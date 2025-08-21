@@ -14,8 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -25,7 +24,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * Multiple accesses to the same entity's capability will provide this as only the first request will
  * instantiate a new instance.
  */
-public final class LivingEntityEquipmentHandlerAttachment implements IResourceHandler<ItemResource> {
+public final class LivingEntityEquipmentHandlerAttachment implements ResourceHandler<ItemResource> {
     private final List<EquipmentSlot> slots;
     private final ArrayList<ItemStack> internalStacks;
     private final ArrayList<Journal> snapshots = new ArrayList<>();
@@ -81,13 +80,13 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         return getStackInSlot(index).getCount();
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
+    public long getCapacityAsLong(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
         return slots.get(index).countLimit;
     }
@@ -96,45 +95,21 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
     public boolean isValid(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return true;
-        return resource.canEquip(slots.get(index), entity);
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int characteristics(int index) {
-        return TransferCharacteristics.DEFAULT;
+        // TODO: restore canEquip?
+//        return resource.canEquip(slots.get(index), entity);
+        return true;
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return insertBehaviour(index, resource, amount, transaction);
-    }
-
-    @Override
-    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            handled += insertBehaviour(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-        return handled;
-    }
-
-    private int insertBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (!isValid(index, resource)) return 0;
 
         ItemStack stack = getStackInSlot(index);
-        if (!stack.isEmpty() && !resource.is(stack)) return 0;
+        if (!stack.isEmpty() && !resource.matches(stack)) return 0;
 
-        amount = Math.min(amount, getCapacity(index, resource) - stack.getCount());
+        amount = Math.min(amount, getCapacityAsInt(index, resource) - stack.getCount());
         if (amount > 0) {
             snapshots.get(index).updateSnapshots(transaction);
             internalStacks.set(index, resource.toStack(stack.getCount() + amount));
@@ -146,28 +121,13 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return extractBehaviour(index, resource, amount, transaction);
-    }
 
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            handled += extractBehaviour(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-
-        return handled;
-    }
-
-    private int extractBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
         ItemStack stack = getStackInSlot(index);
         EquipmentSlot equipmentSlot = slots.get(index);
 
-        if (stack.isEmpty() || !resource.is(stack)) return 0;
-        if (equipmentSlot.isArmor() && !resource.canUnequip()) return 0;
+        if (stack.isEmpty() || !resource.matches(stack)) return 0;
+        // TODO: restore canUnequip?
+//        if (equipmentSlot.isArmor() && !resource.canUnequip()) return 0;
 
         int extracted = Math.min(amount, stack.getCount());
         if (extracted > 0) {
@@ -198,7 +158,7 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
         }
 
         @Override
-        protected void onCommit(ItemStack originalState) {
+        protected void onRootCommit(ItemStack originalState) {
             entity.setItemSlot(slots.get(index), internalStacks.get(index));
         }
     }

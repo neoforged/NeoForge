@@ -22,15 +22,13 @@ import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.NotifyingSnapshotJournal;
+import org.jetbrains.annotations.Nullable;
 
-public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
+public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     /**
      * Global wrapper concurrent map.
      *
@@ -60,11 +58,10 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     private int size;
     //TODO Look into pushing these into the container itself to remove the need for a wrapper.
     private final ArrayList<SlotItemStackResourceHandlerJournal> snapshots = new ArrayList<>();
-    private final SnapshotJournal<?> setChangeJournal;
+    private final SetChangedJournal setChangedJournal = new SetChangedJournal();
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
-        this.setChangeJournal = NotifyingSnapshotJournal.commitWith(container::setChanged);
     }
 
     protected Container getContainer() {
@@ -140,23 +137,13 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public int getAmount(int index) {
-        return get(index).getAmount(0);
+    public long getAmountAsLong(int index) {
+        return get(index).getAmountAsLong(0);
     }
 
     @Override
-    public int characteristics() {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int characteristics(int index) {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int getCapacity(int index, ItemResource resource) {
-        return get(index).getCapacity(0, resource);
+    public long getCapacityAsLong(int index, ItemResource resource) {
+        return get(index).getCapacityAsLong(0, resource);
     }
 
     @Override
@@ -167,6 +154,21 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     @Override
     public String toString() {
         return "VanillaContainerWrapper{%s}".formatted(container);
+    }
+
+    private class SetChangedJournal extends SnapshotJournal<@Nullable Void> {
+        @Override
+        protected @Nullable Void createSnapshot() {
+            return null;
+        }
+
+        @Override
+        protected void revertToSnapshot(@Nullable Void snapshot) {}
+
+        @Override
+        protected void onRootCommit(@Nullable Void originalState) {
+            container.setChanged();
+        }
     }
 
     private class SlotItemStackResourceHandlerJournal extends ItemStackResourceHandlerJournal {
@@ -190,7 +192,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         protected boolean canInsert(ItemResource resource) {
             //We are using unsafe access to the innerstack of ItemResource for a readonly action.
             //This is to avoid allocating a new stack when no mutation will occur.
-            return container.canPlaceItem(index, UnsafeResourceUtils.innerStackOf(resource));
+            return container.canPlaceItem(index, resource.toStack());
         }
 
         /**
@@ -212,13 +214,13 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
                 return 1;
             }
 
-            return container.getMaxStackSize(UnsafeResourceUtils.innerStackOf(resource));
+            return container.getMaxStackSize(resource.toStack());
         }
 
         @Override
-        public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
             //Resource checks are done in the ContainerWrapper insert
-            int inserted = super.insert(resource, amount, transaction);
+            int inserted = super.insert(index, resource, amount, transaction);
             if (inserted > 0) {
                 container.onTransfer(this.index, true, transaction);
             }
@@ -226,9 +228,9 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         }
 
         @Override
-        public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
             //Resource checks are done in the ContainerWrapper extract
-            int extracted = super.extract(resource, amount, transaction);
+            int extracted = super.extract(index, resource, amount, transaction);
             if (extracted > 0) {
                 container.onTransfer(index, false, transaction);
             }
@@ -238,7 +240,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         // We override updateSnapshots to also schedule a setChanged call for the backing container.
         @Override
         public void updateSnapshots(TransactionContext transaction) {
-            setChangeJournal.updateSnapshots(transaction);
+            setChangedJournal.updateSnapshots(transaction);
             super.updateSnapshots(transaction);
 
             // If the container is a double chest, we need to ensure we notify the other wrapped container as well of changes.
@@ -247,17 +249,17 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
                 Level level = chest.getLevel();
                 if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
                     // For chests: also schedule a setChanged call for the other half
-                    VanillaContainerWrapper.of(otherChest).setChangeJournal.updateSnapshots(transaction);
+                    VanillaContainerWrapper.of(otherChest).setChangedJournal.updateSnapshots(transaction);
                 }
             }
         }
 
         @Override
-        protected void onCommit(ItemStack original) {
+        protected void onRootCommit(ItemStack original) {
             // Try to apply the change to the original stack
             ItemStack currentStack = get();
 
-            container.onCommit(index, original);
+            container.onRootCommit(index, original);
 
             //Was the original empty or not matching?
             if (original.isEmpty() || original.getItem() != currentStack.getItem()) {

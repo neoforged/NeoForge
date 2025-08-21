@@ -8,8 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -17,12 +16,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A single-index item snapshot backed by an {@link ItemStack}.
  * Implementors should at least override {@link #get} and {@link #set},
- * and probably {@link #onCommit} as well for {@code markDirty()} and similar calls.
+ * and probably {@link #onRootCommit} as well for {@code markDirty()} and similar calls.
  *
  * <p>{@link #canInsert} and {@link #canExtract} can be used for more precise control over which items may be inserted or extracted.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
  */
-public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<ItemStack> implements ISingleResourceHandler<ItemResource> {
+public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource> {
     /**
      * Return the stack of this storage. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #set}.
@@ -66,11 +65,17 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemStack currentStack = get();
 
-        if ((!currentStack.isEmpty() && !resource.is(currentStack)) || !canInsert(resource)) return 0;
+        if ((!currentStack.isEmpty() && !resource.matches(currentStack)) || !canInsert(resource)) return 0;
 
         int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
         if (insertedAmount == 0) return 0;
@@ -90,11 +95,12 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemStack currentStack = get();
 
-        if (!resource.is(currentStack) || !canExtract(resource)) return 0;
+        if (!resource.matches(currentStack) || !canExtract(resource)) return 0;
 
         int extracted = Math.min(currentStack.getCount(), amount);
         if (extracted == 0) return 0;
@@ -108,24 +114,19 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     }
 
     @Override
-    public int characteristics() {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
     public ItemResource getResource(int index) {
         Objects.checkIndex(index, size());
         return ItemResource.of(get());
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         return get().getCount();
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
+    public long getCapacityAsLong(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
         return getCapacity(resource);
     }

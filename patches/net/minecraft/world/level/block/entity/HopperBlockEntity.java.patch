@@ -19,7 +19,7 @@
 +    };
 +
 +    @Override
-+    public void onCommit(int slot, ItemStack originalStack) {
++    public void onRootCommit(int slot, ItemStack originalStack) {
 +        if (isInserting && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
 +            if (!isOnCustomCooldown()) {
 +                // This cooldown is always set to 8 in vanilla with one exception:

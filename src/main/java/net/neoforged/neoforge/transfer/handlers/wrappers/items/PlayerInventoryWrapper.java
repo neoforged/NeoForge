@@ -7,13 +7,12 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -47,7 +46,9 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     public boolean isValid(int index, ItemResource resource) {
         EquipmentSlot slot = getEquipmentSlot(index);
         if (resource.isEmpty()) return true;
-        return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
+        // TODO: restore canEquip?
+//        return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
+        return true;
     }
 
     //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
@@ -64,15 +65,14 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     /**
      * Retrieves a wrapper for a specific slot.
      */
-    public IResourceHandler<ItemResource> getSlot(int slot) {
-        Objects.checkIndex(slot, size());
-        return new RangedResourceHandler<>(this, slot, slot + 1);
+    public ResourceHandler<ItemResource> getSlot(int slot) {
+        return RangedResourceHandler.ofSingleIndex(this, slot);
     }
 
     /**
      * Retrieves a wrapper for the slot corresponding to the given hand.
      */
-    public IResourceHandler<ItemResource> getHandSlot(InteractionHand hand) {
+    public ResourceHandler<ItemResource> getHandSlot(InteractionHand hand) {
         return switch (hand) {
             case MAIN_HAND -> {
                 if (Inventory.isHotbarSlot(inventory.getSelectedSlot())) {
@@ -85,19 +85,19 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         };
     }
 
-    public IResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
+    public ResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
         return getSlot(slot.getIndex(Inventory.INVENTORY_SIZE));
     }
 
-    public IResourceHandler<ItemResource> getArmor() {
-        return new RangedResourceHandler<>(this, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE));
+    public ResourceHandler<ItemResource> getArmor() {
+        return RangedResourceHandler.of(this, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE));
     }
 
     /**
      * Retrieves a wrapper around the main slots only.
      */
-    public IResourceHandler<ItemResource> getMainSlots() {
-        return new RangedResourceHandler<>(this, 0, Inventory.INVENTORY_SIZE);
+    public ResourceHandler<ItemResource> getMainSlots() {
+        return RangedResourceHandler.of(this, 0, Inventory.INVENTORY_SIZE);
     }
 
     /**
@@ -158,7 +158,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
 
         @Override
-        protected void onCommit(Integer originalState) {
+        protected void onRootCommit(Integer originalState) {
             // actually drop the stacks
             for (DropInfo dropInfo : entries) {
                 int remainder = dropInfo.amount;

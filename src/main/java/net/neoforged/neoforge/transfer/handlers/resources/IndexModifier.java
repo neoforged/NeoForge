@@ -12,11 +12,11 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * Provides information on how a particular container would be mutated at a given index,
  * a resource, and an amount. This is intended to be used with {@link ResourceHandlerSlot}
  * instead of making an IModifiableResourceHandler.
- * 
+ *
  * @param <T>
  */
 @FunctionalInterface
-public interface IIndexModifier<T extends IResource> {
+public interface IndexModifier<T extends IResource> {
     /**
      * Overrides the resource and amount at the given index.
      *

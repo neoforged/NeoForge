@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Extension methods for {@link Container}. These methods are used by {@link VanillaContainerWrapper},
  * to allow containers to be integrated in a transaction.
  */
-public interface IContainerExtension {
+public interface ContainerExtension {
     private Container self() {
         return (Container) this;
     }
@@ -37,7 +37,7 @@ public interface IContainerExtension {
      * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper}.
      */
     @ApiStatus.OverrideOnly
-    default void onCommit(int slot, ItemStack originalStack) {}
+    default void onRootCommit(int slot, ItemStack originalStack) {}
 
     /**
      * Perform additional logic during the transaction after a transfer of at least 1 in value. (i.e. insert or extract with result > 0).

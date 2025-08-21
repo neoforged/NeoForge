@@ -8,13 +8,12 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
+public class WorldlyContainerWrapper implements ResourceHandler<ItemResource> {
     private final WorldlyContainer worldlyContainer;
     private final VanillaContainerWrapper wrappedContainer;
     @Nullable
@@ -51,13 +50,13 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public int getAmount(int index) {
-        return wrappedContainer.getAmount(convertSlot(index));
+    public long getAmountAsLong(int index) {
+        return wrappedContainer.getAmountAsLong(convertSlot(index));
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
-        return wrappedContainer.getCapacity(convertSlot(index), resource);
+    public long getCapacityAsLong(int index, ItemResource resource) {
+        return wrappedContainer.getCapacityAsLong(convertSlot(index), resource);
     }
 
     @Override
@@ -66,20 +65,10 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public int characteristics(int index) {
-        return wrappedContainer.characteristics(convertSlot(index));
-    }
-
-    @Override
-    public int characteristics() {
-        return wrappedContainer.characteristics();
-    }
-
-    @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int convertedIndex = convertSlot(index);
-        if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, UnsafeResourceUtils.innerStackOf(resource), side)) {
+        if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, resource.toStack(), side)) {
             return 0;
         }
         return wrappedContainer.insert(convertedIndex, resource, amount, transaction);
@@ -89,7 +78,7 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int convertedSlot = convertSlot(index);
-        if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, UnsafeResourceUtils.innerStackOf(resource), side)) {
+        if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, resource.toStack(), side)) {
             return 0;
         }
         return wrappedContainer.extract(convertedSlot, resource, amount, transaction);

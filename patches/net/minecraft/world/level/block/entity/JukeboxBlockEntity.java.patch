@@ -20,11 +20,11 @@
      @Override
      public void setTheItem(ItemStack p_304781_) {
          this.item = p_304781_;
-+        onCommit(0, /* ignored */ ItemStack.EMPTY);
++        onRootCommit(0, /* ignored */ ItemStack.EMPTY);
 +    }
 +
 +    @Override
-+    public void onCommit(int slot, ItemStack ignored) {
++    public void onRootCommit(int slot, ItemStack ignored) {
          boolean flag = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> optional = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
          this.notifyItemChangedInJukebox(flag);

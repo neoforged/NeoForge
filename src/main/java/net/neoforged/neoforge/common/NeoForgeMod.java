@@ -159,7 +159,7 @@ import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.LivingEntityEquipmentHandlerAttachment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -204,10 +204,10 @@ public class NeoForgeMod {
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
 
     /**
-     * An attachment intended for living entities to hold their {@link IResourceHandler} handling their equipment items.
+     * An attachment intended for living entities to hold their {@link ResourceHandler} handling their equipment items.
      * This is only added on demand, rather than for every living entity, hence why it is an attachment since things like Players, and horse like creatures,
      * have their own equipment handling.
-     * 
+     *
      * @see CapabilityHooks
      */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<LivingEntityEquipmentHandlerAttachment>> ENTITY_EQUIPMENT_ATTACHMENT = ATTACHMENTS.register("entity_equipment", LivingEntityEquipmentHandlerAttachment.BUILDER::build);

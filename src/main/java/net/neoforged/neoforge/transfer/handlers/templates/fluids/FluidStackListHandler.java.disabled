@@ -1,3 +1,4 @@
+// TODO: currently disabled
 /*
  * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
@@ -38,7 +39,7 @@ public class FluidStackListHandler extends StackListHandler<FluidStack, FluidRes
 
     @Override
     public boolean matches(FluidStack stack, FluidResource resource) {
-        return resource.is(stack);
+        return resource.matches(stack);
     }
 
     @Override

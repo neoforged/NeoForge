@@ -18,9 +18,7 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -38,14 +36,14 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
     private Float probability = NO_OP;
 
-    private final IResourceHandler<ItemResource> topHandler = new Top();
-    private final IResourceHandler<ItemResource> bottomHandler = new Bottom();
+    private final ResourceHandler<ItemResource> topHandler = new Top();
+    private final ResourceHandler<ItemResource> bottomHandler = new Bottom();
 
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
     private static final Map<WrapperLocation, ComposterWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
 
     @Nullable
-    public static IResourceHandler<ItemResource> get(Level level, BlockPos pos, @Nullable Direction direction) {
+    public static ResourceHandler<ItemResource> get(Level level, BlockPos pos, @Nullable Direction direction) {
         if (direction == null || !direction.getAxis().isVertical()) return null;
 
         WrapperLocation location = new WrapperLocation(level, pos.immutable());
@@ -68,7 +66,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     }
 
     @Override
-    protected void onCommit(Float originalState) {
+    protected void onRootCommit(Float originalState) {
         if (probability.equals(NO_OP)) return;
 
         // Apply pending action
@@ -114,9 +112,15 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         return ComposterBlock.getValue(resource.toStack());
     }
 
-    private class Top implements ISingleResourceHandler<ItemResource> {
+    private class Top implements ResourceHandler<ItemResource> {
         @Override
-        public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            Objects.checkIndex(index, size());
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
             // Check that no action is scheduled.
@@ -135,13 +139,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
             return 0;
-        }
-
-        @Override
-        public int characteristics() {
-            return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERTABLE;
         }
 
         @Override
@@ -150,12 +149,12 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public int getAmount(int index) {
+        public long getAmountAsLong(int index) {
             return 0;
         }
 
         @Override
-        public int getCapacity(int index, ItemResource resource) {
+        public long getCapacityAsLong(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
             return resource.isEmpty() || getValueFrom(resource) > 0 ? 1 : 0;
         }
@@ -172,14 +171,20 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
     }
 
-    private class Bottom implements ISingleResourceHandler<ItemResource> {
+    private class Bottom implements ResourceHandler<ItemResource> {
         @Override
-        public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
             return 0;
         }
 
         @Override
-        public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            Objects.checkIndex(index, size());
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
             // Check that the resource is bone meal & there is bone meal to extract.
@@ -197,13 +202,13 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public int getAmount(int index) {
+        public long getAmountAsLong(int index) {
             Objects.checkIndex(index, size());
             return hasBoneMeal() ? 1 : 0;
         }
 
         @Override
-        public int getCapacity(int index, ItemResource resource) {
+        public long getCapacityAsLong(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
             return resource.isEmpty() || isBoneMeal(resource) ? 1 : 0;
         }
@@ -212,11 +217,6 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
             return resource.isEmpty();
-        }
-
-        @Override
-        public int characteristics() {
-            return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.EXTRACTABLE;
         }
 
         @Override

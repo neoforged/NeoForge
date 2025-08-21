@@ -7,22 +7,18 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
-    private final IResourceHandler<ItemResource> handler;
-    private final IIndexModifier<ItemResource> slotModifier;
+    private final ResourceHandler<ItemResource> handler;
+    private final IndexModifier<ItemResource> slotModifier;
 
-    public ResourceHandlerSlot(IResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition, IIndexModifier<ItemResource> slotModifier) {
+    public ResourceHandlerSlot(ResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition, IndexModifier<ItemResource> slotModifier) {
         super(EMPTY, index, xPosition, yPosition);
         this.handler = handler;
         this.slotModifier = slotModifier;
@@ -42,7 +38,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public ItemStack getItem() {
-        return handler.getResource(getSlotIndex()).toStack(handler.getAmount(getSlotIndex()));
+        return handler.getResource(getSlotIndex()).toStack(handler.getAmountAsInt(getSlotIndex()));
     }
 
     @Override
@@ -57,38 +53,39 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public int getMaxStackSize() {
-        return handler.getCapacity(getSlotIndex(), ItemResource.EMPTY);
+        return handler.getCapacityAsInt(getSlotIndex(), ItemResource.EMPTY);
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        return handler.getCapacity(getSlotIndex(), ItemResource.of(stack));
+        return handler.getCapacityAsInt(getSlotIndex(), ItemResource.of(stack));
     }
 
-    @Override
-    public boolean mayPickup(Player player) {
-        return ResourceHandlerUtil.hasExtractableResourceAtIndex(handler, resource -> true, getSlotIndex());
-    }
-
-    @Override
-    public ItemStack remove(int amount) {
-        var slotIndex = getSlotIndex();
-        ItemResource resource = handler.getResource(slotIndex);
-        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-            int extracted = handler.extract(slotIndex, resource, amount, transaction);
-
-            if (extracted > 0) return ItemStack.EMPTY;
-
-            transaction.commit();
-            return resource.toStack(extracted);
-        }
-    }
-
-    public IResourceHandler<ItemResource> asResourceHandler() {
-        return handler;
-    }
-
-    public IIndexModifier<ItemResource> getSlotModifier() {
-        return slotModifier;
-    }
+    // TODO: fix
+//    @Override
+//    public boolean mayPickup(Player player) {
+//        return ResourceHandlerUtil.hasExtractableResourceAtIndex(handler, resource -> true, getSlotIndex());
+//    }
+//
+//    @Override
+//    public ItemStack remove(int amount) {
+//        var slotIndex = getSlotIndex();
+//        ItemResource resource = handler.getResource(slotIndex);
+//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+//            int extracted = handler.extract(slotIndex, resource, amount, transaction);
+//
+//            if (extracted > 0) return ItemStack.EMPTY;
+//
+//            transaction.commit();
+//            return resource.toStack(extracted);
+//        }
+//    }
+//
+//    public IResourceHandler<ItemResource> asResourceHandler() {
+//        return handler;
+//    }
+//
+//    public IIndexModifier<ItemResource> getSlotModifier() {
+//        return slotModifier;
+//    }
 }

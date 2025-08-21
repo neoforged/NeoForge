@@ -33,7 +33,7 @@
 +            lastInteractedSlot = snapshot;
 +        }
 +        @Override
-+        protected void onCommit(Integer originalState) {
++        protected void onRootCommit(Integer originalState) {
 +            updateState(lastInteractedSlot);
 +        }
 +    };

@@ -7,18 +7,18 @@ package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * An {@link ISingleResourceHandler} that allows extraction of an unlimited amount of a specified resource.
+ * A {@link ResourceHandler} that allows extraction of an unlimited amount of a specified resource.
  *
  * @param <T> The type of resource that this storage can accept.
  */
-public class InfiniteResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
+// TODO: questionable usefulness
+public class InfiniteResourceHandler<T extends IResource> implements ResourceHandler<T> {
     /**
      * Resource that should be provided infinitely. Mustn't be {@code null}.
      */
@@ -33,13 +33,20 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public int insert(T resource, int amount, TransactionContext context) {
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public int insert(int index, T resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         ResourceHandlerUtil.isEmpty(resource, amount);
         return 0; // doesn't allow insertions
     }
 
     @Override
-    public int extract(T resource, int amount, TransactionContext context) {
+    public int extract(int index, T resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return resource.equals(infinite) ? amount : 0;
     }
@@ -51,21 +58,9 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public int getAmount(int index) {
-        Objects.checkIndex(index, size());
-        return Integer.MAX_VALUE; //This is mostly for pretty printing when displayed by mods.
-    }
-
-    @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
-    }
-
-    @Override
-    public int getCapacity(int index, T resource) {
-        Objects.checkIndex(index, size());
-        return Integer.MAX_VALUE; // Maximum capacity
     }
 
     @Override
@@ -78,10 +73,5 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
         return resource.isEmpty();
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.EXTRACTABLE | TransferCharacteristics.INFINITE | TransferCharacteristics.IMMUTABLE;
     }
 }

@@ -16,8 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
  */
 @ApiStatus.Internal
-public final class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
+public final class CauldronWrapper extends SnapshotJournal<BlockState> implements ResourceHandler<FluidResource> {
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
     private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakKeys().weakValues().makeMap();
     private final WrapperLocation location;
@@ -50,49 +49,44 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     }
 
     @Override
+    public int size() {
+        return 1;
+    }
+
+    @Override
     public FluidResource getResource(int index) {
         Objects.checkIndex(index, size());
 
         BlockState state = location.getBlockState();
-        return getContent(state).fluid.getDefaultResource();
+        return FluidResource.of(getContent(state).fluid);
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         BlockState state = location.getBlockState();
         return getContent(state).getMillibuckets(state);
     }
 
     @Override
-    public int getCapacity(int index, FluidResource resource) {
+    public long getCapacityAsLong(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return CauldronFluidContent.getLargestValue();
-        CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
+        CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
-        return resource.isEmpty() || CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
-    }
-
-    @Override
-    public int characteristics(int index) {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.DEFAULT;
+        return resource.isEmpty() || CauldronFluidContent.getForFluid(resource.getFluid()) != null;
     }
 
     /**
      * Called by fill and drain to update the block state.
      * Note that this temporarily updates the block state in the level
      *
-     * @see #onCommit
+     * @see #onRootCommit
      */
     private void updateSnapshotAndSetBlock(CauldronFluidContent newContent, int fluidLevel, TransactionContext transaction) {
         updateSnapshots(transaction);
@@ -112,10 +106,11 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     }
 
     @Override
-    public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        CauldronFluidContent handledContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
+        CauldronFluidContent handledContent = CauldronFluidContent.getForFluid(resource.getFluid());
         if (handledContent == null) {
             return 0;
         }
@@ -144,14 +139,15 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     }
 
     @Override
-    public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         BlockState state = location.getBlockState();
         CauldronFluidContent handledContent = getContent(state);
 
         //This handles the `is(fluid)` as well as components are `empty` with the default resource being the baseline of the fluid
-        if (amount < handledContent.getMillibuckets(state) || !resource.equals(handledContent.fluid.getDefaultResource())) {
+        if (amount < handledContent.getMillibuckets(state) || !resource.is(handledContent.fluid) || !resource.isComponentsPatchEmpty()) {
             return 0;
         }
 
@@ -181,7 +177,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     }
 
     @Override
-    protected void onCommit(BlockState originalState) {
+    protected void onRootCommit(BlockState originalState) {
         // State as it was modified during this outermost transaction being committed.
         BlockState state = location.getBlockState();
 
