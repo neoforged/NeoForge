@@ -20,12 +20,12 @@
 +    private boolean wasEmpty(int slot, int amountChange) {
 +        if (items.get(slot).getCount() != amountChange) return false;
 +        for (int i = 0; i < slot; ++i) {
-+            if (items.get(i).isEmpty()) {
++            if (!items.get(i).isEmpty()) {
 +                return false;
 +            }
 +        }
 +        for (int i = slot + 1; i < items.size(); ++i) {
-+            if (items.get(i).isEmpty()) {
++            if (!items.get(i).isEmpty()) {
 +                return false;
 +            }
 +        }
