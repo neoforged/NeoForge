@@ -4,7 +4,7 @@
  
      @Override
      public void setItem(int p_332705_, ItemStack p_332643_) {
-+        setItem(p_332705_, p_332643_, true);
++        setItem(p_332705_, p_332643_, false);
 +    }
 +
 +    // Neo: Support deferring side effects until end of a transaction

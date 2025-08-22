@@ -4,13 +4,13 @@
  
      @Override
      public void setItem(int p_256610_, ItemStack p_255789_) {
-+        setItem(p_256610_, p_255789_, true);
++        setItem(p_256610_, p_255789_, false);
 +    }
 +
 +    // Neo: Support deferring changes until end of a transaction
 +    @Override
 +    public void setItem(int p_256610_, ItemStack p_255789_, boolean insideTransaction) {
-+        if (!insideTransaction) {
++        if (insideTransaction) {
 +            this.items.set(p_256610_, p_255789_);
 +            return;
 +        }
@@ -23,7 +23,7 @@
      }
 +
 +    // Neo: Make lastInteractedSlot transactional, and defer updateState until end of a transaction
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedParticipant = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedSlotJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
 +        @Override
 +        protected Integer createSnapshot() {
 +            return lastInteractedSlot;
@@ -39,8 +39,8 @@
 +    };
 +
 +    @Override
-+    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
-+        this.lastInteractedParticipant.updateSnapshots(transaction);
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        this.lastInteractedSlotJournal.updateSnapshots(transaction);
 +        lastInteractedSlot = slot;
 +     }
  

@@ -1,43 +1,47 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,43 @@
+@@ -82,6 +_,47 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
 +    // Neo: Update cooldown after insertion into hopper
-+    private boolean isInserting = false;
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> journal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> cooldownTimeJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
 +        @Override
-+        protected Boolean createSnapshot() {
-+            return isInserting;
++        protected Integer createSnapshot() {
++            return cooldownTime;
 +        }
-+
 +        @Override
-+        protected void revertToSnapshot(Boolean snapshot) {
-+           isInserting = snapshot;
++        protected void revertToSnapshot(Integer snapshot) {
++            cooldownTime = snapshot;
 +        }
 +    };
 +
-+    @Override
-+    public void onRootCommit(int slot, ItemStack originalStack) {
-+        if (isInserting && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
-+            if (!isOnCustomCooldown()) {
-+                // This cooldown is always set to 8 in vanilla with one exception:
-+                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
-+                // has not been updated as recently as the one pushing items into it.
-+                // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
-+                setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
++    // Neo: Checks if the hopper was empty just before the insertion of `amountChange` at index `slot`.
++    private boolean wasEmpty(int slot, int amountChange) {
++        if (items.get(slot).getCount() != amountChange) return false;
++        for (int i = 0; i < slot; ++i) {
++            if (items.get(i).isEmpty()) {
++                return false;
 +            }
 +        }
-+        isInserting = false;
++        for (int i = slot + 1; i < items.size(); ++i) {
++            if (items.get(i).isEmpty()) {
++                return false;
++            }
++        }
++        return true;
 +    }
 +
 +    @Override
-+    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
-+        super.onTransfer(slot, isInserting, context);
-+        if (isInserting) {
-+            journal.updateSnapshots(context);
-+            this.isInserting = true;
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        // If we just went from empty to something in the hopper, reset the cooldown.
++        if (amountChange > 0 && wasEmpty(slot, amountChange) && !isOnCustomCooldown()) {
++            cooldownTimeJournal.updateSnapshots(transaction);
++            // This cooldown is always set to 8 in vanilla with one exception:
++            // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++            // has not been updated as recently as the one pushing items into it.
++            // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++            setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
 +        }
 +    }
 +

@@ -219,20 +219,18 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            //Resource checks are done in the ContainerWrapper insert
             int inserted = super.insert(index, resource, amount, transaction);
             if (inserted > 0) {
-                container.onTransfer(this.index, true, transaction);
+                container.onTransfer(this.index, inserted, transaction);
             }
             return inserted;
         }
 
         @Override
         public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            //Resource checks are done in the ContainerWrapper extract
             int extracted = super.extract(index, resource, amount, transaction);
             if (extracted > 0) {
-                container.onTransfer(index, false, transaction);
+                container.onTransfer(index, -extracted, transaction);
             }
             return extracted;
         }

@@ -206,7 +206,7 @@ public abstract class StackListHandler<S, R extends IResource> implements Resour
     }
 
     @Override
-    public int insert(R resource, int amount, TransactionContext context) {
+    public int insert(R resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int handled = 0;
         for (int index = 0; index < size; index++) {
@@ -218,7 +218,7 @@ public abstract class StackListHandler<S, R extends IResource> implements Resour
     }
 
     @Override
-    public int insert(int index, R resource, int amount, TransactionContext context) {
+    public int insert(int index, R resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
@@ -242,7 +242,7 @@ public abstract class StackListHandler<S, R extends IResource> implements Resour
     }
 
     @Override
-    public int extract(int index, R resource, int amount, TransactionContext context) {
+    public int extract(int index, R resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
@@ -250,7 +250,7 @@ public abstract class StackListHandler<S, R extends IResource> implements Resour
     }
 
     @Override
-    public int extract(R resource, int amount, TransactionContext context) {
+    public int extract(R resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         int handled = 0;

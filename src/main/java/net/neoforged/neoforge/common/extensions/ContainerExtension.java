@@ -7,7 +7,11 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -21,9 +25,11 @@ public interface ContainerExtension {
     }
 
     /**
-     * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling committed actions.
+     * An extension of {@link Container#setItem(int, ItemStack)} that allows non-transactional actions to be skipped.
+     * Non-transactional actions include for example calling {@code setChanged} or making changes to the world.
      *
-     * <p>If {@code insideTransaction} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the insideTransaction.
+     * @param insideTransaction When {@code true}, non-transactional actions should be deferred until {@link #onRootCommit}.
+     *                          When {@code false}, non-transactional actions can be performed immediately.
      */
     @ApiStatus.OverrideOnly
     default void setItem(int slot, ItemStack stack, boolean insideTransaction) {
@@ -31,8 +37,8 @@ public interface ContainerExtension {
     }
 
     /**
-     * Perform changes that were deferred in {@link #setItem(int, ItemStack, boolean)}
-     * because {@code forceChanges} was false.
+     * Perform non-transactional actions that were deferred in {@link #setItem(int, ItemStack, boolean)}
+     * because {@code insideTransaction} was {@code true}.
      *
      * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper}.
      */
@@ -40,10 +46,17 @@ public interface ContainerExtension {
     default void onRootCommit(int slot, ItemStack originalStack) {}
 
     /**
-     * Perform additional logic during the transaction after a transfer of at least 1 in value. (i.e. insert or extract with result > 0).
-     * Any logic performed here should be fully transactional, and support being rolled back.
-     * In other words, the transaction is still on going.
+     * Perform additional logic during the transaction, <strong>immediately</strong> after a successful transfer
+     * (i.e. {@linkplain ResourceHandler#insert(int, IResource, int, TransactionContext) insert} or
+     * {@linkplain ResourceHandler#extract(int, IResource, int, TransactionContext) extract} with result > 0).
+     * Any logic performed by this method should be fully transactional, and support being rolled back.
+     * In other words, the transaction is still ongoing.
+     *
+     * @param amountChange If positive, the amount of items that were just inserted into this slot.
+     *                     If negative, <strong>minus</strong> the amount of items that were just extracted from this slot.
+     * @implSpec Any logic performed by this method must properly support {@linkplain Transaction transactions}.
+     *           Note that {@link SnapshotJournal} can serve as the base class for transaction-aware state management.
      */
     @ApiStatus.OverrideOnly
-    default void onTransfer(int slot, boolean isInserting, TransactionContext context) {}
+    default void onTransfer(int slot, int amountChange, TransactionContext transaction) {}
 }

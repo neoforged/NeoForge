@@ -38,14 +38,14 @@ public class InfiniteResourceHandler<T extends IResource> implements ResourceHan
     }
 
     @Override
-    public int insert(int index, T resource, int amount, TransactionContext context) {
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         ResourceHandlerUtil.isEmpty(resource, amount);
         return 0; // doesn't allow insertions
     }
 
     @Override
-    public int extract(int index, T resource, int amount, TransactionContext context) {
+    public int extract(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return resource.equals(infinite) ? amount : 0;
