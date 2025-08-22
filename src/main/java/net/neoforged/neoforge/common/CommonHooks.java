@@ -778,6 +778,7 @@ public class CommonHooks {
         return onGrindstoneTake(inputSlots, access, null, xpFunction);
     }
 
+    //TODO remove nullable annotation from player once method above is removed
     public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, @Nullable Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);

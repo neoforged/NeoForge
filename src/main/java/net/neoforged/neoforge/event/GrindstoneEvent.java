@@ -131,6 +131,7 @@ public abstract class GrindstoneEvent extends Event {
         /**
          * @deprecated Use {@link #OnTakeItem(ContainerLevelAccess, Player, ItemStack, ItemStack, int) the context-aware version} instead
          */
+        //TODO also remove nullable annotations from player once this is removed
         @Deprecated(forRemoval = true, since = "1.21.8")
         public OnTakeItem(ItemStack top, ItemStack bottom, int xp) {
             this(ContainerLevelAccess.NULL, null, top, bottom, xp);
@@ -178,14 +179,14 @@ public abstract class GrindstoneEvent extends Event {
         }
 
         /**
-         * @return access to the grindstone's level and position
+         * {@return an accessor for the grindstone's level and position}
          */
         public ContainerLevelAccess getContainerAccess() {
             return this.access;
         }
 
         /**
-         * @return the player currently using the grindstone
+         * {@return the player currently using the grindstone}
          */
         @Nullable
         public Player getPlayer() {
