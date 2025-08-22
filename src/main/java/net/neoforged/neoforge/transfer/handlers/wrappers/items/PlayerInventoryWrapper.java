@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -20,39 +21,26 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An implementation of {@code IResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
+ * An implementation of {@code ResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
+ *
+ * @see VanillaContainerWrapper
+ * @see WorldlyContainerWrapper
  */
+// TODO: do we want to "animate" inserted items just like in PlayerMainInvWrapper?
 public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
+    /**
+     * Gets the inventory wrapper for a {@link Player}.
+     */
     public static PlayerInventoryWrapper of(Player player) {
         return of(player.getInventory());
     }
 
+    /**
+     * Gets the inventory wrapper for a player's {@link Inventory}.
+     */
     public static PlayerInventoryWrapper of(Inventory inventory) {
         return (PlayerInventoryWrapper) VanillaContainerWrapper.of(inventory);
     }
-
-    @Override
-    public Inventory getContainer() {
-        return (Inventory) super.getContainer();
-    }
-
-    @Nullable
-    private EquipmentSlot getEquipmentSlot(int slot) {
-        if (slot < getContainer().getNonEquipmentItems().size()) return null;
-        return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
-    }
-
-    @Override
-    public boolean isValid(int index, ItemResource resource) {
-        EquipmentSlot slot = getEquipmentSlot(index);
-        if (resource.isEmpty()) return true;
-        // TODO: restore canEquip?
-//        return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
-        return true;
-    }
-
-    //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
-    // we just need the context
 
     private final DroppedItems droppedItems = new DroppedItems();
     private final Inventory inventory;
@@ -85,6 +73,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         };
     }
 
+    // TODO: weird, this will silently fail for equipment slots that are not armor slots?
     public ResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
         return getSlot(slot.getIndex(Inventory.INVENTORY_SIZE));
     }
@@ -101,6 +90,34 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     /**
+     * Inserts items into this player inventory, trying to place items
+     * following the logic of {@link Inventory#placeItemBackInInventory}.
+     */
+    @Override
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+
+        int inserted = 0;
+
+        // Stack into the main stack first and the offhand stack second.
+        for (InteractionHand hand : InteractionHand.values()) {
+            var handSlot = getHandSlot(hand);
+
+            if (handSlot.getResource(0).equals(resource)) {
+                inserted += handSlot.insert(resource, amount - inserted, transaction);
+                if (inserted == amount) {
+                    return inserted;
+                }
+            }
+        }
+
+        // Otherwise insert into the main slots, stacking first.
+        inserted += ResourceHandlerUtil.insertStacking(getMainSlots(), resource, amount - inserted, transaction);
+
+        return inserted;
+    }
+
+    /**
      * Transactional version of {@link Inventory#placeItemBackInInventory}:
      * tries to insert as much as possible into the player inventory, and drops the remainder.
      *
@@ -114,9 +131,13 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
     }
 
+    /**
+     * Transactionally drops an item in the world.
+     */
     public void drop(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount))
-            return;
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0) return;
+
         // Drop in the world on the server side (will be synced by the game with the client).
         // Dropping items is server-side only because it involves randomness.
         if (!inventory.player.level().isClientSide()) {
@@ -124,9 +145,35 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
     }
 
+    // TODO: suspicious method
+    @Override
+    public Inventory getContainer() {
+        return (Inventory) super.getContainer();
+    }
+
+    @Nullable
+    private EquipmentSlot getEquipmentSlot(int slot) {
+        if (slot < getContainer().getNonEquipmentItems().size()) return null;
+        return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
+    }
+
+    // TODO: overriding isValid is weird given that the InventoryWrapper delegates everything to the SlotWrapper
+    // TODO: there might be a way to share the slot identity with the entity equipment wrapper?
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        EquipmentSlot slot = getEquipmentSlot(index);
+        if (resource.isEmpty()) return true;
+        // TODO: restore canEquip?
+//        return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
+        return true;
+    }
+
+    //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
+    // we just need the context
+
     @Override
     public String toString() {
-        return "InventoryWrapper{ %s }".formatted(inventory.player);
+        return "PlayerInventoryWrapper{player=%s}".formatted(inventory.player);
     }
 
     private class DroppedItems extends SnapshotJournal<Integer> {
@@ -150,11 +197,6 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
             while (entries.size() > previousSize) {
                 entries.removeLast();
             }
-        }
-
-        @Override
-        protected void releaseSnapshot(Integer snapshot) {
-            entries.clear();
         }
 
         @Override

@@ -12,22 +12,30 @@ import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An implementation of {@code ResourceHandler<ItemResource>} for vanilla's {@link Container}.
+ *
+ * <p><b>Important note:</b> This wrapper assumes that the container owns its slots.
+ * If the container does not own its slots, for example because it delegates to another container, this wrapper should not be used!
+ *
+ * @see PlayerInventoryWrapper
+ * @see WorldlyContainerWrapper
+ */
 public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     /**
      * Global wrapper concurrent map.
@@ -37,50 +45,58 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
      *
      * <p>A note on GC: weak keys alone are not suitable as the {@link VanillaContainerWrapper} strongly references the Container.
      * Weak values are suitable, but we have to ensure that the {@link VanillaContainerWrapper} remains strongly reachable as long as
-     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotItemStackResourceHandlerJournal}.
+     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotWrapper}.
      *
      * @see WorldlyContainerWrapper
      * @see PlayerInventoryWrapper
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
     // TODO: should have identity semantics?
-    // TODO: Looking into also the possibility of wiping the need of the map entirely.
     private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakKeys().weakValues().makeMap();
 
+    /**
+     * Wraps a vanilla container into a {@link ResourceHandler} of {@link ItemResource}s.
+     *
+     * <p>If the container is a player {@link Inventory}, use {@link PlayerInventoryWrapper} instead which adds convenience methods for players.
+     *
+     * <p>If the container is a {@link WorldlyContainer}, use {@link WorldlyContainerWrapper} instead which checks the extra methods of worldy containers.
+     */
     public static VanillaContainerWrapper of(Container container) {
-        VanillaContainerWrapper wrapper = WRAPPERS.computeIfAbsent(container,
-                inv -> inv instanceof Inventory inventory ? new PlayerInventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
+        VanillaContainerWrapper wrapper = WRAPPERS.computeIfAbsent(container, cont -> {
+            if (cont instanceof Inventory inventory) {
+                return new PlayerInventoryWrapper(inventory);
+            } else {
+                return new VanillaContainerWrapper(cont);
+            }
+        });
         wrapper.resize();
         return wrapper;
     }
 
     private final Container container;
     private int size;
-    //TODO Look into pushing these into the container itself to remove the need for a wrapper.
-    private final ArrayList<SlotItemStackResourceHandlerJournal> snapshots = new ArrayList<>();
+    private final ArrayList<SlotWrapper> slotWrappers = new ArrayList<>();
     private final SetChangedJournal setChangedJournal = new SetChangedJournal();
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
     }
 
+    // TODO: double check this getter?
     protected Container getContainer() {
         return container;
     }
 
     private void resize() {
         size = container.getContainerSize();
-        snapshots.clear();
-        snapshots.ensureCapacity(size);
-        for (int i = snapshots.size(); i < size; i++) {
-            snapshots.add(new SlotItemStackResourceHandlerJournal(i));
+        while (slotWrappers.size() < size) {
+            slotWrappers.add(new SlotWrapper(slotWrappers.size()));
         }
-        snapshots.trimToSize();
     }
 
-    private SlotItemStackResourceHandlerJournal get(int index) {
+    private SlotWrapper getSlot(int index) {
         Objects.checkIndex(index, size());
-        return snapshots.get(index);
+        return slotWrappers.get(index);
     }
 
     @Override
@@ -90,70 +106,37 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        if (!isValid(index, resource)) return 0;
-
-        return get(index).insert(0, resource, amount, transaction);
-    }
-
-    @Override
-    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-
-        for (int index = 0; index < size; index++) {
-            if (!isValid(index, resource)) continue;
-
-            handled += get(index).insert(0, resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-        return handled;
+        return getSlot(index).insert(0, resource, amount, transaction);
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        return get(index).extract(resource, amount, transaction);
-    }
-
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-
-        for (int index = 0; index < size; index++) {
-            handled += get(index).extract(resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-        return handled;
+        return getSlot(index).extract(resource, amount, transaction);
     }
 
     @Override
     public ItemResource getResource(int index) {
-        return get(index).getResource(0);
+        return getSlot(index).getResource(0);
     }
 
     @Override
     public long getAmountAsLong(int index) {
-        return get(index).getAmountAsLong(0);
+        return getSlot(index).getAmountAsLong(0);
     }
 
     @Override
     public long getCapacityAsLong(int index, ItemResource resource) {
-        return get(index).getCapacityAsLong(0, resource);
+        return getSlot(index).getCapacityAsLong(0, resource);
     }
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        return get(index).isValid(0, resource);
+        return getSlot(index).isValid(0, resource);
     }
 
     @Override
     public String toString() {
-        return "VanillaContainerWrapper{%s}".formatted(container);
+        return "VanillaContainerWrapper{container=%s}".formatted(container);
     }
 
     private class SetChangedJournal extends SnapshotJournal<@Nullable Void> {
@@ -171,27 +154,26 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         }
     }
 
-    private class SlotItemStackResourceHandlerJournal extends ItemStackResourceHandlerJournal {
+    private class SlotWrapper extends ItemStackResourceHandler {
         private final int index;
 
-        private SlotItemStackResourceHandlerJournal(int index) {
+        private SlotWrapper(int index) {
             this.index = index;
         }
 
         @Override
-        protected ItemStack get() {
+        protected ItemStack getStack() {
             return container.getItem(index);
         }
 
         @Override
-        protected void set(ItemStack item) {
-            container.setItem(index, item/*, false*/);
+        protected void setStack(ItemStack item) {
+            // We pass insideTransaction = true to disable all non-transactional actions.
+            container.setItem(index, item, true);
         }
 
         @Override
-        protected boolean canInsert(ItemResource resource) {
-            //We are using unsafe access to the innerstack of ItemResource for a readonly action.
-            //This is to avoid allocating a new stack when no mutation will occur.
+        protected boolean isValid(ItemResource resource) {
             return container.canPlaceItem(index, resource.toStack());
         }
 
@@ -241,12 +223,11 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
             setChangedJournal.updateSnapshots(transaction);
             super.updateSnapshots(transaction);
 
-            // If the container is a double chest, we need to ensure we notify the other wrapped container as well of changes.
+            // For chests: also schedule a setChanged call for the other half
             if (container instanceof ChestBlockEntity chest && chest.getBlockState().getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
                 BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
-                Level level = chest.getLevel();
-                if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
-                    // For chests: also schedule a setChanged call for the other half
+
+                if (chest.getLevel().getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
                     VanillaContainerWrapper.of(otherChest).setChangedJournal.updateSnapshots(transaction);
                 }
             }
@@ -255,24 +236,22 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         @Override
         protected void onRootCommit(ItemStack original) {
             // Try to apply the change to the original stack
-            ItemStack currentStack = get();
+            ItemStack currentStack = getStack();
 
             container.onRootCommit(index, original);
 
-            //Was the original empty or not matching?
-            if (original.isEmpty() || original.getItem() != currentStack.getItem()) {
-                // Assume everything was taken from original so empty it.
-                original.setCount(0);
-                return;
-            }
+            // TODO: we should maybe re-evaluate this, it might make sense to keep it for item capabilities only
+            if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
+                // Components have changed, we need to copy the stack.
+                ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
 
-            // Components have changed, we need to copy the stack.
-            if (original.getComponents() instanceof PatchedDataComponentMap map) {
-                map.restorePatch(currentStack.getComponentsPatch());
+                // None is empty and the items and components match: just update the amount, and reuse the original stack.
+                original.setCount(currentStack.getCount());
+                setStack(original);
+            } else {
+                // Otherwise assume everything was taken from original so empty it.
+                original.setCount(0);
             }
-            // None is empty and the items and components match: just update the amount, and reuse the original stack.
-            original.setCount(currentStack.getCount());
-            set(original);
         }
     }
 }

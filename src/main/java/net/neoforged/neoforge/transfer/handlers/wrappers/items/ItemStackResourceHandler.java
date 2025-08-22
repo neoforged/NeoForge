@@ -7,52 +7,45 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A single-index item snapshot backed by an {@link ItemStack}.
- * Implementors should at least override {@link #get} and {@link #set},
+ * A <strong>single-index</strong> item resource handler, backed by an {@link ItemStack}.
+ * Implementors should at least override {@link #getStack} and {@link #setStack},
  * and probably {@link #onRootCommit} as well for {@code markDirty()} and similar calls.
  *
- * <p>{@link #canInsert} and {@link #canExtract} can be used for more precise control over which items may be inserted or extracted.
+ * <p>{@link #isValid} can be used for more precise control over which items may be stored.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
  */
-public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource> {
+public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource> {
     /**
      * Return the stack of this storage. It will be modified directly sometimes to avoid needless copies.
-     * However, any mutation of the stack will directly be followed by a call to {@link #set}.
+     * However, any mutation of the stack will directly be followed by a call to {@link #setStack}.
      * This means that either returning the backing stack directly or a copy is safe.
      *
      * @return The current stack.
      */
-    protected abstract ItemStack get();
+    protected abstract ItemStack getStack();
 
     /**
      * Set the stack of this storage.
      */
-    protected abstract void set(ItemStack stack);
+    protected abstract void setStack(ItemStack stack);
 
     /**
-     * Return {@code true} if the passed non-blank item resource can be inserted, {@code false} otherwise.
+     * Return {@code true} if the passed non-empty item resource can be inserted, {@code false} otherwise.
      */
-    protected boolean canInsert(ItemResource resource) {
-        return true;
-    }
-
-    /**
-     * Return {@code true} if the passed non-blank item resource can be extracted, {@code false} otherwise.
-     */
-    protected boolean canExtract(ItemResource resource) {
+    protected boolean isValid(ItemResource resource) {
         return true;
     }
 
     /**
      * Return the maximum capacity of this storage for the passed item resource.
-     * If the passed item resource is blank, an estimate should be returned.
+     * If the passed item resource is empty, an estimate should be returned.
      *
      * <p>If the capacity should be limited by the max stack size of the item, this function must take it into account.
      * For example, a storage with a maximum count of 4, or less for items that have a smaller max stack size,
@@ -72,57 +65,64 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        ItemStack currentStack = get();
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-        if ((!currentStack.isEmpty() && !resource.matches(currentStack)) || !canInsert(resource)) return 0;
+        ItemStack currentStack = getStack();
 
-        int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
-        if (insertedAmount == 0) return 0;
+        if ((currentStack.isEmpty() || resource.matches(currentStack)) && isValid(resource)) {
+            int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
 
-        updateSnapshots(transaction);
-        currentStack = get();
+            if (insertedAmount > 0) {
+                updateSnapshots(transaction);
+                currentStack = getStack();
 
-        if (currentStack.isEmpty()) {
-            currentStack = resource.toStack(insertedAmount);
-        } else {
-            currentStack.grow(insertedAmount);
+                if (currentStack.isEmpty()) {
+                    currentStack = resource.toStack(insertedAmount);
+                } else {
+                    currentStack.grow(insertedAmount);
+                }
+
+                setStack(currentStack);
+                return insertedAmount;
+            }
         }
 
-        set(currentStack);
-
-        return insertedAmount;
+        return 0;
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        ItemStack currentStack = get();
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-        if (!resource.matches(currentStack) || !canExtract(resource)) return 0;
+        ItemStack currentStack = getStack();
 
-        int extracted = Math.min(currentStack.getCount(), amount);
-        if (extracted == 0) return 0;
+        if (resource.matches(currentStack)) {
+            int extracted = Math.min(currentStack.getCount(), amount);
 
-        this.updateSnapshots(transaction);
-        currentStack = get();
-        currentStack.shrink(extracted);
-        set(currentStack);
+            if (extracted > 0) {
+                this.updateSnapshots(transaction);
+                currentStack = getStack();
+                currentStack.shrink(extracted);
+                setStack(currentStack);
 
-        return extracted;
+                return extracted;
+            }
+        }
+
+        return 0;
     }
 
     @Override
     public ItemResource getResource(int index) {
         Objects.checkIndex(index, size());
-        return ItemResource.of(get());
+        return ItemResource.of(getStack());
     }
 
     @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
-        return get().getCount();
+        return getStack().getCount();
     }
 
     @Override
@@ -134,23 +134,24 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     @Override
     public boolean isValid(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
-        return resource.isEmpty() || canInsert(resource);
+        TransferPreconditions.checkNonEmpty(resource);
+        return isValid(resource);
     }
 
     @Override
     protected ItemStack createSnapshot() {
-        ItemStack original = get();
-        set(original.copy());
+        ItemStack original = getStack();
+        setStack(original.copy());
         return original;
     }
 
     @Override
     protected void revertToSnapshot(ItemStack snapshot) {
-        set(snapshot);
+        setStack(snapshot);
     }
 
     @Override
     public String toString() {
-        return getClass().getName() + "[" + get() + "]";
+        return getClass().getName() + "[" + getStack() + "]";
     }
 }
