@@ -85,6 +85,7 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
         /**
          * Applies an ordering based on a modified copy of {@link DataProvider#FIXED_ORDER_FIELDS}.
          * <p>
+         * 
          * @apiNote Unless explicitly set by the {@code config}, the map's default return value is 2.
          */
         public Builder orderMap(Consumer<Object2IntOpenHashMap<String>> config) {
