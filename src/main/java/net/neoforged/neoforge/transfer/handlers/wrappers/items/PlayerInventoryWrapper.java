@@ -79,7 +79,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     public ResourceHandler<ItemResource> getArmor() {
-        return RangedResourceHandler.of(this, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE));
+        return RangedResourceHandler.of(this, Inventory.INVENTORY_SIZE, Inventory.INVENTORY_SIZE);
     }
 
     /**
@@ -145,15 +145,9 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
     }
 
-    // TODO: suspicious method
-    @Override
-    public Inventory getContainer() {
-        return (Inventory) super.getContainer();
-    }
-
     @Nullable
     private EquipmentSlot getEquipmentSlot(int slot) {
-        if (slot < getContainer().getNonEquipmentItems().size()) return null;
+        if (slot < inventory.getNonEquipmentItems().size()) return null;
         return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
     }
 

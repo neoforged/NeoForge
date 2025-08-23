@@ -43,16 +43,13 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
      * <p>Note on thread-safety: we assume that Containers are inherently single-threaded, and no attempt is made at synchronization.
      * However, the access to implementations can happen on multiple threads concurrently, which is why we use a thread-safe wrapper map.
      *
-     * <p>A note on GC: weak keys alone are not suitable as the {@link VanillaContainerWrapper} strongly references the Container.
-     * Weak values are suitable, but we have to ensure that the {@link VanillaContainerWrapper} remains strongly reachable as long as
-     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotWrapper}.
-     *
-     * @see WorldlyContainerWrapper
-     * @see PlayerInventoryWrapper
+     * <p>We use weak keys and values to avoid keeping a strong reference to the Container until the next time the map is cleaned.
+     * As long as a slot wrapper is used, there is a strong reference to the outer {@link VanillaContainerWrapper} class,
+     * which also references the container. This ensures that the entries remain in the map at least as long as the wrappers are in use.
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
     // TODO: should have identity semantics?
-    private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakKeys().weakValues().makeMap();
+    private static final Map<Container, VanillaContainerWrapper> wrappers = new MapMaker().weakKeys().weakValues().makeMap();
 
     /**
      * Wraps a vanilla container into a {@link ResourceHandler} of {@link ItemResource}s.
@@ -61,8 +58,13 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
      *
      * <p>If the container is a {@link WorldlyContainer}, use {@link WorldlyContainerWrapper} instead which checks the extra methods of worldy containers.
      */
-    public static VanillaContainerWrapper of(Container container) {
-        VanillaContainerWrapper wrapper = WRAPPERS.computeIfAbsent(container, cont -> {
+    public static ResourceHandler<ItemResource> of(Container container) {
+        // Only expose a ResourceHandler in this method.
+        return internalOf(container);
+    }
+
+    private static VanillaContainerWrapper internalOf(Container container) {
+        VanillaContainerWrapper wrapper = wrappers.computeIfAbsent(container, cont -> {
             if (cont instanceof Inventory inventory) {
                 return new PlayerInventoryWrapper(inventory);
             } else {
@@ -80,11 +82,6 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
-    }
-
-    // TODO: double check this getter?
-    protected Container getContainer() {
-        return container;
     }
 
     private void resize() {
@@ -228,7 +225,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
                 BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
 
                 if (chest.getLevel().getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
-                    VanillaContainerWrapper.of(otherChest).setChangedJournal.updateSnapshots(transaction);
+                    VanillaContainerWrapper.internalOf(otherChest).setChangedJournal.updateSnapshots(transaction);
                 }
             }
         }
@@ -252,6 +249,11 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
                 // Otherwise assume everything was taken from original so empty it.
                 original.setCount(0);
             }
+        }
+
+        @Override
+        public String toString() {
+            return "vanilla container wrapper[container=" + container + ",slot=" + index + "]";
         }
     }
 }
