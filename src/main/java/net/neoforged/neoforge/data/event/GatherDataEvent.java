@@ -48,7 +48,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.data.util.FieldOrderingFactory;
+import net.neoforged.neoforge.data.FieldOrderingFactory;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;

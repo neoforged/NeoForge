@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.data.util;
+package net.neoforged.neoforge.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -54,7 +54,7 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
         /**
          * Applies a JSON filter that checks if the JSON object has a field with the given key and string value.
          * <p>
-         * This can be used to filter by object subtype, e.g. "crafting_shaped" for recipes.
+         * This can be used to filter by object subtype, e.g. "type": "minecraft:crafting_shaped" for recipes.
          */
         public Builder forObjectSubtype(String typeKey, String subtype) {
             return jsonFilter(typeKey, new JsonPrimitive(subtype));
@@ -86,6 +86,7 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
         /**
          * Applies an ordering based on a modified copy of {@link DataProvider#FIXED_ORDER_FIELDS}.
          * <p>
+         * This method allows you to specify custom sort orderings for individual keys. Keys with a lower numeric value are sorted first.
          * 
          * @apiNote Unless explicitly set by the {@code config}, the map's default return value is 2.
          */
@@ -96,6 +97,9 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
             return comparator(comparator);
         }
 
+        /**
+         * Sets a custom path filter. If the path filter returns false, the comparator will not be applied.
+         */
         public Builder pathFilter(Predicate<Path> filter) {
             this.pathFilter = filter;
             return this;
@@ -108,16 +112,26 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
             return jsonFilter(j -> j.isJsonObject() && value.equals(j.getAsJsonObject().get(key)));
         }
 
+        /**
+         * Sets a custom JSON filter. If the JSON filter returns false, the comparator will not be applied.
+         */
         public Builder jsonFilter(Predicate<JsonElement> filter) {
             this.jsonFilter = filter;
             return this;
         }
 
+        /**
+         * Sets a fully custom comparator to be applied if both filters pass.
+         */
         public Builder comparator(Comparator<String> comparator) {
             this.comparator = comparator;
             return this;
         }
 
+        /**
+         * Builds the {@link FilteredOrderingFactory}. Before calling this method, the comparator
+         * must have been set by one of: {@link #order(String...)}, {@link #orderMap(Consumer)}, or {@link #comparator(Comparator)}.
+         */
         public FilteredOrderingFactory build() {
             if (this.comparator == null) throw new IllegalStateException("Comparator must be set");
             return new FilteredOrderingFactory(this.pathFilter, this.jsonFilter, this.comparator);

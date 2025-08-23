@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.data.util;
+package net.neoforged.neoforge.data;
 
 import com.google.gson.JsonElement;
 import java.nio.file.Path;
@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * We don't have a ton of context at the time we need to evaluate the ordering, but the file contents and the output path should be good enough.
  */
+@FunctionalInterface
 public interface FieldOrderingFactory {
     /**
      * Returns a comparator for ordering fields in a JSON object.
