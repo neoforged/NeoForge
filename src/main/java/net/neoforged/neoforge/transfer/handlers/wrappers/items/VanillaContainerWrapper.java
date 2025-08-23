@@ -63,7 +63,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         return internalOf(container);
     }
 
-    private static VanillaContainerWrapper internalOf(Container container) {
+    static VanillaContainerWrapper internalOf(Container container) {
         VanillaContainerWrapper wrapper = wrappers.computeIfAbsent(container, cont -> {
             if (cont instanceof Inventory inventory) {
                 return new PlayerInventoryWrapper(inventory);
@@ -209,7 +209,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
             int extracted = super.extract(index, resource, amount, transaction);
             if (extracted > 0) {
-                container.onTransfer(index, -extracted, transaction);
+                container.onTransfer(this.index, -extracted, transaction);
             }
             return extracted;
         }

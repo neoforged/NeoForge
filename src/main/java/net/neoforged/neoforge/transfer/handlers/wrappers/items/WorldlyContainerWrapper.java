@@ -29,7 +29,7 @@ public class WorldlyContainerWrapper implements ResourceHandler<ItemResource> {
 
     public WorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
         this.container = container;
-        this.wrapper = VanillaContainerWrapper.of(container);
+        this.wrapper = VanillaContainerWrapper.internalOf(container);
         this.side = side;
     }
 
