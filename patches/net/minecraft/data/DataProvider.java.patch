@@ -17,12 +17,15 @@
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);
          p_236070_.defaultReturnValue(2);
-@@ -80,7 +_,7 @@
+@@ -80,8 +_,9 @@
  
                  try (JsonWriter jsonwriter = new JsonWriter(new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8))) {
                      jsonwriter.setSerializeNulls(false);
 -                    jsonwriter.setIndent("  ");
+-                    GsonHelper.writeValue(jsonwriter, p_254542_, KEY_COMPARATOR);
 +                    jsonwriter.setIndent(" ".repeat(java.lang.Math.max(0, INDENT_WIDTH.get()))); // Neo: Allow changing the indent width without needing to mixin this lambda.
-                     GsonHelper.writeValue(jsonwriter, p_254542_, KEY_COMPARATOR);
++                    var comparator = net.neoforged.data.util.FieldOrderingFactory.Impl.getComparatorFor(p_254542_, p_254467_);
++                    GsonHelper.writeValue(jsonwriter, p_254542_, comparator); // Neo: Use the custom field ordering API instead of KEY_COMPARATOR.
                  }
  
+                 p_253653_.writeIfNeeded(p_254467_, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());

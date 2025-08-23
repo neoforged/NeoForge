@@ -48,6 +48,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.data.util.FieldOrderingFactory;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
@@ -100,6 +101,16 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
     public boolean validate() {
         return this.config.validate;
+    }
+
+    /**
+     * Registers a new {@link FieldOrderingFactory} to provide custom field ordering during data generation.
+     * 
+     * @see {@link FieldOrderingFactory} for more details on how field ordering is determined.
+     * @see {@link FilteredOrderingFactory} for the default implementation with a builder-style API.
+     */
+    public void registerFieldOrdering(FieldOrderingFactory factory) {
+        FieldOrderingFactory.Impl.register(factory);
     }
 
     public static class Server extends GatherDataEvent {
