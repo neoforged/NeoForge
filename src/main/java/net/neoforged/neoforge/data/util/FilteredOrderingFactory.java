@@ -69,17 +69,18 @@ public record FilteredOrderingFactory(Predicate<Path> pathFilter, Predicate<Json
 
         /**
          * Applies an ordering based on the given field names, in the given order.
+         * <p>
+         * Any keys not in the list are placed after the listed keys.
          * 
          * @apiNote This method inherits the default mappings from {@link DataProvider#FIXED_ORDER_FIELDS}.
          */
         public Builder order(String... fieldsInOrder) {
-            Object2IntOpenHashMap<String> map = defaultMap();
-            for (int i = 0; i < fieldsInOrder.length; i++) {
-                map.put(fieldsInOrder[i], 2 + i); // Use this offset of 2 to avoid clashing with the default settings.
-            }
-            map.defaultReturnValue(2 + fieldsInOrder.length); // Fields not in the list get the next index after the last one.
-            Comparator<String> comparator = Comparator.comparingInt(map).thenComparing(Function.identity());
-            return comparator(comparator);
+            return orderMap(map -> {
+                for (int i = 0; i < fieldsInOrder.length; i++) {
+                    map.put(fieldsInOrder[i], 2 + i); // Use this offset of 2 to avoid clashing with the default settings.
+                }
+                map.defaultReturnValue(2 + fieldsInOrder.length); // Fields not in the list get the next index after the last one.
+            });
         }
 
         /**
