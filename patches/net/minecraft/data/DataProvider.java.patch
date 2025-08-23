@@ -24,7 +24,7 @@
 -                    jsonwriter.setIndent("  ");
 -                    GsonHelper.writeValue(jsonwriter, p_254542_, KEY_COMPARATOR);
 +                    jsonwriter.setIndent(" ".repeat(java.lang.Math.max(0, INDENT_WIDTH.get()))); // Neo: Allow changing the indent width without needing to mixin this lambda.
-+                    var comparator = net.neoforged.data.util.FieldOrderingFactory.Impl.getComparatorFor(p_254542_, p_254467_);
++                    var comparator = net.neoforged.neoforge.data.util.FieldOrderingFactory.Impl.getComparatorFor(p_254542_, p_254467_);
 +                    GsonHelper.writeValue(jsonwriter, p_254542_, comparator); // Neo: Use the custom field ordering API instead of KEY_COMPARATOR.
                  }
  
