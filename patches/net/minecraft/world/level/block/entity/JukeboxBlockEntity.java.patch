@@ -1,10 +1,25 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -108,9 +_,27 @@
+@@ -108,9 +_,39 @@
          return itemstack;
      }
  
-+    // Neo: Support deferring "final" actions until end of a transaction
++    // Neo: Support deferring non-transactional played song update until end of a transaction
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<@org.jetbrains.annotations.Nullable Void> updateSongJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++        @Override
++        protected @org.jetbrains.annotations.Nullable Void createSnapshot() { return null; }
++        @Override
++        protected void revertToSnapshot(@org.jetbrains.annotations.Nullable Void snapshot) {}
++        @Override
++        protected void onRootCommit(@org.jetbrains.annotations.Nullable Void originalState) {
++            refreshPlayedSong();
++        }
++    };
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        updateSongJournal.updateSnapshots(transaction);
++    }
++
 +    @Override
 +    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
 +        if (slot != 0) return;
@@ -16,15 +31,12 @@
 +        }
 +    }
 +
-+
      @Override
      public void setTheItem(ItemStack p_304781_) {
          this.item = p_304781_;
-+        onRootCommit(0, /* ignored */ ItemStack.EMPTY);
++        refreshPlayedSong();
 +    }
-+
-+    @Override
-+    public void onRootCommit(int slot, ItemStack ignored) {
++    private void refreshPlayedSong() {
          boolean flag = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> optional = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
          this.notifyItemChangedInJukebox(flag);

@@ -108,45 +108,63 @@
      }
  
      private static int getTotalCookTime(ServerLevel p_380169_, AbstractFurnaceBlockEntity p_222694_) {
-@@ -306,16 +_,37 @@
+@@ -306,17 +_,55 @@
  
      @Override
      public void setItem(int p_58333_, ItemStack p_58334_) {
 +        setItem(p_58333_, p_58334_, false);
 +    }
 +
-+    // Neo: Transactional support for cooking time and timer + defer side effects until end of a transaction
++    // Neo: Defer side effects until end of a transaction
 +    @Override
 +    public void setItem(int p_58333_, ItemStack p_58334_, boolean insideTransaction) {
          ItemStack itemstack = this.items.get(p_58333_);
          boolean flag = !p_58334_.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, p_58334_);
          this.items.set(p_58333_, p_58334_);
          p_58334_.limitSize(this.getMaxStackSize(p_58334_));
-         if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel) {
-+            // Need to check the lifecycle in case this is called from SlotWrapper#onRootCommit
-+            if (insideTransaction && net.neoforged.neoforge.transfer.transaction.Transaction.getLifecycle().isOpen()) cookingTimesJournal.updateSnapshots(net.neoforged.neoforge.transfer.transaction.Transaction.getCurrentOpenedTransaction());
+-        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel) {
++        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel && !insideTransaction) {
              this.cookingTotalTime = getTotalCookTime(serverlevel, this);
              this.cookingTimer = 0;
--            this.setChanged();
-+            if (!insideTransaction) this.setChanged();
+             this.setChanged();
          }
      }
-+
-+    private record CookingTimes(int cookingTotalTime, int cookingTimer) {}
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<CookingTimes> cookingTimesJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<CookingTimes>() {
+ 
++    // Neo: Reset cooking time when the input changes
++    private boolean needsCookingReset = false;
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> cookingResetJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean>() {
 +        @Override
-+        protected CookingTimes createSnapshot() {
-+            return new CookingTimes(cookingTotalTime, cookingTimer);
++        protected Boolean createSnapshot() {
++            return needsCookingReset;
 +        }
 +        @Override
-+        protected void revertToSnapshot(CookingTimes snapshot) {
-+            cookingTimer = snapshot.cookingTimer;
-+            cookingTotalTime = snapshot.cookingTotalTime;
++        protected void revertToSnapshot(Boolean snapshot) {
++            needsCookingReset = snapshot;
++        }
++        @Override
++        protected void onRootCommit(Boolean originalState) {
++            if (needsCookingReset) {
++                cookingTotalTime = getTotalCookTime((ServerLevel) level, AbstractFurnaceBlockEntity.this);
++                cookingTimer = 0;
++                needsCookingReset = false;
++            }
 +        }
 +    };
- 
++
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        if (slot == 0) {
++            int currentAmount = getItem(0).getCount();
++            if (currentAmount == 0 || currentAmount == amountChange) {
++                cookingResetJournal.updateSnapshots(transaction);
++                needsCookingReset = true;
++            }
++        }
++    }
++
      @Override
      public boolean canPlaceItem(int p_58389_, ItemStack p_58390_) {
+         if (p_58389_ == 2) {
 @@ -325,7 +_,7 @@
              return true;
          } else {

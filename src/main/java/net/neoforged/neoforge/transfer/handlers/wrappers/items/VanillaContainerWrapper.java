@@ -235,8 +235,6 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
             // Try to apply the change to the original stack
             ItemStack currentStack = getStack();
 
-            container.onRootCommit(index, original);
-
             // TODO: we should maybe re-evaluate this, it might make sense to keep it for item capabilities only
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
                 // Components have changed, we need to copy the stack.
