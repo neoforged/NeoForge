@@ -16,7 +16,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A <strong>single-index</strong> item resource handler, backed by an {@link ItemStack}.
  * Implementors should at least override {@link #getStack} and {@link #setStack},
- * and probably {@link #onRootCommit} as well for {@code markDirty()} and similar calls.
+ * and probably {@link #onRootCommit} as well for {@code setChanged()} and similar calls.
  *
  * <p>{@link #isValid} can be used for more precise control over which items may be stored.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
