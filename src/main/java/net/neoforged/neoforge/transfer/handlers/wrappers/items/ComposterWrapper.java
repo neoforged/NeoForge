@@ -17,33 +17,39 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * {@code ResourceHandler<ItemResource>} implementation for the composter block.
+ */
+@ApiStatus.Internal
 public class ComposterWrapper extends SnapshotJournal<Float> {
-    private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
+    /**
+     * To make sure multiple accesses to the same composter return the same wrapper,
+     * we maintain a {@code (Level, BlockPos) -> Wrapper} cache.
+     */
+    private record WrapperLocation(Level level, BlockPos pos) {
+        public BlockState getBlockState() {
+            return level.getBlockState(pos);
+        }
+    }
 
-    //Floats to avoid boxing and unboxing when taking a snapshot or assigning;
-    //Also allows us to make use of the Float.equals
-    private static final Float NO_OP = 0f;
-    private static final Float EXTRACT = -1f;
-
-    private final WrapperLocation location;
-    // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
-    private Float probability = NO_OP;
-
-    private final ResourceHandler<ItemResource> topHandler = new Top();
-    private final ResourceHandler<ItemResource> bottomHandler = new Bottom();
-
-    // Weak values to make sure wrappers are cleaned up after use, thread-safe.
-    private static final Map<WrapperLocation, ComposterWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
+    /**
+     * Wrapper map, similar to {@link VanillaContainerWrapper#wrappers}.
+     * We need the composter wrapper to hold a strong reference to the wrapper location to avoid the weak key being cleared too early,
+     * and we need each sub-handler to hold a strong reference to the composter wrapper to avoid the weak value being cleared too early.
+     */
+    private static final Map<WrapperLocation, ComposterWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakKeys().weakValues().makeMap();
 
     @Nullable
     public static ResourceHandler<ItemResource> get(Level level, BlockPos pos, @Nullable Direction direction) {
+        // TODO: for a null direction we could return a read-only view of the bottom handler
         if (direction == null || !direction.getAxis().isVertical()) return null;
 
         WrapperLocation location = new WrapperLocation(level, pos.immutable());
@@ -51,34 +57,44 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         return direction == Direction.UP ? wrapper.topHandler : wrapper.bottomHandler;
     }
 
+    private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
+
+    // Floats to avoid boxing and unboxing when taking a snapshot or assigning.
+    private static final Float DO_NOTHING = 0f;
+    private static final Float EXTRACT_BONEMEAL = -1f;
+
+    private final WrapperLocation location;
+    // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
+    private Float increaseProbability = DO_NOTHING;
+    private final ResourceHandler<ItemResource> topHandler = new Top();
+    private final ResourceHandler<ItemResource> bottomHandler = new Bottom();
+
     private ComposterWrapper(WrapperLocation location) {
         this.location = location;
     }
 
     @Override
     protected Float createSnapshot() {
-        return probability;
+        return increaseProbability;
     }
 
     @Override
     protected void revertToSnapshot(Float snapshot) {
-        probability = snapshot;
+        increaseProbability = snapshot;
     }
 
     @Override
     protected void onRootCommit(Float originalState) {
-        if (probability.equals(NO_OP)) return;
-
         // Apply pending action
-        if (probability.equals(EXTRACT)) {
+        if (increaseProbability.equals(EXTRACT_BONEMEAL)) {
             // Mimic ComposterBlock#empty logic.
-            BlockState newState = location.blockstate().setValue(ComposterBlock.LEVEL, ComposterBlock.MIN_LEVEL);
+            BlockState newState = location.getBlockState().setValue(ComposterBlock.LEVEL, ComposterBlock.MIN_LEVEL);
             location.level.setBlockAndUpdate(location.pos, newState);
             location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
         } else {
-            BlockState state = location.blockstate();
+            BlockState state = location.getBlockState();
             // Always increment on first insert (like vanilla).
-            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == ComposterBlock.MIN_LEVEL || location.level.getRandom().nextDouble() < probability;
+            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == ComposterBlock.MIN_LEVEL || location.level.getRandom().nextDouble() < increaseProbability;
 
             if (increaseSuccessful) {
                 // Mimic ComposterBlock#addItem logic.
@@ -96,19 +112,15 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         // Reset after successful commit.
-        probability = NO_OP;
-    }
-
-    private boolean isBoneMeal(ItemResource resource) {
-        return resource.equals(BONE_MEAL);
+        increaseProbability = DO_NOTHING;
     }
 
     private boolean hasBoneMeal() {
         // We only have bone meal if the level is READY and no action was scheduled.
-        return probability.equals(NO_OP) && location.blockstate().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
+        return increaseProbability.equals(DO_NOTHING) && location.getBlockState().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
     }
 
-    private float getValueFrom(ItemResource resource) {
+    private static float getComposterValue(ItemResource resource) {
         return ComposterBlock.getValue(resource.toStack());
     }
 
@@ -121,20 +133,21 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
             Objects.checkIndex(index, size());
-            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
+            // Check amount.
+            if (amount < 1) return 0;
             // Check that no action is scheduled.
-            if (!probability.equals(NO_OP)) return 0;
+            if (!increaseProbability.equals(DO_NOTHING)) return 0;
             // Check that the composter can accept items.
-            if (location.blockstate().getValue(ComposterBlock.LEVEL) >= ComposterBlock.READY) return 0;
-
+            if (location.getBlockState().getValue(ComposterBlock.LEVEL) >= ComposterBlock.MAX_LEVEL) return 0;
             // Check that the item is compostable.
-            float insertedIncreaseProbability = getValueFrom(resource);
+            float insertedIncreaseProbability = getComposterValue(resource);
             if (insertedIncreaseProbability <= 0) return 0;
 
             // Schedule insertion.
             updateSnapshots(transaction);
-            probability += insertedIncreaseProbability;
+            increaseProbability = insertedIncreaseProbability;
             return 1;
         }
 
@@ -156,13 +169,13 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public long getCapacityAsLong(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return resource.isEmpty() || getValueFrom(resource) > 0 ? 1 : 0;
+            return resource.isEmpty() || getComposterValue(resource) > 0 ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return getValueFrom(resource) > 0;
+            return getComposterValue(resource) > 0;
         }
 
         @Override
@@ -185,13 +198,17 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
             Objects.checkIndex(index, size());
-            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-            // Check that the resource is bone meal & there is bone meal to extract.
-            if (!isBoneMeal(resource) || !hasBoneMeal()) return 0;
+            // Check amount.
+            if (amount < 1) return 0;
+            // Check that the resource is bone meal.
+            if (!BONE_MEAL.equals(resource)) return 0;
+            // Check that there is bone meal to extract.
+            if (!hasBoneMeal()) return 0;
 
             updateSnapshots(transaction);
-            probability = EXTRACT;
+            increaseProbability = EXTRACT_BONEMEAL;
             return 1;
         }
 
@@ -210,29 +227,18 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public long getCapacityAsLong(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return resource.isEmpty() || isBoneMeal(resource) ? 1 : 0;
+            return resource.isEmpty() || BONE_MEAL.equals(resource) ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return resource.isEmpty();
+            return BONE_MEAL.equals(resource);
         }
 
         @Override
         public String toString() {
             return "ComposterWrapper[" + location + "/bottom]";
-        }
-    }
-
-    /**
-     * Using the location, we can maintain a cache with a given wrapped by using
-     * <p>
-     * {@code (Level, BlockPos) -> Wrapper}
-     */
-    private record WrapperLocation(Level level, BlockPos pos) {
-        public BlockState blockstate() {
-            return level.getBlockState(pos);
         }
     }
 }
