@@ -7,12 +7,16 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
+// TODO: missing javadoc
+// TODO: should maybe extend StackCopySlot
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final ResourceHandler<ItemResource> handler;
@@ -32,11 +36,6 @@ public class ResourceHandlerSlot extends Slot {
     }
 
     @Override
-    public boolean hasItem() {
-        return !handler.getResource(getSlotIndex()).isEmpty();
-    }
-
-    @Override
     public ItemStack getItem() {
         return handler.getResource(getSlotIndex()).toStack(handler.getAmountAsInt(getSlotIndex()));
     }
@@ -47,7 +46,6 @@ public class ResourceHandlerSlot extends Slot {
         setChanged();
     }
 
-    //From old SlotItemHandler
     @Override
     public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {}
 
@@ -61,31 +59,31 @@ public class ResourceHandlerSlot extends Slot {
         return handler.getCapacityAsInt(getSlotIndex(), ItemResource.of(stack));
     }
 
-    // TODO: fix
-//    @Override
-//    public boolean mayPickup(Player player) {
-//        return ResourceHandlerUtil.hasExtractableResourceAtIndex(handler, resource -> true, getSlotIndex());
-//    }
-//
-//    @Override
-//    public ItemStack remove(int amount) {
-//        var slotIndex = getSlotIndex();
-//        ItemResource resource = handler.getResource(slotIndex);
-//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-//            int extracted = handler.extract(slotIndex, resource, amount, transaction);
-//
-//            if (extracted > 0) return ItemStack.EMPTY;
-//
-//            transaction.commit();
-//            return resource.toStack(extracted);
-//        }
-//    }
-//
-//    public IResourceHandler<ItemResource> asResourceHandler() {
-//        return handler;
-//    }
-//
-//    public IIndexModifier<ItemResource> getSlotModifier() {
-//        return slotModifier;
-//    }
+    @Override
+    public boolean mayPickup(Player player) {
+        try (var tx = Transaction.open(null)) {
+            // Simulated extraction
+            return handler.extract(getSlotIndex(), handler.getResource(getSlotIndex()), 1, tx) == 1;
+        }
+    }
+
+    @Override
+    public ItemStack remove(int amount) {
+        ItemResource resource = handler.getResource(getSlotIndex());
+
+        try (Transaction transaction = Transaction.open(null)) {
+            int extracted = handler.extract(getSlotIndex(), resource, amount, transaction);
+            transaction.commit();
+            return resource.toStack(extracted);
+        }
+    }
+
+    public ResourceHandler<ItemResource> getResourceHandler() {
+        return handler;
+    }
+
+    @Override
+    public boolean isSameInventory(Slot other) {
+        return other instanceof ResourceHandlerSlot rhs && rhs.handler == this.handler;
+    }
 }
