@@ -127,6 +127,7 @@ public class LivingEntityEquipmentWrapper {
         @Override
         protected void onRootCommit(ItemStack originalState) {
             // Perform the delayed non-transactional actions
+            // Note that this will not capture the details of all intermediate item changes that happened inside the transaction.
             entity.onEquipItem(slot, originalState, getStack());
         }
 
