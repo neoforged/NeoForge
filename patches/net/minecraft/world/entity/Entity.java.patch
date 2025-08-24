@@ -89,7 +89,7 @@
      }
  
      private boolean shouldPlayAmethystStepSound(BlockState p_278069_) {
-@@ -1426,20 +_,23 @@
+@@ -1426,26 +_,29 @@
  
      public void updateSwimming() {
          if (this.isSwimming()) {
@@ -118,6 +118,13 @@
      }
  
      void updateInWaterStateAndDoWaterCurrentPushing() {
+         if (this.getVehicle() instanceof AbstractBoat abstractboat && !abstractboat.isUnderWater()) {
+             this.wasTouchingWater = false;
+-        } else if (this.updateFluidHeightAndDoFluidPushing(FluidTags.WATER, 0.014)) {
++        } else if (this.updateFluidHeightAndDoCanPushEntityFluidPushing()) {
+             if (!this.wasTouchingWater && !this.firstTick) {
+                 this.doWaterSplashEffect();
+             }
 @@ -1460,6 +_,7 @@
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
@@ -314,7 +321,7 @@
          this.dimensions = entitydimensions1;
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
-@@ -3471,9 +_,17 @@
+@@ -3471,9 +_,33 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
@@ -324,6 +331,22 @@
 +        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
 +        else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
 +        else return false;
++    }
++
++    public boolean updateFluidHeightAndDoCanPushEntityFluidPushing() {
++        this.updateFluidHeightAndDoFluidPushing();
++
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return false;
++        }
++
++        for (net.neoforged.neoforge.fluids.FluidType fluidType : this.forgeFluidTypeHeight.keySet()) {
++            if (fluidType.canPushEntity(this) && this.isInFluidType(fluidType)) {
++                return true;
++            }
++        }
++
++        return false;
 +    }
 +
 +    public void updateFluidHeightAndDoFluidPushing() {
