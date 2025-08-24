@@ -9,12 +9,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComparatorBlock;
@@ -36,6 +40,7 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.LivingEntityEquipmentWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -512,5 +517,50 @@ public class VanillaHandlersTests {
                 helper.succeed();
             });
         });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Player armor wrapper only allows equippable items, and checks for curse of binding.")
+    public static void testPlayerArmorWrapper(ExtendedGameTestHelper helper) {
+        var creativePlayer = helper.makeMockPlayer();
+        var chestWrapper = PlayerInventoryWrapper.of(creativePlayer).getArmorSlot(EquipmentSlot.CHEST);
+
+        var diamondChestplate = ItemResource.of(Items.DIAMOND_CHESTPLATE);
+        var curseOfBinding = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        curseOfBinding.set(helper.getHolder(Enchantments.BINDING_CURSE), 1);
+        var cursedDiamondChestplate = diamondChestplate.with(DataComponents.ENCHANTMENTS, curseOfBinding.toImmutable());
+
+        try (var tx = Transaction.open(null)) {
+            if (chestWrapper.insert(ItemResource.of(Items.DIAMOND_PICKAXE), 1, tx) != 0) {
+                helper.fail("Should have rejected diamond pickaxe as player armor");
+            }
+            if (chestWrapper.insert(diamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have inserted 1 diamond chestplate");
+            }
+            if (chestWrapper.extract(diamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have extracted 1 diamond chestplate");
+            }
+            if (chestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have inserted 1 cursed diamond chestplate");
+            }
+            if (chestWrapper.extract(cursedDiamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have extracted 1 cursed diamond chestplate");
+            }
+        }
+
+        var survivalPlayer = helper.makeMockPlayer(GameType.SURVIVAL);
+        var survivalChestWrapper = PlayerInventoryWrapper.of(survivalPlayer).getArmorSlot(EquipmentSlot.CHEST);
+
+        try (var tx = Transaction.open(null)) {
+            if (survivalChestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have inserted 1 cursed diamond chestplate");
+            }
+            if (survivalChestWrapper.extract(cursedDiamondChestplate, 1, tx) != 1) {
+                helper.fail("Should have not been able to extract 1 cursed diamond chestplate");
+            }
+        }
+
+        helper.succeed();
     }
 }

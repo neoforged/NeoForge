@@ -11,6 +11,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
@@ -18,7 +20,6 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An implementation of {@code ResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
@@ -50,11 +51,20 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         this.inventory = inventory;
     }
 
+    @Override
+    SlotWrapper newSlotWrapper(int index) {
+        if (Inventory.INVENTORY_SIZE <= index && index < Inventory.INVENTORY_SIZE + 4) {
+            var equipmentSlot = Inventory.EQUIPMENT_SLOT_MAPPING.get(index);
+            return new ArmorSlotWrapper(index, equipmentSlot);
+        }
+        return super.newSlotWrapper(index);
+    }
+
     /**
      * Retrieves a wrapper for a specific slot.
      */
     public ResourceHandler<ItemResource> getSlot(int slot) {
-        return RangedResourceHandler.ofSingleIndex(this, slot);
+        return getSlotWrapper(slot);
     }
 
     /**
@@ -73,20 +83,28 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         };
     }
 
-    // TODO: weird, this will silently fail for equipment slots that are not armor slots?
-    public ResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
-        return getSlot(slot.getIndex(Inventory.INVENTORY_SIZE));
-    }
-
-    public ResourceHandler<ItemResource> getArmor() {
-        return RangedResourceHandler.of(this, Inventory.INVENTORY_SIZE, Inventory.INVENTORY_SIZE);
-    }
-
     /**
      * Retrieves a wrapper around the main slots only.
      */
     public ResourceHandler<ItemResource> getMainSlots() {
         return RangedResourceHandler.of(this, 0, Inventory.INVENTORY_SIZE);
+    }
+
+    /**
+     * Retrieves a wrapper around a single armor slot.
+     */
+    public ResourceHandler<ItemResource> getArmorSlot(EquipmentSlot slot) {
+        if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
+            throw new IllegalArgumentException("EquipmentSlot is not an armor slot: " + slot);
+        }
+        return getSlot(slot.getIndex(Inventory.INVENTORY_SIZE));
+    }
+
+    /**
+     * Retrieves a wrapper around all 4 armor slots.
+     */
+    public ResourceHandler<ItemResource> getArmorSlots() {
+        return RangedResourceHandler.of(this, Inventory.INVENTORY_SIZE, Inventory.INVENTORY_SIZE + 4);
     }
 
     /**
@@ -145,26 +163,6 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
     }
 
-    @Nullable
-    private EquipmentSlot getEquipmentSlot(int slot) {
-        if (slot < inventory.getNonEquipmentItems().size()) return null;
-        return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
-    }
-
-    // TODO: overriding isValid is weird given that the InventoryWrapper delegates everything to the SlotWrapper
-    // TODO: there might be a way to share the slot identity with the entity equipment wrapper?
-    @Override
-    public boolean isValid(int index, ItemResource resource) {
-        EquipmentSlot slot = getEquipmentSlot(index);
-        if (resource.isEmpty()) return true;
-        // TODO: restore canEquip?
-//        return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
-        return true;
-    }
-
-    //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
-    // we just need the context
-
     @Override
     public String toString() {
         return "PlayerInventoryWrapper{player=%s}".formatted(inventory.player);
@@ -209,5 +207,40 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
 
         private record DropInfo(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) {}
+    }
+
+    /**
+     * Specialized slot wrapper for one of the armor slots.
+     * Limits size to 1, disallows insertion of non-equippable items, and extraction of cursed items for non-creative players.
+     */
+    private class ArmorSlotWrapper extends SlotWrapper {
+        private final EquipmentSlot slot;
+
+        ArmorSlotWrapper(int index, EquipmentSlot slot) {
+            super(index);
+            this.slot = slot;
+        }
+
+        @Override
+        protected boolean isValid(ItemResource resource) {
+            if (!resource.toStack().canEquip(slot, inventory.player)) {
+                return false;
+            }
+            return super.isValid(resource);
+        }
+
+        @Override
+        protected int getCapacity(ItemResource resource) {
+            return 1;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            // Prevent extraction of items with the curse of binding for non-creative players.
+            if (!inventory.player.isCreative() && EnchantmentHelper.has(resource.toStack(), EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) {
+                return 0;
+            }
+            return super.extract(index, resource, amount, transaction);
+        }
     }
 }

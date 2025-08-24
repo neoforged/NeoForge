@@ -87,11 +87,18 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     private void resize() {
         size = container.getContainerSize();
         while (slotWrappers.size() < size) {
-            slotWrappers.add(new SlotWrapper(slotWrappers.size()));
+            slotWrappers.add(newSlotWrapper(slotWrappers.size()));
         }
     }
 
-    private SlotWrapper getSlot(int index) {
+    /**
+     * Creates a new wrapper for the given index.
+     */
+    SlotWrapper newSlotWrapper(int index) {
+        return new SlotWrapper(index);
+    }
+
+    SlotWrapper getSlotWrapper(int index) {
         Objects.checkIndex(index, size());
         return slotWrappers.get(index);
     }
@@ -103,32 +110,32 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        return getSlot(index).insert(0, resource, amount, transaction);
+        return getSlotWrapper(index).insert(0, resource, amount, transaction);
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        return getSlot(index).extract(resource, amount, transaction);
+        return getSlotWrapper(index).extract(resource, amount, transaction);
     }
 
     @Override
     public ItemResource getResource(int index) {
-        return getSlot(index).getResource(0);
+        return getSlotWrapper(index).getResource(0);
     }
 
     @Override
     public long getAmountAsLong(int index) {
-        return getSlot(index).getAmountAsLong(0);
+        return getSlotWrapper(index).getAmountAsLong(0);
     }
 
     @Override
     public long getCapacityAsLong(int index, ItemResource resource) {
-        return getSlot(index).getCapacityAsLong(0, resource);
+        return getSlotWrapper(index).getCapacityAsLong(0, resource);
     }
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        return getSlot(index).isValid(0, resource);
+        return getSlotWrapper(index).isValid(0, resource);
     }
 
     @Override
@@ -151,10 +158,10 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         }
     }
 
-    private class SlotWrapper extends ItemStackResourceHandler {
+    class SlotWrapper extends ItemStackResourceHandler {
         private final int index;
 
-        private SlotWrapper(int index) {
+        SlotWrapper(int index) {
             this.index = index;
         }
 
