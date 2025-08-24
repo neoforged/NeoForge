@@ -107,8 +107,13 @@ public class LivingEntityEquipmentWrapper {
 
         @Override
         protected void setStack(ItemStack stack) {
-            // TODO: defer non-transactional actions
-            entity.setItemSlot(slot, stack);
+            // We pass insideTransaction = true to disable all non-transactional actions.
+            entity.setItemSlot(slot, stack, true);
+        }
+
+        @Override
+        protected boolean isValid(ItemResource resource) {
+            return resource.toStack().canEquip(slot, entity);
         }
 
         @Override
@@ -117,6 +122,12 @@ public class LivingEntityEquipmentWrapper {
                 return 1;
             }
             return resource.getMaxStackSize();
+        }
+
+        @Override
+        protected void onRootCommit(ItemStack originalState) {
+            // Perform the delayed non-transactional actions
+            entity.onEquipItem(slot, originalState, getStack());
         }
 
         @Override

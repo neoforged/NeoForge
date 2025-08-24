@@ -23,7 +23,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource> {
     /**
-     * Return the stack of this storage. It will be modified directly sometimes to avoid needless copies.
+     * Return the stack of this handler. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #setStack}.
      * This means that either returning the backing stack directly or a copy is safe.
      *
@@ -32,26 +32,33 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
     protected abstract ItemStack getStack();
 
     /**
-     * Set the stack of this storage.
+     * Set the stack of this handler.
      */
     protected abstract void setStack(ItemStack stack);
 
     /**
-     * Return {@code true} if the passed non-empty item resource can be inserted, {@code false} otherwise.
+     * Return {@code true} if the passed non-empty item resource can fit in this handler, {@code false} otherwise.
+     *
+     * <p>The result of this function is used in the provided implementations of:
+     * <ul>
+     * <li>{@link #isValid(int, ItemResource)}, to report which items are valid;</li>
+     * <li>{@link #getCapacityAsLong(int, ItemResource)}, to report a capacity of {@code 0} for invalid items;</li>
+     * <li>{@link #insert(int, ItemResource, int, TransactionContext)}, to reject items that cannot fit in this handler.</li>
+     * </ul>
      */
     protected boolean isValid(ItemResource resource) {
         return true;
     }
 
     /**
-     * Return the maximum capacity of this storage for the passed item resource.
+     * Return the maximum capacity of this handler for the passed item resource.
      * If the passed item resource is empty, an estimate should be returned.
      *
      * <p>If the capacity should be limited by the max stack size of the item, this function must take it into account.
-     * For example, a storage with a maximum count of 4, or less for items that have a smaller max stack size,
+     * For example, a handler with a maximum count of 4, or less for items that have a smaller max stack size,
      * should override this to return {@code Math.min(resource.getMaxStackSize(), 4);}.
      *
-     * @return The maximum capacity of this storage for the passed item resource.
+     * @return The maximum capacity of this handler for the passed item resource.
      */
     protected int getCapacity(ItemResource resource) {
         return resource.getMaxStackSize();
@@ -128,7 +135,7 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
     @Override
     public long getCapacityAsLong(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
-        return getCapacity(resource);
+        return resource.isEmpty() || isValid(resource) ? getCapacity(resource) : 0;
     }
 
     @Override

@@ -5,11 +5,14 @@
 
 package net.neoforged.neoforge.debug.transfer;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -28,12 +31,16 @@ import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.LivingEntityEquipmentWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -443,5 +450,67 @@ public class VanillaHandlersTests {
 
         helper.assertBlockState(pos, state -> state.getValue(JukeboxBlock.HAS_RECORD), (b) -> Component.literal("Jukebox should have its state changed"));
         helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate("5x5x5")
+    @TestHolder(description = "Horse armor wrapper defers notifications and doesn't allow insertion of non-armor items")
+    public static void testHorseArmorWrapper(DynamicTest test) {
+        AtomicInteger equipEvents = new AtomicInteger();
+        AtomicInteger unequipEvents = new AtomicInteger();
+        test.whenEnabled(listeners -> listeners.forge().addListener((VanillaGameEvent event) -> {
+            if (event.getVanillaEvent() == GameEvent.EQUIP) {
+                equipEvents.incrementAndGet();
+            }
+            if (event.getVanillaEvent() == GameEvent.UNEQUIP) {
+                unequipEvents.incrementAndGet();
+            }
+        }));
+
+        test.onGameTest(helper -> {
+            var horse = helper.spawnWithNoFreeWill(EntityType.HORSE, new BlockPos(2, 2, 2));
+            var wrapper = LivingEntityEquipmentWrapper.of(horse, EquipmentSlot.Type.ANIMAL_ARMOR);
+
+            equipEvents.setPlain(0);
+            unequipEvents.setPlain(0);
+
+            // Wait 1 tick such that the entity will start emitting (un)equip events
+            helper.runAtTickTime(1, () -> {
+                try (var tx = Transaction.open(null)) {
+                    // Check that non-armor items can't be inserted
+                    if (wrapper.insert(ItemResource.of(Items.DIAMOND_PICKAXE), 1, tx) != 0) {
+                        helper.fail("Should have rejected diamond pickaxe as horse armor");
+                    }
+
+                    if (wrapper.insert(ItemResource.of(Items.DIAMOND_HORSE_ARMOR), 1, tx) != 1) {
+                        helper.fail("Should have inserted 1 diamond horse armor");
+                    }
+                    // No events yet - in case the insertion is rolled back
+                    helper.assertValueEqual(0, equipEvents.getPlain(), "equip event count");
+                    helper.assertValueEqual(0, unequipEvents.getPlain(), "unequip event count");
+
+                    // Once we commit, the equip event should fire
+                    tx.commit();
+                    helper.assertValueEqual(1, equipEvents.getPlain(), "equip event count");
+                    helper.assertValueEqual(0, unequipEvents.getPlain(), "unequip event count");
+                }
+
+                try (var tx = Transaction.open(null)) {
+                    if (wrapper.extract(ItemResource.of(Items.DIAMOND_HORSE_ARMOR), 1, tx) != 1) {
+                        helper.fail("Should have extracted 1 diamond horse armor");
+                    }
+                    // No additional events yet - in case the extraction is rolled back
+                    helper.assertValueEqual(1, equipEvents.getPlain(), "equip event count");
+                    helper.assertValueEqual(0, unequipEvents.getPlain(), "unequip event count");
+
+                    // Once we commit, the unequip event should fire
+                    tx.commit();
+                    helper.assertValueEqual(1, equipEvents.getPlain(), "equip event count");
+                    helper.assertValueEqual(1, unequipEvents.getPlain(), "unequip event count");
+                }
+
+                helper.succeed();
+            });
+        });
     }
 }
