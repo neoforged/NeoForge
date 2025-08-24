@@ -108,24 +108,25 @@ public final class ResourceHandlerUtil {
      */
     public static <T extends IResource> int getRedstoneSignalFromResourceHandler(ResourceHandler<T> handler) {
         float proportion = 0.0F;
+        int sampleCount = 0; // Number of samples in proportion
         int size = handler.size();
-        if (size == 0) {
-            return Redstone.SIGNAL_NONE;
-        }
-
         for (int index = 0; index < size; ++index) {
             long indexFill = handler.getAmountAsLong(index);
             if (indexFill > 0) {
                 long capacity = handler.getCapacityAsLong(index, handler.getResource(index));
-                if (capacity == 0) {
-                    // Avoid division by zero
-                    return Redstone.SIGNAL_NONE;
+                if (capacity > 0) {
+                    // Clamp to 1 to avoid overfilled slots increasing the signal strength beyond 15
+                    proportion += Math.min(1.0f, (float) indexFill / capacity);
+                    sampleCount++;
                 }
-                proportion += (float) indexFill / capacity;
             }
         }
 
-        proportion /= size;
+        if (sampleCount == 0) {
+            return Redstone.SIGNAL_NONE;
+        }
+
+        proportion /= sampleCount;
         return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
     }
 
@@ -363,6 +364,9 @@ public final class ResourceHandlerUtil {
                 try (Transaction transferTransaction = Transaction.open(transaction)) {
                     // check how much can be inserted
                     int inserted = to.insert(fromResource, extracted, transferTransaction);
+
+                    // The target might not accept the resource at all, or might be full
+                    if (inserted == 0) continue;
 
                     // extract it, or rollback if we cannot actually extract the amount we inserted
                     // this can happen even for a well-behaving handler if it only supports extracting the exact
