@@ -130,7 +130,7 @@
          }
      }
  
-+    // Neo: Reset cooking time when the input changes
++    // Neo: Reset cooking time when the input changes inside a transaction
 +    private boolean needsCookingReset = false;
 +    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> cookingResetJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean>() {
 +        @Override
