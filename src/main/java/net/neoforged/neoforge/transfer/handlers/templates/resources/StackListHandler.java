@@ -1,0 +1,275 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.templates.resources;
+
+import com.mojang.serialization.Codec;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.joml.Math;
+
+// TODO: class javadoc needs a solid pass to reference all the common methods that should be overridden
+/**
+ * This is provided as a simple handler to still use a stack of type {@code S} in a List as the backing data structure.
+ * <p>
+ * This can be used in an attachment, a block entity field, or other mutable structures.
+ */
+public abstract class StackListHandler<S, T extends IResource> implements ResourceHandler<T>, ValueIOSerializable {
+    public static final String VALUE_IO_KEY = "stacks";
+
+    protected NonNullList<S> stacks;
+    protected final S emptyStack;
+    protected final Codec<NonNullList<S>> codec;
+
+    private int size;
+    private final List<StackJournal> snapshotJournals;
+
+    protected StackListHandler(int size, S emptyStack, Codec<S> stackCodec) {
+        this(NonNullList.withSize(size, emptyStack), emptyStack, stackCodec);
+    }
+
+    protected StackListHandler(NonNullList<S> stacks, S emptyStack, Codec<S> stackCodec) {
+        this.stacks = mutableCopyOf(stacks);
+        this.emptyStack = emptyStack;
+        // Don't use NonNullList.codecOf because it creates an unmodifiable list
+        this.codec = stackCodec.listOf().xmap(StackListHandler::mutableCopyOf, Function.identity());
+        this.size = stacks.size();
+        this.snapshotJournals = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            snapshotJournals.add(new StackJournal(i));
+        }
+    }
+
+    private static <T> NonNullList<T> mutableCopyOf(Collection<T> list) {
+        NonNullList<T> ret = NonNullList.createWithCapacity(list.size());
+        ret.addAll(list);
+        return ret;
+    }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        output.store(VALUE_IO_KEY, codec, stacks);
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        Optional<NonNullList<S>> optional = input.read(VALUE_IO_KEY, codec);
+        if (optional.isEmpty()) return;
+
+        stacks = optional.get();
+        size = stacks.size();
+    }
+
+    /**
+     * Directly overwrites the contents of the handler.
+     *
+     * <p>Note that this method can set to be used as an {@link IndexModifier}, for usage in {@link ResourceHandlerSlot}.
+     *
+     * @param index    index to change
+     * @param resource new resource at the index
+     * @param amount   new amount at the index
+     * @throws IllegalArgumentException if either the amount is negative; or if the resource is non-empty for a 0 amount
+     */
+    public void set(int index, T resource, int amount) {
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) {
+            throw new IllegalArgumentException("Amount is 0 but the resource is not empty: " + resource);
+        }
+
+        var oldContents = stacks.set(index, getStackFrom(resource, amount));
+        onContentsChanged(index, oldContents);
+    }
+
+    /**
+     * Retrieves the resource from a stack.
+     * In the case of an {@link ItemStack} an {@link ItemResource} would be returned for example.
+     */
+    protected abstract T getResourceFrom(S stack);
+
+    /**
+     * Retrieves the amount from a stack.
+     * In the case of an {@link ItemStack} {@linkplain ItemStack#getCount() the count} would be returned for example.
+     */
+    protected abstract int getAmountFrom(S stack);
+
+    /**
+     * Creates a stack from a resource and an amount.
+     */
+    protected abstract S getStackFrom(T resource, int amount);
+
+    /**
+     * Return {@code true} if the passed non-empty resource can fit in this handler, {@code false} otherwise.
+     *
+     * <p>The result of this function is used in the provided implementations of:
+     * <ul>
+     * <li>{@link #getCapacityAsLong(int, T)}, to report a capacity of {@code 0} for invalid items;</li>
+     * <li>{@link #insert(int, T, int, TransactionContext)}, to reject items that cannot fit in this handler.</li>
+     * </ul>
+     */
+    @Override
+    public boolean isValid(int index, T resource) {
+        return true;
+    }
+
+    /**
+     * Return the maximum capacity of this handler for the passed resource.
+     * If the passed resource is empty, an estimate should be returned.
+     *
+     * @return The maximum capacity of this handler for the passed resource.
+     */
+    protected abstract int getCapacity(int index, T resource);
+
+    /**
+     * Creates a copy of a stack, for use as a snapshot.
+     *
+     * <p>If using an immutable stack type such as {@link ResourceStack}, it can be returned as is.
+     * In the case of a mutable stack type such as an item or fluid stack, a copy should be returned.
+     */
+    protected abstract S copyOf(S stack);
+
+    /**
+     * Checks if the passed resource corresponds to the stack.
+     *
+     * @param stack    the stack, usually the current stored value
+     * @param resource the resource, usually the received value in insert or extract
+     * @return {@code true} if the stack and resource match; {@code false} otherwise.
+     * @implSpec This function should be equivalent to {@code getResourceFrom(stack).equals(resource)}.
+     *
+     */
+    protected boolean matches(S stack, T resource) {
+        return getResourceFrom(stack).equals(resource);
+    }
+
+    /**
+     * Called after the contents of the handler changed.
+     *
+     * <p>For changes that happen through {@link #set}, this method is called immediately.
+     * For changes that happen through {@link #insert} or {@link #extract},
+     * this function will be called at the end of the transaction, once per index that changed.
+     *
+     * @param index            the index where the change happened
+     * @param previousContents the stack before the change
+     */
+    protected void onContentsChanged(int index, S previousContents) {}
+
+    /**
+     * Copies all the contents of this handler to a mutable non-null list of the same size.
+     */
+    public NonNullList<S> copyToList() {
+        NonNullList<S> list = NonNullList.withSize(size(), emptyStack);
+        int size = size();
+        for (int index = 0; index < size; index++) {
+            // Copy the stack as well, to make sure modification of the returned stacks does not affect the handler.
+            list.set(index, copyOf(stacks.get(index)));
+        }
+        return list;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public T getResource(int index) {
+        Objects.checkIndex(index, size());
+        return getResourceFrom(stacks.get(index));
+    }
+
+    @Override
+    public long getAmountAsLong(int index) {
+        Objects.checkIndex(index, size());
+        return getAmountFrom(stacks.get(index));
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, T resource) {
+        Objects.checkIndex(index, size());
+        return resource.isEmpty() || isValid(index, resource) ? getCapacity(index, resource) : 0;
+    }
+
+    @Override
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+
+        S currentStack = stacks.get(index);
+        int currentAmount = getAmountFrom(currentStack);
+
+        if ((currentAmount == 0 || matches(currentStack, resource)) && isValid(index, resource)) {
+            int inserted = Math.min(amount, getCapacity(index, resource) - currentAmount);
+
+            if (inserted > 0) {
+                snapshotJournals.get(index).updateSnapshots(transaction);
+                stacks.set(index, getStackFrom(resource, currentAmount + inserted));
+                return inserted;
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int extract(int index, T resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+
+        S currentStack = stacks.get(index);
+
+        if (matches(currentStack, resource)) {
+            int currentAmount = getAmountFrom(currentStack);
+            int extracted = Math.min(amount, currentAmount);
+
+            if (extracted > 0) {
+                snapshotJournals.get(index).updateSnapshots(transaction);
+                stacks.set(index, getStackFrom(resource, currentAmount - extracted));
+                return extracted;
+            }
+        }
+
+        return 0;
+    }
+
+    private class StackJournal extends SnapshotJournal<S> {
+        private final int index;
+
+        private StackJournal(int index) {
+            this.index = index;
+        }
+
+        @Override
+        protected S createSnapshot() {
+            return copyOf(stacks.get(index));
+        }
+
+        @Override
+        protected void revertToSnapshot(S snapshot) {
+            stacks.set(index, snapshot);
+        }
+
+        @Override
+        protected void onRootCommit(S originalState) {
+            onContentsChanged(index, originalState);
+        }
+    }
+}
