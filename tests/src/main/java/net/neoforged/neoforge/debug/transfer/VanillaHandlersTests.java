@@ -556,7 +556,7 @@ public class VanillaHandlersTests {
             if (survivalChestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
                 helper.fail("Should have inserted 1 cursed diamond chestplate");
             }
-            if (survivalChestWrapper.extract(cursedDiamondChestplate, 1, tx) != 1) {
+            if (survivalChestWrapper.extract(cursedDiamondChestplate, 1, tx) != 0) {
                 helper.fail("Should have not been able to extract 1 cursed diamond chestplate");
             }
         }
