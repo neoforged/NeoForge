@@ -6,30 +6,25 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A {@link ResourceHandler} that allows extraction of an unlimited amount of a specified resource.
+ * A {@link ResourceHandler} that allows insertion and extraction of an unlimited amount of a specified resource.
  *
- * @param <T> The type of resource that this storage can accept.
+ * @param <T> The type of resource that this handler can accept.
  */
-// TODO: questionable usefulness
 public class InfiniteResourceHandler<T extends IResource> implements ResourceHandler<T> {
+    protected final T infiniteResource;
+
     /**
-     * Resource that should be provided infinitely. Mustn't be {@code null}.
+     * @param infiniteResource The resource to be treated as infinite.
      */
-    public T infinite;
-
-    public InfiniteResourceHandler(T resource) {
-        this.infinite = resource;
-    }
-
-    public InfiniteResourceHandler(ResourceStack<T> resourceStack) {
-        this(resourceStack.resource());
+    public InfiniteResourceHandler(T infiniteResource) {
+        TransferPreconditions.checkNonEmpty(infiniteResource);
+        this.infiniteResource = infiniteResource;
     }
 
     @Override
@@ -40,21 +35,22 @@ public class InfiniteResourceHandler<T extends IResource> implements ResourceHan
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        ResourceHandlerUtil.isEmpty(resource, amount);
-        return 0; // doesn't allow insertions
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        // Accept insertion of the infinite resource only
+        return resource.equals(infiniteResource) ? amount : 0;
     }
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return resource.equals(infinite) ? amount : 0;
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        return resource.equals(infiniteResource) ? amount : 0;
     }
 
     @Override
     public T getResource(int index) {
         Objects.checkIndex(index, size());
-        return infinite;
+        return infiniteResource;
     }
 
     @Override
@@ -72,6 +68,6 @@ public class InfiniteResourceHandler<T extends IResource> implements ResourceHan
     @Override
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
-        return resource.isEmpty();
+        return resource.equals(infiniteResource);
     }
 }

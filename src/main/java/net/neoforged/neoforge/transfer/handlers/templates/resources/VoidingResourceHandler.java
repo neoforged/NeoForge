@@ -16,13 +16,16 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  *
  * @param <T> The type of resource that this handler can accept.
  */
-public final class VoidingResourceHandler<T extends IResource> implements ResourceHandler<T> {
-    private final T emptyResource;
+public class VoidingResourceHandler<T extends IResource> implements ResourceHandler<T> {
+    protected final T emptyResource;
 
     /**
      * @param emptyResource The resource to return when the contents of this handler are queried.
      */
     public VoidingResourceHandler(T emptyResource) {
+        if (!emptyResource.isEmpty()) {
+            throw new IllegalArgumentException("Resource is not empty: " + emptyResource);
+        }
         this.emptyResource = emptyResource;
     }
 
