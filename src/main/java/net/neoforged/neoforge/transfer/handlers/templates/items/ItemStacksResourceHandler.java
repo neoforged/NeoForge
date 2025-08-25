@@ -7,16 +7,27 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
-// TODO: class javadoc needs a solid pass to reference all the common methods that should be overridden
-public class ItemStackListHandler extends StackListHandler<ItemStack, ItemResource> {
-    public ItemStackListHandler(int size) {
+/**
+ * Base implementation of a {@code ResourceHandler<ItemResource>} backed by a list of {@link ItemStack}s.
+ *
+ * <p>The following methods will typically be overridden:
+ * <ul>
+ * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
+ * <li>(optional) {@link #getCapacity} to specify the capacity of this handler; by default the maximum stack size is used.</li>
+ * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
+ * </ul>
+ *
+ * @see StacksResourceHandler
+ */
+public class ItemStacksResourceHandler extends StacksResourceHandler<ItemStack, ItemResource> {
+    public ItemStacksResourceHandler(int size) {
         super(size, ItemStack.EMPTY, ItemStack.OPTIONAL_CODEC);
     }
 
-    public ItemStackListHandler(NonNullList<ItemStack> stacks) {
+    public ItemStacksResourceHandler(NonNullList<ItemStack> stacks) {
         super(stacks, ItemStack.EMPTY, ItemStack.OPTIONAL_CODEC);
     }
 

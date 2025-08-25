@@ -8,17 +8,29 @@ package net.neoforged.neoforge.transfer.handlers.templates.resources;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-// TODO: javadocs
-public abstract class ResourceStackListHandler<R extends IResource> extends StackListHandler<ResourceStack<R>, R> {
+/**
+ * Base implementation of a {@link ResourceHandler} backed by a list of {@link ResourceStack}s.
+ *
+ * <p>The following methods will typically be overridden:
+ * <ul>
+ * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
+ * <li>(required) {@link #getCapacity} to specify the capacity of this handler.</li>
+ * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
+ * </ul>
+ *
+ * @see StacksResourceHandler
+ */
+public abstract class ResourceStacksResourceHandler<R extends IResource> extends StacksResourceHandler<ResourceStack<R>, R> {
     // TODO: do we want to be passing a resource codec instead?
-    public ResourceStackListHandler(int size, R emptyResource, Codec<ResourceStack<R>> stackCodec) {
+    public ResourceStacksResourceHandler(int size, R emptyResource, Codec<ResourceStack<R>> stackCodec) {
         super(size, new ResourceStack<>(emptyResource, 0), stackCodec);
     }
 
-    public ResourceStackListHandler(NonNullList<ResourceStack<R>> stacks, R emptyResource, Codec<ResourceStack<R>> stackCodec) {
+    public ResourceStacksResourceHandler(NonNullList<ResourceStack<R>> stacks, R emptyResource, Codec<ResourceStack<R>> stackCodec) {
         super(stacks, new ResourceStack<>(emptyResource, 0), stackCodec);
     }
 

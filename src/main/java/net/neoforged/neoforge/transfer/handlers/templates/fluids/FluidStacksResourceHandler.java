@@ -7,19 +7,30 @@ package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 
-// TODO: class javadoc needs a solid pass to reference all the common methods that should be overridden
-public class FluidStackListHandler extends StackListHandler<FluidStack, FluidResource> {
+/**
+ * Base implementation of a {@code ResourceHandler<FluidResource>} backed by a list of {@link FluidStack}s.
+ *
+ * <p>The following methods will typically be overridden:
+ * <ul>
+ * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
+ * <li>(optional) {@link #getCapacity} to specify the capacity of this handler; by default the {@link #capacity} given in the constructor is used.</li>
+ * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
+ * </ul>
+ *
+ * @see StacksResourceHandler
+ */
+public class FluidStacksResourceHandler extends StacksResourceHandler<FluidStack, FluidResource> {
     protected int capacity;
 
-    public FluidStackListHandler(int size, int capacity) {
+    public FluidStacksResourceHandler(int size, int capacity) {
         super(size, FluidStack.EMPTY, FluidStack.OPTIONAL_CODEC);
         this.capacity = capacity;
     }
 
-    public FluidStackListHandler(NonNullList<FluidStack> stacks, int capacity) {
+    public FluidStacksResourceHandler(NonNullList<FluidStack> stacks, int capacity) {
         super(stacks, FluidStack.EMPTY, FluidStack.OPTIONAL_CODEC);
         this.capacity = capacity;
     }

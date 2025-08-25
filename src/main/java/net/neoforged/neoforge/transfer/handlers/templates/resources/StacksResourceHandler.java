@@ -20,6 +20,8 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -28,13 +30,28 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.joml.Math;
 
-// TODO: class javadoc needs a solid pass to reference all the common methods that should be overridden
 /**
- * This is provided as a simple handler to still use a stack of type {@code S} in a List as the backing data structure.
- * <p>
- * This can be used in an attachment, a block entity field, or other mutable structures.
+ * Base implementation of a {@link ResourceHandler} backed by a list of stacks.
+ * This implementation is generic in the type of transferred resources {@code T},
+ * and in the type of stack {@code S} used to store the contents of the handler.
+ *
+ * <p>As a result of this flexibility, this base implementation comes with the following methods will typically be overridden:
+ * <ul>
+ * <li>(required) {@link #getResourceFrom}, {@link #getAmountFrom}, and {@link #getStackFrom} to convert between amounts, resources and stacks.</li>
+ * <li>(required) {@link #copyOf} to copy stacks for snapshotting support.</li>
+ * <li>(recommended) {@link #matches} to optimize the frequent operation of checking whether a resource and a stack match.</li>
+ * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
+ * <li>(required) {@link #getCapacity} to specify the capacity of this handler.</li>
+ * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
+ * </ul>
+ *
+ * @param <S> The type of stack used to store the contents of this handler.
+ * @param <T> The type of resource this handler manages.
+ * @see ItemStacksResourceHandler the ItemStack-based subclass
+ * @see FluidStacksResourceHandler the FluidStack-based subclass
+ * @see ResourceStacksResourceHandler the ResourceStack-based subclass
  */
-public abstract class StackListHandler<S, T extends IResource> implements ResourceHandler<T>, ValueIOSerializable {
+public abstract class StacksResourceHandler<S, T extends IResource> implements ResourceHandler<T>, ValueIOSerializable {
     public static final String VALUE_IO_KEY = "stacks";
 
     protected NonNullList<S> stacks;
@@ -44,15 +61,15 @@ public abstract class StackListHandler<S, T extends IResource> implements Resour
     private int size;
     private final List<StackJournal> snapshotJournals;
 
-    protected StackListHandler(int size, S emptyStack, Codec<S> stackCodec) {
+    protected StacksResourceHandler(int size, S emptyStack, Codec<S> stackCodec) {
         this(NonNullList.withSize(size, emptyStack), emptyStack, stackCodec);
     }
 
-    protected StackListHandler(NonNullList<S> stacks, S emptyStack, Codec<S> stackCodec) {
+    protected StacksResourceHandler(NonNullList<S> stacks, S emptyStack, Codec<S> stackCodec) {
         this.stacks = mutableCopyOf(stacks);
         this.emptyStack = emptyStack;
         // Don't use NonNullList.codecOf because it creates an unmodifiable list
-        this.codec = stackCodec.listOf().xmap(StackListHandler::mutableCopyOf, Function.identity());
+        this.codec = stackCodec.listOf().xmap(StacksResourceHandler::mutableCopyOf, Function.identity());
         this.size = stacks.size();
         this.snapshotJournals = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -118,6 +135,26 @@ public abstract class StackListHandler<S, T extends IResource> implements Resour
     protected abstract S getStackFrom(T resource, int amount);
 
     /**
+     * Creates a copy of a stack, for use as a snapshot.
+     *
+     * <p>If using an immutable stack type such as {@link ResourceStack}, it can be returned as is.
+     * In the case of a mutable stack type such as an item or fluid stack, a copy should be returned.
+     */
+    protected abstract S copyOf(S stack);
+
+    /**
+     * Checks if the passed resource corresponds to the stack.
+     *
+     * @param stack    the stack, usually the current stored value
+     * @param resource the resource, usually the received value in insert or extract
+     * @return {@code true} if the stack and resource match; {@code false} otherwise.
+     * @implSpec This function should be equivalent to {@code getResourceFrom(stack).equals(resource)}.
+     */
+    protected boolean matches(S stack, T resource) {
+        return getResourceFrom(stack).equals(resource);
+    }
+
+    /**
      * Return {@code true} if the passed non-empty resource can fit in this handler, {@code false} otherwise.
      *
      * <p>The result of this function is used in the provided implementations of:
@@ -138,27 +175,6 @@ public abstract class StackListHandler<S, T extends IResource> implements Resour
      * @return The maximum capacity of this handler for the passed resource.
      */
     protected abstract int getCapacity(int index, T resource);
-
-    /**
-     * Creates a copy of a stack, for use as a snapshot.
-     *
-     * <p>If using an immutable stack type such as {@link ResourceStack}, it can be returned as is.
-     * In the case of a mutable stack type such as an item or fluid stack, a copy should be returned.
-     */
-    protected abstract S copyOf(S stack);
-
-    /**
-     * Checks if the passed resource corresponds to the stack.
-     *
-     * @param stack    the stack, usually the current stored value
-     * @param resource the resource, usually the received value in insert or extract
-     * @return {@code true} if the stack and resource match; {@code false} otherwise.
-     * @implSpec This function should be equivalent to {@code getResourceFrom(stack).equals(resource)}.
-     *
-     */
-    protected boolean matches(S stack, T resource) {
-        return getResourceFrom(stack).equals(resource);
-    }
 
     /**
      * Called after the contents of the handler changed.
