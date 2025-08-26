@@ -13,6 +13,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ReloadableServerRegistries;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -27,7 +29,10 @@ import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.data.ConditionalLootTableSubProvider;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -191,5 +196,51 @@ public class LootPoolTest {
                     helper.assertTrue(collectedItems.size() == 2 && collectedItems.stream().allMatch(itemStack -> itemStack.getItem().equals(Items.YELLOW_CONCRETE)), "neoforge:test_loot_table_4 Loot Table should drop 2 Yellow Concrete");
                 })
                 .thenSucceed());
+    }
+
+    @TestHolder(description = "Tests that loot tables correctly generate with loading conditions", enabledByDefault = true)
+    static void conditionalLootTable(final DynamicTest test, final RegistrationHelper reg) {
+        ResourceKey<LootTable> tableOne = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(test.createModId(), "table_1"));
+        ResourceKey<LootTable> tableTwo = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(test.createModId(), "table_2"));
+        ResourceLocation tableOneLoc = tableOne.location().withPrefix("loot_table/").withSuffix(".json");
+        ResourceLocation tableTwoLoc = tableTwo.location().withPrefix("loot_table/").withSuffix(".json");
+
+        reg.addClientProvider(event -> new LootTableProvider(
+                event.getGenerator().getPackOutput(),
+                Set.of(),
+                List.of(
+                        new LootTableProvider.SubProviderEntry(provider -> consumer -> {
+                            consumer.accept(tableOne, LootTable.lootTable().withCondition(new ModLoadedCondition("doesnt_exist")));
+                        }, LootContextParamSets.ALL_PARAMS),
+                        new LootTableProvider.SubProviderEntry(provider -> new ConditionalLootTableSubProvider(
+                                consumer -> {
+                                    consumer.accept(tableTwo, LootTable.lootTable());
+                                },
+                                List.of(new ModLoadedCondition("doesnt_exist"))), LootContextParamSets.ALL_PARAMS)),
+                event.getLookupProvider()));
+
+        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+            ResourceManager resourceManager = event.getServer().getResourceManager();
+            if (resourceManager.getResource(tableOneLoc).isEmpty()) {
+                test.fail("Test loot table one (conditions directly on builder) is missing");
+                return;
+            }
+            if (resourceManager.getResource(tableTwoLoc).isEmpty()) {
+                test.fail("Test loot table two (conditions on ConditionalLootTableSubProvider) is missing");
+                return;
+            }
+
+            ReloadableServerRegistries.Holder registries = event.getServer().reloadableRegistries();
+            if (registries.getLootTable(tableOne) != LootTable.EMPTY) {
+                test.fail("Test loot table one (conditions directly on builder) was incorrectly loaded");
+                return;
+            }
+            if (registries.getLootTable(tableTwo) != LootTable.EMPTY) {
+                test.fail("Test loot table two (conditions on ConditionalLootTableSubProvider) was incorrectly loaded");
+                return;
+            }
+
+            test.pass();
+        });
     }
 }
