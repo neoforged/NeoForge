@@ -402,7 +402,6 @@ public class NeoForgeMod {
             .canPushEntity(false)
             .canSwim(false)
             .canDrown(false)
-            .isWaterLike(false)
             .fallDistanceModifier(1F)
             .pathType(null)
             .adjacentPathType(null)
@@ -424,6 +423,7 @@ public class NeoForgeMod {
             .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
             .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)
             .canHydrate(true)
+            .isWaterLike(true)
             .addDripstoneDripping(PointedDripstoneBlock.WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
@@ -443,7 +443,6 @@ public class NeoForgeMod {
             .descriptionId("block.minecraft.lava")
             .canSwim(false)
             .canDrown(false)
-            .isWaterLike(false)
             .pathType(PathType.LAVA)
             .adjacentPathType(null)
             .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL_LAVA)

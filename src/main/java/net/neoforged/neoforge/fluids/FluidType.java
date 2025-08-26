@@ -879,7 +879,7 @@ public class FluidType {
         private Rarity rarity = Rarity.COMMON;
         @Nullable
         private DripstoneDripInfo dripInfo;
-        private boolean isWaterLike = true;
+        private boolean isWaterLike = false;
 
         private Properties() {}
 
