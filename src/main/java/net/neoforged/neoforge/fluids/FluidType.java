@@ -1072,7 +1072,7 @@ public class FluidType {
          * @param temperature the temperature of the fluid
          * @return the property holder instance
          */
-        public Properties temperatufre(int temperature) {
+        public Properties temperature(int temperature) {
             this.temperature = temperature;
             return this;
         }
