@@ -92,6 +92,8 @@ public class VanillaHandlersTests {
         if (ComposterBlock.getValue(nonCompostable) > 0)
             helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
 
+        // Of particular note to be tested here is the 'null' side; see #2572
+        // "IItemHandler for null side of Composter allows items without compost value to be inserted"
         var sides = new Direction[] { null, Direction.UP, Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
 
         for (Direction side : sides) {
