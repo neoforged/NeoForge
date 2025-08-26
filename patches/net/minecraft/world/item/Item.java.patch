@@ -139,6 +139,19 @@
      }
  
      public ItemStack getDefaultInstance() {
+@@ -332,6 +_,12 @@
+         return SoundEvents.ITEM_BREAK;
+     }
+ 
++    /**
++     * @deprecated Neo: call {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#canFitInsideContainerItems()} instead,
++     * prefer overriding {@link net.neoforged.neoforge.common.extensions.IItemExtension#canFitInsideContainerItems(ItemStack)}
++     * @implNote It is recommended to still override this to ensure mods calling this instead of the extension still behave safely.
++     */
++    @Deprecated
+     public boolean canFitInsideContainerItems() {
+         return true;
+     }
 @@ -341,6 +_,14 @@
          return this.requiredFeatures;
      }

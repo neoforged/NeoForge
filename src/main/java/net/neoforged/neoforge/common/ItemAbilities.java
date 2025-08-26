@@ -143,6 +143,11 @@ public class ItemAbilities {
      */
     public static final ItemAbility FIRESTARTER_LIGHT = ItemAbility.get("firestarter_light");
 
+    /**
+     * Exposed by spyglasses to allow querying tool behaviours for items that can be used to scope.
+     */
+    public static final ItemAbility SPYGLASS_SCOPE = ItemAbility.get("spyglass_scope");
+
     // Default actions supported by each tool type
     public static final Set<ItemAbility> DEFAULT_AXE_ACTIONS = of(AXE_DIG, AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF);
     public static final Set<ItemAbility> DEFAULT_HOE_ACTIONS = of(HOE_DIG, HOE_TILL);
@@ -156,6 +161,7 @@ public class ItemAbilities {
     public static final Set<ItemAbility> DEFAULT_BRUSH_ACTIONS = of(BRUSH_BRUSH);
     public static final Set<ItemAbility> DEFAULT_FLINT_ACTIONS = of(FIRESTARTER_LIGHT);
     public static final Set<ItemAbility> DEFAULT_FIRECHARGE_ACTIONS = of(FIRESTARTER_LIGHT);
+    public static final Set<ItemAbility> DEFAULT_SPYGLASS_ACTIONS = of(SPYGLASS_SCOPE);
 
     private static Set<ItemAbility> of(ItemAbility... actions) {
         return Stream.of(actions).collect(Collectors.toCollection(Sets::newIdentityHashSet));

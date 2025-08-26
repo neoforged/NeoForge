@@ -9,14 +9,17 @@ import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -40,12 +43,6 @@ import org.jetbrains.annotations.Nullable;
  * <li>Serializable entity attachments are not copied on death by default (but they are copied when returning from the end).</li>
  * <li>Serializable entity attachments can opt into copying on death via {@link Builder#copyOnDeath()}.</li>
  * </ul>
- * <h3>{@link ItemStack}-exclusive behavior:</h3>
- * <ul>
- * <li>Serializable item stack attachments are synced between the server and the client.</li>
- * <li>Serializable item stack attachments are copied when an item stack is copied.</li>
- * <li>Serializable item stack attachments must match for item stack comparison to succeed.</li>
- * </ul>
  * <h3>{@link Level}-exclusive behavior:</h3>
  * <ul>
  * <li>(nothing)</li>
@@ -62,12 +59,15 @@ public final class AttachmentType<T> {
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentCopyHandler<T> copyHandler;
+    @Nullable
+    AttachmentSyncHandler<T> syncHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
+        this.syncHandler = builder.syncHandler;
     }
 
     private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
@@ -153,6 +153,8 @@ public final class AttachmentType<T> {
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentCopyHandler<T> copyHandler;
+        @Nullable
+        private AttachmentSyncHandler<T> syncHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -175,9 +177,6 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
          *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
-         *
          * <p>Codec-based attachments cannot capture a reference to their holder.
          *
          * @param codec The codec to use.
@@ -188,9 +187,6 @@ public final class AttachmentType<T> {
 
         /**
          * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
-         *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
          *
          * <p>Codec-based attachments cannot capture a reference to their holder.
          *
@@ -246,6 +242,53 @@ public final class AttachmentType<T> {
                 throw new IllegalStateException("copyHandler requires a serializer");
             this.copyHandler = cloner;
             return this;
+        }
+
+        /**
+         * Requests that this attachment be synced to clients using the provided {@code syncHandler}.
+         */
+        public Builder<T> sync(AttachmentSyncHandler<T> syncHandler) {
+            Objects.requireNonNull(syncHandler);
+            this.syncHandler = syncHandler;
+            return this;
+        }
+
+        /**
+         * Requests that this attachment be synced to all clients that receive the holding object.
+         *
+         * <p>The full data is always written using the provided stream codec.
+         */
+        public Builder<T> sync(StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            return sync((holder, to) -> true, streamCodec);
+        }
+
+        /**
+         * Requests that this attachment be synced to some clients.
+         *
+         * <p>The full data is always written using the provided stream codec.
+         *
+         * @param sendToPlayer A predicate that determines whether the data should be sent to a specific player that receives the holding object.
+         * @see AttachmentSyncHandler#sendToPlayer
+         */
+        public Builder<T> sync(BiPredicate<IAttachmentHolder, ServerPlayer> sendToPlayer, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            Objects.requireNonNull(sendToPlayer);
+            Objects.requireNonNull(streamCodec);
+            return sync(new AttachmentSyncHandler<>() {
+                @Override
+                public boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
+                    return sendToPlayer.test(holder, to);
+                }
+
+                @Override
+                public void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync) {
+                    streamCodec.encode(buf, attachment);
+                }
+
+                @Override
+                public T read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable T previousValue) {
+                    return streamCodec.decode(buf);
+                }
+            });
         }
 
         public AttachmentType<T> build() {

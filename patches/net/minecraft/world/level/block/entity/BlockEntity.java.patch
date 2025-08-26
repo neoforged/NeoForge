@@ -63,7 +63,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -246,6 +_,27 @@
+@@ -246,6 +_,32 @@
          return this.type;
      }
  
@@ -86,6 +86,11 @@
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setChanged();
 +        return super.removeData(type);
++    }
++
++    @Override
++    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
 +    }
 +
      @Deprecated

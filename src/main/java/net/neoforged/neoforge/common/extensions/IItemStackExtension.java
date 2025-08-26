@@ -513,4 +513,14 @@ public interface IItemStackExtension {
 
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
+
+    /**
+     * Determines whether the item held by this stack can be safely stored inside another container item, optionally
+     * taking this stack's data into account.
+     *
+     * @return whether the item held by this stack can fit inside a container item
+     */
+    default boolean canFitInsideContainerItems() {
+        return self().getItem().canFitInsideContainerItems(self());
+    }
 }

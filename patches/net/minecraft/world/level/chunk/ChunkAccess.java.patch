@@ -99,7 +99,7 @@
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    protected net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
++    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
 +        return attachmentHolder;
 +    }
 +

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/layers/PlayerItemInHandLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/PlayerItemInHandLayer.java
+@@ -39,7 +_,7 @@
+         MultiBufferSource p_270414_,
+         int p_270295_
+     ) {
+-        if (p_270379_.is(Items.SPYGLASS) && p_270884_.getUseItem() == p_270379_ && p_270884_.swingTime == 0) {
++        if (p_270379_.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE) && p_270884_.getUseItem() == p_270379_ && p_270884_.swingTime == 0) {
+             this.renderArmWithSpyglass(p_270884_, p_270379_, p_270324_, p_270124_, p_270414_, p_270295_);
+         } else {
+             super.renderArmWithItem(p_270884_, p_270379_, p_270607_, p_270324_, p_270124_, p_270414_, p_270295_);
