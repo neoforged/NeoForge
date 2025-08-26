@@ -111,8 +111,8 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
     }
 
     private static class StrippablesAccess extends AxeItem {
-        private StrippablesAccess(ToolMaterial material, float p_364213_, float p_365432_, Properties p_40524_) {
-            super(material, p_364213_, p_365432_, p_40524_);
+        private StrippablesAccess(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties) {
+            super(material, attackDamage, attackSpeed, properties);
         }
 
         public static Map<Block, Block> getStrippables() {
