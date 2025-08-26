@@ -118,7 +118,7 @@ public class FluidUtil {
                         if (doFill) {
                             tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, true);
                             if (player != null) {
-                                SoundEvent soundevent = simulatedTransfer.getFluidType().getSound(simulatedTransfer, SoundActions.BUCKET_FILL);
+                                SoundEvent soundevent = simulatedTransfer.getFluid().getSound(simulatedTransfer, SoundActions.BUCKET_FILL);
 
                                 if (soundevent != null) {
                                     player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -165,7 +165,7 @@ public class FluidUtil {
                     }
 
                     if (doDrain && player != null) {
-                        SoundEvent soundevent = transfer.getFluidType().getSound(transfer, SoundActions.BUCKET_EMPTY);
+                        SoundEvent soundevent = transfer.getFluid().getSound(transfer, SoundActions.BUCKET_EMPTY);
 
                         if (soundevent != null) {
                             player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -465,7 +465,7 @@ public class FluidUtil {
         }
 
         Fluid fluid = resource.getFluid();
-        if (fluid == Fluids.EMPTY || !fluid.getFluidType().canBePlacedInLevel(level, pos, resource)) {
+        if (fluid == Fluids.EMPTY || !fluid.canBePlacedInWorld(player, level, pos, resource)) {
             return false;
         }
 
@@ -484,10 +484,10 @@ public class FluidUtil {
             return false; // Non-air, solid, unreplacable block. We can't put fluid here.
         }
 
-        if (fluid.getFluidType().isVaporizedOnPlacement(level, pos, resource)) {
+        if (fluid.isVaporizedOnPlacement(level, pos, resource)) {
             FluidStack result = fluidSource.drain(resource, IFluidHandler.FluidAction.EXECUTE);
             if (!result.isEmpty()) {
-                result.getFluidType().onVaporize(player, level, pos, result);
+                result.getFluid().onVaporize(player, level, pos, result);
                 return true;
             }
         } else {
@@ -496,11 +496,11 @@ public class FluidUtil {
             if (canDestContainFluid) {
                 handler = new BlockWrapper.LiquidContainerBlockWrapper((LiquidBlockContainer) destBlockState.getBlock(), level, pos);
             } else {
-                handler = getFluidBlockHandler(fluid, level, pos);
+                handler = new BlockWrapper(fluid, level, pos);
             }
             FluidStack result = tryFluidTransfer(handler, fluidSource, resource, true);
             if (!result.isEmpty()) {
-                SoundEvent soundevent = resource.getFluidType().getSound(resource, SoundActions.BUCKET_EMPTY);
+                SoundEvent soundevent = resource.getFluid().getSound(resource, SoundActions.BUCKET_EMPTY);
 
                 if (soundevent != null) {
                     level.playSound(player, pos, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -510,17 +510,6 @@ public class FluidUtil {
             }
         }
         return false;
-    }
-
-    /**
-     * Internal method for getting a fluid block handler for placing a fluid.
-     *
-     * Modders: Instead of this method, use {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, ItemStack, FluidStack)}
-     * or {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, IFluidHandler, FluidStack)}
-     */
-    private static IFluidHandler getFluidBlockHandler(Fluid fluid, Level level, BlockPos pos) {
-        BlockState state = fluid.getFluidType().getBlockForFluidState(level, pos, fluid.defaultFluidState());
-        return new BlockWrapper(state, level, pos);
     }
 
     /**
@@ -555,6 +544,6 @@ public class FluidUtil {
                 return new ItemStack(Items.LAVA_BUCKET);
             }
         }
-        return fluidStack.getFluidType().getBucket(fluidStack);
+        return fluidStack.getFluid().getBucket().getDefaultInstance();
     }
 }

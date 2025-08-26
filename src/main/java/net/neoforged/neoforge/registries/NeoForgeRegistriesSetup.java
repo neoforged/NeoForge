@@ -65,7 +65,6 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
         event.register(NeoForgeRegistries.BIOME_MODIFIER_SERIALIZERS);
         event.register(NeoForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS);
-        event.register(NeoForgeRegistries.FLUID_TYPES);
         event.register(NeoForgeRegistries.HOLDER_SET_TYPES);
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.FLUID_INGREDIENT_TYPES);

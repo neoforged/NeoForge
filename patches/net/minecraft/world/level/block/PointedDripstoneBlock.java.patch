@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -188,7 +_,7 @@
+@@ -164,7 +_,7 @@
+             if (!(f > 0.12F)) {
+                 getFluidAboveStalactite(p_221871_, p_221872_, p_221870_)
+                     .filter(p_221848_ -> f < 0.02F || canFillCauldron(p_221848_.fluid))
+-                    .ifPresent(p_221881_ -> spawnDripParticle(p_221871_, p_221872_, p_221870_, p_221881_.fluid));
++                    .ifPresent(p_221881_ -> spawnDripParticle(p_221871_, p_221872_, p_221870_, p_221881_.fluidState, p_221881_.fluid));
+             }
+         }
+     }
+@@ -188,23 +_,22 @@
  
      @VisibleForTesting
      public static void maybeTransferFluid(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
@@ -9,7 +18,9 @@
              if (isStalactiteStartPos(p_221860_, p_221861_, p_221862_)) {
                  Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(p_221861_, p_221862_, p_221860_);
                  if (!optional.isEmpty()) {
-@@ -197,14 +_,12 @@
+                     Fluid fluid = optional.get().fluid;
++                    FluidState fluidState = optional.get().fluidState;
+                     float f;
                      if (fluid == Fluids.WATER) {
                          f = 0.17578125F;
                      } else {
@@ -21,27 +32,74 @@
                      }
  
 -                    if (!(p_221863_ >= f)) {
-+                    net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
++                    Fluid.DripstoneDripInfo dripInfo = fluidState != null ? fluidState.getDripInfo() : fluid.getDripInfo();
 +                    if (dripInfo != null && !(p_221863_ >= dripInfo.chance())) {
                          BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
                          if (blockpos != null) {
                              if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -403,7 +_,8 @@
+@@ -397,13 +_,19 @@
+     }
+ 
+     private static void spawnDripParticle(Level p_154072_, BlockPos p_154073_, BlockState p_154074_, Fluid p_154075_) {
++        spawnDripParticle(p_154072_, p_154073_, p_154074_, null, p_154075_);
++    }
++
++    private static void spawnDripParticle(Level p_154072_, BlockPos p_154073_, BlockState p_154074_, @Nullable FluidState fluidState, Fluid p_154075_) {
+         Vec3 vec3 = p_154074_.getOffset(p_154073_);
+         double d0 = 0.0625;
+         double d1 = p_154073_.getX() + 0.5 + vec3.x;
          double d2 = p_154073_.getY() + STALACTITE_DRIP_START_PIXEL - 0.0625;
          double d3 = p_154073_.getZ() + 0.5 + vec3.z;
-         Fluid fluid = getDripFluid(p_154072_, p_154075_);
+-        Fluid fluid = getDripFluid(p_154072_, p_154075_);
 -        ParticleOptions particleoptions = fluid.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+        ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++        Fluid fluid = getDripFluid(p_154072_, fluidState, p_154075_);
++        var info = fluidState != null ? fluidState.getDripInfo() : fluid.getDripInfo();
++        ParticleOptions particleoptions = info != null ? info.dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 +        if (particleoptions != null)
          p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
      }
  
-@@ -555,7 +_,7 @@
+@@ -544,18 +_,20 @@
+             BlockPos blockpos = p_221876_.above();
+             BlockState blockstate = p_154182_.getBlockState(blockpos);
+             Fluid fluid;
++            FluidState state = null;
+             if (blockstate.is(Blocks.MUD) && !p_154182_.dimensionType().ultraWarm()) {
+                 fluid = Fluids.WATER;
+             } else {
+-                fluid = p_154182_.getFluidState(blockpos).getType();
++                state = p_154182_.getFluidState(blockpos);
++                fluid = state.getType();
+             }
+ 
+-            return new PointedDripstoneBlock.FluidInfo(blockpos, fluid, blockstate);
++            return new PointedDripstoneBlock.FluidInfo(blockpos, state, fluid, blockstate);
+         });
      }
  
      private static boolean canFillCauldron(Fluid p_154159_) {
 -        return p_154159_ == Fluids.LAVA || p_154159_ == Fluids.WATER;
-+        return p_154159_.getFluidType().getDripInfo() != null;
++        return p_154159_.getDripInfo() != null;
      }
  
      private static boolean canGrow(BlockState p_154141_, BlockState p_154142_) {
+@@ -563,6 +_,11 @@
+     }
+ 
+     private static Fluid getDripFluid(Level p_154053_, Fluid p_154054_) {
++        return getDripFluid(p_154053_, null, p_154054_);
++    }
++
++    private static Fluid getDripFluid(Level p_154053_, @Nullable FluidState fluidState, Fluid p_154054_) {
++        if (fluidState != null && !fluidState.is(Fluids.EMPTY)) return fluidState.getType();
+         if (p_154054_.isSame(Fluids.EMPTY)) {
+             return p_154053_.dimensionType().ultraWarm() ? Fluids.LAVA : Fluids.WATER;
+         } else {
+@@ -609,6 +_,6 @@
+         }
+     }
+ 
+-    record FluidInfo(BlockPos pos, Fluid fluid, BlockState sourceState) {
++    record FluidInfo(BlockPos pos, @Nullable FluidState fluidState, Fluid fluid, BlockState sourceState) {
+     }
+ }

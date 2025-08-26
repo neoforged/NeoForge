@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
+@@ -85,6 +_,7 @@
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+ import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.level.pathfinder.Path;
+ import net.minecraft.world.level.pathfinder.PathType;
+ import net.minecraft.world.level.storage.ValueInput;
 @@ -500,7 +_,7 @@
          if (this.hivePos == null) {
              return null;
@@ -23,7 +31,7 @@
 +    }
 +
 +    @Override
-+    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++    public void jumpInFluid(Fluid type) {
 +        this.jumpInLiquidInternal();
      }
  

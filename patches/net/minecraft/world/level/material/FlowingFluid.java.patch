@@ -1,5 +1,24 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
+@@ -29,6 +_,7 @@
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.world.FluidBehaviour;
+ 
+ public abstract class FlowingFluid extends Fluid {
+     public static final BooleanProperty FALLING = BlockStateProperties.FALLING;
+@@ -49,6 +_,10 @@
+     );
+     private final Map<FluidState, VoxelShape> shapes = Maps.newIdentityHashMap();
+ 
++    protected FlowingFluid(FluidBehaviour.Properties properties) {
++        super(properties);
++    }
++
+     @Override
+     protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76046_) {
+         p_76046_.add(FALLING);
 @@ -171,7 +_,7 @@
              BlockState blockstate = p_376839_.getBlockState(blockpos);
              FluidState fluidstate = blockstate.getFluidState();

@@ -12,7 +12,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
@@ -36,15 +35,16 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         if (fluid.is(Fluids.WATER) || fluid.is(Fluids.LAVA)) {
             return true;
         }
-        return !fluid.getFluidType().getBucket(fluid).isEmpty();
+        //return !fluid.getFluidType().getBucket(fluid).isEmpty();
+        return false;
     }
 
     public FluidStack getFluid() {
         Item item = container.getItem();
         if (item instanceof BucketItem) {
-            return new FluidStack(((BucketItem) item).content, FluidType.BUCKET_VOLUME);
+            return new FluidStack(((BucketItem) item).content, 1000);
         } else if (item == Items.MILK_BUCKET && NeoForgeMod.MILK.isBound()) {
-            return new FluidStack(NeoForgeMod.MILK.get(), FluidType.BUCKET_VOLUME);
+            return new FluidStack(NeoForgeMod.MILK.get(), 1000);
         } else {
             return FluidStack.EMPTY;
         }
@@ -69,7 +69,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
 
     @Override
     public int getTankCapacity(int tank) {
-        return FluidType.BUCKET_VOLUME;
+        return 1000; //1000;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.getAmount() < FluidType.BUCKET_VOLUME || container.getItem() == Items.MILK_BUCKET || !getFluid().isEmpty() || !canFillFluidType(resource)) {
+        if (container.getCount() != 1 || resource.getAmount() < 1000 || container.getItem() == Items.MILK_BUCKET || !getFluid().isEmpty() || !canFillFluidType(resource)) {
             return 0;
         }
 
@@ -87,12 +87,12 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
             setFluid(resource);
         }
 
-        return FluidType.BUCKET_VOLUME;
+        return 1000;
     }
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.getAmount() < FluidType.BUCKET_VOLUME) {
+        if (container.getCount() != 1 || resource.getAmount() < 1000) {
             return FluidStack.EMPTY;
         }
 
@@ -109,7 +109,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
 
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
-        if (container.getCount() != 1 || maxDrain < FluidType.BUCKET_VOLUME) {
+        if (container.getCount() != 1 || maxDrain < 1000) {
             return FluidStack.EMPTY;
         }
 

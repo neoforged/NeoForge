@@ -14,7 +14,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.fluids.FluidType;
 
 /**
  * Allows registering client extensions for various game objects.
@@ -92,27 +91,5 @@ public final class RegisterClientExtensionsEvent extends Event implements IModBu
      */
     public boolean isMobEffectRegistered(MobEffect mobEffect) {
         return ClientExtensionsManager.MOB_EFFECT_EXTENSIONS.containsKey(mobEffect);
-    }
-
-    /**
-     * Register the given {@link IClientFluidTypeExtensions} for the given {@link FluidType}s
-     */
-    public void registerFluidType(IClientFluidTypeExtensions extensions, FluidType... fluidTypes) {
-        ClientExtensionsManager.register(extensions, ClientExtensionsManager.FLUID_TYPE_EXTENSIONS, fluidTypes);
-    }
-
-    /**
-     * Register the given {@link IClientFluidTypeExtensions} for the given {@link FluidType}s
-     */
-    @SafeVarargs
-    public final void registerFluidType(IClientFluidTypeExtensions extensions, Holder<FluidType>... fluidTypes) {
-        registerFluidType(extensions, Arrays.stream(fluidTypes).map(Holder::value).toArray(FluidType[]::new));
-    }
-
-    /**
-     * {@return whether a {@link IClientFluidTypeExtensions} has been registered for the given {@link FluidType}}
-     */
-    public boolean isFluidTypeRegistered(FluidType fluidType) {
-        return ClientExtensionsManager.FLUID_TYPE_EXTENSIONS.containsKey(fluidType);
     }
 }

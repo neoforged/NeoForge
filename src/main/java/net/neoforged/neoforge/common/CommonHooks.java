@@ -216,7 +216,6 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
@@ -907,25 +906,6 @@ public class CommonHooks {
         return Codec.of(LootPool.CODEC.listOf(), decoder);
     }
 
-    /**
-     * Returns a vanilla fluid type for the given fluid.
-     *
-     * @param fluid the fluid looking for its type
-     * @return the type of the fluid if vanilla
-     * @throws RuntimeException if the fluid is not a vanilla one
-     */
-    public static FluidType getVanillaFluidType(Fluid fluid) {
-        if (fluid == Fluids.EMPTY)
-            return NeoForgeMod.EMPTY_TYPE.value();
-        if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER)
-            return NeoForgeMod.WATER_TYPE.value();
-        if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA)
-            return NeoForgeMod.LAVA_TYPE.value();
-        if (NeoForgeMod.MILK.asOptional().filter(milk -> milk == fluid).isPresent() || NeoForgeMod.FLOWING_MILK.asOptional().filter(milk -> milk == fluid).isPresent())
-            return NeoForgeMod.MILK_TYPE.value();
-        throw new RuntimeException("Mod fluids must override getFluidType.");
-    }
-
     // FIXME: is this still needed
     /*public static TagKey<Block> getTagFromVanillaTier(Tiers tier) {
         return switch (tier) {
@@ -1423,10 +1403,10 @@ public class CommonHooks {
      */
     public static void onLivingBreathe(LivingEntity entity, int consumeAirAmount, int refillAirAmount) {
         // Check things that vanilla considers to be air - these will cause the air supply to be increased.
-        boolean isAir = entity.getEyeInFluidType().isAir() || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
+        boolean isAir = entity.getEyeInFluid().isSame(Fluids.EMPTY) || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
         boolean canBreathe = isAir;
         // The following effects cause the entity to not drown, but do not cause the air supply to be increased.
-        if (!isAir && (MobEffectUtil.hasWaterBreathing(entity) || !entity.canDrownInFluidType(entity.getEyeInFluidType()) || (entity instanceof Player player && player.getAbilities().invulnerable))) {
+        if (!isAir && (MobEffectUtil.hasWaterBreathing(entity) || !entity.canDrownInFluid(entity.getEyeInFluid()) || (entity instanceof Player player && player.getAbilities().invulnerable))) {
             canBreathe = true;
             refillAirAmount = 0;
         }
@@ -1455,7 +1435,7 @@ public class CommonHooks {
             }
         }
 
-        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
+        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluid(entity.level(), entity.blockPosition(), entity.getEyeInFluid(), entity)) {
             entity.stopRiding();
         }
     }

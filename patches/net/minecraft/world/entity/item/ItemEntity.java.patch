@@ -1,5 +1,15 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -30,6 +_,9 @@
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.gameevent.GameEvent;
++import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.level.material.FluidState;
++import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.level.portal.TeleportTransition;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
 @@ -53,6 +_,10 @@
      @Nullable
      private UUID target;
@@ -35,13 +45,14 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -129,6 +_,9 @@
+@@ -129,6 +_,10 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
-+            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > 0.1F) fluidType.setItemMovement(this);
-+            else
++            Fluid fluidType = this.getMaxHeightFluid();
++            if (!fluidType.isSame(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F && fluidType.move(this.level().getFluidState(this.blockPosition()), this, vec3, getGravity())) {
++                // Neo: if the fluid handled the movement, don't do anything
++            } else
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {

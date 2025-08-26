@@ -1,5 +1,46 @@
 --- a/net/minecraft/world/level/material/LavaFluid.java
 +++ b/net/minecraft/world/level/material/LavaFluid.java
+@@ -4,8 +_,12 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
++import net.minecraft.core.HolderSet;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.core.particles.ParticleTypes;
++import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.resources.ResourceKey;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+@@ -27,9 +_,27 @@
+ import net.minecraft.world.level.block.LiquidBlock;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.StateDefinition;
++import net.minecraft.world.level.pathfinder.PathType;
+ 
+ public abstract class LavaFluid extends FlowingFluid {
+     public static final float MIN_LEVEL_CUTOFF = 0.44444445F;
++    private static final HolderSet<Fluid> FAMILY = HolderSet.emptyNamed(BuiltInRegistries.FLUID, FluidTags.LAVA);
++
++    protected LavaFluid(String id) {
++        super(net.neoforged.neoforge.common.world.FluidBehaviour.Properties.of()
++            .fallDistanceModifier(0.5f)
++            .pushEntities()
++            .pathType(PathType.LAVA)
++            .adjacentPathType(null)
++            .family(FAMILY)
++            .setId(ResourceKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.withDefaultNamespace(id))));
++    }
++
++    @Override
++    public double motionScale(final Entity entity)
++    {
++        return entity.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
++    }
+ 
+     @Override
+     public Fluid getFlowing() {
 @@ -92,7 +_,7 @@
                          BlockState blockstate = p_376493_.getBlockState(blockpos);
                          if (blockstate.isAir()) {
@@ -59,3 +100,34 @@
                  }
  
                  this.fizz(p_76220_, p_76221_);
+@@ -223,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected float getExplosionResistance() {
++    public float getExplosionResistance() {
+         return 100.0F;
+     }
+ 
+@@ -233,6 +_,10 @@
+     }
+ 
+     public static class Flowing extends LavaFluid {
++        public Flowing() {
++            super("flowing_lava");
++        }
++
+         @Override
+         protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76260_) {
+             super.createFluidStateDefinition(p_76260_);
+@@ -251,6 +_,10 @@
+     }
+ 
+     public static class Source extends LavaFluid {
++        public Source() {
++            super("lava");
++        }
++
+         @Override
+         public int getAmount(FluidState p_76269_) {
+             return 8;

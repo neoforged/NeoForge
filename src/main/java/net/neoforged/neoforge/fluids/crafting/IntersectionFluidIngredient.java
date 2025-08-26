@@ -15,7 +15,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 
 /**
  * FluidIngredient that matches if all child ingredients match
@@ -64,7 +63,7 @@ public final class IntersectionFluidIngredient extends FluidIngredient {
     public Stream<Holder<Fluid>> generateFluids() {
         return children.stream()
                 .flatMap(child -> child.fluids().stream())
-                .filter(fluid -> test(new FluidStack(fluid, FluidType.BUCKET_VOLUME)));
+                .filter(fluid -> test(new FluidStack(fluid, 1000)));
     }
 
     @Override

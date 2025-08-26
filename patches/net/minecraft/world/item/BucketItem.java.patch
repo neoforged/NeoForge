@@ -41,8 +41,8 @@
              if (!flag1) {
 -                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
 +                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null, container);
-+            } else if (containedFluidStack.isPresent() && this.content.getFluidType().isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack.get())) {
-+                this.content.getFluidType().onVaporize(p_394627_, p_150717_, p_150718_, containedFluidStack.get());
++            } else if (containedFluidStack.isPresent() && this.content.isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack.get())) {
++                this.content.onVaporize(p_394627_, p_150717_, p_150718_, containedFluidStack.get());
 +                return true;
              } else if (p_150717_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
                  int l = p_150718_.getX();
@@ -61,7 +61,7 @@
  
      protected void playEmptySound(@Nullable LivingEntity p_394061_, LevelAccessor p_40697_, BlockPos p_40698_) {
 -        SoundEvent soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-+        SoundEvent soundevent = this.content.getFluidType().getSound(p_394061_, p_40697_, p_40698_, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
++        SoundEvent soundevent = this.content.getSound(p_394061_, p_40697_, p_40698_, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
 +        if(soundevent == null) soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
          p_40697_.playSound(p_394061_, p_40698_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
          p_40697_.gameEvent(p_394061_, GameEvent.FLUID_PLACE, p_40698_);

@@ -1,15 +1,16 @@
-/*
- * Copyright (c) Forge Development LLC and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
-
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,141 +18,133 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.common.SoundAction;
+import net.neoforged.neoforge.common.world.FluidBehaviour.DripstoneDripInfo;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-public interface IFluidExtension {
+import javax.annotation.Nullable;
+
+public interface IFluidExtension
+{
     private Fluid self() {
         return (Fluid) this;
     }
 
-    /**
-     * Returns the explosion resistance of the fluid.
-     *
-     * @param state     the state of the fluid
-     * @param level     the level the fluid is in
-     * @param pos       the position of the fluid
-     * @param explosion the explosion the fluid is absorbing
-     * @return the amount of the explosion the fluid can absorb
-     */
-    @SuppressWarnings("deprecation")
-    default float getExplosionResistance(FluidState state, BlockGetter level, BlockPos pos, Explosion explosion) {
-        return state.getExplosionResistance();
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos, FluidStack stack) {
+        return self().canBePlacedInWorld(entity, level, pos, self().getStateForPlacement(level, pos, stack));
     }
 
-    /**
-     * Returns the type of this fluid.
-     *
-     * <p>Important: This MUST be overridden on your fluid, otherwise an
-     * error will be thrown.
-     *
-     * @return the type of this fluid
-     */
-    FluidType getFluidType();
-
-    /**
-     * Performs how an entity moves when within the fluid. If using custom
-     * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water.
-     *
-     * @param state          the state of the fluid
-     * @param entity         the entity moving within the fluid
-     * @param movementVector the velocity of how the entity wants to move
-     * @param gravity        the gravity to apply to the entity
-     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
-     */
-    default boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-        return getFluidType().move(state, entity, movementVector, gravity);
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos, FluidState state) {
+        return self().canBePlacedInWorld(entity, level, pos);
     }
 
-    /**
-     * Returns whether the fluid can create a source.
-     *
-     * @param state the state of the fluid
-     * @param level the level that can get the fluid
-     * @param pos   the location of the fluid
-     * @return {@code true} if the fluid can create a source, {@code false} otherwise
-     */
-    default boolean canConvertToSource(FluidState state, ServerLevel level, BlockPos pos) {
-        return getFluidType().canConvertToSource(state, level, pos);
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos) {
+        return self().canBePlacedInWorld(level, pos);
     }
 
-    /**
-     * Returns whether the boat can be used on the fluid.
-     *
-     * @param state the state of the fluid
-     * @param boat  the boat trying to be used on the fluid
-     * @return {@code true} if the boat can be used, {@code false} otherwise
-     */
-    default boolean supportsBoating(FluidState state, AbstractBoat boat) {
-        return getFluidType().supportsBoating(state, boat);
+    default float getExplosionResistance(FluidState fluidState, BlockGetter level, BlockPos pos, Explosion explosion) {
+        return self().getExplosionResistance();
     }
 
-    /**
-     * Gets the path type of this fluid when an entity is pathfinding. When
-     * {@code null}, uses vanilla behavior.
-     *
-     * @param state       the state of the fluid
-     * @param level       the level which contains this fluid
-     * @param pos         the position of the fluid
-     * @param mob         the mob currently pathfinding, may be {@code null}
-     * @param canFluidLog {@code true} if the path is being applied for fluids that can log blocks,
-     *                    should be checked against if the fluid can log a block
-     * @return the path type of this fluid
-     */
+    default boolean canVehicleRideUnder(FluidState fluidState, BlockGetter level, BlockPos pos, Entity entity, Entity rider)  {
+        return self().canVehicleRideUnder(level, pos, entity, rider);
+    }
+
+    default boolean move(FluidState fluidState, LivingEntity entity, Vec3 movementVector, double gravity) {
+        return self().move(entity, movementVector, gravity);
+    }
+
+    default boolean move(FluidState fluidState, ItemEntity entity, Vec3 movementVector, double gravity) {
+        return self().move(entity, movementVector, gravity);
+    }
+
+    default boolean canConvertToSource(FluidState fluidState, ServerLevel level, BlockPos pos) {
+        return self().canConvertToSource(level, pos);
+    }
+
+    default boolean supportsBoating(FluidState fluidState, AbstractBoat boat) {
+        return self().supportsBoating(boat);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    default PathType getBlockPathType(FluidState fluidState, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, boolean canFluidLog) {
+        return self().getBlockPathType(level, pos, mob, canFluidLog);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    default PathType getAdjacentBlockPathType(FluidState fluidState, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, PathType originalType) {
+        return self().getAdjacentBlockPathType(level, pos, mob, originalType);
+    }
+
+    default boolean canHydrate(FluidState fluidState, BlockGetter level, BlockPos pos, BlockState target, BlockPos targetPos) {
+        return self().canHydrate(level, pos, target, targetPos);
+    }
+
+    default boolean canExtinguish(FluidState fluidState, BlockGetter level, BlockPos pos) {
+        return self().canExtinguish(level, pos);
+    }
+
     @Nullable
-    default PathType getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, boolean canFluidLog) {
-        return getFluidType().getBlockPathType(state, level, pos, mob, canFluidLog);
+    default SoundEvent getSound(FluidState state, FluidStack stack, SoundAction action) {
+        return self().getSound(stack, action);
     }
 
-    /**
-     * Gets the path type of the adjacent fluid to a pathfinding entity.
-     * Path types with a negative malus are not traversable for the entity.
-     * Pathfinding entities will favor paths consisting of a lower malus.
-     * When {@code null}, uses vanilla behavior.
-     *
-     * @param state        the state of the fluid
-     * @param level        the level which contains this fluid
-     * @param pos          the position of the fluid
-     * @param mob          the mob currently pathfinding, may be {@code null}
-     * @param originalType the path type of the source the entity is on
-     * @return the path type of this fluid
-     */
     @Nullable
-    default PathType getAdjacentBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, PathType originalType) {
-        return getFluidType().getAdjacentBlockPathType(state, level, pos, mob, originalType);
+    default SoundEvent getSound(FluidState state, Entity entity, SoundAction action) {
+        return self().getSound(entity, action);
+    }
+
+    default float getFallDistanceModifier(FluidState fluidState, Entity entity) {
+        return self().getFallDistanceModifier(entity);
+    }
+
+    default boolean canDrownIn(FluidState fluidState, LivingEntity livingEntity) {
+        return self().canDrownIn(livingEntity);
+    }
+
+    default boolean canStartSwimming(FluidState state, Entity entity) {
+        return self().canStartSwimming(entity);
+    }
+
+    default boolean canContinueSwimming(FluidState state, Entity entity) {
+        return self().canContinueSwimming(entity);
+    }
+
+    default double motionScale(FluidState state, Entity entity) {
+        return self().motionScale(entity);
+    }
+
+    default boolean canPushEntity(FluidState state, Entity entity) {
+        return self().canPushEntity(entity);
+    }
+
+    default boolean canHydrate(FluidState state, Entity entity) {
+        return self().canHydrate(entity);
+    }
+
+    default boolean canExtinguish(FluidState state, Entity entity) {
+        return self().canExtinguish(entity);
+    }
+
+    default boolean shouldHideAdjacentFluidFace(FluidState state, Direction selfFace, FluidState adjacentFluid) {
+        return self().shouldHideAdjacentFluidFace(selfFace, adjacentFluid);
+    }
+
+    @Nullable
+    default DripstoneDripInfo getDripInfo(FluidState state) {
+        return self().getDripInfo();
     }
 
     /**
-     * Returns whether the block can be hydrated by a fluid.
+     * Gets the tint of the fluid in world.
      *
-     * <p>Hydration is an arbitrary word which depends on the block.
-     * <ul>
-     * <li>A farmland has moisture</li>
-     * <li>A sponge can soak up the liquid</li>
-     * <li>A coral can live</li>
-     * </ul>
+     * @param state The state of the fluid.
+     * @param level The level which contains this fluid.
+     * @param position The position of the fluid.
      *
-     * @param state     the state of the fluid
-     * @param getter    the getter which can get the fluid
-     * @param pos       the position of the fluid
-     * @param source    the state of the block being hydrated
-     * @param sourcePos the position of the block being hydrated
-     * @return {@code true} if the block can be hydrated, {@code false} otherwise
+     * @return The tint color of the fluid in world, in {@link ARGB} format.
      */
-    default boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return getFluidType().canHydrate(state, getter, pos, source, sourcePos);
-    }
-
-    /**
-     * Returns whether the block can be extinguished by this fluid.
-     *
-     * @param state  the state of the fluid
-     * @param getter the getter which can get the fluid
-     * @param pos    the position of the fluid
-     * @return {@code true} if the block can be extinguished, {@code false} otherwise
-     */
-    default boolean canExtinguish(FluidState state, BlockGetter getter, BlockPos pos) {
-        return getFluidType().canExtinguish(state, getter, pos);
+    default int getTintColor(FluidState state, BlockAndTintGetter level, BlockPos position) {
+        return 0xFF_FF_FF_FF;
     }
 }

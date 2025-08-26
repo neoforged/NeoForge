@@ -74,6 +74,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.waypoints.TrackedWaypoint.Camera;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -1049,17 +1050,5 @@ public interface IBlockExtension {
         } else {
             return BubbleColumnDirection.NONE;
         }
-    }
-
-    /**
-     * Determines if a fluid adjacent to the block on the given side should not be rendered.
-     * 
-     * @param state         the block state of the block
-     * @param selfFace      the face of this block that the fluid is adjacent to
-     * @param adjacentFluid the fluid that is touching that face
-     * @return true if this block should cause the fluid's face to not render
-     */
-    default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
-        return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
 }

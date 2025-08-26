@@ -40,7 +40,6 @@ import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.ComposedModelState;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
@@ -91,7 +90,7 @@ public class DynamicFluidContainerModel implements ItemModel {
         Material coverLocation = unbakedModel.textures.cover.map(ClientHooks::getBlockMaterial).orElse(null);
 
         TextureAtlasSprite baseSprite = baseLocation != null ? sprites.get(baseLocation, DEBUG_NAME) : null;
-        TextureAtlasSprite fluidSprite = fluid != Fluids.EMPTY ? sprites.get(ClientHooks.getBlockMaterial(IClientFluidTypeExtensions.of(fluid).getStillTexture()), DEBUG_NAME) : null;
+        TextureAtlasSprite fluidSprite = null; //fluid != Fluids.EMPTY ? sprites.get(ClientHooks.getBlockMaterial(IClientFluidTypeExtensions.of(fluid).getStillTexture()), DEBUG_NAME) : null;
         TextureAtlasSprite coverSprite = (coverLocation != null && (!unbakedModel.coverIsMask || baseLocation != null)) ? sprites.get(coverLocation, DEBUG_NAME) : null;
 
         TextureAtlasSprite particleSprite = particleLocation != null ? sprites.get(particleLocation, DEBUG_NAME) : null;
@@ -102,7 +101,7 @@ public class DynamicFluidContainerModel implements ItemModel {
 
         // If the fluid is lighter than air, rotate 180deg to turn it upside down
         ModelState state = BlockModelRotation.X0_Y0;
-        if (unbakedModel.flipGas && fluid != Fluids.EMPTY && fluid.getFluidType().isLighterThanAir()) {
+        if (unbakedModel.flipGas && fluid != Fluids.EMPTY) {// && fluid.isLighterThanAir()) {
             state = new ComposedModelState(state, new Transformation(null, new Quaternionf(0, 0, 1, 0), null, null));
         }
 
@@ -125,7 +124,7 @@ public class DynamicFluidContainerModel implements ItemModel {
             var unbaked = UnbakedElementsHelper.createUnbakedItemMaskElements(0, templateSprite); // Use template as mask
             var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> fluidSprite, transformedState); // Bake with fluid texture
 
-            var emissive = unbakedModel.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
+            var emissive = unbakedModel.applyFluidLuminosity && false; //fluid.getLightLevel() > 0;
             var renderTypes = getLayerRenderTypes(emissive);
             if (emissive) QuadTransformers.settingMaxEmissivity().processInPlace(quads);
 

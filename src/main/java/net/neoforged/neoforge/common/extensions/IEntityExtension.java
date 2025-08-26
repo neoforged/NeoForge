@@ -19,16 +19,18 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,13 +74,13 @@ public interface IEntityExtension {
     /**
      * Returns whether the entity can ride in this vehicle under the fluid.
      *
-     * @param type  the type of the fluid
+     * @param fluid the type of the fluid
      * @param rider the entity riding the vehicle
      * @return {@code true} if the vehicle can be ridden in under this fluid,
      *         {@code false} otherwise
      */
-    default boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
-        return type.canRideVehicleUnder(self(), rider);
+    default boolean canBeRiddenUnderFluid(BlockGetter level, BlockPos pos, Fluid fluid, Entity rider) {
+        return fluid.canVehicleRideUnder(self().level().getFluidState(pos), level, pos, self(), rider);
     }
 
     /**
@@ -163,7 +165,7 @@ public interface IEntityExtension {
      * @param type the type of the fluid
      * @return the height of the fluid compared to the entity
      */
-    double getFluidTypeHeight(FluidType type);
+    double getFluidHeight(Fluid type);
 
     /**
      * Returns the fluid type which is the highest on the bounding box of
@@ -172,28 +174,17 @@ public interface IEntityExtension {
      * @return the fluid type which is the highest on the bounding box of
      *         the entity
      */
-    FluidType getMaxHeightFluidType();
+    Fluid getMaxHeightFluid();
 
     /**
      * Returns whether the entity is within the fluid type of the state.
      *
-     * @param state the state of the fluid
+     * @param state the type of the fluid
      * @return {@code true} if the entity is within the fluid type of the
      *         state, {@code false} otherwise
      */
-    default boolean isInFluidType(FluidState state) {
-        return this.isInFluidType(state.getFluidType());
-    }
-
-    /**
-     * Returns whether the entity is within the fluid type.
-     *
-     * @param type the type of the fluid
-     * @return {@code true} if the entity is within the fluid type,
-     *         {@code false} otherwise
-     */
-    default boolean isInFluidType(FluidType type) {
-        return this.getFluidTypeHeight(type) > 0.0D;
+    default boolean isInFluid(FluidState state) {
+        return this.getFluidHeight(state.getType()) > 0.0;
     }
 
     /**
@@ -204,8 +195,8 @@ public interface IEntityExtension {
      * @return {@code true} if a fluid type meets the condition, {@code false}
      *         otherwise
      */
-    default boolean isInFluidType(BiPredicate<FluidType, Double> predicate) {
-        return isInFluidType(predicate, false);
+    default boolean isInFluid(BiPredicate<Fluid, Double> predicate) {
+        return isInFluid(predicate, false);
     }
 
     /**
@@ -218,29 +209,39 @@ public interface IEntityExtension {
      * @return {@code true} if a fluid type meets the condition, {@code false}
      *         otherwise
      */
-    boolean isInFluidType(BiPredicate<FluidType, Double> predicate, boolean forAllTypes);
+    boolean isInFluid(BiPredicate<Fluid, Double> predicate, boolean forAllTypes);
 
     /**
      * Returns whether the entity is in a fluid.
      *
      * @return {@code true} if the entity is in a fluid, {@code false} otherwise
      */
-    boolean isInFluidType();
+    boolean isInFluid();
 
     /**
      * Returns the fluid that is on the entity's eyes.
      *
      * @return the fluid that is on the entity's eyes
      */
-    FluidType getEyeInFluidType();
+    Fluid getEyeInFluid();
 
     /**
      * Returns whether the fluid is on the entity's eyes.
      *
      * @return {@code true} if the fluid is on the entity's eyes, {@code false} otherwise
      */
-    default boolean isEyeInFluidType(FluidType type) {
-        return type == this.getEyeInFluidType();
+    default boolean isEyeInFluid(Fluid type) {
+        return type.isSame(this.getEyeInFluid());
+    }
+
+    /**
+     * Returns whether the entity can swim in the fluid.
+     *
+     * @param type the type of the fluid
+     * @return {@code true} if the entity can swim in the fluid, {@code false} otherwise
+     */
+    default boolean canSwimInFluid(Fluid type) {
+        return type.canStartSwimming(self());
     }
 
     /**
@@ -249,7 +250,16 @@ public interface IEntityExtension {
      * @return {@code true} if the entity can start swimming, {@code false} otherwise
      */
     default boolean canStartSwimming() {
-        return !this.getEyeInFluidType().isAir() && this.canSwimInFluidType(this.getEyeInFluidType()) && this.canSwimInFluidType(this.self().level().getFluidState(this.self().blockPosition()).getFluidType());
+        return !this.getEyeInFluid().isSame(Fluids.EMPTY) && this.canSwimInFluid(getEyeInFluid()) && this.canSwimInFluid(self().level().getFluidState(self().blockPosition()).getType());
+    }
+
+    /**
+     * Returns whether the entity can continue swimming in the fluid.
+     *
+     * @return {@code true} if the entity can continue swimming, {@code false} otherwise.
+     */
+    default boolean canContinueSwimming() {
+        return this.isInFluid((state, height) -> state.canContinueSwimming(self()));
     }
 
     /**
@@ -259,7 +269,7 @@ public interface IEntityExtension {
      * @param type the type of the fluid
      * @return a scalar to multiply to the fluid velocity
      */
-    default double getFluidMotionScale(FluidType type) {
+    default double getFluidMotionScale(FluidState type) {
         return type.motionScale(self());
     }
 
@@ -269,18 +279,8 @@ public interface IEntityExtension {
      * @param type the type of the fluid
      * @return {@code true} if the entity can be pushed by the fluid, {@code false} otherwise
      */
-    default boolean isPushedByFluid(FluidType type) {
+    default boolean isPushedByFluid(FluidState type) {
         return self().isPushedByFluid() && type.canPushEntity(self());
-    }
-
-    /**
-     * Returns whether the entity can swim in the fluid.
-     *
-     * @param type the type of the fluid
-     * @return {@code true} if the entity can swim in the fluid, {@code false} otherwise
-     */
-    default boolean canSwimInFluidType(FluidType type) {
-        return type.canSwim(self());
     }
 
     /**
@@ -289,7 +289,7 @@ public interface IEntityExtension {
      * @param type the type of the fluid
      * @return {@code true} if the entity can be extinguished, {@code false} otherwise
      */
-    default boolean canFluidExtinguish(FluidType type) {
+    default boolean canFluidExtinguish(Fluid type) {
         return type.canExtinguish(self());
     }
 
@@ -303,7 +303,7 @@ public interface IEntityExtension {
      * @param type the type of the fluid
      * @return a scalar to multiply to the fall damage
      */
-    default float getFluidFallDistanceModifier(FluidType type) {
+    default float getFluidFallDistanceModifier(Fluid type) {
         return type.getFallDistanceModifier(self());
     }
 
@@ -316,7 +316,7 @@ public interface IEntityExtension {
      * @return {@code true} if the entity can be hydrated, {@code false}
      *         otherwise
      */
-    default boolean canHydrateInFluidType(FluidType type) {
+    default boolean canHydrateInFluid(FluidState type) {
         return type.canHydrate(self());
     }
 
@@ -330,7 +330,7 @@ public interface IEntityExtension {
      * @return the sound to play when performing the action
      */
     @Nullable
-    default SoundEvent getSoundFromFluidType(FluidType type, SoundAction action) {
+    default SoundEvent getSoundFromFluid(FluidState type, SoundAction action) {
         return type.getSound(self(), action);
     }
 

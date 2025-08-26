@@ -40,6 +40,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.waypoints.TrackedWaypoint.Camera;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -785,16 +786,5 @@ public interface IBlockStateExtension {
      */
     default BubbleColumnDirection getBubbleColumnDirection() {
         return self().getBlock().getBubbleColumnDirection(self());
-    }
-
-    /**
-     * Determines if a fluid adjacent to the block on the given side should not be rendered.
-     * 
-     * @param selfFace      the face of this block that the fluid is adjacent to
-     * @param adjacentFluid the fluid that is touching that face
-     * @return true if this block should cause the fluid's face to not render
-     */
-    default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
-        return self().getBlock().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
     }
 }

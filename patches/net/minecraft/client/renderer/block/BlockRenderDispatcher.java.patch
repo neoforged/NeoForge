@@ -1,5 +1,42 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
+@@ -4,10 +_,12 @@
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.Map;
+ import java.util.function.Supplier;
+ import net.minecraft.CrashReport;
+ import net.minecraft.CrashReportCategory;
+ import net.minecraft.ReportedException;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.color.block.BlockColors;
+ import net.minecraft.client.renderer.ItemBlockRenderTypes;
+ import net.minecraft.client.renderer.MultiBufferSource;
+@@ -15,6 +_,7 @@
+ import net.minecraft.client.renderer.block.model.BlockModelPart;
+ import net.minecraft.client.renderer.block.model.BlockStateModel;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
++import net.minecraft.client.renderer.texture.TextureAtlas;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.server.packs.resources.ResourceManager;
+ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+@@ -23,6 +_,7 @@
+ import net.minecraft.world.level.BlockAndTintGetter;
+ import net.minecraft.world.level.block.RenderShape;
+ import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.material.FluidState;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -33,6 +_,7 @@
+     private final ModelBlockRenderer modelRenderer;
+     private final Supplier<SpecialBlockModelRenderer> specialBlockModelRenderer;
+     private final LiquidBlockRenderer liquidBlockRenderer;
++    private Map<Fluid, net.neoforged.neoforge.client.fluids.FluidRenderer> fluidBlockRenderers;
+     private final RandomSource singleThreadRandom = RandomSource.create();
+     private final List<BlockModelPart> singleThreadPartList = new ArrayList<>();
+     private final BlockColors blockColors;
 @@ -54,12 +_,13 @@
              BlockStateModel blockstatemodel = this.blockModelShaper.getBlockModel(p_110919_);
              this.singleThreadRandom.setSeed(p_110919_.getSeed(p_110920_));
@@ -38,14 +75,16 @@
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block in world");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Block being tesselated");
-@@ -81,6 +_,7 @@
+@@ -81,7 +_,8 @@
  
      public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
          try {
-+            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234368_).renderFluid(p_234368_, p_234365_, p_234364_, p_234366_, p_234367_)) return;
-             this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
+-            this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
++            var renderer = this.fluidBlockRenderers.getOrDefault(p_234368_.getType(), this.liquidBlockRenderer::tesselate);
++            renderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
+             CrashReportCategory crashreportcategory = crashreport.addCategory("Block being tesselated");
 @@ -98,7 +_,12 @@
          return this.blockModelShaper.getBlockModel(p_110911_);
      }
@@ -68,10 +107,16 @@
              );
              this.specialBlockModelRenderer.get().renderByBlock(p_110913_.getBlock(), ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
          }
-@@ -116,5 +_,9 @@
+@@ -116,5 +_,15 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_110909_) {
          this.liquidBlockRenderer.setupSprites();
++        this.fluidBlockRenderers = net.neoforged.neoforge.client.fluids.FluidRenderers.createFluidRenderers(
++            new net.neoforged.neoforge.client.fluids.FluidRendererProvider.Context(
++                p_110909_,
++                Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS),
++                this.blockColors
++            ));
 +    }
 +
 +    public LiquidBlockRenderer getLiquidBlockRenderer() {

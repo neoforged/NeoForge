@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.fluids.FluidType;
 
 public interface IAbstractBoatExtension {
     private AbstractBoat self() {
@@ -27,10 +27,10 @@ public interface IAbstractBoatExtension {
     /**
      * Returns whether the boat can be used on the fluid.
      *
-     * @param type the type of the fluid
+     * @param fluid the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    default boolean canBoatInFluid(FluidType type) {
-        return type.supportsBoating(self());
+    default boolean canBoatInFluid(Fluid fluid) {
+        return fluid.supportsBoating(self().level().getFluidState(self().blockPosition()), self());
     }
 }

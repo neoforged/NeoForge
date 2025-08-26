@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
+@@ -71,6 +_,7 @@
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.level.pathfinder.PathType;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
 @@ -129,6 +_,11 @@
      private Leashable.LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
@@ -116,11 +124,9 @@
                  if (this.level() instanceof ServerLevel serverlevel) {
                      serverlevel.addFreshEntity(t);
                  }
-@@ -1326,14 +_,24 @@
-     }
+@@ -1327,13 +_,22 @@
  
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> p_204045_) {
 +        this.jumpInLiquidInternal(() -> super.jumpInLiquid(p_204045_));
 +    }
@@ -135,7 +141,7 @@
      }
  
 +    @Override
-+    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++    public void jumpInFluid(Fluid type) {
 +        this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
 +    }
 +

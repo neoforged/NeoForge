@@ -17,7 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.EventHooks;
 
@@ -32,7 +34,7 @@ import net.neoforged.neoforge.event.EventHooks;
  * {@code FlowingFluid#spreadTo} and not by this interaction manager.
  */
 public final class FluidInteractionRegistry {
-    private static final Map<FluidType, List<InteractionInformation>> INTERACTIONS = new HashMap<>();
+    private static final Map<Fluid, List<InteractionInformation>> INTERACTIONS = new HashMap<>();
 
     /**
      * Adds an interaction between a source and its surroundings.
@@ -40,7 +42,7 @@ public final class FluidInteractionRegistry {
      * @param source      the source of the interaction, this will be replaced if the interaction occurs
      * @param interaction the interaction data to check and perform
      */
-    public static synchronized void addInteraction(FluidType source, InteractionInformation interaction) {
+    public static synchronized void addInteraction(Fluid source, InteractionInformation interaction) {
         INTERACTIONS.computeIfAbsent(source, s -> new ArrayList<>()).add(interaction);
     }
 
@@ -57,7 +59,7 @@ public final class FluidInteractionRegistry {
         FluidState state = level.getFluidState(pos);
         for (Direction direction : LiquidBlock.POSSIBLE_FLOW_DIRECTIONS) {
             BlockPos relativePos = pos.relative(direction.getOpposite());
-            List<InteractionInformation> interactions = INTERACTIONS.getOrDefault(state.getFluidType(), Collections.emptyList());
+            List<InteractionInformation> interactions = INTERACTIONS.getOrDefault(state.getType(), Collections.emptyList());
             for (InteractionInformation interaction : interactions) {
                 if (interaction.predicate().test(level, pos, relativePos, state)) {
                     interaction.interaction().interact(level, pos, relativePos, state);
@@ -70,13 +72,22 @@ public final class FluidInteractionRegistry {
     }
 
     static {
-        // Lava + Water = Obsidian (Source Lava) / Cobblestone (Flowing Lava)
-        addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
-                NeoForgeMod.WATER_TYPE.value(),
-                fluidState -> fluidState.isSource() ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState()));
+        // Lava source + Water flowing = Obsidian
+        addInteraction(Fluids.LAVA, new InteractionInformation(
+                Fluids.FLOWING_WATER,
+                fluidState -> Blocks.OBSIDIAN.defaultBlockState()));
+        // Lava flowing + Water flowing = Cobblestone
+        addInteraction(Fluids.FLOWING_LAVA, new InteractionInformation(
+            Fluids.FLOWING_WATER,
+            fluidState -> Blocks.COBBLESTONE.defaultBlockState()));
+
+        // Water source + Lava flowing = Stone
+        addInteraction(Fluids.WATER, new InteractionInformation(
+            Fluids.FLOWING_LAVA,
+            fluidState -> Blocks.STONE.defaultBlockState()));
 
         // Lava + Soul Soil (Below) + Blue Ice = Basalt
-        addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
+        addInteraction(Fluids.LAVA, new InteractionInformation(
                 (level, currentPos, relativePos, currentState) -> level.getBlockState(currentPos.below()).is(Blocks.SOUL_SOIL) && level.getBlockState(relativePos).is(Blocks.BLUE_ICE),
                 Blocks.BASALT.defaultBlockState()));
     }
@@ -96,7 +107,7 @@ public final class FluidInteractionRegistry {
          * @param type  the type of the fluid that must be surrounding the source
          * @param state the state of the block replacing the source
          */
-        public InteractionInformation(FluidType type, BlockState state) {
+        public InteractionInformation(Fluid type, BlockState state) {
             this(type, fluidState -> state);
         }
 
@@ -117,8 +128,8 @@ public final class FluidInteractionRegistry {
          * @param type     the type of the fluid that must be surrounding the source
          * @param getState a function to transform the source fluid into a block state
          */
-        public InteractionInformation(FluidType type, Function<FluidState, BlockState> getState) {
-            this((level, currentPos, relativePos, currentState) -> level.getFluidState(relativePos).getFluidType() == type, getState);
+        public InteractionInformation(Fluid type, Function<FluidState, BlockState> getState) {
+            this((level, currentPos, relativePos, currentState) -> level.getFluidState(relativePos).getType() == type, getState);
         }
 
         /**

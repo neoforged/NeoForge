@@ -1,0 +1,71 @@
+--- a/net/minecraft/world/level/material/WaterFluid.java
++++ b/net/minecraft/world/level/material/WaterFluid.java
+@@ -4,8 +_,12 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
++import net.minecraft.core.HolderSet;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.core.particles.ParticleTypes;
++import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.resources.ResourceKey;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+@@ -30,6 +_,24 @@
+ import net.minecraft.world.level.block.state.StateDefinition;
+ 
+ public abstract class WaterFluid extends FlowingFluid {
++    private static final HolderSet<Fluid> FAMILY = HolderSet.emptyNamed(BuiltInRegistries.FLUID, FluidTags.WATER);
++    protected WaterFluid(String id) {
++        super(net.neoforged.neoforge.common.world.FluidBehaviour.Properties.of()
++            .convertsToSource()
++            .extinguishBlocks()
++            .hydrateBlocks()
++            .fallDistanceModifier(0f)
++            .motionScale(0.014d)
++            .pushEntities()
++            .swimmable()
++            .drownable()
++            .extinguishEntities()
++            .hydrateEntities()
++            .supportsBoats()
++            .family(FAMILY)
++            .setId(ResourceKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.withDefaultNamespace(id))));
++    }
++
+     @Override
+     public Fluid getFlowing() {
+         return Fluids.FLOWING_WATER;
+@@ -126,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected float getExplosionResistance() {
++    public float getExplosionResistance() {
+         return 100.0F;
+     }
+ 
+@@ -136,6 +_,10 @@
+     }
+ 
+     public static class Flowing extends WaterFluid {
++        public Flowing() {
++            super("flowing_water");
++        }
++
+         @Override
+         protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76476_) {
+             super.createFluidStateDefinition(p_76476_);
+@@ -154,6 +_,10 @@
+     }
+ 
+     public static class Source extends WaterFluid {
++        public Source() {
++            super("water");
++        }
++
+         @Override
+         public int getAmount(FluidState p_76485_) {
+             return 8;
