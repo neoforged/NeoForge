@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.extensions.common;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
@@ -231,6 +232,16 @@ public interface IClientItemExtensions {
     @Nullable
     default ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
         return null;
+    }
+
+    /**
+     * Returns the texture to use for scoping with the item.
+     * 
+     * @param stack The scoping item stack
+     * @return The texture to use for scoping
+     */
+    default ResourceLocation getScopeOverlayTexture(ItemStack stack) {
+        return Gui.SPYGLASS_SCOPE_LOCATION;
     }
 
     enum FontContext {

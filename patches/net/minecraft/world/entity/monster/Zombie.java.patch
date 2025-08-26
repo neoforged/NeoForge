@@ -37,3 +37,18 @@
              if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                  return flag;
              }
+@@ -565,10 +_,14 @@
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 0.25 + 0.5, AttributeModifier.Operation.ADD_VALUE)
+                 );
++            var damageTaken = getMaxHealth() - getHealth();
+             this.getAttribute(Attributes.MAX_HEALTH)
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+                 );
++            // Neo: fix MC-219981 by resetting the leader zombie's health based on the new max health
++            // without disregarding damage already taken (if any)
++            setHealth(getMaxHealth() - damageTaken);
+             this.setCanBreakDoors(true);
+         }
+     }
