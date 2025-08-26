@@ -97,11 +97,7 @@ public class VanillaHandlersTests {
         var sides = new Direction[] { null, Direction.UP, Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
 
         for (Direction side : sides) {
-            var capability = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, helper.absolutePos(composterPos), side);
-            if (capability == null)
-                helper.fail("Expected composter to have a block item handler capability for side " + side);
-
-            assert capability != null; // The helper#fail call above ensures this is not null
+            var capability = helper.requireCapability(Capabilities.ItemHandler.BLOCK, composterPos, side);
             var result = capability.insertItem(0, nonCompostable, false);
             if (result.isEmpty())
                 helper.fail("Expected failure to insert non-compostable item for side " + side);
