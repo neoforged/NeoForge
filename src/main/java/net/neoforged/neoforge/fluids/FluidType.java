@@ -1121,6 +1121,7 @@ public class FluidType {
 
         /**
          * Sets whether the fluid does the following:
+         * 
          * <pre>
          * - Triggers splash effects when entering
          * - Crouching in fluid causes player to sink
@@ -1137,6 +1138,7 @@ public class FluidType {
          * - Underwater music can play when player is submerged in the fluid
          * - Muffles Minecart moving sounds and reduces their speed
          * </pre>
+         * 
          * @param isWaterLike whether the fluid is water-like
          * @return the property holder instance
          */
