@@ -326,7 +326,7 @@
          this.dimensions = entitydimensions1;
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
-@@ -3471,9 +_,37 @@
+@@ -3471,9 +_,36 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
@@ -339,9 +339,8 @@
 +    }
 +
 +    public boolean updateFluidHeightAndDoCanPushEntityFluidPushing(boolean performFluidPushing) {
-+        this.forgeFluidTypeHeight.clear();
-+
 +        if (performFluidPushing) {
++            this.forgeFluidTypeHeight.clear();
 +            this.updateFluidHeightAndDoFluidPushing();
 +        }
 +
