@@ -25,7 +25,6 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "capabilities.vanillahandlers")
 public class VanillaHandlersTests {
@@ -95,8 +94,7 @@ public class VanillaHandlersTests {
 
         var sides = new Direction[] { null, Direction.UP, Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
 
-        for (@Nullable
-        Direction side : sides) {
+        for (Direction side : sides) {
             var capability = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, helper.absolutePos(composterPos), side);
             if (capability == null)
                 helper.fail("Expected composter to have a block item handler capability for side " + side);
