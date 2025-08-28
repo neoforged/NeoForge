@@ -44,7 +44,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import org.apache.commons.lang3.function.Consumers;
 import org.lwjgl.BufferUtils;
 
 @ForEachTest(side = Dist.CLIENT, groups = "client")
