@@ -305,5 +305,8 @@
   ],
   "net/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/client/resources/model/EquipmentClientInfo$LayerType": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ]
 }
