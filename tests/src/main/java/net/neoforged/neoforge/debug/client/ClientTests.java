@@ -153,6 +153,7 @@ public class ClientTests {
             // Check serialized name uses slash
             if (layerType.getSerializedName().contains(":")) {
                 test.fail(layerType.getSerializedName() + " should not contain a colon as part of its path");
+                return;
             }
 
             // Create fake equipment client info
@@ -160,9 +161,10 @@ public class ClientTests {
             var equipmentLayer = new EquipmentClientInfo.Layer(textureId);
 
             // Check to see if texture is found
-            Minecraft.getInstance().getResourceManager().getResource(equipmentLayer.getTextureLocation(layerType)).ifPresentOrElse(
-                    Consumers.nop(),
-                    () -> test.fail("Could not find " + textureId + " in " + equipmentLayer.getTextureLocation(layerType)));
+            if (Minecraft.getInstance().getResourceManager().getResource(equipmentLayer.getTextureLocation(layerType)).isEmpty()) {
+                test.fail("Could not find " + textureId + " in " + equipmentLayer.getTextureLocation(layerType));
+                return;
+            }
 
             test.pass();
         });
