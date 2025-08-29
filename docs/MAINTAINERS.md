@@ -20,9 +20,8 @@ It is a good idea to test the backport PRs before merging in case the PR functio
 
 If a PR needs to be merged without triggering the workflow to generate a NeoForge release, follow [the documentation here](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs) for how to skip workflow runs. Essentially adding `[skip ci]` to the PR merge commit message will suffice.
 
-## Addition Policies
+## Notes
 
-- `c` tags are to be a standard between loaders with Fabric being our main partner in this effort. This means that `c` tags in 1.21+ NeoForge should be kept in sync with Fabric's `c` tags as close as possible. New `c` tags or changes to existing `c` tag should by ran by Fabric to ensure they will agree to make the same changes. This can be done by opening an issue report or PR on Fabric repository and link the NeoForge issue or PR to it. Only when Fabric agrees to merge the change, the corresponding NeoForge PR can then be merged.
 - PRs that had requested changes from a maintainer or has another maintainer assigned to the PR, these maintainer(s) should be contacted first before merging the PR to ensure they are ok with the final form of the PR and that their concerns were properly addressed. Along these lines, a maintainer's review should not be "dismissed" without checking with the maintainer.
 - Breaking change window for the NeoForge project will generally aim to last about 1 month after a significant Minecraft version.
     - Hotfix Minecraft versions or very small Minecraft versions will not reset the breaking change window.
