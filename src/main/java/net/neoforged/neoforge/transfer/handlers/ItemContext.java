@@ -12,7 +12,6 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.ReadOnlyItemC
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,13 +66,13 @@ import org.jetbrains.annotations.Nullable;
  * This will remove 4 bottles of honey from the stack and replace them with 4 empty bottles. Since the stack still has
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
-public interface IItemContext {
+public interface ItemContext {
     /**
      * Creates a context object based on the given context, which will only allow inspection of the contained
      * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
      */
     @ApiStatus.NonExtendable
-    default IItemContext asReadOnly() {
+    default ItemContext asReadOnly() {
         return new ReadOnlyItemContext(this);
     }
 
@@ -82,7 +81,7 @@ public interface IItemContext {
      * An example is if you had a stack of say 15 buckets, but only wanted to interact with 1 of them.
      */
     @ApiStatus.NonExtendable
-    default IItemContext oneByOne() {
+    default ItemContext oneByOne() {
         return new OneByOneItemContext(this);
     }
 
@@ -91,7 +90,7 @@ public interface IItemContext {
      */
     @Nullable
     @ApiStatus.NonExtendable
-    default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
+    default <T> T getCapability(ItemCapability<T, ItemContext> capability) {
         return capability.getCapability(getResource().toStack(), this);
     }
 
@@ -138,7 +137,7 @@ public interface IItemContext {
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction)) {
             int extracted = extract(getResource(), amount, subTransaction);
             var inserted = insert(resource, extracted, subTransaction);
             if (inserted == extracted) {

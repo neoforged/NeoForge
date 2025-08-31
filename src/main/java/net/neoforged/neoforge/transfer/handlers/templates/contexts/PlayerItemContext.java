@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -18,11 +18,11 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A context that represents a player's inventory slot.
  */
-public class PlayerItemContext implements IItemContext {
+public class PlayerItemContext implements ItemContext {
     protected final PlayerInventoryWrapper handler;
     protected final int index;
 
-    public static IItemContext ofHand(Player player, InteractionHand hand) {
+    public static ItemContext ofHand(Player player, InteractionHand hand) {
         if (player.getAbilities().instabuild) {
             ItemStack itemInHand = player.getItemInHand(hand);
             return new CreativePlayerItemContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
@@ -41,7 +41,7 @@ public class PlayerItemContext implements IItemContext {
      * @param slot   The equipment slot that is desired.
      * @return Either a {@link PlayerItemContext} or {@link CreativePlayerItemContext} based on the player state, given a particular equipment slot.
      */
-    public static IItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
+    public static ItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
         if (slot.getType() == EquipmentSlot.Type.HAND)
             return ofHand(player, slot == EquipmentSlot.MAINHAND ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 
@@ -68,7 +68,7 @@ public class PlayerItemContext implements IItemContext {
 
     @Override
     public int getAmount() {
-        return handler.getAmount(index);
+        return handler.getAmountAsInt(index);
     }
 
     @Override

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;

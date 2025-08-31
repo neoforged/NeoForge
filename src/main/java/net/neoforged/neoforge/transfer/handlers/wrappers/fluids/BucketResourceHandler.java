@@ -12,10 +12,10 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -26,10 +26,10 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * With the item context, handling the scenario of filling or draining multiple stacked buckets is possible.
  */
-public final class BucketResourceHandler implements ISingleResourceHandler<FluidResource> {
-    private final IItemContext itemContext;
+public final class BucketResourceHandler implements ResourceHandler<FluidResource> {
+    private final ItemContext itemContext;
 
-    public BucketResourceHandler(IItemContext itemContext) {
+    public BucketResourceHandler(ItemContext itemContext) {
         this.itemContext = itemContext;
     }
 
@@ -38,7 +38,12 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         ItemResource bucket = itemContext.getResource();
         if (bucket.is(Items.MILK_BUCKET))
             return NeoForgeMod.MILK.isBound();
-        return bucket.getInstanceValue() instanceof BucketItem;
+        return bucket.getItem() instanceof BucketItem;
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 
     @Override
@@ -46,7 +51,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         Objects.checkIndex(index, size());
 
         ItemResource resource = itemContext.getResource();
-        if (resource.getInstanceValue() instanceof BucketItem bucket)
+        if (resource.getItem() instanceof BucketItem bucket)
             return FluidResource.of(bucket.content);
         if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound())
             return FluidResource.of(NeoForgeMod.MILK.get());
@@ -55,32 +60,10 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     }
 
     @Override
-    public int getAmount(int index) {
-        Objects.checkIndex(index, size());
-        if (!isBucket() || getResource(index).isEmpty()) return 0;
-        return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
-    }
-
-    @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         if (!isBucket() || getResource(index).isEmpty()) return 0;
-        return ((long) FluidType.BUCKET_VOLUME * itemContext.getAmount());
-    }
-
-    @Override
-    public int getCapacity(int index, FluidResource resource) {
-        Objects.checkIndex(index, size());
-        if (!isBucket()) return 0;
-
-        if (resource.isEmpty())
-            return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
-
-        //Shouldn't be able to overflow given the max stack size is 99, thus the max this can be on a single item should be 99,000.
-        // Of course this will differ for other implementations, so care will be needed for those.
-        FluidResource fluid = getResource(index);
-        if (!fluid.isEmpty() && !resource.equals(fluid)) return 0;
-        return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
+        return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
     }
 
     @Override
@@ -96,24 +79,14 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     }
 
     @Override
-    public int characteristics(int index) {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!isBucket()) return 0;
         if (!itemContext.getResource().is(Tags.Items.BUCKETS_EMPTY)) {
             return 0; // can't fill non-empty buckets
         }
 
-        ItemResource filledBucket = resource.getFilledBucket();
+        ItemResource filledBucket = ItemResource.of(FluidUtil.getFilledBucket(resource.toStack(1)));
         if (filledBucket.isEmpty()) return 0; // the fluid has no associated bucket item
 
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
@@ -123,7 +96,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     }
 
     @Override
-    public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!isBucket()) return 0;
         FluidResource containedFluid = getResource(0);
@@ -139,9 +112,6 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        Objects.checkIndex(index, size());
-        if (resource.isEmpty()) return true;
-        if (!isBucket()) return false;
-        return !resource.getFilledBucket().isEmpty();
+        return true;
     }
 }

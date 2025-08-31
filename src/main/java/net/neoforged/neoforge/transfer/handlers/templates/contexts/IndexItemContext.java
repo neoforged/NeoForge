@@ -7,19 +7,19 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class IndexItemContext implements IItemContext {
+public class IndexItemContext implements ItemContext {
     /**
      * Creates a context object for working with resource handler contained in an item.
      *
      * @param handler The handler containing the item.
      * @param index   The index in {@code handler}, where the item can be found.
      */
-    public static IndexItemContext of(IResourceHandler<ItemResource> handler, int index) {
+    public static IndexItemContext of(ResourceHandler<ItemResource> handler, int index) {
         return new IndexItemContext(handler, index, true);
     }
 
@@ -29,15 +29,15 @@ public class IndexItemContext implements IItemContext {
      * @param handler The handler containing the item.
      * @param index   The index in {@code handler}, where the item can be found and only allow mutations on that {@code index}.
      */
-    public static IndexItemContext ofSpecific(IResourceHandler<ItemResource> handler, int index) {
+    public static IndexItemContext ofSpecific(ResourceHandler<ItemResource> handler, int index) {
         return new IndexItemContext(handler, index, false);
     }
 
     private final int index;
     private final boolean allowsOverflow;
-    private final IResourceHandler<ItemResource> handler;
+    private final ResourceHandler<ItemResource> handler;
 
-    private IndexItemContext(IResourceHandler<ItemResource> handler, int index, boolean allowsOverflow) {
+    private IndexItemContext(ResourceHandler<ItemResource> handler, int index, boolean allowsOverflow) {
         this.handler = handler;
         this.index = index;
         this.allowsOverflow = allowsOverflow;
@@ -52,7 +52,7 @@ public class IndexItemContext implements IItemContext {
     @Override
     public int getAmount() {
         Objects.checkIndex(index, handler.size());
-        return handler.getAmount(index);
+        return handler.getAmountAsInt(index);
     }
 
     @Override

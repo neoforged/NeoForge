@@ -11,31 +11,28 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link IResourceHandler}.
+ * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link ResourceHandler}.
  * For use with any resource, consider using {@link ResourceContainerContents} and its associated handler {@link ResourceContainerContentsHandler}
  *
  * @see ResourceContainerContents
  * @see ResourceContainerContentsHandler
  */
-public class ItemContainerContentsResourceHandler implements IResourceHandler<ItemResource> {
-    protected final IItemContext itemContext;
+public class ItemContainerContentsResourceHandler implements ResourceHandler<ItemResource> {
+    protected final ItemContext itemContext;
     protected final DataComponentType<ItemContainerContents> componentType;
     /**
      * Size the component is expected to be able to grow to.
      */
     protected final int size;
 
-    public ItemContainerContentsResourceHandler(IItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
+    public ItemContainerContentsResourceHandler(ItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
         if (size > 256)
             throw new IllegalArgumentException("Got %d items, but maximum is 256".formatted(size));
 
@@ -64,14 +61,14 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         ItemContainerContents contents = getContents();
         return getStackInSlot(contents, index).getCount();
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
+    public long getCapacityAsLong(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return Item.ABSOLUTE_MAX_STACK_SIZE;
         return Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
@@ -81,19 +78,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
     public boolean isValid(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return true;
-        return resource.getInstanceValue().canFitInsideContainerItems();
-    }
-
-    @Override
-    public int characteristics(int index) {
-        // despite the component growing and shrinking, the size of the handler is static
-        return TransferCharacteristics.DEFAULT;
-    }
-
-    @Override
-    public int characteristics() {
-        // despite the component growing and shrinking, the size of the handler is static
-        return TransferCharacteristics.DEFAULT;
+        return resource.getItem().canFitInsideContainerItems();
     }
 
     private ItemStack getStackInSlot(ItemContainerContents contents, int index) {
@@ -114,9 +99,9 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
             return set(contents, inserted, context, index, resource.toStack(inserted));
         }
 
-        if (!resource.is(stack) || stack.getCount() >= resource.getMaxStackSize()) return 0;
+        if (!resource.matches(stack) || stack.getCount() >= resource.getMaxStackSize()) return 0;
 
-        int inserted = Math.min(amount, getCapacity(index, resource) - stack.getCount());
+        int inserted = Math.min(amount, getCapacityAsInt(index, resource) - stack.getCount());
         stack.grow(inserted);
         return set(contents, inserted, context, index, stack);
     }
@@ -129,7 +114,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
         ItemContainerContents contents = getContents();
         ItemStack stack = getStackInSlot(contents, index);
 
-        if (stack.isEmpty() || !resource.is(stack)) return 0;
+        if (stack.isEmpty() || !resource.matches(stack)) return 0;
 
         int extracted = Math.min(stack.getCount(), amount);
         stack.shrink(extracted);

@@ -6,16 +6,16 @@
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.ItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public final class OneByOneItemContext implements IItemContext {
-    private final IItemContext itemContext;
+public final class OneByOneItemContext implements ItemContext {
+    private final ItemContext itemContext;
 
-    public OneByOneItemContext(IItemContext itemContext) {
+    public OneByOneItemContext(ItemContext itemContext) {
         this.itemContext = itemContext;
     }
 
