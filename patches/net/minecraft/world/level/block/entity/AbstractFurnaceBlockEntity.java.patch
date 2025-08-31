@@ -115,7 +115,7 @@
 +        setItem(p_58333_, p_58334_, false);
 +    }
 +
-+    // Neo: Defer side effects until end of a transaction
++    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
 +    @Override
 +    public void setItem(int p_58333_, ItemStack p_58334_, boolean insideTransaction) {
          ItemStack itemstack = this.items.get(p_58333_);

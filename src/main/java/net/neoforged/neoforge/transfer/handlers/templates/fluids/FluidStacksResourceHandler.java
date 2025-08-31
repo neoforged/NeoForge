@@ -19,8 +19,6 @@ import net.neoforged.neoforge.transfer.resources.FluidResource;
  * <li>(optional) {@link #getCapacity} to specify the capacity of this handler; by default the {@link #capacity} given in the constructor is used.</li>
  * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
  * </ul>
- *
- * @see StacksResourceHandler
  */
 public class FluidStacksResourceHandler extends StacksResourceHandler<FluidStack, FluidResource> {
     protected int capacity;

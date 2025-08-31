@@ -7,7 +7,7 @@
 +        setItem(p_256610_, p_255789_, false);
 +    }
 +
-+    // Neo: Support deferring changes until end of a transaction
++    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
 +    @Override
 +    public void setItem(int p_256610_, ItemStack p_255789_, boolean insideTransaction) {
 +        if (insideTransaction) {

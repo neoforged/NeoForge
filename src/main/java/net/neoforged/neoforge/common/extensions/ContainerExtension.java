@@ -25,12 +25,12 @@ public interface ContainerExtension {
     }
 
     /**
-     * An extension of {@link Container#setItem(int, ItemStack)} that allows non-transactional actions to be skipped.
-     * Non-transactional actions include for example calling {@code setChanged} or making changes to the world.
+     * An extension of {@link Container#setItem(int, ItemStack)} that allows non-transactional side-effects to be skipped.
+     * Non-transactional side-effects include for example calling {@code setChanged} or making changes to the world.
      *
      * @param insideTransaction When {@code true}, non-transactional actions should be deferred.
      *                          When {@code false}, non-transactional actions can be performed immediately.
-     * @see #onTransfer(int,int,TransactionContext) Overriding onTransfer, to react to transactions.
+     * @see #onTransfer(int,int,TransactionContext) Overriding onTransfer, to react to transactions and defer non-transactional side-effects until the transaction is committed.
      */
     @ApiStatus.OverrideOnly
     default void setItem(int slot, ItemStack stack, boolean insideTransaction) {

@@ -138,8 +138,6 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     /**
      * Transactional version of {@link Inventory#placeItemBackInInventory}:
      * tries to insert as much as possible into the player inventory, and drops the remainder.
-     *
-     * <p>Another name for this method could have been {@code insertOrDrop}.
      */
     public void placeItemBackInInventory(ItemResource resource, int amount, TransactionContext transactionContext) {
         int inserted = insert(resource, amount, transactionContext);

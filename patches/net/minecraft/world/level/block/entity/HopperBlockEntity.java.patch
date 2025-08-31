@@ -4,7 +4,7 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
-+    // Neo: Update cooldown after insertion into hopper
++    // Neo: Make the hopper cooldown time transactional (it may change when items are inserted)
 +    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> cooldownTimeJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
 +        @Override
 +        protected Integer createSnapshot() {
