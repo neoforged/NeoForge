@@ -28,7 +28,6 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.joml.Math;
 
 /**
  * Base implementation of a {@link ResourceHandler} backed by a list of stacks.
@@ -58,7 +57,6 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
     protected final S emptyStack;
     protected final Codec<NonNullList<S>> codec;
 
-    private int size;
     private final List<StackJournal> snapshotJournals;
 
     protected StacksResourceHandler(int size, S emptyStack, Codec<S> stackCodec) {
@@ -70,9 +68,8 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
         this.emptyStack = emptyStack;
         // Don't use NonNullList.codecOf because it creates an unmodifiable list
         this.codec = stackCodec.listOf().xmap(StacksResourceHandler::mutableCopyOf, Function.identity());
-        this.size = stacks.size();
-        this.snapshotJournals = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
+        this.snapshotJournals = new ArrayList<>(this.stacks.size());
+        for (int i = 0; i < this.stacks.size(); i++) {
             snapshotJournals.add(new StackJournal(i));
         }
     }
@@ -94,7 +91,6 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
         if (optional.isEmpty()) return;
 
         stacks = optional.get();
-        size = stacks.size();
     }
 
     /**
@@ -203,7 +199,7 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
 
     @Override
     public int size() {
-        return size;
+        return stacks.size();
     }
 
     @Override

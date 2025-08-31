@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,47 @@
+@@ -82,6 +_,42 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
@@ -19,13 +19,8 @@
 +    // Neo: Checks if the hopper was empty just before the insertion of `amountChange` at index `slot`.
 +    private boolean wasEmpty(int slot, int amountChange) {
 +        if (items.get(slot).getCount() != amountChange) return false;
-+        for (int i = 0; i < slot; ++i) {
-+            if (!items.get(i).isEmpty()) {
-+                return false;
-+            }
-+        }
-+        for (int i = slot + 1; i < items.size(); ++i) {
-+            if (!items.get(i).isEmpty()) {
++        for (int i = 0; i < items.size(); ++i) {
++            if (i != slot && !items.get(i).isEmpty()) {
 +                return false;
 +            }
 +        }

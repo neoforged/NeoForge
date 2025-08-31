@@ -5,15 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
- * Provides information on how a particular container would be mutated at a given index,
- * a resource, and an amount. This is intended to be used with {@link ResourceHandlerSlot}
- * instead of making an IModifiableResourceHandler.
- *
- * @param <T>
+ * Represents a function to directly mutate the resource and amount at a specific index of a {@link ResourceHandler}.
  */
 @FunctionalInterface
 public interface IndexModifier<T extends IResource> {
