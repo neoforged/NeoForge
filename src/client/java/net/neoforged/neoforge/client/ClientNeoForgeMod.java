@@ -24,6 +24,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
@@ -97,13 +98,18 @@ public class ClientNeoForgeMod {
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
-        // Reset WORLD type config caches
         NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut event) -> {
+            // Reset WORLD type config caches
             ModConfigs.getFileMap().values().forEach(config -> {
                 if (config.getSpec() instanceof ModConfigSpec spec) {
                     spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
+
+            // Unload SERVER configs only when disconnecting from a remote server
+            if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
+                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+            }
         });
 
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {

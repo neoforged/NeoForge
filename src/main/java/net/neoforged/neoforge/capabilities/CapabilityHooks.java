@@ -65,11 +65,7 @@ public class CapabilityHooks {
             // Invalidation is taken care of by the patches to ComposterBlock
 
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            if (side == null) {
-                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
-            } else {
-                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
-            }
+            return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
         }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
