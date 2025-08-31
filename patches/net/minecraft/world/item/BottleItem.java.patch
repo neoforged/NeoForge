@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/item/BottleItem.java
++++ b/net/minecraft/world/item/BottleItem.java
+@@ -57,13 +_,12 @@
+                         return InteractionResultHolder.pass(itemstack);
+                     }
+ 
+-                    if (p_40656_.getFluidState(blockpos).is(FluidTags.WATER)) {
+-                        p_40656_.playSound(
+-                            p_40657_, p_40657_.getX(), p_40657_.getY(), p_40657_.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F
+-                        );
++                    if (p_40656_.getFluidState(blockpos).getType().canFillBottle()) {
++                        ItemStack filledBottle = p_40656_.getFluidState(blockpos).getType().fillBottle(p_40656_, p_40657_, itemstack);
++                        if (filledBottle.isEmpty()) return InteractionResultHolder.pass(itemstack);
+                         p_40656_.gameEvent(p_40657_, GameEvent.FLUID_PICKUP, blockpos);
+                         return InteractionResultHolder.sidedSuccess(
+-                            this.turnBottleIntoItem(itemstack, p_40657_, PotionContents.createItemStack(Items.POTION, Potions.WATER)), p_40656_.isClientSide()
++                            this.turnBottleIntoItem(itemstack, p_40657_, filledBottle), p_40656_.isClientSide()
+                         );
+                     }
+                 }

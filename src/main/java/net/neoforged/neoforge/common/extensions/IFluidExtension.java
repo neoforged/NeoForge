@@ -6,17 +6,26 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,5 +162,32 @@ public interface IFluidExtension {
      */
     default boolean canExtinguish(FluidState state, BlockGetter getter, BlockPos pos) {
         return getFluidType().canExtinguish(state, getter, pos);
+    }
+
+    /**
+     * Override if you want your fluid to be picked up by a bottle
+     *
+     * Also need to override {@link #fillBottle(Level, Player, ItemStack)} along with this
+     *
+     * Supports Water only by default.
+     **/
+    default boolean canFillBottle() {
+        return self().getFluidType().isVanilla() && self().is(Tags.Fluids.WATER);
+    }
+
+    /**
+     * Override this to properly implement bottle picking-up modded fluids.
+     *
+     * Also play whatever pickup sound you'd like here.
+     * @param level the level
+     * @param player the player picking up the fluid
+     * @param bottle the empty bottle the player is holding
+     * @return the filled bottle.
+     */
+    default ItemStack fillBottle(Level level, Player player, ItemStack bottle) {
+        level.playSound(
+               player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F
+        );
+        return PotionContents.createItemStack(Items.POTION, Potions.WATER);
     }
 }
