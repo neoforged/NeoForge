@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +21,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
  * such as {@link StacksResourceHandler#set}.
  */
 public class ResourceHandlerSlot extends StackCopySlot {
-    private static final Container EMPTY = new SimpleContainer(0);
     private final ResourceHandler<ItemResource> handler;
     private final IndexModifier<ItemResource> slotModifier;
     private final int index;

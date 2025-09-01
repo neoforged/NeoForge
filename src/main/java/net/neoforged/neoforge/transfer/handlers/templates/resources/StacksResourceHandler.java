@@ -96,7 +96,7 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
     /**
      * Directly overwrites the contents of the handler.
      *
-     * <p>Note that this method can set to be used as an {@link IndexModifier}, for usage in {@link ResourceHandlerSlot}.
+     * <p>Note that this method can be used as an {@link IndexModifier}, for usage in {@link ResourceHandlerSlot}.
      *
      * @param index    index to change
      * @param resource new resource at the index
@@ -105,11 +105,11 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
      */
     public void set(int index, T resource, int amount) {
         TransferPreconditions.checkNonNegative(amount);
-        if (amount == 0) {
-            throw new IllegalArgumentException("Amount is 0 but the resource is not empty: " + resource);
+        if (resource.isEmpty() && amount > 0) {
+            throw new IllegalArgumentException("Resource is empty but the amount is positive: " + amount);
         }
 
-        var oldContents = stacks.set(index, getStackFrom(resource, amount));
+        S oldContents = stacks.set(index, getStackFrom(resource, amount));
         onContentsChanged(index, oldContents);
     }
 

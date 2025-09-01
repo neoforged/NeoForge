@@ -30,13 +30,13 @@
 +    @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        // If we just went from empty to something in the hopper, reset the cooldown.
-+        if (amountChange > 0 && wasEmpty(slot, amountChange) && !isOnCustomCooldown()) {
++        if (amountChange > 0 && !isOnCustomCooldown() && wasEmpty(slot, amountChange)) {
 +            cooldownTimeJournal.updateSnapshots(transaction);
 +            // This cooldown is always set to 8 in vanilla with one exception:
 +            // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
 +            // has not been updated as recently as the one pushing items into it.
 +            // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
-+            setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
++            setCooldown(MOVE_ITEM_SPEED);
 +        }
 +    }
 +

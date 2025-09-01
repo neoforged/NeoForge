@@ -26,6 +26,7 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
      * Return the stack of this handler. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #setStack}.
      * This means that either returning the backing stack directly or a copy is safe.
+     * If returning a copy, consider overriding {@link #getAmountAsLong} and {@link #getResource} to avoid unnecessary copies.
      *
      * @return The current stack.
      */
@@ -65,7 +66,7 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return 1;
     }
 

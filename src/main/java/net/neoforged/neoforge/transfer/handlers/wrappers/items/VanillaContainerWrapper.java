@@ -46,9 +46,10 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
      * <p>We use weak keys and values to avoid keeping a strong reference to the Container until the next time the map is cleaned.
      * As long as a slot wrapper is used, there is a strong reference to the outer {@link VanillaContainerWrapper} class,
      * which also references the container. This ensures that the entries remain in the map at least as long as the wrappers are in use.
+     *
+     * <p>Note that {@link MapMaker#weakKeys()} makes the map use identity semantics for the keys, which is desirable here.
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
-    // TODO: should have identity semantics?
     private static final Map<Container, VanillaContainerWrapper> wrappers = new MapMaker().weakKeys().weakValues().makeMap();
 
     /**

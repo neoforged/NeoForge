@@ -195,7 +195,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
             for (DropInfo dropInfo : entries) {
                 int remainder = dropInfo.amount;
 
-                var maxStackSize = dropInfo.resource.getMaxStackSize();
+                int maxStackSize = dropInfo.resource.getMaxStackSize();
                 while (remainder > 0) {
                     int dropped = Math.min(maxStackSize, remainder);
                     inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
@@ -221,10 +221,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
 
         @Override
         protected boolean isValid(ItemResource resource) {
-            if (!resource.toStack().canEquip(slot, inventory.player)) {
-                return false;
-            }
-            return super.isValid(resource);
+            return resource.toStack().canEquip(slot, inventory.player) && super.isValid(resource);
         }
 
         @Override

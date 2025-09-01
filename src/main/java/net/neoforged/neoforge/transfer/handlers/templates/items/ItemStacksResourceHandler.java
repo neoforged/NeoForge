@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -48,7 +49,7 @@ public class ItemStacksResourceHandler extends StacksResourceHandler<ItemStack, 
 
     @Override
     protected int getCapacity(int index, ItemResource resource) {
-        return Math.min(resource.getMaxStackSize(), 99);
+        return Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
     }
 
     @Override

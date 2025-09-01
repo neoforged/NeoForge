@@ -39,11 +39,8 @@ public class LivingEntityEquipmentWrapper {
      * @throws IllegalArgumentException if the passed entity is a player. For players the {@link PlayerInventoryWrapper} should be used instead.
      */
     public static ResourceHandler<ItemResource> of(LivingEntity entity, EquipmentSlot.Type equipmentType) {
-        if (entity instanceof Player) {
-            throw new IllegalArgumentException("LivingEntityEquipmentWrapper does not support players. Use PlayerInventoryWrapper instead.");
-        }
-        var wrapper = wrappers.computeIfAbsent(entity, LivingEntityEquipmentWrapper::new);
-        return wrapper.byType.get(equipmentType);
+        // Only expose a ResourceHandler in this method.
+        return internalOf(entity, equipmentType);
     }
 
     /**
@@ -54,11 +51,15 @@ public class LivingEntityEquipmentWrapper {
      * @throws IllegalArgumentException if the passed entity is a player. For players the {@link PlayerInventoryWrapper} should be used instead.
      */
     public static ResourceHandler<ItemResource> of(LivingEntity entity, EquipmentSlot equipmentSlot) {
+        return internalOf(entity, equipmentSlot.getType()).getSlotWrapper(equipmentSlot.getIndex());
+    }
+
+    private static EquipmentTypeWrapper internalOf(LivingEntity entity, EquipmentSlot.Type equipmentType) {
         if (entity instanceof Player) {
             throw new IllegalArgumentException("LivingEntityEquipmentWrapper does not support players. Use PlayerInventoryWrapper instead.");
         }
         var wrapper = wrappers.computeIfAbsent(entity, LivingEntityEquipmentWrapper::new);
-        return wrapper.byType.get(equipmentSlot.getType()).getSlotWrapper(equipmentSlot.getIndex());
+        return wrapper.byType.get(equipmentType);
     }
 
     private final LivingEntity entity;
@@ -69,7 +70,7 @@ public class LivingEntityEquipmentWrapper {
         this.byType = new EnumMap<>(EquipmentSlot.Type.class);
         for (var equipmentType : EquipmentSlot.Type.values()) {
             var slotWrappers = new ArrayList<SlotWrapper>();
-            for (var equipmentSlot : EquipmentSlot.values()) {
+            for (var equipmentSlot : EquipmentSlot.VALUES) {
                 if (equipmentSlot.getType() == equipmentType) {
                     slotWrappers.add(new SlotWrapper(equipmentSlot));
                 }
@@ -90,8 +91,6 @@ public class LivingEntityEquipmentWrapper {
 
     /**
      * The wrapper for a single {@link EquipmentSlot}, used as a building block.
-     * Note that there is currently no check for whether an item is allowed to be inserted,
-     * since we don't override {@link #isValid(ItemResource)}.
      */
     private class SlotWrapper extends ItemStackResourceHandler {
         private final EquipmentSlot slot;

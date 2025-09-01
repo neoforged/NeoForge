@@ -82,6 +82,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
 
         BlockState state = location.getBlockState();
         CauldronFluidContent content = getContent(state);
+        // Note that non-integer amounts (such as 1000/3 for example) are rounded down.
         return (long) content.totalAmount * content.currentLevel(state) / content.maxLevel;
     }
 
@@ -89,6 +90,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     public long getCapacityAsLong(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
 
+        // Note that the empty fluid has a content registered for it, so this case does not require special handling.
         CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
