@@ -201,7 +201,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
                 return 1;
             }
 
-            return container.getMaxStackSize(resource.toStack());
+            return resource.isEmpty() ? container.getMaxStackSize() : container.getMaxStackSize(resource.toStack());
         }
 
         @Override

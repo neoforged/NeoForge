@@ -49,7 +49,7 @@ public class ItemStacksResourceHandler extends StacksResourceHandler<ItemStack, 
 
     @Override
     protected int getCapacity(int index, ItemResource resource) {
-        return Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
+        return resource.isEmpty() ? Item.ABSOLUTE_MAX_STACK_SIZE : Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
     }
 
     @Override

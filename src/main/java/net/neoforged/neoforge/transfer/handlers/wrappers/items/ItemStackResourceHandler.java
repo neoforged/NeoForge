@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.Objects;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
@@ -56,13 +57,15 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
      * If the passed item resource is empty, an estimate should be returned.
      *
      * <p>If the capacity should be limited by the max stack size of the item, this function must take it into account.
+     * Additionally, the empty resource should be special-cased to return the intended maximum capacity of the handler,
+     * as it will otherwise report a {@linkplain ItemResource#getMaxStackSize() max stack size} of 1.
      * For example, a handler with a maximum count of 4, or less for items that have a smaller max stack size,
-     * should override this to return {@code Math.min(resource.getMaxStackSize(), 4);}.
+     * should override this to return {@code resource.isEmpty() ? 4 : Math.min(resource.getMaxStackSize(), 4)}.
      *
      * @return The maximum capacity of this handler for the passed item resource.
      */
     protected int getCapacity(ItemResource resource) {
-        return resource.getMaxStackSize();
+        return resource.isEmpty() ? Item.ABSOLUTE_MAX_STACK_SIZE : Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
     }
 
     @Override
