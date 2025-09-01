@@ -27,7 +27,11 @@ import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -41,7 +45,19 @@ import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
-import net.neoforged.neoforge.registries.datamaps.builtin.*;
+import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableVillagerDistance;
+import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
+import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
+import net.neoforged.neoforge.registries.datamaps.builtin.Flattenable;
+import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
+import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
+import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
+import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
+import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
+import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
+import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
