@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -17,12 +17,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A template that stores a single {@link ItemResource} in the form of a {@link ResourceStack} on a component.
  */
 public class ItemContextItemHandler extends ItemContextResourceHandler<ItemResource> {
-    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem) {
-        super(itemContext, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem);
+    public ItemContextItemHandler(IItemContext itemAccess, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem) {
+        super(itemAccess, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem);
     }
 
-    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, Predicate<ItemResource> validator) {
-        super(itemContext, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem, validator);
+    public ItemContextItemHandler(IItemContext itemAccess, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, Predicate<ItemResource> validator) {
+        super(itemAccess, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem, validator);
     }
 
     public static class Consumable extends ItemContextItemHandler {
@@ -35,7 +35,7 @@ public class ItemContextItemHandler extends ItemContextResourceHandler<ItemResou
         }
 
         protected int setEmpty(int count, TransactionContext context) {
-            return itemContext.extract(itemContext.getResource(), count, context);
+            return itemAccess.extract(itemAccess.getResource(), count, context);
         }
     }
 
@@ -53,7 +53,7 @@ public class ItemContextItemHandler extends ItemContextResourceHandler<ItemResou
         }
 
         protected int setEmpty(int count, TransactionContext context) {
-            return itemContext.exchange(emptyContainer, count, context);
+            return itemAccess.exchange(emptyContainer, count, context);
         }
     }
 }

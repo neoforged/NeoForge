@@ -11,7 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -25,26 +25,26 @@ import org.jetbrains.annotations.ApiStatus;
  * @see ResourceContainerContentsHandler
  */
 public class ItemContainerContentsResourceHandler implements ResourceHandler<ItemResource> {
-    protected final ItemContext itemContext;
+    protected final ItemAccess itemAccess;
     protected final DataComponentType<ItemContainerContents> componentType;
     /**
      * Size the component is expected to be able to grow to.
      */
     protected final int size;
 
-    public ItemContainerContentsResourceHandler(ItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
+    public ItemContainerContentsResourceHandler(ItemAccess itemAccess, DataComponentType<ItemContainerContents> componentType, int size) {
         if (size > 256)
             throw new IllegalArgumentException("Got %d items, but maximum is 256".formatted(size));
 
         this.componentType = componentType;
-        this.itemContext = itemContext;
+        this.itemAccess = itemAccess;
         this.size = size;
     }
 
     public ItemContainerContents getContents() {
         //If we don't have a container, we should return empty.
-        if (itemContext.getAmount() == 0) return ItemContainerContents.EMPTY;
-        ItemResource resource = itemContext.getResource();
+        if (itemAccess.getAmount() == 0) return ItemContainerContents.EMPTY;
+        ItemResource resource = itemAccess.getResource();
         return resource.getOrDefault(componentType, ItemContainerContents.EMPTY);
     }
 
@@ -126,14 +126,14 @@ public class ItemContainerContentsResourceHandler implements ResourceHandler<Ite
      */
     @ApiStatus.OverrideOnly
     protected int set(ItemContainerContents contents, int changedAmount, TransactionContext context, int index, ItemStack stack) {
-        ItemResource contextResource = itemContext.getResource();
+        ItemResource contextResource = itemAccess.getResource();
         ItemStack newStack = contextResource.toStack();
         // Use the max of the content's size and the handler size to avoid truncating
         int contentSize = Math.max(contents.getSlots(), size());
         newStack.set(componentType, contents.with(contentSize, index, stack));
         //using the context, trade out our current container, for the new one.
         //While it is valid to try to do more than one at a time, we are going to handle just 1 exchange for now.
-        int exchangedCount = itemContext.exchange(ItemResource.of(newStack), 1, context);
+        int exchangedCount = itemAccess.exchange(ItemResource.of(newStack), 1, context);
         return exchangedCount == 1 ? changedAmount : 0;
     }
 }

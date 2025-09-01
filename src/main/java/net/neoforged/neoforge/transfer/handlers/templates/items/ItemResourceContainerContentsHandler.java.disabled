@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 public class ItemResourceContainerContentsHandler extends ResourceContainerContentsHandler<ItemResource> {
-    public ItemResourceContainerContentsHandler(IItemContext itemContext, DataComponentType<ResourceContainerContents<ItemResource>> componentType, int size, int capacity) {
-        super(itemContext, componentType, size, capacity, ItemResource.EMPTY, ItemResource::withAmount, ItemResourceContainerContents.EMPTY);
+    public ItemResourceContainerContentsHandler(IItemContext itemAccess, DataComponentType<ResourceContainerContents<ItemResource>> componentType, int size, int capacity) {
+        super(itemAccess, componentType, size, capacity, ItemResource.EMPTY, ItemResource::withAmount, ItemResourceContainerContents.EMPTY);
     }
 
     //If the desire is to surpass the normal max stack size of an item, overriding this class and method is possible.

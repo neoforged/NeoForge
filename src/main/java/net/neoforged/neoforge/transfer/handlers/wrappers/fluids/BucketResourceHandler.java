@@ -14,7 +14,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -27,15 +27,15 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * With the item context, handling the scenario of filling or draining multiple stacked buckets is possible.
  */
 public final class BucketResourceHandler implements ResourceHandler<FluidResource> {
-    private final ItemContext itemContext;
+    private final ItemAccess itemAccess;
 
-    public BucketResourceHandler(ItemContext itemContext) {
-        this.itemContext = itemContext;
+    public BucketResourceHandler(ItemAccess itemAccess) {
+        this.itemAccess = itemAccess;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isBucket() {
-        ItemResource bucket = itemContext.getResource();
+        ItemResource bucket = itemAccess.getResource();
         if (bucket.is(Items.MILK_BUCKET))
             return NeoForgeMod.MILK.isBound();
         return bucket.getItem() instanceof BucketItem;
@@ -50,7 +50,7 @@ public final class BucketResourceHandler implements ResourceHandler<FluidResourc
     public FluidResource getResource(int index) {
         Objects.checkIndex(index, size());
 
-        ItemResource resource = itemContext.getResource();
+        ItemResource resource = itemAccess.getResource();
         if (resource.getItem() instanceof BucketItem bucket)
             return FluidResource.of(bucket.content);
         if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound())
@@ -63,7 +63,7 @@ public final class BucketResourceHandler implements ResourceHandler<FluidResourc
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         if (!isBucket() || getResource(index).isEmpty()) return 0;
-        return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
+        return (long) FluidType.BUCKET_VOLUME * itemAccess.getAmount();
     }
 
     @Override
@@ -71,18 +71,18 @@ public final class BucketResourceHandler implements ResourceHandler<FluidResourc
         Objects.checkIndex(index, size());
         if (!isBucket()) return 0;
         if (resource.isEmpty())
-            return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
+            return (long) FluidType.BUCKET_VOLUME * itemAccess.getAmount();
 
         FluidResource fluid = getResource(0);
         if (!fluid.isEmpty() && !resource.equals(fluid)) return 0;
-        return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
+        return (long) FluidType.BUCKET_VOLUME * itemAccess.getAmount();
     }
 
     @Override
     public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!isBucket()) return 0;
-        if (!itemContext.getResource().is(Tags.Items.BUCKETS_EMPTY)) {
+        if (!itemAccess.getResource().is(Tags.Items.BUCKETS_EMPTY)) {
             return 0; // can't fill non-empty buckets
         }
 
@@ -91,7 +91,7 @@ public final class BucketResourceHandler implements ResourceHandler<FluidResourc
 
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToFill == 0) return 0;
-        int handled = itemContext.exchange(filledBucket, bucketsToFill, transaction);
+        int handled = itemAccess.exchange(filledBucket, bucketsToFill, transaction);
         return IntMath.saturatedMultiply(handled, FluidType.BUCKET_VOLUME);
     }
 
@@ -106,7 +106,7 @@ public final class BucketResourceHandler implements ResourceHandler<FluidResourc
         int bucketsToEmpty = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToEmpty == 0) return 0; // Nothing to empty
 
-        int bucketsEmptied = itemContext.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, transaction);
+        int bucketsEmptied = itemAccess.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, transaction);
         return IntMath.saturatedMultiply(bucketsEmptied, FluidType.BUCKET_VOLUME);
     }
 

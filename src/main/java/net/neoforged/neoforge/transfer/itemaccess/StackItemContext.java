@@ -3,25 +3,25 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.contexts;
+package net.neoforged.neoforge.transfer.itemaccess;
 
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Implementation of {@link ItemContext} that will mutate a stack directly,
+ * Implementation of {@link ItemAccess} that will mutate a stack directly,
  * possibly changing the components and the count, but never the underlying Item as it's final.
  *
  * <p>This can be used when it is known that the storage will not change the underlying Item.
  */
-public final class StackItemContext implements ItemContext {
+// TODO: check
+public final class StackItemContext implements ItemAccess {
     private final ResourceHandler<ItemResource> container;
     private final Item item;
 

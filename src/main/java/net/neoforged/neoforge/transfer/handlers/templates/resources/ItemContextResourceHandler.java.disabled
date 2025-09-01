@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -19,18 +19,18 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    protected final IItemContext itemContext;
+    protected final IItemContext itemAccess;
     protected final DataComponentType<ResourceStack<T>> componentType;
     protected final ResourceStack<T> emptyStack;
     protected final int capacityOfOneItem;
     protected final Predicate<T> validator;
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem) {
-        this(itemContext, componentType, emptyStack, capacityOfOneItem, r -> true);
+    public ItemContextResourceHandler(IItemContext itemAccess, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem) {
+        this(itemAccess, componentType, emptyStack, capacityOfOneItem, r -> true);
     }
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem, Predicate<T> validator) {
-        this.itemContext = itemContext;
+    public ItemContextResourceHandler(IItemContext itemAccess, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem, Predicate<T> validator) {
+        this.itemAccess = itemAccess;
         this.componentType = componentType;
         this.emptyStack = emptyStack;
         this.capacityOfOneItem = capacityOfOneItem;
@@ -38,7 +38,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     }
 
     protected final ResourceStack<T> getStoredResourceStack() {
-        return itemContext.getResource().getOrDefault(componentType, emptyStack);
+        return itemAccess.getResource().getOrDefault(componentType, emptyStack);
     }
 
     /**
@@ -61,20 +61,20 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     @Override
     public int getAmount(int index) {
         Objects.checkIndex(index, size());
-        return IntMath.saturatedMultiply(getSingleItemAmount(), itemContext.getAmount());
+        return IntMath.saturatedMultiply(getSingleItemAmount(), itemAccess.getAmount());
     }
 
     @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
-        return (long) getSingleItemAmount() * itemContext.getAmount();
+        return (long) getSingleItemAmount() * itemAccess.getAmount();
     }
 
     @Override
     public int getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
         if (!resource.isEmpty() && !getResource(index).equals(resource)) return 0;
-        return IntMath.saturatedMultiply(capacityOfOneItem, itemContext.getAmount());
+        return IntMath.saturatedMultiply(capacityOfOneItem, itemAccess.getAmount());
     }
 
     @Override
@@ -82,7 +82,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         Objects.checkIndex(index, size());
 
         if (!resource.isEmpty() && !getResource(index).equals(resource)) return 0;
-        return (long) capacityOfOneItem * itemContext.getAmount();
+        return (long) capacityOfOneItem * itemAccess.getAmount();
     }
 
     @Override
@@ -165,7 +165,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
      */
     @ApiStatus.OverrideOnly
     protected int set(int count, ResourceStack<T> resultStack, TransactionContext transaction) {
-        var resultResource = itemContext.getResource().with(componentType, resultStack);
-        return itemContext.exchange(resultResource, count, transaction);
+        var resultResource = itemAccess.getResource().with(componentType, resultStack);
+        return itemAccess.exchange(resultResource, count, transaction);
     }
 }

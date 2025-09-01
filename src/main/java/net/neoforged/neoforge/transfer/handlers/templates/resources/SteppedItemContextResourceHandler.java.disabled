@@ -9,18 +9,18 @@ import com.google.common.math.IntMath;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class SteppedItemContextResourceHandler<T extends IResource> extends ItemContextResourceHandler<T> {
-    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem) {
-        super(itemContext, componentType, defaultStep, capacityOfOneItem);
+    public SteppedItemContextResourceHandler(IItemContext itemAccess, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem) {
+        super(itemAccess, componentType, defaultStep, capacityOfOneItem);
     }
 
-    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem, Predicate<T> validator) {
-        super(itemContext, componentType, defaultStep, capacityOfOneItem);
+    public SteppedItemContextResourceHandler(IItemContext itemAccess, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem, Predicate<T> validator) {
+        super(itemAccess, componentType, defaultStep, capacityOfOneItem);
     }
 
     @Override

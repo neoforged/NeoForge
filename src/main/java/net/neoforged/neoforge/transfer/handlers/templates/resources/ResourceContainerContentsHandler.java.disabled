@@ -11,7 +11,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ItemContext;
+import net.neoforged.neoforge.transfer.itemaccess.ItemAccess;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -29,20 +29,20 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
      */
     protected final int size;
     protected final DataComponentType<ResourceContainerContents<T>> componentType;
-    protected final IItemContext itemContext;
+    protected final IItemContext itemAccess;
     private final ResourceContainerContents<T> emptyContents;
     private final IStackFactory<T, ResourceStack<T>> stackFactory;
     private final T emptyResource;
     private final int capacity;
 
     //Docs will come post slicing.
-    public ResourceContainerContentsHandler(IItemContext itemContext, DataComponentType<ResourceContainerContents<T>> componentType, int size, int capacity, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory, ResourceContainerContents<T> emptyContents) {
+    public ResourceContainerContentsHandler(IItemContext itemAccess, DataComponentType<ResourceContainerContents<T>> componentType, int size, int capacity, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory, ResourceContainerContents<T> emptyContents) {
         if (size > 256)
             throw new IllegalArgumentException("Had a size of %d, but maximum is 256.".formatted(size));
 
         this.size = size;
         this.capacity = capacity;
-        this.itemContext = itemContext;
+        this.itemAccess = itemAccess;
         this.componentType = componentType;
 
         this.emptyContents = emptyContents;
@@ -52,8 +52,8 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
 
     //If we don't have a container, we should return empty.
     public ResourceContainerContents<T> getContents() {
-        if (itemContext.getAmount() == 0) return emptyContents;
-        ItemResource resource = itemContext.getResource();
+        if (itemAccess.getAmount() == 0) return emptyContents;
+        ItemResource resource = itemAccess.getResource();
         return resource.getOrDefault(componentType, emptyContents);
     }
 
@@ -149,7 +149,7 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
 
     @ApiStatus.OverrideOnly
     protected int set(ResourceContainerContents<T> contents, int index, int changedAmount, int originalAmountRequest, TransactionContext context, ResourceStack<T> stack) {
-        ItemResource contextResource = itemContext.getResource();
+        ItemResource contextResource = itemAccess.getResource();
         ItemStack newStack = contextResource.toStack();
         // Use the max of the content's size and the handler size to avoid truncating
         int contentSize = Math.max(contents.getSlots(), size());
@@ -158,7 +158,7 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
         int exchangeCount = originalAmountRequest / changedAmount;
 
         //While it is valid to try to do more than one at a time, we are going to handle just 1 exchange for now.
-        int exchangedCount = itemContext.exchange(ItemResource.of(newStack), exchangeCount, context);
+        int exchangedCount = itemAccess.exchange(ItemResource.of(newStack), exchangeCount, context);
         return IntMath.saturatedMultiply(exchangedCount, changedAmount);
     }
 }
