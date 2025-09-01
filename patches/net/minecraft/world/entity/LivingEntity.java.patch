@@ -513,7 +513,7 @@
          float f1 = f * 0.91F;
          Vec3 vec3 = this.handleRelativeFrictionAndCalculateMovement(p_362457_, f);
          double d0 = vec3.y;
-@@ -2306,11 +_,19 @@
+@@ -2306,11 +_,20 @@
          }
      }
  
@@ -530,7 +530,8 @@
          double d0 = this.getY();
          double d1 = this.getEffectiveGravity();
 -        if (this.isInWater()) {
-+        if (this.isInWater() || (this.isInFluidType(fluidState) && !this.moveInFluid(fluidState, p_365480_, d1))) {
++        // Neo: patched in to use the fluid the eye is in because fluidState is always EMPTY fluid.
++        if (this.isInWater() || (this.isInFluidType(this.getEyeInFluidType()) && !this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), p_365480_, d1))) {
              float f = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
              float f1 = 0.02F;
              float f2 = (float)this.getAttributeValue(Attributes.WATER_MOVEMENT_EFFICIENCY);

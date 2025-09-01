@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Ustaw to na true, aby włączyć reklamę serwera dedykowanego do lokalnych klientów sieci LAN, tak aby pojawiał się automatycznie na ekranie wieloosobowym.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Dodatkowy Atrybut Zaawansowanych Podpowiedzi Narzędzia",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Zmień wartość tej zmiennej na \"true\", aby aktywować dodatkowe informacje o atrybutach przedmiotów, gdy włączona jest opcja \"advanced tooltips\" (F3+h).",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "Lekki Rurociąg NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Włącz proces renderowania bloków NeoForge - poprawia oświetlenie modeli niestandardowych.",
   "neoforge.configgui.fullBoundingBoxLadders": "Drabiny z pełnym obszarem trafienia",

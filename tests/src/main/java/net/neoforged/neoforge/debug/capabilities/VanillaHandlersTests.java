@@ -11,7 +11,9 @@ import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
@@ -74,6 +76,32 @@ public class VanillaHandlersTests {
             helper.fail("Should have invalidated a second time");
         if (capCache.getCapability() != null)
             helper.fail("Expected no capability", composterPos);
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that non-compostable items cannot be inserted into a composter")
+    public static void testComposterCannotAcceptNonCompostables(ExtendedGameTestHelper helper) {
+        var composterPos = new BlockPos(1, 1, 1);
+
+        helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
+
+        var nonCompostable = new ItemStack(Blocks.BARRIER, 1);
+        if (ComposterBlock.getValue(nonCompostable) > 0)
+            helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
+
+        // Of particular note to be tested here is the 'null' side; see #2572
+        // "IItemHandler for null side of Composter allows items without compost value to be inserted"
+        var sides = new Direction[] { null, Direction.UP, Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
+
+        for (Direction side : sides) {
+            var capability = helper.requireCapability(Capabilities.ItemHandler.BLOCK, composterPos, side);
+            var result = capability.insertItem(0, nonCompostable, false);
+            if (result.isEmpty())
+                helper.fail("Expected failure to insert non-compostable item for side " + side);
+        }
 
         helper.succeed();
     }

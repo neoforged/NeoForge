@@ -29,7 +29,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
     private final CommandEncoder realCommandEncoder;
     private final GpuDeviceUsageValidator validator;
 
-    ValidationCommandEncoder(CommandEncoder realCommandEncoder, GpuDeviceUsageValidator validator) {
+    protected ValidationCommandEncoder(CommandEncoder realCommandEncoder, GpuDeviceUsageValidator validator) {
         this.realCommandEncoder = realCommandEncoder;
         this.validator = validator;
     }
@@ -40,11 +40,24 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public RenderPass createRenderPass(Supplier<String> label, GpuTextureView colorTextureView, OptionalInt clearColor) {
+        if (colorTextureView instanceof ValidationGpuTextureView validationColorTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            colorTextureView = validationColorTextureView.getRealTextureView();
+        }
         return wrapRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor), validator);
     }
 
     @Override
     public RenderPass createRenderPass(Supplier<String> label, GpuTextureView colorTextureView, OptionalInt clearColor, @Nullable GpuTextureView depthTextureView, OptionalDouble clearDepth) {
+        if (colorTextureView instanceof ValidationGpuTextureView validationColorTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            colorTextureView = validationColorTextureView.getRealTextureView();
+        }
+        if (depthTextureView instanceof ValidationGpuTextureView validationDepthTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            depthTextureView = validationDepthTextureView.getRealTextureView();
+        }
+
         return wrapRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor, depthTextureView, clearDepth), validator);
     }
 
@@ -166,8 +179,12 @@ public class ValidationCommandEncoder implements CommandEncoder {
     }
 
     @Override
-    public void presentTexture(GpuTextureView texture) {
-        realCommandEncoder.presentTexture(texture);
+    public void presentTexture(GpuTextureView textureView) {
+        if (textureView instanceof ValidationGpuTextureView validationTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            textureView = validationTextureView.getRealTextureView();
+        }
+        realCommandEncoder.presentTexture(textureView);
     }
 
     @Override

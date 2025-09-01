@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Установіть значення «true» для показу віддалених серверів місцевим клієнтам локальної мережі, щоб це автоматично з’являлося на екрані гри в мережі.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Додаткові атрибути розширених підказок",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Установіть значення «true» для увімкнення додаткової інформації про атрибути предмета при увімкнених розширених підказках.",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "Конвеєр світла NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активує конвеєр NeoForge для промальовування блоків — виправляє освітлення користувацьких моделей.",
   "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",

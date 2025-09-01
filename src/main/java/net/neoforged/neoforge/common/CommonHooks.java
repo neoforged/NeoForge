@@ -38,6 +38,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
@@ -71,7 +72,9 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.SyncedDataHolder;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -228,6 +231,7 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
 /**
  * Class for various common (i.e. client and server-side) hooks.
@@ -692,7 +696,7 @@ public class CommonHooks {
      * Called from {@link AnvilMenu#createResult()} after the vanilla result has been computed.
      * <p>
      * If the left input to the anvil is not empty, this method fires the {@link AnvilUpdateEvent} to allow mods to manipulate the result.
-     * 
+     *
      * @param menu       The anvil menu
      * @param leftInput  The left input item
      * @param rightInput The right input item
@@ -724,7 +728,7 @@ public class CommonHooks {
      * This is fired from the head of {@link AnvilMenu#onTake}, before any other logic is run.
      * <p>
      * If this event is cancelled, {@link AnvilMenu#onTake} should return immediately.
-     * 
+     *
      * @param menu   The anvil menu
      * @param player The player who is using the anvil
      * @param output The output item
@@ -741,7 +745,7 @@ public class CommonHooks {
      * Fires the {@link AnvilCraftEvent.Post} when the anvil is used to craft an item.
      * <p>
      * This is fired from the tail of {@link AnvilMenu#onTake}, after all other logic is run.
-     * 
+     *
      * @param menu   The anvil menu
      * @param player The player who is using the anvil
      * @param output The output item
@@ -1719,6 +1723,57 @@ public class CommonHooks {
             var payload = RecipeContentPayload.create(recipeTypesToSend, recipeMap);
             LOGGER.debug("Sending {} recipes of the following types: {}", payload.recipes().size(), payload.recipeTypes());
             PacketDistributor.sendToPlayer(player, payload);
+        }
+    }
+
+    private static final Set<Class<?>> EDA_CHECKED_CLASSES = ConcurrentHashMap.newKeySet(BuiltInRegistries.ENTITY_TYPE.size());
+
+    @ApiStatus.Internal
+    public static void verifyEntityDataAccessorRegistration(final Class<?> callerClass, final Class<? extends SyncedDataHolder> holderClass) {
+        if (!EDA_CHECKED_CLASSES.add(callerClass)) return;
+
+        // Replicate Mojang check, which ensures that the defining class is the same as the holder
+        final var isEntityClass = callerClass == holderClass;
+
+        // The check might hold up either because the definition is sound or because someone added a Mixin into the
+        // entity class aiming to add their own synced data; this is still an issue as different ordering that might
+        // occur due to whatever version might still cause problems down the line.
+        final Collection<String> mixinsInjectingEda;
+        if (isEntityClass) {
+            mixinsInjectingEda = Stream.of(callerClass.getDeclaredFields())
+                    .filter(it -> EntityDataAccessor.class.isAssignableFrom(it.getType()))
+                    .map(it -> it.getAnnotation(MixinMerged.class))
+                    .filter(Objects::nonNull)
+                    .map(MixinMerged::mixin)
+                    .collect(Collectors.toSet());
+        } else {
+            // We don't care about which mixins exist outside of entities, it's wrong already
+            mixinsInjectingEda = Set.of();
+        }
+
+        final var isValid = isEntityClass && mixinsInjectingEda.isEmpty();
+        if (isValid) {
+            return;
+        }
+
+        final var message = new StringBuilder();
+        message.append("Identified an attempt to add synced data to a foreign entity: this is highly discouraged.\n");
+        message.append("Entity class: ").append(holderClass.getName()).append('\n');
+
+        if (mixinsInjectingEda.isEmpty()) {
+            message.append("Declaring class: ").append(callerClass.getName());
+        } else {
+            message.append("Mixins into entity class: ").append(String.join(", ", mixinsInjectingEda));
+        }
+
+        message.append("\nModders should use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
+        message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.\n");
+        message.append("This message will only be printed once per class");
+
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
+            throw new IllegalStateException(message.toString());
+        } else {
+            LOGGER.warn(message);
         }
     }
 }
