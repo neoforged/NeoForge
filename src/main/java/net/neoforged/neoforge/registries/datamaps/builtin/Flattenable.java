@@ -16,15 +16,13 @@ import net.minecraft.world.level.block.Block;
  * @param flattenedBlock the flattened block, as a result of being right-clicked by a shovel.
  */
 public record Flattenable(Block flattenedBlock) {
-    public static final Codec<Flattenable> FLATTENED_BLOCK_CODEC =
-            BuiltInRegistries.BLOCK.byNameCodec().xmap(Flattenable::new, Flattenable::flattenedBlock);
+    public static final Codec<Flattenable> FLATTENED_BLOCK_CODEC = BuiltInRegistries.BLOCK.byNameCodec().xmap(Flattenable::new, Flattenable::flattenedBlock);
 
     public static final Codec<Flattenable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(
                     instance -> instance.group(
                             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("flattened_block")
-                                    .forGetter(Flattenable::flattenedBlock)
-                    ).apply(instance, Flattenable::new)
-            ), FLATTENED_BLOCK_CODEC
-    );
+                                    .forGetter(Flattenable::flattenedBlock))
+                            .apply(instance, Flattenable::new)),
+            FLATTENED_BLOCK_CODEC);
 }
