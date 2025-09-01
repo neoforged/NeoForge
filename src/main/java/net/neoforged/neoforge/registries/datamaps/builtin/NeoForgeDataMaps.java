@@ -17,6 +17,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
@@ -69,6 +70,18 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
+
+    /**
+     * The {@linkplain Block} data map that replaces {@link ShovelItem#FLATTENABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/flattenables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code flattened_block} - the flattened equivalent of the block after being right-clicked on by a shovel.</li>
+     * </ul>
+     *
+     */
+    public static final DataMapType<Block, Flattenable> FLATTENABLES = DataMapType.builder(
+            id("flattenables"), Registries.BLOCK, Flattenable.CODEC).synced(Flattenable.FLATTENED_BLOCK_CODEC, false).build();
 
     /**
      * The {@linkplain Item} data map that replaces {@link AbstractFurnaceBlockEntity#getFuel()}.
@@ -197,6 +210,7 @@ public class NeoForgeDataMaps {
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(ACCEPTABLE_VILLAGER_DISTANCES);
         event.register(COMPOSTABLES);
+        event.register(FLATTENABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
         event.register(OXIDIZABLES);

@@ -1,0 +1,22 @@
+{
+  "values": {
+    "minecraft:coarse_dirt": {
+      "flattened_block": "minecraft:dirt_path"
+    },
+    "minecraft:dirt": {
+      "flattened_block": "minecraft:dirt_path"
+    },
+    "minecraft:grass_block": {
+      "flattened_block": "minecraft:dirt_path"
+    },
+    "minecraft:mycelium": {
+      "flattened_block": "minecraft:dirt_path"
+    },
+    "minecraft:podzol": {
+      "flattened_block": "minecraft:dirt_path"
+    },
+    "minecraft:rooted_dirt": {
+      "flattened_block": "minecraft:dirt_path"
+    }
+  }
+}

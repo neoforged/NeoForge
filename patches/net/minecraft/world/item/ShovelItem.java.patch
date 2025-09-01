@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/item/ShovelItem.java
 +++ b/net/minecraft/world/item/ShovelItem.java
+@@ -19,6 +_,8 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
+ public class ShovelItem extends Item {
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLATTENABLES data map} instead */
++    @Deprecated
+     protected static final Map<Block, BlockState> FLATTENABLES = Maps.newHashMap(
+         new Builder()
+             .put(Blocks.GRASS_BLOCK, Blocks.DIRT_PATH.defaultBlockState())
 @@ -43,18 +_,16 @@
              return InteractionResult.PASS;
          } else {
@@ -21,7 +30,7 @@
              }
  
              if (blockstate2 != null) {
-@@ -71,5 +_,15 @@
+@@ -71,5 +_,17 @@
                  return InteractionResult.PASS;
              }
          }
@@ -29,6 +38,8 @@
 +
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getShovelPathingState(BlockState originalState) {
++        var flattened = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLATTENABLES);
++        if (flattened != null) return flattened.flattenedBlock().defaultBlockState();
 +        return FLATTENABLES.get(originalState.getBlock());
 +    }
 +
