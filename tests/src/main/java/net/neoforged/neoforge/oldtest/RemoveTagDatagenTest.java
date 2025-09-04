@@ -26,7 +26,8 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 @Mod(RemoveTagDatagenTest.MODID)
 public class RemoveTagDatagenTest {
     public static final String MODID = "remove_tag_datagen_test";
-    public static final TagKey<Block> TEST_TAG = BlockTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
+    public static final TagKey<Block> TEST_TAG_BLOCK = BlockTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
+    public static final TagKey<Item> TEST_TAG_ITEM = ItemTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
 
     public RemoveTagDatagenTest(IEventBus modBus) {
         modBus.addListener(this::onGatherData);
@@ -40,7 +41,7 @@ public class RemoveTagDatagenTest {
             @SuppressWarnings("unchecked")
             @Override
             protected void addTags(HolderLookup.Provider provider) {
-                this.tag(TEST_TAG)
+                this.tag(TEST_TAG_BLOCK)
                         .remove(key(Blocks.DIRT))
                         .remove(key(Blocks.OAK_DOOR), key(Blocks.DARK_OAK_DOOR))
                         .remove(key(Blocks.ANVIL))
@@ -63,6 +64,8 @@ public class RemoveTagDatagenTest {
                 // Remove GOLD_ORE from the PIGLIN_LOVED tag, which is added by PIGLIN_LOVED reference to the GOLD_ORES tag
                 // This will make GOLD_ORE unable to be loved by piglins.
                 this.tag(ItemTags.PIGLIN_LOVED).remove(key(Items.GOLD_ORE));
+
+                this.copy(TEST_TAG_BLOCK, TEST_TAG_ITEM);
             }
         });
     }
