@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -462,6 +_,18 @@
+@@ -462,6 +_,19 @@
              }
          }
  
++        // Neo: For reading NeoForge's additional save data (mod list, etc.)
 +        public void readAdditionalLevelSaveData(boolean fallback) {
 +            checkLock();
 +            Path path = fallback ? this.levelDirectory.oldDataFile() : this.levelDirectory.dataFile();
