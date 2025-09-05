@@ -63,6 +63,8 @@ public class RemoveTagDatagenTest {
                 // This will make GOLD_ORE unable to be loved by piglins.
                 this.tag(ItemTags.PIGLIN_LOVED).remove(key(Items.GOLD_ORE));
 
+                // The beehives item tag doesn't exist, so create it to appease the datagen verification
+                this.tag(ItemTags.create(ResourceLocation.withDefaultNamespace("beehives")));
                 this.copy(TEST_TAG_BLOCK, TEST_TAG_ITEM);
             }
         });
