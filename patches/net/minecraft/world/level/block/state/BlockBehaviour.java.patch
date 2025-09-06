@@ -69,7 +69,7 @@
                  }
              }
  
-@@ -563,12 +_,14 @@
+@@ -563,14 +_,18 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -84,7 +84,11 @@
 +            return this.getBlock().isAir((BlockState)this);
          }
  
++        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#ignitedByLava(BlockGetter, BlockPos, Direction)} instead */
++        @Deprecated
          public boolean ignitedByLava() {
+             return this.ignitedByLava;
+         }
 @@ -581,9 +_,11 @@
          }
  

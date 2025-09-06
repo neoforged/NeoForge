@@ -44,7 +44,7 @@
 +            return false;
 +        }
 +        BlockState state = level.getBlockState(pos);
-+        return state.ignitedByLava();
++        return state.ignitedByLava(level, pos, face);
 +    }
 +
      @Nullable
