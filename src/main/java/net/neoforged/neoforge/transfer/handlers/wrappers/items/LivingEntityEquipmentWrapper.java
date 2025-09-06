@@ -12,6 +12,7 @@ import java.util.Map;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandler;
@@ -117,10 +118,8 @@ public class LivingEntityEquipmentWrapper {
 
         @Override
         protected int getCapacity(ItemResource resource) {
-            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-                return 1;
-            }
-            return resource.getMaxStackSize();
+            int slotLimit = slot.countLimit == 0 ? Item.ABSOLUTE_MAX_STACK_SIZE : slot.countLimit;
+            return resource.isEmpty() ? slotLimit : Math.min(slotLimit, resource.getMaxStackSize());
         }
 
         @Override

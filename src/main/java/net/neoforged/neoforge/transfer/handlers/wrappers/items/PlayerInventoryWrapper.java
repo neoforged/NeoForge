@@ -27,7 +27,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * @see VanillaContainerWrapper
  * @see WorldlyContainerWrapper
  */
-// TODO: do we want to "animate" inserted items just like in PlayerMainInvWrapper?
+// TODO: do we want to "animate" client-side inserted items with setPopTime(POP_TIME_DURATION)?
 public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     /**
      * Gets the inventory wrapper for a {@link Player}.
@@ -52,12 +52,28 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     @Override
-    SlotWrapper newSlotWrapper(int index) {
-        if (Inventory.INVENTORY_SIZE <= index && index < Inventory.INVENTORY_SIZE + 4) {
-            var equipmentSlot = Inventory.EQUIPMENT_SLOT_MAPPING.get(index);
-            return new ArmorSlotWrapper(index, equipmentSlot);
+    void resize() {
+        // We currently limit the player wrapper to main + armor + offhand. This can be changed later if needed.
+        size = Inventory.SLOT_BODY_ARMOR;
+        while (slotWrappers.size() < size) {
+            int index = slotWrappers.size();
+            if (Inventory.INVENTORY_SIZE <= index && index < Inventory.SLOT_OFFHAND) {
+                var equipmentSlot = Inventory.EQUIPMENT_SLOT_MAPPING.get(index);
+                slotWrappers.add(new ArmorSlotWrapper(index, equipmentSlot));
+            } else {
+                slotWrappers.add(new SlotWrapper(index));
+            }
         }
-        return super.newSlotWrapper(index);
+    }
+
+    @Override
+    void onRootCommit() {
+        super.onRootCommit();
+        // This sends a ClientboundContainerSetSlotPacket for each changed slot,
+        // which seems to be a good thing to do based on vanilla's Inventory#placeItemBackInInventory
+        if (!inventory.player.level().isClientSide()) {
+            inventory.player.containerMenu.broadcastChanges();
+        }
     }
 
     /**
@@ -104,7 +120,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
      * Retrieves a wrapper around all 4 armor slots.
      */
     public ResourceHandler<ItemResource> getArmorSlots() {
-        return RangedResourceHandler.of(this, Inventory.INVENTORY_SIZE, Inventory.INVENTORY_SIZE + 4);
+        return RangedResourceHandler.of(this, Inventory.INVENTORY_SIZE, Inventory.SLOT_OFFHAND);
     }
 
     /**
@@ -226,7 +242,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
 
         @Override
         protected int getCapacity(ItemResource resource) {
-            return 1;
+            return slot.countLimit;
         }
 
         @Override

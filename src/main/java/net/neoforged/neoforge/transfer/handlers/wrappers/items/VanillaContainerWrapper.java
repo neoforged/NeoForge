@@ -77,32 +77,29 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     }
 
     private final Container container;
-    private int size;
-    private final List<SlotWrapper> slotWrappers = new ArrayList<>();
+    int size;
+    final List<SlotWrapper> slotWrappers = new ArrayList<>();
     private final RootCommitJournal setChangedJournal;
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
-        this.setChangedJournal = new RootCommitJournal(container::setChanged);
+        this.setChangedJournal = new RootCommitJournal(this::onRootCommit);
     }
 
-    private void resize() {
+    void resize() {
         size = container.getContainerSize();
         while (slotWrappers.size() < size) {
-            slotWrappers.add(newSlotWrapper(slotWrappers.size()));
+            slotWrappers.add(new SlotWrapper(slotWrappers.size()));
         }
-    }
-
-    /**
-     * Creates a new wrapper for the given index.
-     */
-    SlotWrapper newSlotWrapper(int index) {
-        return new SlotWrapper(index);
     }
 
     SlotWrapper getSlotWrapper(int index) {
         Objects.checkIndex(index, size());
         return slotWrappers.get(index);
+    }
+
+    void onRootCommit() {
+        container.setChanged();
     }
 
     @Override
