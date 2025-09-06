@@ -90,7 +90,8 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     public long getCapacityAsLong(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
 
-        // Note that the empty fluid has a content registered for it, so this case does not require special handling.
+        // Note that the empty fluid has a content registered for it with a capacity of 1 bucket, so this case does not require special handling.
+        // TODO: For the empty fluid, consider returning the largest capacity across all registered fluid contents instead.
         CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
@@ -100,7 +101,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmpty(resource);
 
-        return CauldronFluidContent.getForFluid(resource.getFluid()) != null;
+        return resource.isComponentsPatchEmpty() && CauldronFluidContent.getForFluid(resource.getFluid()) != null;
     }
 
     /**
@@ -129,6 +130,10 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
+        if (!resource.isComponentsPatchEmpty()) {
+            // Don't accept patched resources as we can only represent the Fluid in a cauldron.
+            return 0;
+        }
         CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getFluid());
         if (insertContent == null) {
             return 0;
@@ -205,5 +210,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
         location.level.setBlock(location.pos, originalState, 0);
         // Now perform the change that will trigger notifications to other blocks/neighbors/clients.
         location.level.setBlockAndUpdate(location.pos, state);
+
+        // Currently we don't send a BLOCK_CHANGE nor FLUID_PLACE/FLUID_PICKUP game event. This can be reconsidered.
     }
 }

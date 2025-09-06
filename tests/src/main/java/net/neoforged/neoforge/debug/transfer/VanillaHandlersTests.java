@@ -401,7 +401,7 @@ public class VanillaHandlersTests {
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
             ItemResource resource = ItemResource.of(stack);
-            helper.assertTrue(resource.matches(stack), "Item variant in slot " + i + " must match stack");
+            helper.assertTrue(resource.matches(stack), "Item resource in slot " + i + " must match stack");
             int expectedCount = stack.getCount();
             int actualCount = handler.getAmountAsInt(i);
             helper.assertValueEqual(expectedCount, actualCount, "slot " + i + " item count");

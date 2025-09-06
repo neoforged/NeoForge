@@ -36,6 +36,9 @@ public class ResourceHandlerSlot extends StackCopySlot {
     public boolean mayPlace(ItemStack stack) {
         if (stack.isEmpty())
             return false;
+        // Use isValid as a reasonable estimate.
+        // We can't try to insert as we don't want to check the current contents to allow swapping.
+        // This method is left for mods to override if this is not sufficient.
         return handler.isValid(index, ItemResource.of(stack));
     }
 
