@@ -9,6 +9,7 @@ import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +22,8 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 /**
  * Exposes the armor or hands inventory of an {@link LivingEntity} as a {@code ResourceHandler<ItemResource>}
  * using {@link LivingEntity#getItemBySlot(EquipmentSlot)} and {@link LivingEntity#setItemSlot(EquipmentSlot, ItemStack)}.
+ *
+ * @see PlayerInventoryWrapper
  */
 public class LivingEntityEquipmentWrapper {
     /**
@@ -37,9 +40,17 @@ public class LivingEntityEquipmentWrapper {
      *
      * @param entity        the entity whose equipment slots should be wrapped
      * @param equipmentType the type of equipment slots to wrap
-     * @throws IllegalArgumentException if the passed entity is a player. For players the {@link PlayerInventoryWrapper} should be used instead.
+     * @throws IllegalArgumentException if the entity is a player and the equipment type is neither
+     *                                  {@link EquipmentSlot.Type#HAND} nor {@link EquipmentSlot.Type#HUMANOID_ARMOR}
      */
     public static ResourceHandler<ItemResource> of(LivingEntity entity, EquipmentSlot.Type equipmentType) {
+        if (entity instanceof Player player) {
+            return switch (equipmentType) {
+                case HAND -> PlayerInventoryWrapper.of(player).getHandSlots();
+                case HUMANOID_ARMOR -> PlayerInventoryWrapper.of(player).getArmorSlots();
+                default -> throw new IllegalArgumentException("Wrapping the equipment type " + equipmentType + " of a player is not supported.");
+            };
+        }
         // Only expose a ResourceHandler in this method.
         return internalOf(entity, equipmentType);
     }
@@ -49,16 +60,24 @@ public class LivingEntityEquipmentWrapper {
      *
      * @param entity        the entity whose equipment slots should be wrapped
      * @param equipmentSlot the equipment slot to wrap
-     * @throws IllegalArgumentException if the passed entity is a player. For players the {@link PlayerInventoryWrapper} should be used instead.
+     * @throws IllegalArgumentException if the entity is a player and the equipment slot's type is neither
+     *                                  {@link EquipmentSlot.Type#HAND} nor {@link EquipmentSlot.Type#HUMANOID_ARMOR}
      */
     public static ResourceHandler<ItemResource> of(LivingEntity entity, EquipmentSlot equipmentSlot) {
+        if (entity instanceof Player player) {
+            if (equipmentSlot == EquipmentSlot.MAINHAND) {
+                return PlayerInventoryWrapper.of(player).getMainHandSlot();
+            } else if (equipmentSlot == EquipmentSlot.OFFHAND) {
+                return PlayerInventoryWrapper.of(player).getHandSlot(InteractionHand.OFF_HAND);
+            } else if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+                return PlayerInventoryWrapper.of(player).getArmorSlot(equipmentSlot);
+            }
+            throw new IllegalArgumentException("Wrapping the equipment slot " + equipmentSlot + " of a player is not supported.");
+        }
         return internalOf(entity, equipmentSlot.getType()).getSlotWrapper(equipmentSlot.getIndex());
     }
 
     private static EquipmentTypeWrapper internalOf(LivingEntity entity, EquipmentSlot.Type equipmentType) {
-        if (entity instanceof Player) {
-            throw new IllegalArgumentException("LivingEntityEquipmentWrapper does not support players. Use PlayerInventoryWrapper instead.");
-        }
         var wrapper = wrappers.computeIfAbsent(entity, LivingEntityEquipmentWrapper::new);
         return wrapper.byType.get(equipmentType);
     }

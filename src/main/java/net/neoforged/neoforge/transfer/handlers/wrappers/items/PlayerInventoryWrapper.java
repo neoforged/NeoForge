@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -84,19 +85,31 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     /**
+     * Retrieves a wrapper for the slot corresponding to the current main hand.
+     */
+    public ResourceHandler<ItemResource> getMainHandSlot() {
+        if (Inventory.isHotbarSlot(inventory.getSelectedSlot())) {
+            return getSlot(inventory.getSelectedSlot());
+        } else {
+            throw new RuntimeException("Unexpected player selected slot: " + inventory.getSelectedSlot());
+        }
+    }
+
+    /**
      * Retrieves a wrapper for the slot corresponding to the given hand.
      */
     public ResourceHandler<ItemResource> getHandSlot(InteractionHand hand) {
         return switch (hand) {
-            case MAIN_HAND -> {
-                if (Inventory.isHotbarSlot(inventory.getSelectedSlot())) {
-                    yield getSlot(inventory.getSelectedSlot());
-                } else {
-                    throw new RuntimeException("Unexpected player selected slot: " + inventory.getSelectedSlot());
-                }
-            }
+            case MAIN_HAND -> getMainHandSlot();
             case OFF_HAND -> getSlot(Inventory.SLOT_OFFHAND);
         };
+    }
+
+    /**
+     * Retrieves a wrapper around both hand slots.
+     */
+    public ResourceHandler<ItemResource> getHandSlots() {
+        return new CombinedResourceHandler<>(getMainHandSlot(), getHandSlot(InteractionHand.OFF_HAND));
     }
 
     /**
