@@ -39,6 +39,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.LivingEntityEquipmentWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
@@ -302,7 +304,7 @@ public class VanillaHandlersTests {
 
             try (var tx = Transaction.open(null)) {
                 if (resourceHandler.insert(ItemResource.of(Items.SHULKER_BOX), 1, tx) > 0) {
-                    helper.fail(Component.literal("Expected shulker box to be rejected"), pos);
+                    helper.fail("Expected shulker box to be rejected from side: " + side, pos);
                 }
             }
         }
@@ -375,58 +377,55 @@ public class VanillaHandlersTests {
         helper.succeed();
     }
 
+    /**
+     * Regression test for <a href="https://github.com/FabricMC/fabric/issues/2810">double chest wrapper only updating modified halves</a>.
+     */
     // TODO: I would like to bring this test over, but we need snbt test structure support first
-//    /**
-//     * Regression test for <a href="https://github.com/FabricMC/fabric/issues/2810">double chest wrapper only updating modified halves</a>.
-//     */
-//    @GameTest(structure = "fabric-transfer-api-v1-testmod:double_chest_comparators", skyAccess = true)
-//    public static void testDoubleChestComparator(TestContext context) {
-//        BlockPos chestPos = new BlockPos(2, 1, 2);
-//        Storage<ItemResource> storage = ItemStorage.SIDED.find(context.getWorld(), context.getAbsolutePos(chestPos), Direction.UP);
-//        context.assertTrue(storage != null, Text.literal("Storage must not be null"));
-//
-//        // Insert one item
-//        try (Transaction tx = Transaction.open(null)) {
-//            context.assertTrue(storage.insert(ItemResource.of(Items.DIAMOND), 1, tx) == 1, Text.literal("Diamond should have been inserted"));
-//            tx.commit();
-//        }
-//
-//        // Check that the inventory and slotted storages match
-//        Inventory inventory = HopperBlockEntity.getInventoryAt(context.getWorld(), context.getAbsolutePos(chestPos));
-//        context.assertTrue(inventory != null, Text.literal("Inventory must not be null"));
-//
-//        if (!(storage instanceof SlottedStorage<ItemResource> slottedStorage)) {
-//            throw context.assertionException("Double chest storage must be a SlottedStorage");
-//        }
-//
-//        for (int i = 0; i < inventory.size(); ++i) {
-//            ItemStack stack = inventory.getStack(i);
-//            ItemResource variant = ItemResource.of(stack.getItem());
-//            context.assertTrue(variant.matches(stack), Text.literal("Item variant in slot " + i + " must match stack"));
-//            long expectedCount = stack.getCount();
-//            long actualCount = slottedStorage.getSlot(i).getAmount();
-//            context.assertTrue(expectedCount == actualCount, Text.literal("Slot " + i + " should have " + expectedCount + " items, but has " + actualCount));
-//        }
-//
-//        // Check that an update is queued for every single comparator
-//        MutableInt comparatorCount = new MutableInt();
-//
-//        context.forEachRelativePos(relativePos -> {
-//            if (context.getBlockState(relativePos).getBlock() != Blocks.COMPARATOR) {
-//                return;
-//            }
-//
-//            comparatorCount.increment();
-//
-//            if (!context.getWorld().getBlockTickScheduler().isQueued(context.getAbsolutePos(relativePos), Blocks.COMPARATOR)) {
-//                throw context.assertionException("Comparator at " + relativePos + " should have an update scheduled");
-//            }
-//        });
-//
-//        context.assertTrue(comparatorCount.intValue() == 6, Text.literal("Expected exactly 6 comparators"));
-//
-//        helper.succeed();
-//    }
+    // @GameTest(template = "fabric-transfer-api-v1-testmod:double_chest_comparators")
+    // @TestHolder
+    public static void testDoubleChestComparator(ExtendedGameTestHelper helper) {
+        BlockPos chestPos = new BlockPos(2, 1, 2);
+        // TODO: use ResourceHandler capability
+        ResourceHandler<ItemResource> handler = EmptyResourceHandler.instance(); // helper.requireCapability(Capabilities.ItemHandler.BLOCK, chestPos, Direction.UP);
+
+        // Insert one item
+        try (Transaction tx = Transaction.open(null)) {
+            helper.assertTrue(handler.insert(ItemResource.of(Items.DIAMOND), 1, tx) == 1, "Diamond should have been inserted");
+            tx.commit();
+        }
+
+        // Check that the container and the handler match
+        Container container = HopperBlockEntity.getContainerAt(helper.getLevel(), helper.absolutePos(chestPos));
+        helper.assertTrue(container != null, "Container must not be null");
+
+        for (int i = 0; i < container.getContainerSize(); ++i) {
+            ItemStack stack = container.getItem(i);
+            ItemResource resource = ItemResource.of(stack);
+            helper.assertTrue(resource.matches(stack), "Item variant in slot " + i + " must match stack");
+            int expectedCount = stack.getCount();
+            int actualCount = handler.getAmountAsInt(i);
+            helper.assertValueEqual(expectedCount, actualCount, "slot " + i + " item count");
+        }
+
+        // Check that an update is queued for every single comparator
+        AtomicInteger comparatorCount = new AtomicInteger();
+
+        helper.forEveryBlockInStructure(relativePos -> {
+            if (helper.getBlockState(relativePos).getBlock() != Blocks.COMPARATOR) {
+                return;
+            }
+
+            comparatorCount.incrementAndGet();
+
+            if (!helper.getLevel().getBlockTicks().hasScheduledTick(helper.absolutePos(relativePos), Blocks.COMPARATOR)) {
+                throw helper.assertionException("Comparator at " + relativePos + " should have an update scheduled");
+            }
+        });
+
+        helper.assertTrue(comparatorCount.intValue() == 6, "Expected exactly 6 comparators");
+
+        helper.succeed();
+    }
 
     /**
      * Regression test for <a href="https://github.com/FabricMC/fabric/issues/3017">composters not always incrementing their level on the first insert</a>.
@@ -445,7 +444,7 @@ public class VanillaHandlersTests {
 
             try (Transaction tx = Transaction.open(null)) {
                 if (wrapper.insert(carrot, 1, tx) != 1) {
-                    helper.fail(Component.literal("Carrot should have been inserted"), pos);
+                    helper.fail("Carrot should have been inserted", pos);
                 }
 
                 tx.commit();
@@ -470,11 +469,11 @@ public class VanillaHandlersTests {
 
         try (Transaction tx = Transaction.open(null)) {
             resourceHandler.insert(ItemResource.of(Items.MUSIC_DISC_11), 1, tx);
-            helper.assertBlockState(pos, state -> !state.getValue(JukeboxBlock.HAS_RECORD), (b) -> Component.literal("Jukebox should not have its state changed mid-transaction"));
+            helper.assertBlockState(pos, state -> !state.getValue(JukeboxBlock.HAS_RECORD), b -> Component.literal("Jukebox should not have its state changed mid-transaction"));
             tx.commit();
         }
 
-        helper.assertBlockState(pos, state -> state.getValue(JukeboxBlock.HAS_RECORD), (b) -> Component.literal("Jukebox should have its state changed"));
+        helper.assertBlockState(pos, state -> state.getValue(JukeboxBlock.HAS_RECORD), b -> Component.literal("Jukebox should have its state changed"));
         helper.succeed();
     }
 
