@@ -52,3 +52,15 @@
          this.blockTags = p_275634_;
      }
  
+@@ -43,7 +_,10 @@
+             this.tagsToCopy.forEach((p_274763_, p_274764_) -> {
+                 TagBuilder tagbuilder = this.getOrCreateRawBuilder((TagKey<Item>)p_274764_);
+                 Optional<TagBuilder> optional = p_274767_.apply(p_274763_);
+-                optional.orElseThrow(() -> new IllegalStateException("Missing block tag " + p_274764_.location())).build().forEach(tagbuilder::add);
++                // Neo: Copy over the remove entries as well
++                var fromBuilder = optional.orElseThrow(() -> new IllegalStateException("Missing block tag " + p_274764_.location()));
++                fromBuilder.build().forEach(tagbuilder::add);
++                fromBuilder.getRemoveEntries().forEach(tagbuilder::remove);
+             });
+             return (HolderLookup.Provider)p_274766_;
+         });
