@@ -1,5 +1,48 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -82,6 +_,42 @@
+         p_59316_.limitSize(this.getMaxStackSize(p_59316_));
+     }
+ 
++    // Neo: Make the hopper cooldown time transactional (it may change when items are inserted)
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> cooldownTimeJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++        @Override
++        protected Integer createSnapshot() {
++            return cooldownTime;
++        }
++        @Override
++        protected void revertToSnapshot(Integer snapshot) {
++            cooldownTime = snapshot;
++        }
++    };
++
++    // Neo: Checks if the hopper was empty just before the insertion of `amountChange` at index `slot`.
++    private boolean wasEmpty(int slot, int amountChange) {
++        if (items.get(slot).getCount() != amountChange) return false;
++        for (int i = 0; i < items.size(); ++i) {
++            if (i != slot && !items.get(i).isEmpty()) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        // If we just went from empty to something in the hopper, reset the cooldown.
++        if (amountChange > 0 && !isOnCustomCooldown() && wasEmpty(slot, amountChange)) {
++            cooldownTimeJournal.updateSnapshots(transaction);
++            // This cooldown is always set to 8 in vanilla with one exception:
++            // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++            // has not been updated as recently as the one pushing items into it.
++            // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++            setCooldown(MOVE_ITEM_SPEED);
++        }
++    }
++
+     @Override
+     public void setBlockState(BlockState p_326468_) {
+         super.setBlockState(p_326468_);
 @@ -138,10 +_,11 @@
      }
  
