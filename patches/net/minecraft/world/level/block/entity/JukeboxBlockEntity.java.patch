@@ -1,20 +1,12 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -108,9 +_,38 @@
+@@ -108,9 +_,30 @@
          return itemstack;
      }
  
 +    // Neo: Support deferring non-transactional notification and song player update until the end of a transaction
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<@org.jetbrains.annotations.Nullable Void> itemChangedJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
-+        @Override
-+        protected @org.jetbrains.annotations.Nullable Void createSnapshot() { return null; }
-+        @Override
-+        protected void revertToSnapshot(@org.jetbrains.annotations.Nullable Void snapshot) {}
-+        @Override
-+        protected void onRootCommit(@org.jetbrains.annotations.Nullable Void originalState) {
-+            itemChanged();
-+        }
-+    };
++    private final net.neoforged.neoforge.transfer.transaction.RootCommitJournal itemChangedJournal =
++            new net.neoforged.neoforge.transfer.transaction.RootCommitJournal(this::itemChanged);
 +    @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        itemChangedJournal.updateSnapshots(transaction);

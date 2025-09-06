@@ -24,9 +24,8 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An implementation of {@code ResourceHandler<ItemResource>} for vanilla's {@link Container}.
@@ -80,10 +79,11 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     private final Container container;
     private int size;
     private final List<SlotWrapper> slotWrappers = new ArrayList<>();
-    private final SetChangedJournal setChangedJournal = new SetChangedJournal();
+    private final RootCommitJournal setChangedJournal;
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
+        this.setChangedJournal = new RootCommitJournal(container::setChanged);
     }
 
     private void resize() {
@@ -143,21 +143,6 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
     @Override
     public String toString() {
         return "VanillaContainerWrapper{container=%s}".formatted(container);
-    }
-
-    private class SetChangedJournal extends SnapshotJournal<@Nullable Void> {
-        @Override
-        protected @Nullable Void createSnapshot() {
-            return null;
-        }
-
-        @Override
-        protected void revertToSnapshot(@Nullable Void snapshot) {}
-
-        @Override
-        protected void onRootCommit(@Nullable Void originalState) {
-            container.setChanged();
-        }
     }
 
     class SlotWrapper extends ItemStackResourceHandler {
