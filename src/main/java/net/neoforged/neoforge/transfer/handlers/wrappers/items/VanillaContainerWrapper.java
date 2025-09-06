@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
@@ -78,7 +79,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
     private final Container container;
     private int size;
-    private final ArrayList<SlotWrapper> slotWrappers = new ArrayList<>();
+    private final List<SlotWrapper> slotWrappers = new ArrayList<>();
     private final SetChangedJournal setChangedJournal = new SetChangedJournal();
 
     VanillaContainerWrapper(Container container) {
@@ -116,7 +117,7 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        return getSlotWrapper(index).extract(resource, amount, transaction);
+        return getSlotWrapper(index).extract(0, resource, amount, transaction);
     }
 
     @Override
@@ -188,11 +189,13 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
          * <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
          * <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
          * </ul>
+         *
+         * <p>Should these extra checks cause performance issues, we can switch to subclasses.
          */
         @Override
         protected int getCapacity(ItemResource resource) {
             // Special case to limit buckets to 1 in furnace fuel inputs.
-            if (index == 1 && resource.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
+            if (index == /* AbstractFurnaceBlockEntity.SLOT_FUEL */ 1 && resource.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
                 return 1;
             }
 
@@ -225,8 +228,8 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         // We override updateSnapshots to also schedule a setChanged call for the backing container.
         @Override
         public void updateSnapshots(TransactionContext transaction) {
-            setChangedJournal.updateSnapshots(transaction);
             super.updateSnapshots(transaction);
+            setChangedJournal.updateSnapshots(transaction);
 
             // For chests: also schedule a setChanged call for the other half
             if (container instanceof ChestBlockEntity chest && chest.getBlockState().getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
@@ -245,10 +248,8 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
 
             // TODO: we should maybe re-evaluate this, it might make sense to keep it for item capabilities only
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
-                // Components have changed, we need to copy the stack.
+                // The item matches: set the original stack in the container, with updated components and count.
                 ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
-
-                // None is empty and the items and components match: just update the amount, and reuse the original stack.
                 original.setCount(currentStack.getCount());
                 setStack(original);
             } else {

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 public class ItemTests {
     @Test
-    public void testStackReference() {
+    void testStackReference() {
         // Ensure that Container wrappers will try to mutate the backing stack as much as possible.
         // In many cases, MC code captures a reference to the ItemStack so we want to edit that stack directly
         // and not a copy whenever we can. Obviously this can't be perfect, but we try to cover as many cases as possible.
@@ -41,7 +41,7 @@ public class ItemTests {
 
         if (stack != container.getItem(0)) throw new AssertionError("Stack should have stayed the same.");
 
-        // Commit should try to edit the original stack when it is feasible to do so.
+        // Commit should modify the count of the original stack.
         try (Transaction tx = Transaction.open(null)) {
             containerWrapper.extract(ItemResource.of(Items.DIAMOND), 1, tx);
             tx.commit();
@@ -54,7 +54,7 @@ public class ItemTests {
         ItemResource newResource = oldResource.with(DataComponents.MAX_DAMAGE, 10);
 
         try (Transaction tx = Transaction.open(null)) {
-            containerWrapper.extract(oldResource, 2, tx);
+            containerWrapper.extract(oldResource, 1, tx);
             containerWrapper.insert(newResource, 5, tx);
             tx.commit();
         }
@@ -64,7 +64,7 @@ public class ItemTests {
     }
 
     @Test
-    public void testContainerWrappers() {
+    void testContainerWrappers() {
         ItemResource emptyBucket = ItemResource.of(Items.BUCKET);
         TestWorldlyContainer testContainer = new TestWorldlyContainer();
         checkComparatorOutput(testContainer);
@@ -75,7 +75,7 @@ public class ItemTests {
         var upWrapper = new WorldlyContainerWrapper(testContainer, Direction.UP);
 
         // Make sure querying a new wrapper returns the same one.
-        if (VanillaContainerWrapper.of(testContainer) != unsidedWrapper) throw new AssertionError("Wrappers should be ==.");
+        if (VanillaContainerWrapper.of(testContainer) != unsidedWrapper) throw new AssertionError("Wrappers should be ==");
 
         for (int iter = 0; iter < 2; ++iter) {
             // First time, abort.
@@ -101,7 +101,7 @@ public class ItemTests {
 
         // Check commit.
         if (!testContainer.getItem(0).isEmpty()) throw new AssertionError("Slot 0 should have been empty.");
-        if (!testContainer.getItem(1).is(Items.BUCKET) || testContainer.getItem(1).getCount() != 1) throw new AssertionError("Slot 1 should have been a bucket.");
+        if (!testContainer.getItem(1).is(Items.BUCKET) || testContainer.getItem(1).getCount() != 1) throw new AssertionError("Slot 1 should have been a single bucket.");
 
         checkComparatorOutput(testContainer);
 
@@ -125,7 +125,7 @@ public class ItemTests {
     }
 
     private static class TestWorldlyContainer extends SimpleContainer implements WorldlyContainer {
-        private static final int[] SLOTS = new int[] { 0, 1, 2 };
+        private static final int[] SLOTS = { 0, 1, 2 };
 
         TestWorldlyContainer() {
             super(SLOTS.length);
@@ -156,9 +156,14 @@ public class ItemTests {
      * Test insertion when {@link Container#getMaxStackSize()} is the bottleneck.
      */
     @Test
-    public void testLimitedStackCountContainer() {
+    void testLimitedStackCountContainer() {
         ItemResource diamond = ItemResource.of(Items.DIAMOND);
-        LimitedStackCountContainer container = new LimitedStackCountContainer(diamond.toStack(), diamond.toStack(), diamond.toStack());
+        SimpleContainer container = new SimpleContainer(diamond.toStack(), diamond.toStack(), diamond.toStack()) {
+            @Override
+            public int getMaxStackSize() {
+                return 3;
+            }
+        };
         var wrapper = VanillaContainerWrapper.of(container);
 
         // Should only be able to insert 2 diamonds per stack * 3 stacks = 6 diamonds.
@@ -175,9 +180,9 @@ public class ItemTests {
      * Test insertion when {@link Item#getMaxStackSize} is the bottleneck.
      */
     @Test
-    public void testLimitedStackCountItem() {
+    void testLimitedStackCountItem() {
         ItemResource diamondPickaxe = ItemResource.of(Items.DIAMOND_PICKAXE);
-        LimitedStackCountContainer container = new LimitedStackCountContainer(5);
+        SimpleContainer container = new SimpleContainer(5);
         var wrapper = VanillaContainerWrapper.of(container);
 
         // Should only be able to insert 5 pickaxes, as the item limits stack counts to 1.
@@ -187,21 +192,6 @@ public class ItemTests {
             }
 
             checkComparatorOutput(container);
-        }
-    }
-
-    private static class LimitedStackCountContainer extends SimpleContainer {
-        LimitedStackCountContainer(int size) {
-            super(size);
-        }
-
-        LimitedStackCountContainer(ItemStack... stacks) {
-            super(stacks);
-        }
-
-        @Override
-        public int getMaxStackSize() {
-            return 3;
         }
     }
 
@@ -224,7 +214,7 @@ public class ItemTests {
      * Ensure that SimpleContainer only calls setChanged at the end of a successful transaction.
      */
     @Test
-    public void testSimpleContainerUpdates() {
+    void testSimpleContainerUpdates() {
         var simpleContainer = new SimpleContainer(2) {
             boolean throwOnSetChanges = true;
             boolean setChangesCalled = false;

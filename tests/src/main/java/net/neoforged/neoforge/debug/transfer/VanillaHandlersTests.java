@@ -21,6 +21,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.ComparatorBlock;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
@@ -51,6 +52,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
+import org.apache.commons.lang3.ArrayUtils;
 
 @ForEachTest(groups = "transfer.vanillahandlers")
 public class VanillaHandlersTests {
@@ -75,7 +77,7 @@ public class VanillaHandlersTests {
         helper.assertValueEqual(HopperBlockEntity.MOVE_ITEM_SPEED, getHopperCooldown(hopperEntity), "hopper cooldown");
         hopperEntity.setCooldown(0);
 
-        // Second insertion into hopper -> no cooldown
+        // Second insertion into hopper -> no cooldown because the hopper is not empty
         try (var transaction = Transaction.open(null)) {
             hopper.insert(RESOURCE, 10, transaction);
             transaction.commit();
@@ -181,6 +183,7 @@ public class VanillaHandlersTests {
         var resourceHandler = VanillaContainerWrapper.of(container);
 
         BlockPos comparatorPos = new BlockPos(1, 1, 0);
+        BlockPos absoluteComparatorPos = helper.absolutePos(comparatorPos);
         Direction comparatorFacing = helper.getTestRotation().rotate(Direction.WEST);
         // support block under the comparator
         helper.setBlock(comparatorPos.relative(Direction.DOWN), Blocks.GREEN_WOOL.defaultBlockState());
@@ -188,23 +191,23 @@ public class VanillaHandlersTests {
         helper.setBlock(comparatorPos, Blocks.COMPARATOR.defaultBlockState().setValue(ComparatorBlock.FACING, comparatorFacing));
 
         try (Transaction transaction = Transaction.open(null)) {
-            if (level.getBlockTicks().hasScheduledTick(helper.absolutePos(comparatorPos), Blocks.COMPARATOR)) {
+            if (level.getBlockTicks().hasScheduledTick(absoluteComparatorPos, Blocks.COMPARATOR)) {
                 throw helper.assertionException("Comparator should not have a tick scheduled.");
             }
 
             resourceHandler.insert(resource, 1000000, transaction);
 
             // uncommitted insert should not schedule an update
-            if (level.getBlockTicks().hasScheduledTick(helper.absolutePos(comparatorPos), Blocks.COMPARATOR)) {
+            if (level.getBlockTicks().hasScheduledTick(absoluteComparatorPos, Blocks.COMPARATOR)) {
                 throw helper.assertionException("Comparator should not have a tick scheduled.");
             }
 
             transaction.commit();
+        }
 
-            // committed insert should schedule an update
-            if (!level.getBlockTicks().hasScheduledTick(helper.absolutePos(comparatorPos), Blocks.COMPARATOR)) {
-                throw helper.assertionException("Comparator should have a tick scheduled.");
-            }
+        // committed insert should schedule an update
+        if (!level.getBlockTicks().hasScheduledTick(absoluteComparatorPos, Blocks.COMPARATOR)) {
+            throw helper.assertionException("Comparator should have a tick scheduled.");
         }
 
         helper.succeed();
@@ -276,12 +279,12 @@ public class VanillaHandlersTests {
         // Let's also check the state properties. Only slot 2 should be occupied.
         BlockState state = bookshelf.getBlockState();
 
-        if (state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_0_OCCUPIED)) throw helper.assertionException("Slot 0 should not be occupied");
-        if (state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_1_OCCUPIED)) throw helper.assertionException("Slot 1 should not be occupied");
-        if (!state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_2_OCCUPIED)) throw helper.assertionException("Slot 2 should be occupied");
-        if (state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_3_OCCUPIED)) throw helper.assertionException("Slot 3 should not be occupied");
-        if (state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_4_OCCUPIED)) throw helper.assertionException("Slot 4 should not be occupied");
-        if (state.getValue(BlockStateProperties.CHISELED_BOOKSHELF_SLOT_5_OCCUPIED)) throw helper.assertionException("Slot 5 should not be occupied");
+        for (var property : ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES) {
+            helper.assertValueEqual(
+                    property == BlockStateProperties.CHISELED_BOOKSHELF_SLOT_2_OCCUPIED,
+                    state.getValue(property),
+                    "Value of property " + property.getName());
+        }
 
         helper.succeed();
     }
@@ -293,11 +296,14 @@ public class VanillaHandlersTests {
         BlockPos pos = new BlockPos(0, 2, 0);
         helper.setBlock(pos, Blocks.SHULKER_BOX);
         ShulkerBoxBlockEntity shulker = helper.getBlockEntity(pos, ShulkerBoxBlockEntity.class);
-        var resourceHandler = new WorldlyContainerWrapper(shulker, null);
 
-        try (var tx = Transaction.open(null)) {
-            if (resourceHandler.insert(ItemResource.of(Items.SHULKER_BOX), 1, tx) > 0) {
-                helper.fail(Component.literal("Expected shulker box to be rejected"), pos);
+        for (var side : ArrayUtils.add(Direction.values(), null)) {
+            var resourceHandler = new WorldlyContainerWrapper(shulker, side);
+
+            try (var tx = Transaction.open(null)) {
+                if (resourceHandler.insert(ItemResource.of(Items.SHULKER_BOX), 1, tx) > 0) {
+                    helper.fail(Component.literal("Expected shulker box to be rejected"), pos);
+                }
             }
         }
 
@@ -339,15 +345,30 @@ public class VanillaHandlersTests {
         BrewingStandBlockEntity brewingStand = helper.getBlockEntity(pos, BrewingStandBlockEntity.class);
         var brewingStandWrapper = VanillaContainerWrapper.of(brewingStand);
 
+        var glassBottle = ItemResource.of(Items.GLASS_BOTTLE);
+
         try (Transaction tx = Transaction.open(null)) {
             for (int bottleSlot = 0; bottleSlot < 3; ++bottleSlot) {
-                if (brewingStandWrapper.insert(bottleSlot, ItemResource.of(Items.GLASS_BOTTLE), 2, tx) != 1) {
+                if (brewingStandWrapper.insert(bottleSlot, glassBottle, 2, tx) != 1) {
                     throw helper.assertionException("Exactly 1 glass bottle should have been inserted");
                 }
             }
 
             if (brewingStandWrapper.insert(3, ItemResource.of(Items.REDSTONE), 2, tx) != 2) {
                 throw helper.assertionException("Brewing ingredient insertion should not be limited");
+            }
+        }
+
+        try (Transaction tx = Transaction.open(null)) {
+            // Insertion of glass bottles should put exactly 1 bottle in each bottle slot
+            if (brewingStandWrapper.insert(glassBottle, 10, tx) != 3) {
+                throw helper.assertionException("Exactly 3 glass bottles should have been inserted");
+            }
+
+            for (int bottleSlot = 0; bottleSlot < 3; ++bottleSlot) {
+                if (!glassBottle.equals(brewingStandWrapper.getResource(bottleSlot)) || brewingStandWrapper.getAmountAsInt(bottleSlot) != 1) {
+                    throw helper.assertionException("Exactly 1 glass bottle should be stored at the bottle slot " + bottleSlot);
+                }
             }
         }
 
@@ -430,7 +451,7 @@ public class VanillaHandlersTests {
                 tx.commit();
             }
 
-            helper.assertBlockState(pos, state -> state.getValue(ComposterBlock.LEVEL) == 1, (s) -> Component.literal("Composter should have level 1"));
+            helper.assertBlockState(pos, state -> state.getValue(ComposterBlock.LEVEL) == 1, s -> Component.literal("Composter should have level 1: " + s));
         }
 
         helper.succeed();
@@ -544,6 +565,7 @@ public class VanillaHandlersTests {
             if (chestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
                 helper.fail("Should have inserted 1 cursed diamond chestplate");
             }
+            // Extraction of the cursed chestplate is allowed in creative mode
             if (chestWrapper.extract(cursedDiamondChestplate, 1, tx) != 1) {
                 helper.fail("Should have extracted 1 cursed diamond chestplate");
             }
@@ -556,6 +578,7 @@ public class VanillaHandlersTests {
             if (survivalChestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
                 helper.fail("Should have inserted 1 cursed diamond chestplate");
             }
+            // Extraction of the cursed chestplate is disallowed in survival mode
             if (survivalChestWrapper.extract(cursedDiamondChestplate, 1, tx) != 0) {
                 helper.fail("Should have not been able to extract 1 cursed diamond chestplate");
             }
