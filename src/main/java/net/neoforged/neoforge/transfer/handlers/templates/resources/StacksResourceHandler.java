@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
@@ -53,8 +53,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public abstract class StacksResourceHandler<S, T extends IResource> implements ResourceHandler<T>, ValueIOSerializable {
     public static final String VALUE_IO_KEY = "stacks";
 
-    protected NonNullList<S> stacks;
     protected final S emptyStack;
+    protected NonNullList<S> stacks;
     protected final Codec<NonNullList<S>> codec;
 
     private final List<StackJournal> snapshotJournals;
@@ -64,20 +64,21 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
     }
 
     protected StacksResourceHandler(NonNullList<S> stacks, S emptyStack, Codec<S> stackCodec) {
-        this.stacks = mutableCopyOf(stacks);
         this.emptyStack = emptyStack;
+        this.stacks = mutableCopyOf(stacks);
         // Don't use NonNullList.codecOf because it creates an unmodifiable list
-        this.codec = stackCodec.listOf().xmap(StacksResourceHandler::mutableCopyOf, Function.identity());
+        this.codec = stackCodec.listOf().xmap(this::mutableCopyOf, Function.identity());
         this.snapshotJournals = new ArrayList<>(this.stacks.size());
         for (int i = 0; i < this.stacks.size(); i++) {
             snapshotJournals.add(new StackJournal(i));
         }
     }
 
-    private static <T> NonNullList<T> mutableCopyOf(Collection<T> list) {
-        NonNullList<T> ret = NonNullList.createWithCapacity(list.size());
-        ret.addAll(list);
-        return ret;
+    /**
+     * Creates a {@link NonNullList} that is a fixed-size mutable copy of the given collection.
+     */
+    private NonNullList<S> mutableCopyOf(Collection<S> list) {
+        return NonNullList.of(emptyStack, (S[]) list.toArray(Object[]::new));
     }
 
     @Override
@@ -87,10 +88,9 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
 
     @Override
     public void deserialize(ValueInput input) {
-        Optional<NonNullList<S>> optional = input.read(VALUE_IO_KEY, codec);
-        if (optional.isEmpty()) return;
-
-        stacks = optional.get();
+        input.read(VALUE_IO_KEY, codec).ifPresent(l -> {
+            stacks = l;
+        });
     }
 
     /**
@@ -127,6 +127,9 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
 
     /**
      * Creates a stack from a resource and an amount.
+     *
+     * <p>If the stack {@linkplain ResourceHandlerUtil#isEmpty(IResource, int) would be empty},
+     * consider returning {@link #emptyStack} instead of creating a new empty stack instance.
      */
     protected abstract S getStackFrom(T resource, int amount);
 
@@ -185,16 +188,10 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
     protected void onContentsChanged(int index, S previousContents) {}
 
     /**
-     * Copies all the contents of this handler to a mutable non-null list of the same size.
+     * Copies all the contents of this handler to a mutable fixed-size {@link NonNullList}.
      */
     public NonNullList<S> copyToList() {
-        NonNullList<S> list = NonNullList.withSize(size(), emptyStack);
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            // Copy the stack as well, to make sure modification of the returned stacks does not affect the handler.
-            list.set(index, copyOf(stacks.get(index)));
-        }
-        return list;
+        return mutableCopyOf(stacks);
     }
 
     @Override
