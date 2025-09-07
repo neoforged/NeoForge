@@ -13,18 +13,7 @@
              return this.stackTrace.length;
          }
      }
-@@ -165,16 +_,16 @@
- 
-         if (this.stackTrace != null && this.stackTrace.length > 0) {
-             p_128169_.append("\nStacktrace:");
--
--            for (StackTraceElement stacktraceelement : this.stackTrace) {
--                p_128169_.append("\n\tat ");
--                p_128169_.append(stacktraceelement);
--            }
-+            p_128169_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.stackTrace));
-         }
-     }
+@@ -175,6 +_,10 @@
  
      public StackTraceElement[] getStacktrace() {
          return this.stackTrace;
