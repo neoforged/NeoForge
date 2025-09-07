@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.logging;
 
-import cpw.mods.modlauncher.log.TransformingThrowablePatternConverter;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -40,21 +41,6 @@ public class CrashReportExtender {
         ForgeSnapshotsMod.addCrashReportHeader(stringbuilder, crashReport);
     }
 
-    public static String generateEnhancedStackTrace(final Throwable throwable) {
-        return generateEnhancedStackTrace(throwable, true);
-    }
-
-    public static String generateEnhancedStackTrace(final StackTraceElement[] stacktrace) {
-        final Throwable t = new Throwable();
-        t.setStackTrace(stacktrace);
-        return generateEnhancedStackTrace(t, false);
-    }
-
-    public static String generateEnhancedStackTrace(final Throwable throwable, boolean header) {
-        final String s = TransformingThrowablePatternConverter.generateEnhancedStackTrace(throwable);
-        return header ? s : s.substring(s.indexOf(Strings.LINE_SEPARATOR));
-    }
-
     private static final StackTraceElement[] BLANK_STACK_TRACE = new StackTraceElement[0];
 
     public static File dumpModLoadingCrashReport(final Logger logger, final List<ModLoadingIssue> issues, final File topLevelDir) {
@@ -65,7 +51,9 @@ public class CrashReportExtender {
             Throwable cause = issue.cause();
             int depth = 0;
             while (cause != null && cause.getCause() != null && cause.getCause() != cause) {
-                category.setDetail("Caused by " + (depth++), cause + generateEnhancedStackTrace(cause.getStackTrace()).replaceAll(Strings.LINE_SEPARATOR + "\t", "\n\t\t"));
+                StringWriter trace = new StringWriter();
+                cause.printStackTrace(new PrintWriter(trace));
+                category.setDetail("Caused by " + (depth++), cause + trace.toString().replaceAll(Strings.LINE_SEPARATOR + "\t", "\n\t\t"));
                 cause = cause.getCause();
             }
             // Set the stack trace to the issue cause if possible; if there is no issue cause, then remove the 

@@ -56,13 +56,6 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Input
     public abstract ListProperty<String> getIgnoreList();
 
-    @Input
-    protected abstract Property<String> getModulePath();
-
-    public void setModules(Configuration modules) {
-        getModulePath().set(DependencyUtils.configurationToClasspath(modules, "${library_directory}/", "${classpath_separator}"));
-    }
-
     @OutputFile
     public abstract RegularFileProperty getLauncherProfile();
 
@@ -77,22 +70,15 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),
                 "--fml.fmlVersion", getFmlVersion().get(),
                 "--fml.mcVersion", getMinecraftVersion().get(),
-                "--fml.neoFormVersion", getRawNeoFormVersion().get(),
-                "--launchTarget", "neoforgeclient"));
+                "--fml.neoFormVersion", getRawNeoFormVersion().get()));
 
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",
                 "-DignoreList=" + String.join(",", getIgnoreList().get()),
                 "-DlibraryDirectory=${library_directory}"));
 
-        jvmArguments.add("-p");
-        jvmArguments.add(getModulePath().get());
-
         jvmArguments.addAll(List.of(
-                "--add-modules", "ALL-MODULE-PATH",
-                "--add-opens", "java.base/java.util.jar=cpw.mods.securejarhandler",
-                "--add-opens", "java.base/java.lang.invoke=cpw.mods.securejarhandler",
-                "--add-exports", "java.base/sun.security.util=cpw.mods.securejarhandler",
+                "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
                 "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"));
 
         var arguments = new LinkedHashMap<String, List<String>>();
@@ -104,7 +90,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 time,
                 time,
                 "release",
-                "cpw.mods.bootstraplauncher.BootstrapLauncher",
+                "net.neoforged.fml.startup.Client",
                 getMinecraftVersion().get(),
                 arguments,
                 libraries

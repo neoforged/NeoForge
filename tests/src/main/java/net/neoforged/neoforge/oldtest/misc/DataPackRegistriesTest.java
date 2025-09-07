@@ -30,7 +30,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -76,7 +76,7 @@ public class DataPackRegistriesTest {
         modBus.addListener(this::onGatherData);
         forgeBus.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLLoader.getDist().isClient()) {
             ClientEvents.subscribeClientEvents();
         }
     }

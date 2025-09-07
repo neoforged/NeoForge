@@ -39,12 +39,6 @@ class NeoDevConfigurations {
      */
     final Configuration libraries;
     /**
-     * Libraries used by NeoForge at compilation and runtime that need to be placed on the jvm's module path to end up in the boot layer.
-     * Currently, this only contains the few dependencies that are needed to create the MC-BOOTSTRAP module layer.
-     * (i.e. BootstrapLauncher and its dependencies).
-     */
-    final Configuration moduleLibraries;
-    /**
      * Libraries that should be accessible in mod development environments at compilation time only.
      * Currently, this is only used for MixinExtras, which is already available at runtime via JiJ in the NeoForge universal jar.
      */
@@ -69,10 +63,6 @@ class NeoDevConfigurations {
      * Resolvable {@link #neoFormDependencies}.
      */
     final Configuration neoFormClasspath;
-    /**
-     * Resolvable {@link #moduleLibraries}.
-     */
-    final Configuration modulePath;
     /**
      * Userdev dependencies (written to a json file in the userdev jar).
      * This should contain all of NeoForge's additional dependencies for userdev,
@@ -124,13 +114,11 @@ class NeoDevConfigurations {
         neoFormData = dependencyScope(configurations, "neoFormData");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
-        moduleLibraries = dependencyScope(configurations, "moduleLibraries");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
 
         neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
-        modulePath = resolvable(configurations, "modulePath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
         userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
@@ -138,7 +126,7 @@ class NeoDevConfigurations {
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
-        configurations.getByName("api").extendsFrom(libraries, moduleLibraries, neoFormDependencies);
+        configurations.getByName("api").extendsFrom(libraries, neoFormDependencies);
 
         // runtimeClasspath is our reference for all MC dependency versions.
         // Make sure that any classpath we resolve is consistent with it.
@@ -149,10 +137,7 @@ class NeoDevConfigurations {
 
         neoFormClasspath.extendsFrom(neoFormDependencies);
 
-        modulePath.extendsFrom(moduleLibraries);
-        modulePath.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        userdevClasspath.extendsFrom(libraries, moduleLibraries, userdevCompileOnly);
+        userdevClasspath.extendsFrom(libraries, userdevCompileOnly);
         userdevClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         userdevCompileOnlyClasspath.extendsFrom(userdevCompileOnly);
@@ -161,7 +146,7 @@ class NeoDevConfigurations {
         userdevTestClasspath.extendsFrom(userdevTestFixtures);
         userdevTestClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
-        launcherProfileClasspath.extendsFrom(libraries, moduleLibraries);
+        launcherProfileClasspath.extendsFrom(libraries);
         launcherProfileClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         toolClasspaths = createToolClasspaths(project);
