@@ -30,8 +30,9 @@ dependencies {
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
+    junitImplementation "org.junit.jupiter:junit-jupiter"
     junitImplementation "org.junit.jupiter:junit-jupiter-params"
-    junitRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    junitRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
     junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"

@@ -248,8 +248,8 @@ public class ResourcePackLoader {
 
     public static Pack.ResourcesSupplier createPackForJarContents(JarContents contents) {
         return switch (contents) {
-            case FolderJarContents folderJarContents -> new PathPackResources.PathResourcesSupplier(folderJarContents.path());
-            case JarFileContents jarFileContents -> new FilePackResources.FileResourcesSupplier(jarFileContents.path());
+            case FolderJarContents folderJarContents -> new PathPackResources.PathResourcesSupplier(folderJarContents.getPrimaryPath());
+            case JarFileContents jarFileContents -> new FilePackResources.FileResourcesSupplier(jarFileContents.getPrimaryPath());
             default -> new JarContentsPackResources.JarContentsResourcesSupplier(contents);
         };
     }

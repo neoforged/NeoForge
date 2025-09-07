@@ -18,7 +18,7 @@ import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
@@ -58,7 +58,7 @@ public abstract class CommonModLoader {
 
         if (!datagen) {
             ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) {
+                if (FMLLoader.getDist() == Dist.CLIENT) {
                     ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
                 }
                 ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
@@ -73,7 +73,7 @@ public abstract class CommonModLoader {
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
-                FMLEnvironment.dist.isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
+                FMLLoader.getDist().isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
 
         ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
     }

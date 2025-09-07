@@ -177,7 +177,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.getLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevClasspath));
-            task.getModules().addAll(DependencyUtils.configurationToGavList(configurations.modulePath));
             task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
             task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
             task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
@@ -207,14 +206,12 @@ public class NeoDevPlugin implements Plugin<Project> {
                 neoDevBuildDir,
                 extension.getRuns(),
                 writeUserDevConfig,
-                modulePath -> {
-                    modulePath.extendsFrom(configurations.moduleLibraries);
-                },
+                modulePath -> {},
                 legacyClassPath -> {
                     legacyClassPath.getDependencies().addLater(mcAndNeoFormVersion.map(v -> dependencyFactory.create("net.neoforged:neoform:" + v).capabilities(caps -> {
                         caps.requireCapability("net.neoforged:neoform-dependencies");
                     })));
-                    legacyClassPath.extendsFrom(configurations.libraries, configurations.moduleLibraries, configurations.userdevCompileOnly);
+                    legacyClassPath.extendsFrom(configurations.libraries, configurations.userdevCompileOnly);
                 },
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
         );
@@ -340,7 +337,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRepositoryURLs().set(installerRepositoryUrls);
             // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
             task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
-            task.setModules(configurations.modulePath);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
 
@@ -372,11 +368,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(";", configurations.launcherProfileClasspath, configurations.modulePath);
+            task.setLibraries(";", configurations.launcherProfileClasspath);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(":", configurations.launcherProfileClasspath, configurations.modulePath);
+            task.setLibraries(":", configurations.launcherProfileClasspath);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
@@ -388,12 +384,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                // In theory, new BootstrapLauncher shouldn't need the module path in the ignore list anymore.
-                // However, in server installs libraries are passed as relative paths here.
-                // Module path detection doesn't currently work with relative paths (BootstrapLauncher #20).
-                task.getIgnoreList().set(configurations.modulePath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                    return results.stream().map(r -> r.getFile().getName()).toList();
-                }));
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }

@@ -22,15 +22,16 @@ dependencyResolutionManagement {
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         mavenCentral()
-        maven {
-            name = "Maven for PR #342" // https://github.com/neoforged/FancyModLoader/pull/342
-            url = uri("https://prmaven.neoforged.net/FancyModLoader/pr342")
-            content {
-                includeModule("net.neoforged.fancymodloader", "bootstraplauncher")
-                includeModule("net.neoforged.fancymodloader", "earlydisplay")
-                includeModule("net.neoforged.fancymodloader", "junit-fml")
-                includeModule("net.neoforged.fancymodloader", "loader")
-                includeModule("net.neoforged.fancymodloader", "securejarhandler")
+        repositories {
+            maven {
+                name = "Maven for PR #357" // https://github.com/neoforged/FancyModLoader/pull/357
+                url = uri("https://prmaven.neoforged.net/FancyModLoader/pr357")
+                content {
+                    includeModule("net.neoforged.fancymodloader", "earlydisplay")
+                    includeModule("net.neoforged.fancymodloader", "junit-fml")
+                    includeModule("net.neoforged.fancymodloader", "loader")
+                    includeModule("net.neoforged.fancymodloader", "securejarhandler")
+                }
             }
         }
     }

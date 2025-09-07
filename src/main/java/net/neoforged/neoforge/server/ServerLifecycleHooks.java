@@ -33,7 +33,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
@@ -96,7 +95,7 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStarting(final MinecraftServer server) {
-        if (FMLEnvironment.dist.isDedicatedServer()) {
+        if (FMLLoader.getDist().isDedicatedServer()) {
             LanguageHook.loadModLanguages(server);
         }
         PermissionAPI.initializePermissionAPI();

@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -45,7 +45,7 @@ public class ItemUseAnimationTest {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLLoader.getDist().isClient()) {
             modBus.addListener(ClientEvents::onRegisterClientExtensions);
         }
     }

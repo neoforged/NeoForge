@@ -45,9 +45,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
     abstract ListProperty<String> getLibraries();
 
     @Input
-    abstract ListProperty<String> getModules();
-
-    @Input
     abstract ListProperty<String> getTestLibraries();
 
     @Input
@@ -75,7 +72,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 getLibraries().get(),
                 getTestLibraries().get(),
                 new LinkedHashMap<>(),
-                getModules().get());
+                List.of() /* deprecated: modules */);
 
         for (var runType : RunType.values()) {
             var launchTarget = switch (runType) {
@@ -118,16 +115,21 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 systemProperties.put("neoforge.enableGameTest", "true");
             }
 
+            var mainMethod = switch (runType) {
+                case CLIENT -> "net.neoforged.fml.startup.Client";
+                case CLIENT_DATA -> "net.neoforged.fml.startup.DataClient";
+                case SERVER_DATA -> "net.neoforged.fml.startup.DataServer";
+                case SERVER -> "net.neoforged.fml.startup.Server";
+                case GAME_TEST_SERVER -> "net.neoforged.neoforge.gametest.GameTestServer";
+                case JUNIT -> null;
+            };
+
             config.runs().put(runType.jsonName, new UserDevRunType(
                     runType != RunType.JUNIT,
-                    "cpw.mods.bootstraplauncher.BootstrapLauncher",
+                    mainMethod,
                     args,
                     List.of(
-                            "-p", "{modules}",
-                            "--add-modules", "ALL-MODULE-PATH",
-                            "--add-opens", "java.base/java.util.jar=cpw.mods.securejarhandler",
-                            "--add-opens", "java.base/java.lang.invoke=cpw.mods.securejarhandler",
-                            "--add-exports", "java.base/sun.security.util=cpw.mods.securejarhandler",
+                            "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
                             "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"),
                     runType == RunType.CLIENT || runType == RunType.JUNIT || runType == RunType.CLIENT_DATA,
                     runType == RunType.GAME_TEST_SERVER || runType == RunType.SERVER || runType == RunType.SERVER_DATA,

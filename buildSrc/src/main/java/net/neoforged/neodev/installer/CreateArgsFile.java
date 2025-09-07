@@ -47,18 +47,11 @@ public abstract class CreateArgsFile extends DefaultTask {
     protected abstract Property<String> getPathSeparator();
 
     @Input
-    protected abstract Property<String> getModules();
-
-    @Input
-    public abstract ListProperty<String> getIgnoreList();
-
-    @Input
     protected abstract Property<String> getClasspath();
 
-    public void setLibraries(String separator, Configuration classpath, Configuration modulePath) {
+    public void setLibraries(String separator, Configuration classpath) {
         getPathSeparator().set(separator);
         getClasspath().set(DependencyUtils.configurationToClasspath(classpath, "libraries/", separator));
-        getModules().set(DependencyUtils.configurationToClasspath(modulePath, "libraries/", separator));
     }
 
     @InputFile
@@ -103,11 +96,7 @@ public abstract class CreateArgsFile extends DefaultTask {
     @TaskAction
     public void createArgsFile() throws IOException {
         var replacements = new HashMap<String, String>();
-        replacements.put("@MODULE_PATH@", getModules().get());
         replacements.put("@MODULES@", "ALL-MODULE-PATH");
-        replacements.put("@IGNORE_LIST@", String.join(",", getIgnoreList().get()));
-        replacements.put("@PLUGIN_LAYER_LIBRARIES@", "");
-        replacements.put("@GAME_LAYER_LIBRARIES@", "");
         replacements.put("@CLASS_PATH@", resolveClasspath());
         replacements.put("@TASK@", "neoforgeserver");
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());

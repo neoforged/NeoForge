@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.gametest;
 
-import cpw.mods.modlauncher.Launcher;
-import cpw.mods.modlauncher.api.IEnvironment;
-import java.util.Objects;
 import net.minecraft.SharedConstants;
 import net.neoforged.fml.loading.FMLLoader;
 
@@ -17,6 +14,6 @@ public class GameTestHooks {
     }
 
     public static boolean isGametestServer() {
-        return Objects.equals("neoforgegametestserverdev", Launcher.INSTANCE.environment().getProperty(IEnvironment.Keys.LAUNCHTARGET.get()).orElse(null));
+        return GameTestServer.isRunning();
     }
 }
