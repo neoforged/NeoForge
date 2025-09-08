@@ -3,22 +3,19 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.itemaccess;
+package net.neoforged.neoforge.transfer.access;
 
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Objects;
+class HandlerItemAccess implements ItemAccess {
+    private final ResourceHandler<ItemResource> handler;
+    private final int index;
 
-class PlayerItemAccess implements ItemAccess {
-    protected final PlayerInventoryWrapper handler;
-    protected final int index;
-
-    public PlayerItemAccess(Player player, int index) {
-        this.handler = PlayerInventoryWrapper.of(player);
-        Objects.checkIndex(index, handler.size());
+    HandlerItemAccess(ResourceHandler<ItemResource> handler, int index) {
+        this.handler = handler;
         this.index = index;
     }
 
@@ -34,12 +31,13 @@ class PlayerItemAccess implements ItemAccess {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        int inserted = handler.insert(index, resource, amount, transaction);
-        if (amount > inserted) {
-            handler.placeItemBackInInventory(resource, amount - inserted, transaction);
-        }
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-        return amount;
+        int inserted = handler.insert(index, resource, amount, transaction);
+        if (inserted < amount) {
+            inserted += handler.insert(resource, amount - inserted, transaction);
+        }
+        return inserted;
     }
 
     @Override

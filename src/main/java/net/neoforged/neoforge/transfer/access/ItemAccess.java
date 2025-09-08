@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.itemaccess;
+package net.neoforged.neoforge.transfer.access;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,6 +15,8 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.CarriedSlotWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -34,8 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * Use the {@link #getCapability(ItemCapability)} method to query a capability for this location.
  */
 public interface ItemAccess {
-    // TODO: "constant" access and stack access need to be restored
-
+    // TODO: "constant" access needs to be restored?
     /**
      * Creates an item access instance for interaction with a player's hand.
      *
@@ -71,15 +72,15 @@ public interface ItemAccess {
      * Creates an item access instance for a player's cursor in a menu.
      */
     static ItemAccess forPlayerCursor(Player player, AbstractContainerMenu menu) {
-        // TODO: missing cursor wrapper... :(
-        return new PlayerItemAccess(player, -1);
+        return new PlayerItemAccess(PlayerInventoryWrapper.of(player), CarriedSlotWrapper.of(menu));
     }
 
     /**
      * Creates an item access instance for a specific slot of a player.
      */
     static ItemAccess forPlayerSlot(Player player, int slot) {
-        return new PlayerItemAccess(player, slot);
+        var inventoryWrapper = PlayerInventoryWrapper.of(player);
+        return new PlayerItemAccess(inventoryWrapper, RangedResourceHandler.ofSingleIndex(inventoryWrapper, slot));
     }
 
     /**
@@ -91,6 +92,21 @@ public interface ItemAccess {
      */
     static ItemAccess forHandlerIndex(ResourceHandler<ItemResource> handler, int index) {
         return new HandlerItemAccess(handler, index);
+    }
+
+    /**
+     * Creates an item access instance that will mutate a stack directly,
+     * possibly changing the components and the count, but never the underlying Item as it's final.
+     *
+     * <p>This can be used when it is known that the underlying Item will not change.
+     *
+     * @throws IllegalArgumentException if the stack is empty
+     */
+    static ItemAccess forStack(ItemStack stack) {
+        if (stack.isEmpty()) {
+            throw new IllegalArgumentException("Expected stack to be non-empty.");
+        }
+        return new StackItemAccess(stack);
     }
 
     /**

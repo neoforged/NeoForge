@@ -3,12 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.itemaccess;
+package net.neoforged.neoforge.transfer.access;
 
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -18,53 +17,45 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * Implementation of {@link ItemAccess} that will mutate a stack directly,
  * possibly changing the components and the count, but never the underlying Item as it's final.
  *
- * <p>This can be used when it is known that the storage will not change the underlying Item.
+ * <p>This can be used when it is known that the resource handler will not change the underlying Item.
  */
-// TODO: check
-public final class StackItemContext implements ItemAccess {
-    private final ResourceHandler<ItemResource> container;
+class StackItemAccess implements ItemAccess {
     private final Item item;
+    // We essentially reuse the ability of the Container wrappers to mutate the original stack.
+    private final ResourceHandler<ItemResource> wrapper;
 
-    public StackItemContext(ItemStack stack) {
-        // TODO: there was a subclass for a good reason
-        container = VanillaContainerWrapper.of(new StackContainer(stack));
+    public StackItemAccess(ItemStack stack) {
         item = stack.getItem();
+        wrapper = VanillaContainerWrapper.of(new SimpleContainer(stack) {
+            // Override to avoid clamping oversized stacks to their max stack size, just in case.
+            @Override
+            public void setItem(int slot, ItemStack stack, boolean performSideEffects) {
+                getItems().set(slot, stack);
+            }
+        });
     }
 
     @Override
     public ItemResource getResource() {
-        return container.getResource(0);
+        return wrapper.getResource(0);
     }
 
     @Override
     public int getAmount() {
-        return container.getAmountAsInt(0);
+        return wrapper.getAmountAsInt(0);
     }
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!resource.is(this.item)) {
             // Make sure that we do not change the underlying stack, even if it becomes temporarily empty.
             return 0;
         }
-        return container.insert(resource, amount, transaction);
+        return wrapper.insert(resource, amount, transaction);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return container.extract(resource, amount, transaction);
-    }
-
-    private static class StackContainer extends SimpleContainer {
-        public StackContainer(ItemStack stack) {
-            super(stack);
-        }
-
-        @Override
-        public void setItem(int index, ItemStack stack, boolean insideTransaction) {
-            getItems().set(index, stack);
-        }
+        return wrapper.extract(resource, amount, transaction);
     }
 }
