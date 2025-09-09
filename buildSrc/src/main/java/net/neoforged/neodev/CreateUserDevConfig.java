@@ -75,18 +75,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 List.of() /* deprecated: modules */);
 
         for (var runType : RunType.values()) {
-            var launchTarget = switch (runType) {
-                case CLIENT -> "neoforgeclientdev";
-                case CLIENT_DATA -> "neoforgeclientdatadev";
-                case SERVER_DATA -> "neoforgeserverdatadev";
-                case SERVER -> "neoforgeserverdev";
-                case GAME_TEST_SERVER -> "neoforgegametestserverdev";
-                case JUNIT -> "neoforgejunitdev";
-            };
-
             List<String> args = new ArrayList<>();
-            Collections.addAll(args,
-                    "--launchTarget", launchTarget);
 
             if (runType == RunType.CLIENT || runType == RunType.JUNIT) {
                 // TODO: this is copied from NG but shouldn't it be the MC version?
@@ -115,18 +104,9 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 systemProperties.put("neoforge.enableGameTest", "true");
             }
 
-            var mainMethod = switch (runType) {
-                case CLIENT -> "net.neoforged.fml.startup.Client";
-                case CLIENT_DATA -> "net.neoforged.fml.startup.DataClient";
-                case SERVER_DATA -> "net.neoforged.fml.startup.DataServer";
-                case SERVER -> "net.neoforged.fml.startup.Server";
-                case GAME_TEST_SERVER -> "net.neoforged.neoforge.gametest.GameTestServer";
-                case JUNIT -> null;
-            };
-
             config.runs().put(runType.jsonName, new UserDevRunType(
                     runType != RunType.JUNIT,
-                    mainMethod,
+                    runType.mainClass,
                     args,
                     List.of(
                             "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
@@ -145,22 +125,22 @@ abstract class CreateUserDevConfig extends DefaultTask {
         FileUtils.writeStringSafe(
                 getUserDevConfig().getAsFile().get().toPath(),
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(config),
-                // TODO: Not sure what this should be? Most likely the file is ASCII.
                 StandardCharsets.UTF_8);
     }
 
     private enum RunType {
-        CLIENT("client"),
-        CLIENT_DATA("clientData"),
-        SERVER_DATA("serverData"),
-        GAME_TEST_SERVER("gameTestServer"),
-        SERVER("server"),
-        JUNIT("junit");
-
+        CLIENT("client", "net.neoforged.fml.startup.Client"),
+        CLIENT_DATA("clientData", "net.neoforged.fml.startup.DataClient"),
+        SERVER_DATA("serverData", "net.neoforged.fml.startup.DataServer"),
+        GAME_TEST_SERVER("gameTestServer", "net.neoforged.fml.startup.GameTestServer"),
+        SERVER("server", "net.neoforged.fml.startup.Server"),
+        JUNIT("junit", null);
         private final String jsonName;
+        private final String mainClass;
 
-        RunType(String jsonName) {
+        RunType(String jsonName, String mainClass) {
             this.jsonName = jsonName;
+            this.mainClass = mainClass;
         }
     }
 }
