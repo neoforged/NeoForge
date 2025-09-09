@@ -18,7 +18,7 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path path1 = Paths.get("server.properties");
-+            if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
++            if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(false); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
              DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
              dedicatedserversettings.forceSave();
              RegionFileVersion.configure(dedicatedserversettings.getProperties().regionFileComression);

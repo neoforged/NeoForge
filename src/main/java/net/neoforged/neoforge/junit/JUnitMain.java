@@ -17,6 +17,6 @@ public class JUnitMain implements JUnitGameBootstrapper {
         Bootstrap.bootStrap();
 
         // Load mods
-        net.neoforged.neoforge.server.loading.ServerModLoader.load();
+        net.neoforged.neoforge.server.loading.ServerModLoader.load(false);
     }
 }
