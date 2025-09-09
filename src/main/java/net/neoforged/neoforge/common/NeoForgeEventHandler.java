@@ -23,10 +23,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -175,5 +177,10 @@ public class NeoForgeEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.isSpawnCancelled()) {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public void logTransformationsOnGameShutdown(GameShuttingDownEvent event) {
+        ModLoader.logTransformationSummary();
     }
 }

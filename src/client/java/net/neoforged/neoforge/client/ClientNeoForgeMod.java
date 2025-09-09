@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.client;
 
+import com.mojang.brigadier.Command;
 import java.util.Optional;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
@@ -17,12 +19,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
@@ -33,6 +37,7 @@ import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -108,6 +113,25 @@ public class ClientNeoForgeMod {
 
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
             ClientConfigCommand.register(event.getDispatcher());
+        });
+
+        NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
+            if (event.isInitial()) {
+                ModLoader.logTransformationSummary();
+            }
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
+            event.getDispatcher().register(
+                    Commands.literal("neoforge")
+                            .then(Commands.literal("debug_class_loading_transformations")
+                                    .executes(ctx -> {
+                                        var entity = ctx.getSource().getEntity();
+                                        if (entity instanceof Player player) {
+                                            player.displayClientMessage(Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ModLoader.getTransformationSummary(), ModLoader.getMixinParsedClassesSummary()), false);
+                                        }
+                                        return Command.SINGLE_SUCCESS;
+                                    })));
         });
     }
 
