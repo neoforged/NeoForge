@@ -127,6 +127,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Component %s with value %s was deleted",
   "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
   "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
 
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recipe lookup is not possible in client commands",
 
