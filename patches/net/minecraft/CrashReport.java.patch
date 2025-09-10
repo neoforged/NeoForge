@@ -45,3 +45,11 @@
      }
  
      public String getFriendlyReport(ReportType p_350860_, List<String> p_350563_) {
+@@ -150,6 +_,7 @@
+                 }
+ 
+                 this.saveFile = p_350440_;
++                net.neoforged.neoforge.logging.LogBundle.collectAndSave(exception, saveFile.toFile());
+                 return true;
+             } catch (Throwable throwable1) {
+                 LOGGER.error("Could not save crash report to {}", p_350440_, throwable1);
