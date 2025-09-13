@@ -93,9 +93,7 @@ public abstract class CreateArgsFile extends DefaultTask {
     @TaskAction
     public void createArgsFile() throws IOException {
         var replacements = new HashMap<String, String>();
-        replacements.put("@MODULES@", "ALL-MODULE-PATH");
         replacements.put("@CLASS_PATH@", resolveClasspath());
-        replacements.put("@TASK@", "neoforgeserver");
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());
         replacements.put("@MCP_VERSION@", getRawNeoFormVersion().get());

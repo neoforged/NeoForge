@@ -1,10 +1,10 @@
---add-opens java.base/java.lang.invoke=cpw.mods.securejarhandler
+--add-opens java.base/java.lang.invoke=ALL-UNNAMED
 --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming
 -Djava.net.preferIPv6Addresses=system
 -DlibraryDirectory=libraries
--DlegacyClassPath=@CLASS_PATH@
-cpw.mods.bootstraplauncher.BootstrapLauncher
---launchTarget @TASK@
+-classpath
+@CLASS_PATH@
+net.neoforged.fml.startup.Server
 --fml.neoForgeVersion @FORGE_VERSION@
 --fml.mcVersion @MC_VERSION@
 --fml.neoFormVersion @MCP_VERSION@
