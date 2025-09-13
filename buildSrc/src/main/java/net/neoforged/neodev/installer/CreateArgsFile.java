@@ -32,9 +32,6 @@ public abstract class CreateArgsFile extends DefaultTask {
     public abstract RegularFileProperty getTemplate();
 
     @Input
-    public abstract Property<String> getFmlVersion();
-
-    @Input
     public abstract Property<String> getMinecraftVersion();
 
     @Input
@@ -100,7 +97,6 @@ public abstract class CreateArgsFile extends DefaultTask {
         replacements.put("@CLASS_PATH@", resolveClasspath());
         replacements.put("@TASK@", "neoforgeserver");
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
-        replacements.put("@FML_VERSION@", getFmlVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());
         replacements.put("@MCP_VERSION@", getRawNeoFormVersion().get());
 

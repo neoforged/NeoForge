@@ -56,7 +56,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         var neoDevBuildDir = project.getLayout().getBuildDirectory().dir("neodev");
 
         var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
-        var fmlVersion = project.getProviders().gradleProperty("fancy_mod_loader_version");
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
         var neoForgeVersion = project.provider(() -> project.getVersion().toString());
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
@@ -172,7 +171,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         var writeUserDevConfig = tasks.register("writeUserDevConfig", CreateUserDevConfig.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getUserDevConfig().set(neoDevBuildDir.map(dir -> dir.file("userdev-config.json")));
-            task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
@@ -275,6 +273,12 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.into(project.getRootProject().file("patches"));
         });
 
+        // Even the jar built only for local usage in other tasks needs the MANIFEST.MF used to tell FML it's the
+        // NeoForge resource jar.
+        tasks.named("jar", Jar.class).configure(task -> {
+            task.getManifest().attributes(Map.of("FML-System-Mods", "neoforge"));
+        });
+
         // Universal jar = the jar that contains NeoForge classes
         // TODO: signing?
         var universalJar = tasks.register("universalJar", Jar.class, task -> {
@@ -329,7 +333,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
@@ -380,7 +383,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
-                task.getFmlVersion().set(fmlVersion);
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
