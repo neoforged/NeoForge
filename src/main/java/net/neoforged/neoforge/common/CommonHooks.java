@@ -718,10 +718,19 @@ public class CommonHooks {
         return e.getXp();
     }
 
+    /**
+     * @deprecated Use {@link #onGrindstoneTake(Container, ContainerLevelAccess, Player, Function) the player version} instead
+     */
+    @Deprecated(forRemoval = true, since = "1.21.8")
     public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction) {
+        return onGrindstoneTake(inputSlots, access, null, xpFunction);
+    }
+
+    //TODO remove nullable annotation from player once method above is removed
+    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, @Nullable Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
-            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
+            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(access, player, inputSlots.getItem(0), inputSlots.getItem(1), xp);
             if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
                 return;
             }

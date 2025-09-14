@@ -6,10 +6,13 @@
 package net.neoforged.neoforge.event;
 
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class GrindstoneEvent extends Event {
     private final ItemStack top;
@@ -115,8 +118,23 @@ public abstract class GrindstoneEvent extends Event {
         private ItemStack newTop = ItemStack.EMPTY;
         private ItemStack newBottom = ItemStack.EMPTY;
 
-        public OnTakeItem(ItemStack top, ItemStack bottom, int xp) {
+        private final ContainerLevelAccess access;
+        @Nullable
+        private final Player player;
+
+        public OnTakeItem(ContainerLevelAccess access, @Nullable Player player, ItemStack top, ItemStack bottom, int xp) {
             super(top, bottom, xp);
+            this.access = access;
+            this.player = player;
+        }
+
+        /**
+         * @deprecated Use {@link #OnTakeItem(ContainerLevelAccess, Player, ItemStack, ItemStack, int) the context-aware version} instead
+         */
+        //TODO also remove nullable annotations from player once this is removed
+        @Deprecated(forRemoval = true, since = "1.21.8")
+        public OnTakeItem(ItemStack top, ItemStack bottom, int xp) {
+            this(ContainerLevelAccess.NULL, null, top, bottom, xp);
         }
 
         /**
@@ -158,6 +176,21 @@ public abstract class GrindstoneEvent extends Event {
          */
         public int getXp() {
             return super.getXp();
+        }
+
+        /**
+         * {@return an accessor for the grindstone's level and position}
+         */
+        public ContainerLevelAccess getContainerAccess() {
+            return this.access;
+        }
+
+        /**
+         * {@return the player currently using the grindstone}
+         */
+        @Nullable
+        public Player getPlayer() {
+            return this.player;
         }
     }
 }
