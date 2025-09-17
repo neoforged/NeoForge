@@ -1,0 +1,16 @@
+--- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
++++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
+@@ -122,9 +_,11 @@
+             if (p_443044_ != null && p_443044_.isJsonArray()) {
+                 JsonArray jsonarray = p_443044_.getAsJsonArray();
+                 if (!jsonarray.isEmpty() && jsonarray.size() <= 1) {
+-                    Params params = this.paramsCodec.parse(JsonOps.INSTANCE, jsonarray.get(0)).getOrThrow(InvalidParameterJsonRpcException::new);
++                    var registries = p_442932_.registries();
++                    var ops = registries != null ? registries.createSerializationContext(JsonOps.INSTANCE) : JsonOps.INSTANCE;
++                    Params params = this.paramsCodec.parse(ops, jsonarray.get(0)).getOrThrow(InvalidParameterJsonRpcException::new);
+                     Result result = this.function.apply(p_442932_, params, p_442918_);
+-                    return this.resultCodec.encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);
++                    return this.resultCodec.encodeStart(ops, result).getOrThrow(EncodeJsonRpcException::new);
+                 } else {
+                     throw new InvalidParameterJsonRpcException("Expected exactly one element in the params array");
+                 }
