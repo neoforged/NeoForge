@@ -718,8 +718,10 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterParticleProvidersEvent(particleResources));
     }
 
-    public static void onRegisterKeyMappings(Options options) {
-        ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
+    public static void onRegisterKeyMappings(Options options, List<KeyMapping.Category> categories) {
+        RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options, categories);
+        ModLoader.postEvent(event);
+        event.sortAndStoreCategories();
     }
 
     @Nullable

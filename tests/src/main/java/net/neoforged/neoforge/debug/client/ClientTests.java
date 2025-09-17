@@ -7,6 +7,8 @@ package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.DeltaTracker;
@@ -32,11 +34,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -92,6 +96,45 @@ public class ClientTests {
                     test.pass();
                 }
             }
+        });
+    }
+
+    @TestHolder(description = "Tests that custom key mapping categories and their sorting works correctly", enabledByDefault = true)
+    static void keyMappingCategoriesTest(final DynamicTest test) {
+        KeyMapping.Category categoryOne = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_1"));
+        KeyMapping.Category categoryTwo = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_2"));
+        KeyMapping.Category categoryThree = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_3"));
+
+        List<KeyMapping.Category> categories = ObfuscationReflectionHelper.getPrivateValue(KeyMapping.Category.class, null, "SORT_ORDER");
+        Objects.requireNonNull(categories);
+
+        List<KeyMapping.Category> vanillaCategories = List.copyOf(categories);
+
+        test.framework().modEventBus().addListener((final RegisterKeyMappingsEvent event) -> {
+            event.registerCategory(categoryOne);
+            event.addCategoryDependency(categoryOne.id(), KeyMapping.Category.INVENTORY.id());
+            event.registerCategory(categoryThree);
+            event.registerCategory(categoryTwo);
+        });
+
+        test.eventListeners().forge().addListener((final ClientStartedEvent event) -> {
+            List<KeyMapping.Category> sortedVanillaCategories = categories.stream()
+                    .filter(cat -> cat.id().getNamespace().equals("minecraft"))
+                    .toList();
+            if (!sortedVanillaCategories.equals(vanillaCategories)) {
+                test.fail("Expected vanilla category order to be retained through sorting");
+                return;
+            }
+
+            if (categories.indexOf(categoryOne) > categories.indexOf(KeyMapping.Category.INVENTORY)) {
+                test.fail("Expected 'test_category_1' before 'inventory' category due to explicit dependency");
+                return;
+            }
+            if (categories.indexOf(categoryTwo) > categories.indexOf(categoryThree)) {
+                test.fail("Expected 'test_category_2' before 'test_category_3' due to lexicographical sorting");
+                return;
+            }
+            test.pass();
         });
     }
 
