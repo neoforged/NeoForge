@@ -18,7 +18,6 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteDefaultMetadataSectionTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.testframework.DynamicTest;
@@ -74,8 +73,8 @@ public class TextureAtlasTests {
         var testResource = ResourceLocation.fromNamespaceAndPath(modId, "block/resource");
         var sectionType = new MetadataSectionType<>("default_metadata_test", Codec.BOOL);
 
-        test.framework().modEventBus().addListener(RegisterSpriteDefaultMetadataSectionTypesEvent.class, event -> {
-            event.register(sectionType);
+        test.framework().modEventBus().addListener(RegisterTextureAtlasesEvent.class, event -> {
+            event.addAdditionalMetadata(AtlasIds.BLOCKS, sectionType);
         });
 
         test.eventListeners().forge().addListener((ClientResourceLoadFinishedEvent event) -> {

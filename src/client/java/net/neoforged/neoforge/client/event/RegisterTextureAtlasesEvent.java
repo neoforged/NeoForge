@@ -5,9 +5,15 @@
 
 package net.neoforged.neoforge.client.event;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.model.AtlasManager;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -47,5 +53,31 @@ public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
             }
         }
         this.atlases.add(atlasConfig);
+    }
+
+    /**
+     * Add an additional {@link MetadataSectionType} to be loaded for the sprites of the given texture atlas.
+     *
+     * @param atlasId         The ID of the texture atlas, see {@link AtlasIds} for vanilla IDs
+     * @param metaSectionType The metadata section type to add
+     */
+    public void addAdditionalMetadata(ResourceLocation atlasId, MetadataSectionType<?> metaSectionType) {
+        if (metaSectionType == AnimationMetadataSection.TYPE) {
+            throw new IllegalArgumentException("Animation metadata is always loaded, it may not be added as additional metadata");
+        }
+        for (int i = 0; i < this.atlases.size(); i++) {
+            AtlasManager.AtlasConfig atlas = this.atlases.get(i);
+            if (atlas.definitionLocation().equals(atlasId)) {
+                Set<MetadataSectionType<?>> additionalMetadata = new HashSet<>(atlas.additionalMetadata());
+                additionalMetadata.add(metaSectionType);
+                this.atlases.set(i, new AtlasManager.AtlasConfig(
+                        atlas.textureId(),
+                        atlas.definitionLocation(),
+                        atlas.createMipmaps(),
+                        Set.copyOf(additionalMetadata)));
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown texture atlas: " + atlasId);
     }
 }
