@@ -167,3 +167,14 @@
      }
  
      @Nullable
+@@ -206,6 +_,10 @@
+             return register(ResourceLocation.withDefaultNamespace(p_449101_));
+         }
+ 
++        /**
++         * @deprecated Neo: use {@link net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)} instead
++         */
++        @Deprecated
+         public static KeyMapping.Category register(ResourceLocation p_449977_) {
+             KeyMapping.Category keymapping$category = new KeyMapping.Category(p_449977_);
+             if (SORT_ORDER.contains(keymapping$category)) {

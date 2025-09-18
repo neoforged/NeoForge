@@ -33,7 +33,7 @@
              p_426141_ -> {}
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
-+        net.neoforged.neoforge.client.ClientHooks.onRegisterKeyMappings(this);
++        net.neoforged.neoforge.client.ClientHooks.onRegisterKeyMappings(this, KeyMapping.Category.SORT_ORDER);
          this.load();
      }
  
