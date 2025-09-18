@@ -80,9 +80,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.BlockElement;
@@ -138,7 +136,6 @@ import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
@@ -178,7 +175,6 @@ import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
@@ -288,10 +284,6 @@ public class ClientHooks {
 
     public static void onClientPauseChangePost(boolean pause) {
         NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
-    }
-
-    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
-        return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {

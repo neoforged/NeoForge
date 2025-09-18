@@ -231,6 +231,48 @@
                  }
              }
          }
+@@ -922,19 +_,23 @@
+                 BlockPos blockpos = blockhitresult.getBlockPos();
+                 BlockState blockstate = this.level.getBlockState(blockpos);
+                 if (!blockstate.isAir() && this.level.getWorldBorder().isWithinBounds(blockpos)) {
+-                    boolean flag = ItemBlockRenderTypes.getChunkRenderType(blockstate).sortOnUpload();
++                    boolean flag = net.neoforged.neoforge.client.ClientHooks.isInTranslucentBlockOutlinePass(this.level, blockpos, blockstate);
+                     boolean flag1 = this.minecraft.options.highContrastBlockOutline().get();
+                     CollisionContext collisioncontext = CollisionContext.of(p_451355_.getEntity());
++                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, blockpos, blockstate, blockhitresult, collisioncontext, p_451355_, p_451261_);
++                    if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                        return;
++                    }
+                     VoxelShape voxelshape = blockstate.getShape(this.level, blockpos, collisioncontext);
+                     if (SharedConstants.DEBUG_SHAPES) {
+                         VoxelShape voxelshape1 = blockstate.getCollisionShape(this.level, blockpos, collisioncontext);
+                         VoxelShape voxelshape2 = blockstate.getOcclusionShape();
+                         VoxelShape voxelshape3 = blockstate.getInteractionShape(this.level, blockpos);
+                         p_451261_.blockOutlineRenderState = new BlockOutlineRenderState(
+-                            blockpos, flag, flag1, voxelshape, voxelshape1, voxelshape2, voxelshape3
++                            blockpos, flag, flag1, voxelshape, voxelshape1, voxelshape2, voxelshape3, event.getCustomRenderers()
+                         );
+                     } else {
+-                        p_451261_.blockOutlineRenderState = new BlockOutlineRenderState(blockpos, flag, flag1, voxelshape);
++                        p_451261_.blockOutlineRenderState = new BlockOutlineRenderState(blockpos, flag, flag1, voxelshape, event.getCustomRenderers());
+                     }
+                 }
+             }
+@@ -944,6 +_,14 @@
+     private void renderBlockOutline(MultiBufferSource.BufferSource p_362782_, PoseStack p_361893_, boolean p_361698_, LevelRenderState p_451577_) {
+         BlockOutlineRenderState blockoutlinerenderstate = p_451577_.blockOutlineRenderState;
+         if (blockoutlinerenderstate != null) {
++            boolean cancel = false;
++            for (net.neoforged.neoforge.client.CustomBlockOutlineRenderer customRenderer : blockoutlinerenderstate.customRenderers()) {
++                cancel |= customRenderer.render(blockoutlinerenderstate, p_362782_, p_361893_, p_361698_, p_451577_);
++            }
++            if (cancel) {
++                return;
++            }
++
+             if (blockoutlinerenderstate.isTranslucent() == p_361698_) {
+                 Vec3 vec3 = p_451577_.cameraRenderState.pos;
+                 if (blockoutlinerenderstate.highContrast()) {
 @@ -1112,7 +_,15 @@
          }
      }
