@@ -10,6 +10,8 @@ import java.util.Map;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * {@code ResourceHandler<ItemResource>} implementation for the carried slot of an {@link AbstractContainerMenu}.
@@ -29,7 +31,7 @@ public final class CarriedSlotWrapper extends ItemStackResourceHandler {
      * i.e. the stack that can be manipulated with {@link AbstractContainerMenu#getCarried}
      * and {@link AbstractContainerMenu#setCarried}.
      */
-    public static CarriedSlotWrapper of(AbstractContainerMenu menu) {
+    public static ResourceHandler<ItemResource> of(AbstractContainerMenu menu) {
         return wrappers.computeIfAbsent(menu, CarriedSlotWrapper::new);
     }
 
