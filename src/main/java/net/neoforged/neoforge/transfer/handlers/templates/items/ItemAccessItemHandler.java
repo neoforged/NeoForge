@@ -11,10 +11,20 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resources.ItemAccessResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
+/**
+ * Base implementation of an item {@link ResourceHandler} backed by an {@link ItemAccess}.
+ * The stacks are stored in a {@link ItemContainerContents} data component.
+ * <p>
+ * To use this class, register a new {@link DataComponentType} which holds an {@link ItemContainerContents} for your item.
+ * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
+ */
 public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResource> {
     protected final Item validItem;
     protected final DataComponentType<ItemContainerContents> component;
