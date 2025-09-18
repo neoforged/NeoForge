@@ -26,7 +26,18 @@
      }
  
      public ClientItem.Properties getItemProperties(ResourceLocation p_390438_) {
-@@ -105,8 +_,10 @@
+@@ -96,17 +_,20 @@
+     ) {
+         ResourceManager resourcemanager = p_433049_.resourceManager();
+         CompletableFuture<EntityModelSet> completablefuture = CompletableFuture.supplyAsync(EntityModelSet::vanilla, p_250550_);
++        var pendingAnimations = p_433049_.get(net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.STATE_KEY);
+         CompletableFuture<SpecialBlockModelRenderer> completablefuture1 = completablefuture.thenApplyAsync(
+             p_438833_ -> SpecialBlockModelRenderer.vanilla(
+-                new SpecialModelRenderer.BakingContext.Simple(p_438833_, this.atlasManager, this.playerSkinRenderCache)
++                new SpecialModelRenderer.BakingContext.Simple(p_438833_, this.atlasManager, this.playerSkinRenderCache, pendingAnimations)
+             ),
+             p_250550_
+         );
          CompletableFuture<Map<ResourceLocation, UnbakedModel>> completablefuture2 = loadBlockModels(resourcemanager, p_250550_);
          CompletableFuture<BlockStateModelLoader.LoadedModels> completablefuture3 = BlockStateModelLoader.loadBlockStates(resourcemanager, p_250550_);
          CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> completablefuture4 = ClientItemInfoLoader.scheduleLoad(resourcemanager, p_250550_);
@@ -47,11 +58,12 @@
              )
              .thenComposeAsync(
                  p_438832_ -> {
-@@ -139,7 +_,9 @@
+@@ -139,7 +_,10 @@
                          completablefuture4.join().contents(),
                          modelmanager$resolvedmodels.models(),
                          modelmanager$resolvedmodels.missing()
-+                        , standaloneModelsFuture.join()
++                        , standaloneModelsFuture.join(),
++                        pendingAnimations
                      );
 +                    this.modelBakery.set(modelbakery);
                      return loadModels(spriteloader$preparations, modelbakery, object2intmap, completablefuture.join(), completablefuture1.join(), p_250550_);
