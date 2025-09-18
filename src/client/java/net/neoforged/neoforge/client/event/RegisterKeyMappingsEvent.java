@@ -54,10 +54,9 @@ public class RegisterKeyMappingsEvent extends Event implements IModBusEvent {
             this.categoriesById.put(category.id(), category);
             this.graph.addNode(category);
         }
-        for (int i = 1; i < categories.size() - 1; i++) {
+        for (int i = 1; i < categories.size(); i++) {
             KeyMapping.Category category = categories.get(i);
             this.graph.putEdge(categories.get(i - 1), category);
-            this.graph.putEdge(category, categories.get(i + 1));
         }
     }
 
