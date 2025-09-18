@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -14,9 +21,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.client.CustomBlockOutlineRenderer;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fired after the {@link BlockOutlineRenderState} is extracted.
@@ -46,8 +50,7 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
             BlockHitResult hitResult,
             CollisionContext collisionContext,
             Camera camera,
-            LevelRenderState levelRenderState
-    ) {
+            LevelRenderState levelRenderState) {
         this.levelRenderer = levelRenderer;
         this.level = level;
         this.pos = pos;

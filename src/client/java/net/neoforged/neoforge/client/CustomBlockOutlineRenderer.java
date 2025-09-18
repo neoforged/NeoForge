@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,6 +21,7 @@ import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
 public interface CustomBlockOutlineRenderer {
     /**
      * Called when the block outline described by the provided {@link BlockOutlineRenderState} is about to be rendered.
+     * 
      * @return {@code true} to suppress vanilla outline rendering
      */
     boolean render(BlockOutlineRenderState renderState, MultiBufferSource.BufferSource buffer, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState);
