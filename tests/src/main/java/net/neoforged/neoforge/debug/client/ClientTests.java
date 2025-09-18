@@ -112,7 +112,6 @@ public class ClientTests {
 
         test.framework().modEventBus().addListener((final RegisterKeyMappingsEvent event) -> {
             event.registerCategory(categoryOne);
-            event.addCategoryDependency(categoryOne.id(), KeyMapping.Category.INVENTORY.id());
             event.registerCategory(categoryThree);
             event.registerCategory(categoryTwo);
         });
@@ -126,8 +125,8 @@ public class ClientTests {
                 return;
             }
 
-            if (categories.indexOf(categoryOne) > categories.indexOf(KeyMapping.Category.INVENTORY)) {
-                test.fail("Expected 'test_category_1' before 'inventory' category due to explicit dependency");
+            if (categories.indexOf(categoryOne) < categories.indexOf(KeyMapping.Category.SPECTATOR)) {
+                test.fail("Expected custom categories after vanilla categories");
                 return;
             }
             if (categories.indexOf(categoryTwo) > categories.indexOf(categoryThree)) {
