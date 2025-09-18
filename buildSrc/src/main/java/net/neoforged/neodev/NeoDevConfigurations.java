@@ -3,7 +3,9 @@ package net.neoforged.neodev;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
 
 import java.util.HashMap;
@@ -48,6 +50,12 @@ class NeoDevConfigurations {
      * Currently, this only contains the fml-junit test fixtures.
      */
     final Configuration userdevTestFixtures;
+    /**
+     * The libraries used by Minecraft itself.
+     * Used to know which libraries can be removed from the launcher and installer profiles.
+     * Note that the client&server dependencies are differentiated by attributes on the resolving configuration.
+     */
+    final Configuration minecraftDependencies;
 
     //
     // Resolvable configurations.
@@ -83,6 +91,14 @@ class NeoDevConfigurations {
      * This is also used to produce the legacy classpath file for server installs.
      */
     final Configuration launcherProfileClasspath;
+    /**
+     * Resolvable {@link #minecraftDependencies} for the client-side.
+     */
+    final Configuration minecraftClientClasspath;
+    /**
+     * Resolvable {@link #minecraftDependencies} for the server-side.
+     */
+    final Configuration minecraftServerClasspath;
 
     //
     // The configurations for resolution only are declared in the build.gradle file.
@@ -116,6 +132,7 @@ class NeoDevConfigurations {
         libraries = dependencyScope(configurations, "libraries");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
+        minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");
 
         neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
@@ -123,6 +140,8 @@ class NeoDevConfigurations {
         userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
         launcherProfileClasspath = resolvable(configurations, "launcherProfileClasspath");
+        minecraftClientClasspath = resolvable(configurations, "minecraftClientClasspath");
+        minecraftServerClasspath = resolvable(configurations, "minecraftServerClasspath");
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
@@ -148,6 +167,16 @@ class NeoDevConfigurations {
 
         launcherProfileClasspath.extendsFrom(libraries);
         launcherProfileClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
+        launcherProfileClasspath.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
+
+        minecraftClientClasspath.extendsFrom(minecraftDependencies);
+        minecraftClientClasspath.getAttributes().attribute(
+                Attribute.of("net.neoforged.distribution", String.class), "client"
+        );
+        minecraftServerClasspath.extendsFrom(minecraftDependencies);
+        minecraftServerClasspath.getAttributes().attribute(
+                Attribute.of("net.neoforged.distribution", String.class), "server"
+        );
 
         toolClasspaths = createToolClasspaths(project);
     }

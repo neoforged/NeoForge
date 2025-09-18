@@ -3,6 +3,8 @@ package net.neoforged.neodev.installer;
 import com.google.gson.GsonBuilder;
 import net.neoforged.neodev.utils.DependencyUtils;
 import net.neoforged.neodev.utils.FileUtils;
+import net.neoforged.neodev.utils.MavenIdentifier;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
@@ -23,13 +25,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Creates the JSON file for running NeoForge via the Vanilla launcher.
  */
 public abstract class CreateLauncherProfile extends DefaultTask {
     @Inject
-    public CreateLauncherProfile() {}
+    public CreateLauncherProfile() {
+    }
 
     @Input
     public abstract Property<String> getMinecraftVersion();
@@ -43,15 +47,25 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Nested
     protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
 
+    /**
+     * The libraries that the Minecraft version we target already has as dependencies.
+     */
+    @Input
+    protected abstract ListProperty<MavenIdentifier> getMinecraftLibraryIds();
+
     public void setLibraries(Configuration libraries) {
         getLibraryFiles().set(IdentifiedFile.listFromConfiguration(getProject(), libraries));
     }
 
-    @Input
-    public abstract ListProperty<URI> getRepositoryURLs();
+    public void setMinecraftLibraries(Configuration configuration) {
+        getMinecraftLibraryIds().set(configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(
+                artifacts -> artifacts.stream()
+                        .map(DependencyUtils::guessMavenIdentifier)
+                        .toList()));
+    }
 
     @Input
-    public abstract ListProperty<String> getIgnoreList();
+    public abstract ListProperty<URI> getRepositoryURLs();
 
     @OutputFile
     public abstract RegularFileProperty getLauncherProfile();
@@ -61,7 +75,32 @@ public abstract class CreateLauncherProfile extends DefaultTask {
         var time = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
         getLogger().info("Collecting libraries for Launcher Profile");
-        var libraries = LibraryCollector.resolveLibraries(getRepositoryURLs().get(), getLibraryFiles().get());
+
+        // We have to filter out any libraries that are already part of Minecraft, since
+        // the Vanilla Launcher overrides not only the classifier we add, but also all other
+        // classifiers of the same library. Example: if we add lwjgl, Vanilla removes all lwjgl natives, unless
+        // we also add them.
+        var minecraftLibraryVersions = getMinecraftLibraryIds().get().stream()
+                .collect(Collectors.toMap(mavenId -> mavenId.withVersion("*").artifactNotation(), mavenId -> new DefaultArtifactVersion(mavenId.version())));
+        var libraryFiles = new ArrayList<>(getLibraryFiles().get());
+        libraryFiles.removeIf(identifiedFile -> {
+            var libraryId = identifiedFile.getIdentifier().get();
+            var idWithoutVersion = libraryId.withVersion("*");
+            var minecraftVersion = minecraftLibraryVersions.get(idWithoutVersion.artifactNotation());
+            if (minecraftVersion == null) {
+                return false; // If Minecraft doesn't have the library at all, we add it ourselves.
+            }
+            // Otherwise we have to compare versions
+            var libraryVersion = new DefaultArtifactVersion(libraryId.version());
+            if (libraryVersion.compareTo(minecraftVersion) <= 0) {
+                getLogger().info("Removing library {} since Minecraft already ships version {}", libraryId, minecraftVersion);
+                return true; // Remove, if it's older or equal
+            } else {
+                return false;
+            }
+        });
+
+        var libraries = LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFiles);
 
         var gameArguments = new ArrayList<>(List.of(
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),
@@ -70,7 +109,6 @@ public abstract class CreateLauncherProfile extends DefaultTask {
 
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",
-                "-DignoreList=" + String.join(",", getIgnoreList().get()),
                 "-DlibraryDirectory=${library_directory}"));
 
         jvmArguments.addAll(List.of(
@@ -108,5 +146,6 @@ record LauncherProfile(
         String mainClass,
         String inheritsFrom,
         Map<String, List<String>> arguments,
-        List<Library> libraries) {}
+        List<Library> libraries) {
+}
 

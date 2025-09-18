@@ -177,10 +177,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevClasspath));
             task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
             task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
-            task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                return results.stream().map(r -> r.getFile().getName()).toList();
-            }));
-            task.getIgnoreList().addAll("client-extra", "neoforge-");
             task.getBinpatcherGav().set(Tools.BINPATCHER.asGav(project));
         });
 
@@ -337,9 +333,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.setLibraries(configurations.launcherProfileClasspath);
+            task.setMinecraftLibraries(configurations.neoFormClasspath);
             task.getRepositoryURLs().set(installerRepositoryUrls);
-            // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
-            task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
 

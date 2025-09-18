@@ -104,6 +104,7 @@ dependencies {
         }
         endorseStrictVersions()
     }
+    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}")
 
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
         libraries(asmModule) {

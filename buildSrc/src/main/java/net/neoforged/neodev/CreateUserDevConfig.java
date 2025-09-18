@@ -45,9 +45,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
     abstract ListProperty<String> getTestLibraries();
 
     @Input
-    abstract ListProperty<String> getIgnoreList();
-
-    @Input
     abstract Property<String> getBinpatcherGav();
 
     @OutputFile
@@ -93,8 +90,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
             Map<String, String> systemProperties = new LinkedHashMap<>();
             systemProperties.put("java.net.preferIPv6Addresses", "system");
-            systemProperties.put("ignoreList", String.join(",", getIgnoreList().get()));
-            systemProperties.put("legacyClassPath.file", "{minecraft_classpath_file}");
 
             if (runType == RunType.CLIENT || runType == RunType.GAME_TEST_SERVER) {
                 systemProperties.put("neoforge.enableGameTest", "true");
