@@ -5,53 +5,28 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.common.util.ValueIOSerializable;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.handlers.resources.IndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStacksResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStacksResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-
-// TODO: javadoc
 /**
- * Base implementation of a {@link ResourceHandler} backed by a list of stacks.
+ * Base implementation of a {@link ResourceHandler} backed by an {@link ItemAccess}.
  * This implementation is generic in the type of transferred resources {@code T},
- * and in the type of stack {@code S} used to store the contents of the handler.
+ * and in how they are ultimately stored in the item access.
  *
- * <p>As a result of this flexibility, this base implementation comes with the following methods will typically be overridden:
+ * <p>As a result of this flexibility, this base implementation comes with the following methods that will typically be overridden:
  * <ul>
- * <li>(required) {@link #getResourceFrom}, {@link #getAmountFrom}, and {@link #getStackFrom} to convert between amounts, resources and stacks.</li>
- * <li>(required) {@link #copyOf} to copy stacks for snapshotting support.</li>
- * <li>(recommended) {@link #matches} to optimize the frequent operation of checking whether a resource and a stack match.</li>
+ * <li>(required) {@link #getResourceFrom} and {@link #getAmountFrom} to read the stored resource and amount in the item access.</li>
+ * <li>(required) {@link #update} to update an item resource from the item access with new contents of the handler.</li>
  * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
  * <li>(required) {@link #getCapacity} to specify the capacity of this handler.</li>
- * <li>(recommended) {@link #onContentsChanged} to react to changes in this handler, for example to trigger {@code setChanged()}.</li>
  * </ul>
  *
- * @param <S> The type of stack used to store the contents of this handler.
  * @param <T> The type of resource this handler manages.
- * @see ItemStacksResourceHandler the ItemStack-based subclass
- * @see FluidStacksResourceHandler the FluidStack-based subclass
- * @see ResourceStacksResourceHandler the ResourceStack-based subclass
  */
 public abstract class ItemAccessResourceHandler<T extends IResource> implements ResourceHandler<T> {
     protected final ItemAccess itemAccess;
@@ -60,26 +35,6 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
     protected ItemAccessResourceHandler(ItemAccess itemAccess, int size) {
         this.itemAccess = itemAccess;
         this.size = size;
-    }
-
-    /**
-     * Directly overwrites the contents of the handler.
-     *
-     * <p>Note that this method can be used as an {@link IndexModifier}, for usage in {@link ResourceHandlerSlot}.
-     *
-     * @param index    index to change
-     * @param resource new resource at the index
-     * @param amount   new amount at the index
-     * @throws IllegalArgumentException if either the amount is negative; or if the resource is non-empty for a 0 amount
-     */
-    public void set(int index, T resource, int amount) {
-        TransferPreconditions.checkNonNegative(amount);
-        if (resource.isEmpty() && amount > 0) {
-            throw new IllegalArgumentException("Resource is empty but the amount is positive: " + amount);
-        }
-
-        S oldContents = stacks.set(index, getStackFrom(resource, amount));
-        onContentsChanged(index, oldContents);
     }
 
     /**
@@ -92,10 +47,22 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      */
     protected abstract int getAmountFrom(ItemResource accessResource, int index);
 
-    // TODO: document
+    /**
+     * Returns a resource with updated resource and amount.
+     *
+     * @param accessResource current resource, before the update
+     * @param index          the index at which the resource and amount should be updated
+     * @param newResource    the new resource
+     * @param newAmount      the new amount
+     * @return {@code accessResource} updated with the new resource and amount,
+     *         or {@link ItemResource#EMPTY} if the new resource or amount cannot be stored
+     * @implNote This function <strong>should not</strong> mutate the {@linkplain #itemAccess item access},
+     *           that will be done by the calling code based on the results of this function.
+     */
+    // TODO: we could return null when the resource/amount cannot be stored, and empty when the item should be deleted
+    // TODO: this would allow for "consumable" implementations with minimal effort
     protected abstract ItemResource update(ItemResource accessResource, int index, T newResource, int newAmount);
 
-    // TODO: should maybe depend on accessResource as well
     /**
      * Return {@code true} if the passed non-empty resource can fit in this handler, {@code false} otherwise.
      *
@@ -117,19 +84,6 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      * @return The maximum capacity of this handler for the passed resource.
      */
     protected abstract int getCapacity(int index, T resource);
-
-    // TODO: what to do with this method?
-    /**
-     * Called after the contents of the handler changed.
-     *
-     * <p>For changes that happen through {@link #set}, this method is called immediately.
-     * For changes that happen through {@link #insert} or {@link #extract},
-     * this function will be called at the end of the transaction, once per index that changed.
-     *
-     * @param index            the index where the change happened
-     * @param previousContents the stack before the change
-     */
-    protected void onContentsChanged(int index, S previousContents) {}
 
     @Override
     public int size() {
@@ -153,6 +107,8 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
         Objects.checkIndex(index, size());
         return resource.isEmpty() || isValid(index, resource) ? getCapacity(index, resource) : 0;
     }
+
+    // TODO: support "all or nothing" resource handlers better by optionally changing how insert and extract round
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
