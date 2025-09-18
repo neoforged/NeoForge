@@ -10,11 +10,11 @@ import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-class HandlerItemAccess implements ItemAccess {
-    private final ResourceHandler<ItemResource> handler;
-    private final int index;
+public class HandlerItemAccess implements ItemAccess {
+    protected final ResourceHandler<ItemResource> handler;
+    protected final int index;
 
-    HandlerItemAccess(ResourceHandler<ItemResource> handler, int index) {
+    public HandlerItemAccess(ResourceHandler<ItemResource> handler, int index) {
         this.handler = handler;
         this.index = index;
     }

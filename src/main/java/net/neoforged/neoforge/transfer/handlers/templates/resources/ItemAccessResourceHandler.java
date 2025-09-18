@@ -52,14 +52,14 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      *
      * @param accessResource current resource, before the update
      * @param index          the index at which the resource and amount should be updated
-     * @param newResource    the new resource
+     * @param newResource    the new resource, <strong>never empty</strong>: empty is indicated by a 0 amount
      * @param newAmount      the new amount
      * @return {@code accessResource} updated with the new resource and amount,
      *         or {@link ItemResource#EMPTY} if the new resource or amount cannot be stored
      * @implNote This function <strong>should not</strong> mutate the {@linkplain #itemAccess item access},
      *           that will be done by the calling code based on the results of this function.
      */
-    // TODO: we could return null when the resource/amount cannot be stored, and empty when the item should be deleted
+    // TODO: we could allow returning null when the resource/amount should be deleted
     // TODO: this would allow for "consumable" implementations with minimal effort
     protected abstract ItemResource update(ItemResource accessResource, int index, T newResource, int newAmount);
 

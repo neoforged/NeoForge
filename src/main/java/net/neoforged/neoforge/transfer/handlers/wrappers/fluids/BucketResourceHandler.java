@@ -44,7 +44,7 @@ public final class BucketResourceHandler extends ItemAccessResourceHandler<Fluid
 
     @Override
     protected ItemResource update(ItemResource accessResource, int index, FluidResource newResource, int newAmount) {
-        if (newResource.isEmpty()) {
+        if (newAmount == 0) {
             return ItemResource.of(Items.BUCKET);
         } else if (newAmount != FluidType.BUCKET_VOLUME) {
             return ItemResource.EMPTY;
