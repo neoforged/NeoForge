@@ -212,7 +212,7 @@ public class ClientEventTests {
                         var randomSource = new SingleThreadedRandomSource(0);
                         var state = Blocks.GOLD_BLOCK.defaultBlockState();
                         var stack = event.getPoseStack();
-                        var camera = event.getCamera().pos;
+                        var camera = event.getLevelRenderState().cameraRenderState.pos;
                         event.getRenderableSections().forEach(section -> {
                             if (section.isEmpty()) {
                                 return;
@@ -228,7 +228,7 @@ public class ClientEventTests {
                             Minecraft.getInstance().getBlockRenderer().renderBatched(
                                     state,
                                     section.getRenderOrigin(),
-                                    Minecraft.getInstance().level,
+                                    EmptyBlockAndTintGetter.INSTANCE,
                                     stack,
                                     csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
                                     false,
