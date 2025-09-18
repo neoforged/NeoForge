@@ -124,7 +124,7 @@ public class AnimationLoaderTests {
         }
 
         @Override
-        public void resolveDependencies(Resolver resolver) { }
+        public void resolveDependencies(Resolver resolver) {}
 
         @Override
         public MapCodec<TestItemModel> type() {
