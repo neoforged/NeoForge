@@ -43,7 +43,7 @@
      }
  
      public <V> CompletableFuture<V> submit(Supplier<V> p_442544_) {
-@@ -79,6 +_,15 @@
+@@ -79,6 +_,19 @@
          return this.notificationManager;
      }
  
@@ -52,8 +52,12 @@
 +    }
 +
 +    @SuppressWarnings("unchecked")
-+    public <S> @org.jetbrains.annotations.Nullable S getService(net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<S> key) {
-+        return (S) this.services.get(key);
++    public <S> S getService(net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<S> key) {
++        S service = (S) this.services.get(key);
++        if (service == null) {
++            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("Required service for this method is not available");
++        }
++        return service;
 +    }
 +
      public static MinecraftApi of(DedicatedServer p_449765_) {
@@ -63,7 +67,7 @@
          MinecraftServerSettingsServiceImpl minecraftserversettingsserviceimpl = new MinecraftServerSettingsServiceImpl(p_449765_, jsonrpclogger);
          MinecraftServerStateServiceImpl minecraftserverstateserviceimpl = new MinecraftServerStateServiceImpl(p_449765_, jsonrpclogger);
          MinecraftExecutorService minecraftexecutorservice = new MinecraftExecutorServiceImpl(p_449765_);
-+        var registries = p_449765_.registries().compositeAccess();
++        var registries = p_449765_.registryAccess();
 +        var services = new java.util.concurrent.ConcurrentHashMap<net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<?>, Object>();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.server.RegisterMinecraftApiServiceEvent(p_449765_, jsonrpclogger, services));
          return new MinecraftApi(

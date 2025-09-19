@@ -1,5 +1,20 @@
 --- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
 +++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
+@@ -101,10 +_,14 @@
+             return this.method.create(methodinfo, new IncomingRpcMethod.Attributes(this.runOnMainThread, this.discoverable));
+         }
+ 
++        /* @deprecated Neo: Use the RegisterEvent to register instead of this  */
++        @Deprecated
+         public T register(Registry<IncomingRpcMethod> p_451139_, String p_451409_) {
+             return this.register(p_451139_, ResourceLocation.withDefaultNamespace(p_451409_));
+         }
+ 
++        /* @deprecated Neo: Use the RegisterEvent to register instead of this  */
++        @Deprecated
+         private T register(Registry<IncomingRpcMethod> p_443333_, ResourceLocation p_451500_) {
+             return Registry.register(p_443333_, p_451500_, this.build());
+         }
 @@ -122,9 +_,11 @@
              if (p_443044_ != null && p_443044_.isJsonArray()) {
                  JsonArray jsonarray = p_443044_.getAsJsonArray();
