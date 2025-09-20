@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Creates the userdev configuration file used by the various Gradle plugins used to develop
@@ -97,7 +98,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
             config.runs().put(runType.jsonName, new UserDevRunType(
                     runType != RunType.JUNIT,
-                    runType.mainClass,
+                    // Archloom crashes when reading a userconfig without a main class
+                    Objects.requireNonNullElse(runType.mainClass, "NONE"),
                     args,
                     List.of(
                             "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
