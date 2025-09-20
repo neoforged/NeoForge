@@ -26,7 +26,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class CustomSpriteSourceTest {
 
     public CustomSpriteSourceTest(IEventBus modEventBus) {
         if (!ENABLED) return;
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modEventBus.addListener(this::registerTextureAtlasSpriteLoaders);
         }
         ITEMS.register(modEventBus);

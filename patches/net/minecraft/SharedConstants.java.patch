@@ -5,7 +5,7 @@
      public static final boolean USE_DEVONLY = false;
      public static boolean CHECK_DATA_FIXER_SCHEMA = true;
 -    public static boolean IS_RUNNING_IN_IDE;
-+    public static boolean IS_RUNNING_IN_IDE = !net.neoforged.fml.loading.FMLLoader.isProduction();
++    public static boolean IS_RUNNING_IN_IDE = !net.neoforged.fml.loading.FMLEnvironment.isProduction();
 +    public static final boolean IS_RUNNING_WITH_JDWP = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream().anyMatch(str -> str.startsWith("-agentlib:jdwp"));
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;

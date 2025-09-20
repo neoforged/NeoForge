@@ -36,7 +36,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -109,7 +109,7 @@ public class FluidTypeTest {
             modEventBus.addListener(this::commonSetup);
             modEventBus.addListener(this::addCreative);
 
-            if (FMLLoader.getDist().isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 new FluidTypeTestClient(modEventBus);
             }
         }

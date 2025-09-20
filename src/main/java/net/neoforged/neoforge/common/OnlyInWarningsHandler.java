@@ -12,7 +12,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.objectweb.asm.Type;
@@ -26,7 +26,7 @@ public class OnlyInWarningsHandler {
     private static final boolean HIDE_WARNING_SCREEN = Boolean.getBoolean("neoforge.warnings.onlyin.hide");
 
     public OnlyInWarningsHandler(ModContainer container) {
-        if (!FMLLoader.isProduction()) {
+        if (!FMLEnvironment.isProduction()) {
             ModList.get().forEachModFile(file -> {
                 if (file.getModInfos().stream().anyMatch(info -> info.getModId().equals("minecraft"))) {
                     return;

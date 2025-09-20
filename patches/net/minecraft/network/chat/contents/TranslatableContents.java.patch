@@ -4,7 +4,7 @@
          this.key = p_265775_;
          this.fallback = p_265204_;
          this.args = p_265752_;
-+        if (!net.neoforged.fml.loading.FMLLoader.isProduction()) {
++        if (!net.neoforged.fml.loading.FMLEnvironment.isProduction()) {
 +            for (Object arg : this.args) {
 +                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
 +                    throw new IllegalArgumentException("TranslatableContents' arguments must be either a Component, Number, Boolean, or a String. Was given " + arg + " for " + this.key);

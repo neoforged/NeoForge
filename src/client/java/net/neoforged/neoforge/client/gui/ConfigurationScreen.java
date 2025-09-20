@@ -63,7 +63,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen.ConfigurationSectionScreen.Filter;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -161,7 +161,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         public void finish() {
-            if (NeoForgeClientConfig.INSTANCE.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
+            if (NeoForgeClientConfig.INSTANCE.logUntranslatedConfigurationWarnings.get() && !FMLEnvironment.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("""
                         \n	Dev warning - Untranslated configuration keys encountered. Please translate your configuration keys so users can properly configure your mod.

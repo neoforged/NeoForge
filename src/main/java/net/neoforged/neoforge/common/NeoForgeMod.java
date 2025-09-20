@@ -68,6 +68,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.FMLVersion;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -540,7 +541,7 @@ public class NeoForgeMod {
             return uuid.toString();
         });
 
-        CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getFmlVersion);
+        CrashReportCallables.registerCrashCallable("FML", FMLVersion::getVersion);
         CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
 
         // Forge-provided datapack registries

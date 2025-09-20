@@ -53,7 +53,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.InclusiveRange;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -97,7 +97,7 @@ public class LoginPacketSplitTest {
                 }
             });
 
-            if (FMLLoader.getDist().isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
                         .executes(context -> {
                             context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().lookupOrThrow(BIG_DATA).size() + " entries."), true);

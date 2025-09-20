@@ -27,6 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import org.slf4j.Logger;
 
@@ -67,7 +68,7 @@ class DumpCommand {
 
         String fileLocationForErrorReporting = "";
         try {
-            Path registryDumpDirectory = FMLLoader.getGamePath().resolve("dumps").resolve("registry");
+            Path registryDumpDirectory = FMLLoader.getCurrent().getGameDir().resolve("dumps").resolve("registry");
             Path registryNamespaceDirectory = registryDumpDirectory.resolve(registryKey.location().getNamespace().replaceAll("[/:.]", "_"));
             Files.createDirectories(registryNamespaceDirectory);
 
@@ -87,12 +88,12 @@ class DumpCommand {
                 }
             }
 
-            MutableComponent filePathComponent = Component.literal("..." + FMLLoader.getGamePath().relativize(registryDumpFile))
+            MutableComponent filePathComponent = Component.literal("..." + FMLLoader.getCurrent().getGameDir().relativize(registryDumpFile))
                     .withStyle(ChatFormatting.UNDERLINE)
                     .withStyle(ChatFormatting.GOLD);
 
             // Click action not allow on dedicated servers as client cannot click link to a server's file path.
-            if (!FMLLoader.getDist().isDedicatedServer()) {
+            if (!FMLEnvironment.getDist().isDedicatedServer()) {
                 filePathComponent.withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(registryDumpFile)));
             }
 

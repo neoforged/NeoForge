@@ -32,7 +32,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.modscan.ModAnnotation;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import net.neoforged.testframework.Test;
@@ -51,7 +51,7 @@ import org.objectweb.asm.Type;
 
 public final class FrameworkCollectors {
     private static final Predicate<ModFileScanData.AnnotationData> SIDE_FILTER = data -> {
-        final Dist current = FMLLoader.getDist();
+        final Dist current = FMLEnvironment.getDist();
         Object sidesValue = data.annotationData().get("side");
         if (sidesValue == null) sidesValue = data.annotationData().get("dist");
         if (sidesValue == null) return true;

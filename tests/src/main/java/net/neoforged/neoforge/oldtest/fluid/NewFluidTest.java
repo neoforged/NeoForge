@@ -34,7 +34,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -91,7 +91,7 @@ public class NewFluidTest {
             FLUIDS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
 
-            if (FMLLoader.getDist().isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 modEventBus.addListener(ClientEvents::onRegisterClientExtensions);
             }
         }

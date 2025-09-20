@@ -41,7 +41,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
@@ -102,7 +102,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         this.logger = LoggerFactory.getLogger("TestFramework " + this.id);
         new LoggerSetup(this).prepareLogger();
 
-        if (FMLLoader.getDist().isClient() && configuration.clientConfiguration() != null) {
+        if (FMLEnvironment.getDist().isClient() && configuration.clientConfiguration() != null) {
             this.client = FrameworkClient.factory().map(it -> it.create(this, configuration.clientConfiguration().get())).orElse(null);
         } else {
             this.client = null;
@@ -250,7 +250,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         }
         tests().initialiseDefaultEnabledTests();
 
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             setupClient(this, modBus, container);
         }
 
@@ -359,11 +359,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     @SuppressWarnings("SameParameterValue")
     private void sendPacketIfOn(@Nullable Runnable onServer, @Nullable Runnable remoteClient, @Nullable Runnable singlePlayer) {
-        if (FMLLoader.getDist().isClient() && server != null) {
+        if (FMLEnvironment.getDist().isClient() && server != null) {
             if (singlePlayer != null) singlePlayer.run();
-        } else if (FMLLoader.getDist().isClient()) {
+        } else if (FMLEnvironment.getDist().isClient()) {
             if (remoteClient != null && configuration.isEnabled(Feature.CLIENT_MODIFICATIONS)) remoteClient.run();
-        } else if (FMLLoader.getDist().isDedicatedServer() && server != null) {
+        } else if (FMLEnvironment.getDist().isDedicatedServer() && server != null) {
             if (onServer != null && configuration.isEnabled(Feature.CLIENT_SYNC)) onServer.run();
         }
     }

@@ -35,7 +35,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -53,7 +53,7 @@ public class CustomTooltipTest {
 
     public CustomTooltipTest(IEventBus modEventBus) {
         if (ENABLED) {
-            if (FMLLoader.getDist().isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 NeoForge.EVENT_BUS.register(ClientEventHandler.class);
                 modEventBus.register(ClientModBusEventHandler.class);
             }
@@ -99,7 +99,7 @@ public class CustomTooltipTest {
 
         @Override
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
-            if (level.isClientSide() && FMLLoader.getDist().isClient()) {
+            if (level.isClientSide() && FMLEnvironment.getDist().isClient()) {
                 TooltipTestScreen.show();
             }
             return InteractionResult.SUCCESS;

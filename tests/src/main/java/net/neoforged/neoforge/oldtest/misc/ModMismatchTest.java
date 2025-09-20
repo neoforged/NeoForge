@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -41,7 +41,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     private static final boolean REGISTER_FOR_SERVER = true;
     private static final boolean REGISTER_FOR_CLIENT = true;
 
-    private static final String CHANNEL_PROTOCOL_VERSION = FMLLoader.getDist().isClient() ? "V1" : "V2";
+    private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.getDist().isClient() ? "V1" : "V2";
 
     public ModMismatchTest(IEventBus modBus) {
         if (ENABLED) {
@@ -50,7 +50,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     }
 
     private void onRegisterPacketHandler(RegisterPayloadHandlersEvent event) {
-        if ((FMLLoader.getDist().isDedicatedServer() && REGISTER_FOR_SERVER) || (FMLLoader.getDist().isClient() && REGISTER_FOR_CLIENT)) {
+        if ((FMLEnvironment.getDist().isDedicatedServer() && REGISTER_FOR_SERVER) || (FMLEnvironment.getDist().isClient() && REGISTER_FOR_CLIENT)) {
             event
                     .registrar(CHANNEL_PROTOCOL_VERSION)
                     .configurationBidirectional(

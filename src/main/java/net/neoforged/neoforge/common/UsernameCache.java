@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 public final class UsernameCache {
     private static Map<UUID, String> map = new HashMap<>();
 
-    private static final Path saveFile = FMLLoader.getGamePath().resolve("usernamecache.json");
+    private static final Path saveFile = FMLLoader.getCurrent().getGameDir().resolve("usernamecache.json");
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private static final Logger LOGGER = LogManager.getLogger(UsernameCache.class);

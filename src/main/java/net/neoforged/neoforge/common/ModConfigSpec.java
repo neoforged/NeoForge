@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -916,7 +916,7 @@ public class ModConfigSpec implements IConfigSpec {
 
         public String buildComment(final List<String> path) {
             if (comment.stream().allMatch(String::isBlank)) {
-                if (FMLLoader.isProduction())
+                if (FMLEnvironment.isProduction())
                     LOGGER.warn(Logging.CORE, "Detected a comment that is all whitespace for config option {}, which causes obscure bugs in NeoForge's config system and will cause a crash in the future. Please report this to the mod author.",
                             DOT_JOINER.join(path));
                 else
