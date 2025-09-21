@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.access;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -15,6 +16,7 @@ public class HandlerItemAccess implements ItemAccess {
     protected final int index;
 
     public HandlerItemAccess(ResourceHandler<ItemResource> handler, int index) {
+        Objects.checkIndex(index, handler.size());
         this.handler = handler;
         this.index = index;
     }
