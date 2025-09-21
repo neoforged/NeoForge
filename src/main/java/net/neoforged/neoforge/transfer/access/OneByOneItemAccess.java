@@ -7,9 +7,7 @@ package net.neoforged.neoforge.transfer.access;
 
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal
 record OneByOneItemAccess(ItemAccess delegate) implements ItemAccess {
     @Override
     public ItemResource getResource() {
