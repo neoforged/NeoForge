@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.resources;
+package net.neoforged.neoforge.transfer.resource;
 
 /**
  * Most general form of a resource that can be quantified and moved around.

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import com.google.common.primitives.Ints;
-import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resource.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;

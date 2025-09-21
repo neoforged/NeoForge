@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resource.IResource;
 
 /**
  * Precondition checks useful for implementing {@link ResourceHandler}.

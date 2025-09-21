@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resource.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**

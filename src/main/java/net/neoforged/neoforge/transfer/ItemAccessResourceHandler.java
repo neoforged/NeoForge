@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer;
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resource.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**

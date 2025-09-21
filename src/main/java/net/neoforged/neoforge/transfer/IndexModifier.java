@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resource.IResource;
 
 /**
  * Represents a function to directly mutate the resource and amount at a specific index of a {@link ResourceHandler}.

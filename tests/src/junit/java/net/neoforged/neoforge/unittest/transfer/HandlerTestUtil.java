@@ -8,8 +8,8 @@ package net.neoforged.neoforge.unittest.transfer;
 import java.util.ArrayList;
 import java.util.List;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 final class HandlerTestUtil {

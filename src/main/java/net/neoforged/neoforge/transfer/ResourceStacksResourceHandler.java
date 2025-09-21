@@ -7,8 +7,8 @@ package net.neoforged.neoforge.transfer;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 /**
  * Base implementation of a {@link ResourceHandler} backed by a list of {@link ResourceStack}s.
