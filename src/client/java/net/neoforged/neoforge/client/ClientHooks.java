@@ -719,9 +719,9 @@ public class ClientHooks {
     }
 
     public static void onRegisterKeyMappings(Options options, List<KeyMapping.Category> categories) {
-        RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options, categories);
+        RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options);
         ModLoader.postEvent(event);
-        event.sortAndStoreCategories();
+        event.sortAndStoreCategories(categories);
     }
 
     @Nullable

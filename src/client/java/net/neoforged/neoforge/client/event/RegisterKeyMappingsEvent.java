@@ -29,13 +29,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class RegisterKeyMappingsEvent extends Event implements IModBusEvent {
     private final Options options;
-    private final List<KeyMapping.Category> categories;
     private final Map<ResourceLocation, KeyMapping.Category> moddedCategories = new HashMap<>();
 
     @ApiStatus.Internal
-    public RegisterKeyMappingsEvent(Options options, List<KeyMapping.Category> categories) {
+    public RegisterKeyMappingsEvent(Options options) {
         this.options = options;
-        this.categories = categories;
     }
 
     /**
@@ -55,9 +53,9 @@ public class RegisterKeyMappingsEvent extends Event implements IModBusEvent {
     }
 
     @ApiStatus.Internal
-    public void sortAndStoreCategories() {
+    public void sortAndStoreCategories(List<KeyMapping.Category> categories) {
         List<KeyMapping.Category> custom = new ArrayList<>(this.moddedCategories.values());
         custom.sort((c1, c2) -> c1.id().compareNamespaced(c2.id()));
-        this.categories.addAll(custom);
+        categories.addAll(custom);
     }
 }
