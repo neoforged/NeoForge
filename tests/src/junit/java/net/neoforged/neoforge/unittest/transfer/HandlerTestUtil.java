@@ -7,7 +7,7 @@ package net.neoforged.neoforge.unittest.transfer;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
