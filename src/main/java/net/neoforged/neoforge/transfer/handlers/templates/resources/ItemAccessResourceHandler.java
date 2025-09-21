@@ -22,8 +22,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <ul>
  * <li>(required) {@link #getResourceFrom} and {@link #getAmountFrom} to read the stored resource and amount in the item access.</li>
  * <li>(required) {@link #update} to update an item resource from the item access with new contents of the handler.</li>
- * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
  * <li>(required) {@link #getCapacity} to specify the capacity of this handler.</li>
+ * <li>(optional) {@link #isValid} to limit which resources are allowed in this handler; by default any resource is allowed.</li>
  * </ul>
  *
  * @param <T> The type of resource this handler manages.
@@ -44,6 +44,8 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
 
     /**
      * Retrieves the amount stored in the {@linkplain ItemAccess#getResource() current contents} of the item access.
+     *
+     * @see ResourceHandler#getAmountAsInt
      */
     protected abstract int getAmountFrom(ItemResource accessResource, int index);
 
@@ -59,8 +61,7 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      * @implNote This function <strong>should not</strong> mutate the {@linkplain #itemAccess item access},
      *           that will be done by the calling code based on the results of this function.
      */
-    // TODO: we could allow returning null when the resource/amount should be deleted
-    // TODO: this would allow for "consumable" implementations with minimal effort
+    // TODO: we could allow returning null when the resource/amount should be deleted, to allow for "consumable" implementations with minimal effort
     protected abstract ItemResource update(ItemResource accessResource, int index, T newResource, int newAmount);
 
     /**
@@ -71,6 +72,8 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      * <li>{@link #getCapacityAsLong(int, T)}, to report a capacity of {@code 0} for invalid items;</li>
      * <li>{@link #insert(int, T, int, TransactionContext)}, to reject items that cannot fit in this handler.</li>
      * </ul>
+     *
+     * @see ResourceHandler#isValid
      */
     @Override
     public boolean isValid(int index, T resource) {
@@ -82,6 +85,7 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
      * If the passed resource is empty, an estimate should be returned.
      *
      * @return The maximum capacity of this handler for the passed resource.
+     * @see ResourceHandler#getCapacityAsInt
      */
     protected abstract int getCapacity(int index, T resource);
 
@@ -99,6 +103,7 @@ public abstract class ItemAccessResourceHandler<T extends IResource> implements 
     @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
+        // Cast as the product of two ints might overflow an int, but fits into a long
         return (long) itemAccess.getAmount() * getAmountFrom(itemAccess.getResource(), index);
     }
 

@@ -34,7 +34,15 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
         // Store the current item, such that if the item changes later we don't return any stored content from it.
         this.validItem = itemAccess.getResource().getItem();
         this.component = component;
-        Preconditions.checkArgument(size <= 256, "The max size of ItemContainerContents is 256 slots.");
+        Preconditions.checkArgument(size <= /* ItemContainerContents.MAX_SIZE */ 256,
+                "The max size of ItemContainerContents is 256 slots.");
+    }
+
+    /**
+     * Retrieves the {@link ItemContainerContents} from the current resource of the item access.
+     */
+    protected ItemContainerContents getContents(ItemResource accessResource) {
+        return accessResource.getOrDefault(component, ItemContainerContents.EMPTY);
     }
 
     /**
@@ -46,13 +54,13 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
      * @return a copy of the stack in the target slot
      */
     protected ItemStack getStackFromContents(ItemContainerContents contents, int slot) {
-        return contents.getSlots() <= slot ? ItemStack.EMPTY : contents.getStackInSlot(slot);
+        return slot < contents.getSlots() ? contents.getStackInSlot(slot) : ItemStack.EMPTY;
     }
 
     @Override
     protected ItemResource getResourceFrom(ItemResource accessResource, int index) {
         if (accessResource.is(validItem)) {
-            return ItemResource.of(getStackFromContents(accessResource.getOrDefault(component, ItemContainerContents.EMPTY), index));
+            return ItemResource.of(getStackFromContents(getContents(accessResource), index));
         } else {
             return ItemResource.EMPTY;
         }
@@ -61,7 +69,7 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
     @Override
     protected int getAmountFrom(ItemResource accessResource, int index) {
         if (accessResource.is(validItem)) {
-            return getStackFromContents(accessResource.getOrDefault(component, ItemContainerContents.EMPTY), index).getCount();
+            return getStackFromContents(getContents(accessResource), index).getCount();
         } else {
             return 0;
         }
@@ -69,8 +77,8 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
 
     @Override
     protected ItemResource update(ItemResource accessResource, int index, ItemResource newResource, int newAmount) {
-        var contents = accessResource.getOrDefault(component, ItemContainerContents.EMPTY);
-        // Use the max of the contents slots and the capability slots to avoid truncating
+        var contents = getContents(accessResource);
+        // Ensure we don't truncate any data by taking the max of the number of slots we need to fit, and our desired size
         NonNullList<ItemStack> list = NonNullList.withSize(Math.max(contents.getSlots(), size), ItemStack.EMPTY);
         contents.copyInto(list);
         list.set(index, newResource.toStack(newAmount));
@@ -79,6 +87,7 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
+        // Any resource is valid, but we have to check that the item of the item access has not changed.
         return itemAccess.getResource().is(validItem);
     }
 

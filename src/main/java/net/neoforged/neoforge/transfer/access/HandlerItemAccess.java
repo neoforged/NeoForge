@@ -35,6 +35,7 @@ public class HandlerItemAccess implements ItemAccess {
 
         int inserted = handler.insert(index, resource, amount, transaction);
         if (inserted < amount) {
+            // Insert any leftover into the rest of the handler
             inserted += handler.insert(resource, amount - inserted, transaction);
         }
         return inserted;

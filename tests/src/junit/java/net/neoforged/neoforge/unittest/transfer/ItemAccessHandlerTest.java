@@ -38,30 +38,30 @@ class ItemAccessHandlerTest {
             // Test extract.
             if (slot2Handler.extract(water, FluidType.BUCKET_VOLUME, transaction) != FluidType.BUCKET_VOLUME) throw new AssertionError("Should have extracted from full bucket.");
             // Test that an empty bucket was added.
-            if (!stackEquals(testContainer.getItem(1), Items.BUCKET, 2)) throw new AssertionError("Buckets should have stacked.");
+            if (!sameItemSameCount(testContainer.getItem(1), Items.BUCKET, 2)) throw new AssertionError("Buckets should have stacked.");
             // Test that we can't extract again
             if (slot2Handler.extract(water, FluidType.BUCKET_VOLUME, transaction) != 0) throw new AssertionError("Should not have extracted a second time.");
             // Now insert water into slot 1.
             if (slot1Handler.insert(water, FluidType.BUCKET_VOLUME, transaction) != FluidType.BUCKET_VOLUME) throw new AssertionError("Failed to insert.");
             // Check that it filled slot 0.
-            if (!stackEquals(testContainer.getItem(0), Items.WATER_BUCKET, 1)) throw new AssertionError("Should have filled slot 0.");
+            if (!sameItemSameCount(testContainer.getItem(0), Items.WATER_BUCKET, 1)) throw new AssertionError("Should have filled slot 0.");
             // Now we yeet the bucket from slot 0 just because we can.
             if (VanillaContainerWrapper.of(testContainer).extract(0, waterBucket, 1, transaction) != 1) throw new AssertionError("Failed to yeet bucket from slot 0.");
             // Now insert should fill slot 1 with a bucket.
             if (slot1Handler.insert(water, FluidType.BUCKET_VOLUME, transaction) != FluidType.BUCKET_VOLUME) throw new AssertionError("Failed to insert.");
             // Check container contents.
             if (!testContainer.getItem(0).isEmpty()) throw new AssertionError("Slot 0 should have been empty.");
-            if (!stackEquals(testContainer.getItem(1), Items.WATER_BUCKET, 1)) throw new AssertionError("Should have filled slot 1 with a water bucket.");
+            if (!sameItemSameCount(testContainer.getItem(1), Items.WATER_BUCKET, 1)) throw new AssertionError("Should have filled slot 1 with a water bucket.");
         }
 
         // Check contents after abort
         if (!testContainer.getItem(0).isEmpty()) throw new AssertionError("Failed to abort slot 0.");
-        if (!stackEquals(testContainer.getItem(1), Items.BUCKET, 1)) throw new AssertionError("Failed to abort slot 1.");
-        if (!stackEquals(testContainer.getItem(2), Items.WATER_BUCKET, 1)) throw new AssertionError("Failed to abort slot 2.");
+        if (!sameItemSameCount(testContainer.getItem(1), Items.BUCKET, 1)) throw new AssertionError("Failed to abort slot 1.");
+        if (!sameItemSameCount(testContainer.getItem(2), Items.WATER_BUCKET, 1)) throw new AssertionError("Failed to abort slot 2.");
     }
 
-    private static boolean stackEquals(ItemStack stack, Item item, int count) {
-        return stack.getItem() == item && stack.getCount() == count;
+    private static boolean sameItemSameCount(ItemStack stack, Item item, int count) {
+        return stack.is(item) && stack.getCount() == count;
     }
 
     private static class BucketTestContainer extends SimpleContainer {

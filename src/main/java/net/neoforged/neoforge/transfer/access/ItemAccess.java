@@ -33,10 +33,9 @@ import org.jetbrains.annotations.Nullable;
  * <p>This interface is primarily used as the context type {@code C} for {@linkplain ItemCapability item capabilities}.
  * This allows the returned capability instance to modify the current item or even swap out the item entirely,
  * for example to replace an empty bucket by a filled bucket.
- * Use the {@link #getCapability(ItemCapability)} method to query a capability for this location.
+ * Use the {@link #getCapability(ItemCapability)} method to query a capability for the item referenced by an item access.
  */
 public interface ItemAccess {
-    // TODO: "constant" access needs to be restored?
     /**
      * Creates an item access instance for interaction with a player's hand.
      *
@@ -63,8 +62,15 @@ public interface ItemAccess {
      * Any {@linkplain #insert insertion} is always accepted, but only one item is actually added
      * to the player's inventory, and only if the player does not already have the item.
      * This matches the behavior of {@link ItemUtils#createFilledResult}.
+     *
+     * @see #forPlayerInteraction(Player, InteractionHand) the recommended method for player interaction
      */
     static ItemAccess forInfiniteMaterials(Player player, ItemStack contents) {
+        if (!player.hasInfiniteMaterials()) {
+            // Check to avoid accidental usage of the method for players that are not in creative mode.
+            // Can be removed in the future if a use case comes up.
+            throw new IllegalArgumentException("Player " + player + " does not have infinite materials");
+        }
         return new InfiniteMaterialsItemAccess(player, ItemResource.of(contents), contents.getCount());
     }
 
@@ -84,14 +90,24 @@ public interface ItemAccess {
     }
 
     /**
-     * Creates an item access instance for a specific slot of an item resource handler.
+     * Creates an item access instance for a specific slot of an item resource handler,
+     * with any overflow being sent to the rest of the handler.
      *
      * <p>Overflow on insertion will be sent to the rest of the handler via
      * {@linkplain ResourceHandler#insert(IResource, int, TransactionContext) the slotless insert} method.
-     * If this is not desired, create a single slot wrapper using {@link RangedResourceHandler#ofSingleIndex}.
+     * If this is not desired, use the {@link #forHandlerIndexStrict} method instead.
      */
     static ItemAccess forHandlerIndex(ResourceHandler<ItemResource> handler, int index) {
         return new HandlerItemAccess(handler, index);
+    }
+
+    /**
+     * Creates an item access instance for a specific slot of an item resource handler.
+     *
+     * <p>To send overflow on insertion to the rest of the handler, use the {@link #forHandlerIndex} method instead.
+     */
+    static ItemAccess forHandlerIndexStrict(ResourceHandler<ItemResource> handler, int index) {
+        return new HandlerItemAccess(RangedResourceHandler.ofSingleIndex(handler, index), 0);
     }
 
     /**
@@ -125,7 +141,7 @@ public interface ItemAccess {
     @Nullable
     @ApiStatus.NonExtendable
     default <T> T getCapability(ItemCapability<T, ItemAccess> capability) {
-        return getResource().toStack().getCapability(capability, this);
+        return capability.getCapability(getResource().toStack(), this);
     }
 
     /**
@@ -138,6 +154,8 @@ public interface ItemAccess {
      *
      * <p>The returned amount must be <strong>non-negative</strong>.
      * If the {@linkplain #getResource stored resource} is empty, the amount must be 0.
+     *
+     * @apiNote The returned amount may be larger than the {@linkplain ItemResource#getMaxStackSize() max stack size} of the current resource.
      */
     int getAmount();
 
@@ -145,7 +163,7 @@ public interface ItemAccess {
      * Inserts up to the given amount of an item resource into the accessed location.
      * <p>
      * If the inserted item is not stackable with the current item, it may be inserted in a place that is inaccessible
-     * for {@link #extract}, such as the player inventory.
+     * by {@link #extract}, such as the player inventory.
      *
      * <p>Changes to the accessed location are made in the context of a {@linkplain Transaction transaction}.
      *
@@ -195,10 +213,12 @@ public interface ItemAccess {
 
         try (Transaction subTransaction = Transaction.open(transaction)) {
             int extracted = extract(currentResource, amount, subTransaction);
-            var inserted = insert(newResource, extracted, subTransaction);
-            if (inserted == extracted) {
-                subTransaction.commit();
-                return extracted;
+            if (extracted > 0) {
+                var inserted = insert(newResource, extracted, subTransaction);
+                if (inserted == extracted) {
+                    subTransaction.commit();
+                    return extracted;
+                }
             }
         }
 

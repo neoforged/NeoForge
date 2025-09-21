@@ -59,6 +59,7 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
+        // Any resource is valid, but we have to check that the item of the item access has not changed.
         return itemAccess.getResource().is(validItem);
     }
 
