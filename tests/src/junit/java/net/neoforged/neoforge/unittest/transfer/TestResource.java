@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.unittest.transfer;
 
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 
-public enum TestResource implements IResource {
+public enum TestResource implements Resource {
     EMPTY,
     SOME,
     OTHER_1,

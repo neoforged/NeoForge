@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 
 /**
  * Precondition checks useful for implementing {@link ResourceHandler}.
@@ -18,7 +18,7 @@ public class TransferPreconditions {
      *
      * @throws IllegalArgumentException when resource is empty.
      */
-    public static void checkNonEmpty(IResource resource) {
+    public static void checkNonEmpty(Resource resource) {
         if (resource.isEmpty()) {
             throw new IllegalArgumentException("Expected resource to be non-empty: " + resource);
         }
@@ -40,7 +40,7 @@ public class TransferPreconditions {
      *
      * @throws IllegalArgumentException when resource is empty or value is negative.
      */
-    public static void checkNonEmptyNonNegative(IResource resource, int value) {
+    public static void checkNonEmptyNonNegative(Resource resource, int value) {
         checkNonEmpty(resource);
         checkNonNegative(value);
     }

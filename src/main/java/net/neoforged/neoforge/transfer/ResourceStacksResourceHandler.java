@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 /**
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.transfer.resource.ResourceStack;
  *
  * @see StacksResourceHandler
  */
-public abstract class ResourceStacksResourceHandler<R extends IResource> extends StacksResourceHandler<ResourceStack<R>, R> {
+public abstract class ResourceStacksResourceHandler<R extends Resource> extends StacksResourceHandler<ResourceStack<R>, R> {
     // TODO: do we want to be passing a resource codec instead?
     public ResourceStacksResourceHandler(int size, R emptyResource, Codec<ResourceStack<R>> stackCodec) {
         super(size, new ResourceStack<>(emptyResource, 0), stackCodec);
