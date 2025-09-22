@@ -9,12 +9,9 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A buffer of energy that has an endless supply, but never insertable.
- * If you need custom behaviour, then a new implementation is required rather than extending {@link InfiniteEnergyHandler}
- * <p>
- * <b>Note</b> This does not auto eject by just having this as your capability, this is just a buffer.
+ * An {@link EnergyHandler} that allows insertion and extraction of an unlimited amount of energy.
  */
-public final class InfiniteEnergyHandler implements EnergyHandler {
+public class InfiniteEnergyHandler implements EnergyHandler {
     public static final InfiniteEnergyHandler INSTANCE = new InfiniteEnergyHandler();
 
     @Override
@@ -30,14 +27,14 @@ public final class InfiniteEnergyHandler implements EnergyHandler {
     @Override
     public int insert(int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonNegative(amount);
-        return 0;
+        // Accept full insertion
+        return amount;
     }
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonNegative(amount);
+        // Accept full extraction
         return amount;
     }
-
-    private InfiniteEnergyHandler() {}
 }

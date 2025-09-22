@@ -15,12 +15,46 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 /**
  * Utility class for handling various {@link EnergyHandler} interactions
  */
 public final class EnergyHandlerUtil {
+    /**
+     * Checks if an {@link EnergyHandler} is full.
+     * <p>
+     * An energy handler is considered full if its {@linkplain EnergyHandler#getAmountAsLong() amount}
+     * is greater than or equal to its {@linkplain EnergyHandler#getCapacityAsLong() capacity}.
+     *
+     * @param handler the {@link EnergyHandler} to check
+     * @return {@code true} if the {@link EnergyHandler} is full, {@code false} otherwise
+     */
+    public static boolean isFull(EnergyHandler handler) {
+        return handler.getAmountAsLong() >= handler.getCapacityAsLong();
+    }
+
+    /**
+     * Calculates the redstone signal strength based on the given energy handler's content. This value is between 0 and 15.
+     * <p>This method is based on {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}.
+     *
+     * @param handler the energy handler to calculate the signal from
+     * @return the redstone signal strength
+     */
+    public static int getRedstoneSignalFromEnergyHandler(EnergyHandler handler) {
+        long amount = handler.getAmountAsLong();
+        if (amount == 0) {
+            return Redstone.SIGNAL_NONE;
+        }
+        long capacity = handler.getCapacityAsLong();
+        if (capacity == 0) {
+            return Redstone.SIGNAL_NONE;
+        }
+        return Mth.lerpDiscrete(
+                // Clamp to 1 to avoid increasing the signal strength beyond 15
+                Math.min(1.0f, (float) amount / capacity),
+                Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
+    }
+
     /**
      * Moves energy between two handlers, and return the amount that was successfully transferred.
      *
@@ -37,28 +71,28 @@ public final class EnergyHandlerUtil {
             int amount,
             @Nullable TransactionContext transaction) {
         TransferPreconditions.checkNonNegative(amount);
-        if (amount == 0 || from == null || to == null) return 0;
-
-        //Test if the `from` handler supports extracting energy from it.
-        //Test if the `to` handler supports inserting energy into it.
-        //While these are  not strictly necessary, it can reduce our iteration loop cost
-        if (!from.supportsExtraction() || !to.supportsInsertion()) return 0;
+        if (from == null || to == null || amount == 0) return 0;
 
         try (Transaction subTransaction = Transaction.open(transaction)) {
-            int extractableAmount;
-            try (Transaction simulatedTransaction = Transaction.open(subTransaction)) {
-                extractableAmount = from.extract(amount, simulatedTransaction);
-                //Don't commit. This will revert the extraction to allow work with the amount we "simulated".
+            int maxExtracted;
+            try (Transaction simulatedExtract = Transaction.open(subTransaction)) {
+                maxExtracted = from.extract(amount, simulatedExtract);
             }
 
-            int inserted = to.insert(extractableAmount, subTransaction);
-            int extracted = from.extract(inserted, subTransaction);
-            //Check to be sure the amount we inserted is able to be fully extracted before committing.
-            if (extracted == inserted) {
-                subTransaction.commit();
-                return extracted;
+            if (maxExtracted == 0) return 0;
+
+            // check how much can be inserted
+            int inserted = to.insert(maxExtracted, subTransaction);
+
+            // extract it, or rollback if we cannot actually extract the amount we inserted
+            // this can happen even for a well-behaving handler if it only supports extracting the exact
+            // amount we previously simulated, but the destination only accepted less.
+            if (inserted != from.extract(inserted, subTransaction)) {
+                return 0;
             }
-            return 0;
+
+            subTransaction.commit();
+            return inserted;
         } catch (Exception e) {
             CrashReport report = CrashReport.forThrowable(e, "Moving energy between handlers");
             //noinspection DataFlowIssue
@@ -68,57 +102,6 @@ public final class EnergyHandlerUtil {
                     .setDetail("Amount", amount)
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
-        }
-    }
-
-    /**
-     * Calculates the redstone signal strength based on the given resource handler. This value is between 0 and 15.
-     * This method is based on {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}
-     *
-     * @param handler the energy handler to calculate the signal from
-     * @return the redstone signal strength
-     */
-    @Range(from = Redstone.SIGNAL_NONE, to = Redstone.SIGNAL_MAX)
-    public static int getRedstoneSignalStrength(EnergyHandler handler) {
-        var capacity = handler.getCapacityAsInt();
-        if (capacity == 0) return Redstone.SIGNAL_NONE;
-        var amount = handler.getAmountAsLong();
-        if (amount == 0) return Redstone.SIGNAL_NONE;
-        float proportion = (float) amount / (float) capacity;
-        return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
-    }
-
-    /**
-     * Returns if the specified {@code IEnergyHandler} could accept energy. The transaction used is not committed.
-     *
-     * @param handler The energy handler to check
-     * @return {@code true} if any energy could be accepted by the handler, otherwise {@code false}.
-     */
-    public static boolean canAcceptEnergy(EnergyHandler handler) {
-        return getInsertableAmount(handler) > 0;
-    }
-
-    /**
-     * Returns the maximum value the specified {@code IEnergyHandler} could accept. The transaction used is not committed.
-     *
-     * @param handler the energy handler to check
-     * @return The max value that energy handler could receive
-     */
-    public static int getInsertableAmount(EnergyHandler handler) {
-        try (Transaction transaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
-            return handler.insert(Integer.MAX_VALUE, transaction);
-        }
-    }
-
-    /**
-     * Returns the maximum value the specified {@code IEnergyHandler} could provide. The transaction used is not committed.
-     *
-     * @param handler the energy handler to check
-     * @return The max value that energy handler could provide
-     */
-    public static int getExtractableAmount(EnergyHandler handler) {
-        try (Transaction transaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
-            return handler.insert(Integer.MAX_VALUE, transaction);
         }
     }
 
