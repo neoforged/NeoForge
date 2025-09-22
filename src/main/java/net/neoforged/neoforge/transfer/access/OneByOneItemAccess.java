@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.access;
 
-import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 record OneByOneItemAccess(ItemAccess delegate) implements ItemAccess {
