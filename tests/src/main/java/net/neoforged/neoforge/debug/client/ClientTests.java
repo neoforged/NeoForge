@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -32,6 +33,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
@@ -140,6 +142,30 @@ public class ClientTests {
         });
         test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
             test.requestConfirmation(event.getEntity(), Component.literal("Does stone cover the screen when wearing the *_custom_helmet_rendering:neo_helmet?"));
+        });
+    }
+
+    @TestHolder(description = "Checks existence of enum and texture location", enabledByDefault = true)
+    static void customEquipmentLayerType(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final ClientResourceLoadFinishedEvent event) -> {
+            var layerType = EquipmentClientInfo.LayerType.valueOf("NEOTESTS_LAYER_TYPE");
+            // Check serialized name uses slash
+            if (layerType.getSerializedName().contains(":")) {
+                test.fail(layerType.getSerializedName() + " should not contain a colon as part of its path");
+                return;
+            }
+
+            // Create fake equipment client info
+            var textureId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "equipment_texture_present");
+            var equipmentLayer = new EquipmentClientInfo.Layer(textureId);
+
+            // Check to see if texture is found
+            if (Minecraft.getInstance().getResourceManager().getResource(equipmentLayer.getTextureLocation(layerType)).isEmpty()) {
+                test.fail("Could not find " + textureId + " in " + equipmentLayer.getTextureLocation(layerType));
+                return;
+            }
+
+            test.pass();
         });
     }
 

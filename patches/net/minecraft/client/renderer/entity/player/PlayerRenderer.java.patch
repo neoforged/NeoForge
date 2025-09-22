@@ -26,6 +26,15 @@
      protected void renderNameTag(PlayerRenderState p_363185_, Component p_117809_, PoseStack p_117810_, MultiBufferSource p_117811_, int p_117812_) {
          p_117810_.pushPose();
          if (p_363185_.scoreText != null) {
+@@ -201,7 +_,7 @@
+         p_360583_.heldOnHead.clear();
+         if (p_360583_.isUsingItem) {
+             ItemStack itemstack = p_361478_.getItemInHand(p_360583_.useItemHand);
+-            if (itemstack.is(Items.SPYGLASS)) {
++            if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE)) {
+                 this.itemModelResolver.updateForLiving(p_360583_.heldOnHead, itemstack, ItemDisplayContext.HEAD, p_361478_);
+             }
+         }
 @@ -252,11 +_,29 @@
          }
      }

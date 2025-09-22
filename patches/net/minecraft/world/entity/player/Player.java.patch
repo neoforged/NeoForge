@@ -68,6 +68,19 @@
      }
  
      @Override
+@@ -372,7 +_,11 @@
+     }
+ 
+     protected boolean updateIsUnderwater() {
+-        this.wasUnderwater = this.isEyeInFluid(FluidTags.WATER);
++        this.wasUnderwater = false;
++        if (this.forgeFluidTypeHeight.isEmpty()) { return false; }
++        for (net.neoforged.neoforge.fluids.FluidType fluidType : this.forgeFluidTypeHeight.keySet()) {
++            if (fluidType.canSwim(this) && this.isInFluidType(fluidType)) { this.wasUnderwater = true; }
++        }
+         return this.wasUnderwater;
+     }
+ 
 @@ -454,6 +_,10 @@
      }
  
@@ -413,6 +426,15 @@
              }
          }
      }
+@@ -2011,7 +_,7 @@
+     }
+ 
+     public boolean isScoping() {
+-        return this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS);
++        return this.isUsingItem() && this.getUseItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE);
+     }
+ 
+     @Override
 @@ -2159,5 +_,41 @@
          public Component getMessage() {
              return this.message;

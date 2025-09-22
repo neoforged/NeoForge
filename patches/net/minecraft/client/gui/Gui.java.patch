@@ -33,7 +33,7 @@
      }
  
      public void resetTitleTimes() {
-@@ -212,27 +_,44 @@
+@@ -212,27 +_,43 @@
  
      public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
          if (this.minecraft.screen == null || !(this.minecraft.screen instanceof ReceivingLevelScreen)) {
@@ -72,13 +72,12 @@
 +
 +        // TODO: Split this up again into its pieces
 +        layerManager.add(HOTBAR, this::renderHotbar, guiVisible);
-+        var playerHealthComponents = new net.neoforged.neoforge.client.gui.GuiLayerManager()
-+                .add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics))
-+                .add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics))
-+                .add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics))
-+                .add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> renderVehicleHealth(guiGraphics), guiVisible)
-+                .add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics));
-+        layerManager.add(playerHealthComponents, () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean());
++        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean();
++        layerManager.add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics), survivalVisible);
++        layerManager.add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics), survivalVisible);
++        layerManager.add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics), survivalVisible);
++        layerManager.add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> renderVehicleHealth(guiGraphics), guiVisible);
++        layerManager.add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics), survivalVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBarBackground, guiVisible);
 +        layerManager.add(EXPERIENCE_LEVEL, this::renderExperienceLevel, guiVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
@@ -387,6 +386,17 @@
                  }
              }
          }
+@@ -1037,7 +_,9 @@
+         int l = (p_282069_.guiHeight() - j) / 2;
+         int i1 = k + i;
+         int j1 = l + j;
+-        p_282069_.blit(RenderPipelines.GUI_TEXTURED, SPYGLASS_SCOPE_LOCATION, k, l, 0.0F, 0.0F, i, j, i, j);
++        ItemStack useItem = this.minecraft.player.getUseItem();
++        var clientItemExtensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(useItem);
++        p_282069_.blit(RenderPipelines.GUI_TEXTURED, clientItemExtensions.getScopeOverlayTexture(useItem), k, l, 0.0F, 0.0F, i, j, i, j);
+         p_282069_.fill(RenderPipelines.GUI, 0, j1, p_282069_.guiWidth(), p_282069_.guiHeight(), -16777216);
+         p_282069_.fill(RenderPipelines.GUI, 0, 0, p_282069_.guiWidth(), l, -16777216);
+         p_282069_.fill(RenderPipelines.GUI, 0, l, k, j1, -16777216);
 @@ -1172,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()

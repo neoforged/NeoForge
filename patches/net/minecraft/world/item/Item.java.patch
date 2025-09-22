@@ -57,7 +57,7 @@
      public final ItemStack getCraftingRemainder() {
          return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -338,7 +_,14 @@
+@@ -338,13 +_,26 @@
      }
  
      public boolean useOnRelease(ItemStack p_41464_) {
@@ -73,6 +73,18 @@
      }
  
      public ItemStack getDefaultInstance() {
+         return new ItemStack(this);
+     }
+ 
++    /**
++     * @deprecated Neo: call {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#canFitInsideContainerItems()} instead,
++     *             prefer overriding {@link net.neoforged.neoforge.common.extensions.IItemExtension#canFitInsideContainerItems(ItemStack)}
++     * @implNote It is recommended to still override this to ensure mods calling this instead of the extension still behave safely.
++     */
++    @Deprecated
+     public boolean canFitInsideContainerItems() {
+         return true;
+     }
 @@ -369,6 +_,12 @@
          private ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;

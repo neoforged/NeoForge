@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/SpyglassItem.java
++++ b/net/minecraft/world/item/SpyglassItem.java
+@@ -48,4 +_,9 @@
+     private void stopUsing(LivingEntity p_151207_) {
+         p_151207_.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+     }
++
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SPYGLASS_ACTIONS.contains(itemAbility);
++    }
+ }

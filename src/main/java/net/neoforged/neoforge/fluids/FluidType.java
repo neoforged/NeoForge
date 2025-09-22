@@ -89,6 +89,7 @@ public class FluidType {
     private final Rarity rarity;
     @Nullable
     private final DripstoneDripInfo dripInfo;
+    private final boolean isWaterLike;
 
     /**
      * A map of actions performed to sound that should be played.
@@ -120,6 +121,7 @@ public class FluidType {
         this.viscosity = properties.viscosity;
         this.rarity = properties.rarity;
         this.dripInfo = properties.dripInfo;
+        this.isWaterLike = properties.isWaterLike;
     }
 
     /* Default Accessors */
@@ -575,6 +577,15 @@ public class FluidType {
         return false;
     }
 
+    /**
+     * Returns if the fluid is water-like in some behaviors.
+     *
+     * @return whether the fluid is water-like
+     */
+    public boolean getIsWaterLike() {
+        return this.isWaterLike;
+    }
+
     /* Stack-Based Accessors */
 
     /**
@@ -868,6 +879,7 @@ public class FluidType {
         private Rarity rarity = Rarity.COMMON;
         @Nullable
         private DripstoneDripInfo dripInfo;
+        private boolean isWaterLike = false;
 
         private Properties() {}
 
@@ -1104,6 +1116,34 @@ public class FluidType {
                 this.sounds.put(SoundActions.CAULDRON_DRIP, fillSound);
             }
             this.dripInfo = new DripstoneDripInfo(chance, dripParticle, cauldron);
+            return this;
+        }
+
+        /**
+         * Sets whether the fluid does the following:
+         * 
+         * <pre>
+         * - Triggers splash effects when entering
+         * - Crouching in fluid causes player to sink
+         * - Reduces fall damage and resets fall distance when touching fluid
+         * - Triggers water swim sounds
+         * - Trigger the swim game event
+         * - Allows various mobs to move, breath, or perform other water-based behavior properly
+         * - makes wolves/dogs shake when exiting fluid
+         * - Damages entities that are sensitive to water
+         * - Prevents sun-burning mobs from being set on fire in sunlight *(Note: {@link #canExtinguish} must be false as well for fire to persist)*
+         * - Allows fire arrows to be extinguished. *(Note: {@link #canExtinguish} also can extinguish the fire independently)*
+         * - Allows Riptide Tridents to activate
+         * - Allows Conduit block to function
+         * - Underwater music can play when player is submerged in the fluid
+         * - Muffles Minecart moving sounds and reduces their speed
+         * </pre>
+         * 
+         * @param isWaterLike whether the fluid is water-like
+         * @return the property holder instance
+         */
+        public Properties isWaterLike(boolean isWaterLike) {
+            this.isWaterLike = isWaterLike;
             return this;
         }
     }

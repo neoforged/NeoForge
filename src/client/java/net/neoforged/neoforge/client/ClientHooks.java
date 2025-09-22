@@ -1136,7 +1136,14 @@ public class ClientHooks {
 
     public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
         final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
-        if (NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getAsBoolean()) {
+        boolean enableValidation;
+        try {
+            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getAsBoolean();
+        } catch (NullPointerException | IllegalStateException e) {
+            // We're in an early error state, config is not available. Assume environment default.
+            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getDefault();
+        }
+        if (enableValidation) {
             return new ValidationGpuDevice(glDevice, true);
         }
         return glDevice;

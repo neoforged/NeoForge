@@ -44,7 +44,7 @@
 +            return false;
 +        }
 +        BlockState state = level.getBlockState(pos);
-+        return state.ignitedByLava() && state.isFlammable(level, pos, face);
++        return state.ignitedByLava(level, pos, face);
 +    }
 +
      @Nullable
