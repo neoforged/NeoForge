@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.energy;
+package net.neoforged.neoforge.transfer.energy;
 
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**

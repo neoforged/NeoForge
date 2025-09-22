@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer;
+package net.neoforged.neoforge.transfer.energy;
 
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -11,7 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
-import net.neoforged.neoforge.transfer.handlers.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;

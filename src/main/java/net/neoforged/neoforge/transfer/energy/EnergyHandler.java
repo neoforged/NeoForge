@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.energy;
+package net.neoforged.neoforge.transfer.energy;
 
 import com.google.common.primitives.Ints;
 import net.neoforged.neoforge.capabilities.Capabilities;
