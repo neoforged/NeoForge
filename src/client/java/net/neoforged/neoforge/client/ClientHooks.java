@@ -718,6 +718,7 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterParticleProvidersEvent(particleResources));
     }
 
+    @ApiStatus.Internal
     public static void onRegisterKeyMappings(Options options, List<KeyMapping.Category> categories) {
         RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options);
         ModLoader.postEvent(event);
