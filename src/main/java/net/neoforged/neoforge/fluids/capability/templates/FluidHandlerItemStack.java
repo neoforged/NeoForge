@@ -11,6 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
 
 /**
  * FluidHandlerItemStack is a template capability provider for ItemStacks.
@@ -20,7 +22,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
  *
  * <p>Additional examples are provided to enable consumable fluid containers (see {@link Consumable}),
  * fluid containers with different empty and full items (see {@link SwapEmpty},
+ *
+ * @deprecated Use {@link ItemAccessFluidHandler} instead.
  */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class FluidHandlerItemStack implements IFluidHandlerItem {
     protected final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected ItemStack container;
@@ -154,7 +159,11 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
     /**
      * Destroys the container item when it's emptied.
+     *
+     * @deprecated Deprecated with no direct equivalent, however {@link ItemAccessFluidHandler} can serve as inspiration.
+     *             Please open an issue on GitHub if you have a use for an equivalent of this class.
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static class Consumable extends FluidHandlerItemStack {
         public Consumable(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
             super(componentType, container, capacity);
@@ -169,7 +178,11 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
     /**
      * Swaps the container item for a different one when it's emptied.
+     *
+     * @deprecated Use {@link ItemAccessFluidHandler} instead, with an override of {@link ItemAccessFluidHandler#update}
+     *             to return a different item resource if the fluid amount is 0.
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static class SwapEmpty extends FluidHandlerItemStack {
         protected final ItemStack emptyContainer;
 

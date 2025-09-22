@@ -16,9 +16,15 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ *
+ * @deprecated Deprecated without equivalent. Please open an issue on GitHub if you have a use for an equivalent of this class.
+ */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class BucketPickupHandlerWrapper implements IFluidHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 

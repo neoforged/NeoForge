@@ -37,6 +37,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
+// TODO MIGRATION
 public class FluidUtil {
     private FluidUtil() {}
 
