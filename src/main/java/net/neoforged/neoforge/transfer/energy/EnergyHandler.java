@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * see the exposed capabilities in {@linkplain Capabilities.EnergyHandler}.
  *
  * <p>This interface can be also be used for other energy systems,
- * provided that they register a capability under a different name (i.e. with a different name).
+ * provided that they register a capability under a different name.
  */
 public interface EnergyHandler {
     /**
