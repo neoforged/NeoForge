@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.transfer.access;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class HandlerItemAccess implements ItemAccess {

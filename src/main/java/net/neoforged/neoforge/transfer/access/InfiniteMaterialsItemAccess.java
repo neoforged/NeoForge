@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.transfer.access;
 
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 class InfiniteMaterialsItemAccess implements ItemAccess {

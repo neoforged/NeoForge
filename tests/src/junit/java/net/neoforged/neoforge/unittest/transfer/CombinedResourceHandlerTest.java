@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.EmptyResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.EmptyResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

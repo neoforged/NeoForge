@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.unittest.transfer.resources;
 
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
