@@ -103,13 +103,14 @@
                  if (p_363964_) {
                      this.renderBlockOutline(multibuffersource$buffersource, posestack, true, p_451509_);
                  }
-@@ -676,7 +_,14 @@
+@@ -676,7 +_,15 @@
          );
      }
  
 +    /**
 +     * @deprecated Neo: use {@link #addParticlesPass(FrameGraphBuilder, GpuBufferSlice, Matrix4f)} instead
 +     */
++    @Deprecated
      private void addParticlesPass(FrameGraphBuilder p_363357_, GpuBufferSlice p_418328_) {
 +        addParticlesPass(p_363357_, p_418328_, RenderSystem.getModelViewMatrix());
 +    }
