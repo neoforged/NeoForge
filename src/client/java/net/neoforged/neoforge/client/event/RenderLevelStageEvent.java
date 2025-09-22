@@ -28,11 +28,10 @@ import org.joml.Matrix4f;
  * <p>The sub-events are fired on the {@linkplain NeoForge#EVENT_BUS main NeoForge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
  *
- * <p>The current order that the sub-events fire in are:
+ * <p>The sub-events are fired in the following order:
  * {@link AfterSky},
  * {@link AfterOpaqueBlocks},
  * {@link AfterEntities},
- * {@link AfterBlockEntities},
  * {@link AfterTranslucentBlocks},
  * {@link AfterTripwireBlocks},
  * {@link AfterParticles},
@@ -93,7 +92,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired at the end of {@linkplain LevelRenderer#addSkyPass}. This is the first RenderLevelStageEvent sub-event to fire.
+     * Fired at the end of {@linkplain LevelRenderer#addSkyPass} after the sky has been rendered. This is the first RenderLevelStageEvent sub-event to fire.
      */
     public static class AfterSky extends RenderLevelStageEvent {
         public AfterSky(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -102,7 +101,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired early in {@linkplain LevelRenderer#addMainPass} after {@code AfterSky} had ran.
+     * Fired early in {@linkplain LevelRenderer#addMainPass} after solid and cutout chunk geometry has been rendered.
      */
     public static class AfterOpaqueBlocks extends RenderLevelStageEvent {
         public AfterOpaqueBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -111,7 +110,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterOpaqueBlocks} had ran.
+     * Fired within {@linkplain LevelRenderer#addMainPass} after entities and block entities have been rendered.
      */
     public static class AfterEntities extends RenderLevelStageEvent {
         public AfterEntities(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -120,16 +119,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterEntities} had ran and just before block outline rendering.
-     */
-    public static class AfterBlockEntities extends RenderLevelStageEvent {
-        public AfterBlockEntities(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
-            super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
-        }
-    }
-
-    /**
-     * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterBlockEntities} had ran.
+     * Fired within {@linkplain LevelRenderer#addMainPass} after translucent chunk geometry has been rendered.
      */
     public static class AfterTranslucentBlocks extends RenderLevelStageEvent {
         public AfterTranslucentBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -138,7 +128,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired near the end of {@linkplain LevelRenderer#addMainPass} after {@code AfterTranslucentBlocks} had ran.
+     * Fired near the end of {@linkplain LevelRenderer#addMainPass} after tripwire chunk geometry has been rendered.
      */
     public static class AfterTripwireBlocks extends RenderLevelStageEvent {
         public AfterTripwireBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -147,7 +137,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired at the end of {@linkplain LevelRenderer#addParticlesPass} after {@code AfterTripwireBlocks} had ran.
+     * Fired at the end of {@linkplain LevelRenderer#addParticlesPass} after particles have been rendered.
      */
     public static class AfterParticles extends RenderLevelStageEvent {
         public AfterParticles(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
@@ -156,7 +146,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired near the end of {@linkplain LevelRenderer#addWeatherPass} after {@code AfterParticles} had ran but before world border rendering.
+     * Fired near the end of {@linkplain LevelRenderer#addWeatherPass} after weather has been rendered, before world border rendering.
      */
     public static class AfterWeather extends RenderLevelStageEvent {
         public AfterWeather(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {

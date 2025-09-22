@@ -62,7 +62,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
     }
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent.AfterBlockEntities event) {
+    public static void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
         if (!enabled) {
             return;
         }

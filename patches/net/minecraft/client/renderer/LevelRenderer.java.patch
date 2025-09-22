@@ -81,19 +81,15 @@
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (resourcehandle2 != null) {
                      resourcehandle2.get().copyDepthFrom(this.minecraft.getMainRenderTarget());
-@@ -616,8 +_,12 @@
-                 MultiBufferSource.BufferSource multibuffersource$buffersource1 = this.renderBuffers.crumblingBufferSource();
-                 p_362234_.popPush("submitEntities");
-                 this.submitEntities(posestack, p_451509_, this.submitNodeStorage);
+@@ -633,6 +_,8 @@
+                 multibuffersource$buffersource.endBatch(Sheets.hangingSignSheet());
+                 multibuffersource$buffersource.endBatch(Sheets.chestSheet());
+                 this.renderBuffers.outlineBufferSource().endOutlineBatch();
 +                p_362234_.popPush("neoforge_render_after_entities");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterEntities(this, this.levelRenderState, posestack, p_362420_, this.getRenderableSections()));
-                 p_362234_.popPush("submitBlockEntities");
-                 this.submitBlockEntities(posestack, p_451509_, this.submitNodeStorage);
-+                p_362234_.popPush("neoforge_render_after_block_entities");
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterBlockEntities(this, this.levelRenderState, posestack, p_362420_, this.getRenderableSections()));
-                 p_362234_.popPush("renderFeatures");
-                 this.featureRenderDispatcher.renderAllFeatures();
-                 multibuffersource$buffersource.endLastBatch();
+                 if (p_363964_) {
+                     this.renderBlockOutline(multibuffersource$buffersource, posestack, false, p_451509_);
+                 }
 @@ -664,8 +_,12 @@
  
                  p_362234_.push("translucent");
