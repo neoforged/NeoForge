@@ -42,11 +42,15 @@ public class LimitingEnergyHandler extends DelegatingEnergyHandler {
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        return super.insert(Math.min(amount, maxInsert), transaction);
+        TransferPreconditions.checkNonNegative(amount);
+        int toInsert = Math.min(amount, maxInsert);
+        return toInsert <= 0 ? 0 : super.insert(toInsert, transaction);
     }
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        return super.extract(Math.min(amount, maxExtract), transaction);
+        TransferPreconditions.checkNonNegative(amount);
+        int toExtract = Math.min(amount, maxInsert);
+        return toExtract <= 0 ? 0 : super.extract(toExtract, transaction);
     }
 }
