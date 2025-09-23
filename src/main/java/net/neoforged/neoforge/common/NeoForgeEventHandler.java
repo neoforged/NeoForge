@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cpw.mods.modlauncher.ClassTransformStatistics;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -181,6 +183,8 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void logTransformationsOnGameShutdown(GameShuttingDownEvent event) {
-        ModLoader.logTransformationSummary();
+        ClassTransformStatistics.logTransformationSummary();
+        // Also check if anyone appears to be performing mass-ASM and log a warning if so
+        ClassTransformStatistics.checkTransformationBehavior();
     }
 }

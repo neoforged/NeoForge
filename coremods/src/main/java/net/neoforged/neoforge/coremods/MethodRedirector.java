@@ -5,10 +5,8 @@
 
 package net.neoforged.neoforge.coremods;
 
+import cpw.mods.modlauncher.api.CoreModTransformationContext;
 import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TargetType;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+
+import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -24,9 +24,9 @@ import org.objectweb.asm.tree.MethodInsnNode;
 /**
  * Redirect calls to one method to another.
  */
-public class MethodRedirector implements ITransformer<ClassNode> {
+public class MethodRedirector implements ITransformer.ClassTransformer {
     private final Map<String, List<MethodRedirection>> redirectionsByClass = new HashMap<>();
-    private final Set<Target<ClassNode>> targets = new HashSet<>();
+    private final Set<Target.ClassTarget> targets = new HashSet<>();
 
     private static final List<MethodRedirection> REDIRECTIONS = List.of(
             new MethodRedirection(
@@ -45,7 +45,7 @@ public class MethodRedirector implements ITransformer<ClassNode> {
         for (var redirection : REDIRECTIONS) {
             var targetClassNames = CoremodUtils.loadResource(redirection.targetClassListFile, String[].class);
             for (var targetClassName : targetClassNames) {
-                targets.add(Target.targetClass(targetClassName));
+                targets.add(new Target.ClassTarget(targetClassName));
                 var redirections = redirectionsByClass.computeIfAbsent(targetClassName, s -> new ArrayList<>());
                 redirections.add(redirection);
             }
@@ -53,17 +53,17 @@ public class MethodRedirector implements ITransformer<ClassNode> {
     }
 
     @Override
-    public TargetType<ClassNode> getTargetType() {
-        return TargetType.CLASS;
+    public ProcessorName name() {
+        return new ProcessorName("neoforge.coremods", "method_redirector");
     }
 
     @Override
-    public Set<Target<ClassNode>> targets() {
+    public Set<Target.ClassTarget> targets() {
         return targets;
     }
 
     @Override
-    public ClassNode transform(ClassNode classNode, ITransformerVotingContext votingContext) {
+    public void transform(ClassNode classNode, CoreModTransformationContext votingContext) {
         var redirections = redirectionsByClass.getOrDefault(classNode.name, Collections.emptyList());
 
         var methods = classNode.methods;
@@ -85,12 +85,6 @@ public class MethodRedirector implements ITransformer<ClassNode> {
                 }
             }
         }
-        return classNode;
-    }
-
-    @Override
-    public TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
     }
 
     private record MethodRedirection(

@@ -13,8 +13,8 @@ import net.neoforged.neoforgespi.coremod.ICoreMod;
 
 public class NeoForgeCoreMod implements ICoreMod {
     @Override
-    public Iterable<? extends ITransformer<?>> getTransformers() {
-        List<ITransformer<?>> transformers = new ArrayList<>();
+    public Iterable<? extends ITransformer> getTransformers() {
+        List<ITransformer> transformers = new ArrayList<>();
         transformers.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.biome.Biome", Map.of(
                 "climateSettings", "getModifiedClimateSettings",
                 "specialEffects", "getModifiedSpecialEffects")));
