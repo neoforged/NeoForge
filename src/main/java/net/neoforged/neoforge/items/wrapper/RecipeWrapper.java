@@ -8,7 +8,12 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
+/**
+ * @deprecated Implement {@link RecipeInput} directly instead.
+ */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class RecipeWrapper implements RecipeInput {
     protected final IItemHandler inv;
 

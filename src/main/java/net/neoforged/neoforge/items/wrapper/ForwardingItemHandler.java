@@ -9,11 +9,16 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * An {@link IItemHandler} that delegates each method to another {@link IItemHandler}.
  * The {@code Supplier} is re-evaluated each time a method is called.
+ *
+ * @deprecated Use {@link DelegatingResourceHandler} instead.
  */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class ForwardingItemHandler implements IItemHandler {
     protected final Supplier<IItemHandler> delegate;
 
