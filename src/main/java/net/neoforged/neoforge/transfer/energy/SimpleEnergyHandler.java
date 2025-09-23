@@ -22,9 +22,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
     protected int energy;
-    protected final int capacity;
-    protected final int maxInsert;
-    protected final int maxExtract;
+    protected int capacity;
+    protected int maxInsert;
+    protected int maxExtract;
 
     private final EnergyJournal energyJournal = new EnergyJournal();
 
