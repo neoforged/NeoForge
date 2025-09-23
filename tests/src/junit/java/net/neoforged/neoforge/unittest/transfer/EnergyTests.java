@@ -7,12 +7,12 @@ package net.neoforged.neoforge.unittest.transfer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 class EnergyTests {
     @Test
-    public void testEmptyEnergyHandler() {
+    void testEmptyEnergyHandler() {
         try (Transaction transaction = Transaction.open(null)) {
             ensureEmpty(EmptyEnergyHandler.INSTANCE, transaction);
         }
@@ -39,13 +39,15 @@ class EnergyTests {
 
     @Test
     void testSimpleEnergyHandler() {
-        var simpleHandler = new SimpleEnergyHandler(100, 5, 10);
+        var simpleHandler = new SimpleEnergyHandler(100, 5, 7);
         assertEquals(0, simpleHandler.getAmountAsLong());
 
         try (Transaction transaction = Transaction.open(null)) {
             assertEquals(5, simpleHandler.insert(100, transaction));
             assertEquals(3, simpleHandler.insert(3, transaction));
             assertEquals(8, simpleHandler.getAmountAsLong());
+            assertEquals(7, simpleHandler.extract(10, transaction));
+            assertEquals(1, simpleHandler.getAmountAsLong());
         }
 
         assertEquals(0, simpleHandler.getAmountAsLong());
@@ -54,24 +56,20 @@ class EnergyTests {
             assertEquals(5, simpleHandler.insert(100, transaction));
             assertEquals(3, simpleHandler.insert(3, transaction));
             assertEquals(8, simpleHandler.getAmountAsLong());
+            assertEquals(7, simpleHandler.extract(10, transaction));
+            assertEquals(1, simpleHandler.getAmountAsLong());
 
             transaction.commit();
         }
 
-        assertEquals(8, simpleHandler.getAmountAsLong());
+        assertEquals(1, simpleHandler.getAmountAsLong());
     }
 
     @Test
     void testItemAccessEnergyHandler() {
         // Starting items: 2 diamonds. Diamond will be considered the energy container here.
         var startingItems = NonNullList.of(ItemStack.EMPTY, new ItemStack(Items.DIAMOND, 2));
-        var handler = new ItemStacksResourceHandler(startingItems) {
-            @Override
-            protected int getCapacity(int index, ItemResource resource) {
-                // Limit to 2
-                return Math.min(2, super.getCapacity(index, resource));
-            }
-        };
+        var handler = new ItemStacksResourceHandler(startingItems);
         var itemAccess = ItemAccess.forHandlerIndex(handler, 0);
 
         // Create the energy handler
@@ -109,7 +107,7 @@ class EnergyTests {
         private static final String MOD_ID = "energy_test";
         private static final DeferredRegister.DataComponents components = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
         private static final Supplier<DataComponentType<Integer>> ENERGY = components.registerComponentType("energy",
-                b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
+                b -> b.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
         public TestMod(IEventBus modBus) {
             components.register(modBus);

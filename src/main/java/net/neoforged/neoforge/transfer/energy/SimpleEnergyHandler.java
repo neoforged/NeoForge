@@ -35,7 +35,7 @@ public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
      * @see SimpleEnergyHandler(int, int, int, int)
      */
     public SimpleEnergyHandler(int capacity) {
-        this(capacity, capacity, capacity, 0);
+        this(capacity, capacity);
     }
 
     /**
@@ -45,7 +45,7 @@ public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
      * @see SimpleEnergyHandler(int, int, int, int)
      */
     public SimpleEnergyHandler(int capacity, int maxTransfer) {
-        this(capacity, maxTransfer, maxTransfer, 0);
+        this(capacity, maxTransfer, maxTransfer);
     }
 
     /**
@@ -86,7 +86,7 @@ public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
 
     @Override
     public void deserialize(ValueInput input) {
-        energy = input.getIntOr("energy", 0);
+        energy = Math.max(0, input.getIntOr("energy", 0));
     }
 
     /**
@@ -97,9 +97,11 @@ public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
     public void set(int amount) {
         TransferPreconditions.checkNonNegative(amount);
 
-        int previousAmount = this.energy;
-        this.energy = amount;
-        onEnergyChanged(previousAmount);
+        if (this.energy != amount) {
+            int previousAmount = this.energy;
+            this.energy = amount;
+            onEnergyChanged(previousAmount);
+        }
     }
 
     /**
@@ -160,7 +162,10 @@ public class SimpleEnergyHandler implements EnergyHandler, ValueIOSerializable {
 
         @Override
         protected void onRootCommit(Integer originalState) {
-            onEnergyChanged(originalState);
+            int previousAmount = originalState;
+            if (energy != previousAmount) {
+                onEnergyChanged(previousAmount);
+            }
         }
     }
 }

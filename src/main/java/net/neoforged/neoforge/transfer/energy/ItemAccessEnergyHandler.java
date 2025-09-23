@@ -37,7 +37,7 @@ public class ItemAccessEnergyHandler implements EnergyHandler {
      * @see ItemAccessEnergyHandler (ItemAccess, DataComponentType, int, int, int)
      */
     public ItemAccessEnergyHandler(ItemAccess itemAccess, DataComponentType<Integer> energyComponent, int capacity) {
-        this(itemAccess, energyComponent, capacity, capacity, capacity);
+        this(itemAccess, energyComponent, capacity, capacity);
     }
 
     /**
@@ -78,6 +78,9 @@ public class ItemAccessEnergyHandler implements EnergyHandler {
      * Retrieves the amount stored in the {@linkplain ItemAccess#getResource() current contents} of the item access.
      */
     protected int getAmountFrom(ItemResource accessResource) {
+        if (!accessResource.is(validItem)) {
+            return 0;
+        }
         return accessResource.getOrDefault(energyComponent, 0);
     }
 
@@ -97,11 +100,6 @@ public class ItemAccessEnergyHandler implements EnergyHandler {
 
     @Override
     public long getAmountAsLong() {
-        var accessResource = itemAccess.getResource();
-        if (!accessResource.is(validItem)) {
-            return 0;
-        }
-
         // Cast as the product of two ints might overflow an int, but fits into a long
         return (long) itemAccess.getAmount() * getAmountFrom(itemAccess.getResource());
     }
@@ -125,8 +123,14 @@ public class ItemAccessEnergyHandler implements EnergyHandler {
             return 0;
         }
         int amountPerItem = Math.min(maxInsert, amount / accessAmount);
+        if (amountPerItem == 0) {
+            return 0;
+        }
 
         ItemResource accessResource = itemAccess.getResource();
+        if (!accessResource.is(validItem)) {
+            return 0;
+        }
         int currentAmountPerItem = getAmountFrom(accessResource);
 
         int insertedPerItem = Math.min(amountPerItem, capacity - currentAmountPerItem);
@@ -150,8 +154,12 @@ public class ItemAccessEnergyHandler implements EnergyHandler {
             return 0;
         }
         int amountPerItem = Math.min(maxExtract, amount / accessAmount);
+        if (amountPerItem == 0) {
+            return 0;
+        }
 
         ItemResource accessResource = itemAccess.getResource();
+        // If the resource is not validItem this will return 0 and avoid extraction
         int currentAmountPerItem = getAmountFrom(accessResource);
 
         int extractedPerItem = Math.min(amountPerItem, currentAmountPerItem);

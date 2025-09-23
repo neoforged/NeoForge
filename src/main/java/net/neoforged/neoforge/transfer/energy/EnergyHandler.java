@@ -91,8 +91,8 @@ public interface EnergyHandler {
      * @see #getCapacityAsLong()
      */
     @ApiStatus.NonExtendable
-    default long getCapacityAsInt() {
-        return getCapacityAsLong();
+    default int getCapacityAsInt() {
+        return Ints.saturatedCast(getCapacityAsLong());
     }
 
     /**

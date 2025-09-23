@@ -9,7 +9,7 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * An {@link EnergyHandler} that allows insertion and extraction of an unlimited amount of energy.
+ * An {@link EnergyHandler} that allows extraction of an unlimited amount of energy.
  */
 public class InfiniteEnergyHandler implements EnergyHandler {
     public static final InfiniteEnergyHandler INSTANCE = new InfiniteEnergyHandler();
@@ -27,8 +27,8 @@ public class InfiniteEnergyHandler implements EnergyHandler {
     @Override
     public int insert(int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonNegative(amount);
-        // Accept full insertion
-        return amount;
+        // Don't accept any insertion
+        return 0;
     }
 
     @Override
