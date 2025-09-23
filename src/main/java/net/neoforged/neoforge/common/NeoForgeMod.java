@@ -570,7 +570,6 @@ public class NeoForgeMod {
         modEventBus.addListener(NeoForgeMod::onConfigLoad);
         modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         modEventBus.addListener(NeoForgeRpcMethods::register);
-        NeoForge.EVENT_BUS.addListener(NeoForgeRpcMethods::registerServices);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);

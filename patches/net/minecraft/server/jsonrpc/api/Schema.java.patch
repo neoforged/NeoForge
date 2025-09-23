@@ -1,0 +1,17 @@
+--- a/net/minecraft/server/jsonrpc/api/Schema.java
++++ b/net/minecraft/server/jsonrpc/api/Schema.java
+@@ -95,6 +_,14 @@
+         return schemacomponent;
+     }
+ 
++    public static SchemaComponent registerSchema(net.minecraft.resources.ResourceLocation name, Schema schema) {
++        synchronized (SCHEMA_REGISTRY) {
++            SchemaComponent component = new SchemaComponent(name.toString(), ReferenceUtil.createLocalReference(name.toString()), schema);
++            SCHEMA_REGISTRY.add(component);
++            return component;
++        }
++    }
++
+     public static List<SchemaComponent> getSchemaRegistry() {
+         return SCHEMA_REGISTRY;
+     }
