@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.SequencedMap;
 import java.util.Set;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
@@ -30,10 +30,10 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
 public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
-    private final List<AtlasManager.AtlasConfig> atlases;
+    private final SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlases;
 
     @ApiStatus.Internal
-    public RegisterTextureAtlasesEvent(List<AtlasManager.AtlasConfig> atlases) {
+    public RegisterTextureAtlasesEvent(SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlases) {
         this.atlases = atlases;
     }
 
@@ -43,16 +43,14 @@ public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
      * @param atlasConfig The configuration of the texture atlas
      */
     public void register(AtlasManager.AtlasConfig atlasConfig) {
-        for (AtlasManager.AtlasConfig atlas : this.atlases) {
-            if (atlas.textureId().equals(atlasConfig.textureId())) {
-                throw new IllegalStateException(String.format(
-                        "Duplicate registration of atlas: %s (old config: %s, new config: %s)",
-                        atlasConfig.textureId(),
-                        atlas,
-                        atlasConfig));
-            }
+        AtlasManager.AtlasConfig oldConfig = this.atlases.putIfAbsent(atlasConfig.definitionLocation(), atlasConfig);
+        if (oldConfig != null) {
+            throw new IllegalStateException(String.format(
+                    "Duplicate registration of atlas: %s (old config: %s, new config: %s)",
+                    atlasConfig.definitionLocation(),
+                    oldConfig,
+                    atlasConfig));
         }
-        this.atlases.add(atlasConfig);
     }
 
     /**
@@ -65,19 +63,18 @@ public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
         if (metaSectionType == AnimationMetadataSection.TYPE) {
             throw new IllegalArgumentException("Animation metadata is always loaded, it may not be added as additional metadata");
         }
-        for (int i = 0; i < this.atlases.size(); i++) {
-            AtlasManager.AtlasConfig atlas = this.atlases.get(i);
-            if (atlas.definitionLocation().equals(atlasId)) {
-                Set<MetadataSectionType<?>> additionalMetadata = new HashSet<>(atlas.additionalMetadata());
-                additionalMetadata.add(metaSectionType);
-                this.atlases.set(i, new AtlasManager.AtlasConfig(
-                        atlas.textureId(),
-                        atlas.definitionLocation(),
-                        atlas.createMipmaps(),
-                        Set.copyOf(additionalMetadata)));
-                return;
-            }
+
+        AtlasManager.AtlasConfig atlas = this.atlases.get(atlasId);
+        if (atlas == null) {
+            throw new IllegalArgumentException("Unknown texture atlas: " + atlasId);
         }
-        throw new IllegalArgumentException("Unknown texture atlas: " + atlasId);
+
+        Set<MetadataSectionType<?>> additionalMetadata = new HashSet<>(atlas.additionalMetadata());
+        additionalMetadata.add(metaSectionType);
+        this.atlases.put(atlasId, new AtlasManager.AtlasConfig(
+                atlas.textureId(),
+                atlas.definitionLocation(),
+                atlas.createMipmaps(),
+                Set.copyOf(additionalMetadata)));
     }
 }

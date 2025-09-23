@@ -26,10 +26,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
@@ -1092,9 +1094,10 @@ public class ClientHooks {
     }
 
     public static List<AtlasManager.AtlasConfig> gatherTextureAtlases(List<AtlasManager.AtlasConfig> vanillaAtlases) {
-        vanillaAtlases = new ArrayList<>(vanillaAtlases);
-        ModLoader.postEvent(new RegisterTextureAtlasesEvent(vanillaAtlases));
-        return List.copyOf(vanillaAtlases);
+        SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlasMap = new LinkedHashMap<>(vanillaAtlases.size());
+        vanillaAtlases.forEach(atlas -> atlasMap.put(atlas.definitionLocation(), atlas));
+        ModLoader.postEvent(new RegisterTextureAtlasesEvent(atlasMap));
+        return List.copyOf(atlasMap.values());
     }
 
     @ApiStatus.Internal
