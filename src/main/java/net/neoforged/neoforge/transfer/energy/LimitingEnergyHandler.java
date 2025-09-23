@@ -50,7 +50,7 @@ public class LimitingEnergyHandler extends DelegatingEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonNegative(amount);
-        int toExtract = Math.min(amount, maxInsert);
+        int toExtract = Math.min(amount, maxExtract);
         return toExtract <= 0 ? 0 : super.extract(toExtract, transaction);
     }
 }
