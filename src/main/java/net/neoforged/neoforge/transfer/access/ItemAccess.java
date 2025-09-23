@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.CarriedSlotWrapper;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -94,7 +94,7 @@ public interface ItemAccess {
      * with any overflow being sent to the rest of the handler.
      *
      * <p>Overflow on insertion will be sent to the rest of the handler via
-     * {@linkplain ResourceHandler#insert(IResource, int, TransactionContext) the slotless insert} method.
+     * {@linkplain ResourceHandler#insert(Resource, int, TransactionContext) the slotless insert} method.
      * If this is not desired, use the {@link #forHandlerIndexStrict} method instead.
      */
     static ItemAccess forHandlerIndex(ResourceHandler<ItemResource> handler, int index) {

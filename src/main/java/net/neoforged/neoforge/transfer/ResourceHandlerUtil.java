@@ -13,7 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -26,14 +26,14 @@ public final class ResourceHandlerUtil {
     private ResourceHandlerUtil() {}
 
     /**
-     * Determines if either the given resource or amount is classified as empty: if either {@link IResource#isEmpty()} is {@code true},
+     * Determines if either the given resource or amount is classified as empty: if either {@link Resource#isEmpty()} is {@code true},
      * or the amount is zero (or negative) then the resource is considered empty.
      *
      * @param resource The resource to check.
      * @param amount   An amount to check.
-     * @return {@code true} if either {@link IResource#isEmpty()} returns {@code true}, or the amount is {@code <= 0}.
+     * @return {@code true} if either {@link Resource#isEmpty()} returns {@code true}, or the amount is {@code <= 0}.
      */
-    public static boolean isEmpty(IResource resource, int amount) {
+    public static boolean isEmpty(Resource resource, int amount) {
         return amount <= 0 || resource.isEmpty();
     }
 
@@ -47,7 +47,7 @@ public final class ResourceHandlerUtil {
      * @param handler the {@link ResourceHandler} to check for emptiness
      * @return {@code true} if the {@link ResourceHandler} is empty, {@code false} otherwise
      */
-    public static boolean isEmpty(ResourceHandler<? extends IResource> handler) {
+    public static boolean isEmpty(ResourceHandler<? extends Resource> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
             if (handler.getAmountAsLong(i) > 0) {
@@ -61,13 +61,13 @@ public final class ResourceHandlerUtil {
      * Checks if a {@link ResourceHandler} is full.
      * <p>
      * A {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
-     * greater than or equal to their respective {@linkplain ResourceHandler#getCapacityAsLong(int, IResource) capacity}.
+     * greater than or equal to their respective {@linkplain ResourceHandler#getCapacityAsLong(int, Resource) capacity}.
      * <p>A handler of size zero is always considered full.
      *
      * @param handler the {@link ResourceHandler} to check
      * @return {@code true} if the {@link ResourceHandler} is full, {@code false} otherwise
      */
-    public static <T extends IResource> boolean isFull(ResourceHandler<T> handler) {
+    public static <T extends Resource> boolean isFull(ResourceHandler<T> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
             if (handler.getAmountAsLong(i) < handler.getCapacityAsLong(i, handler.getResource(i))) {
@@ -83,9 +83,9 @@ public final class ResourceHandlerUtil {
      * @param handler  the {@link ResourceHandler} to check
      * @param resource the resource to check. <strong>Must be non-empty.</strong>
      * @return {@code true} if the resource is valid in any index of the handler.
-     * @see ResourceHandler#isValid(int, IResource)
+     * @see ResourceHandler#isValid(int, Resource)
      */
-    public static <T extends IResource> boolean isValid(ResourceHandler<T> handler, T resource) {
+    public static <T extends Resource> boolean isValid(ResourceHandler<T> handler, T resource) {
         TransferPreconditions.checkNonEmpty(resource);
 
         int size = handler.size();
@@ -105,7 +105,7 @@ public final class ResourceHandlerUtil {
      * @param <T>     the type of resource handled by the handler
      * @return the redstone signal strength
      */
-    public static <T extends IResource> int getRedstoneSignalFromResourceHandler(ResourceHandler<T> handler) {
+    public static <T extends Resource> int getRedstoneSignalFromResourceHandler(ResourceHandler<T> handler) {
         float proportion = 0.0F;
         int sampleCount = 0; // Number of samples in proportion
         int size = handler.size();
@@ -140,7 +140,7 @@ public final class ResourceHandlerUtil {
      *                    Passing in {@code null} will open a root transaction, and commit it at the end of the method.
      * @return the amount of the resource that was inserted
      */
-    public static <T extends IResource> int insertStacking(
+    public static <T extends Resource> int insertStacking(
             @Nullable ResourceHandler<T> handler,
             T resource,
             int amount,
@@ -187,7 +187,7 @@ public final class ResourceHandlerUtil {
      * @return the resource and amount that was extracted or {@code null} if nothing was extracted
      */
     @Nullable
-    public static <T extends IResource> ResourceStack<T> extractFirst(
+    public static <T extends Resource> ResourceStack<T> extractFirst(
             @Nullable ResourceHandler<T> handler,
             Predicate<T> filter,
             int amount,
@@ -249,7 +249,7 @@ public final class ResourceHandlerUtil {
      * @return the resource and amount that was transferred or {@code null} if nothing was transferred
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    public static <T extends IResource> int move(
+    public static <T extends Resource> int move(
             @Nullable ResourceHandler<T> from,
             @Nullable ResourceHandler<T> to,
             Predicate<T> filter,
@@ -326,7 +326,7 @@ public final class ResourceHandlerUtil {
      * @return the resource and amount that was transferred or {@code null} if nothing was transferred
      */
     @Nullable
-    public static <T extends IResource> ResourceStack<T> moveFirst(
+    public static <T extends Resource> ResourceStack<T> moveFirst(
             @Nullable ResourceHandler<T> from,
             @Nullable ResourceHandler<T> to,
             Predicate<T> filter,
@@ -403,7 +403,7 @@ public final class ResourceHandlerUtil {
      * @param handler  The handler to check for the resource.
      * @param resource The resource to check for. <strong>Must be non-empty.</strong>
      */
-    public static <T extends IResource> boolean contains(ResourceHandler<T> handler, T resource) {
+    public static <T extends Resource> boolean contains(ResourceHandler<T> handler, T resource) {
         return indexOf(handler, resource) != -1;
     }
 
@@ -413,7 +413,7 @@ public final class ResourceHandlerUtil {
      * @param handler  The handler to check for the resource.
      * @param resource The resource to find. <strong>Must be non-empty.</strong>
      */
-    public static <T extends IResource> int indexOf(ResourceHandler<T> handler, T resource) {
+    public static <T extends Resource> int indexOf(ResourceHandler<T> handler, T resource) {
         TransferPreconditions.checkNonEmpty(resource);
         int size = handler.size();
         for (int index = 0; index < size; index++) {
@@ -435,7 +435,7 @@ public final class ResourceHandlerUtil {
      * @param <T> The type of resource handled by the handler.
      */
     @Nullable
-    public static <T extends IResource> T findExtractableResource(
+    public static <T extends Resource> T findExtractableResource(
             ResourceHandler<T> handler,
             Predicate<T> filter,
             @Nullable TransactionContext transaction) {

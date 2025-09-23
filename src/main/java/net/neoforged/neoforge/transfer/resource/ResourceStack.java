@@ -8,15 +8,15 @@ package net.neoforged.neoforge.transfer.resource;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 
 /**
- * Creates a resource stack from a given {@link IResource resource} and {@code amount}.
+ * Creates a resource stack from a given {@link Resource resource} and {@code amount}.
  *
  * @param resource The resource to wrap the stack around.
  * @param amount   The amount of the resource the stack is holding.
  */
-public record ResourceStack<T extends IResource>(T resource, int amount) {
+public record ResourceStack<T extends Resource>(T resource, int amount) {
     /**
      * Checks if the resource stack is empty, meaning that the amount is zero
-     * or that the resource is {@link IResource#isEmpty() empty}.
+     * or that the resource is {@link Resource#isEmpty() empty}.
      *
      * @return {@code true} if empty
      */

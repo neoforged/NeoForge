@@ -20,7 +20,7 @@ import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -46,7 +46,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * @see FluidStacksResourceHandler the FluidStack-based subclass
  * @see ResourceStacksResourceHandler the ResourceStack-based subclass
  */
-public abstract class StacksResourceHandler<S, T extends IResource> implements ResourceHandler<T>, ValueIOSerializable {
+public abstract class StacksResourceHandler<S, T extends Resource> implements ResourceHandler<T>, ValueIOSerializable {
     public static final String VALUE_IO_KEY = "stacks";
 
     protected final S emptyStack;
@@ -124,7 +124,7 @@ public abstract class StacksResourceHandler<S, T extends IResource> implements R
     /**
      * Creates a stack from a resource and an amount.
      *
-     * <p>If the stack {@linkplain ResourceHandlerUtil#isEmpty(IResource, int) would be empty},
+     * <p>If the stack {@linkplain ResourceHandlerUtil#isEmpty(Resource, int) would be empty},
      * consider returning {@link #emptyStack} instead of creating a new empty stack instance.
      */
     protected abstract S getStackFrom(T resource, int amount);

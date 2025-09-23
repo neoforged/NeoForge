@@ -9,7 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -39,8 +39,8 @@ public interface ContainerExtension {
 
     /**
      * Perform additional logic during the transaction, <strong>immediately</strong> after a successful transfer
-     * (i.e. {@linkplain ResourceHandler#insert(int, IResource, int, TransactionContext) insert} or
-     * {@linkplain ResourceHandler#extract(int, IResource, int, TransactionContext) extract} with result > 0).
+     * (i.e. {@linkplain ResourceHandler#insert(int, Resource, int, TransactionContext) insert} or
+     * {@linkplain ResourceHandler#extract(int, Resource, int, TransactionContext) extract} with result > 0).
      * Any logic performed by this method should be fully transactional, and support being rolled back.
      * In other words, the transaction is still ongoing.
      *

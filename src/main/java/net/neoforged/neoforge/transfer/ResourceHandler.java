@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.transfer;
 
 import com.google.common.primitives.Ints;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * A generic handler for the transfer and storage of {@link IResource resources} whether it be inserting, extracting, querying some value, etc.
+ * A generic handler for the transfer and storage of {@link Resource resources} whether it be inserting, extracting, querying some value, etc.
  *
  * <h2>Indices</h2>
  * <p>A resource handler is organized into indices, which are addressed using an int between {@code 0} and {@code size() - 1}.
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param <T> The type of resource this handler manages.
  */
-public interface ResourceHandler<T extends IResource> {
+public interface ResourceHandler<T extends Resource> {
     /**
      * {@return the <i>current</i> number of indices in this resource handler}
      *
@@ -102,8 +102,8 @@ public interface ResourceHandler<T extends IResource> {
      * @param index    The index to get the capacity for.
      * @param resource The resource to get the capacity for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as a long
-     * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
-     * @see #getCapacityAsInt(int, IResource)
+     * @implSpec This method should return 0 for any resource for which {@link #isValid(int, Resource)} returns {@code false}.
+     * @see #getCapacityAsInt(int, Resource)
      */
     long getCapacityAsLong(int index, T resource);
 
@@ -123,8 +123,8 @@ public interface ResourceHandler<T extends IResource> {
      * @param index    The index to get the limit for.
      * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as an {@code int}
-     * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
-     * @see #getCapacityAsLong(int, IResource)
+     * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, Resource)} and convert the result appropriately.
+     * @see #getCapacityAsLong(int, Resource)
      */
     @ApiStatus.NonExtendable
     default int getCapacityAsInt(int index, T resource) {
@@ -156,14 +156,14 @@ public interface ResourceHandler<T extends IResource> {
      * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
      *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
-     * @see #insert(IResource, int, TransactionContext) Inserting without a specific index, which can be more efficient.
+     * @see #insert(Resource, int, TransactionContext) Inserting without a specific index, which can be more efficient.
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
 
     /**
      * Inserts up to the given amount of a resource into the handler.
      *
-     * <p>This function is preferred to the {@linkplain #insert(int, IResource, int, TransactionContext) index-specific overload}
+     * <p>This function is preferred to the {@linkplain #insert(int, Resource, int, TransactionContext) index-specific overload}
      * since it lets the handler decide how to distribute the resource.
      * <p>This method is expected to be more efficient than callers trying to find a suitable index for insertion themselves.
      *
@@ -176,7 +176,7 @@ public interface ResourceHandler<T extends IResource> {
      * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
      *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
-     * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler.
+     * @see #insert(int, Resource, int, TransactionContext) Inserting into a specific index of the handler.
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
@@ -203,14 +203,14 @@ public interface ResourceHandler<T extends IResource> {
      * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
      *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
-     * @see #extract(IResource, int, TransactionContext) Extracting without a specific index, which can be more efficient.
+     * @see #extract(Resource, int, TransactionContext) Extracting without a specific index, which can be more efficient.
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
 
     /**
      * Tries to extract up to the given amount of a resource from the handler.
      *
-     * <p>This function is preferred to the {@linkplain #extract(int, IResource, int, TransactionContext) index-specific overload}
+     * <p>This function is preferred to the {@linkplain #extract(int, Resource, int, TransactionContext) index-specific overload}
      * since it lets the handler decide how to find indices that contain the resource.
      * <p>This method is expected to be more efficient than callers trying to find indices that contain the resource themselves.
      *
@@ -223,7 +223,7 @@ public interface ResourceHandler<T extends IResource> {
      * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
      *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
-     * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler.
+     * @see #extract(int, Resource, int, TransactionContext) Extracting from a specific index of the handler.
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
@@ -241,7 +241,7 @@ public interface ResourceHandler<T extends IResource> {
      * Creates a class with the right generic type, such that it can be used to register a capability.
      */
     @SuppressWarnings("unchecked")
-    static <T extends IResource> Class<ResourceHandler<T>> asClass() {
+    static <T extends Resource> Class<ResourceHandler<T>> asClass() {
         return (Class<ResourceHandler<T>>) (Object) ResourceHandler.class;
     }
 }

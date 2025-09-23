@@ -18,7 +18,7 @@ import net.minecraft.core.component.DataComponentType;
  *
  * @param <T> The type of the backing registry entry.
  */
-public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
+public interface DataComponentHolderResource<T> extends RegisteredResource<T>, DataComponentHolder {
     /**
      * Checks if the resource's data component holder has no patches applied to it.
      * Equivalent to checking if the {@link #getComponentsPatch() patch} is empty, but more efficient.
@@ -31,7 +31,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      * @param patch The patch added to the new resource instance.
      * @implSpec If the patch is empty, the same resource instance is returned directly.
      */
-    IDataComponentHolderResource<T> withMergedPatch(DataComponentPatch patch);
+    DataComponentHolderResource<T> withMergedPatch(DataComponentPatch patch);
 
     /**
      * {@return a resource with the data component set to the given value}
@@ -40,14 +40,14 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      * @param data the data to set
      * @param <D>  the type of data component
      */
-    <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
+    <D> DataComponentHolderResource<T> with(DataComponentType<D> type, D data);
 
     /**
      * {@return a resource without the data component, i.e. with the data component explicitly removed}
      *
      * @param type the type of data component
      */
-    IDataComponentHolderResource<T> without(DataComponentType<?> type);
+    DataComponentHolderResource<T> without(DataComponentType<?> type);
 
     /**
      * Patches currently applied to the resource's data component holder.
@@ -61,7 +61,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      * @param data the data to set
      * @param <D>  the type of data component
      */
-    default <D> IDataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, D data) {
+    default <D> DataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
@@ -70,7 +70,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      *
      * @param type the supplier for the type of data component
      */
-    default IDataComponentHolderResource<T> without(Supplier<? extends DataComponentType<?>> type) {
+    default DataComponentHolderResource<T> without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
     }
 }

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param <T> The type of the backing registry entry.
  */
-public interface IRegisteredResource<T> extends IResource {
+public interface RegisteredResource<T> extends Resource {
     /**
      * {@return the backing instance of the resource}
      */

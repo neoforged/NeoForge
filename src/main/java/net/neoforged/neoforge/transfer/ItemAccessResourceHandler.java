@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer;
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -26,7 +26,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  *
  * @param <T> The type of resource this handler manages.
  */
-public abstract class ItemAccessResourceHandler<T extends IResource> implements ResourceHandler<T> {
+public abstract class ItemAccessResourceHandler<T extends Resource> implements ResourceHandler<T> {
     protected final ItemAccess itemAccess;
     protected final int size;
 

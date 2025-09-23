@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -14,7 +14,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  *
  * @param <T> The type of resource that this handler can accept.
  */
-public class VoidingResourceHandler<T extends IResource> implements ResourceHandler<T> {
+public class VoidingResourceHandler<T extends Resource> implements ResourceHandler<T> {
     protected final T emptyResource;
 
     /**
