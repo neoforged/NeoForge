@@ -8,7 +8,7 @@ package net.neoforged.neoforge.unittest.transfer;
 import java.util.ArrayList;
 import java.util.List;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +20,7 @@ final class HandlerTestUtil {
 
     private HandlerTestUtil() {}
 
-    static <T extends IResource> List<SlotInfo<T>> describeSlots(ResourceHandler<T> handler) {
+    static <T extends Resource> List<SlotInfo<T>> describeSlots(ResourceHandler<T> handler) {
         List<SlotInfo<T>> content = new ArrayList<>(handler.size());
         for (int i = 0; i < handler.size(); i++) {
             T resource = handler.getResource(i);
@@ -35,7 +35,7 @@ final class HandlerTestUtil {
         return content;
     }
 
-    static <T extends IResource> List<ResourceStack<T>> describeStacks(ResourceHandler<T> handler) {
+    static <T extends Resource> List<ResourceStack<T>> describeStacks(ResourceHandler<T> handler) {
         List<ResourceStack<T>> content = new ArrayList<>(handler.size());
         for (int i = 0; i < handler.size(); i++) {
             T resource = handler.getResource(i);
@@ -93,7 +93,7 @@ final class HandlerTestUtil {
         return new ResourceStack<>(resource, amount);
     }
 
-    record SlotInfo<T extends IResource>(T resource, long amount, long capacity) {
+    record SlotInfo<T extends Resource>(T resource, long amount, long capacity) {
         @Override
         public String toString() {
             return amount + "x" + resource + " (cap: " + capacity + ")";

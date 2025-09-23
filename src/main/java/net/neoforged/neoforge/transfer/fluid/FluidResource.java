@@ -25,13 +25,13 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.resource.IDataComponentHolderResource;
+import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IDataComponentHolderResource<Fluid> {
+public final class FluidResource implements DataComponentHolderResource<Fluid> {
     /**
      * The empty resource instance of a {@link FluidResource}
      */

@@ -7,20 +7,20 @@ package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A resource handler that wraps a range of indices of another handler.
  */
-public class RangedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
+public class RangedResourceHandler<T extends Resource> extends DelegatingResourceHandler<T> {
     /**
      * Creates a wrapper for a range of indices.
      *
      * @param start start of the range of indices, inclusive
      * @param end   end of the range of indices, exclusive
      */
-    public static <T extends IResource> RangedResourceHandler<T> of(ResourceHandler<T> delegate, int start, int end) {
+    public static <T extends Resource> RangedResourceHandler<T> of(ResourceHandler<T> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
     }
 
@@ -30,21 +30,21 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
      * @param start start of the range of indices, inclusive
      * @param end   end of the range of indices, exclusive
      */
-    public static <T extends IResource> RangedResourceHandler<T> of(Supplier<ResourceHandler<T>> delegate, int start, int end) {
+    public static <T extends Resource> RangedResourceHandler<T> of(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
     }
 
     /**
      * Creates a wrapper for a single index.
      */
-    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(ResourceHandler<T> delegate, int index) {
+    public static <T extends Resource> RangedResourceHandler<T> ofSingleIndex(ResourceHandler<T> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
     }
 
     /**
      * Creates a wrapper for a single index, with the passed supplier being queried every time the handler is accessed.
      */
-    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(Supplier<ResourceHandler<T>> delegate, int index) {
+    public static <T extends Resource> RangedResourceHandler<T> ofSingleIndex(Supplier<ResourceHandler<T>> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
     }
 

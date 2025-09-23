@@ -7,13 +7,13 @@ package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A resource handler that delegates all calls to another handler.
  */
-public class DelegatingResourceHandler<T extends IResource> implements ResourceHandler<T> {
+public class DelegatingResourceHandler<T extends Resource> implements ResourceHandler<T> {
     protected final Supplier<ResourceHandler<T>> delegate;
 
     public DelegatingResourceHandler(ResourceHandler<T> delegate) {

@@ -13,7 +13,7 @@ package net.neoforged.neoforge.transfer.resource;
  * <p>
  * Note, the amount is not encoded in the resource, for that you can use something like {@link ResourceStack}.
  */
-public interface IResource {
+public interface Resource {
     /**
      * Returns {@code true} if this represents an empty resource.
      *

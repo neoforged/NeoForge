@@ -5,13 +5,13 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.resource.IResource;
+import net.neoforged.neoforge.transfer.resource.Resource;
 
 /**
  * Represents a function to directly mutate the resource and amount at a specific index of a {@link ResourceHandler}.
  */
 @FunctionalInterface
-public interface IndexModifier<T extends IResource> {
+public interface IndexModifier<T extends Resource> {
     /**
      * Overrides the resource and amount at the given index.
      *

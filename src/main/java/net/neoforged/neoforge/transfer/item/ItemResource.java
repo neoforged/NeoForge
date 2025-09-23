@@ -25,13 +25,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.resource.IDataComponentHolderResource;
+import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IDataComponentHolderResource<Item> {
+public final class ItemResource implements DataComponentHolderResource<Item> {
     /**
      * The empty resource instance of a {@link ItemResource}
      */
