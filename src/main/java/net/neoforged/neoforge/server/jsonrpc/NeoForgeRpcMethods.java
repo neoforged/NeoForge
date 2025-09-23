@@ -10,25 +10,21 @@ import java.util.List;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.jsonrpc.IncomingRpcMethod;
 import net.minecraft.server.jsonrpc.api.ParamInfo;
 import net.minecraft.server.jsonrpc.api.ResultInfo;
 import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.internalapi.MinecraftApi;
 import net.minecraft.server.jsonrpc.methods.ClientInfo;
-import net.neoforged.neoforge.event.server.RegisterMinecraftApiServiceEvent;
+import net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.server.jsonrpc.impl.NeoForgeServiceImpl;
-import net.neoforged.neoforgespi.language.IModInfo;
 
 public class NeoForgeRpcMethods {
     public static void register(RegisterEvent event) {
         event.register(Registries.INCOMING_RPC_METHOD, NeoForgeRpcMethods::registerIncoming);
-    }
-
-    public static void registerServices(RegisterMinecraftApiServiceEvent event) {
-        event.register(NeoForgeService.SERVICE_KEY, new NeoForgeServiceImpl(event.getServer(), event.getJsonRpcLogger()));
     }
 
     private static void registerIncoming(RegisterEvent.RegisterHelper<IncomingRpcMethod> helper) {
@@ -55,15 +51,36 @@ public class NeoForgeRpcMethods {
     }
 
     private static List<ModRecord> getModList(MinecraftApi api) {
-        List<IModInfo> modList = api.getService(NeoForgeService.SERVICE_KEY).getModList();
-        return modList.stream().map(info -> new ModRecord(info.getModId(), info.getVersion().toString(), info.getDisplayName(), info.getDescription())).toList();
+        return ModList
+                .get()
+                .getMods()
+                .stream()
+                .map(info -> new ModRecord(info.getModId(), info.getVersion().toString(), info.getDisplayName(), info.getDescription()))
+                .toList();
     }
 
     private static List<String> listRegistries(MinecraftApi api) {
-        return api.getService(NeoForgeService.SERVICE_KEY).listRegistries().map(reg -> reg.location().toString()).toList();
+        DedicatedServer server = api.getServer();
+        if (server == null) {
+            throw new MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
+        }
+        return server
+                .registryAccess()
+                .listRegistryKeys()
+                .map(reg -> reg.location().toString())
+                .toList();
     }
 
     private static List<ResourceLocation> listRegistryContents(MinecraftApi api, ResourceLocation registryId, ClientInfo clientInfo) {
-        return api.getService(NeoForgeService.SERVICE_KEY).listRegistryKeys(ResourceKey.createRegistryKey(registryId)).map(ResourceKey::location).toList();
+        DedicatedServer server = api.getServer();
+        if (server == null) {
+            throw new MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
+        }
+        return server
+                .registryAccess()
+                .lookupOrThrow(ResourceKey.createRegistryKey(registryId))
+                .listElementIds()
+                .map(ResourceKey::location)
+                .toList();
     }
 }

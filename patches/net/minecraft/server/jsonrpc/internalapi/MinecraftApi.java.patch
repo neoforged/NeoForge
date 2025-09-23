@@ -4,8 +4,8 @@
      private final MinecraftServerSettingsService minecraftServerSettingsService;
      private final MinecraftServerStateService minecraftServerStateService;
      private final MinecraftExecutorService executorService;
-+    private final net.minecraft.core.HolderLookup.@org.jetbrains.annotations.Nullable Provider registries;
-+    private final java.util.Map<net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<?>, Object> services;
++    private final @org.jetbrains.annotations.Nullable DedicatedServer server;
++    private final @org.jetbrains.annotations.Nullable JsonRpcLogger logger;
 +
 +    public MinecraftApi(
 +            NotificationManager p_449655_,
@@ -18,7 +18,7 @@
 +            MinecraftServerStateService p_443354_,
 +            MinecraftExecutorService p_449378_
 +    ) {
-+        this(p_449655_, p_443286_, p_443467_, p_442735_, p_442736_, p_443566_, p_443225_, p_443354_, p_449378_, null, java.util.Map.of());
++        this(p_449655_, p_443286_, p_443467_, p_442735_, p_442736_, p_443566_, p_443225_, p_443354_, p_449378_, null, null);
 +    }
  
      public MinecraftApi(
@@ -29,8 +29,8 @@
          MinecraftServerStateService p_443354_,
 -        MinecraftExecutorService p_449378_
 +        MinecraftExecutorService p_449378_,
-+        net.minecraft.core.HolderLookup.@org.jetbrains.annotations.Nullable Provider registries,
-+        java.util.Map<net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<?>, Object> services
++        @org.jetbrains.annotations.Nullable DedicatedServer server,
++        @org.jetbrains.annotations.Nullable JsonRpcLogger logger
      ) {
          this.notificationManager = p_449655_;
          this.allowListService = p_443286_;
@@ -38,49 +38,34 @@
          this.minecraftServerSettingsService = p_443225_;
          this.minecraftServerStateService = p_443354_;
          this.executorService = p_449378_;
-+        this.registries = registries;
-+        this.services = services;
++        this.server = server;
++        this.logger = logger;
      }
  
      public <V> CompletableFuture<V> submit(Supplier<V> p_442544_) {
-@@ -79,6 +_,19 @@
+@@ -79,6 +_,14 @@
          return this.notificationManager;
      }
  
-+    public net.minecraft.core.HolderLookup.@org.jetbrains.annotations.Nullable Provider registries() {
-+        return this.registries;
++    public @org.jetbrains.annotations.Nullable DedicatedServer getServer() {
++        return this.server;
 +    }
 +
-+    @SuppressWarnings("unchecked")
-+    public <S> S getService(net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<S> key) {
-+        S service = (S) this.services.get(key);
-+        if (service == null) {
-+            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("Required service for this method is not available");
-+        }
-+        return service;
++    public @org.jetbrains.annotations.Nullable JsonRpcLogger getLogger() {
++        return this.logger;
 +    }
 +
      public static MinecraftApi of(DedicatedServer p_449765_) {
          JsonRpcLogger jsonrpclogger = new JsonRpcLogger();
          MinecraftAllowListServiceImpl minecraftallowlistserviceimpl = new MinecraftAllowListServiceImpl(p_449765_, jsonrpclogger);
-@@ -89,6 +_,9 @@
-         MinecraftServerSettingsServiceImpl minecraftserversettingsserviceimpl = new MinecraftServerSettingsServiceImpl(p_449765_, jsonrpclogger);
-         MinecraftServerStateServiceImpl minecraftserverstateserviceimpl = new MinecraftServerStateServiceImpl(p_449765_, jsonrpclogger);
-         MinecraftExecutorService minecraftexecutorservice = new MinecraftExecutorServiceImpl(p_449765_);
-+        var registries = p_449765_.registryAccess();
-+        var services = new java.util.concurrent.ConcurrentHashMap<net.neoforged.neoforge.server.jsonrpc.MinecraftApiServiceKey<?>, Object>();
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.server.RegisterMinecraftApiServiceEvent(p_449765_, jsonrpclogger, services));
-         return new MinecraftApi(
-             p_449765_.notificationManager(),
-             minecraftallowlistserviceimpl,
 @@ -98,7 +_,9 @@
              minecraftoperatorlistserviceimpl,
              minecraftserversettingsserviceimpl,
              minecraftserverstateserviceimpl,
 -            minecraftexecutorservice
 +            minecraftexecutorservice,
-+            registries,
-+            services
++            p_449765_,
++            jsonrpclogger
          );
      }
  }

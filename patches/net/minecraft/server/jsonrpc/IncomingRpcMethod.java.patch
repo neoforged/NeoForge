@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
 +++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
-@@ -101,10 +_,14 @@
+@@ -119,10 +_,14 @@
              return this.method.create(methodinfo, new IncomingRpcMethod.Attributes(this.runOnMainThread, this.discoverable));
          }
  
@@ -15,17 +15,17 @@
          private T register(Registry<IncomingRpcMethod> p_443333_, ResourceLocation p_451500_) {
              return Registry.register(p_443333_, p_451500_, this.build());
          }
-@@ -122,9 +_,11 @@
-             if (p_443044_ != null && p_443044_.isJsonArray()) {
-                 JsonArray jsonarray = p_443044_.getAsJsonArray();
-                 if (!jsonarray.isEmpty() && jsonarray.size() <= 1) {
--                    Params params = this.paramsCodec.parse(JsonOps.INSTANCE, jsonarray.get(0)).getOrThrow(InvalidParameterJsonRpcException::new);
-+                    var registries = p_442932_.registries();
-+                    var ops = registries != null ? registries.createSerializationContext(JsonOps.INSTANCE) : JsonOps.INSTANCE;
-+                    Params params = this.paramsCodec.parse(ops, jsonarray.get(0)).getOrThrow(InvalidParameterJsonRpcException::new);
+@@ -161,9 +_,11 @@
+                         jsonelement = jsonarray.get(0);
+                     }
+ 
+-                    Params params = this.paramsCodec.parse(JsonOps.INSTANCE, jsonelement).getOrThrow(InvalidParameterJsonRpcException::new);
++                    var server = p_442932_.getServer();
++                    var ops = server != null ? server.registryAccess().createSerializationContext(JsonOps.INSTANCE) : JsonOps.INSTANCE;
++                    Params params = this.paramsCodec.parse(ops, jsonelement).getOrThrow(InvalidParameterJsonRpcException::new);
                      Result result = this.function.apply(p_442932_, params, p_442918_);
 -                    return this.resultCodec.encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);
 +                    return this.resultCodec.encodeStart(ops, result).getOrThrow(EncodeJsonRpcException::new);
-                 } else {
-                     throw new InvalidParameterJsonRpcException("Expected exactly one element in the params array");
                  }
+             } else {
+                 throw new InvalidParameterJsonRpcException("Expected params as array or named");
