@@ -1,18 +1,19 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
-@@ -58,14 +_,12 @@
+@@ -58,14 +_,8 @@
          if (this.uncategorizedStackTrace != null && this.uncategorizedStackTrace.length > 0) {
              p_127520_.append("-- Head --\n");
              p_127520_.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
 -            p_127520_.append("Stacktrace:\n");
-+            p_127520_.append("Stacktrace:");
- 
-             for (StackTraceElement stacktraceelement : this.uncategorizedStackTrace) {
-                 p_127520_.append("\t").append("at ").append(stacktraceelement);
-                 p_127520_.append("\n");
-             }
+-
+-            for (StackTraceElement stacktraceelement : this.uncategorizedStackTrace) {
+-                p_127520_.append("\t").append("at ").append(stacktraceelement);
+-                p_127520_.append("\n");
+-            }
 -
 -            p_127520_.append("\n");
++            p_127520_.append("Stacktrace:");
++            p_127520_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
          }
  
          for (CrashReportCategory crashreportcategory : this.details) {
@@ -24,3 +25,23 @@
          this.systemReport.appendToCrashReportString(p_127520_);
      }
  
+@@ -92,18 +_,7 @@
+             throwable.setStackTrace(this.exception.getStackTrace());
+         }
+ 
+-        String s;
+-        try {
+-            stringwriter = new StringWriter();
+-            printwriter = new PrintWriter(stringwriter);
+-            throwable.printStackTrace(printwriter);
+-            s = stringwriter.toString();
+-        } finally {
+-            IOUtils.closeQuietly((Writer)stringwriter);
+-            IOUtils.closeQuietly((Writer)printwriter);
+-        }
+-
+-        return s;
++        return net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(throwable);
+     }
+ 
+     public String getFriendlyReport(ReportType p_350860_, List<String> p_350563_) {

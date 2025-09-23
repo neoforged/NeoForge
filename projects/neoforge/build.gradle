@@ -306,6 +306,7 @@ tasks.withType(Javadoc.class).configureEach {
     options.addStringOption('Xdoclint:all,-missing', '-public')
 }
 
+// Generates the neoforge.mods.toml so it contains a fully realized version number
 final generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
     group = 'build'
     from(rootProject.file('src/main/neoforge.mods.toml')) {

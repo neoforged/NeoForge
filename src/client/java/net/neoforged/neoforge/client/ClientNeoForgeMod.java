@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
-import java.util.Optional;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
