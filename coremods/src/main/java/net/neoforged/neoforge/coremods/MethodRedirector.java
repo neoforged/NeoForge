@@ -62,8 +62,8 @@ public class MethodRedirector implements ITransformer.ClassTransformer {
     }
 
     @Override
-    public void transform(ClassNode classNode, CoreModTransformationContext votingContext) {
-        var redirections = redirectionsByClass.getOrDefault(classNode.name, Collections.emptyList());
+    public void transform(ClassNode classNode, CoreModTransformationContext context) {
+        var redirections = redirectionsByClass.getOrDefault(context.type().getClassName(), Collections.emptyList());
 
         var methods = classNode.methods;
         for (var method : methods) {

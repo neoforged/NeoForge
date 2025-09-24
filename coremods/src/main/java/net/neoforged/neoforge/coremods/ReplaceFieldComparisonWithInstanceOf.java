@@ -63,7 +63,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer.Method
     }
 
     @Override
-    public void transform(MethodNode methodNode, CoreModTransformationContext votingContext) {
+    public void transform(MethodNode methodNode, CoreModTransformationContext context) {
         var count = 0;
         for (var node = methodNode.instructions.getFirst(); node != null; node = node.getNext()) {
             if (node instanceof JumpInsnNode jumpNode && (jumpNode.getOpcode() == Opcodes.IF_ACMPEQ || jumpNode.getOpcode() == Opcodes.IF_ACMPNE)) {
