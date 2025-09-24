@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;

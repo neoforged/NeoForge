@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
@@ -42,7 +41,7 @@ public class ReplaceFieldWithGetterAccess implements ITransformer.ClassTransform
     @Override
     public ProcessorName name() {
         var owner = className.toLowerCase(Locale.ROOT).replace('$', '.');
-        return new ProcessorName("neoforge.coremods", "field_to_getter."+owner);
+        return new ProcessorName("neoforge.coremods", "field_to_getter." + owner);
     }
 
     @Override

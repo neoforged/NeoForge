@@ -10,7 +10,6 @@ import cpw.mods.modlauncher.api.ITransformer;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -55,7 +54,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer.Method
     public ProcessorName name() {
         var owner = fieldOwner.toLowerCase(Locale.ROOT).replace('$', '.');
         var name = fieldName.toLowerCase(Locale.ROOT);
-        return new ProcessorName("neoforge.coremods", "field_comparison_to_instanceof."+owner+"."+name);
+        return new ProcessorName("neoforge.coremods", "field_comparison_to_instanceof." + owner + "." + name);
     }
 
     @Override
