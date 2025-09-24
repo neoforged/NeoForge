@@ -72,7 +72,7 @@ public abstract class GenerateFinalizeSpawnTargets extends DefaultTask {
                     if (opcode == Opcodes.INVOKEVIRTUAL
                             && name.equals("finalizeSpawn")
                             && descriptor.equals("(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;")) {
-                        matchedClasses.add(currentClass);
+                        matchedClasses.add(currentClass.replace('/', '.'));
                     }
                 }
             };
