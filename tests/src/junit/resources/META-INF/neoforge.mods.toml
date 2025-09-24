@@ -10,6 +10,8 @@ modId="block_entity_type_valid_blocks_event_test"
 [[mods]]
 modId="creative_tab_order_test"
 [[mods]]
+modId="energy_test"
+[[mods]]
 modId="startup_config_test"
 [[mods]]
 modId="custom_feature_flags_test"
