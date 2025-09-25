@@ -171,8 +171,8 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleGroupsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -839,9 +839,8 @@ public class ClientHooks {
     }
 
     public static void populateParticleGroups(
-        Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
-        List<ParticleRenderType> particleRenderOrder) {
-
+            Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
+            List<ParticleRenderType> particleRenderOrder) {
         var event = new RegisterParticleGroupsEvent(particleGroupFactories, particleRenderOrder);
         ModLoader.postEvent(event);
     }

@@ -1,5 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.event;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleGroup;
@@ -8,10 +16,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Fired for registering additional {@linkplain ParticleGroup particle group factories}.
@@ -26,8 +30,8 @@ public class RegisterParticleGroupsEvent extends Event implements IModBusEvent {
 
     @ApiStatus.Internal
     public RegisterParticleGroupsEvent(
-        Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
-        List<ParticleRenderType> particleRenderOrder)  {
+            Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
+            List<ParticleRenderType> particleRenderOrder) {
         this.particleGroupFactories = particleGroupFactories;
         this.particleRenderOrder = particleRenderOrder;
     }
@@ -37,7 +41,7 @@ public class RegisterParticleGroupsEvent extends Event implements IModBusEvent {
      * before all currently registered types.
      *
      * @param particleRenderType An identifier uniquely identifying the particle group.
-     * @param factory A factory function used to create a {@link ParticleGroup} for the particle group.
+     * @param factory            A factory function used to create a {@link ParticleGroup} for the particle group.
      *
      * @throws IllegalArgumentException when {@code particleRenderType} has already been registered.
      */
@@ -54,7 +58,7 @@ public class RegisterParticleGroupsEvent extends Event implements IModBusEvent {
      * after all currently registered types.
      *
      * @param particleRenderType An identifier uniquely identifying the particle group.
-     * @param factory A factory function used to create a {@link ParticleGroup} for the particle group.
+     * @param factory            A factory function used to create a {@link ParticleGroup} for the particle group.
      *
      * @throws IllegalArgumentException when {@code particleRenderType} has already been registered.
      */
@@ -70,9 +74,9 @@ public class RegisterParticleGroupsEvent extends Event implements IModBusEvent {
      * Registers a factory function for the given {@linkplain Particle#getGroup() particle group}, to be rendered
      * before the given type.
      *
-     * @param before An identifier uniquely identifying that particle group to register before
+     * @param before             An identifier uniquely identifying that particle group to register before
      * @param particleRenderType An identifier uniquely identifying the particle group.
-     * @param factory A factory function used to create a {@link ParticleGroup} for the particle group.
+     * @param factory            A factory function used to create a {@link ParticleGroup} for the particle group.
      *
      * @throws IllegalArgumentException when {@code before} has not been registered.
      * @throws IllegalArgumentException when {@code particleRenderType} has already been registered.
@@ -94,9 +98,9 @@ public class RegisterParticleGroupsEvent extends Event implements IModBusEvent {
      * Registers a factory function for the given {@linkplain Particle#getGroup() particle group}, to be rendered
      * after the given type.
      *
-     * @param after An identifier uniquely identifying that particle group to register after
+     * @param after              An identifier uniquely identifying that particle group to register after
      * @param particleRenderType An identifier uniquely identifying the particle group.
-     * @param factory A factory function used to create a {@link ParticleGroup} for the particle group.
+     * @param factory            A factory function used to create a {@link ParticleGroup} for the particle group.
      *
      * @throws IllegalArgumentException when {@code after} has not been registered.
      * @throws IllegalArgumentException when {@code particleRenderType} has already been registered.

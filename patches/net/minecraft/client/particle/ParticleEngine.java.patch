@@ -1,15 +1,5 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -4,6 +_,9 @@
- import com.google.common.collect.Maps;
- import com.google.common.collect.Queues;
- import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-+
-+import java.util.ArrayList;
-+import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
- import java.util.Optional;
 @@ -29,6 +_,8 @@
      );
      protected ClientLevel level;
@@ -23,8 +13,8 @@
      public ParticleEngine(ClientLevel p_107299_, ParticleResources p_446012_) {
          this.level = p_107299_;
          this.resourceManager = p_446012_;
-+        var particleGroupFactories = new HashMap<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>>();
-+        var particleRenderOrder = new ArrayList<>(RENDER_ORDER);
++        var particleGroupFactories = new java.util.HashMap<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>>();
++        var particleRenderOrder = new java.util.ArrayList<>(RENDER_ORDER);
 +        net.neoforged.neoforge.client.ClientHooks.populateParticleGroups(particleGroupFactories, particleRenderOrder);
 +        this.particleGroupFactories = Map.copyOf(particleGroupFactories);
 +        this.particleRenderOrder = List.copyOf(particleRenderOrder);
