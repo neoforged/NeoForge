@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -173,7 +172,7 @@ import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleRenderTypeGroupEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleGroupsEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -839,27 +838,12 @@ public class ClientHooks {
         return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
     }
 
-    public static Comparator<ParticleRenderType> makeParticleRenderTypeComparator(List<ParticleRenderType> renderOrder) {
-        Comparator<ParticleRenderType> vanillaComparator = Comparator.comparingInt(renderOrder::indexOf);
-        return (typeOne, typeTwo) -> {
-            boolean vanillaOne = renderOrder.contains(typeOne);
-            boolean vanillaTwo = renderOrder.contains(typeTwo);
+    public static void populateParticleGroups(
+        Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
+        List<ParticleRenderType> particleRenderOrder) {
 
-            if (vanillaOne && vanillaTwo) {
-                return vanillaComparator.compare(typeOne, typeTwo);
-            }
-            if (!vanillaOne && !vanillaTwo) {
-                return Integer.compare(System.identityHashCode(typeOne), System.identityHashCode(typeTwo));
-            }
-            return vanillaOne ? -1 : 1;
-        };
-    }
-
-    public static Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> makeParticleGroupFactories() {
-        final var map = new HashMap<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>>();
-        final var event = new RegisterParticleRenderTypeGroupEvent(map);
+        var event = new RegisterParticleGroupsEvent(particleGroupFactories, particleRenderOrder);
         ModLoader.postEvent(event);
-        return Collections.unmodifiableMap(map);
     }
 
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {
