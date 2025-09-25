@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.Objects;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -13,8 +14,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-
-import java.util.Objects;
 
 /**
  * @deprecated Use {@link ResourceHandler} with an {@link ItemResource} instead. Code that is written against {@link IItemHandler} but receives

@@ -8,11 +8,11 @@ package net.neoforged.neoforge.transfer.item;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.world.inventory.StackCopySlot;
 import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.world.inventory.StackCopySlot;
 
 /**
  * Base implementation for a {@link Slot} backed by a {@code ResourceHandler<ItemResource>}.
