@@ -35,8 +35,7 @@ public interface IFluidHandler {
     static IFluidHandler of(ResourceHandler<FluidResource> handler) {
         Objects.requireNonNull(handler);
 
-        // TODO MIGRATION
-        return null;
+        return new FluidResourceHandlerAdapter(handler);
     }
 
     enum FluidAction {

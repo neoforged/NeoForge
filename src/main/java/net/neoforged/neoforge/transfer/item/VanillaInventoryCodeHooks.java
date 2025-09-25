@@ -15,8 +15,9 @@ import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,16 +29,23 @@ public class VanillaInventoryCodeHooks {
      * @param handler target item handler
      * @return {@code true} if we moved an item, {@code false} if we moved no items
      */
-    public static boolean extractHook(Hopper dest, IItemHandler handler) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack extractItem = handler.extractItem(i, 1, true);
-            if (!extractItem.isEmpty()) {
+    public static boolean extractHook(Hopper dest, ResourceHandler<ItemResource> handler) {
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            var itemResource = handler.getResource(index);
+            try (var tx = Transaction.open(null)) {
+                int extracted = handler.extract(itemResource, 1, tx);
+                if (extracted == 0) {
+                    continue;
+                }
+
+                var stack = itemResource.toStack();
                 for (int j = 0; j < dest.getContainerSize(); j++) {
                     ItemStack destStack = dest.getItem(j);
-                    if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
-                        extractItem = handler.extractItem(i, 1, false);
+                    if (dest.canPlaceItem(j, stack) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && itemResource.matches(destStack))) {
+                        tx.commit();
                         if (destStack.isEmpty())
-                            dest.setItem(j, extractItem);
+                            dest.setItem(j, stack);
                         else {
                             destStack.grow(1);
                             dest.setItem(j, destStack);
@@ -57,35 +65,30 @@ public class VanillaInventoryCodeHooks {
      * @param itemHandler target item handler
      * @return {@code true} if we moved an item, {@code false} if we moved no items
      */
-    public static boolean insertHook(HopperBlockEntity hopper, IItemHandler itemHandler) {
-        if (isFull(itemHandler)) {
+    public static boolean insertHook(HopperBlockEntity hopper, ResourceHandler<ItemResource> itemHandler) {
+        if (ResourceHandlerUtil.isFull(itemHandler)) {
             return false;
         }
-        for (int i = 0; i < hopper.getContainerSize(); ++i) {
-            if (!hopper.getItem(i).isEmpty()) {
-                ItemStack originalSlotContents = hopper.getItem(i).copy();
-                ItemStack insertStack = hopper.removeItem(i, 1);
-                ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, insertStack, false);
-
-                if (remainder.isEmpty()) {
-                    return true;
+        try (var tx = Transaction.open(null)) {
+            for (int i = 0; i < hopper.getContainerSize(); ++i) {
+                var hopperItem = hopper.getItem(i);
+                if (hopperItem.isEmpty()) {
+                    continue;
                 }
 
-                hopper.setItem(i, originalSlotContents);
+                ItemStack originalSlotContents = hopperItem.copy();
+                ItemStack insertStack = hopper.removeItem(i, 1);
+
+                if (itemHandler.insert(ItemResource.of(insertStack), 1, tx) == 1) {
+                    tx.commit();
+                    return true;
+                } else {
+                    hopper.setItem(i, originalSlotContents);
+                }
             }
         }
 
         return false;
-    }
-
-    private static boolean isFull(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-            if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static ContainerOrHandler getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
@@ -97,14 +100,14 @@ public class VanillaInventoryCodeHooks {
                     if (!entity.isAlive()) {
                         return false;
                     }
-                    return entity instanceof Container || entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side) != null;
+                    return entity instanceof Container || entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, side) != null;
                 });
         if (!list.isEmpty()) {
             var entity = list.get(level.random.nextInt(list.size()));
             if (entity instanceof Container container) {
                 return new ContainerOrHandler(container, null);
             }
-            IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            ResourceHandler<ItemResource> entityCap = entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, side);
             if (entityCap != null) { // Could be null even if it wasn't in the entity predicate above.
                 return new ContainerOrHandler(null, entityCap);
             }
