@@ -1,11 +1,12 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -28,7 +_,7 @@
+@@ -28,7 +_,8 @@
          ParticleRenderType.SINGLE_QUADS, ParticleRenderType.ITEM_PICKUP, ParticleRenderType.ELDER_GUARDIANS
      );
      protected ClientLevel level;
 -    private final Map<ParticleRenderType, ParticleGroup<?>> particles = Maps.newIdentityHashMap();
 +    private final Map<ParticleRenderType, ParticleGroup<?>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ClientHooks.makeParticleRenderTypeComparator(RENDER_ORDER));
++    private final Map<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories = net.neoforged.neoforge.client.ClientHooks.makeParticleGroupFactories();
      private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
@@ -18,3 +19,12 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_, this.random);
+@@ -117,6 +_,8 @@
+             return new ItemPickupParticleGroup(this);
+         } else if (p_446516_ == ParticleRenderType.ELDER_GUARDIANS) {
+             return new ElderGuardianParticleGroup(this);
++        } else if (this.particleGroupFactories.containsKey(p_446516_)) {
++            return this.particleGroupFactories.get(p_446516_).apply(this);
+         } else {
+             return (ParticleGroup<?>)(p_446516_ == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, p_446516_));
+         }

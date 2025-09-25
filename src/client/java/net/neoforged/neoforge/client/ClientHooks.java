@@ -76,6 +76,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleGroup;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -171,6 +173,7 @@ import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleRenderTypeGroupEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -850,6 +853,13 @@ public class ClientHooks {
             }
             return vanillaOne ? -1 : 1;
         };
+    }
+
+    public static Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> makeParticleGroupFactories() {
+        final var map = new HashMap<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>>();
+        final var event = new RegisterParticleRenderTypeGroupEvent(map);
+        ModLoader.postEvent(event);
+        return Collections.unmodifiableMap(map);
     }
 
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {
