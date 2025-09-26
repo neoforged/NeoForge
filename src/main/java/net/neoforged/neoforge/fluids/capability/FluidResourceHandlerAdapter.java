@@ -58,7 +58,7 @@ class FluidResourceHandlerAdapter implements IFluidHandler {
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (resource.isEmpty()) {
-            return 0;
+            return FluidStack.EMPTY;
         }
         try (var tx = Transaction.open(null)) {
             int extracted = handler.extract(FluidResource.of(resource), resource.getAmount(), tx);

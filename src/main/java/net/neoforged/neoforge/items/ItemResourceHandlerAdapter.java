@@ -32,7 +32,7 @@ class ItemResourceHandlerAdapter implements IItemHandler {
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        return ItemUtil.insertItemReturnRemaining(slot, stack, simulate);
+        return ItemUtil.insertItemReturnRemaining(handler, slot, stack, simulate);
     }
 
     @Override

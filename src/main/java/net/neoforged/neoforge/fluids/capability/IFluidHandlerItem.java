@@ -7,6 +7,7 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
@@ -19,12 +20,11 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead.
  *             To apply changes to an underlying item container, capture an {@link ItemAccess},
  *             as provided for example by the {@link Capabilities.Fluid#ITEM} capability.
- *             Code that is written against {@link IFluidHandlerItem} but receives
- *             a {@code ResourceHandler<FluidResource>} can temporarily use {@link IFluidHandlerItem#of} to ease migration.
+ *             Code that is written against {@link IFluidHandlerItem}
+ *             can temporarily use {@link FluidUtil#getFluidHandler(ItemStack)} to ease migration.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IFluidHandlerItem extends IFluidHandler {
-    // TODO MIGRATION helper method of(...)
     /**
      * Get the container currently acted on by this fluid handler.
      * The ItemStack may be different from its initial state, in the case of fluid containers that have different items

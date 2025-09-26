@@ -10,7 +10,6 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.transfer.ItemAccessResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -48,7 +47,8 @@ public final class BucketResourceHandler extends ItemAccessResourceHandler<Fluid
         } else if (newAmount != FluidType.BUCKET_VOLUME) {
             return ItemResource.EMPTY;
         } else {
-            return ItemResource.of(FluidUtil.getFilledBucket(newResource.toStack(newAmount)));
+            var newStack = newResource.toStack(newAmount);
+            return ItemResource.of(newStack.getFluidType().getBucket(newStack));
         }
     }
 

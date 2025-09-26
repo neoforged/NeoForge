@@ -15,11 +15,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
+ *
+ * @deprecated An equivalent class is work in progress.
  */
-// TODO MIGRATION
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     private static final DispenseFluidContainer INSTANCE = new DispenseFluidContainer();
 
