@@ -1,22 +1,19 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -29,6 +_,8 @@
-     );
-     protected ClientLevel level;
-     private final Map<ParticleRenderType, ParticleGroup<?>> particles = Maps.newIdentityHashMap();
+@@ -34,10 +_,17 @@
+     private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
+     private final ParticleResources resourceManager;
+     private final RandomSource random = RandomSource.create();
 +    private final Map<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories;
 +    private final List<ParticleRenderType> particleRenderOrder;
-     private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
-     private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
-     private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
-@@ -38,6 +_,11 @@
+ 
      public ParticleEngine(ClientLevel p_107299_, ParticleResources p_446012_) {
          this.level = p_107299_;
          this.resourceManager = p_446012_;
-+        var particleGroupFactories = new java.util.HashMap<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>>();
++        var particleGroupFactories = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>>();
 +        var particleRenderOrder = new java.util.ArrayList<>(RENDER_ORDER);
-+        net.neoforged.neoforge.client.ClientHooks.populateParticleGroups(particleGroupFactories, particleRenderOrder);
-+        this.particleGroupFactories = Map.copyOf(particleGroupFactories);
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterParticleGroupsEvent(particleGroupFactories, particleRenderOrder));
++        this.particleGroupFactories = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.unmodifiable(particleGroupFactories);
 +        this.particleRenderOrder = List.copyOf(particleRenderOrder);
      }
  

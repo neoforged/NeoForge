@@ -75,9 +75,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleGroup;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
@@ -171,7 +168,6 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleGroupsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
@@ -836,13 +832,6 @@ public class ClientHooks {
             return Stream.of(component.getVisualOrderText()).map(ClientTooltipComponent::create);
         }
         return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
-    }
-
-    public static void populateParticleGroups(
-            Map<ParticleRenderType, Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories,
-            List<ParticleRenderType> particleRenderOrder) {
-        var event = new RegisterParticleGroupsEvent(particleGroupFactories, particleRenderOrder);
-        ModLoader.postEvent(event);
     }
 
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {
