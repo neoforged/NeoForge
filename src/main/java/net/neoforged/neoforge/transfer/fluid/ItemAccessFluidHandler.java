@@ -52,7 +52,12 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
 
     @Override
     protected ItemResource update(ItemResource accessResource, int index, FluidResource newResource, int newAmount) {
-        return accessResource.with(component, SimpleFluidContent.copyOf(newResource.toStack(newAmount)));
+        var newStack = newResource.toStack(newAmount);
+        if (newStack.isEmpty()) {
+            return accessResource.without(component);
+        } else {
+            return accessResource.with(component, SimpleFluidContent.copyOf(newStack));
+        }
     }
 
     @Override

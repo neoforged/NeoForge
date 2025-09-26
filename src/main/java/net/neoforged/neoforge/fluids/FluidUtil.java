@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +40,7 @@ import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import org.jetbrains.annotations.Nullable;
 
 // TODO MIGRATION
@@ -393,7 +395,16 @@ public class FluidUtil {
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static Optional<IFluidHandlerItem> getFluidHandler(ItemStack itemStack) {
-        var itemAccess = ItemAccess.forStack(itemStack);
+        // We essentially reuse the ability of the Container wrappers to mutate the original stack,
+        // so that changes will be applied to itemStack when possible.
+        var container = VanillaContainerWrapper.of(new SimpleContainer(itemStack) {
+            // Override to avoid clamping oversized stacks to their max stack size, just in case.
+            @Override
+            public void setItem(int slot, ItemStack stack, boolean performSideEffects) {
+                getItems().set(slot, stack);
+            }
+        });
+        var itemAccess = ItemAccess.forHandlerIndex(container, 0);
         var resourceHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
         if (resourceHandler == null) {
             return Optional.empty();
