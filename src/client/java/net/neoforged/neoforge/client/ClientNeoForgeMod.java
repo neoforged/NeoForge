@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.api.distmarker.Dist;
@@ -131,10 +130,7 @@ public class ClientNeoForgeMod {
                     Commands.literal("neoforge")
                             .then(Commands.literal("debug_class_loading_transformations")
                                     .executes(ctx -> {
-                                        var entity = ctx.getSource().getEntity();
-                                        if (entity instanceof Player player) {
-                                            player.displayClientMessage(Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ModLoader.getTransformationSummary(), ModLoader.getMixinParsedClassesSummary()), false);
-                                        }
+                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ModLoader.getTransformationSummary(), ModLoader.getMixinParsedClassesSummary()), false);
                                         return Command.SINGLE_SUCCESS;
                                     })));
         });

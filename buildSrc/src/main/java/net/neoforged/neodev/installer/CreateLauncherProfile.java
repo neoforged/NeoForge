@@ -6,6 +6,7 @@ import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.MavenIdentifier;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -32,8 +33,7 @@ import java.util.stream.Collectors;
  */
 public abstract class CreateLauncherProfile extends DefaultTask {
     @Inject
-    public CreateLauncherProfile() {
-    }
+    public CreateLauncherProfile() {}
 
     @Input
     public abstract Property<String> getMinecraftVersion();
@@ -92,7 +92,9 @@ public abstract class CreateLauncherProfile extends DefaultTask {
             }
             // Otherwise we have to compare versions
             var libraryVersion = new DefaultArtifactVersion(libraryId.version());
-            if (libraryVersion.compareTo(minecraftVersion) <= 0) {
+            if (libraryVersion.compareTo(minecraftVersion) < 0) {
+                throw new GradleException("Downgrading library " + libraryId + " from the Minecraft version " + minecraftVersion);
+            } else if (libraryVersion.compareTo(minecraftVersion) == 0) {
                 getLogger().info("Removing library {} since Minecraft already ships version {}", libraryId, minecraftVersion);
                 return true; // Remove, if it's older or equal
             } else {
