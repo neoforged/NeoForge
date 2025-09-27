@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
  * @deprecated Deprecated without equivalent. Please open an issue on GitHub if you have a use for an equivalent of this class.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)

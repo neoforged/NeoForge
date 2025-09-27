@@ -17,11 +17,16 @@ import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Use {@link ResourceHandler} with an {@link ItemResource} instead of {@link IItemHandler}.
+ *             For available utils, see {@link ResourceHandlerUtil} as well as {@link ItemUtil}.
+ */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class ItemHandlerHelper {
     /**

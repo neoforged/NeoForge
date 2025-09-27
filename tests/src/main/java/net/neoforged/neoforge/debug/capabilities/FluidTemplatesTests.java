@@ -47,6 +47,7 @@ public class FluidTemplatesTests {
         ItemStack stack = Items.APPLE.getDefaultInstance();
         ItemAccess itemAccess = ItemAccess.forStack(stack);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
+        // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessFluidHandler matches the old FluidHandlerItemStack.
         var fluidHandler = IFluidHandler.of(new ItemAccessFluidHandler(itemAccess, SIMPLE_FLUID_CONTENT.get(), capacity));
 
         if (fluidHandler.getTanks() != 1) {

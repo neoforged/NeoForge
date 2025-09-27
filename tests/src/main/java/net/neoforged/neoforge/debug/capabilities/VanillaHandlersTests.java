@@ -101,6 +101,7 @@ public class VanillaHandlersTests {
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
         var fluidHandler = capCache.getCapability();
         helper.assertNotNull(fluidHandler, "Expected fluid handler");
+        // Note: this uses the legacy wrappers, testing the wrappers and that the new CauldronWrapper matches the old one.
         var wrapper = IFluidHandler.of(fluidHandler);
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 

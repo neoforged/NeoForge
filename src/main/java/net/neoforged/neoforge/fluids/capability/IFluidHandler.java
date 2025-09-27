@@ -12,6 +12,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 /**
  * Implement this interface as a capability which should handle fluids, generally storing them in
@@ -75,6 +76,7 @@ public interface IFluidHandler {
      * @param tank Tank to query.
      * @return FluidStack in a given tank. FluidStack.EMPTY if the tank is empty.
      * @deprecated Use {@link ResourceHandler#getAmountAsInt} and {@link ResourceHandler#getResource} instead.
+     *             Alternatively use the {@link FluidUtil#getStack} helper.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     FluidStack getFluidInTank(int tank);
@@ -84,7 +86,8 @@ public interface IFluidHandler {
      *
      * @param tank Tank to query.
      * @return The maximum fluid amount held by the tank.
-     * @deprecated Use {@link ResourceHandler#getCapacityAsInt} instead.
+     * @deprecated Use {@link ResourceHandler#getCapacityAsInt} instead,
+     *             passing {@link FluidResource#EMPTY} as the resource to retrieve a general tank limit.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int getTankCapacity(int tank);

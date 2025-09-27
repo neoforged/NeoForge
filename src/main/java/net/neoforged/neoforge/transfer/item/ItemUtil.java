@@ -51,7 +51,7 @@ public final class ItemUtil {
     }
 
     /**
-     * Attempts to insert an item stack into the slot of a handler, returning any leftover.
+     * Attempts to insert an item stack into the index of a handler, returning any leftover.
      *
      * @param handler  handler to insert into
      * @param index    index to insert into

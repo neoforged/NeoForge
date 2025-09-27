@@ -41,7 +41,8 @@ public final class FluidUtil {
     }
 
     /**
-     * Returns a new fluid stack with the first fluid contents of the given item stack.
+     * Returns a new fluid stack with the first fluid contents of the given item stack,
+     * ignoring the count of the stack.
      */
     public static FluidStack getFirstStackContained(ItemStack stack) {
         var handler = ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM);
@@ -98,7 +99,7 @@ public final class FluidUtil {
         }
 
         return moveWithSound(handler, handHandler, player, SoundActions.BUCKET_FILL)
-                || moveWithSound(handler, handHandler, player, SoundActions.BUCKET_EMPTY);
+                || moveWithSound(handHandler, handler, player, SoundActions.BUCKET_EMPTY);
     }
 
     private static boolean moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Player player, SoundAction soundAction) {

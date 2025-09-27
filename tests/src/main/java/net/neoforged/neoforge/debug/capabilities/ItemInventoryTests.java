@@ -60,6 +60,7 @@ public class ItemInventoryTests {
         test.onGameTest(helper -> {
             ItemStack stack = BACKPACK.toStack();
             ItemAccess itemAccess = ItemAccess.forStack(stack);
+            // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
             IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
 
             ItemStack storedStick = items.getStackInSlot(STICK_SLOT);

@@ -62,6 +62,7 @@ public class ItemEnergyTests {
         test.onGameTest(helper -> {
             ItemStack stack = BATTERY.toStack();
             ItemAccess itemAccess = ItemAccess.forStack(stack);
+            // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessEnergyHandler matches the old ComponentEnergyStorage.
             IEnergyStorage energy = IEnergyStorage.of(itemAccess.getCapability(Capabilities.Energy.ITEM));
             helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 

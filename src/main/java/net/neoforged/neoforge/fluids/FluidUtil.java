@@ -37,13 +37,19 @@ import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrap
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import org.jetbrains.annotations.Nullable;
 
-// TODO MIGRATION
+/**
+ * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead of {@link IFluidHandler}.
+ *             For available utils, see {@link ResourceHandlerUtil} as well as the new {@link net.neoforged.neoforge.transfer.fluid.FluidUtil}.
+ */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class FluidUtil {
     private FluidUtil() {}
 
@@ -392,6 +398,8 @@ public class FluidUtil {
      * Vanilla buckets will be converted to universal buckets if they are enabled.
      *
      * @deprecated Obtain an {@link ItemAccess}, and find a handler by calling {@link ItemAccess#getCapability} with {@link Capabilities.Fluid#ITEM}.
+     *             To ease migration, this method currently queries a {@link Capabilities.Fluid#ITEM} capability,
+     *             and wraps it in a legacy {@link IFluidHandlerItem adapter}.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static Optional<IFluidHandlerItem> getFluidHandler(ItemStack itemStack) {
