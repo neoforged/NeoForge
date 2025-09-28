@@ -213,7 +213,7 @@ public final class FluidUtil {
      * Honors the amount of fluid contained by the used container.
      * Checks if water-like fluids should vaporize like in the nether.
      *
-     * <p>Modeled after {@link BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)}
+     * <p>Modeled after {@link BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)}.
      *
      * @param resource The fluid resource to place
      * @param player   Player who places the fluid. May be null for blocks like dispensers.
@@ -233,12 +233,11 @@ public final class FluidUtil {
 
         // check that we can place the fluid at the destination
         BlockState destBlockState = level.getBlockState(pos);
-        boolean isDestNonSolid = !destBlockState.isSolid();
         boolean isDestReplaceable = destBlockState.canBeReplaced(context);
         boolean canDestContainFluid = destBlockState.getBlock() instanceof LiquidBlockContainer lbc
                 && lbc.canPlaceLiquid(player, level, pos, destBlockState, resource.getFluid());
-        if (!level.isEmptyBlock(pos) && !isDestNonSolid && !isDestReplaceable && !canDestContainFluid) {
-            return false; // Non-air, solid, unreplacable block. We can't put fluid here.
+        if (!level.isEmptyBlock(pos) && !isDestReplaceable && !canDestContainFluid) {
+            return false; // Non-air unreplaceable block. We can't put fluid here.
         }
 
         if (resource.getFluidType().isVaporizedOnPlacement(level, pos, stack)) {
@@ -250,10 +249,8 @@ public final class FluidUtil {
                 lbc.placeLiquid(level, pos, destBlockState, resource.getFluidType().getStateForPlacement(level, pos, stack));
             } else {
                 // Destroy the existing state on fluid placement
-                if (!level.isClientSide) {
-                    if ((isDestNonSolid || isDestReplaceable) && !destBlockState.liquid()) {
-                        level.destroyBlock(pos, true);
-                    }
+                if (!level.isClientSide && isDestReplaceable && !destBlockState.liquid()) {
+                    level.destroyBlock(pos, true);
                 }
                 var state = resource.getFluidType().getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
                 level.setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
