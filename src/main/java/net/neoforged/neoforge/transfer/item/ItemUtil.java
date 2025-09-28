@@ -33,9 +33,9 @@ public final class ItemUtil {
     /**
      * Attempts to insert an item stack into a handler, leaving distribution to the handler, and returning any leftover.
      *
-     * @param handler  handler to insert into
-     * @param stack    the stack to insert, will not be modified by this function
-     * @param simulate {@code true} to simulate the result of the insert but leave the handler unmodified, {@code false} to modify the handler
+     * @param handler     handler to insert into
+     * @param stack       the stack to insert, will not be modified by this function
+     * @param simulate    {@code true} to simulate the result of the insert but leave the handler unmodified, {@code false} to modify the handler
      * @param transaction The transaction that this operation is part of.
      *                    This method will always use a nested transaction that will be rolled back.
      *                    {@code null} can be passed to conveniently have this method open its own root transaction.
@@ -62,10 +62,10 @@ public final class ItemUtil {
     /**
      * Attempts to insert an item stack into the index of a handler, returning any leftover.
      *
-     * @param handler  handler to insert into
-     * @param index    index to insert into
-     * @param stack    the stack to insert, will not be modified by this function
-     * @param simulate {@code true} to simulate the result of the insert but leave the handler unmodified, {@code false} to modify the handler
+     * @param handler     handler to insert into
+     * @param index       index to insert into
+     * @param stack       the stack to insert, will not be modified by this function
+     * @param simulate    {@code true} to simulate the result of the insert but leave the handler unmodified, {@code false} to modify the handler
      * @param transaction The transaction that this operation is part of.
      *                    This method will always use a nested transaction that will be rolled back.
      *                    {@code null} can be passed to conveniently have this method open its own root transaction.

@@ -67,8 +67,8 @@ public class FluidTemplatesTests {
         if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to be able to fill a bucket of water");
         }
-        if (!stack.has(SIMPLE_FLUID_CONTENT)) {
-            helper.fail("Expected fluid stack component");
+        if (!SimpleFluidContent.copyOf(waterStack).equals(stack.get(SIMPLE_FLUID_CONTENT))) {
+            helper.fail("Expected fluid stack component with one bucket of water");
         }
         if (fluidHandler.getFluidInTank(0).getAmount() != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected a bucket of water");
@@ -81,8 +81,8 @@ public class FluidTemplatesTests {
         if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT)) {
-            helper.fail("Expected no fluid stack component");
+        if (!SimpleFluidContent.EMPTY.equals(stack.get(SIMPLE_FLUID_CONTENT))) {
+            helper.fail("Expected empty fluid stack component");
         }
 
         helper.succeed();

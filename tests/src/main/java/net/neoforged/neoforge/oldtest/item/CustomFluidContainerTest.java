@@ -73,7 +73,7 @@ public class CustomFluidContainerTest {
 
         @Override
         public Component getName(ItemStack itemStack) {
-            var fluidStack = net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(itemStack);
+            var fluidStack = FluidUtil.getFirstStackContained(itemStack);
             String name = "Custom Fluid Container";
             if (fluidStack.isEmpty()) {
                 name = name + " (empty)";

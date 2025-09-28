@@ -46,8 +46,7 @@ public class VanillaInventoryCodeHooks {
                     if (dest.canPlaceItem(j, extractedStack) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && itemResource.matches(destStack))) {
                         if (destStack.isEmpty()) {
                             dest.setItem(j, extractedStack);
-                        }
-                        else {
+                        } else {
                             destStack.grow(1);
                             dest.setItem(j, destStack);
                         }

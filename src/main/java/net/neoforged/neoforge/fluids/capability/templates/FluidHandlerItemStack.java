@@ -7,6 +7,7 @@ package net.neoforged.neoforge.fluids.capability.templates;
 
 import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
@@ -24,6 +25,9 @@ import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
  * fluid containers with different empty and full items (see {@link SwapEmpty},
  *
  * @deprecated Use {@link ItemAccessFluidHandler} instead.
+ *             Note that {@link FluidHandlerItemStack} would remove entirely the data component when emptied,
+ *             whereas {@link ItemAccessFluidHandler} will set the data component to {@link SimpleFluidContent#EMPTY}.
+ *             Make sure to add {@link SimpleFluidContent#EMPTY} to the prototype of your item with {@link Item.Properties#component}.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class FluidHandlerItemStack implements IFluidHandlerItem {
