@@ -34,23 +34,25 @@ public class VanillaInventoryCodeHooks {
         for (int index = 0; index < size; index++) {
             var itemResource = handler.getResource(index);
             try (var tx = Transaction.open(null)) {
-                int extracted = handler.extract(itemResource, 1, tx);
+                int extracted = handler.extract(index, itemResource, 1, tx);
                 if (extracted == 0) {
                     continue;
                 }
 
-                var stack = itemResource.toStack();
-                for (int j = 0; j < dest.getContainerSize(); j++) {
+                var extractedStack = itemResource.toStack();
+                int destSize = dest.getContainerSize();
+                for (int j = 0; j < destSize; j++) {
                     ItemStack destStack = dest.getItem(j);
-                    if (dest.canPlaceItem(j, stack) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && itemResource.matches(destStack))) {
-                        tx.commit();
-                        if (destStack.isEmpty())
-                            dest.setItem(j, stack);
+                    if (dest.canPlaceItem(j, extractedStack) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && itemResource.matches(destStack))) {
+                        if (destStack.isEmpty()) {
+                            dest.setItem(j, extractedStack);
+                        }
                         else {
                             destStack.grow(1);
                             dest.setItem(j, destStack);
                         }
                         dest.setChanged();
+                        tx.commit();
                         return true;
                     }
                 }
@@ -70,7 +72,8 @@ public class VanillaInventoryCodeHooks {
             return false;
         }
         try (var tx = Transaction.open(null)) {
-            for (int i = 0; i < hopper.getContainerSize(); ++i) {
+            int size = hopper.getContainerSize();
+            for (int i = 0; i < size; ++i) {
                 var hopperItem = hopper.getItem(i);
                 if (hopperItem.isEmpty()) {
                     continue;
@@ -83,6 +86,7 @@ public class VanillaInventoryCodeHooks {
                     tx.commit();
                     return true;
                 } else {
+                    // The stack was removed from the hopper but could not be inserted, so add it back
                     hopper.setItem(i, originalSlotContents);
                 }
             }

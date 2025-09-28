@@ -417,7 +417,6 @@ public class FluidUtil {
         if (resourceHandler == null) {
             return Optional.empty();
         }
-        // TODO: not quite there yet: we need to allow either modifying the stack or putting a new item as a "container item". Otherwise this won't work for buckets.
         return Optional.of(new FluidResourceHandlerItemAdapter(resourceHandler, itemAccess));
     }
 

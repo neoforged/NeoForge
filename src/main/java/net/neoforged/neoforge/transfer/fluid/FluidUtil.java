@@ -43,6 +43,9 @@ public final class FluidUtil {
     /**
      * Returns a new fluid stack with the first fluid contents of the given item stack,
      * ignoring the count of the stack.
+     *
+     * <p>The contents from the first non-empty index are returned.
+     * As such the returned contents might not be extractable, and the stack might contain additional contents.
      */
     public static FluidStack getFirstStackContained(ItemStack stack) {
         var handler = ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM);

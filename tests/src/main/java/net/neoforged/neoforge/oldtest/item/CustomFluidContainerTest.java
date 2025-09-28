@@ -25,11 +25,11 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
 
 @Mod(CustomFluidContainerTest.MODID)
@@ -87,15 +87,15 @@ public class CustomFluidContainerTest {
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
             var itemStack = player.getItemInHand(hand);
             FluidActionResult result = null;
-            var fluidStack = net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(itemStack);
+            var fluidStack = FluidUtil.getFirstStackContained(itemStack);
             if (fluidStack.isEmpty()) {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-                result = FluidUtil.tryPickUpFluid(itemStack, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection());
+                result = net.neoforged.neoforge.fluids.FluidUtil.tryPickUpFluid(itemStack, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection());
             } else {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
                 //try to place fluid in hit block (waterlogging, fill tank, ...). When no success try the block on the hit side.
                 for (BlockPos pos : Arrays.asList(blockHitResult.getBlockPos(), blockHitResult.getBlockPos().relative(blockHitResult.getDirection()))) {
-                    result = FluidUtil.tryPlaceFluid(player, level, hand, pos, itemStack, fluidStack);
+                    result = net.neoforged.neoforge.fluids.FluidUtil.tryPlaceFluid(player, level, hand, pos, itemStack, fluidStack);
                     if (result.isSuccess()) {
                         break;
                     }

@@ -32,7 +32,7 @@ class ItemResourceHandlerAdapter implements IItemHandler {
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        return ItemUtil.insertItemReturnRemaining(handler, slot, stack, simulate);
+        return ItemUtil.insertItemReturnRemaining(handler, slot, stack, simulate, null);
     }
 
     @Override
@@ -51,7 +51,7 @@ class ItemResourceHandlerAdapter implements IItemHandler {
             if (!simulate) {
                 tx.commit();
             }
-            return extracted == 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+            return resource.toStack(extracted);
         }
     }
 
