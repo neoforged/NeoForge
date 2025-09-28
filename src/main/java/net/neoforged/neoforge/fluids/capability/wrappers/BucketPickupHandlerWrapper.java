@@ -17,11 +17,12 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * @deprecated Deprecated without equivalent. Please open an issue on GitHub if you have a use for an equivalent of this class.
+ * @deprecated Use {@link FluidUtil#tryPickupFluid} instead.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class BucketPickupHandlerWrapper implements IFluidHandler {

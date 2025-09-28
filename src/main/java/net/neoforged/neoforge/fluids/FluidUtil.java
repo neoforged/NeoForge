@@ -463,7 +463,7 @@ public class FluidUtil {
      * @param side           The side of the fluid that is being drained.
      * @return a {@link FluidActionResult} holding the result and the resulting container.
      *
-     * @deprecated An equivalent method is work in progress.
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPickupFluid} instead.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static FluidActionResult tryPickUpFluid(ItemStack emptyContainer, @Nullable Player playerIn, Level level, BlockPos pos, Direction side) {
@@ -498,7 +498,7 @@ public class FluidUtil {
      * @param resource  The fluidStack to place
      * @return the container's ItemStack with the remaining amount of fluid if the placement was successful, null otherwise
      *
-     * @deprecated An equivalent method is work in progress.
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static FluidActionResult tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
@@ -526,7 +526,7 @@ public class FluidUtil {
      * @param resource    The fluidStack to place.
      * @return true if the placement was successful, false otherwise
      *
-     * @deprecated An equivalent method is work in progress.
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static boolean tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, IFluidHandler fluidSource, FluidStack resource) {
