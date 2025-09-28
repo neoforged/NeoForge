@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import net.minecraft.FileUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.CompositePackResources;
@@ -72,28 +73,27 @@ public class JarContentsPackResources extends AbstractPackResources {
         Set<String> namespaces = Sets.newHashSet();
         String prefix = this.addPrefix(packType.getDirectory() + "/");
 
-        contents.visitContent((relativePath, resource) -> {
-            String namespace = extractNamespace(prefix, relativePath);
-            if (!namespace.isEmpty()) {
-                if (ResourceLocation.isValidNamespace(namespace)) {
-                    namespaces.add(namespace);
-                } else {
-                    LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", namespace, contents);
-                }
+        contents.visitContent(prefix, (relativePath, resource) -> {
+            if (!relativePath.startsWith(prefix)) {
+                throw new IllegalStateException("Path received from visitContent doesn't start with prefix '" + prefix + "': " + relativePath);
+            }
+
+            // Extract the namespace
+            int i = prefix.length();
+            int j = relativePath.indexOf('/', i);
+            if (j == -1) {
+                return; // Ignore files that are directly beneath the prefix, only directories can be namespaces
+            }
+            var namespace = relativePath.substring(i, j);
+
+            if (ResourceLocation.isValidNamespace(namespace)) {
+                namespaces.add(namespace);
+            } else {
+                LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", namespace, contents);
             }
         });
 
         return namespaces;
-    }
-
-    private static String extractNamespace(String prefix, String relativePath) {
-        if (!relativePath.startsWith(prefix)) {
-            return "";
-        } else {
-            int i = prefix.length();
-            int j = relativePath.indexOf('/', i);
-            return j == -1 ? relativePath.substring(i) : relativePath.substring(i, j);
-        }
     }
 
     @Override
@@ -127,7 +127,11 @@ public class JarContentsPackResources extends AbstractPackResources {
 
         public JarContentsResourcesSupplier(JarContents contents, String prefix) {
             this.contents = contents;
-            this.prefix = prefix;
+            // Prefix mustn't end with slashes
+            while (prefix.endsWith("/")) {
+                prefix = prefix.substring(0, prefix.length() - 1);
+            }
+            this.prefix = FileUtil.normalizeResourcePath(prefix);
         }
 
         @Override
