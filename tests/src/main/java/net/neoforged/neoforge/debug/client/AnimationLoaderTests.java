@@ -113,10 +113,8 @@ public class AnimationLoaderTests {
         @Override
         public ItemModel bake(ItemModel.BakingContext context) {
             AnimationLoader.PendingAnimations pendingAnimations = context.pendingAnimations();
-            if (pendingAnimations == null) {
-                this.test.fail("PendingAnimations not provided by ItemModel.BakingContext");
-            } else if (pendingAnimations.get(TestEntityModel.ANIM_LOC) == null) {
-                this.test.fail("Test animation present in PendingAnimations");
+            if (pendingAnimations.get(TestEntityModel.ANIM_LOC) == null) {
+                this.test.fail("Test animation not present in PendingAnimations");
             } else {
                 this.test.pass();
             }

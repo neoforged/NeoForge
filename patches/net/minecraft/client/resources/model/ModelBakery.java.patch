@@ -1,11 +1,10 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -57,7 +_,14 @@
+@@ -57,7 +_,13 @@
      private final Map<ResourceLocation, ClientItem> clientInfos;
      final Map<ResourceLocation, ResolvedModel> resolvedModels;
      final ResolvedModel missingModel;
 +    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
-+    @org.jetbrains.annotations.Nullable
 +    private final net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations;
  
 +    /**
@@ -19,7 +18,7 @@
          Map<ResourceLocation, ResolvedModel> p_388404_,
          ResolvedModel p_404940_
      ) {
-+        this(p_388903_, p_434703_, p_440085_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, null);
++        this(p_388903_, p_434703_, p_440085_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +    }
 +
 +    public ModelBakery(
@@ -31,7 +30,7 @@
 +        Map<ResourceLocation, ResolvedModel> p_388404_,
 +        ResolvedModel p_404940_,
 +        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels,
-+        @org.jetbrains.annotations.Nullable net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
 +    ) {
          this.entityModelSet = p_388903_;
          this.materials = p_434703_;

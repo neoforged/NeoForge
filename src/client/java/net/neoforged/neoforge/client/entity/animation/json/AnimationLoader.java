@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import net.minecraft.Util;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
@@ -98,6 +99,8 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
     }
 
     public static final class PendingAnimations {
+        public static final PendingAnimations EMPTY = Util.make(new PendingAnimations(), pending -> pending.future.complete(Map.of()));
+
         private final CompletableFuture<Map<ResourceLocation, AnimationDefinition>> future;
 
         private PendingAnimations() {
