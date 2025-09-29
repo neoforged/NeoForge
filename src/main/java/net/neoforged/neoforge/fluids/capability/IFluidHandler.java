@@ -9,7 +9,6 @@ import java.util.Objects;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
@@ -23,7 +22,7 @@ import net.neoforged.neoforge.transfer.fluid.FluidUtil;
  * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead. Code that is written against {@link IFluidHandler} but receives
  *             a {@code ResourceHandler<FluidResource>} can temporarily use {@link IFluidHandler#of} to ease migration.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public interface IFluidHandler {
     /**
      * Creates a wrapper around a {@link ResourceHandler}, to present it as a legacy {@link IFluidHandler}.
@@ -57,7 +56,7 @@ public interface IFluidHandler {
      * @return The number of tanks available
      * @deprecated Use {@link ResourceHandler#size()} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getTanks();
 
     /**
@@ -78,7 +77,7 @@ public interface IFluidHandler {
      * @deprecated Use {@link ResourceHandler#getAmountAsInt} and {@link ResourceHandler#getResource} instead.
      *             Alternatively use the {@link FluidUtil#getStack} helper.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     FluidStack getFluidInTank(int tank);
 
     /**
@@ -89,7 +88,7 @@ public interface IFluidHandler {
      * @deprecated Use {@link ResourceHandler#getCapacityAsInt} instead,
      *             passing {@link FluidResource#EMPTY} as the resource to retrieve a general tank limit.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getTankCapacity(int tank);
 
     /**
@@ -103,7 +102,7 @@ public interface IFluidHandler {
      * @deprecated Use {@link ResourceHandler#isValid} instead, however note that it doesn't make the same strong guarantees
      *             regarding how long a resource is valid. In other words: the result of {@code isValid} might change.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     boolean isFluidValid(int tank, FluidStack stack);
 
     /**
@@ -114,7 +113,7 @@ public interface IFluidHandler {
      * @return Amount of resource that was (or would have been, if simulated) filled.
      * @deprecated Use {@link ResourceHandler#insert} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int fill(FluidStack resource, FluidAction action);
 
     /**
@@ -126,7 +125,7 @@ public interface IFluidHandler {
      *         simulated) drained.
      * @deprecated Use {@link ResourceHandler#extract} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     FluidStack drain(FluidStack resource, FluidAction action);
 
     /**
@@ -140,6 +139,6 @@ public interface IFluidHandler {
      *         simulated) drained.
      * @deprecated Use {@link ResourceHandlerUtil#extractFirst} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     FluidStack drain(int maxDrain, FluidAction action);
 }

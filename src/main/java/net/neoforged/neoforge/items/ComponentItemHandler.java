@@ -14,7 +14,6 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 
 /**
@@ -31,7 +30,7 @@ import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
  * @implNote All functions in this class should attempt to minimize component read/writes to avoid unnecessary churn, noting that the component can never be cached.
  * @deprecated Use {@link ItemAccessItemHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class ComponentItemHandler implements IItemHandlerModifiable {
     protected final MutableDataComponentHolder parent;
     protected final DataComponentType<ItemContainerContents> component;

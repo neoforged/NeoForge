@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 
 /**
@@ -17,7 +16,7 @@ import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
  *
  * @deprecated Use {@link PlayerInventoryWrapper} instead, in particular {@link PlayerInventoryWrapper#getMainSlots()} for the main slots only.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class PlayerMainInvWrapper extends RangedWrapper {
     private final Inventory inventoryPlayer;
 

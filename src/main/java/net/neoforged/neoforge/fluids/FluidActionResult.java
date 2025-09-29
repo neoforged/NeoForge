@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.fluids;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 
 /**
@@ -21,7 +20,7 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
  * @deprecated The new {@link ItemAccess}-backed handler implementations will directly mutate the underlying item access,
  *             thus there is no need to represent the resulting item stack anymore.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class FluidActionResult {
     public static final FluidActionResult FAILURE = new FluidActionResult(false, ItemStack.EMPTY);
 

@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 
@@ -19,7 +18,7 @@ import net.neoforged.neoforge.transfer.item.ItemUtil;
  * @deprecated Use {@link ResourceHandler} with an {@link ItemResource} instead. Code that is written against {@link IItemHandler} but receives
  *             a {@code ResourceHandler<ItemResource>} can temporarily use {@link IItemHandler#of} to ease migration.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public interface IItemHandler {
     /**
      * Creates a wrapper around an item {@link ResourceHandler}, to present it as a legacy {@link IItemHandler}.
@@ -41,7 +40,7 @@ public interface IItemHandler {
      * @return The number of slots available
      * @deprecated Use {@link ResourceHandler#size()} instead.
      **/
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getSlots();
 
     /**
@@ -65,7 +64,7 @@ public interface IItemHandler {
      * @deprecated Use {@link ResourceHandler#getResource} and {@link ResourceHandler#getAmountAsInt} instead.
      *             Alternatively use the {@link ItemUtil#getStack} helper.
      **/
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     ItemStack getStackInSlot(int slot);
 
     /**
@@ -86,7 +85,7 @@ public interface IItemHandler {
      *             unlike this method which returns the leftover (i.e. how much was <strong>not</strong> inserted).
      *             Alternatively use the {@link ItemUtil#insertItemReturnRemaining} helper.
      **/
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
     /**
@@ -103,7 +102,7 @@ public interface IItemHandler {
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
      * @deprecated Use {@link ResourceHandler#extract} instead.
      **/
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     ItemStack extractItem(int slot, int amount, boolean simulate);
 
     /**
@@ -114,7 +113,7 @@ public interface IItemHandler {
      * @deprecated Use {@link ResourceHandler#getCapacityAsInt} instead,
      *             passing {@link ItemResource#EMPTY} as the resource to retrieve a general slot limit.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getSlotLimit(int slot);
 
     /**
@@ -139,6 +138,6 @@ public interface IItemHandler {
      * @deprecated Use {@link ResourceHandler#isValid} instead, however note that it doesn't make the same strong guarantees
      *             regarding how long a resource is valid. In other words: the result of {@code isValid} might change.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     boolean isItemValid(int slot, ItemStack stack);
 }

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.energy;
 
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.energy.EmptyEnergyHandler;
 
 /**
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.transfer.energy.EmptyEnergyHandler;
  *
  * @deprecated Use {@link EmptyEnergyHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class EmptyEnergyStorage implements IEnergyStorage {
     public static final EmptyEnergyStorage INSTANCE = new EmptyEnergyStorage();
 

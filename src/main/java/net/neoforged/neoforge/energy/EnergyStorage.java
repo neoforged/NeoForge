@@ -9,7 +9,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
 /**
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
  *
  * @deprecated Use {@link SimpleEnergyHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class EnergyStorage implements IEnergyStorage, ValueIOSerializable {
     protected int energy;
     protected int capacity;

@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
 
 /**
@@ -24,7 +23,7 @@ import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
  *
  * @deprecated Use {@link ItemAccessEnergyHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class ComponentEnergyStorage implements IEnergyStorage {
     protected final MutableDataComponentHolder parent;
     protected final DataComponentType<Integer> energyComponent;

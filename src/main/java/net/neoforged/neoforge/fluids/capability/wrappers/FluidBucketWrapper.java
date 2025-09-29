@@ -15,7 +15,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.fluid.BucketResourceHandler;
 
 /**
@@ -24,7 +23,7 @@ import net.neoforged.neoforge.transfer.fluid.BucketResourceHandler;
  *
  * @deprecated Use {@link BucketResourceHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class FluidBucketWrapper implements IFluidHandlerItem {
     protected ItemStack container;
 

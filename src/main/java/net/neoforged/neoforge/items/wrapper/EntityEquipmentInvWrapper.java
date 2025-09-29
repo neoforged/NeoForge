@@ -14,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.item.LivingEntityEquipmentWrapper;
 
 /**
@@ -23,7 +22,7 @@ import net.neoforged.neoforge.transfer.item.LivingEntityEquipmentWrapper;
  *
  * @deprecated Use {@link LivingEntityEquipmentWrapper} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiable {
     /**
      * The entity.

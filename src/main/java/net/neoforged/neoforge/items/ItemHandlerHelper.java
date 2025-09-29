@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * @deprecated Use {@link ResourceHandler} with an {@link ItemResource} instead of {@link IItemHandler}.
  *             For available utils, see {@link ResourceHandlerUtil} as well as {@link ItemUtil}.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class ItemHandlerHelper {
     /**
      * @deprecated Use {@link ResourceHandler#insert(Resource, int, TransactionContext)} instead.
@@ -35,7 +34,7 @@ public class ItemHandlerHelper {
      *             unlike this method which returns the leftover (i.e. how much was <strong>not</strong> inserted).
      *             Alternatively use the {@link ItemUtil#insertItemReturnRemaining} helper.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static ItemStack insertItem(IItemHandler dest, ItemStack stack, boolean simulate) {
         if (dest == null || stack.isEmpty())
             return stack;
@@ -59,7 +58,7 @@ public class ItemHandlerHelper {
      *             Note that {@code ResourceHandlerUtil.insertStacking} returns <strong>how much was inserted</strong>,
      *             unlike this method which returns the leftover (i.e. how much was <strong>not</strong> inserted).
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static ItemStack insertItemStacked(IItemHandler inventory, ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
@@ -100,7 +99,7 @@ public class ItemHandlerHelper {
     }
 
     /** giveItemToPlayer without preferred slot */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack) {
         giveItemToPlayer(player, stack, -1);
     }
@@ -113,7 +112,7 @@ public class ItemHandlerHelper {
      * @param stack  The itemstack to insert
      * @deprecated Use {@link Inventory#placeItemBackInInventory} or {@link Inventory#add} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
         if (stack.isEmpty()) return;
 
@@ -155,7 +154,7 @@ public class ItemHandlerHelper {
      * @return A redstone value in the range [0,15] representing how "full" this inventory is.
      * @deprecated Use {@link ResourceHandlerUtil#getRedstoneSignalFromResourceHandler} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {
         if (inv == null) {
             return 0;

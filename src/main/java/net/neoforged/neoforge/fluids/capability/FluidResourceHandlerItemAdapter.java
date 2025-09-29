@@ -7,11 +7,10 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class FluidResourceHandlerItemAdapter extends FluidResourceHandlerAdapter implements IFluidHandlerItem {
     private final ItemAccess itemAccess;
 

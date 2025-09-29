@@ -8,12 +8,11 @@ package net.neoforged.neoforge.fluids.capability.templates;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.EmptyResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * @deprecated Use {@link EmptyResourceHandler} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class EmptyFluidHandler implements IFluidHandler {
     public static final EmptyFluidHandler INSTANCE = new EmptyFluidHandler();
 

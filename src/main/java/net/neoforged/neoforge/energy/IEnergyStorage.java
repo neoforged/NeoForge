@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.energy;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 /**
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
  * @deprecated Use {@link EnergyHandler} instead. Code that is written against {@link IEnergyStorage} but receives
  *             an {@link EnergyHandler} can temporarily use {@link IEnergyStorage#of} to ease migration.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public interface IEnergyStorage {
     /**
      * Creates a wrapper around a {@link EnergyHandler}, to present it as a legacy {@link IEnergyStorage}.
@@ -44,7 +43,7 @@ public interface IEnergyStorage {
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
      * @deprecated Use {@link EnergyHandler#insert} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int receiveEnergy(int toReceive, boolean simulate);
 
     /**
@@ -55,7 +54,7 @@ public interface IEnergyStorage {
      * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
      * @deprecated Use {@link EnergyHandler#extract} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int extractEnergy(int toExtract, boolean simulate);
 
     /**
@@ -63,7 +62,7 @@ public interface IEnergyStorage {
      * 
      * @deprecated Use either {@link EnergyHandler#getAmountAsLong()} or {@link EnergyHandler#getAmountAsInt()} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getEnergyStored();
 
     /**
@@ -71,7 +70,7 @@ public interface IEnergyStorage {
      * 
      * @deprecated Use either {@link EnergyHandler#getCapacityAsLong()} or {@link EnergyHandler#getCapacityAsInt()} instead.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     int getMaxEnergyStored();
 
     /**
@@ -81,7 +80,7 @@ public interface IEnergyStorage {
      * @deprecated There is no direct equivalent for this method, since each energy handler is expected to perform this check on extraction already.
      *             Please open an issue on GitHub if you have a use for an equivalent of this method.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     boolean canExtract();
 
     /**
@@ -91,6 +90,6 @@ public interface IEnergyStorage {
      * @deprecated There is no direct equivalent for this method, since each energy handler is expected to perform this check on insertion already.
      *             Please open an issue on GitHub if you have a use for an equivalent of this method.
      */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    @Deprecated(since = "1.21.9", forRemoval = true)
     boolean canReceive();
 }

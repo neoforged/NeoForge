@@ -7,7 +7,6 @@ package net.neoforged.neoforge.fluids;
 
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 /**
@@ -17,7 +16,7 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  *
  * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead.
  */
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+@Deprecated(since = "1.21.9", forRemoval = true)
 public interface IFluidTank {
     /**
      * @return FluidStack representing the fluid in the tank, null if the tank is empty.
