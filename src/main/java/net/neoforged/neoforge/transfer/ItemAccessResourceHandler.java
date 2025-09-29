@@ -108,7 +108,11 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
     @Override
     public long getCapacityAsLong(int index, T resource) {
         Objects.checkIndex(index, size());
-        return resource.isEmpty() || isValid(index, resource) ? getCapacity(index, resource) : 0;
+        if (resource.isEmpty() || isValid(index, resource)) {
+            // Cast as the product of two ints might overflow an int, but fits into a long
+            return (long) itemAccess.getAmount() * getCapacity(index, resource);
+        }
+        return 0;
     }
 
     // TODO: support "all or nothing" resource handlers better by optionally changing how insert and extract round

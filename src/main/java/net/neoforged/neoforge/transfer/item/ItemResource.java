@@ -81,8 +81,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
     public static ItemResource of(ItemLike item) {
         Item value = item.asItem();
         if (value == Items.AIR) return EMPTY;
-        // TODO: cache the resource with an empty patch for each item
-        return new ItemResource(new ItemStack(value));
+        return value.computeDefaultResource(i -> new ItemResource(new ItemStack(i)));
     }
 
     /**

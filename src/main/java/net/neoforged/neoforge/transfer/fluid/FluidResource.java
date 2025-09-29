@@ -80,8 +80,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
      */
     public static FluidResource of(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
-        // TODO: cache the resource with an empty patch for each fluid
-        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
+        return fluid.computeDefaultResource(f -> new FluidResource(new FluidStack(f, FluidType.BUCKET_VOLUME)));
     }
 
     /**
