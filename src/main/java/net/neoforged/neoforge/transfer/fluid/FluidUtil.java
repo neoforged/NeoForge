@@ -29,7 +29,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -99,7 +98,7 @@ public final class FluidUtil {
         Preconditions.checkNotNull(pos);
 
         var fluidHandler = level.getCapability(Capabilities.Fluid.BLOCK, pos, side);
-        return fluidHandler != null && interactWithFluidHandler(player, hand, fluidHandler);
+        return fluidHandler != null && interactWithFluidHandler(player, hand, pos, fluidHandler);
     }
 
     /**
@@ -110,34 +109,49 @@ public final class FluidUtil {
      *
      * @param player  The player doing the interaction between the item and fluid handler.
      * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
+     * @param pos     The position at which to send game events and play sounds. If {@code null}, the player's position will be used.
      * @param handler The fluid handler.
      * @return true if the interaction succeeded, false otherwise.
      */
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, ResourceHandler<FluidResource> handler) {
+    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, @Nullable BlockPos pos, ResourceHandler<FluidResource> handler) {
         var itemAccess = ItemAccess.forPlayerInteraction(player, hand).oneByOne();
         var handHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
         if (handHandler == null) {
             return false;
         }
 
-        return !moveWithSound(handler, handHandler, player, SoundActions.BUCKET_FILL).isEmpty()
-                || !moveWithSound(handHandler, handler, player, SoundActions.BUCKET_EMPTY).isEmpty();
+        return !moveWithSound(handler, handHandler, player.level(), pos, player, true).isEmpty()
+                || !moveWithSound(handHandler, handler, player.level(), pos, player, false).isEmpty();
     }
 
-    private static FluidStack moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, @Nullable Player player, SoundAction soundAction) {
+    private static FluidStack moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Level level, @Nullable BlockPos pos, @Nullable Player player, boolean pickup) {
+        if (player == null && pos == null) {
+            throw new IllegalArgumentException("Either player or pos must be provided.");
+        }
+
         var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, null);
         if (moved == null) {
             return FluidStack.EMPTY;
         }
 
         var stack = moved.resource().toStack(moved.amount());
-        if (player != null) {
-            SoundEvent soundEvent = stack.getFluidType().getSound(stack, soundAction);
-            if (soundEvent != null) {
-                player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-            }
-        }
+        playSoundAndGameEvent(stack, level, pos, player, pickup);
         return stack;
+    }
+
+    private static void playSoundAndGameEvent(FluidStack stack, Level level, @Nullable BlockPos blockPos, @Nullable Player player, boolean pickup) {
+        if (player == null && blockPos == null) {
+            throw new IllegalArgumentException("Either player or blockPos must be provided.");
+        }
+
+        // Prioritize block position, use player position as a fallback
+        Vec3 position = blockPos != null ? Vec3.atCenterOf(blockPos) : new Vec3(player.getX(), player.getY() + 0.5, player.getZ());
+
+        SoundEvent soundEvent = stack.getFluidType().getSound(stack, pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
+        if (soundEvent != null) {
+            level.playSound(null, position.x, position.y, position.z, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        level.gameEvent(player, pickup ? GameEvent.FLUID_PICKUP : GameEvent.FLUID_PLACE, position);
     }
 
     /**
@@ -195,13 +209,7 @@ public final class FluidUtil {
                     return FluidStack.EMPTY;
                 }
                 tx.commit();
-                if (player != null) {
-                    SoundEvent soundEvent = extracted.getFluidType().getSound(extracted, SoundActions.BUCKET_FILL);
-                    if (soundEvent != null) {
-                        level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    }
-                }
-                level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+                playSoundAndGameEvent(extracted, level, pos, player, true);
                 return extracted;
             }
         } else {
@@ -209,7 +217,7 @@ public final class FluidUtil {
             if (fluidHandler == null) {
                 return FluidStack.EMPTY;
             }
-            return moveWithSound(fluidHandler, destination, player, SoundActions.BUCKET_FILL);
+            return moveWithSound(fluidHandler, destination, level, pos, player, true);
         }
     }
 
@@ -307,13 +315,7 @@ public final class FluidUtil {
                 var state = fluidType.getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
                 level.setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
             }
-            if (player != null) {
-                SoundEvent soundEvent = fluidType.getSound(stack, SoundActions.BUCKET_EMPTY);
-                if (soundEvent != null) {
-                    level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-                }
-            }
-            level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
+            playSoundAndGameEvent(stack, level, pos, player, false);
             return true;
         }
     }
