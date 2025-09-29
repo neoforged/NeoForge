@@ -23,12 +23,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
 
@@ -85,24 +85,22 @@ public class CustomFluidContainerTest {
 
         @Override
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
-            var itemStack = player.getItemInHand(hand);
-            FluidActionResult result = null;
-            var fluidStack = FluidUtil.getFirstStackContained(itemStack);
-            if (fluidStack.isEmpty()) {
-                var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-                result = net.neoforged.neoforge.fluids.FluidUtil.tryPickUpFluid(itemStack, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection());
-            } else {
-                var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+            var handler = ItemAccess.forPlayerInteraction(player, hand).oneByOne().getCapability(Capabilities.Fluid.ITEM);
+
+            var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
+            boolean success = !FluidUtil.tryPickupFluid(handler, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection()).isEmpty();
+
+            if (!success) {
+                blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
                 //try to place fluid in hit block (waterlogging, fill tank, ...). When no success try the block on the hit side.
                 for (BlockPos pos : Arrays.asList(blockHitResult.getBlockPos(), blockHitResult.getBlockPos().relative(blockHitResult.getDirection()))) {
-                    result = net.neoforged.neoforge.fluids.FluidUtil.tryPlaceFluid(player, level, hand, pos, itemStack, fluidStack);
-                    if (result.isSuccess()) {
-                        break;
-                    }
+                    success = !FluidUtil.tryPlaceFluid(handler, player, level, hand, pos).isEmpty();
+                    if (success) break;
                 }
             }
-            if (result != null && result.isSuccess()) {
-                return InteractionResult.SUCCESS.heldItemTransformedTo(result.getResult());
+
+            if (success) {
+                return InteractionResult.SUCCESS;
             }
             return super.use(level, player, hand);
         }

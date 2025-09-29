@@ -71,7 +71,7 @@ public final class FluidUtil {
         }
         int size = handler.size();
         for (int index = 0; index < size; ++index) {
-            var fluidStack = getStack(handler, size);
+            var fluidStack = getStack(handler, index);
             if (!fluidStack.isEmpty()) {
                 return fluidStack;
             }
@@ -207,9 +207,53 @@ public final class FluidUtil {
     }
 
     /**
+     * Tries to extract {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource from a resource handler
+     * and place it into the level as a block.
+     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, InteractionHand, BlockPos)},
+     * this function will modify the source handler directly and return what was placed.
+     *
+     * <p>Makes a fluid emptying or vaporization sound when successful.
+     * Honors the amount of fluid contained by the used container.
+     * Checks if water-like fluids should vaporize like in the nether.
+     *
+     * @param source The source for the placed fluid. May be null.
+     * @param player Player who places the fluid. May be null for blocks like dispensers.
+     * @param level  Level to place the fluid in
+     * @param hand   Hand of the player to place the fluid with
+     * @param pos    The position in the level to place the fluid block
+     * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
+     */
+    public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
+        if (source == null) {
+            return FluidStack.EMPTY;
+        }
+        int size = source.size();
+        for (int index = 0; index < size; ++index) {
+            var resource = source.getResource(index);
+            if (resource.isEmpty()) {
+                continue;
+            }
+            try (var tx = Transaction.open(null)) {
+                int amount = source.extract(index, resource, FluidType.BUCKET_VOLUME, tx);
+                if (amount != FluidType.BUCKET_VOLUME) {
+                    continue;
+                }
+                // Managed to extract 1 bucket, try to place it!
+                if (tryPlaceFluid(resource, player, level, hand, pos)) {
+                    tx.commit();
+                    return resource.toStack(FluidType.BUCKET_VOLUME);
+                }
+            }
+        }
+        return FluidStack.EMPTY;
+    }
+
+    /**
      * Tries to place {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource into the level as a block.
      * Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
-     * Makes a fluid emptying or vaporization sound when successful.
+     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, InteractionHand, BlockPos)} to modify a source handler directly.
+     *
+     * <p>Makes a fluid emptying or vaporization sound when successful.
      * Honors the amount of fluid contained by the used container.
      * Checks if water-like fluids should vaporize like in the nether.
      *
@@ -261,7 +305,7 @@ public final class FluidUtil {
                     level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
             }
+            return true;
         }
-        return false;
     }
 }

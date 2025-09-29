@@ -13,14 +13,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
@@ -33,8 +29,6 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     }
 
     private DispenseFluidContainer() {}
-
-    private final DefaultDispenseItemBehavior dispenseBehavior = new DefaultDispenseItemBehavior();
 
     @Override
     public ItemStack execute(BlockSource source, ItemStack stack) {
@@ -49,8 +43,12 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
             return super.execute(source, stack);
         }
 
-        boolean didSomething = tryFillContainer(source, resourceHandler) || tryDumpContainer(source, resourceHandler);
-        if (didSomething) {
+        Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos targetPos = source.pos().relative(dispenserFacing);
+
+        // First try to pick up fluid in front of the dispenser, then try to drain a filled container and place the fluid in front of the dispenser
+        if (!FluidUtil.tryPickupFluid(resourceHandler, null, source.level(), targetPos, dispenserFacing.getOpposite()).isEmpty()
+                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), InteractionHand.MAIN_HAND, targetPos).isEmpty()) {
             var stack0 = ItemUtil.getStack(containingHandler, 0);
             var stack1 = ItemUtil.getStack(containingHandler, 1);
 
@@ -59,35 +57,6 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
             return this.consumeWithRemainder(source, stack, stack1);
         } else {
             return super.execute(source, stack);
-        }
-    }
-
-    /**
-     * Tries to pick up fluid in front of the dispenser.
-     */
-    private boolean tryFillContainer(BlockSource source, ResourceHandler<FluidResource> handler) {
-        Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
-        BlockPos sourcePos = source.pos().relative(dispenserFacing);
-        return !FluidUtil.tryPickupFluid(handler, null, source.level(), sourcePos, dispenserFacing.getOpposite()).isEmpty();
-    }
-
-    /**
-     * Tries to drain a filled container and place the fluid in front of the dispenser.
-     */
-    private boolean tryDumpContainer(BlockSource source, ResourceHandler<FluidResource> handler) {
-        Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
-        BlockPos destinationPos = source.pos().relative(dispenserFacing);
-
-        try (var tx = Transaction.open(null)) {
-            var extracted = ResourceHandlerUtil.extractFirst(handler, fr -> true, FluidType.BUCKET_VOLUME, tx);
-            if (extracted == null || extracted.amount() != FluidType.BUCKET_VOLUME) {
-                return false;
-            }
-            if (FluidUtil.tryPlaceFluid(extracted.resource(), null, source.level(), InteractionHand.MAIN_HAND, destinationPos)) {
-                tx.commit();
-                return true;
-            }
-            return false;
         }
     }
 }
