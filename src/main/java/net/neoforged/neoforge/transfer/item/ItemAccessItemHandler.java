@@ -28,7 +28,7 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
     protected final Item validItem;
     protected final DataComponentType<ItemContainerContents> component;
 
-    protected ItemAccessItemHandler(ItemAccess itemAccess, DataComponentType<ItemContainerContents> component, int size) {
+    public ItemAccessItemHandler(ItemAccess itemAccess, DataComponentType<ItemContainerContents> component, int size) {
         super(itemAccess, size);
         // Store the current item, such that if the item changes later we don't return any stored content from it.
         this.validItem = itemAccess.getResource().getItem();

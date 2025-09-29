@@ -14,10 +14,14 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * Wrapper around any block, only accounts for fluid placement, otherwise the block acts a void.
+ *
+ * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
  */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class BlockWrapper extends VoidFluidHandler {
     protected final BlockState state;
     protected final Level world;
@@ -42,6 +46,7 @@ public class BlockWrapper extends VoidFluidHandler {
         return FluidType.BUCKET_VOLUME;
     }
 
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static class LiquidContainerBlockWrapper extends VoidFluidHandler {
         protected final LiquidBlockContainer liquidContainer;
         protected final Level world;

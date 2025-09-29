@@ -8,11 +8,17 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
+import net.neoforged.neoforge.world.inventory.StackCopySlot;
 
 /**
  * Slot class that can be used with immutable {@link IItemHandler}s
  * like {@link ComponentItemHandler}.
+ *
+ * @deprecated Use {@link ResourceHandlerSlot} instead.
  */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class ItemHandlerCopySlot extends StackCopySlot {
     private final SlotItemHandler slotItemHandler;
 
