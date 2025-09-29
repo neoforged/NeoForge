@@ -12,21 +12,19 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A resource handler that destroys any resources inserted into it.
+ * A {@link ResourceHandler} that allows insertion and extraction of an unlimited amount of a specified resource.
  *
  * @param <T> The type of resource that this handler can accept.
  */
-public class VoidingResourceHandler<T extends IResource> implements ResourceHandler<T> {
-    protected final T emptyResource;
+public class InfiniteResourceHandler<T extends IResource> implements ResourceHandler<T> {
+    protected final T infiniteResource;
 
     /**
-     * @param emptyResource The resource to return when the contents of this handler are queried.
+     * @param infiniteResource The resource to be treated as infinite.
      */
-    public VoidingResourceHandler(T emptyResource) {
-        if (!emptyResource.isEmpty()) {
-            throw new IllegalArgumentException("Resource is not empty: " + emptyResource);
-        }
-        this.emptyResource = emptyResource;
+    public InfiniteResourceHandler(T infiniteResource) {
+        TransferPreconditions.checkNonEmpty(infiniteResource);
+        this.infiniteResource = infiniteResource;
     }
 
     @Override
@@ -38,27 +36,27 @@ public class VoidingResourceHandler<T extends IResource> implements ResourceHand
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-        // Always accept the full amount
-        return amount;
+        // Accept insertion of the infinite resource only
+        return resource.equals(infiniteResource) ? amount : 0;
     }
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-        return 0;
+        return resource.equals(infiniteResource) ? amount : 0;
     }
 
     @Override
     public T getResource(int index) {
         Objects.checkIndex(index, size());
-        return emptyResource;
+        return infiniteResource;
     }
 
     @Override
     public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
-        return 0;
+        return Long.MAX_VALUE;
     }
 
     @Override
@@ -70,6 +68,6 @@ public class VoidingResourceHandler<T extends IResource> implements ResourceHand
     @Override
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
-        return true;
+        return resource.equals(infiniteResource);
     }
 }

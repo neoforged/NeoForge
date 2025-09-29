@@ -302,7 +302,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             return this != NONE;
         }
 
-        boolean isOpen() {
+        public boolean isOpen() {
             return this == OPEN;
         }
     }

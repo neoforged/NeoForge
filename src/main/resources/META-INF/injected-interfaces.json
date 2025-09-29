@@ -134,6 +134,9 @@
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
   ],
+  "net/minecraft/world/Container": [
+    "net/neoforged/neoforge/common/extensions/ContainerExtension"
+  ],
   "net/minecraft/world/MenuProvider": [
     "net/neoforged/neoforge/common/extensions/IMenuProviderExtension"
   ],
