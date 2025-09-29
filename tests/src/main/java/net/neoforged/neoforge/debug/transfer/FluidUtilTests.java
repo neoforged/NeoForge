@@ -136,7 +136,7 @@ public class FluidUtilTests {
         helper.assertValueEqual(Items.BUCKET, mainHandItem.getItem(), "main hand item");
         helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
 
-        // A second placement attempt should fail since the item in hand is now empty
+        // A second placement attempt should fail since the item in hand is now an empty bucket
         var secondPlacementResult = FluidUtil.tryPlaceFluid(
                 handHandler,
                 player,
