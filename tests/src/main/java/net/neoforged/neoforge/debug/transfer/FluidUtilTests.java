@@ -84,6 +84,68 @@ public class FluidUtilTests {
                 helper.absolutePos(waterPos),
                 null);
         helper.assertTrue(secondPickupResult.isEmpty(), "second pickup result is empty");
+        // Block state should not have changed
+        helper.assertBlockState(waterPos, finalState);
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test placing water with FluidUtil.tryPlaceFluid")
+    public static void testWaterBlockPlacement(ExtendedGameTestHelper helper) {
+        testWaterPlacement(
+                helper,
+                Blocks.AIR.defaultBlockState(),
+                Blocks.WATER.defaultBlockState());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test placing water into a slab with FluidUtil.tryPlaceFluid")
+    public static void testWaterloggedSlabPlacement(ExtendedGameTestHelper helper) {
+        testWaterPlacement(
+                helper,
+                Blocks.STONE_SLAB.defaultBlockState(),
+                Blocks.STONE_SLAB.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true));
+    }
+
+    private static void testWaterPlacement(ExtendedGameTestHelper helper, BlockState initialState, BlockState finalState) {
+        var waterPos = new BlockPos(1, 0, 0);
+        helper.setBlock(waterPos, initialState);
+
+        // Survival because ItemAccess.forPlayerInteraction behaves differently in creative mode
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+        var handHandler = ItemAccess.forPlayerInteraction(player, InteractionHand.MAIN_HAND)
+                .oneByOne()
+                .getCapability(Capabilities.Fluid.ITEM);
+
+        var placementResult = FluidUtil.tryPlaceFluid(
+                handHandler,
+                player,
+                helper.getLevel(),
+                InteractionHand.MAIN_HAND,
+                helper.absolutePos(waterPos));
+        helper.assertValueEqual(Fluids.WATER, placementResult.getFluid(), "placed fluid");
+        helper.assertValueEqual(FluidType.BUCKET_VOLUME, placementResult.getAmount(), "placed amount");
+        helper.assertBlockState(waterPos, finalState);
+
+        // Bucket should have been emptied
+        var mainHandItem = player.getMainHandItem();
+        helper.assertValueEqual(Items.BUCKET, mainHandItem.getItem(), "main hand item");
+        helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
+
+        // A second placement attempt should fail
+        var secondPlacementResult = FluidUtil.tryPlaceFluid(
+                handHandler,
+                player,
+                helper.getLevel(),
+                InteractionHand.MAIN_HAND,
+                helper.absolutePos(waterPos));
+        helper.assertTrue(secondPlacementResult.isEmpty(), "second placement result is empty");
+        // Block state should not have changed
+        helper.assertBlockState(waterPos, finalState);
 
         helper.succeed();
     }
