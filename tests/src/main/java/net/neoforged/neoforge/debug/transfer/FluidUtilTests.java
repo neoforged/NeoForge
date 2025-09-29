@@ -136,7 +136,7 @@ public class FluidUtilTests {
         helper.assertValueEqual(Items.BUCKET, mainHandItem.getItem(), "main hand item");
         helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
 
-        // A second placement attempt should fail
+        // A second placement attempt should fail since the item in hand is now empty
         var secondPlacementResult = FluidUtil.tryPlaceFluid(
                 handHandler,
                 player,
@@ -144,6 +144,27 @@ public class FluidUtilTests {
                 InteractionHand.MAIN_HAND,
                 helper.absolutePos(waterPos));
         helper.assertTrue(secondPlacementResult.isEmpty(), "second placement result is empty");
+        // Block state should not have changed
+        helper.assertBlockState(waterPos, finalState);
+
+        // But another placement with a full bucket in hand should succeed, since placing additional water into a water block is allowed
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+        var thirdPlacementResult = FluidUtil.tryPlaceFluid(
+                handHandler,
+                player,
+                helper.getLevel(),
+                InteractionHand.MAIN_HAND,
+                helper.absolutePos(waterPos));
+        helper.assertTrue(secondPlacementResult.isEmpty(), "third placement result is empty");
+        helper.assertValueEqual(Fluids.WATER, thirdPlacementResult.getFluid(), "third placed fluid");
+        helper.assertValueEqual(FluidType.BUCKET_VOLUME, thirdPlacementResult.getAmount(), "third placed amount");
+        helper.assertBlockState(waterPos, finalState);
+
+        // Bucket should have been emptied
+        mainHandItem = player.getMainHandItem();
+        helper.assertValueEqual(Items.BUCKET, mainHandItem.getItem(), "main hand item");
+        helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
+
         // Block state should not have changed
         helper.assertBlockState(waterPos, finalState);
 

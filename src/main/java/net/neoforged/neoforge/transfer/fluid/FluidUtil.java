@@ -23,6 +23,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -140,8 +142,8 @@ public final class FluidUtil {
 
     /**
      * Attempts to pick up a fluid in the level and put it into a fluid handler,
-     * either from a {@link BucketPickup} block (such as fluid sources and waterlogged blocks),
-     * or from a {@link Capabilities.Fluid#BLOCK} capability instance.
+     * first from a {@link BucketPickup} block (such as fluid sources and waterlogged blocks),
+     * or second from a {@link Capabilities.Fluid#BLOCK} capability instance.
      *
      * @param destination The destination for the picked up fluid. May be null.
      * @param player      The player filling the container. Optional.
@@ -159,7 +161,7 @@ public final class FluidUtil {
         Block block = state.getBlock();
         if (block instanceof BucketPickup bucketPickup) {
             // Get stored fluid
-            var fluid = level.getFluidState(pos).getType();
+            Fluid fluid = level.getFluidState(pos).getType();
             if (fluid == Fluids.EMPTY) {
                 return FluidStack.EMPTY;
             }
@@ -172,12 +174,17 @@ public final class FluidUtil {
                 }
                 // Fluid could fit, so pickup from the level
                 if (level.getFluidState(pos).getType() != fluid) {
-                    // Type changed, abort
+                    // Inserting into destination caused type in the level to change, aborting
                     return FluidStack.EMPTY;
                 }
                 ItemStack pickedUpStack = bucketPickup.pickupBlock(player, level, pos, level.getBlockState(pos));
                 if (!(pickedUpStack.getItem() instanceof BucketItem bucket)) {
                     // Not a bucket, abort
+                    if (!pickedUpStack.isEmpty()) {
+                        // Be loud since we are going to void the stack
+                        LOGGER.warn("Picked up stack is not a bucket. Fluid {} at {} in {} picked up as {}.",
+                                BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().location(), pickedUpStack);
+                    }
                     return FluidStack.EMPTY;
                 }
                 FluidStack extracted = new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
@@ -194,9 +201,9 @@ public final class FluidUtil {
                         level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
                     }
                 }
+                level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
                 return extracted;
             }
-
         } else {
             var fluidHandler = level.getCapability(Capabilities.Fluid.BLOCK, pos, state, null, side);
             if (fluidHandler == null) {
@@ -268,43 +275,45 @@ public final class FluidUtil {
      */
     public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
         var stack = resource.toStack(FluidType.BUCKET_VOLUME);
-        if (stack.isEmpty() || !stack.getFluidType().canBePlacedInLevel(level, pos, stack)) {
+        var fluidType = resource.getFluidType();
+        if (stack.isEmpty() || !fluidType.canBePlacedInLevel(level, pos, stack)) {
             return false;
         }
 
         var handItem = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        BlockPlaceContext context = new BlockPlaceContext(level, player, hand, handItem, new BlockHitResult(Vec3.ZERO, Direction.UP, pos, false));
+        BlockPlaceContext context = new BlockPlaceContext(level, player, hand, handItem, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false));
 
         // check that we can place the fluid at the destination
         BlockState destBlockState = level.getBlockState(pos);
         boolean isDestReplaceable = destBlockState.canBeReplaced(context);
         boolean canDestContainFluid = destBlockState.getBlock() instanceof LiquidBlockContainer lbc
                 && lbc.canPlaceLiquid(player, level, pos, destBlockState, resource.getFluid());
-        if (!level.isEmptyBlock(pos) && !isDestReplaceable && !canDestContainFluid) {
+        if (!destBlockState.isAir() && !isDestReplaceable && !canDestContainFluid) {
             return false; // Non-air unreplaceable block. We can't put fluid here.
         }
 
-        if (resource.getFluidType().isVaporizedOnPlacement(level, pos, stack)) {
-            resource.getFluidType().onVaporize(player, level, pos, stack);
+        if (fluidType.isVaporizedOnPlacement(level, pos, stack)) {
+            fluidType.onVaporize(player, level, pos, stack);
             return true;
         } else {
             if (canDestContainFluid) {
                 LiquidBlockContainer lbc = (LiquidBlockContainer) destBlockState.getBlock();
-                lbc.placeLiquid(level, pos, destBlockState, resource.getFluidType().getStateForPlacement(level, pos, stack));
+                lbc.placeLiquid(level, pos, destBlockState, fluidType.getStateForPlacement(level, pos, stack));
             } else {
                 // Destroy the existing state on fluid placement
                 if (!level.isClientSide && isDestReplaceable && !destBlockState.liquid()) {
                     level.destroyBlock(pos, true);
                 }
-                var state = resource.getFluidType().getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
+                var state = fluidType.getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
                 level.setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
             }
             if (player != null) {
-                SoundEvent soundEvent = resource.getFluidType().getSound(stack, SoundActions.BUCKET_EMPTY);
+                SoundEvent soundEvent = fluidType.getSound(stack, SoundActions.BUCKET_EMPTY);
                 if (soundEvent != null) {
                     level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
             }
+            level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
             return true;
         }
     }
