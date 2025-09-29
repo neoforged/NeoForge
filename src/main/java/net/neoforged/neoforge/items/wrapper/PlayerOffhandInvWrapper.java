@@ -6,7 +6,13 @@
 package net.neoforged.neoforge.items.wrapper;
 
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 
+/**
+ * @deprecated Use {@link PlayerInventoryWrapper} instead, in particular {@link PlayerInventoryWrapper#getHandSlot} for the offhand only.
+ */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class PlayerOffhandInvWrapper extends RangedWrapper {
     public PlayerOffhandInvWrapper(Inventory inv) {
         super(new InvWrapper(inv), Inventory.SLOT_OFFHAND, Inventory.SLOT_OFFHAND + 1);

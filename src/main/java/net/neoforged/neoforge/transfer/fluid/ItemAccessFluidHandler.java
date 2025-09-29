@@ -24,7 +24,7 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
     protected final DataComponentType<SimpleFluidContent> component;
     protected int capacity;
 
-    protected ItemAccessFluidHandler(ItemAccess itemAccess, DataComponentType<SimpleFluidContent> component, int capacity) {
+    public ItemAccessFluidHandler(ItemAccess itemAccess, DataComponentType<SimpleFluidContent> component, int capacity) {
         super(itemAccess, 1);
         // Store the current item, such that if the item changes later we don't return any stored content from it.
         this.validItem = itemAccess.getResource().getItem();
