@@ -37,7 +37,7 @@
                  || $$8
                  || $$7 instanceof LiquidBlockContainer liquidblockcontainer
                      && liquidblockcontainer.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, this.content);
-+            // TODO: The stack is only used in the vaporization check. Should the rest of the method be made stack-aware as well?
++            // TODO: The stack is only used as a parameter in the vaporization check. What if the fluidType is different? And should the rest of the method be made stack-aware as well?
 +            var containedFluidStack = container != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(container) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
              if (!flag1) {
 -                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
