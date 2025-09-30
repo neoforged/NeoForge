@@ -80,7 +80,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
             if (runType == RunType.CLIENT || runType == RunType.JUNIT) {
                 // TODO: this is copied from NG but shouldn't it be the MC version?
                 Collections.addAll(args,
-                        "--version", getNeoForgeVersion().get());
+                        "--version", getNeoForgeVersion().get(),
+                        "--offlineDeveloperMode");
             }
 
             if (runType == RunType.CLIENT || runType == RunType.CLIENT_DATA || runType == RunType.JUNIT) {
