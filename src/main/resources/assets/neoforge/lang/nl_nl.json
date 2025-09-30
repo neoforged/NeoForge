@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Onderdeel %s met waarde %s is verwijderd",
   "commands.neoforge.data_components.list.tooltip.modified": "Onderdeel %s is gewijzigd van %s naar %s",
   "commands.neoforge.data_components.list.tooltip.added": "Onderdeel %s is toegevoegd met de waarde %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recept zoeken is niet mogelijk in client commando's",
   "commands.config.getwithtype": "Configuratie voor %s van type %s gevonden bij %s",
   "commands.config.noconfig": "Configuratie voor %s van type %s niet gevonden",
