@@ -1,17 +1,20 @@
 --- a/net/minecraft/server/jsonrpc/api/Schema.java
 +++ b/net/minecraft/server/jsonrpc/api/Schema.java
-@@ -95,6 +_,14 @@
-         return schemacomponent;
+@@ -32,7 +_,7 @@
+                 .apply(p_451636_, Schema::new)
+         )
+     );
+-    private static final List<SchemaComponent> SCHEMA_REGISTRY = new ArrayList<>();
++    private static final List<SchemaComponent> SCHEMA_REGISTRY = net.neoforged.neoforge.server.ServerLifecycleHooks.getSchemaRegistry();
+     public static final Schema BOOL_SCHEMA = ofType("boolean");
+     public static final Schema INT_SCHEMA = ofType("integer");
+     public static final Schema NUMBER_SCHEMA = ofType("number");
+@@ -96,7 +_,7 @@
      }
  
-+    public static SchemaComponent registerSchema(net.minecraft.resources.ResourceLocation name, Schema schema) {
-+        synchronized (SCHEMA_REGISTRY) {
-+            SchemaComponent component = new SchemaComponent(name.toString(), ReferenceUtil.createLocalReference(name.toString()), schema);
-+            SCHEMA_REGISTRY.add(component);
-+            return component;
-+        }
-+    }
-+
      public static List<SchemaComponent> getSchemaRegistry() {
-         return SCHEMA_REGISTRY;
+-        return SCHEMA_REGISTRY;
++        return java.util.Collections.unmodifiableList(SCHEMA_REGISTRY);
      }
+ 
+     public static Schema ofRef(URI p_451180_) {

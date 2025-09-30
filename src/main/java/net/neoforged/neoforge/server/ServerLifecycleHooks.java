@@ -6,15 +6,20 @@
 package net.neoforged.neoforge.server;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
@@ -23,6 +28,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.jsonrpc.IncomingRpcMethod;
+import net.minecraft.server.jsonrpc.OutgoingRpcMethod;
+import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
@@ -39,6 +47,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
+import net.neoforged.neoforge.event.server.RegisterSchemaEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -134,6 +143,47 @@ public class ServerLifecycleHooks {
 
     public static void handleExit(int retVal) {
         System.exit(retVal);
+    }
+
+    private static final ArrayList<SchemaComponent> SCHEMA_REGISTRY_VIEW = new ArrayList<>();
+
+    public static List<SchemaComponent> getSchemaRegistry() {
+        return SCHEMA_REGISTRY_VIEW;
+    }
+
+    public static void fireSchemaRegistryEvent() {
+        final Map<ResourceLocation, SchemaComponent> schemaRegistry = new ConcurrentSkipListMap<>(ResourceLocation::compareNamespaced);
+
+        // fill with vanilla values
+        for (SchemaComponent schemaComponent : SCHEMA_REGISTRY_VIEW) {
+            schemaRegistry.put(ResourceLocation.tryParse(schemaComponent.name()), schemaComponent);
+        }
+
+        // post the registration event
+        NeoForge.EVENT_BUS.post(new RegisterSchemaEvent(schemaRegistry));
+
+        // mirror final contents back to the list
+        SCHEMA_REGISTRY_VIEW.clear();
+        SCHEMA_REGISTRY_VIEW.ensureCapacity(schemaRegistry.size());
+        SCHEMA_REGISTRY_VIEW.addAll(schemaRegistry.values());
+
+        Set<String> missing = Stream.concat(
+                BuiltInRegistries.INCOMING_RPC_METHOD.stream().map(IncomingRpcMethod::info),
+                BuiltInRegistries.OUTGOING_RPC_METHOD.stream().map(OutgoingRpcMethod::info))
+                .<URI>mapMulti((methodInfo, consumer) -> {
+                    methodInfo.result().flatMap(resultInfo -> resultInfo.schema().reference()).ifPresent(consumer);
+                    methodInfo.params().flatMap(paramsInfo -> paramsInfo.schema().reference()).ifPresent(consumer);
+                })
+                .map(URI::toString)
+                .filter(uri -> uri.startsWith("#/components/schemas/"))
+                .map(uri -> ResourceLocation.tryParse(uri.substring("#/components/schemas/".length())))
+                .filter(name -> name != null && !schemaRegistry.containsKey(name))
+                .map(ResourceLocation::toString)
+                .collect(Collectors.toSet());
+
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Some schemas were not registered: " + String.join(", ", missing));
+        }
     }
 
     private static <T> void ensureProperSync(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {

@@ -164,6 +164,7 @@ import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.jsonrpc.NeoForgeRpcMethods;
+import net.neoforged.neoforge.server.jsonrpc.NeoForgeSchemas;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
@@ -570,6 +571,7 @@ public class NeoForgeMod {
         modEventBus.addListener(NeoForgeMod::onConfigLoad);
         modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         modEventBus.addListener(NeoForgeRpcMethods::register);
+        NeoForge.EVENT_BUS.addListener(NeoForgeSchemas::registerSchemas);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
