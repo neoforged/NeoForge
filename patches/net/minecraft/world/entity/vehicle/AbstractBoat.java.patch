@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractBoat.java
-@@ -423,7 +_,7 @@
+@@ -419,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(l1, k1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -9,7 +9,7 @@
                          f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                      }
  
-@@ -469,7 +_,7 @@
+@@ -465,7 +_,7 @@
                                      voxelshape,
                                      BooleanOp.AND
                                  )) {
@@ -18,7 +18,7 @@
                                  k1++;
                              }
                          }
-@@ -498,7 +_,7 @@
+@@ -494,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -27,7 +27,7 @@
                          float f = l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
                          this.waterLevel = Math.max((double)f, this.waterLevel);
                          flag |= aabb.minY < f;
-@@ -528,7 +_,7 @@
+@@ -524,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -36,7 +36,7 @@
                          if (!fluidstate.isSource()) {
                              return AbstractBoat.Status.UNDER_FLOWING_WATER;
                          }
-@@ -730,7 +_,7 @@
+@@ -726,7 +_,7 @@
          if (!this.isPassenger()) {
              if (p_376924_) {
                  this.resetFallDistance();
@@ -45,7 +45,7 @@
                  this.fallDistance -= (float)p_376661_;
              }
          }
-@@ -754,7 +_,7 @@
+@@ -750,7 +_,7 @@
  
      @Override
      protected boolean canAddPassenger(Entity p_376443_) {

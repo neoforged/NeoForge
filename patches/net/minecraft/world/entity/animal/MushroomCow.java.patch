@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -171,11 +_,19 @@
+@@ -173,11 +_,19 @@
      @Override
      public void shear(ServerLevel p_376375_, SoundSource p_28924_, ItemStack p_373092_) {
          p_376375_.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);

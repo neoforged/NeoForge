@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -71,7 +_,7 @@
+@@ -73,7 +_,7 @@
  
          for (Entity entity : p_186526_) {
              if (!(entity instanceof Mob mob && (mob.isPersistenceRequired() || mob.requiresCustomPersistence()))) {
@@ -9,7 +9,7 @@
                  if (mobcategory != MobCategory.MISC) {
                      BlockPos blockpos = entity.blockPosition();
                      p_186527_.query(
-@@ -212,7 +_,7 @@
+@@ -214,7 +_,7 @@
                                      l1++;
                                      p_47040_.addFreshEntityWithPassengers(mob);
                                      p_47044_.run(mob, p_47041_);
@@ -18,7 +18,7 @@
                                          return;
                                      }
  
-@@ -284,7 +_,7 @@
+@@ -290,7 +_,7 @@
          return p_46994_ > p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance()
                  && p_46993_.removeWhenFarAway(p_46994_)
              ? false
@@ -27,7 +27,7 @@
      }
  
      private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
-@@ -315,9 +_,14 @@
+@@ -321,9 +_,14 @@
          BlockPos p_220448_,
          @Nullable Holder<Biome> p_220449_
      ) {
@@ -45,7 +45,7 @@
      }
  
      public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
-@@ -404,8 +_,7 @@
+@@ -410,8 +_,7 @@
  
                                  entity.snapTo(d0, blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
                                  if (entity instanceof Mob mob

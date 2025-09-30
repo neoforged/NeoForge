@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Skeleton.java
 +++ b/net/minecraft/world/entity/monster/Skeleton.java
-@@ -94,7 +_,9 @@
+@@ -92,7 +_,9 @@
      }
  
      protected void doFreezeConversion() {

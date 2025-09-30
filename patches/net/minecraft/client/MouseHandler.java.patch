@@ -1,41 +1,45 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -90,6 +_,8 @@
-                 this.activeButton = -1;
+@@ -87,6 +_,8 @@
+                 this.activeButton = null;
              }
  
-+            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(p_91532_, p_91533_, p_91534_)) return;
++            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(p_445718_, p_447323_)) return;
 +            boolean screenHandled = false;
              if (this.minecraft.getOverlay() == null) {
                  if (this.minecraft.screen == null) {
                      if (!this.mouseGrabbed && flag) {
-@@ -103,8 +_,10 @@
-                         screen.afterMouseAction();
- 
+@@ -103,10 +_,14 @@
                          try {
--                            if (screen.mouseClicked(d0, d1, i)) {
--                                return;
-+                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, d0, d1, i);
+                             long i = Util.getMillis();
+                             boolean flag1 = i - this.lastClickTime < 250L && this.lastClickButton == mousebuttonevent.button();
+-                            if (screen.mouseClicked(mousebuttonevent, flag1)) {
++                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, mousebuttonevent, flag1);
 +                            if (!screenHandled) {
-+                                screenHandled = screen.mouseClicked(d0, d1, i);
-+                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, d0, d1, i, screenHandled);
++                                screenHandled = screen.mouseClicked(mousebuttonevent, flag1);
++                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, mousebuttonevent, flag1, screenHandled);
++                            }
++                            if (screenHandled) {
+                                 this.lastClickTime = i;
+                                 this.lastClickButton = mousebuttoninfo.button();
+-                                return;
                              }
                          } catch (Throwable throwable1) {
                              CrashReport crashreport = CrashReport.forThrowable(throwable1, "mouseClicked event handler");
-@@ -116,8 +_,10 @@
+@@ -118,8 +_,10 @@
                          }
                      } else {
                          try {
--                            if (screen.mouseReleased(d0, d1, i)) {
+-                            if (screen.mouseReleased(mousebuttonevent)) {
 -                                return;
-+                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPre(screen, d0, d1, i);
++                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPre(screen, mousebuttonevent);
 +                            if (!screenHandled) {
-+                                screenHandled = screen.mouseReleased(d0, d1, i);
-+                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPost(screen, d0, d1, i, screenHandled);
++                                screenHandled = screen.mouseReleased(mousebuttonevent);
++                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPost(screen, mousebuttonevent, screenHandled);
                              }
                          } catch (Throwable throwable) {
                              CrashReport crashreport1 = CrashReport.forThrowable(throwable, "mouseReleased event handler");
-@@ -131,6 +_,10 @@
+@@ -133,6 +_,10 @@
                  }
              }
  
@@ -44,18 +48,18 @@
 +            // vanilla's fallback handle it
 +            if (!screenHandled) {
              if (this.minecraft.screen == null && this.minecraft.getOverlay() == null) {
-                 if (p_91532_ == 0) {
+                 if (mousebuttoninfo.button() == 0) {
                      this.isLeftPressed = flag;
-@@ -149,6 +_,8 @@
-                     }
+@@ -148,6 +_,8 @@
+                     KeyMapping.click(inputconstants$key);
                  }
              }
 +            }
-+            net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(p_91532_, p_91533_, p_91534_);
++            net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(p_445718_, p_447323_);
          }
      }
  
-@@ -189,7 +_,11 @@
+@@ -204,7 +_,11 @@
                  if (this.minecraft.screen != null) {
                      double d3 = this.getScaledXPos(this.minecraft.getWindow());
                      double d4 = this.getScaledYPos(this.minecraft.getWindow());
@@ -68,7 +72,7 @@
                      this.minecraft.screen.afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      Vector2i vector2i = this.scrollWheelHandler.onMouseScroll(d1, d2);
-@@ -198,6 +_,7 @@
+@@ -213,6 +_,7 @@
                      }
  
                      int i = vector2i.y == 0 ? -vector2i.x : vector2i.y;
@@ -76,20 +80,21 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-i);
-@@ -303,7 +_,11 @@
+@@ -321,7 +_,12 @@
                      double d5 = getScaledYPos(window, this.accumulatedDY);
  
                      try {
--                        screen.mouseDragged(d2, d3, this.activeButton, d4, d5);
-+                        if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, d2, d3, this.activeButton, d4, d5)) {
-+                            if (!screen.mouseDragged(d2, d3, this.activeButton, d4, d5)) {
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, d2, d3, this.activeButton, d4, d5);
+-                        screen.mouseDragged(new MouseButtonEvent(d2, d3, this.activeButton), d4, d5);
++                        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(d2, d3, this.activeButton);
++                        if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, mouseButtonEvent, d4, d5)) {
++                            if (!screen.mouseDragged(mouseButtonEvent, d4, d5)) {
++                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, mouseButtonEvent, d4, d5);
 +                            }
 +                        }
                      } catch (Throwable throwable) {
                          CrashReport crashreport1 = CrashReport.forThrowable(throwable, "mouseDragged event handler");
                          screen.fillCrashDetails(crashreport1);
-@@ -342,12 +_,13 @@
+@@ -360,12 +_,13 @@
      }
  
      private void turnPlayer(double p_316356_) {
@@ -105,7 +110,7 @@
              double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, p_316356_ * d4);
              double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, p_316356_ * d4);
              d0 = d5;
-@@ -393,6 +_,14 @@
+@@ -406,6 +_,14 @@
  
      public double ypos() {
          return this.ypos;

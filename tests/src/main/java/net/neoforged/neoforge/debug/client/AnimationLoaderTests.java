@@ -74,7 +74,6 @@ public class AnimationLoaderTests {
             } else {
                 test.fail("Test animation not loaded in time");
             }
-            test.framework().setEnabled(test, false, null);
         }
 
         private static LayerDefinition createLayer() {

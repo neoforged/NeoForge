@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 @@ -37,12 +_,17 @@
-         this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
-         this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
-         this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
+         this.waterIcons[0] = p_433960_.getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
+         this.waterIcons[1] = p_434648_.get(ModelBakery.WATER_FLOW);
+         this.waterOverlay = p_434648_.get(ModelBakery.WATER_OVERLAY);
 +        net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
      }
  

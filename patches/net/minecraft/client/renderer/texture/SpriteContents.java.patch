@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/SpriteContents.java
 +++ b/net/minecraft/client/renderer/texture/SpriteContents.java
-@@ -49,6 +_,10 @@
+@@ -66,6 +_,10 @@
          this.byMipLevel = new NativeImage[]{this.originalImage};
      }
  
@@ -11,7 +11,7 @@
      public void increaseMipLevel(int p_248864_) {
          try {
              this.byMipLevel = MipmapGenerator.generateMipLevels(this.byMipLevel, p_248864_);
-@@ -132,6 +_,8 @@
+@@ -144,6 +_,8 @@
  
      void upload(int p_248895_, int p_250245_, int p_250458_, int p_251337_, NativeImage[] p_248825_, GpuTexture p_404943_) {
          for (int i = 0; i < this.byMipLevel.length; i++) {
@@ -20,7 +20,7 @@
              RenderSystem.getDevice()
                  .createCommandEncoder()
                  .writeToTexture(
-@@ -250,7 +_,8 @@
+@@ -269,7 +_,8 @@
              for (int i = 0; i < this.activeFrame.length; i++) {
                  int j = SpriteContents.this.width >> i;
                  int k = SpriteContents.this.height >> i;
@@ -30,7 +30,7 @@
              }
          }
  
-@@ -265,6 +_,9 @@
+@@ -284,6 +_,9 @@
                  for (int k = 0; k < this.activeFrame.length; k++) {
                      int l = SpriteContents.this.width >> k;
                      int i1 = SpriteContents.this.height >> k;

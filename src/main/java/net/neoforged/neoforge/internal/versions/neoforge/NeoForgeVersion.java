@@ -20,20 +20,12 @@ public class NeoForgeVersion {
     public static final String MOD_ID = "neoforge";
 
     private static final String version;
-    private static final String fmlVersion;
 
     static {
-        String vers = JarVersionLookupHandler.getVersion(NeoForgeVersion.class).orElseGet(() -> FMLLoader.versionInfo().neoForgeVersion());
+        String vers = JarVersionLookupHandler.getVersion(NeoForgeVersion.class).orElseGet(() -> FMLLoader.getCurrent().getVersionInfo().neoForgeVersion());
         if (vers == null) throw new RuntimeException("Missing NeoForge version, cannot continue");
         version = vers;
         LOGGER.debug(Logging.CORE, "Found NeoForge version {}", version);
-
-        fmlVersion = JarVersionLookupHandler.getVersion(FMLLoader.class).orElseGet(() -> FMLLoader.versionInfo().fmlVersion());
-        LOGGER.debug(Logging.CORE, "Found FML version {}", fmlVersion);
-    }
-
-    public static String getFmlVersion() {
-        return fmlVersion;
     }
 
     public static String getVersion() {

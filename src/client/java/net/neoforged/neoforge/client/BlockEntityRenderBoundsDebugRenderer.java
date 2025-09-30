@@ -38,14 +38,14 @@ public final class BlockEntityRenderBoundsDebugRenderer {
 
         LevelRenderer levelRenderer = Minecraft.getInstance().levelRenderer;
         PoseStack poseStack = event.getPoseStack();
-        Vec3 camera = event.getCamera().getPosition();
+        Vec3 camera = event.getCamera().pos;
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
         levelRenderer.iterateVisibleBlockEntities(be -> drawRenderBoundingBox(poseStack, consumer, camera, be));
     }
 
     private static void drawRenderBoundingBox(PoseStack poseStack, VertexConsumer consumer, Vec3 camera, BlockEntity be) {
-        BlockEntityRenderer<BlockEntity> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(be);
+        BlockEntityRenderer<BlockEntity, ?> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(be);
         if (renderer != null) {
             BlockPos pos = be.getBlockPos();
             AABB aabb = renderer.getRenderBoundingBox(be).move(-pos.getX(), -pos.getY(), -pos.getZ());
@@ -53,7 +53,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
 
             poseStack.pushPose();
             poseStack.translate(offset.x, offset.y, offset.z);
-            ShapeRenderer.renderLineBox(poseStack, consumer, aabb, 1F, 0F, 0F, 1F);
+            ShapeRenderer.renderLineBox(poseStack.last(), consumer, aabb, 1F, 0F, 0F, 1F);
             poseStack.popPose();
         }
     }

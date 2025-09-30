@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/resources/model/AtlasManager.java
++++ b/net/minecraft/client/resources/model/AtlasManager.java
+@@ -47,6 +_,7 @@
+     private int maxMipmapLevels;
+ 
+     public AtlasManager(TextureManager p_434709_, int p_434537_) {
++        List<AtlasManager.AtlasConfig> KNOWN_ATLASES = net.neoforged.neoforge.client.ClientHooks.gatherTextureAtlases(AtlasManager.KNOWN_ATLASES);
+         for (AtlasManager.AtlasConfig atlasmanager$atlasconfig : KNOWN_ATLASES) {
+             TextureAtlas textureatlas = new TextureAtlas(atlasmanager$atlasconfig.textureId);
+             p_434709_.register(atlasmanager$atlasconfig.textureId, textureatlas);

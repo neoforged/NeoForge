@@ -430,7 +430,7 @@ public class CommonHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return null;
 
-        if (!player.level().isClientSide)
+        if (!player.level().isClientSide())
             player.level().addFreshEntity(event.getEntity());
         return event.getEntity();
     }
@@ -1043,7 +1043,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }
@@ -1464,7 +1464,7 @@ public class CommonHooks {
             }
         }
 
-        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
+        if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
         }
     }

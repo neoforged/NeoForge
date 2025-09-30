@@ -10,21 +10,23 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteTicker;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
@@ -41,7 +43,7 @@ public class CustomSpriteSourceTest {
 
     public CustomSpriteSourceTest(IEventBus modEventBus) {
         if (!ENABLED) return;
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modEventBus.addListener(this::registerTextureAtlasSpriteLoaders);
         }
         ITEMS.register(modEventBus);
@@ -74,8 +76,8 @@ public class CustomSpriteSourceTest {
         }
 
         static final class CustomSpriteContents extends SpriteContents {
-            public CustomSpriteContents(ResourceLocation name, FrameSize size, NativeImage image, ResourceMetadata metadata) {
-                super(name, size, image, metadata);
+            public CustomSpriteContents(ResourceLocation name, FrameSize size, NativeImage image, Optional<AnimationMetadataSection> animationMetadata, List<MetadataSectionType.WithValue<?>> additionalMetadata) {
+                super(name, size, image, animationMetadata, additionalMetadata);
             }
 
             @Override

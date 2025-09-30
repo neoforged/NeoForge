@@ -14,8 +14,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
@@ -44,8 +45,10 @@ public class FluidTemplatesTests {
     @TestHolder(description = "Tests that FluidHandlerItemStack works")
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
         ItemStack stack = Items.APPLE.getDefaultInstance();
+        ItemAccess itemAccess = ItemAccess.forStack(stack);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
-        var fluidHandler = new FluidHandlerItemStack(SIMPLE_FLUID_CONTENT, stack, capacity);
+        // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessFluidHandler matches the old FluidHandlerItemStack.
+        var fluidHandler = IFluidHandler.of(new ItemAccessFluidHandler(itemAccess, SIMPLE_FLUID_CONTENT.get(), capacity));
 
         if (fluidHandler.getTanks() != 1) {
             helper.fail("Expected a single tank");
@@ -64,8 +67,8 @@ public class FluidTemplatesTests {
         if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to be able to fill a bucket of water");
         }
-        if (!stack.has(SIMPLE_FLUID_CONTENT)) {
-            helper.fail("Expected fluid stack component");
+        if (!SimpleFluidContent.copyOf(waterStack).equals(stack.get(SIMPLE_FLUID_CONTENT))) {
+            helper.fail("Expected fluid stack component with one bucket of water");
         }
         if (fluidHandler.getFluidInTank(0).getAmount() != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected a bucket of water");
@@ -78,8 +81,8 @@ public class FluidTemplatesTests {
         if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT)) {
-            helper.fail("Expected no fluid stack component");
+        if (!SimpleFluidContent.EMPTY.equals(stack.get(SIMPLE_FLUID_CONTENT))) {
+            helper.fail("Expected empty fluid stack component");
         }
 
         helper.succeed();

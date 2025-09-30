@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -297,6 +_,7 @@
+@@ -295,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -8,7 +8,7 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -475,7 +_,14 @@
+@@ -479,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -24,7 +24,7 @@
      }
  
      @Override
-@@ -715,6 +_,7 @@
+@@ -719,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -32,7 +32,7 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean flag3 = false;
          if (this.autoJumpTime > 0) {
-@@ -759,7 +_,7 @@
+@@ -763,7 +_,7 @@
          }
  
          boolean flag4 = false;
@@ -41,24 +41,16 @@
              if (this.minecraft.gameMode.isAlwaysFlying()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -855,13 +_,14 @@
-             || !this.input.hasForwardImpulse()
-             || !this.hasEnoughFoodToSprint()
-             || this.horizontalCollision && !this.minorHorizontalCollision
--            || this.isInWater() && !this.isUnderWater();
-+            || this.isInWater() && !this.isUnderWater()
-+            || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
+@@ -860,7 +_,7 @@
      }
  
      private boolean shouldStopSwimSprinting() {
-         return this.hasBlindness()
-             || this.isPassenger() && !this.vehicleCanSprint(this.getVehicle())
--            || !this.isInWater()
-+            || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))
-             || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift()
-             || !this.hasEnoughFoodToSprint();
+-        return !this.isSprintingPossible(true) || !this.isInWater() || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
++        return !this.isSprintingPossible(true) || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
      }
-@@ -915,6 +_,10 @@
+ 
+     public Portal.Transition getActivePortalLocalTransition() {
+@@ -905,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();
@@ -69,16 +61,7 @@
          this.handsBusy = false;
          if (this.getControlledVehicle() instanceof AbstractBoat abstractboat) {
              abstractboat.setInput(
-@@ -1089,7 +_,7 @@
-             && (!this.isPassenger() || this.vehicleCanSprint(this.getVehicle()))
-             && (!this.isFallFlying() || this.isUnderWater())
-             && (!this.isMovingSlowly() || this.isUnderWater())
--            && (!this.isInWater() || this.isUnderWater());
-+            && (!this.isInWater() || this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && this.canStartSwimming()));
-     }
- 
-     private boolean vehicleCanSprint(Entity p_265184_) {
-@@ -1097,7 +_,7 @@
+@@ -1091,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToSprint() {

@@ -14,6 +14,8 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -135,17 +137,18 @@ public class StencilEnableTest {
             Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
             poseStack.scale(1, -1, -1);
             float scale = state.scale;
-
+            FeatureRenderDispatcher dispatcher = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+            SubmitNodeStorage store = dispatcher.getSubmitNodeStorage();
             RenderSystem.pushPipelineModifier(STENCIL_FILL_KEY);
             {
-                state.maskRenderState.render(poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                state.maskRenderState.submit(poseStack, store, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                 poseStack.pushPose();
                 poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskRenderState.render(poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                state.maskRenderState.submit(poseStack, store, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                bufferSource.endBatch();
+                dispatcher.renderAllFeatures();
             }
             RenderSystem.popPipelineModifier();
 
@@ -154,14 +157,14 @@ public class StencilEnableTest {
                 poseStack.scale(1.1F, 1.1F, 1.1F);
                 poseStack.translate(-.5F / scale, .5F / scale, 0);
 
-                state.maskedRenderState.render(poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                state.maskedRenderState.submit(poseStack, store, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                 poseStack.pushPose();
                 poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskedRenderState.render(poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                state.maskedRenderState.submit(poseStack, store, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                bufferSource.endBatch();
+                dispatcher.renderAllFeatures();
             }
             RenderSystem.popPipelineModifier();
         }

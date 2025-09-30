@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.network.chat.Component;
@@ -144,15 +144,13 @@ public abstract class RenderNameTagEvent extends Event {
     public static class DoRender extends RenderNameTagEvent implements ICancellableEvent {
         private final Component content;
         private final PoseStack poseStack;
-        private final MultiBufferSource multiBufferSource;
-        private final int packedLight;
+        private final SubmitNodeCollector submitNodeCollector;
 
-        public DoRender(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, float partialTick) {
+        public DoRender(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float partialTick) {
             super(renderState, entityRenderer, partialTick);
             this.content = content;
             this.poseStack = poseStack;
-            this.multiBufferSource = multiBufferSource;
-            this.packedLight = packedLight;
+            this.submitNodeCollector = submitNodeCollector;
         }
 
         /**
@@ -172,17 +170,8 @@ public abstract class RenderNameTagEvent extends Event {
         /**
          * {@return the source of rendering buffers}
          */
-        public MultiBufferSource getMultiBufferSource() {
-            return this.multiBufferSource;
-        }
-
-        /**
-         * {@return the amount of packed (sky and block) light for rendering}
-         *
-         * @see net.minecraft.client.renderer.LightTexture
-         */
-        public int getPackedLight() {
-            return this.packedLight;
+        public SubmitNodeCollector getSubmitNodeCollector() {
+            return this.submitNodeCollector;
         }
     }
 }

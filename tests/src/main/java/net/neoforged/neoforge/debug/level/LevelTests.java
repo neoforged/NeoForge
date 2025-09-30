@@ -50,9 +50,9 @@ public class LevelTests {
         final GameRules.Key<GameRules.IntegerValue> integerGameRule = GameRules.register("%s:custom_integer_game_rule".formatted(test.createModId()), GameRules.Category.MISC, GameRules.IntegerValue.create(1337));
 
         test.eventListeners().forge().addListener((EntityTickEvent.Pre event) -> {
-            if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().getName().equals("test-mock-player")) {
-                if (player.getServer().getGameRules().getBoolean(booleanGameRule)) {
-                    player.setHealth(player.getHealth() - player.getServer().getGameRules().getInt(integerGameRule));
+            if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().name().equals("test-mock-player")) {
+                if (player.level().getServer().getGameRules().getBoolean(booleanGameRule)) {
+                    player.setHealth(player.getHealth() - player.level().getServer().getGameRules().getInt(integerGameRule));
                 }
             }
         });
@@ -60,21 +60,21 @@ public class LevelTests {
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
 
-            final var boolRule = player.getServer().getGameRules().getRule(booleanGameRule);
-            final var intRule = player.getServer().getGameRules().getRule(integerGameRule);
+            final var boolRule = player.level().getServer().getGameRules().getRule(booleanGameRule);
+            final var intRule = player.level().getServer().getGameRules().getRule(integerGameRule);
 
             final var oldBool = boolRule.get();
             final var oldInt = intRule.get();
 
             helper.startSequence()
-                    .thenExecute(() -> boolRule.set(true, player.getServer()))
-                    .thenExecute(() -> intRule.set(12, player.getServer()))
+                    .thenExecute(() -> boolRule.set(true, player.level().getServer()))
+                    .thenExecute(() -> intRule.set(12, player.level().getServer()))
 
                     .thenIdle(1)
                     .thenExecute(() -> helper.assertEntityProperty(player, ServerPlayer::getHealth, "player health", 8f))
 
-                    .thenExecute(() -> boolRule.set(oldBool, player.getServer()))
-                    .thenExecute(() -> intRule.set(oldInt, player.getServer()))
+                    .thenExecute(() -> boolRule.set(oldBool, player.level().getServer()))
+                    .thenExecute(() -> intRule.set(oldInt, player.level().getServer()))
                     .thenSucceed();
         });
     }

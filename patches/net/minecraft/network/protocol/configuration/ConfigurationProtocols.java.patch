@@ -2,7 +2,7 @@
 +++ b/net/minecraft/network/protocol/configuration/ConfigurationProtocols.java
 @@ -34,7 +_,7 @@
          ConnectionProtocol.CONFIGURATION,
-         p_426943_ -> p_426943_.addPacket(CommonPacketTypes.SERVERBOUND_CLIENT_INFORMATION, ServerboundClientInformationPacket.STREAM_CODEC)
+         p_438837_ -> p_438837_.addPacket(CommonPacketTypes.SERVERBOUND_CLIENT_INFORMATION, ServerboundClientInformationPacket.STREAM_CODEC)
              .addPacket(CookiePacketTypes.SERVERBOUND_COOKIE_RESPONSE, ServerboundCookieResponsePacket.STREAM_CODEC)
 -            .addPacket(CommonPacketTypes.SERVERBOUND_CUSTOM_PAYLOAD, ServerboundCustomPayloadPacket.STREAM_CODEC)
 +            .addPacket(CommonPacketTypes.SERVERBOUND_CUSTOM_PAYLOAD, ServerboundCustomPayloadPacket.CONFIG_STREAM_CODEC) // Neo: use protocol-aware stream codec instead

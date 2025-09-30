@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShovelItem.java
 +++ b/net/minecraft/world/item/ShovelItem.java
-@@ -43,18 +_,16 @@
+@@ -42,18 +_,16 @@
              return InteractionResult.PASS;
          } else {
              Player player = p_43119_.getPlayer();
@@ -21,7 +21,7 @@
              }
  
              if (blockstate2 != null) {
-@@ -71,5 +_,15 @@
+@@ -70,5 +_,15 @@
                  return InteractionResult.PASS;
              }
          }

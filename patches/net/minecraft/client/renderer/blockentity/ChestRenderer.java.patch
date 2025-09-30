@@ -1,22 +1,22 @@
 --- a/net/minecraft/client/renderer/blockentity/ChestRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ChestRenderer.java
-@@ -67,7 +_,7 @@
-             f1 = 1.0F - f1;
-             f1 = 1.0F - f1 * f1 * f1;
-             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(p_112367_);
--            Material material = Sheets.chooseMaterial(p_112363_, chesttype, this.xmasTextures);
-+            Material material = this.getMaterial(p_112363_, chesttype);
-             VertexConsumer vertexconsumer = material.buffer(p_112366_, RenderType::entityCutout);
-             if (flag1) {
-                 if (chesttype == ChestType.LEFT) {
-@@ -86,5 +_,15 @@
-     private void render(PoseStack p_112370_, VertexConsumer p_112371_, ChestModel p_364178_, float p_112375_, int p_112376_, int p_112377_) {
-         p_364178_.setupAnim(p_112375_);
-         p_364178_.renderToBuffer(p_112370_, p_112371_, p_112376_, p_112377_);
+@@ -87,7 +_,7 @@
+         float f = p_446740_.open;
+         f = 1.0F - f;
+         f = 1.0F - f * f * f;
+-        Material material = Sheets.chooseMaterial(p_446740_.material, p_446740_.type);
++        Material material = getMaterial(p_446740_.material, p_446740_.type);
+         RenderType rendertype = material.renderType(RenderType::entityCutout);
+         TextureAtlasSprite textureatlassprite = this.materials.get(material);
+         if (p_446740_.type != ChestType.SINGLE) {
+@@ -153,5 +_,15 @@
+         } else {
+             return ChestRenderState.ChestMaterialType.REGULAR;
+         }
 +    }
 +
-+    protected Material getMaterial(T blockEntity, ChestType chestType) {
-+        return Sheets.chooseMaterial(blockEntity, chestType, this.xmasTextures);
++    protected Material getMaterial(ChestRenderState.ChestMaterialType materialType, ChestType chestType) {
++        return Sheets.chooseMaterial(materialType, chestType);
 +    }
 +
 +    @Override

@@ -35,8 +35,8 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.BOOKSHELVES).add(Blocks.BOOKSHELF);
         tag(Tags.Blocks.BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
         tag(Tags.Blocks.BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
-        tag(Tags.Blocks.CHAINS).add(Blocks.CHAIN);
-        tag(Tags.Blocks.CHESTS).addTags(Tags.Blocks.CHESTS_ENDER, Tags.Blocks.CHESTS_TRAPPED, Tags.Blocks.CHESTS_WOODEN);
+        tag(Tags.Blocks.CHAINS).add(Blocks.IRON_CHAIN).addAll(Blocks.COPPER_CHAIN.asList());
+        tag(Tags.Blocks.CHESTS).add(Blocks.COPPER_CHEST).addTags(Tags.Blocks.CHESTS_ENDER, Tags.Blocks.CHESTS_TRAPPED, Tags.Blocks.CHESTS_WOODEN);
         tag(Tags.Blocks.CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(Tags.Blocks.CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
         tag(Tags.Blocks.CHESTS_WOODEN).add(Blocks.CHEST, Blocks.TRAPPED_CHEST);

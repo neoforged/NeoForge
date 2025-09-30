@@ -51,7 +51,7 @@ public class ValidRailShapeTest {
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isSlope);
 
         protected RailSlopeBlock(Properties properties) {
-            super(true, properties.noCollission().strength(0.7F).sound(SoundType.METAL));
+            super(true, properties.noCollision().strength(0.7F).sound(SoundType.METAL));
         }
 
         @Override

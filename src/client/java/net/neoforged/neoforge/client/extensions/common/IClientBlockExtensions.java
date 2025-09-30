@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.fml.LogicalSide;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
 /**
@@ -50,12 +51,12 @@ public interface IClientBlockExtensions {
      *
      * @param state   The current state
      * @param level   The current level
-     * @param target  The target the player is looking at {x/y/z/side/sub}
+     * @param target  The target the player is looking at {x/y/z/side/sub}, if available
      * @param manager A reference to the current particle manager.
      * @return True to prevent vanilla digging particles form spawning.
      */
-    default boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
-        return false;
+    default boolean addHitEffects(BlockState state, Level level, @Nullable HitResult target, ParticleEngine manager) {
+        return !state.shouldSpawnTerrainParticles();
     }
 
     /**

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -133,11 +_,14 @@
+@@ -129,11 +_,14 @@
                      f5 = p_331397_[i1] * p_85992_ * 255.0F;
                  }
  

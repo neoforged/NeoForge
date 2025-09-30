@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/User.java
 +++ b/net/minecraft/client/User.java
-@@ -22,6 +_,19 @@
-     private final User.Type type;
+@@ -15,6 +_,19 @@
+     private final Optional<String> clientId;
  
-     public User(String p_193799_, UUID p_296409_, String p_193800_, Optional<String> p_193802_, Optional<String> p_193803_, User.Type p_193804_) {
+     public User(String p_193799_, UUID p_296409_, String p_193800_, Optional<String> p_193802_, Optional<String> p_193803_) {
 +        if (p_193799_ == null || p_193799_.isEmpty()) {
 +            p_193799_ = "MissingName";
 +            p_296409_ = UUID.fromString("00000000-0000-0000-0000-000000000000");

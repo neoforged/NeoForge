@@ -4,8 +4,8 @@
          ServerLevel serverlevel = p_302443_.level();
          if (!serverlevel.isClientSide()) {
              BlockPos blockpos = p_302443_.pos().relative(p_302443_.state().getValue(DispenserBlock.FACING));
--            this.setSuccess(tryShearBeehive(serverlevel, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
-+            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(p_302443_, p_123581_, serverlevel, blockpos) || tryShearBeehive(serverlevel, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
+-            this.setSuccess(tryShearBeehive(serverlevel, p_123581_, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
++            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(p_302443_, p_123581_, serverlevel, blockpos) || tryShearBeehive(serverlevel, p_123581_, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
              if (this.isSuccess()) {
                  p_123581_.hurtAndBreak(1, serverlevel, null, p_348118_ -> {});
              }

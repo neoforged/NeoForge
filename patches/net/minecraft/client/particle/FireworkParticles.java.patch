@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/FireworkParticles.java
 +++ b/net/minecraft/client/particle/FireworkParticles.java
-@@ -253,6 +_,10 @@
+@@ -258,6 +_,10 @@
                      intlist = IntList.of(DyeColor.BLACK.getFireworkColor());
                  }
  

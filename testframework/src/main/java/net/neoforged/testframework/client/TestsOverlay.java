@@ -20,7 +20,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -190,7 +189,7 @@ public final class TestsOverlay implements GuiLayer {
         rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, colour)));
 
         final List<Component> extras = new ArrayList<>();
-        if (Screen.hasShiftDown()) extras.addAll(test.visuals().description());
+        if (Minecraft.getInstance().hasShiftDown()) extras.addAll(test.visuals().description());
         if (status.result() != Test.Result.PASSED && !status.message().isBlank()) {
             extras.add(Component.literal("!!! " + status.message()).withStyle(ChatFormatting.RED));
         }

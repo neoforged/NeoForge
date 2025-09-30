@@ -827,7 +827,7 @@ public interface IBlockExtension {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {
-                if (!simulate && !context.getLevel().isClientSide) {
+                if (!simulate && !context.getLevel().isClientSide()) {
                     Block.popResourceFromFace(context.getLevel(), context.getClickedPos(), context.getClickedFace(), new ItemStack(Items.HANGING_ROOTS));
                 }
                 return Blocks.DIRT.defaultBlockState();

@@ -24,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
  * Various tests for {@link FluidUtil}, that run when the mod is loaded.
  * If one of the tests fails, an expection will be thrown, and mod loading will fail with an error.
  * If all tests pass, the mod will load successfully.
+ *
+ * <p>Note: these tests use the legacy wrappers, testing the wrappers and that the new bucket wrapper matches the behavior of the old one.
  */
 @Mod(FluidUtilTest.MODID)
 public class FluidUtilTest {

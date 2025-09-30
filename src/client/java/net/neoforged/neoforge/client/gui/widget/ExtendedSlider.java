@@ -9,11 +9,12 @@ import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Slider widget implementation which allows inputting values in a certain range with optional step size.
@@ -120,20 +121,20 @@ public class ExtendedSlider extends AbstractSliderButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        this.setValueFromMouse(mouseX);
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        this.setValueFromMouse(event.x());
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        super.onDrag(mouseX, mouseY, dragX, dragY);
-        this.setValueFromMouse(mouseX);
+    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
+        super.onDrag(event, dragX, dragY);
+        this.setValueFromMouse(event.x());
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean flag = keyCode == GLFW.GLFW_KEY_LEFT;
-        if (flag || keyCode == GLFW.GLFW_KEY_RIGHT) {
+    public boolean keyPressed(KeyEvent keyEvent) {
+        boolean flag = keyEvent.isLeft();
+        if (flag || keyEvent.isRight()) {
             if (this.minValue > this.maxValue)
                 flag = !flag;
             float f = flag ? -1F : 1F;

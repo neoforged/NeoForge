@@ -86,7 +86,7 @@ public class ModelDataManager {
      * @return the model data at this position, or {@link ModelData#EMPTY} if none exists
      */
     public ModelData getAt(BlockPos pos) {
-        Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
+        Preconditions.checkArgument(level.isClientSide(), "Cannot request model data for server level");
         long sectionPos = SectionPos.asLong(pos);
         refreshAt(sectionPos);
         return modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()).getOrDefault(pos.asLong(), ModelData.EMPTY);

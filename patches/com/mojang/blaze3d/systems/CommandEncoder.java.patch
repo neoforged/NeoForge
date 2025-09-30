@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/CommandEncoder.java
 +++ b/com/mojang/blaze3d/systems/CommandEncoder.java
-@@ -35,6 +_,8 @@
+@@ -34,6 +_,8 @@
  
      void clearDepthTexture(GpuTexture p_410276_, double p_410184_);
  

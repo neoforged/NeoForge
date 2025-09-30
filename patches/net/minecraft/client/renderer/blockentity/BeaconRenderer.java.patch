@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
-@@ -221,4 +_,10 @@
+@@ -209,4 +_,10 @@
      public boolean shouldRender(T p_173534_, Vec3 p_173535_) {
          return Vec3.atCenterOf(p_173534_.getBlockPos()).multiply(1.0, 0.0, 1.0).closerThan(p_173535_.multiply(1.0, 0.0, 1.0), this.getViewDistance());
      }

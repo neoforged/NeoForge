@@ -1,29 +1,9 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -114,6 +_,8 @@
-         renderScrollingString(p_281857_, p_282790_, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), p_282944_);
-     }
- 
-+    /** @deprecated Neo: Use {@link #onClick(double, double, int)} instead. */
-+    @Deprecated
-     public void onClick(double p_93634_, double p_93635_) {
-     }
- 
-@@ -130,7 +_,7 @@
-                 boolean flag = this.isMouseOver(p_93641_, p_93642_);
-                 if (flag) {
-                     this.playDownSound(Minecraft.getInstance().getSoundManager());
--                    this.onClick(p_93641_, p_93642_);
-+                    this.onClick(p_93641_, p_93642_, p_93643_);
-                     return true;
-                 }
-             }
-@@ -234,6 +_,19 @@
-     @Override
-     public void setFocused(boolean p_93693_) {
+@@ -238,6 +_,19 @@
          this.focused = p_93693_;
-+    }
-+
+     }
+ 
 +    public static final int UNSET_FG_COLOR = -1;
 +    protected int packedFGColor = UNSET_FG_COLOR;
 +    public int getFGColor() {
@@ -35,6 +15,8 @@
 +    }
 +    public void clearFGColor() {
 +        this.packedFGColor = UNSET_FG_COLOR;
-     }
- 
++    }
++
      @Override
+     public NarratableEntry.NarrationPriority narrationPriority() {
+         if (this.isFocused()) {

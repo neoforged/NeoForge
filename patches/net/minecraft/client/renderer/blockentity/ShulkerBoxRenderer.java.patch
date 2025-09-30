@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -72,6 +_,12 @@
+@@ -127,6 +_,12 @@
          this.model.root().getExtentsForGui(posestack, p_428287_);
      }
  
@@ -11,5 +11,5 @@
 +    }
 +
      @OnlyIn(Dist.CLIENT)
-     static class ShulkerBoxModel extends Model {
+     static class ShulkerBoxModel extends Model<Float> {
          private final ModelPart lid;

@@ -1,173 +1,20 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -74,10 +_,10 @@
-         ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
+@@ -28,7 +_,7 @@
+         ParticleRenderType.SINGLE_QUADS, ParticleRenderType.ITEM_PICKUP, ParticleRenderType.ELDER_GUARDIANS
      );
      protected ClientLevel level;
--    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
-+    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ClientHooks.makeParticleRenderTypeComparator(RENDER_ORDER));
+-    private final Map<ParticleRenderType, ParticleGroup<?>> particles = Maps.newIdentityHashMap();
++    private final Map<ParticleRenderType, ParticleGroup<?>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ClientHooks.makeParticleRenderTypeComparator(RENDER_ORDER));
      private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
-     private final RandomSource random = RandomSource.create();
--    private final Int2ObjectMap<ParticleProvider<?>> providers = new Int2ObjectOpenHashMap<>();
-+    private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
-     private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
-     private final TextureAtlas textureAtlas;
-@@ -207,10 +_,14 @@
-         this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
-     }
- 
-+    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
-+    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_107382_, ParticleProvider<T> p_107383_) {
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107382_), p_107383_);
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107382_), p_107383_);
-     }
- 
-+    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
-+    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
-         this.register(
-             p_273423_,
-@@ -227,10 +_,12 @@
-         );
-     }
- 
-+    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
-+    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_107379_, ParticleEngine.SpriteParticleRegistration<T> p_107380_) {
-         ParticleEngine.MutableSpriteSet particleengine$mutablespriteset = new ParticleEngine.MutableSpriteSet();
-         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), particleengine$mutablespriteset);
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107379_), p_107380_.create(particleengine$mutablespriteset));
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), p_107380_.create(particleengine$mutablespriteset));
-     }
- 
-     @Override
-@@ -350,7 +_,7 @@
-     private <T extends ParticleOptions> Particle makeParticle(
-         T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
+     private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
+@@ -67,7 +_,7 @@
      ) {
--        ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
-+        ParticleProvider<T> particleprovider = (ParticleProvider<T>) this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107396_.getType()));
+         ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.resourceManager
+             .getProviders()
+-            .get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
++            .get(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107396_.getType()));
          return particleprovider == null
              ? null
-             : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -426,28 +_,45 @@
-         }
-     }
- 
-+    @Deprecated
-     public void render(Camera p_107340_, float p_107341_, MultiBufferSource.BufferSource p_383193_) {
--        for (ParticleRenderType particlerendertype : RENDER_ORDER) {
-+        render(p_107340_, p_107341_, p_383193_, null, type -> true);
-+    }
-+
-+    public void render(Camera p_107340_, float p_107341_, MultiBufferSource.BufferSource p_383193_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
-+        for (ParticleRenderType particlerendertype : this.particles.keySet()) { // Neo: allow custom IParticleRenderType's
-+            if (particlerendertype == ParticleRenderType.NO_RENDER || particlerendertype == ParticleRenderType.CUSTOM || !renderTypePredicate.test(particlerendertype)) continue;
-             Queue<Particle> queue = this.particles.get(particlerendertype);
-             if (queue != null && !queue.isEmpty()) {
--                renderParticleType(p_107340_, p_107341_, p_383193_, particlerendertype, queue);
-+                renderParticleType(p_107340_, p_107341_, p_383193_, particlerendertype, queue, frustum);
-             }
-         }
- 
-         Queue<Particle> queue1 = this.particles.get(ParticleRenderType.CUSTOM);
-         if (queue1 != null && !queue1.isEmpty()) {
--            renderCustomParticles(p_107340_, p_107341_, p_383193_, queue1);
-+            renderCustomParticles(p_107340_, p_107341_, p_383193_, queue1, frustum);
-         }
- 
-         p_383193_.endBatch();
-     }
- 
--    private static void renderParticleType(
--        Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_
-+    /**
-+     * @deprecated Neo: use {@link #renderParticleType(Camera, float, MultiBufferSource.BufferSource, ParticleRenderType, Queue, net.minecraft.client.renderer.culling.Frustum)} instead
-+     */
-+    @Deprecated
-+    private static void renderParticleType(
-+            Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_
-+    ) {
-+        renderParticleType(p_382847_, p_383032_, p_383105_, p_383179_, p_383046_, null);
-+    }
-+
-+    private static void renderParticleType(
-+        Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum
-     ) {
-         VertexConsumer vertexconsumer = p_383105_.getBuffer(Objects.requireNonNull(p_383179_.renderType()));
- 
-         for (Particle particle : p_383046_) {
-+            if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_383032_))) continue;
-             try {
-                 particle.render(vertexconsumer, p_382847_, p_383032_);
-             } catch (Throwable throwable) {
-@@ -460,10 +_,19 @@
-         }
-     }
- 
-+    /**
-+     * @deprecated Neo: use {@link #renderCustomParticles(Camera, float, MultiBufferSource.BufferSource, Queue, net.minecraft.client.renderer.culling.Frustum)} instead
-+     */
-+    @Deprecated
-     private static void renderCustomParticles(Camera p_383089_, float p_383167_, MultiBufferSource.BufferSource p_382990_, Queue<Particle> p_383010_) {
-+        renderCustomParticles(p_383089_, p_383167_, p_382990_, p_383010_, null);
-+    }
-+
-+    private static void renderCustomParticles(Camera p_383089_, float p_383167_, MultiBufferSource.BufferSource p_382990_, Queue<Particle> p_383010_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum) {
-         PoseStack posestack = new PoseStack();
- 
-         for (Particle particle : p_383010_) {
-+            if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_383167_))) continue;
-             try {
-                 particle.renderCustom(posestack, p_382990_, p_383089_, p_383167_);
-             } catch (Throwable throwable) {
-@@ -483,7 +_,7 @@
-     }
- 
-     public void destroy(BlockPos p_107356_, BlockState p_107357_) {
--        if (!p_107357_.isAir() && p_107357_.shouldSpawnTerrainParticles()) {
-+        if (!p_107357_.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_107357_).addDestroyEffects(p_107357_, this.level, p_107356_, this)) {
-             VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
-             double d0 = 0.25;
-             voxelshape.forAllBoxes(
-@@ -515,7 +_,7 @@
-                                         d6 - 0.5,
-                                         p_107357_,
-                                         p_107356_
--                                    )
-+                                    ).updateSprite(p_107357_, p_107356_)
-                                 );
-                             }
-                         }
-@@ -560,12 +_,28 @@
-                 d0 = i + aabb.maxX + 0.1F;
-             }
- 
--            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).setPower(0.2F).scale(0.6F));
-+            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).updateSprite(blockstate, p_107368_).setPower(0.2F).scale(0.6F));
-         }
-     }
- 
-     public String countParticles() {
-         return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
-+    }
-+
-+    public void iterateParticles(java.util.function.Consumer<Particle> consumer) {
-+        for (ParticleRenderType particlerendertype : this.particles.keySet()) {
-+            if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
-+            Iterable<Particle> iterable = this.particles.get(particlerendertype);
-+            if (iterable != null) {
-+                iterable.forEach(consumer);
-+            }
-+        }
-+    }
-+
-+    public void addBlockHitEffects(BlockPos pos, net.minecraft.world.phys.BlockHitResult target) {
-+        BlockState state = level.getBlockState(pos);
-+        if (!net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).addHitEffects(state, level, target, this))
-+            crack(pos, target.getDirection());
-     }
- 
-     private boolean hasSpaceInParticleLimit(ParticleGroup p_172280_) {
+             : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_, this.random);

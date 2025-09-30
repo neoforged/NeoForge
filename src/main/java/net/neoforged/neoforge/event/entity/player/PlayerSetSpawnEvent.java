@@ -26,7 +26,7 @@ public class PlayerSetSpawnEvent extends PlayerEvent implements ICancellableEven
     public PlayerSetSpawnEvent(Player player, @Nullable ServerPlayer.RespawnConfig respawnConfig) {
         super(player);
         this.spawnLevel = ServerPlayer.RespawnConfig.getDimensionOrDefault(respawnConfig);
-        this.newSpawn = respawnConfig != null ? respawnConfig.pos() : null;
+        this.newSpawn = respawnConfig != null ? respawnConfig.respawnData().pos() : null;
         this.forced = respawnConfig != null && respawnConfig.forced();
     }
 

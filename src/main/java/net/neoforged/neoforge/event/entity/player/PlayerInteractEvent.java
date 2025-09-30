@@ -432,6 +432,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * @return The effective, i.e. logical, side of this interaction. This will be {@link LogicalSide#CLIENT} on the client thread, and {@link LogicalSide#SERVER} on the server thread.
      */
     public LogicalSide getSide() {
-        return getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
+        return getLevel().isClientSide() ? LogicalSide.CLIENT : LogicalSide.SERVER;
     }
 }

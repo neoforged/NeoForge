@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import net.minecraft.DetectedVersion;
+import net.minecraft.SharedConstants;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -68,6 +68,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.FMLVersion;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -387,12 +388,12 @@ public class NeoForgeMod {
     public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<PiglinCurrencyItemPredicate>> PIGLIN_CURRENCY_PREDICATE = DATA_COMPONENT_PREDICATE_TYPES.register("piglin_currency", () -> PiglinCurrencyItemPredicate.TYPE);
 
     private static final DeferredRegister<TicketType> TICKET_TYPES = DeferredRegister.create(Registries.TICKET_TYPE, NeoForgeVersion.MOD_ID);
-    public static final Holder<TicketType> GENERATE_FORCED_TICKET = TICKET_TYPES.register("generate_forced", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING));
+    public static final Holder<TicketType> GENERATE_FORCED_TICKET = TICKET_TYPES.register("generate_forced", () -> new TicketType(0L, TicketType.FLAG_LOADING));
     //Note: We don't persist the tickets via the TicketType, as we keep handle persisting multiple backing sources of the ticket at once and will reinstate any ones that are still valid
-    public static final Holder<TicketType> BLOCK_TICKET = TICKET_TYPES.register("block", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION));
-    public static final Holder<TicketType> BLOCK_WITH_NATURAL_SPAWNING_TICKET = TICKET_TYPES.register("block_with_natural_spawning", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION, true));
-    public static final Holder<TicketType> ENTITY_TICKET = TICKET_TYPES.register("entity", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION));
-    public static final Holder<TicketType> ENTITY_WITH_NATURAL_SPAWNING_TICKET = TICKET_TYPES.register("entity_with_natural_spawning", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION, true));
+    public static final Holder<TicketType> BLOCK_TICKET = TICKET_TYPES.register("block", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION));
+    public static final Holder<TicketType> BLOCK_WITH_NATURAL_SPAWNING_TICKET = TICKET_TYPES.register("block_with_natural_spawning", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION, true));
+    public static final Holder<TicketType> ENTITY_TICKET = TICKET_TYPES.register("entity", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION));
+    public static final Holder<TicketType> ENTITY_WITH_NATURAL_SPAWNING_TICKET = TICKET_TYPES.register("entity_with_natural_spawning", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION, true));
 
     private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
@@ -529,7 +530,7 @@ public class NeoForgeMod {
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
-        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.name());
+        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), SharedConstants.getCurrentVersion().name());
         ForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
@@ -540,7 +541,7 @@ public class NeoForgeMod {
             return uuid.toString();
         });
 
-        CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getFmlVersion);
+        CrashReportCallables.registerCrashCallable("FML", FMLVersion::getVersion);
         CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
 
         // Forge-provided datapack registries

@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/block/model/ItemTransforms.java
 +++ b/net/minecraft/client/renderer/block/model/ItemTransforms.java
-@@ -19,8 +_,23 @@
-     ItemTransform head,
+@@ -20,8 +_,24 @@
      ItemTransform gui,
      ItemTransform ground,
--    ItemTransform fixed
-+    ItemTransform fixed,
+     ItemTransform fixed,
+-    ItemTransform fixedFromBottom
++    ItemTransform fixedFromBottom,
 +    com.google.common.collect.ImmutableMap<ItemDisplayContext, ItemTransform> moddedTransforms
  ) {
 +    @Deprecated
@@ -17,15 +17,16 @@
 +        ItemTransform head,
 +        ItemTransform gui,
 +        ItemTransform ground,
-+        ItemTransform fixed
++        ItemTransform fixed,
++        ItemTransform fixedFromBottom
 +    ) {
-+        this(thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, com.google.common.collect.ImmutableMap.of());
++        this(thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom, com.google.common.collect.ImmutableMap.of());
 +    }
 +
      public static final ItemTransforms NO_TRANSFORMS = new ItemTransforms(
          ItemTransform.NO_TRANSFORM,
          ItemTransform.NO_TRANSFORM,
-@@ -33,6 +_,17 @@
+@@ -35,6 +_,17 @@
      );
  
      public ItemTransform getTransform(ItemDisplayContext p_270619_) {
@@ -43,12 +44,12 @@
          return switch (p_270619_) {
              case THIRD_PERSON_LEFT_HAND -> this.thirdPersonLeftHand;
              case THIRD_PERSON_RIGHT_HAND -> this.thirdPersonRightHand;
-@@ -66,9 +_,23 @@
-             ItemTransform itemtransform5 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GUI);
+@@ -70,9 +_,23 @@
              ItemTransform itemtransform6 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GROUND);
              ItemTransform itemtransform7 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.FIXED);
+             ItemTransform itemtransform8 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.ON_SHELF);
 -            return new ItemTransforms(
--                itemtransform1, itemtransform, itemtransform3, itemtransform2, itemtransform4, itemtransform5, itemtransform6, itemtransform7
+-                itemtransform1, itemtransform, itemtransform3, itemtransform2, itemtransform4, itemtransform5, itemtransform6, itemtransform7, itemtransform8
 -            );
 +
 +            var builder = com.google.common.collect.ImmutableMap.<ItemDisplayContext, ItemTransform>builder();
@@ -66,7 +67,7 @@
 +                }
 +            }
 +
-+            return new ItemTransforms(itemtransform1, itemtransform, itemtransform3, itemtransform2, itemtransform4, itemtransform5, itemtransform6, itemtransform7, builder.build());
++            return new ItemTransforms(itemtransform1, itemtransform, itemtransform3, itemtransform2, itemtransform4, itemtransform5, itemtransform6, itemtransform7, itemtransform8, builder.build());
          }
  
          private ItemTransform getTransform(JsonDeserializationContext p_270385_, JsonObject p_270436_, ItemDisplayContext p_270100_) {

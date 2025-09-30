@@ -8,7 +8,7 @@
          this.ensureMapOwnership();
          T t = this.prototype.get(p_330791_);
          Optional<T> optional;
-@@ -203,6 +_,10 @@
+@@ -208,6 +_,10 @@
          return i;
      }
  
@@ -19,7 +19,7 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -232,7 +_,23 @@
+@@ -237,7 +_,23 @@
  
      @Override
      public int hashCode() {

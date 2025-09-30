@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -16,17 +17,18 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -106,7 +108,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param blockEntityType             the block entity type to register a renderer for
          * @param blockEntityRendererProvider the renderer provider
          */
-        public <T extends BlockEntity> void registerBlockEntityRenderer(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
+        public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+                BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T, S> blockEntityRendererProvider) {
             BlockEntityRenderers.register(blockEntityType, blockEntityRendererProvider);
         }
     }
@@ -122,13 +125,19 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class AddLayers extends EntityRenderersEvent {
         private final Map<EntityType<?>, EntityRenderer<?, ?>> renderers;
-        private final Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> skinMap;
+        private final Map<PlayerModelType, AvatarRenderer<AbstractClientPlayer>> playerRenderers;
+        private final Map<PlayerModelType, AvatarRenderer<ClientMannequin>> mannequinRenderers;
         private final EntityRendererProvider.Context context;
 
         @ApiStatus.Internal
-        public AddLayers(Map<EntityType<?>, EntityRenderer<?, ?>> renderers, Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> playerRenderers, EntityRendererProvider.Context context) {
+        public AddLayers(
+                Map<EntityType<?>, EntityRenderer<?, ?>> renderers,
+                Map<PlayerModelType, AvatarRenderer<AbstractClientPlayer>> playerRenderers,
+                Map<PlayerModelType, AvatarRenderer<ClientMannequin>> mannequinRenderers,
+                EntityRendererProvider.Context context) {
             this.renderers = renderers;
-            this.skinMap = playerRenderers;
+            this.playerRenderers = playerRenderers;
+            this.mannequinRenderers = mannequinRenderers;
             this.context = context;
         }
 
@@ -139,22 +148,36 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * {@linkplain ModelLayers#PLAYER regular player model} and {@code slim} for the
          * {@linkplain ModelLayers#PLAYER_SLIM slim player model}.
          */
-        public Set<PlayerSkin.Model> getSkins() {
-            return skinMap.keySet();
+        public Set<PlayerModelType> getSkins() {
+            return playerRenderers.keySet();
         }
 
         /**
          * Returns a player skin renderer for the given skin name.
          *
          * @param skinModel the skin model to get the renderer for
-         * @param <R>       the type of the skin renderer, usually {@link PlayerRenderer}
+         * @param <R>       the type of the skin renderer, usually {@link AvatarRenderer}
          * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
          * @see #getSkins()
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <R extends EntityRenderer<? extends Player, ?>> R getSkin(PlayerSkin.Model skinModel) {
-            return (R) skinMap.get(skinModel);
+        public <R extends AvatarRenderer<AbstractClientPlayer>> R getPlayerRenderer(PlayerModelType skinModel) {
+            return (R) playerRenderers.get(skinModel);
+        }
+
+        /**
+         * Returns a player skin renderer for the given skin name.
+         *
+         * @param skinModel the skin model to get the renderer for
+         * @param <R>       the type of the skin renderer, usually {@link AvatarRenderer}
+         * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
+         * @see #getSkins()
+         */
+        @Nullable
+        @SuppressWarnings("unchecked")
+        public <R extends AvatarRenderer<ClientMannequin>> R getMannequinRenderer(PlayerModelType skinModel) {
+            return (R) mannequinRenderers.get(skinModel);
         }
 
         /**

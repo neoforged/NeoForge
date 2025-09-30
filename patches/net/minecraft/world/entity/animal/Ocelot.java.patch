@@ -3,7 +3,7 @@
 @@ -161,7 +_,7 @@
          if ((this.temptGoal == null || this.temptGoal.isRunning()) && !this.isTrusting() && this.isFood(itemstack) && p_29021_.distanceToSqr(this) < 9.0) {
              this.usePlayerItem(p_29021_, p_29022_, itemstack);
-             if (!this.level().isClientSide) {
+             if (!this.level().isClientSide()) {
 -                if (this.random.nextInt(3) == 0) {
 +                if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_29021_)) {
                      this.setTrusting(true);

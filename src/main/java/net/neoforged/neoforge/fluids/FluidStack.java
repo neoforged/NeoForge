@@ -164,7 +164,11 @@ public final class FluidStack implements MutableDataComponentHolder {
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
-        this(fluid.value(), amount, PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch));
+        this(fluid.value(), amount, patch);
+    }
+
+    public FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
+        this(fluid, amount, PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch));
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount) {

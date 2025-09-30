@@ -32,7 +32,7 @@ public class ShaderResourcesTest {
         if (ENABLE) {
             LOGGER = LogUtils.getLogger();
 
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 ClientInit.init(modEventBus);
             }
         }

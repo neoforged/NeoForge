@@ -22,8 +22,10 @@ import org.jetbrains.annotations.ApiStatus;
 public class ServerModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean hasErrors = false;
+    private static boolean gameTestServer;
 
-    public static void load() {
+    public static void load(boolean gameTestServer) {
+        ServerModLoader.gameTestServer = gameTestServer;
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(() -> {}, false);
@@ -43,6 +45,10 @@ public class ServerModLoader extends CommonModLoader {
                 LOGGER.warn(Logging.LOADING, "{} [{}]", issue.translationKey(), issue.translationArgs());
             }
         }
+    }
+
+    public static boolean isGameTestServer() {
+        return gameTestServer;
     }
 
     public static boolean hasErrors() {

@@ -209,7 +209,7 @@ public abstract class AbstractTest implements Test {
                             .append(" ").append(
                                     Component.literal("No").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)
                                             .withClickEvent(internal.setStatusCommand(
-                                                    id(), Result.FAILED, player.getGameProfile().getName() + " denied seeing the effects of the test"))))),
+                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))),
                     false);
         }
     }

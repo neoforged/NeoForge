@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "#c:ingots/copper",
+    "X": {
+      "neoforge:ingredient_type": "neoforge:difference",
+      "base": "#c:chests/wooden",
+      "subtracted": "#c:chests/trapped"
+    }
+  },
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:copper_chest"
+  }
+}

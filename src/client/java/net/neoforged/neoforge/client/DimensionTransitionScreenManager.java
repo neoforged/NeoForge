@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client;
 import com.mojang.datafixers.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
+import net.minecraft.client.multiplayer.LevelLoadTracker;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.ModLoader;
@@ -49,10 +49,11 @@ public class DimensionTransitionScreenManager {
         if (fromDim != null) {
             return fromDim;
         }
-        return ReceivingLevelScreen::new;
+        return LevelLoadingScreen::new;
     }
 
+    // TODO: Porting 1.21.9 Rename?
     public interface ReceivingLevelScreenFactory {
-        ReceivingLevelScreen create(BooleanSupplier supplier, ReceivingLevelScreen.Reason reason);
+        LevelLoadingScreen create(LevelLoadTracker levelLoadTracker, LevelLoadingScreen.Reason reason);
     }
 }
