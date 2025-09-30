@@ -15,13 +15,19 @@
          private T register(Registry<IncomingRpcMethod> p_443333_, ResourceLocation p_451500_) {
              return Registry.register(p_443333_, p_451500_, this.build());
          }
-@@ -161,9 +_,11 @@
+@@ -160,10 +_,16 @@
+ 
                          jsonelement = jsonarray.get(0);
                      }
- 
+-
 -                    Params params = this.paramsCodec.parse(JsonOps.INSTANCE, jsonelement).getOrThrow(InvalidParameterJsonRpcException::new);
-+                    var server = p_442932_.getServer();
-+                    var ops = server != null ? server.registryAccess().createSerializationContext(JsonOps.INSTANCE) : JsonOps.INSTANCE;
++                    
++                    com.mojang.serialization.DynamicOps<JsonElement> ops;
++                    try {
++                        ops = p_442932_.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
++                    } catch (net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException e) {
++                        ops = JsonOps.INSTANCE;
++                    }
 +                    Params params = this.paramsCodec.parse(ops, jsonelement).getOrThrow(InvalidParameterJsonRpcException::new);
                      Result result = this.function.apply(p_442932_, params, p_442918_);
 -                    return this.resultCodec.encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);

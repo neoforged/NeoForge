@@ -45,15 +45,21 @@
      }
  
      public <V> CompletableFuture<V> submit(Supplier<V> p_442544_) {
-@@ -79,6 +_,14 @@
+@@ -79,6 +_,20 @@
          return this.notificationManager;
      }
  
-+    public @org.jetbrains.annotations.Nullable DedicatedServer getServer() {
++    public DedicatedServer getServer() {
++        if (this.server == null) {
++            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
++        }
 +        return this.server;
 +    }
 +
-+    public @org.jetbrains.annotations.Nullable JsonRpcLogger getLogger() {
++    public JsonRpcLogger getLogger() {
++        if (this.logger == null) {
++            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("This method requires the json-rpc logger, but it is not available");
++        }
 +        return this.logger;
 +    }
 +
