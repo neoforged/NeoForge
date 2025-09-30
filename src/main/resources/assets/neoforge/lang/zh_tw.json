@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "元件 %s 已移除（原值：%s）",
   "commands.neoforge.data_components.list.tooltip.modified": "元件 %s 的值已從 %s 修改為 %s",
   "commands.neoforge.data_components.list.tooltip.added": "元件 %s 已新增，其值為 %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "配方查詢無法在用戶端指令中使用",
   "commands.config.getwithtype": "%s 類型 %s 的配置在 %s 發現",
   "commands.config.noconfig": "%s 類型 %s 的配置未發現",
