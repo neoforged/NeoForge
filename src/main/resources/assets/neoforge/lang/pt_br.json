@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Componente %s com valor %s foi excluído",
   "commands.neoforge.data_components.list.tooltip.modified": "O componente %s foi modificado de %s para %s",
   "commands.neoforge.data_components.list.tooltip.added": "Componente %s foi adicionado com valor %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Não é possível pesquisar por receita em comandos do cliente",
   "commands.config.getwithtype": "Configuração para %s do tipo %s encontrada em %s",
   "commands.config.noconfig": "Configuração para %s do tipo %s não encontrada",
