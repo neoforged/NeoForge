@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Komponen %s dengan nilai %s telah dipadamkan",
   "commands.neoforge.data_components.list.tooltip.modified": "Komponen %s telah diubah suai daripada %s kepada %s",
   "commands.neoforge.data_components.list.tooltip.added": "Komponen %s telah ditambah dengan nilai %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Carian resipi tidak boleh dilakukan dalam perintah klien",
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
