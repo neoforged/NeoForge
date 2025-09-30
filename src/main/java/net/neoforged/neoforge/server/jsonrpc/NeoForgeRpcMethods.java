@@ -10,14 +10,12 @@ import java.util.List;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.jsonrpc.IncomingRpcMethod;
 import net.minecraft.server.jsonrpc.api.ParamInfo;
 import net.minecraft.server.jsonrpc.api.ResultInfo;
 import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.internalapi.MinecraftApi;
 import net.minecraft.server.jsonrpc.methods.ClientInfo;
-import net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -60,11 +58,7 @@ public class NeoForgeRpcMethods {
     }
 
     private static List<String> listRegistries(MinecraftApi api) {
-        DedicatedServer server = api.getServer();
-        if (server == null) {
-            throw new MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
-        }
-        return server
+        return api.getServer()
                 .registryAccess()
                 .listRegistryKeys()
                 .map(reg -> reg.location().toString())
@@ -72,11 +66,7 @@ public class NeoForgeRpcMethods {
     }
 
     private static List<ResourceLocation> listRegistryContents(MinecraftApi api, ResourceLocation registryId, ClientInfo clientInfo) {
-        DedicatedServer server = api.getServer();
-        if (server == null) {
-            throw new MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
-        }
-        return server
+        return api.getServer()
                 .registryAccess()
                 .lookupOrThrow(ResourceKey.createRegistryKey(registryId))
                 .listElementIds()
