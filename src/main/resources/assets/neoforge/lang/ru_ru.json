@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Компонент %s со значением %s был удалён",
   "commands.neoforge.data_components.list.tooltip.modified": "Компонент %s был изменен с %s на %s",
   "commands.neoforge.data_components.list.tooltip.added": "Компонент %s был добавлен со значением %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Поиск рецептов невозможен в командах клиента",
   "commands.config.getwithtype": "Настройки для %s типа %s обнаружены в %s",
   "commands.config.noconfig": "Настройки для %s типа %s не найдены",
