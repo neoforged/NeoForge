@@ -122,6 +122,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "Komponenta %s s hodnotou %s byla smazána",
   "commands.neoforge.data_components.list.tooltip.modified": "Komponenta %s byla změněna z %s na %s",
   "commands.neoforge.data_components.list.tooltip.added": "Komponenta %s byla přidána s hodnotou %s",
+  "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Vyhledávání receptů není možné v klientských příkazech",
   "commands.config.getwithtype": "Konfigurace pro %s typu %s nalezena na %s",
   "commands.config.noconfig": "Konfigurace pro %s typu %s nenalezena",
