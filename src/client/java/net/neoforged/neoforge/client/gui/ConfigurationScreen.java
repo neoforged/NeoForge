@@ -1052,7 +1052,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @Override
         protected ConfigurationSectionScreen rebuild() {
             if (list != null) { // this may be called early, skip and wait for init() then
-                list.children().clear();
+                list.clearEntries();
 
                 for (int idx = 0; idx < cfgList.size(); idx++) {
                     var entry = cfgList.get(idx);
