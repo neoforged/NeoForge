@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -422,7 +_,7 @@
-         this.resourcePackRepository = new PackRepository(clientpacksource, this.downloadedPackSource.createRepositorySource(), repositorysource);
-         this.vanillaPackResources = clientpacksource.getVanillaPack();
-         this.proxy = p_91084_.user.proxy;
--        this.offlineDeveloperMode = p_91084_.game.offlineDeveloperMode;
-+        this.offlineDeveloperMode = p_91084_.game.offlineDeveloperMode || (!net.neoforged.fml.loading.FMLEnvironment.isProduction() && p_91084_.user.user.getAccessToken().equals("0"));
-         YggdrasilAuthenticationService yggdrasilauthenticationservice = this.offlineDeveloperMode
-             ? YggdrasilAuthenticationService.createOffline(this.proxy)
-             : new YggdrasilAuthenticationService(this.proxy);
 @@ -441,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -119,15 +110,6 @@
          }
  
          stringbuilder.append(" ");
-@@ -831,7 +_,7 @@
-     }
- 
-     private UserApiService createUserApiService(YggdrasilAuthenticationService p_193586_, GameConfig p_193587_) {
--        return p_193587_.game.offlineDeveloperMode ? UserApiService.OFFLINE : p_193586_.createUserApiService(p_193587_.user.user.getAccessToken());
-+        return this.isOfflineDeveloperMode() ? UserApiService.OFFLINE : p_193586_.createUserApiService(p_193587_.user.user.getAccessToken());
-     }
- 
-     public boolean isOfflineDeveloperMode() {
 @@ -843,7 +_,7 @@
      }
  

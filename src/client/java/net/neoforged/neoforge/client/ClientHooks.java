@@ -38,8 +38,13 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.ValueConverter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -141,6 +146,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
@@ -1133,5 +1139,44 @@ public class ClientHooks {
             return new ValidationGpuDevice(glDevice, true);
         }
         return glDevice;
+    }
+
+    @ApiStatus.Internal
+    public static ValueConverter<String> convertUsername() {
+        return new ValueConverter<String>() {
+            @Override
+            public String convert(String value) {
+                if (FMLEnvironment.isProduction()) return value;
+                // Replace '#' placeholders with random numbers in dev
+                Matcher m = Pattern.compile("#+").matcher(value);
+                var replaced = new StringBuilder();
+                while (m.find()) {
+                    m.appendReplacement(replaced, getRandomNumbers(m.group().length()));
+                }
+                m.appendTail(replaced);
+                return replaced.toString();
+            }
+
+            @Override
+            public Class<? extends String> valueType() {
+                return String.class;
+            }
+
+            @Override
+            public String valuePattern() {
+                return null;
+            }
+
+            private static String getRandomNumbers(int length) {
+                // Generate a time-based random number, to mimic how n.m.client.Main works
+                return Long.toString(System.nanoTime() % (int) Math.pow(10, length));
+            }
+        };
+    }
+
+    @ApiStatus.Internal
+    public static <T> ArgumentAcceptingOptionSpec<T> optionalInDev(ArgumentAcceptingOptionSpec<T> option, T defaultValue) {
+        if (FMLEnvironment.isProduction()) return option.required();
+        return option.defaultsTo(defaultValue);
     }
 }
