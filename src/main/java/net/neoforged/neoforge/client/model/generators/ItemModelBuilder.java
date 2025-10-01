@@ -12,10 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.armortrim.TrimMaterial;
-import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /**
@@ -23,17 +21,20 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
  * {@link #override()}.
  */
 public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
-    private static final List<ResourceKey<TrimMaterial>> VANILLA_TRIM_MATERIALS = List.of(TrimMaterials.QUARTZ, TrimMaterials.IRON, TrimMaterials.NETHERITE, TrimMaterials.REDSTONE, TrimMaterials.COPPER, TrimMaterials.GOLD, TrimMaterials.EMERALD, TrimMaterials.DIAMOND, TrimMaterials.LAPIS, TrimMaterials.AMETHYST);
     protected List<OverrideBuilder> overrides = new ArrayList<>();
 
     public ItemModelBuilder(ResourceLocation outputLocation, ExistingFileHelper existingFileHelper) {
         super(outputLocation, existingFileHelper);
         //add vanilla armor trims to the existing file helper
-        for (ResourceKey<TrimMaterial> trim : VANILLA_TRIM_MATERIALS) {
-            this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/boots_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/chestplate_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/helmet_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/leggings_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
+        for (ItemModelGenerators.TrimModelData trim : ItemModelGenerators.GENERATED_TRIM_MODELS) {
+            ArrayList<String> trimNames = new ArrayList<>(trim.overrideArmorMaterials().values());
+            trimNames.add(trim.name());
+            for (String trimName : trimNames) {
+                this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/boots_trim_" + trimName), ModelProvider.TEXTURE);
+                this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/chestplate_trim_" + trimName), ModelProvider.TEXTURE);
+                this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/helmet_trim_" + trimName), ModelProvider.TEXTURE);
+                this.existingFileHelper.trackGenerated(ResourceLocation.withDefaultNamespace("trims/items/leggings_trim_" + trimName), ModelProvider.TEXTURE);
+            }
         }
     }
 
