@@ -12,12 +12,15 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 
 /**
  * Flexible implementation of a Fluid Storage object. NOT REQUIRED.
  *
  * @author King Lemming
+ * @deprecated Use {@link FluidStacksResourceHandler} instead.
  */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class FluidTank implements IFluidHandler, IFluidTank, ValueIOSerializable {
     protected Predicate<FluidStack> validator;
     protected FluidStack fluid = FluidStack.EMPTY;

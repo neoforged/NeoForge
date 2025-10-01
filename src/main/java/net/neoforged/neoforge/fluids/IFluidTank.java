@@ -6,12 +6,17 @@
 package net.neoforged.neoforge.fluids;
 
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 /**
  * This interface represents a Fluid Tank. IT IS NOT REQUIRED but is provided for convenience.
  * You are free to handle Fluids in any way that you wish - this is simply an easy default way.
  * DO NOT ASSUME that these objects are used internally in all cases.
+ *
+ * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead.
  */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public interface IFluidTank {
     /**
      * @return FluidStack representing the fluid in the tank, null if the tank is empty.

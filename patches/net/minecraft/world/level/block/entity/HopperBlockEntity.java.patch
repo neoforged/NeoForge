@@ -1,5 +1,47 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -82,6 +_,41 @@
+         this.getItems().set(p_59315_, p_59316_);
+         p_59316_.limitSize(this.getMaxStackSize(p_59316_));
+     }
++    // Neo: Make the hopper cooldown time transactional (it may change when items are inserted)
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> cooldownTimeJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++        @Override
++        protected Integer createSnapshot() {
++            return cooldownTime;
++        }
++        @Override
++        protected void revertToSnapshot(Integer snapshot) {
++            cooldownTime = snapshot;
++        }
++    };
++
++    // Neo: Checks if the hopper was empty just before the insertion of `amountChange` at index `slot`.
++    private boolean wasEmpty(int slot, int amountChange) {
++        if (items.get(slot).getCount() != amountChange) return false;
++        for (int i = 0; i < items.size(); ++i) {
++            if (i != slot && !items.get(i).isEmpty()) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        // If we just went from empty to something in the hopper, reset the cooldown.
++        if (amountChange > 0 && !isOnCustomCooldown() && wasEmpty(slot, amountChange)) {
++            cooldownTimeJournal.updateSnapshots(transaction);
++            // This cooldown is always set to 8 in vanilla with one exception:
++            // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++            // has not been updated as recently as the one pushing items into it.
++            // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++            setCooldown(MOVE_ITEM_SPEED);
++        }
++    }
+ 
+     @Override
+     public void setBlockState(BlockState p_326468_) {
 @@ -139,10 +_,11 @@
      }
  
@@ -20,7 +62,7 @@
                  return false;
              }
 +        } else {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
          }
      }
  
@@ -41,7 +83,7 @@
  
              return false;
 +        } else if (containerOrHandler.itemHandler() != null) {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
          } else {
              boolean flag = p_155554_.isGridAligned()
                  && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
@@ -58,26 +100,26 @@
          return !list.isEmpty() ? (Container)list.get(p_326325_.random.nextInt(list.size())) : null;
      }
  
-+    private static net.neoforged.neoforge.items.ContainerOrHandler getSourceContainerOrHandler(Level p_155597_, Hopper p_155598_, BlockPos p_326315_, BlockState p_326093_) {
++    private static net.neoforged.neoforge.transfer.item.ContainerOrHandler getSourceContainerOrHandler(Level p_155597_, Hopper p_155598_, BlockPos p_326315_, BlockState p_326093_) {
 +        return getContainerOrHandlerAt(p_155597_, p_326315_, p_326093_, p_155598_.getLevelX(), p_155598_.getLevelY() + 1.0, p_155598_.getLevelZ(), Direction.DOWN);
 +    }
 +
-+    public static net.neoforged.neoforge.items.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, @Nullable Direction side) {
++    public static net.neoforged.neoforge.transfer.item.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, @Nullable Direction side) {
 +        return getContainerOrHandlerAt(
 +                level, pos, level.getBlockState(pos), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, side
 +        );
 +    }
 +
-+    private static net.neoforged.neoforge.items.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, @Nullable Direction side) {
++    private static net.neoforged.neoforge.transfer.item.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, @Nullable Direction side) {
 +        Container container = getBlockContainer(level, pos, state);
 +        if (container != null) {
-+            return new net.neoforged.neoforge.items.ContainerOrHandler(container, null);
++            return new net.neoforged.neoforge.transfer.item.ContainerOrHandler(container, null);
 +        }
-+        var blockItemHandler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, pos, state, null, side);
++        var blockItemHandler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Item.BLOCK, pos, state, null, side);
 +        if (blockItemHandler != null) {
-+            return new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
++            return new net.neoforged.neoforge.transfer.item.ContainerOrHandler(null, blockItemHandler);
 +        }
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
++        return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
 +    }
 +
      private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {

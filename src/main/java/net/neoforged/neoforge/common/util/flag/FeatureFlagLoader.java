@@ -20,7 +20,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.flag.FeatureFlagRegistry;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,7 +33,7 @@ public final class FeatureFlagLoader {
 
     public static void loadModdedFlags(FeatureFlagRegistry.Builder builder) {
         Map<IModInfo, JarResource> pathPerMod = new HashMap<>();
-        LoadingModList.get()
+        FMLLoader.getCurrent().getLoadingModList()
                 .getModFiles()
                 .stream()
                 .map(ModFileInfo::getMods)

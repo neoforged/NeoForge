@@ -17,7 +17,10 @@ import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
 
 /**
  * Wrapper around any block, only accounts for fluid placement, otherwise the block acts a void.
+ *
+ * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
  */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class BlockWrapper extends VoidFluidHandler {
     protected final BlockState state;
     protected final Level world;
@@ -42,6 +45,7 @@ public class BlockWrapper extends VoidFluidHandler {
         return FluidType.BUCKET_VOLUME;
     }
 
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static class LiquidContainerBlockWrapper extends VoidFluidHandler {
         protected final LiquidBlockContainer liquidContainer;
         protected final Level world;

@@ -3,22 +3,25 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.items;
+package net.neoforged.neoforge.world.inventory;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Slot to handle immutable itemstack storages (Ex: {@link ComponentItemHandler}).
+ * Slot to handle immutable itemstack storages (Ex: {@link ItemAccessItemHandler}).
  * <p>
- * For an implementation for use with an {@link IItemHandler} see {@link ItemHandlerCopySlot}.
+ * For an implementation for use with a {@link ResourceHandler} see {@link ResourceHandlerSlot}.
  * <p>
- * Vanilla MC code modifies the stack returned by `getStack()` directly, but it
- * calls {@code setChanged()} when that happens, so we just cache the returned stack,
- * and set it when {@code setChanged()} is called.
+ * Vanilla MC code modifies the stack returned by {@link #getItem()} directly, but it
+ * calls {@link #setChanged()} when that happens, so we just cache the returned stack,
+ * and set it when {@link #setChanged()} is called.
  */
 public abstract class StackCopySlot extends Slot {
     private static final Container emptyInventory = new SimpleContainer(0);
