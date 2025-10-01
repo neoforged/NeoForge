@@ -4,7 +4,7 @@
  
      protected void submitNameTag(S p_436016_, PoseStack p_433473_, SubmitNodeCollector p_434265_, CameraRenderState p_451278_) {
          if (p_436016_.nameTag != null) {
-+            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_436016_, p_436016_.nameTag, this, p_433473_, p_434265_, p_436016_.partialTick);
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_436016_, p_436016_.nameTag, this, p_433473_, p_434265_, p_451278_, p_436016_.partialTick);
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
              p_434265_.submitNameTag(
                  p_433473_,
@@ -17,3 +17,16 @@
          return s;
      }
  
+@@ -191,9 +_,10 @@
+ 
+         if (this.entityRenderDispatcher.camera != null) {
+             p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
+-            boolean flag1 = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(p_362104_, p_361028_, this.getNameTag(p_362104_), this, p_362204_);
++            boolean flag1 = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
+             if (flag1) {
+-                p_361028_.nameTag = this.getNameTag(p_362104_);
++                p_361028_.nameTag = event.getContent();
+                 p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
+             } else {
+                 p_361028_.nameTag = null;
