@@ -8,14 +8,6 @@
      static final Logger LOGGER = LogUtils.getLogger();
      static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -272,6 +_,7 @@
- 
-     public void returnToScreen() {
-         this.reloadWorldList();
-+        if (this.minecraft.screen instanceof ProgressScreen || this.minecraft.screen instanceof ConfirmScreen) // Neo - fix MC-251068
-         this.minecraft.setScreen(this.screen);
-     }
- 
 @@ -524,6 +_,7 @@
              this.infoText.setPosition(i, this.getContentY() + 9 + 9 + 3);
              this.infoText.render(p_439856_, p_439492_, p_440095_, p_439455_);
