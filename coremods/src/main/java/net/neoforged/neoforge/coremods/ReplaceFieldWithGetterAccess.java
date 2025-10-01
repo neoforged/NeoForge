@@ -5,15 +5,13 @@
 
 package net.neoforged.neoforge.coremods;
 
-import cpw.mods.modlauncher.api.CoreModTransformationContext;
-import cpw.mods.modlauncher.api.ITransformer;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import net.neoforged.fml.coremod.CoreModClassTransformer;
+import net.neoforged.fml.coremod.CoreModTransformationContext;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;

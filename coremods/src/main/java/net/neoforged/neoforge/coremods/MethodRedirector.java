@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.coremods;
 
-import cpw.mods.modlauncher.api.CoreModTransformationContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import net.neoforged.fml.coremod.CoreModClassTransformer;
+import net.neoforged.fml.coremod.CoreModTransformationContext;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -56,7 +57,7 @@ public class MethodRedirector implements CoreModClassTransformer {
     }
 
     @Override
-    public Set<Target.ClassTarget> targets() {
+    public Set<Target> targets() {
         return targets;
     }
 

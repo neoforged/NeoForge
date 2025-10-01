@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.coremods;
 
-import net.neoforged.fml.coremod.CoreMod;
-import net.neoforged.fml.coremod.CoreModTransformer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.neoforged.fml.coremod.CoreMod;
+import net.neoforged.fml.coremod.CoreModTransformer;
 
 public class NeoForgeCoreMod implements CoreMod {
     @Override

@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.coremods;
 
-import cpw.mods.modlauncher.api.CoreModTransformationContext;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import net.neoforged.fml.coremod.CoreModMethodTransformer;
+import net.neoforged.fml.coremod.CoreModTransformationContext;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
