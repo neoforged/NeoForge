@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.coremods;
 
 import cpw.mods.modlauncher.api.CoreModTransformationContext;
-import cpw.mods.modlauncher.api.ITransformer;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -24,10 +23,10 @@ import org.slf4j.LoggerFactory;
  * as {@code itemstack.getItem() instanceof CrossbowItem}.
  * This transformer targets a set of methods to replace the occurrence of a single field-comparison.
  */
-public class ReplaceFieldComparisonWithInstanceOf implements ITransformer.MethodTransformer {
+public class ReplaceFieldComparisonWithInstanceOf implements CoreModMethodTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(ReplaceFieldComparisonWithInstanceOf.class);
 
-    private final Set<Target.MethodTarget> targets;
+    private final Set<Target> targets;
     private final String fieldOwner;
     private final String fieldName;
     private final String replacementClassName;
@@ -42,7 +41,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer.Method
     public ReplaceFieldComparisonWithInstanceOf(String fieldOwner,
             String fieldName,
             String replacementClassName,
-            List<Target.MethodTarget> methodsToScan) {
+            List<Target> methodsToScan) {
         this.targets = Set.copyOf(methodsToScan);
 
         this.fieldOwner = fieldOwner;
@@ -58,7 +57,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer.Method
     }
 
     @Override
-    public Set<Target.MethodTarget> targets() {
+    public Set<Target> targets() {
         return targets;
     }
 

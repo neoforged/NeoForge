@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import net.neoforged.fml.coremod.CoreModClassTransformer;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
@@ -27,13 +29,13 @@ import org.objectweb.asm.tree.MethodInsnNode;
  * same type as the field.
  * If no methodName is passed, any method matching the described signature will be used as callable method.
  */
-public class ReplaceFieldWithGetterAccess implements ITransformer.ClassTransformer {
+public class ReplaceFieldWithGetterAccess implements CoreModClassTransformer {
     private final Map<String, String> fieldToMethod;
-    private final Set<Target.ClassTarget> targets;
+    private final Set<Target> targets;
     private final String className;
 
     public ReplaceFieldWithGetterAccess(String className, Map<String, String> fieldToMethod) {
-        this.targets = Set.of(new Target.ClassTarget(className));
+        this.targets = Set.of(new Target(className));
         this.fieldToMethod = fieldToMethod;
         this.className = className;
     }
@@ -45,7 +47,7 @@ public class ReplaceFieldWithGetterAccess implements ITransformer.ClassTransform
     }
 
     @Override
-    public Set<Target.ClassTarget> targets() {
+    public Set<Target> targets() {
         return targets;
     }
 

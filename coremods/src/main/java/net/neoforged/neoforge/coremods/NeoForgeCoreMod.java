@@ -5,16 +5,17 @@
 
 package net.neoforged.neoforge.coremods;
 
-import cpw.mods.modlauncher.api.ITransformer;
+import net.neoforged.fml.coremod.CoreMod;
+import net.neoforged.fml.coremod.CoreModTransformer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.neoforged.neoforgespi.coremod.ICoreMod;
 
-public class NeoForgeCoreMod implements ICoreMod {
+public class NeoForgeCoreMod implements CoreMod {
     @Override
-    public Iterable<? extends ITransformer> getTransformers() {
-        List<ITransformer> transformers = new ArrayList<>();
+    public Iterable<? extends CoreModTransformer> getTransformers() {
+        List<CoreModTransformer> transformers = new ArrayList<>();
         transformers.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.biome.Biome", Map.of(
                 "climateSettings", "getModifiedClimateSettings",
                 "specialEffects", "getModifiedSpecialEffects")));

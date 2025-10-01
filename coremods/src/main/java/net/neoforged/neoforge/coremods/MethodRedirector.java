@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.coremods;
 
 import cpw.mods.modlauncher.api.CoreModTransformationContext;
-import cpw.mods.modlauncher.api.ITransformer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,9 +22,9 @@ import org.objectweb.asm.tree.MethodInsnNode;
 /**
  * Redirect calls to one method to another.
  */
-public class MethodRedirector implements ITransformer.ClassTransformer {
+public class MethodRedirector implements CoreModClassTransformer {
     private final Map<String, List<MethodRedirection>> redirectionsByClass = new HashMap<>();
-    private final Set<Target.ClassTarget> targets = new HashSet<>();
+    private final Set<Target> targets = new HashSet<>();
 
     private static final List<MethodRedirection> REDIRECTIONS = List.of(
             new MethodRedirection(
@@ -44,7 +43,7 @@ public class MethodRedirector implements ITransformer.ClassTransformer {
         for (var redirection : REDIRECTIONS) {
             var targetClassNames = CoremodUtils.loadResource(redirection.targetClassListFile, String[].class);
             for (var targetClassName : targetClassNames) {
-                targets.add(new Target.ClassTarget(targetClassName));
+                targets.add(new Target(targetClassName));
                 var redirections = redirectionsByClass.computeIfAbsent(targetClassName, s -> new ArrayList<>());
                 redirections.add(redirection);
             }
