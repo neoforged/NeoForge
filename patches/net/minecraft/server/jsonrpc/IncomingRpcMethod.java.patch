@@ -15,13 +15,11 @@
          private T register(Registry<IncomingRpcMethod> p_443333_, ResourceLocation p_451500_) {
              return Registry.register(p_443333_, p_451500_, this.build());
          }
-@@ -160,10 +_,16 @@
- 
+@@ -161,9 +_,15 @@
                          jsonelement = jsonarray.get(0);
                      }
--
+ 
 -                    Params params = this.paramsCodec.parse(JsonOps.INSTANCE, jsonelement).getOrThrow(InvalidParameterJsonRpcException::new);
-+                    
 +                    com.mojang.serialization.DynamicOps<JsonElement> ops;
 +                    try {
 +                        ops = p_442932_.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
