@@ -30,7 +30,7 @@
          }
  
          if (p_447013_.nameTag != null) {
-+            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_447013_, p_447013_.nameTag, this, p_446358_, p_446248_, p_447013_.partialTick);
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_447013_, p_447013_.nameTag, this, p_446358_, p_446248_, p_451056_, p_447013_.partialTick);
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
              p_446248_.submitNameTag(
                  p_446358_,
