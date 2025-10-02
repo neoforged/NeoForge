@@ -8,9 +8,9 @@ package net.neoforged.neoforge.coremods;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import net.neoforged.fml.coremod.CoreModMethodTransformer;
-import net.neoforged.fml.coremod.CoreModTransformationContext;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
+import net.neoforged.neoforgespi.transformation.SimpleMethodProcessor;
+import net.neoforged.neoforgespi.transformation.SimpleTransformationContext;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * as {@code itemstack.getItem() instanceof CrossbowItem}.
  * This transformer targets a set of methods to replace the occurrence of a single field-comparison.
  */
-public class ReplaceFieldComparisonWithInstanceOf implements CoreModMethodTransformer {
+public class ReplaceFieldComparisonWithInstanceOf extends SimpleMethodProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(ReplaceFieldComparisonWithInstanceOf.class);
 
     private final Set<Target> targets;
@@ -63,7 +63,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements CoreModMethodTransf
     }
 
     @Override
-    public void transform(MethodNode methodNode, CoreModTransformationContext context) {
+    public void transform(MethodNode methodNode, SimpleTransformationContext context) {
         var count = 0;
         for (var node = methodNode.instructions.getFirst(); node != null; node = node.getNext()) {
             if (node instanceof JumpInsnNode jumpNode && (jumpNode.getOpcode() == Opcodes.IF_ACMPEQ || jumpNode.getOpcode() == Opcodes.IF_ACMPNE)) {

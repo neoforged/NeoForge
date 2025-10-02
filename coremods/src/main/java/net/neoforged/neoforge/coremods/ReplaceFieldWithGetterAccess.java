@@ -10,9 +10,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import net.neoforged.fml.coremod.CoreModClassTransformer;
-import net.neoforged.fml.coremod.CoreModTransformationContext;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
+import net.neoforged.neoforgespi.transformation.SimpleClassProcessor;
+import net.neoforged.neoforgespi.transformation.SimpleTransformationContext;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -27,7 +27,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
  * same type as the field.
  * If no methodName is passed, any method matching the described signature will be used as callable method.
  */
-public class ReplaceFieldWithGetterAccess implements CoreModClassTransformer {
+public class ReplaceFieldWithGetterAccess extends SimpleClassProcessor {
     private final Map<String, String> fieldToMethod;
     private final Set<Target> targets;
     private final String className;
@@ -50,7 +50,7 @@ public class ReplaceFieldWithGetterAccess implements CoreModClassTransformer {
     }
 
     @Override
-    public void transform(ClassNode input, CoreModTransformationContext context) {
+    public void transform(ClassNode input, SimpleTransformationContext context) {
         for (var entry : fieldToMethod.entrySet()) {
             redirectFieldToMethod(input, entry.getKey(), entry.getValue());
         }
