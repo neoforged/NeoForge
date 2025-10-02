@@ -17,6 +17,14 @@
          return s;
      }
  
+@@ -173,6 +_,7 @@
+         p_361028_.y = Mth.lerp((double)p_362204_, p_362104_.yOld, p_362104_.getY());
+         p_361028_.z = Mth.lerp((double)p_362204_, p_362104_.zOld, p_362104_.getZ());
+         p_361028_.isInvisible = p_362104_.isInvisible();
++        p_361028_.partialTick = p_362204_;
+         p_361028_.ageInTicks = p_362104_.tickCount + p_362204_;
+         p_361028_.boundingBoxWidth = p_362104_.getBbWidth();
+         p_361028_.boundingBoxHeight = p_362104_.getBbHeight();
 @@ -191,9 +_,10 @@
  
          if (this.entityRenderDispatcher.camera != null) {
