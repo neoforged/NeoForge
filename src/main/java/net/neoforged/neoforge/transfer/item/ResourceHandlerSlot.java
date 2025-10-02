@@ -66,9 +66,13 @@ public class ResourceHandlerSlot extends StackCopySlot {
 
     @Override
     public boolean mayPickup(Player player) {
+        var resource = handler.getResource(index);
+        if (resource.isEmpty()) {
+            return false;
+        }
         try (var tx = Transaction.open(null)) {
             // Simulated extraction
-            return handler.extract(index, handler.getResource(index), 1, tx) == 1;
+            return handler.extract(index, resource, 1, tx) == 1;
         }
     }
 
