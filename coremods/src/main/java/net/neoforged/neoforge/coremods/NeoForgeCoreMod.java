@@ -10,7 +10,7 @@ import net.neoforged.neoforgespi.transformation.ClassProcessorProvider;
 
 public class NeoForgeCoreMod implements ClassProcessorProvider {
     @Override
-    public void makeProcessors(Context context, Collector collector) {
+    public void createProcessors(Context context, Collector collector) {
         collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.biome.Biome", Map.of(
                 "climateSettings", "getModifiedClimateSettings",
                 "specialEffects", "getModifiedSpecialEffects")));
