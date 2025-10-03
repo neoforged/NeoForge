@@ -41,6 +41,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Locale;
+
 /**
  * Adds a blaze head block and item to test the event for registering a custom skull model and to demonstrate the proper way to register a custom mob skull.
  *
@@ -107,12 +109,12 @@ public class CustomHeadTest {
         BLAZE;
 
         SkullType() {
-            TYPES.put(name().toLowerCase(), this);
+            TYPES.put(getSerializedName(), this);
         }
 
         @Override
         public String getSerializedName() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 

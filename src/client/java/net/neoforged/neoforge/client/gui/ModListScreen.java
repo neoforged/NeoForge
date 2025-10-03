@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -91,13 +92,13 @@ public class ModListScreen extends Screen {
 
         @Override
         public int compare(ModContainer o1, ModContainer o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getModInfo().getDisplayName()));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getModInfo().getDisplayName()));
+            String name1 = stripControlCodes(o1.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT);
+            String name2 = stripControlCodes(o2.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT);
             return compare(name1, name2);
         }
 
         Component getButtonText() {
-            return Component.translatable("fml.menu.mods." + StringUtils.toLowerCase(name()));
+            return Component.translatable("fml.menu.mods." + name().toLowerCase(Locale.ROOT));
         }
     }
 
