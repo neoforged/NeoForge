@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.util;
 
-import java.util.Locale;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.include.com.google.common.base.Preconditions;
@@ -26,10 +25,10 @@ public class VanillaClassToKey {
         Preconditions.checkArgument(!cls.getSimpleName().isEmpty(), "Automatic name conversion can only happen for identifiable classes (per Class#getSimpleName()). Provided: " + cls.getName());
 
         StringBuilder sb = new StringBuilder();
-        cls.getSimpleName().codePoints().forEach(value -> {
+        cls.getSimpleName().codePoints().forEachOrdered(value -> {
             if (Character.isUpperCase(value)) {
                 sb.append('_');
-                sb.append(Character.toString(value).toLowerCase(Locale.ROOT));
+                sb.append(Character.toString(Character.toLowerCase(value)));
             } else {
                 sb.append(Character.toString(value));
             }

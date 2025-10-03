@@ -297,7 +297,7 @@ public abstract class AbstractTest implements Test {
                         isInUpper = true;
                         modId.append('_');
                     }
-                    modId.append(Character.toLowerCase(value));
+                    modId.append(Character.toString(Character.toLowerCase(value)));
                 } else {
                     isInUpper = false;
                     modId.append(Character.toString(value));
