@@ -124,8 +124,8 @@ public class ModListScreen extends Screen {
     public ModListScreen(Screen parentScreen) {
         super(Component.translatable("fml.menu.mods.title"));
         this.parentScreen = parentScreen;
-        this.mods = Collections.unmodifiableList(ModList.get().getSortedMods());
-        this.unsortedMods = Collections.unmodifiableList(this.mods);
+        this.unsortedMods = Collections.unmodifiableList(ModList.get().getSortedMods());
+        this.mods = this.unsortedMods;
     }
 
     class InfoPanel extends ScrollPanel {
