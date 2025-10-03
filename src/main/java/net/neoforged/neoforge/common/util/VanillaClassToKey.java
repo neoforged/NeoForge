@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.common.util;
 
+import java.util.Locale;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.include.com.google.common.base.Preconditions;
-
-import java.util.Locale;
 
 @ApiStatus.Internal
 public class VanillaClassToKey {
