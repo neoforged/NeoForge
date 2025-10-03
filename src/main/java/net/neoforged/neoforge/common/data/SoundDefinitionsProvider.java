@@ -123,9 +123,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      *
      * @param soundEvent A {@code Supplier} for the given {@link SoundEvent}.
      * @param definition A {@link SoundDefinition} that defines the given sound.
-     * @deprecated Use {@link #add(Holder, SoundDefinition)} instead.
      */
-    @Deprecated(forRemoval = true, since = "1.21.9")
     protected void add(final Supplier<SoundEvent> soundEvent, final SoundDefinition definition) {
         this.add(soundEvent.get(), definition);
     }
@@ -139,7 +137,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param soundEvent A {@code Holder} for the given {@link SoundEvent}.
      * @param definition A {@link SoundDefinition} that defines the given sound.
      */
-    protected void add(final Holder<SoundEvent> soundEvent, final SoundDefinition definition) {
+    protected void addHolder(final Holder<SoundEvent> soundEvent, final SoundDefinition definition) {
         this.add(soundEvent.value(), definition);
     }
 
@@ -149,7 +147,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      *
      * <p>This method should be preferred when a {@code SoundEvent} is already
      * available in the method context. If you already have a {@code Holder} for
-     * it, refer to {@link #add(Holder, SoundDefinition)}.</p>
+     * it, refer to {@link #addHolder(Holder, SoundDefinition)} (Holder, SoundDefinition)}.</p>
      *
      * @param soundEvent A {@link SoundEvent}.
      * @param definition The {@link SoundDefinition} that defines the given event.
