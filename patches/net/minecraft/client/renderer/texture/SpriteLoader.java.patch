@@ -9,3 +9,12 @@
                  LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.location, p_261919_, k1, j1);
                  l1 = k1;
              } else {
+@@ -130,7 +_,7 @@
+     ) {
+         SpriteResourceLoader spriteresourceloader = SpriteResourceLoader.create(p_432812_);
+         return CompletableFuture.<List<Function<SpriteResourceLoader, SpriteContents>>>supplyAsync(
+-                () -> SpriteSourceList.load(p_295469_, p_294925_).list(p_295469_), p_294720_
++                () -> SpriteSourceList.load(p_295469_, p_294925_).list(p_295469_, p_432812_), p_294720_
+             )
+             .thenCompose(p_293671_ -> runSpriteSuppliers(spriteresourceloader, (List<Function<SpriteResourceLoader, SpriteContents>>)p_293671_, p_294720_))
+             .thenApply(p_261393_ -> this.stitch((List<SpriteContents>)p_261393_, p_294855_, p_294720_));
