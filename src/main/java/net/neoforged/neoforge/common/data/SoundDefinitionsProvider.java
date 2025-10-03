@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -119,14 +121,26 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * Adds the entry name associated with the supplied {@link SoundEvent} with the given
      * {@link SoundDefinition} to the list.
      *
-     * <p>This method should be preferred when dealing with a {@code RegistryObject} or
-     * {@code RegistryDelegate}.</p>
-     *
      * @param soundEvent A {@code Supplier} for the given {@link SoundEvent}.
      * @param definition A {@link SoundDefinition} that defines the given sound.
+     * @deprecated Use {@link #add(Holder, SoundDefinition)} instead.
      */
+    @Deprecated(forRemoval = true, since = "1.21.9")
     protected void add(final Supplier<SoundEvent> soundEvent, final SoundDefinition definition) {
         this.add(soundEvent.get(), definition);
+    }
+
+    /**
+     * Adds the entry name associated with the supplied {@link SoundEvent} with the given
+     * {@link SoundDefinition} to the list.
+     *
+     * <p>This method should be preferred when dealing with a {@code DeferredHolder}.</p>
+     *
+     * @param soundEvent A {@code Holder} for the given {@link SoundEvent}.
+     * @param definition A {@link SoundDefinition} that defines the given sound.
+     */
+    protected void add(final Holder<SoundEvent> soundEvent, final SoundDefinition definition) {
+        this.add(soundEvent.value(), definition);
     }
 
     /**
@@ -134,8 +148,8 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * {@link SoundDefinition} to the list.
      *
      * <p>This method should be preferred when a {@code SoundEvent} is already
-     * available in the method context. If you already have a {@code Supplier} for
-     * it, refer to {@link #add(Supplier, SoundDefinition)}.</p>
+     * available in the method context. If you already have a {@code Holder} for
+     * it, refer to {@link #add(Holder, SoundDefinition)}.</p>
      *
      * @param soundEvent A {@link SoundEvent}.
      * @param definition The {@link SoundDefinition} that defines the given event.
