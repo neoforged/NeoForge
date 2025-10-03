@@ -41,6 +41,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.StringUtil;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
@@ -62,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModListScreen extends Screen {
     private static String stripControlCodes(String value) {
-        return net.minecraft.util.StringUtil.stripColor(value);
+        return StringUtil.stripColor(value);
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
