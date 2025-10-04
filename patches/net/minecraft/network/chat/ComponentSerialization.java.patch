@@ -1,11 +1,10 @@
 --- a/net/minecraft/network/chat/ComponentSerialization.java
 +++ b/net/minecraft/network/chat/ComponentSerialization.java
-@@ -96,7 +_,7 @@
+@@ -123,6 +_,7 @@
+         p_442635_.put("selector", SelectorContents.MAP_CODEC);
+         p_442635_.put("nbt", NbtContents.MAP_CODEC);
+         p_442635_.put("object", ObjectContents.MAP_CODEC);
++        p_442635_.put("neoforge:inserting", net.neoforged.neoforge.common.util.InsertingContents.MAP_CODEC);
+     }
  
-     private static Codec<Component> createCodec(Codec<Component> p_304554_) {
-         ComponentContents.Type<?>[] type = new ComponentContents.Type[]{
--            PlainTextContents.TYPE, TranslatableContents.TYPE, KeybindContents.TYPE, ScoreContents.TYPE, SelectorContents.TYPE, NbtContents.TYPE
-+            PlainTextContents.TYPE, TranslatableContents.TYPE, KeybindContents.TYPE, ScoreContents.TYPE, SelectorContents.TYPE, NbtContents.TYPE, net.neoforged.neoforge.common.util.InsertingContents.TYPE
-         };
-         MapCodec<ComponentContents> mapcodec = createLegacyComponentMatcher(type, ComponentContents.Type::codec, ComponentContents::type, "type");
-         Codec<Component> codec = RecordCodecBuilder.create(
+     static class FuzzyCodec<T> extends MapCodec<T> {

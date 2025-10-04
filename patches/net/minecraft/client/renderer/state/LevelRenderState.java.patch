@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/renderer/state/LevelRenderState.java
++++ b/net/minecraft/client/renderer/state/LevelRenderState.java
+@@ -9,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class LevelRenderState {
++public class LevelRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     public CameraRenderState cameraRenderState = new CameraRenderState();
+     public final List<EntityRenderState> entityRenderStates = new ArrayList<>();
+     public final List<BlockEntityRenderState> blockEntityRenderStates = new ArrayList<>();
+@@ -20,6 +_,7 @@
+     public final WeatherRenderState weatherRenderState = new WeatherRenderState();
+     public final WorldBorderRenderState worldBorderRenderState = new WorldBorderRenderState();
+     public final SkyRenderState skyRenderState = new SkyRenderState();
++    public net.minecraft.client.renderer.DimensionSpecialEffects dimensionSpecialEffects = net.neoforged.neoforge.client.DimensionSpecialEffectsManager.getDefaultEffects();
+ 
+     public void reset() {
+         this.entityRenderStates.clear();
+@@ -30,5 +_,7 @@
+         this.weatherRenderState.reset();
+         this.worldBorderRenderState.reset();
+         this.skyRenderState.reset();
++        this.dimensionSpecialEffects = net.neoforged.neoforge.client.DimensionSpecialEffectsManager.getDefaultEffects();
++        this.resetRenderData();
+     }
+ }

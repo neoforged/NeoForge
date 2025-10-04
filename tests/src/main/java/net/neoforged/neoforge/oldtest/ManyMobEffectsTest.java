@@ -62,7 +62,7 @@ public class ManyMobEffectsTest {
             effect = MOB_EFFECTS.register("effect_" + i, () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xFF0000) {
                 @Override
                 public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
-                    if (entity.level().isClientSide) {
+                    if (entity.level().isClientSide()) {
                         LOGGER.info("Effect Tick for {} on the client", index);
                     }
                     return super.applyEffectTick(level, entity, amplifier);

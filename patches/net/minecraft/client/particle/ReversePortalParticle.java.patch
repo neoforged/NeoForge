@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/ReversePortalParticle.java
 +++ b/net/minecraft/client/particle/ReversePortalParticle.java
-@@ -31,6 +_,7 @@
+@@ -42,6 +_,7 @@
              this.x = this.x + this.xd * f;
              this.y = this.y + this.yd * f;
              this.z = this.z + this.zd * f;

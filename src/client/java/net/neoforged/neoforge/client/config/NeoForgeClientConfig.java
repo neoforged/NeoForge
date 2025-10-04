@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.config;
 import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -65,7 +65,7 @@ public final class NeoForgeClientConfig {
         enableB3DValidationLayer = builder
                 .comment("When enabled, all usage of Blaze3D will be validated against allowed usage")
                 .translation("neoforge.configgui.enableB3DValidationLayer")
-                .define("enableB3DValidationLayer", !FMLLoader.isProduction());
+                .define("enableB3DValidationLayer", !FMLEnvironment.isProduction());
     }
 
     @SubscribeEvent

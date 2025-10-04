@@ -153,6 +153,19 @@ public interface IBlockExtension {
     }
 
     /**
+     * Called when lava is updating, checks if a block face can catch fire from lava.
+     *
+     * @param state     The current state
+     * @param level     The current level
+     * @param pos       Block position in level
+     * @param direction The direction that the fire is coming from
+     * @return True if the face can catch fire from lava, false otherwise.
+     */
+    default boolean ignitedByLava(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return state.ignitedByLava();
+    }
+
+    /**
      * Checks if a player or entity can use this block to 'climb' like a ladder.
      *
      * @param state  The current state
@@ -814,7 +827,7 @@ public interface IBlockExtension {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {
-                if (!simulate && !context.getLevel().isClientSide) {
+                if (!simulate && !context.getLevel().isClientSide()) {
                     Block.popResourceFromFace(context.getLevel(), context.getClickedPos(), context.getClickedFace(), new ItemStack(Items.HANGING_ROOTS));
                 }
                 return Blocks.DIRT.defaultBlockState();

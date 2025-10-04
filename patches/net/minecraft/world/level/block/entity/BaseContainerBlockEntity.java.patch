@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
+@@ -120,9 +_,17 @@
+ 
+     @Override
+     public void setItem(int p_332705_, ItemStack p_332643_) {
++        setItem(p_332705_, p_332643_, false);
++    }
++
++    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
++    @Override
++    public void setItem(int p_332705_, ItemStack p_332643_, boolean insideTransaction) {
+         this.getItems().set(p_332705_, p_332643_);
+         p_332643_.limitSize(this.getMaxStackSize(p_332643_));
+-        this.setChanged();
++        if (!insideTransaction) {
++            this.setChanged();
++        }
+     }
+ 
+     @Override

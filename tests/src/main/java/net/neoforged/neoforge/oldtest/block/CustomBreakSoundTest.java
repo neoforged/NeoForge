@@ -48,7 +48,7 @@ public class CustomBreakSoundTest {
             ITEMS.register(modBus);
             modBus.addListener(CustomBreakSoundTest::addCreative);
 
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 modBus.addListener(ClientEvents::onRegisterClientExtensions);
             }
         }

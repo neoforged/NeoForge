@@ -30,7 +30,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
@@ -46,6 +45,7 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.resource.JarContentsPackResources;
 import net.neoforged.testframework.registration.DeferredAttachmentTypes;
 import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
@@ -167,9 +167,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                 event.addRepositorySource(acceptor -> acceptor.accept(
                         new Pack(
                                 new PackLocationInfo(newName, Component.literal(newName), PackSource.BUILT_IN, Optional.empty()),
-                                new PathPackResources.PathResourcesSupplier(
-                                        owner.getModInfo().getOwningFile()
-                                                .getFile().findResource(newName)),
+                                new JarContentsPackResources.JarContentsResourcesSupplier(
+                                        owner.getModInfo().getOwningFile().getFile().getContents(), newName),
                                 new Pack.Metadata(
                                         Component.empty(),
                                         PackCompatibility.COMPATIBLE,

@@ -25,7 +25,7 @@ public class PlayerNegotiationEventTest {
     @SubscribeEvent
     public static void onPlayerNegotiation(PlayerNegotiationEvent event) {
         if (!ENABLE) return;
-        LOGGER.info("{} ({})[{}] started negotiation", event.getProfile().getName(), event.getProfile().getId(), event.getConnection().getRemoteAddress());
+        LOGGER.info("{} ({})[{}] started negotiation", event.getProfile().name(), event.getProfile().id(), event.getConnection().getRemoteAddress());
         event.enqueueWork(() -> {
             // This log message should be printed on the fork-join-pool.
             LOGGER.info("Hello from {}", Thread.currentThread().getName());

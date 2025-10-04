@@ -1,11 +1,13 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -567,4 +_,8 @@
-     public void setHint(Component p_259584_) {
-         this.hint = p_259584_;
+@@ -611,6 +_,10 @@
+         this.hint = (Component)(flag ? p_259584_.copy().withStyle(DEFAULT_HINT_STYLE) : p_259584_);
      }
-+
+ 
 +    public boolean getTextShadow() {
 +        return this.textShadow;
 +    }
- }
++
+     @FunctionalInterface
+     @OnlyIn(Dist.CLIENT)
+     public interface TextFormatter {

@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
++++ b/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
+@@ -36,7 +_,15 @@
+         this.sources = p_295898_;
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #list(ResourceManager, java.util.Set)} instead
++     */
++    @Deprecated
+     public List<Function<SpriteResourceLoader, SpriteContents>> list(ResourceManager p_294111_) {
++        return this.list(p_294111_, java.util.Set.of());
++    }
++
++    public List<Function<SpriteResourceLoader, SpriteContents>> list(ResourceManager p_294111_, java.util.Set<net.minecraft.server.packs.metadata.MetadataSectionType<?>> additionalMetadata) {
+         final Map<ResourceLocation, SpriteSource.SpriteSupplier> map = new HashMap<>();
+         SpriteSource.Output spritesource$output = new SpriteSource.Output() {
+             @Override
+@@ -60,7 +_,7 @@
+                 }
+             }
+         };
+-        this.sources.forEach(p_295860_ -> p_295860_.run(p_294111_, spritesource$output));
++        this.sources.forEach(p_295860_ -> p_295860_.run(p_294111_, spritesource$output, additionalMetadata));
+         Builder<Function<SpriteResourceLoader, SpriteContents>> builder = ImmutableList.builder();
+         builder.add(p_295583_ -> MissingTextureAtlasSprite.create());
+         builder.addAll(map.values());

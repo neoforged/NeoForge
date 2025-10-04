@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/decoration/HangingEntity.java
 +++ b/net/minecraft/world/entity/decoration/HangingEntity.java
-@@ -84,7 +_,7 @@
+@@ -83,7 +_,7 @@
          if (!this.level().noCollision(this)) {
              return false;
          } else {

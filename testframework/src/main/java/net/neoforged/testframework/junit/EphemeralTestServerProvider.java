@@ -6,7 +6,6 @@
 package net.neoforged.testframework.junit;
 
 import com.google.common.base.Stopwatch;
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
@@ -30,9 +29,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldLoader;
 import net.minecraft.server.WorldStem;
-import net.minecraft.server.level.progress.LoggerChunkProgressListener;
+import net.minecraft.server.level.progress.LoggingLevelLoadListener;
+import net.minecraft.server.notifications.NotificationManager;
+import net.minecraft.server.notifications.NotificationService;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.ServerPacksSource;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.debugchart.LocalSampleLogger;
@@ -67,7 +69,7 @@ import org.slf4j.Logger;
  * The server is ephemeral, meaning that it doesn't store any data, and only has a void overworld available.
  * <p>
  * You should <strong>NOT</strong> not interact with the world of that server as it purely exists to load datapack data.
- * If you need an actual world, you should use a {@linkplain net.minecraft.gametest.framework.GameTest GameTest} instead.
+ * If you need an actual world, you should use a {@linkplain net.neoforged.testframework.gametest.GameTest GameTest} instead.
  *
  * <p>
  * Example usage:
@@ -137,7 +139,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
 
     public static class JUnitServer extends MinecraftServer {
         private static final Logger LOGGER = LogUtils.getLogger();
-        private static final Services NO_SERVICES = new Services(null, ServicesKeySet.EMPTY, null, null);
+        private static final Services NO_SERVICES = new Services(null, ServicesKeySet.EMPTY, null, null, null);
         private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(FeatureFlags.REGISTRY.allFlags()), rules -> {
             rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null);
             rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
@@ -188,6 +190,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         private final Path tempDir;
+        private final NotificationService notificationService = new NotificationManager();
 
         public JUnitServer(
                 Thread thread,
@@ -195,13 +198,13 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 PackRepository pack,
                 WorldStem stem,
                 Path tempDir) {
-            super(thread, access, pack, stem, Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggerChunkProgressListener::createFromGameruleRadius);
+            super(thread, access, pack, stem, Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer());
             this.tempDir = tempDir;
         }
 
         @Override
         public boolean initServer() {
-            this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {});
+            this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, this.notificationService) {});
             net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
             LOGGER.info("Started ephemeral JUnit server");
             net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
@@ -213,6 +216,11 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
             super.tickServer(sup);
             // Consider the server started the first time it ticks
             SERVER.set(this);
+        }
+
+        @Override
+        protected void updateEffectiveRespawnData() {
+            // The server doesn't have any levels
         }
 
         @Override
@@ -254,7 +262,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         @Override
-        public int getOperatorUserPermissionLevel() {
+        public int operatorUserPermissionLevel() {
             return 0;
         }
 
@@ -299,7 +307,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         @Override
-        public boolean isSingleplayerOwner(GameProfile profile) {
+        public boolean isSingleplayerOwner(NameAndId p_433457_) {
             return false;
         }
 
@@ -313,6 +321,11 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         @Override
         public boolean isTickTimeLoggingEnabled() {
             return false;
+        }
+
+        @Override
+        public int getMaxPlayers() {
+            return 1;
         }
     }
 }

@@ -86,6 +86,12 @@
                 "class": "net/neoforged/neoforge/debug/client/CustomGlyphProviderTypeTest",
                 "field": "REFERENCE_2_PARAMS"
             }
+        },
+        {
+            "enum": "net/minecraft/client/resources/model/EquipmentClientInfo$LayerType",
+            "name": "NEOTESTS_LAYER_TYPE",
+            "constructor": "(Ljava/lang/String;)V",
+            "parameters": [ "neotests:layer_type" ]
         }
     ]
 }

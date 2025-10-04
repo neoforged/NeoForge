@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.fluids;
 
 import com.google.common.base.Preconditions;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -29,14 +29,26 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.fluids.capability.FluidResourceHandlerItemAdapter;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Use {@link ResourceHandler} with a {@link FluidResource} instead of {@link IFluidHandler}.
+ *             For available utils, see {@link ResourceHandlerUtil} as well as the new {@link net.neoforged.neoforge.transfer.fluid.FluidUtil}.
+ */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class FluidUtil {
     private FluidUtil() {}
 
@@ -52,7 +64,9 @@ public class FluidUtil {
      * @param pos    The position of the fluid handler block in the level.
      * @param side   The side of the block to interact with. May be null.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#interactWithFluidHandler} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side) {
         Preconditions.checkNotNull(level);
         Preconditions.checkNotNull(pos);
@@ -70,7 +84,9 @@ public class FluidUtil {
      * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
      * @param handler The fluid handler.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#interactWithFluidHandler} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IFluidHandler handler) {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(hand);
@@ -81,8 +97,7 @@ public class FluidUtil {
             return false;
         }
 
-        var playerInventory = player.getCapability(Capabilities.ItemHandler.ENTITY);
-        Objects.requireNonNull(playerInventory, "Player item handler is null");
+        var playerInventory = new PlayerInvWrapper(player.getInventory());
 
         FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
         if (!fluidActionResult.isSuccess()) {
@@ -108,7 +123,10 @@ public class FluidUtil {
      * @param player      The player to make the filling noise. Pass null for no noise.
      * @param doFill      true if the container should actually be filled, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the filled container if successful.
+     * @deprecated Use {@link ResourceHandlerUtil#move} with an {@link ItemAccess}-backed handler as the destination.
+     *             Note that the item access will take care of "stowing" any extra items.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryFillContainer(ItemStack container, IFluidHandler fluidSource, int maxAmount, @Nullable Player player, boolean doFill) {
         ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
@@ -150,7 +168,10 @@ public class FluidUtil {
      * @param doDrain          true if the container should actually be drained, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the empty container if the fluid handler was filled.
      *         NOTE If the container is consumable, the empty container will be null on success.
+     * @deprecated Use {@link ResourceHandlerUtil#move} with an {@link ItemAccess}-backed handler as the source.
+     *             Note that the item access will take care of "stowing" any extra items.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryEmptyContainer(ItemStack container, IFluidHandler fluidDestination, int maxAmount, @Nullable Player player, boolean doDrain) {
         ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
@@ -194,7 +215,10 @@ public class FluidUtil {
      *                    Can be null, only used if the inventory cannot take the filled stack.
      * @param doFill      true if the container should actually be filled, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the result and the resulting container. The resulting container is empty on failure.
+     * @deprecated Use {@link ResourceHandlerUtil#move} with an {@link ItemAccess}-backed handler as the destination.
+     *             Note that the item access will take care of "stowing" any extra items.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryFillContainerAndStow(ItemStack container, IFluidHandler fluidSource, IItemHandler inventory, int maxAmount, @Nullable Player player, boolean doFill) {
         if (container.isEmpty()) {
             return FluidActionResult.FAILURE;
@@ -250,7 +274,10 @@ public class FluidUtil {
      * @param player           The player that gets the items the inventory can't take. Can be null, only used if the inventory cannot take the filled stack.
      * @param doDrain          true if the container should actually be drained, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the result and the resulting container. The resulting container is empty on failure.
+     * @deprecated Use {@link ResourceHandlerUtil#move} with an {@link ItemAccess}-backed handler as the source.
+     *             Note that the item access will take care of "stowing" any extra items.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryEmptyContainerAndStow(ItemStack container, IFluidHandler fluidDestination, IItemHandler inventory, int maxAmount, @Nullable Player player, boolean doDrain) {
         if (container.isEmpty()) {
             return FluidActionResult.FAILURE;
@@ -301,7 +328,9 @@ public class FluidUtil {
      * @param maxAmount        The largest amount of fluid that should be transferred.
      * @param doTransfer       True if the transfer should actually be done, false if it should be simulated.
      * @return the fluidStack that was transferred from the source to the destination. null on failure.
+     * @deprecated Use {@link ResourceHandlerUtil#move} or {@link ResourceHandlerUtil#moveFirst} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidStack tryFluidTransfer(IFluidHandler fluidDestination, IFluidHandler fluidSource, int maxAmount, boolean doTransfer) {
         FluidStack drainable = fluidSource.drain(maxAmount, IFluidHandler.FluidAction.SIMULATE);
         if (!drainable.isEmpty()) {
@@ -320,7 +349,9 @@ public class FluidUtil {
      * @param resource         The fluid that should be transferred. Amount represents the maximum amount to transfer.
      * @param doTransfer       True if the transfer should actually be done, false if it should be simulated.
      * @return the fluidStack that was transferred from the source to the destination. null on failure.
+     * @deprecated Use {@link ResourceHandlerUtil#move} or {@link ResourceHandlerUtil#moveFirst} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidStack tryFluidTransfer(IFluidHandler fluidDestination, IFluidHandler fluidSource, FluidStack resource, boolean doTransfer) {
         FluidStack drainable = fluidSource.drain(resource, IFluidHandler.FluidAction.SIMULATE);
         if (!drainable.isEmpty() && FluidStack.isSameFluidSameComponents(resource, drainable)) {
@@ -364,14 +395,36 @@ public class FluidUtil {
      * You can't fill or drain multiple items at once, if you do then liquid is multiplied or destroyed.
      *
      * Vanilla buckets will be converted to universal buckets if they are enabled.
+     *
+     * @deprecated Obtain an {@link ItemAccess}, and find a handler by calling {@link ItemAccess#getCapability} with {@link Capabilities.Fluid#ITEM}.
+     *             To ease migration, this method currently queries a {@link Capabilities.Fluid#ITEM} capability,
+     *             and wraps it in a legacy {@link IFluidHandlerItem adapter}.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static Optional<IFluidHandlerItem> getFluidHandler(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getCapability(Capabilities.FluidHandler.ITEM));
+        // We essentially reuse the ability of the Container wrappers to mutate the original stack,
+        // so that changes will be applied to itemStack when possible.
+        var container = VanillaContainerWrapper.of(new SimpleContainer(itemStack) {
+            // Override to avoid clamping oversized stacks to their max stack size, just in case.
+            @Override
+            public void setItem(int slot, ItemStack stack, boolean performSideEffects) {
+                getItems().set(slot, stack);
+            }
+        });
+        var itemAccess = ItemAccess.forHandlerIndex(container, 0);
+        var resourceHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
+        if (resourceHandler == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new FluidResourceHandlerItemAdapter(resourceHandler, itemAccess));
     }
 
     /**
      * Helper method to get the fluid contained in an itemStack
+     *
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#getFirstStackContained} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static Optional<FluidStack> getFluidContained(ItemStack container) {
         if (!container.isEmpty()) {
             container = container.copyWithCount(1);
@@ -386,9 +439,16 @@ public class FluidUtil {
 
     /**
      * Helper method to get an IFluidHandler for at a block position.
+     *
+     * @deprecated Use the {@link Capabilities.Fluid#BLOCK} capability directly.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static Optional<IFluidHandler> getFluidHandler(Level level, BlockPos blockPos, @Nullable Direction side) {
-        return Optional.ofNullable(level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, side));
+        var resourceHandler = level.getCapability(Capabilities.Fluid.BLOCK, blockPos, side);
+        if (resourceHandler == null) {
+            return Optional.empty();
+        }
+        return Optional.of(IFluidHandler.of(resourceHandler));
     }
 
     /**
@@ -401,7 +461,10 @@ public class FluidUtil {
      * @param pos            The position of the fluid in the level.
      * @param side           The side of the fluid that is being drained.
      * @return a {@link FluidActionResult} holding the result and the resulting container.
+     *
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPickupFluid} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryPickUpFluid(ItemStack emptyContainer, @Nullable Player playerIn, Level level, BlockPos pos, Direction side) {
         if (emptyContainer.isEmpty() || level == null || pos == null) {
             return FluidActionResult.FAILURE;
@@ -433,7 +496,10 @@ public class FluidUtil {
      * @param container The fluid container holding the fluidStack to place
      * @param resource  The fluidStack to place
      * @return the container's ItemStack with the remaining amount of fluid if the placement was successful, null otherwise
+     *
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static FluidActionResult tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
         ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
@@ -458,7 +524,10 @@ public class FluidUtil {
      * @param fluidSource The fluid source holding the fluidStack to place
      * @param resource    The fluidStack to place.
      * @return true if the placement was successful, false otherwise
+     *
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.fluid.FluidUtil#tryPlaceFluid} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static boolean tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, IFluidHandler fluidSource, FluidStack resource) {
         if (level == null || pos == null) {
             return false;
@@ -529,9 +598,12 @@ public class FluidUtil {
      *
      * @param level the level that the fluid will be placed in
      * @param pos   the location that the fluid will be placed
+     *
+     * @deprecated Deprecated with no equivalent. Please open an issue on GitHub if you have a use for an equivalent of this method.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static void destroyBlockOnFluidPlacement(Level level, BlockPos pos) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockState destBlockState = level.getBlockState(pos);
             boolean isDestNonSolid = !destBlockState.isSolid();
             boolean isDestReplaceable = false; //TODO: Needs BlockItemUseContext destBlockState.canBeReplaced(context);
@@ -546,7 +618,10 @@ public class FluidUtil {
      *                   FluidStack is used instead of Fluid to preserve fluid NBT, the amount is ignored.
      * @return a filled vanilla bucket or filled universal bucket.
      *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
+     *
+     * @deprecated Use {@link FluidType#getBucket} instead.
      */
+    @Deprecated(since = "1.21.9", forRemoval = true)
     public static ItemStack getFilledBucket(FluidStack fluidStack) {
         if (fluidStack.getComponents().isEmpty()) {
             if (fluidStack.is(Fluids.WATER)) {

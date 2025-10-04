@@ -13,6 +13,7 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -45,6 +46,7 @@ import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
@@ -147,8 +149,8 @@ public class BlockTests {
         final var respawn = reg.blocks().register("respawn", key -> new Block(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, key))) {
             @Override
             protected InteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
-                if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.setRespawnPosition(new RespawnConfig(world.dimension(), pos, 0, false), true);
+                if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.setRespawnPosition(new RespawnConfig(new LevelData.RespawnData(GlobalPos.of(world.dimension(), pos), 0, 0), false), true);
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -156,7 +158,7 @@ public class BlockTests {
             @Override
             public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
                 // have the player respawn a block north to the location of the anchor
-                return Optional.of(ServerPlayer.RespawnPosAngle.of(pos.getCenter().add(0, 1, 1), pos));
+                return Optional.of(ServerPlayer.RespawnPosAngle.of(pos.getCenter().add(0, 1, 1), pos, 0));
             }
         }).withBlockItem().withLang("Respawn").withDefaultWhiteModel();
 
@@ -165,7 +167,7 @@ public class BlockTests {
                 .thenExecute(() -> helper.setBlock(1, 2, 2, Blocks.IRON_BLOCK))
 
                 .thenExecute(player -> helper.useBlock(new BlockPos(1, 2, 1), player))
-                .thenExecute(player -> player.getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.CHANGED_DIMENSION))
+                .thenExecute(player -> player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.CHANGED_DIMENSION))
                 .thenExecute(() -> helper.assertEntityPresent(
                         EntityType.PLAYER,
                         1, 3, 2))

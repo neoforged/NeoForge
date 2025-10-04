@@ -1,17 +1,17 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -90,6 +_,10 @@
-         GLFW.glfwWindowHint(139267, 2);
+@@ -93,6 +_,10 @@
+         GLFW.glfwWindowHint(139267, 3);
          GLFW.glfwWindowHint(139272, 204801);
          GLFW.glfwWindowHint(139270, 1);
 +        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
 +        if (earlyLoadingScreen != null) {
-+            this.window = takeOverWindow(earlyLoadingScreen, p_85376_);
++            this.handle = takeOverWindow(earlyLoadingScreen, p_85376_);
 +        } else {
-         this.window = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
+         this.handle = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
          if (monitor != null) {
              VideoMode videomode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -102,6 +_,7 @@
+@@ -105,6 +_,7 @@
              this.windowedX = this.x = aint1[0];
              this.windowedY = this.y = aint[0];
          }
@@ -19,7 +19,7 @@
  
          this.setMode();
          this.refreshFramebufferSize();
-@@ -203,8 +_,10 @@
+@@ -206,8 +_,10 @@
      }
  
      public void defaultErrorCallback(int p_85383_, long p_85384_) {
@@ -31,7 +31,7 @@
          LOGGER.error("########## GL ERROR ##########");
          LOGGER.error("@ {}", this.errorSection);
          LOGGER.error("{}: {}", p_85383_, s);
-@@ -495,5 +_,26 @@
+@@ -510,5 +_,26 @@
          WindowInitFailed(String p_85455_) {
              super(p_85455_);
          }

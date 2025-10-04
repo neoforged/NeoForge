@@ -34,7 +34,7 @@
 +        }
 +
          this.processFlappingMovement();
-         if (this.level().isClientSide) {
+         if (this.level().isClientSide()) {
              this.setHealth(this.getHealth());
 @@ -441,7 +_,7 @@
                      BlockPos blockpos = new BlockPos(k1, l1, i2);

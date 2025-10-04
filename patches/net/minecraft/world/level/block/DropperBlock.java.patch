@@ -15,7 +15,7 @@
 +                        if (containerOrHandler.container() != null) {
 +                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.container(), itemstack.copyWithCount(1), direction.getOpposite());
 +                        } else {
-+                            itemstack1 = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack.copyWithCount(1), false);
++                            itemstack1 = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(containerOrHandler.itemHandler(), itemstack.copyWithCount(1), false, null);
 +                        }
                          if (itemstack1.isEmpty()) {
                              itemstack1 = itemstack.copy();

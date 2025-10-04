@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -103,9 +_,9 @@
+@@ -98,9 +_,9 @@
  
          if (this.entity instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
              ItemStack itemstack = itemframe.getItem();
@@ -12,7 +12,7 @@
                  if (mapitemsaveddata != null) {
                      for (ServerPlayer serverplayer : this.level.players()) {
                          mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
-@@ -268,6 +_,7 @@
+@@ -256,6 +_,7 @@
      public void removePairing(ServerPlayer p_8535_) {
          this.entity.stopSeenByPlayer(p_8535_);
          p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -20,7 +20,7 @@
      }
  
      public void addPairing(ServerPlayer p_8542_) {
-@@ -275,15 +_,17 @@
+@@ -263,15 +_,17 @@
          this.sendPairingData(p_8542_, list::add);
          p_8542_.connection.send(new ClientboundBundlePacket(list));
          this.entity.startSeenByPlayer(p_8542_);
@@ -39,7 +39,7 @@
          if (this.trackedDataValues != null) {
              p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
          }
-@@ -321,6 +_,8 @@
+@@ -309,6 +_,8 @@
          if (this.entity instanceof Leashable leashable && leashable.isLeashed()) {
              p_289563_.accept(new ClientboundSetEntityLinkPacket(this.entity, leashable.getLeashHolder()));
          }

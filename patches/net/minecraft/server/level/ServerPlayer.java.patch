@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -310,6 +_,10 @@
+@@ -321,6 +_,10 @@
          }
  
          private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
@@ -11,7 +11,28 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
          }
  
-@@ -735,6 +_,11 @@
+@@ -372,6 +_,7 @@
+     private Set<DebugSubscription<?>> requestedDebugSubscriptions = Set.of();
+     private int containerCounter;
+     public boolean wonGame;
++    private long lastDayTimeTick = -1L; // Neo: Used to limit TIME_SINCE_REST increases when day length is non-standard. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
+ 
+     public ServerPlayer(MinecraftServer p_254143_, ServerLevel p_254435_, GameProfile p_253651_, ClientInformation p_301997_) {
+         super(p_254435_, p_253651_);
+@@ -664,7 +_,11 @@
+                 }
+ 
+                 if (!this.isSleeping()) {
+-                    this.awardStat(Stats.TIME_SINCE_REST);
++                    // Neo: Advance TIME_SINCE_REST if (a) vanilla daytime handling in effect, or (b) days are shorter, or (c) dayTime has ticked, or (d) dayTime advances are off and we need to ignore day length
++                    if (level().getDayTimeFraction() < 0 || level().getDayTimeFraction() >= 1 || lastDayTimeTick != level().getDayTime() || !level().getGameRules().getRule(GameRules.RULE_DAYLIGHT).get()) {
++                        lastDayTimeTick = level().getDayTime();
++                        this.awardStat(Stats.TIME_SINCE_REST);
++                    }
+                 }
+             }
+ 
+@@ -719,6 +_,11 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
@@ -23,7 +44,7 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -748,7 +_,7 @@
+@@ -732,7 +_,7 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack p_372884_) {
          MapId mapid = p_372884_.get(DataComponents.MAP_ID);
@@ -32,7 +53,7 @@
          if (mapitemsaveddata != null) {
              Packet<?> packet = mapitemsaveddata.getUpdatePacket(mapid, this);
              if (packet != null) {
-@@ -817,6 +_,7 @@
+@@ -881,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {
          this.gameEvent(GameEvent.ENTITY_DIE);
@@ -40,16 +61,16 @@
          boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
          if (flag) {
              Component component = this.getCombatTracker().getDeathMessage();
-@@ -994,7 +_,7 @@
+@@ -1067,7 +_,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, p_348505_, blockpos, blockstate.getValue(BedBlock.FACING), f)
-                 .map(p_348148_ -> ServerPlayer.RespawnPosAngle.of(p_348148_, blockpos));
+                 .map(p_450850_ -> ServerPlayer.RespawnPosAngle.of(p_450850_, blockpos, 0.0F));
          } else if (!flag) {
 -            return Optional.empty();
 +            return blockstate.getRespawnPosition(EntityType.PLAYER, p_348505_, blockpos, f);
          } else {
              boolean flag1 = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_348505_.getBlockState(blockpos.above());
-@@ -1017,6 +_,7 @@
+@@ -1090,6 +_,7 @@
  
      @Nullable
      public ServerPlayer teleport(TeleportTransition p_379854_) {
@@ -57,7 +78,7 @@
          if (this.isRemoved()) {
              return null;
          } else {
-@@ -1044,7 +_,7 @@
+@@ -1117,7 +_,7 @@
                  PlayerList playerlist = this.server.getPlayerList();
                  playerlist.sendPlayerPermissionLevel(this);
                  serverlevel1.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -66,7 +87,7 @@
                  ProfilerFiller profilerfiller = Profiler.get();
                  profilerfiller.push("moving");
                  if (resourcekey == Level.OVERWORLD && serverlevel.dimension() == Level.NETHER) {
-@@ -1064,11 +_,15 @@
+@@ -1137,11 +_,15 @@
                  playerlist.sendLevelInfo(this, serverlevel);
                  playerlist.sendAllPlayerInfo(this);
                  playerlist.sendActivePlayerEffects(this);
@@ -82,7 +103,7 @@
                  return this;
              }
          }
-@@ -1109,6 +_,15 @@
+@@ -1183,6 +_,15 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
@@ -98,7 +119,7 @@
          Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
          if (this.isSleeping() || !this.isAlive()) {
              return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-@@ -1137,7 +_,21 @@
+@@ -1213,7 +_,21 @@
                          return Either.left(Player.BedSleepingProblem.NOT_SAFE);
                      }
                  }
@@ -121,7 +142,7 @@
                  Either<Player.BedSleepingProblem, Unit> either = super.startSleepInBed(p_9115_).ifRight(p_9029_ -> {
                      this.awardStat(Stats.SLEEP_IN_BED);
                      CriteriaTriggers.SLEPT_IN_BED.trigger(this);
-@@ -1159,6 +_,7 @@
+@@ -1235,6 +_,7 @@
      }
  
      private boolean bedInRange(BlockPos p_9117_, Direction p_9118_) {
@@ -129,7 +150,7 @@
          return this.isReachableBedBlock(p_9117_) || this.isReachableBedBlock(p_9117_.relative(p_9118_.getOpposite()));
      }
  
-@@ -1240,11 +_,19 @@
+@@ -1316,11 +_,19 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
@@ -149,7 +170,7 @@
              }
  
              this.nextContainerCounter();
-@@ -1256,10 +_,32 @@
+@@ -1332,10 +_,32 @@
  
                  return OptionalInt.empty();
              } else {
@@ -182,7 +203,7 @@
                  return OptionalInt.of(this.containerCounter);
              }
          }
-@@ -1281,6 +_,7 @@
+@@ -1357,6 +_,7 @@
          this.connection.send(new ClientboundHorseScreenOpenPacket(this.containerCounter, i, p_9059_.getId()));
          this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_, i);
          this.initMenu(this.containerMenu);
@@ -190,7 +211,7 @@
      }
  
      @Override
-@@ -1309,6 +_,7 @@
+@@ -1385,6 +_,7 @@
      public void doCloseContainer() {
          this.containerMenu.removed(this);
          this.inventoryMenu.transferState(this.containerMenu);
@@ -198,7 +219,7 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1534,6 +_,15 @@
+@@ -1611,6 +_,15 @@
          this.setShoulderEntityLeft(p_9016_.getShoulderEntityLeft());
          this.setShoulderEntityRight(p_9016_.getShoulderEntityRight());
          this.setLastDeathLocation(p_9016_.getLastDeathLocation());
@@ -214,7 +235,7 @@
      }
  
      @Override
-@@ -1637,6 +_,8 @@
+@@ -1714,6 +_,8 @@
  
      public boolean setGameMode(GameType p_143404_) {
          boolean flag = this.isSpectator();
@@ -223,7 +244,7 @@
          if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
              return false;
          } else {
-@@ -1807,6 +_,7 @@
+@@ -1884,6 +_,7 @@
      public void setCamera(@Nullable Entity p_9214_) {
          Entity entity = this.getCamera();
          this.camera = (Entity)(p_9214_ == null ? this : p_9214_);
@@ -231,7 +252,7 @@
          if (entity != this.camera) {
              if (this.camera.level() instanceof ServerLevel serverlevel) {
                  this.teleportTo(serverlevel, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1843,7 +_,11 @@
+@@ -1920,7 +_,11 @@
  
      @Nullable
      public Component getTabListDisplayName() {
@@ -244,7 +265,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1878,6 +_,7 @@
+@@ -1955,6 +_,7 @@
      }
  
      public void setRespawnPosition(@Nullable ServerPlayer.RespawnConfig p_405460_, boolean p_9162_) {
@@ -252,7 +273,7 @@
          if (p_9162_ && p_405460_ != null && !p_405460_.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -1932,6 +_,75 @@
+@@ -2009,6 +_,75 @@
          return itementity;
      }
  
@@ -321,14 +342,14 @@
 +        Component oldName = this.tabListDisplayName;
 +        this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
 +        if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
-+            this.getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
++            this.server.getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
 +        }
 +    }
 +
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -1990,11 +_,14 @@
+@@ -2060,11 +_,14 @@
  
      public boolean drop(boolean p_182295_) {
          Inventory inventory = this.getInventory();

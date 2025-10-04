@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
@@ -28,8 +26,8 @@ public class CustomParticleTypeTest {
 
     @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
-        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
-        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
+        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE");
+        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO");
 
         private static class CustomParticle extends TerrainParticle {
             public CustomParticle(ClientLevel level, double x, double y, double z) {
@@ -37,7 +35,7 @@ public class CustomParticleTypeTest {
             }
 
             @Override
-            public ParticleRenderType getRenderType() {
+            public ParticleRenderType getGroup() {
                 return CUSTOM_TYPE;
             }
         }
@@ -48,7 +46,7 @@ public class CustomParticleTypeTest {
             }
 
             @Override
-            public ParticleRenderType getRenderType() {
+            public ParticleRenderType getGroup() {
                 return CUSTOM_TYPE_TWO;
             }
         }

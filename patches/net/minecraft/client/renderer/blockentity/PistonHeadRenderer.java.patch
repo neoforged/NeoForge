@@ -1,25 +1,12 @@
 --- a/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
-@@ -70,14 +_,18 @@
-     private void renderBlock(
-         BlockPos p_112459_, BlockState p_112460_, PoseStack p_112461_, MultiBufferSource p_112462_, Level p_112463_, boolean p_112464_, int p_112465_
-     ) {
--        RenderType rendertype = ItemBlockRenderTypes.getMovingBlockRenderType(p_112460_);
--        VertexConsumer vertexconsumer = p_112462_.getBuffer(rendertype);
--        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(RandomSource.create(p_112460_.getSeed(p_112459_)));
--        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, vertexconsumer, p_112464_, p_112465_);
-+        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup = renderType -> p_112462_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType));
-+        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(p_112463_, p_112459_, p_112460_, RandomSource.create(p_112460_.getSeed(p_112459_)));
-+        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, bufferLookup, p_112464_, p_112465_);
-     }
- 
-     @Override
+@@ -91,4 +_,9 @@
      public int getViewDistance() {
          return 68;
-+    }
+     }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(PistonMovingBlockEntity blockEntity) {
 +        return net.minecraft.world.phys.AABB.INFINITE;
-     }
++    }
  }

@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
-@@ -511,6 +_,7 @@
-                 builder.put(ModelLayers.createHangingSignModelName(p_382521_, hangingsignrenderer$attachmenttype), layerdefinition60);
+@@ -508,6 +_,7 @@
+                 builder.put(ModelLayers.createHangingSignModelName(p_382521_, hangingsignrenderer$attachmenttype), layerdefinition57);
              }
          });
 +        net.neoforged.neoforge.client.ClientHooks.loadLayerDefinitions(builder);
          ImmutableMap<ModelLayerLocation, LayerDefinition> immutablemap = builder.build();
-         List<ModelLayerLocation> list = ModelLayers.getKnownLocations().filter(p_171117_ -> !immutablemap.containsKey(p_171117_)).collect(Collectors.toList());
+         List<ModelLayerLocation> list = ModelLayers.getKnownLocations().filter(p_171117_ -> !immutablemap.containsKey(p_171117_)).toList();
          if (!list.isEmpty()) {

@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
-@@ -189,4 +_,13 @@
-         int i = p_389470_.getColor().getTextColor();
-         return i == DyeColor.BLACK.getTextColor() && p_389470_.hasGlowingText() ? -988212 : ARGB.scaleRGB(i, 0.4F);
+@@ -178,4 +_,13 @@
+         p_446340_.isTextFilteringEnabled = Minecraft.getInstance().isTextFilteringEnabled();
+         p_446340_.drawOutline = isOutlineVisible(p_446457_.getBlockPos());
      }
 +
 +    @Override

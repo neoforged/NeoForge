@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public class NeoForgeProxy {
     public static final NeoForgeProxy INSTANCE = instantiate();
 
     private static NeoForgeProxy instantiate() {
-        return switch (FMLLoader.getDist()) {
+        return switch (FMLEnvironment.getDist()) {
             case CLIENT -> {
                 try {
                     yield (NeoForgeProxy) Class.forName("net.neoforged.neoforge.client.internal.NeoForgeClientProxy").getConstructor().newInstance();

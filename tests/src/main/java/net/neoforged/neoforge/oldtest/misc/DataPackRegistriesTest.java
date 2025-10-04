@@ -76,7 +76,7 @@ public class DataPackRegistriesTest {
         modBus.addListener(this::onGatherData);
         forgeBus.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             ClientEvents.subscribeClientEvents();
         }
     }

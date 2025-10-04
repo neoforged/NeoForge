@@ -93,7 +93,7 @@ public class FluidTypeTest {
             .addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)));
     private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
     private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.registerBlock("test_fluid_block", props -> new LiquidBlock(TEST_FLUID.get(), props), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable());
+    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.registerBlock("test_fluid_block", props -> new LiquidBlock(TEST_FLUID.get(), props), BlockBehaviour.Properties.of().noCollision().strength(100.0F).noLootTable());
     private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.registerItem("test_fluid_bucket", props -> new BucketItem(TEST_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
 
     public FluidTypeTest(IEventBus modEventBus) {
@@ -109,7 +109,7 @@ public class FluidTypeTest {
             modEventBus.addListener(this::commonSetup);
             modEventBus.addListener(this::addCreative);
 
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 new FluidTypeTestClient(modEventBus);
             }
         }

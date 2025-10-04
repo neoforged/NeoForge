@@ -13,7 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
  */
 public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
-    private static final boolean IN_DEV = !FMLLoader.isProduction();
+    private static final boolean IN_DEV = !FMLEnvironment.isProduction();
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private void validateAttachmentType(AttachmentType<?> type) {

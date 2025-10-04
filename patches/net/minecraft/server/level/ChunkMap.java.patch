@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -398,6 +_,7 @@
+@@ -400,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,7 +8,7 @@
              return p_140179_;
          }
      }
-@@ -527,12 +_,15 @@
+@@ -529,12 +_,15 @@
              } else {
                  ChunkAccess chunkaccess = p_140183_.getLatestChunk();
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && chunkaccess != null) {
@@ -24,23 +24,23 @@
                          this.level.unload(levelchunk1);
                      }
  
-@@ -577,6 +_,7 @@
+@@ -578,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
-                 if (p_372662_.isPresent()) {
-                     ChunkAccess chunkaccess = p_372662_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
-+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Load(chunkaccess, p_372662_.get()));
+                 if (p_432462_.isPresent()) {
+                     ChunkAccess chunkaccess = p_432462_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
++                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Load(chunkaccess, p_432462_.get()));
                      this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
                      return chunkaccess;
                  } else {
-@@ -778,6 +_,7 @@
+@@ -774,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(p_140259_, this.level, serializablechunkdata));
                  CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
-                 this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
-                     if (p_381691_ != null) {
-@@ -844,9 +_,11 @@
+                 this.write(chunkpos, completablefuture::join).handle((p_432454_, p_432455_) -> {
+                     if (p_432455_ != null) {
+@@ -840,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -52,7 +52,7 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -947,7 +_,7 @@
+@@ -939,7 +_,7 @@
              ChunkHolder chunkholder = this.visibleChunkMap.get(longiterator.nextLong());
              if (chunkholder != null) {
                  LevelChunk levelchunk = chunkholder.getTickingChunk();
@@ -61,7 +61,7 @@
                      p_401784_.add(levelchunk);
                  }
              }
-@@ -971,6 +_,18 @@
+@@ -963,6 +_,18 @@
          return tristate == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(p_183880_) : tristate.toBoolean(true);
      }
  
@@ -80,7 +80,7 @@
      private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos p_363995_) {
          for (ServerPlayer serverplayer : this.playerMap.getAllPlayers()) {
              if (this.playerIsCloseEnoughForSpawning(serverplayer, p_363995_)) {
-@@ -1079,6 +_,7 @@
+@@ -1071,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -88,7 +88,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1130,7 +_,7 @@
+@@ -1122,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -97,8 +97,8 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1260,6 +_,20 @@
-         });
+@@ -1281,6 +_,20 @@
+         }
      }
  
 +    // Neo: Getter for players watching an entity.
@@ -118,7 +118,7 @@
      class DistanceManager extends net.minecraft.server.level.DistanceManager {
          protected DistanceManager(TicketStorage p_394597_, Executor p_140459_, Executor p_140460_) {
              super(p_394597_, p_140459_, p_140460_);
-@@ -1382,5 +_,20 @@
+@@ -1414,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
          }

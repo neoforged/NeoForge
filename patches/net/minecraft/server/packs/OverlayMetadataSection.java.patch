@@ -1,17 +1,37 @@
 --- a/net/minecraft/server/packs/OverlayMetadataSection.java
 +++ b/net/minecraft/server/packs/OverlayMetadataSection.java
-@@ -12,10 +_,13 @@
- public record OverlayMetadataSection(List<OverlayMetadataSection.OverlayEntry> overlays) {
-     private static final Pattern DIR_VALIDATOR = Pattern.compile("[-_a-zA-Z0-9.]+");
-     private static final Codec<OverlayMetadataSection> CODEC = RecordCodecBuilder.create(
--        p_294898_ -> p_294898_.group(OverlayMetadataSection.OverlayEntry.CODEC.listOf().fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
-+        p_294898_ -> p_294898_.group(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(OverlayMetadataSection.OverlayEntry.CODEC).fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
-             .apply(p_294898_, OverlayMetadataSection::new)
+@@ -17,6 +_,10 @@
+         "overlays", codecForPackType(PackType.CLIENT_RESOURCES)
      );
-     public static final MetadataSectionType<OverlayMetadataSection> TYPE = new MetadataSectionType<>("overlays", CODEC);
-+    // Neo: alternative metadata section that will only be loaded on neoforged. Useful for making datapacks with special
+     public static final MetadataSectionType<OverlayMetadataSection> SERVER_TYPE = new MetadataSectionType<>("overlays", codecForPackType(PackType.SERVER_DATA));
++    // Neo: alternative metadata section types that will only be loaded on neoforged. Useful for making datapacks with special
 +    // logic on different modloaders, or when running on neo vs in vanilla, without having to invert the main pack and overlays
-+    public static final MetadataSectionType<OverlayMetadataSection> NEOFORGE_TYPE = new MetadataSectionType<>("neoforge:overlays", CODEC);
++    public static final MetadataSectionType<OverlayMetadataSection> NEOFORGE_CLIENT_TYPE = new MetadataSectionType<>("neoforge:overlays", CLIENT_TYPE.codec());
++    public static final MetadataSectionType<OverlayMetadataSection> NEOFORGE_SERVER_TYPE = new MetadataSectionType<>("neoforge:overlays", SERVER_TYPE.codec());
  
      private static DataResult<String> validateOverlayDir(String p_296447_) {
          return !DIR_VALIDATOR.matcher(p_296447_).matches()
+@@ -41,6 +_,13 @@
+         };
+     }
+ 
++    public static MetadataSectionType<OverlayMetadataSection> forPackTypeNeoForge(PackType p_434837_) {
++        return switch (p_434837_) {
++            case CLIENT_RESOURCES -> NEOFORGE_CLIENT_TYPE;
++            case SERVER_DATA -> NEOFORGE_SERVER_TYPE;
++        };
++    }
++
+     public List<String> overlaysForVersion(PackFormat p_435088_) {
+         return this.overlays.stream().filter(p_432473_ -> p_432473_.isApplicable(p_435088_)).map(OverlayMetadataSection.OverlayEntry::overlay).toList();
+     }
+@@ -48,8 +_,7 @@
+     public record OverlayEntry(InclusiveRange<PackFormat> format, String overlay) {
+         static Codec<List<OverlayMetadataSection.OverlayEntry>> listCodecForPackType(PackType p_434025_) {
+             int i = PackFormat.lastPreMinorVersion(p_434025_);
+-            return OverlayMetadataSection.OverlayEntry.IntermediateEntry.CODEC
+-                .listOf()
++            return net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(OverlayMetadataSection.OverlayEntry.IntermediateEntry.CODEC)
+                 .flatXmap(
+                     p_432477_ -> PackFormat.validateHolderList(
+                         (List<OverlayMetadataSection.OverlayEntry.IntermediateEntry>)p_432477_,

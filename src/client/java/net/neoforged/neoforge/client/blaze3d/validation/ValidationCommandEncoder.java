@@ -14,7 +14,6 @@ import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -144,7 +143,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
     }
 
     @Override
-    public void writeToTexture(GpuTexture texture, IntBuffer imageData, NativeImage.Format imageFormat, int mipLevel, int layer, int x, int y, int width, int height) {
+    public void writeToTexture(GpuTexture texture, ByteBuffer imageData, NativeImage.Format imageFormat, int mipLevel, int layer, int x, int y, int width, int height) {
         if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
