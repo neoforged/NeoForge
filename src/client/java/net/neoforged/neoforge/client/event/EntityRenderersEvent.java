@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
@@ -55,8 +54,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class EntityRenderersEvent extends Event implements IModBusEvent {
     @ApiStatus.Internal
-    protected EntityRenderersEvent() {
-    }
+    protected EntityRenderersEvent() {}
 
     /**
      * Fired for registering layer definitions at the appropriate time.
@@ -67,8 +65,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class RegisterLayerDefinitions extends EntityRenderersEvent {
         @ApiStatus.Internal
-        public RegisterLayerDefinitions() {
-        }
+        public RegisterLayerDefinitions() {}
 
         /**
          * Registers a layer definition supplier with the given {@link ModelLayerLocation}.
@@ -95,8 +92,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class RegisterRenderers extends EntityRenderersEvent {
         @ApiStatus.Internal
-        public RegisterRenderers() {
-        }
+        public RegisterRenderers() {}
 
         /**
          * Registers an entity renderer for the given entity type.
@@ -247,7 +243,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
-         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, layerLocation, SkullModel::new, skullTexture);
@@ -261,7 +257,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
-         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)), skullTexture);
@@ -270,11 +266,11 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         /**
          * Registers the entity model for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
-         * @param type    a unique skull type; an exception will be thrown if multiple mods register models for
-         *                the same type or a mod tries to register a model for a vanilla type
-         * @param factory the factory to create the skull model instance. A typical implementation will simply bake
-         *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
-         *                constructor for {@link SkullModel}
+         * @param type         a unique skull type; an exception will be thrown if multiple mods register models for
+         *                     the same type or a mod tries to register a model for a vanilla type
+         * @param factory      the factory to create the skull model instance. A typical implementation will simply bake
+         *                     a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
+         *                     constructor for {@link SkullModel}
          * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
         public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
