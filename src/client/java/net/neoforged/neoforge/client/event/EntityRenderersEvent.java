@@ -243,7 +243,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          */
-        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, ResourceLocation textureLocation) {
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation textureLocation) {
             this.registerSkullModel(type, layerLocation, SkullModel::new, textureLocation);
         }
 
@@ -256,7 +256,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
          */
-        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, ResourceLocation skullTexture) {
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)), skullTexture);
         }
 
@@ -269,13 +269,14 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
          *                constructor for {@link SkullModel}
          */
-        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, ResourceLocation texturePath) {
+        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation texturePath) {
             if (type instanceof SkullBlock.Types) {
                 throw new IllegalArgumentException("Cannot register skull model for vanilla skull type: " + type.getSerializedName());
             }
             if (skullModels.putIfAbsent(type, factory) != null) {
                 throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
             }
+            if (texturePath == null) return;
             if (skullTextures.putIfAbsent(type, texturePath) != null) {
                 throw new IllegalArgumentException("Texture already registered for provided skull type: " + type.getSerializedName());
             }
