@@ -282,6 +282,13 @@ generateAccessTransformers {
             classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
             named('<init>')
     )
+
+    // Make all DebugScreenEntry groups public
+    fieldGroup(
+            'DebugScreenEntry groups', PUBLIC,
+            classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
+            fieldsOfType(named('net/minecraft/resources/ResourceLocation'))
+    )
 }
 
 tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
