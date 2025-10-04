@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
@@ -20,6 +21,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -53,7 +55,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class EntityRenderersEvent extends Event implements IModBusEvent {
     @ApiStatus.Internal
-    protected EntityRenderersEvent() {}
+    protected EntityRenderersEvent() {
+    }
 
     /**
      * Fired for registering layer definitions at the appropriate time.
@@ -64,7 +67,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class RegisterLayerDefinitions extends EntityRenderersEvent {
         @ApiStatus.Internal
-        public RegisterLayerDefinitions() {}
+        public RegisterLayerDefinitions() {
+        }
 
         /**
          * Registers a layer definition supplier with the given {@link ModelLayerLocation}.
@@ -91,7 +95,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class RegisterRenderers extends EntityRenderersEvent {
         @ApiStatus.Internal
-        public RegisterRenderers() {}
+        public RegisterRenderers() {
+        }
 
         /**
          * Registers an entity renderer for the given entity type.
@@ -237,47 +242,50 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         }
 
         /**
-         * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}.
+         * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
+         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
-        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation textureLocation) {
-            this.registerSkullModel(type, layerLocation, SkullModel::new, textureLocation);
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation skullTexture) {
+            this.registerSkullModel(type, layerLocation, SkullModel::new, skullTexture);
         }
 
         /**
-         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
+         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)), skullTexture);
         }
 
         /**
-         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
          * @param type    a unique skull type; an exception will be thrown if multiple mods register models for
          *                the same type or a mod tries to register a model for a vanilla type
          * @param factory the factory to create the skull model instance. A typical implementation will simply bake
          *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
          *                constructor for {@link SkullModel}
+         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          */
-        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation texturePath) {
+        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             if (type instanceof SkullBlock.Types) {
                 throw new IllegalArgumentException("Cannot register skull model for vanilla skull type: " + type.getSerializedName());
             }
             if (skullModels.putIfAbsent(type, factory) != null) {
                 throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
             }
-            if (texturePath == null) return;
-            if (skullTextures.putIfAbsent(type, texturePath) != null) {
+            if (skullTexture == null) return;
+            if (skullTextures.putIfAbsent(type, skullTexture) != null) {
                 throw new IllegalArgumentException("Texture already registered for provided skull type: " + type.getSerializedName());
             }
         }

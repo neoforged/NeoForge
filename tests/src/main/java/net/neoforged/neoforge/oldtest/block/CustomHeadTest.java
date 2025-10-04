@@ -137,7 +137,7 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER);
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, null);
         }
 
         @SubscribeEvent
