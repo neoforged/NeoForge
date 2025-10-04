@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
-import cpw.mods.modlauncher.ClassTransformStatistics;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
@@ -25,6 +24,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common;
 
-import cpw.mods.modlauncher.ClassTransformStatistics;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;

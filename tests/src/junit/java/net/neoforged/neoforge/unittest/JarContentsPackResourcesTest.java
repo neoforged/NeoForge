@@ -7,7 +7,6 @@ package net.neoforged.neoforge.unittest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cpw.mods.jarhandling.JarContents;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +18,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
+import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.neoforge.resource.JarContentsPackResources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
