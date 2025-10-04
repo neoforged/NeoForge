@@ -271,7 +271,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param factory      the factory to create the skull model instance. A typical implementation will simply bake
          *                     a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
          *                     constructor for {@link SkullModel}
-         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
+         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
         public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             if (type instanceof SkullBlock.Types) {
