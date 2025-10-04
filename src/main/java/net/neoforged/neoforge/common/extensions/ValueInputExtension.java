@@ -29,7 +29,7 @@ public interface ValueInputExtension {
 
     /**
      * Read the given {@code child} object from the given {@code key}.
-     * Note that the object will only read the child <strong>ONLY</strong> if it's present.
+     * The object will only read the child <strong>ONLY</strong> if it's present.
      *
      * @param key    the key to read the child from
      * @param object the object to read from the given key
