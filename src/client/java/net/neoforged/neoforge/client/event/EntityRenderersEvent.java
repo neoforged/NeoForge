@@ -243,7 +243,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
-         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, layerLocation, SkullModel::new, skullTexture);
