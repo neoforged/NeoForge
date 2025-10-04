@@ -131,19 +131,13 @@ public class CustomHeadTest {
         }
 
         @SubscribeEvent
-        static void clientSetupEvent(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png")));
-        }
-
-        @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, null);
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
 
         @SubscribeEvent
         static void registerSpecialBlockRenderer(RegisterSpecialBlockModelRendererEvent event) {
             event.register(BLAZE_HEAD.get(), new SkullSpecialRenderer.Unbaked(SkullType.BLAZE));
-            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
     }
 }
