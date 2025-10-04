@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network.handling;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import net.minecraft.network.PacketProcessor;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
@@ -28,19 +29,21 @@ public record ServerPayloadContext(ServerCommonPacketListener listener, Resource
 
     @Override
     public CompletableFuture<Void> enqueueWork(Runnable task) {
-        if (listener.getMainThreadEventLoop().isSameThread()) {
+        PacketProcessor processor = listener.getPacketProcessor();
+        if (processor.isSameThread()) {
             task.run();
             return CompletableFuture.completedFuture(null);
         }
-        return NetworkRegistry.guard(listener.getMainThreadEventLoop().submit(task), this.payloadId);
+        return NetworkRegistry.guard(CompletableFuture.runAsync(task, processor::scheduleIfPossible), this.payloadId);
     }
 
     @Override
     public <T> CompletableFuture<T> enqueueWork(Supplier<T> task) {
-        if (listener.getMainThreadEventLoop().isSameThread()) {
+        PacketProcessor processor = listener.getPacketProcessor();
+        if (processor.isSameThread()) {
             return CompletableFuture.completedFuture(task.get());
         }
-        return NetworkRegistry.guard(listener.getMainThreadEventLoop().submit(task), this.payloadId);
+        return NetworkRegistry.guard(CompletableFuture.supplyAsync(task, processor::scheduleIfPossible), this.payloadId);
     }
 
     @Override

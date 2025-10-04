@@ -7,13 +7,13 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
+import net.minecraft.network.PacketProcessor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
@@ -45,9 +45,9 @@ public interface ICommonPacketListener extends PacketListener {
     Connection getConnection();
 
     /**
-     * {@return the main thread event loop}
+     * {@return the main thread packet processor}
      */
-    ReentrantBlockableEventLoop<?> getMainThreadEventLoop();
+    PacketProcessor getPacketProcessor();
 
     /**
      * Checks if the connection has negotiated and opened a channel for the payload.
