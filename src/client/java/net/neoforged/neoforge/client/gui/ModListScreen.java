@@ -49,7 +49,6 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -329,7 +328,7 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getModInfo().getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> stripControlCodes(mi.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT).contains(search.getValue().toLowerCase(Locale.ROOT))).toList();
         lastFilterText = search.getValue();
     }
 
