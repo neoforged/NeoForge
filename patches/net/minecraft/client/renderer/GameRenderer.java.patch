@@ -66,8 +66,8 @@
                  !flag2
              );
 +        profilerfiller.popPush("neoforge_render_after_level");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, this.minecraft.levelRenderer.getTicks(), this.minecraft.getDeltaTracker(), this.levelRenderState.cameraRenderState, this.minecraft.levelRenderer.getFrustum(), this.minecraft.levelRenderer.getRenderableSections()));
-+        this.minecraft.levelRenderer.clearLastFrustum();
++        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, matrix4f1, levelRenderer.getRenderableSections()));
          profilerfiller.popPush("hand");
          boolean flag1 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
          RenderSystem.setProjectionMatrix(

@@ -6,12 +6,22 @@
 package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.CloudStatus;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.SkyRenderState;
+import net.minecraft.client.renderer.state.WeatherRenderState;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import org.joml.Matrix4f;
 
 /**
  * Extension interface for {@link DimensionSpecialEffects}.
+ * <p>
+ * Custom render state needed for the various render methods must be extracted via {@link ExtractLevelRenderStateEvent}
+ * and stored in the provided {@link LevelRenderState}.
  */
 public interface IDimensionSpecialEffectsExtension {
     private DimensionSpecialEffects self() {
@@ -23,7 +33,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(ClientLevel level, int ticks, float partialTick, double camX, double camY, double camZ, Matrix4f modelViewMatrix) {
+    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, Matrix4f modelViewMatrix) {
         return false;
     }
 
@@ -32,7 +42,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla sky rendering
      */
-    default boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Runnable setupFog) {
+    default boolean renderSky(LevelRenderState levelRenderState, SkyRenderState skyRenderState, Matrix4f modelViewMatrix, Runnable setupFog) {
         return false;
     }
 
@@ -41,7 +51,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla snow and rain rendering
      */
-    default boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, double camX, double camY, double camZ) {
+    default boolean renderSnowAndRain(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, MultiBufferSource bufferSource, Vec3 camPos) {
         return false;
     }
 

@@ -104,6 +104,9 @@
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
   ],
+  "net/minecraft/network/PacketProcessor$ListenerAndPacket": [
+    "net/neoforged/neoforge/network/handling/QueuedPacket"
+  ],
   "net/minecraft/network/protocol/PacketFlow": [
     "net/neoforged/neoforge/common/extensions/IPacketFlowExtension"
   ],
