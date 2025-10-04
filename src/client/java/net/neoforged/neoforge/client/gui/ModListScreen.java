@@ -27,6 +27,7 @@ import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.locale.Language;
@@ -57,6 +58,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.jetbrains.annotations.Nullable;
 
 public class ModListScreen extends Screen {
     private static String stripControlCodes(String value) {
@@ -127,6 +129,7 @@ public class ModListScreen extends Screen {
     }
 
     class InfoPanel extends ScrollPanel {
+        @Nullable
         private ResourceLocation logoPath;
         private Size2i logoDims = new Size2i(0, 0);
         private List<FormattedCharSequence> lines = Collections.emptyList();
@@ -200,6 +203,7 @@ public class ModListScreen extends Screen {
             }
         }
 
+        @Nullable
         private Style findTextLine(final int mouseX, final int mouseY) {
             if (!isMouseOver(mouseX, mouseY))
                 return null;
@@ -223,13 +227,13 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        public boolean mouseClicked(final double mouseX, final double mouseY, final int button) {
-            final Style component = findTextLine((int) mouseX, (int) mouseY);
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            final Style component = findTextLine((int) event.x(), (int) event.y());
             if (component != null) {
                 ModListScreen.this.handleComponentClicked(component);
                 return true;
             }
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, doubleClick);
         }
 
         @Override

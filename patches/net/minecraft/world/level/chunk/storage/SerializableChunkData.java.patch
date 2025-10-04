@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -93,7 +_,9 @@
+@@ -92,7 +_,9 @@
      List<SerializableChunkData.SectionData> sectionData,
      List<CompoundTag> entities,
      List<CompoundTag> blockEntities,
@@ -9,9 +9,9 @@
 +    @Nullable CompoundTag attachmentData,
 +    @Nullable ListTag auxLightData
  ) {
-     private static final Codec<PalettedContainer<BlockState>> BLOCK_STATE_CODEC = PalettedContainer.codecRW(
-         Block.BLOCK_STATE_REGISTRY, BlockState.CODEC, PalettedContainer.Strategy.SECTION_STATES, Blocks.AIR.defaultBlockState()
-@@ -112,6 +_,33 @@
+     private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
+     private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
+@@ -108,6 +_,33 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
@@ -20,7 +20,7 @@
 +     */
 +    @Deprecated
 +    SerializableChunkData(
-+            Registry<Biome> biomeRegistry,
++            PalettedContainerFactory containerFactory,
 +            ChunkPos chunkPos,
 +            int minSectionY,
 +            long lastUpdateTime,
@@ -39,13 +39,13 @@
 +            List<CompoundTag> blockEntities,
 +            CompoundTag structureData
 +    ) {
-+        this(biomeRegistry, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, carvingMask, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
++        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, carvingMask, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
 +
      @Nullable
-     public static SerializableChunkData parse(LevelHeightAccessor p_361938_, RegistryAccess p_365010_, CompoundTag p_362040_) {
+     public static SerializableChunkData parse(LevelHeightAccessor p_361938_, PalettedContainerFactory p_447248_, CompoundTag p_362040_) {
          if (p_362040_.getString("Status").isEmpty()) {
-@@ -197,6 +_,9 @@
+@@ -185,6 +_,9 @@
                  }
              }
  
@@ -53,9 +53,9 @@
 +            ListTag auxLightData = p_362040_.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY).orElse(null);
 +
              return new SerializableChunkData(
-                 registry,
+                 p_447248_,
                  chunkpos,
-@@ -215,7 +_,9 @@
+@@ -203,7 +_,9 @@
                  list2,
                  list3,
                  list4,
@@ -66,7 +66,7 @@
              );
          }
      }
-@@ -275,6 +_,9 @@
+@@ -263,6 +_,9 @@
                  postLoadChunk(p_360452_, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
@@ -76,7 +76,7 @@
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> protochunkticks1 = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -313,6 +_,10 @@
+@@ -308,6 +_,10 @@
              chunkaccess.addPackedPostProcess(this.postProcessingSections[j], j);
          }
  
@@ -87,7 +87,7 @@
          if (chunktype == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunkaccess, false);
          } else {
-@@ -402,6 +_,17 @@
+@@ -391,6 +_,18 @@
              CompoundTag compoundtag1 = packStructureData(
                  StructurePieceSerializationContext.fromLevel(p_365319_), chunkpos, p_362284_.getAllStarts(), p_362284_.getAllReferences()
              );
@@ -102,10 +102,11 @@
 +            if (p_362284_ instanceof LevelChunk levelChunk) {
 +                auxLightData = levelChunk.getAuxLightManager(chunkpos).serializeNBT();
 +            }
++
              return new SerializableChunkData(
-                 p_365319_.registryAccess().lookupOrThrow(Registries.BIOME),
+                 p_365319_.palettedContainerFactory(),
                  chunkpos,
-@@ -420,7 +_,9 @@
+@@ -409,7 +_,9 @@
                  list,
                  list2,
                  list1,
@@ -116,7 +117,7 @@
              );
          }
      }
-@@ -487,6 +_,14 @@
+@@ -477,6 +_,14 @@
          this.heightmaps.forEach((p_362472_, p_363515_) -> compoundtag2.put(p_362472_.getSerializationKey(), new LongArrayTag(p_363515_)));
          compoundtag.put("Heightmaps", compoundtag2);
          compoundtag.put("structures", this.structureData);

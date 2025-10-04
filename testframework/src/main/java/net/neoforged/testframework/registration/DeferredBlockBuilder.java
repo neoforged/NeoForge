@@ -27,7 +27,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -65,7 +65,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private boolean hasColor = false;
 
     public DeferredBlockBuilder<T> withDefaultWhiteModel() {
-        if (!FMLLoader.getDist().isClient()) {
+        if (!FMLEnvironment.getDist().isClient()) {
             return this;
         }
 
@@ -113,7 +113,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     public DeferredBlockBuilder<T> withColor(int color) {
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             colorInternal(color);
         }
         hasColor = true;

@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Nastavte toto na true, aby ste povolili reklamu dedikovaného servera lokálnym klientom LAN, aby sa automaticky zobrazoval na obrazovke pre viacerých hráčov.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povoliť kanál vykresľovania blokov NeoForge – opravuje osvetlenie vlastných modelov.",
   "neoforge.configgui.fullBoundingBoxLadders": "Úplné vymedzovanie boxov rebríkov",

@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -54,6 +_,9 @@
-     private KnownPacksManager knownPacks;
+@@ -53,6 +_,9 @@
      @Nullable
      protected ChatComponent.State chatState;
+     private boolean seenCodeOfConduct;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.OTHER;
 +    private boolean initializedConnection = false;
 +    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
@@ -22,7 +22,7 @@
      }
  
      @Override
-@@ -131,7 +_,7 @@
+@@ -155,7 +_,7 @@
          );
          this.connection
              .setupInboundProtocol(
@@ -31,12 +31,12 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -146,14 +_,22 @@
-                         this.serverCookies,
-                         this.chatState,
+@@ -173,14 +_,22 @@
                          this.customReportDetails,
--                        this.serverLinks()
-+                        this.serverLinks(),
+                         this.serverLinks(),
+                         this.seenPlayers,
+-                        this.seenInsecureChatWarning
++                        this.seenInsecureChatWarning,
 +                        this.connectionType
                      )
                  )
@@ -56,7 +56,7 @@
                      @Override
                      public boolean hasInfiniteMaterials() {
                          return true;
-@@ -171,6 +_,53 @@
+@@ -198,6 +_,53 @@
      public void onDisconnect(DisconnectionDetails p_351005_) {
          super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();

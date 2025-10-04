@@ -12,9 +12,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated Use {@link ItemStacksResourceHandler} instead.
+ */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, ValueIOSerializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemStackHandler.class);
 

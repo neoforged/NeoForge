@@ -1,17 +1,9 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -248,6 +_,18 @@
+@@ -207,6 +_,10 @@
          return Optional.empty();
      }
  
-+    /**
-+     * Returns the bounding box that should be used for particle culling. {@link AABB#INFINITE} can be
-+     * returned for particles that should not be culled.
-+     */
-+    public AABB getRenderBoundingBox(float partialTicks) {
-+        return getBoundingBox().inflate(1.0);
-+    }
-+
 +    public Vec3 getPos() {
 +        return new Vec3(this.x, this.y, this.z);
 +    }

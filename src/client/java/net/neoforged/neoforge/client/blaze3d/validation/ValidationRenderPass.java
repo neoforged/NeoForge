@@ -13,7 +13,6 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.Collection;
 import java.util.function.Supplier;
-import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -25,7 +24,7 @@ public class ValidationRenderPass implements RenderPass {
     private final RenderPass realRenderPass;
     private final GpuDeviceUsageValidator validator;
 
-    ValidationRenderPass(RenderPass realRenderPass, GpuDeviceUsageValidator validator) {
+    protected ValidationRenderPass(RenderPass realRenderPass, GpuDeviceUsageValidator validator) {
         this.realRenderPass = realRenderPass;
         this.validator = validator;
     }
@@ -47,8 +46,12 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
-    public void bindSampler(String name, @Nullable GpuTextureView texture) {
-        realRenderPass.bindSampler(name, texture);
+    public void bindSampler(String name, @Nullable GpuTextureView textureView) {
+        if (textureView instanceof ValidationGpuTextureView validationTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            textureView = validationTextureView.getRealTextureView();
+        }
+        realRenderPass.bindSampler(name, textureView);
     }
 
     @Override
@@ -62,6 +65,11 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
+    public void setViewport(int x, int y, int width, int height) {
+        realRenderPass.setViewport(x, y, width, height);
+    }
+
+    @Override
     public void enableScissor(int x, int y, int width, int height) {
         realRenderPass.enableScissor(x, y, width, height);
     }
@@ -69,16 +77,6 @@ public class ValidationRenderPass implements RenderPass {
     @Override
     public void disableScissor() {
         realRenderPass.disableScissor();
-    }
-
-    @Override
-    public void enableStencilTest(StencilTest stencilTest) {
-        realRenderPass.enableStencilTest(stencilTest);
-    }
-
-    @Override
-    public void disableStencilTest() {
-        realRenderPass.disableStencilTest();
     }
 
     @Override

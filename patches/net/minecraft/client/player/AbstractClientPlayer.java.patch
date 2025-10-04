@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/player/AbstractClientPlayer.java
 +++ b/net/minecraft/client/player/AbstractClientPlayer.java
-@@ -86,6 +_,6 @@
+@@ -138,7 +_,7 @@
              }
          }
  
 -        return Mth.lerp(p_366686_, 1.0F, f);
 +        return net.neoforged.neoforge.client.ClientHooks.getFieldOfViewModifier(this, f, p_366686_);
      }
- }
+ 
+     @Override

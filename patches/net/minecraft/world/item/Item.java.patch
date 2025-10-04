@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -93,7 +_,7 @@
+@@ -96,7 +_,7 @@
          );
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Item>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.ITEM);
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -9,7 +9,16 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -125,12 +_,13 @@
+@@ -109,6 +_,8 @@
+     private final Item craftingRemainingItem;
+     protected final String descriptionId;
+     private final FeatureFlagSet requiredFeatures;
++    @Nullable
++    private net.neoforged.neoforge.transfer.item.ItemResource defaultResource;
+ 
+     public static int getId(Item p_41394_) {
+         return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
+@@ -128,12 +_,13 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -24,7 +33,7 @@
      }
  
      @Deprecated
-@@ -142,6 +_,15 @@
+@@ -145,6 +_,25 @@
          return this.components;
      }
  
@@ -35,12 +44,22 @@
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
 +        components = Properties.validateComponents(builder.build());
++        defaultResource = null;
++    }
++
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
++    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    public net.neoforged.neoforge.transfer.item.ItemResource computeDefaultResource(java.util.function.Function<Item, net.neoforged.neoforge.transfer.item.ItemResource> resourceConstructor) {
++        if (this.defaultResource == null) {
++            this.defaultResource = resourceConstructor.apply(this);
++        }
++        return this.defaultResource;
 +    }
 +
      public int getDefaultMaxStackSize() {
          return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -149,6 +_,8 @@
+@@ -152,6 +_,8 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
  
@@ -57,7 +76,7 @@
      public final ItemStack getCraftingRemainder() {
          return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -338,7 +_,14 @@
+@@ -338,13 +_,26 @@
      }
  
      public boolean useOnRelease(ItemStack p_41464_) {
@@ -73,6 +92,18 @@
      }
  
      public ItemStack getDefaultInstance() {
+         return new ItemStack(this);
+     }
+ 
++    /**
++     * @deprecated Neo: call {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#canFitInsideContainerItems()} instead,
++     *             prefer overriding {@link net.neoforged.neoforge.common.extensions.IItemExtension#canFitInsideContainerItems(ItemStack)}
++     * @implNote It is recommended to still override this to ensure mods calling this instead of the extension still behave safely.
++     */
++    @Deprecated
+     public boolean canFitInsideContainerItems() {
+         return true;
+     }
 @@ -369,6 +_,12 @@
          private ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
@@ -86,7 +117,7 @@
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.food(p_41490_, Consumables.DEFAULT_FOOD);
-@@ -543,6 +_,7 @@
+@@ -547,6 +_,7 @@
          }
  
          public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
@@ -94,7 +125,7 @@
              this.components.set(p_330871_, p_330323_);
              return this;
          }
-@@ -553,6 +_,10 @@
+@@ -557,6 +_,10 @@
  
          DataComponentMap buildAndValidateComponents(Component p_371796_, ResourceLocation p_371450_) {
              DataComponentMap datacomponentmap = this.components.set(DataComponents.ITEM_NAME, p_371796_).set(DataComponents.ITEM_MODEL, p_371450_).build();
@@ -105,9 +136,9 @@
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
              } else {
-@@ -589,6 +_,14 @@
-         @Nullable
-         MapItemSavedData mapData(MapId p_339670_);
+@@ -600,6 +_,14 @@
+ 
+         boolean isPeaceful();
  
 +        /**
 +         * Neo: Returns the level if it's available.
@@ -120,10 +151,10 @@
          static Item.TooltipContext of(@Nullable final Level p_339599_) {
              return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -604,6 +_,11 @@
+@@ -620,6 +_,11 @@
                  @Override
-                 public MapItemSavedData mapData(MapId p_339628_) {
-                     return p_339599_.getMapData(p_339628_);
+                 public boolean isPeaceful() {
+                     return p_339599_.getDifficulty() == Difficulty.PEACEFUL;
 +                }
 +
 +                @Override

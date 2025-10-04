@@ -31,7 +31,7 @@ import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -44,8 +44,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.model.ComposedModelState;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -145,14 +144,12 @@ public class DynamicFluidContainerModel implements ItemModel {
     }
 
     @Override
-    public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver modelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int p_387820_) {
-        var fluid = FluidUtil.getFluidContained(stack)
-                .map(FluidStack::getFluid)
-                // not a fluid item apparently
-                .orElse(unbakedModel.fluid);
+    public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver modelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+        var fluidStack = FluidUtil.getFirstStackContained(stack);
+        var fluid = fluidStack.isEmpty() ? unbakedModel.fluid : fluidStack.getFluid();
 
         cache.computeIfAbsent(fluid, this::bakeModelForFluid)
-                .update(renderState, stack, modelResolver, displayContext, level, entity, p_387820_);
+                .update(renderState, stack, modelResolver, displayContext, level, owner, seed);
     }
 
     public record Textures(

@@ -6,6 +6,6 @@
      public InteractionResult interact(Player p_38483_, InteractionHand p_38484_) {
 +        InteractionResult ret = super.interact(p_38483_, p_38484_);
 +        if (ret.consumesAction()) return ret;
-         if (!p_38483_.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide || p_38483_.startRiding(this))) {
+         if (!p_38483_.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide() || p_38483_.startRiding(this))) {
              this.playerRotationOffset = this.rotationOffset;
-             if (!this.level().isClientSide) {
+             if (!this.level().isClientSide()) {

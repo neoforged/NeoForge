@@ -7,11 +7,11 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -47,11 +47,11 @@ public abstract class RenderLevelStageEvent extends Event {
     private final Matrix4f modelViewMatrix;
     private final int renderTick;
     private final DeltaTracker partialTick;
-    private final Camera camera;
+    private final CameraRenderState camera;
     private final Frustum frustum;
     private final Iterable<? extends IRenderableSection> renderableSections;
 
-    public RenderLevelStageEvent(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+    public RenderLevelStageEvent(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
         this.level = level;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
@@ -108,7 +108,7 @@ public abstract class RenderLevelStageEvent extends Event {
     /**
      * {@return the camera}
      */
-    public Camera getCamera() {
+    public CameraRenderState getCamera() {
         return camera;
     }
 
@@ -133,7 +133,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired at the end of {@linkplain LevelRenderer#addSkyPass}. This is the first RenderLevelStageEvent sub-event to fire.
      */
     public static class AfterSky extends RenderLevelStageEvent {
-        public AfterSky(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterSky(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -142,7 +142,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired early in {@linkplain LevelRenderer#addMainPass} after {@code AfterSky} had ran.
      */
     public static class AfterOpaqueBlocks extends RenderLevelStageEvent {
-        public AfterOpaqueBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterOpaqueBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -151,7 +151,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterOpaqueBlocks} had ran.
      */
     public static class AfterEntities extends RenderLevelStageEvent {
-        public AfterEntities(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterEntities(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -160,7 +160,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterEntities} had ran and just before block outline rendering.
      */
     public static class AfterBlockEntities extends RenderLevelStageEvent {
-        public AfterBlockEntities(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterBlockEntities(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -169,7 +169,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterBlockEntities} had ran.
      */
     public static class AfterTranslucentBlocks extends RenderLevelStageEvent {
-        public AfterTranslucentBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTranslucentBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -178,7 +178,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired near the end of {@linkplain LevelRenderer#addMainPass} after {@code AfterTranslucentBlocks} had ran.
      */
     public static class AfterTripwireBlocks extends RenderLevelStageEvent {
-        public AfterTripwireBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTripwireBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -187,7 +187,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired at the end of {@linkplain LevelRenderer#addParticlesPass} after {@code AfterTripwireBlocks} had ran.
      */
     public static class AfterParticles extends RenderLevelStageEvent {
-        public AfterParticles(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterParticles(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -196,7 +196,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired near the end of {@linkplain LevelRenderer#addWeatherPass} after {@code AfterParticles} had ran but before world border rendering.
      */
     public static class AfterWeather extends RenderLevelStageEvent {
-        public AfterWeather(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterWeather(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
@@ -205,7 +205,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain GameRenderer#renderLevel} after {@linkplain LevelRenderer#renderLevel} is called. This is the last RenderLevelStageEvent sub-event to fire.
      */
     public static class AfterLevel extends RenderLevelStageEvent {
-        public AfterLevel(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterLevel(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, CameraRenderState camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }

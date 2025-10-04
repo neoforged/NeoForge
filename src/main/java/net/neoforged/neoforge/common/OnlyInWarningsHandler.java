@@ -26,7 +26,7 @@ public class OnlyInWarningsHandler {
     private static final boolean HIDE_WARNING_SCREEN = Boolean.getBoolean("neoforge.warnings.onlyin.hide");
 
     public OnlyInWarningsHandler(ModContainer container) {
-        if (!FMLEnvironment.production) {
+        if (!FMLEnvironment.isProduction()) {
             ModList.get().forEachModFile(file -> {
                 if (file.getModInfos().stream().anyMatch(info -> info.getModId().equals("minecraft"))) {
                     return;

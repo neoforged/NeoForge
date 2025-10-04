@@ -1,18 +1,18 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -34,9 +_,10 @@
+@@ -36,9 +_,10 @@
  import net.minecraft.world.level.storage.ValueOutput;
  import org.slf4j.Logger;
  
--public abstract class BlockEntity implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
-+public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
+-public abstract class BlockEntity implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
++public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
 +    @Deprecated // Neo: always use getType()
      private final BlockEntityType<?> type;
      @Nullable
      protected Level level;
-@@ -44,6 +_,8 @@
+@@ -46,6 +_,8 @@
      protected boolean remove;
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
@@ -21,7 +21,7 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
-@@ -59,7 +_,7 @@
+@@ -61,7 +_,7 @@
      }
  
      public boolean isValidBlockState(BlockState p_353131_) {
@@ -30,7 +30,7 @@
      }
  
      public static BlockPos getPosFromTag(ChunkPos p_412201_, CompoundTag p_187473_) {
-@@ -91,6 +_,8 @@
+@@ -93,6 +_,8 @@
      }
  
      protected void loadAdditional(ValueInput p_422607_) {
@@ -39,7 +39,7 @@
      }
  
      public final void loadWithComponents(ValueInput p_422624_) {
-@@ -103,6 +_,11 @@
+@@ -105,6 +_,11 @@
      }
  
      protected void saveAdditional(ValueOutput p_422639_) {
@@ -51,7 +51,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
-@@ -238,10 +_,14 @@
+@@ -240,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -66,7 +66,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos p_394577_, BlockState p_394161_) {
-@@ -271,6 +_,32 @@
+@@ -273,6 +_,32 @@
  
      public BlockEntityType<?> getType() {
          return this.type;

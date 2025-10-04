@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -75,6 +_,11 @@
+@@ -85,6 +_,11 @@
      private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
      @Nullable
      private MultipleTestTracker testTracker;
@@ -12,7 +12,7 @@
  
      public static GameTestServer create(
          Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Optional<String> p_397118_, boolean p_397698_
-@@ -85,7 +_,7 @@
+@@ -95,7 +_,7 @@
          arraylist.addFirst("vanilla");
          WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(new DataPackConfig(arraylist, List.of()), ENABLED_FEATURES);
          LevelSettings levelsettings = new LevelSettings(
@@ -21,10 +21,10 @@
          );
          WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_206609_, worlddataconfiguration, false, true);
          WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, 4);
-@@ -152,10 +_,12 @@
+@@ -153,10 +_,12 @@
      @Override
      public boolean initServer() {
-         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {});
+         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()) {});
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
          ServerLevel serverlevel = this.overworld();
@@ -34,7 +34,7 @@
          return true;
      }
  
-@@ -216,8 +_,14 @@
+@@ -217,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,7 +50,7 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -233,11 +_,11 @@
+@@ -234,11 +_,11 @@
  
      private static void logFailedTest(GameTestInfo p_401161_) {
          if (p_401161_.getRotation() != Rotation.NONE) {

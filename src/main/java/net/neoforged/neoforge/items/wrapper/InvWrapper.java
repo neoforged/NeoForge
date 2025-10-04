@@ -8,7 +8,12 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
+/**
+ * @deprecated Use {@link VanillaContainerWrapper#of} instead.
+ */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class InvWrapper implements IItemHandlerModifiable {
     private final Container inv;
 

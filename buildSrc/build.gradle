@@ -36,4 +36,6 @@ dependencies {
     implementation "io.codechicken:DiffPatch:${gradle.parent.ext.diffpatch_version}"
 
     implementation "org.ow2.asm:asm:${gradle.parent.ext.asm_version}"
+
+    implementation "org.apache.maven:maven-artifact:3.8.5"
 }

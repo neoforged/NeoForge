@@ -48,7 +48,7 @@ public class CustomArmorModelTest {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modBus.addListener(ClientEvents::onRegisterClientExtensions);
         }
     }

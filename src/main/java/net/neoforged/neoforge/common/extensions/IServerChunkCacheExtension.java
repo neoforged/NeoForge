@@ -31,8 +31,8 @@ public interface IServerChunkCacheExtension {
      * @param entity  the entity that needs to be watched to receive the payload, and the player to send the payload to if the entity is a player.
      * @param payload the payload to send
      */
-    default void broadcastAndSend(Entity entity, CustomPacketPayload payload) {
-        self().broadcastAndSend(entity, new ClientboundCustomPayloadPacket(payload));
+    default void sendToTrackingPlayersAndSelf(Entity entity, CustomPacketPayload payload) {
+        self().sendToTrackingPlayersAndSelf(entity, new ClientboundCustomPayloadPacket(payload));
     }
 
     /**
@@ -44,7 +44,7 @@ public interface IServerChunkCacheExtension {
      * @param entity  the entity that needs to be watched to receive the payload
      * @param payload the payload to send
      */
-    default void broadcast(Entity entity, CustomPacketPayload payload) {
-        self().broadcast(entity, new ClientboundCustomPayloadPacket(payload));
+    default void sendToTrackingPlayers(Entity entity, CustomPacketPayload payload) {
+        self().sendToTrackingPlayers(entity, new ClientboundCustomPayloadPacket(payload));
     }
 }

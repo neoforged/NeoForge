@@ -25,6 +25,7 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
@@ -39,6 +40,7 @@ import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class ModMismatchDisconnectedScreen extends Screen {
@@ -98,7 +100,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xFFAAAAAA);
-        this.message.renderCentered(guiGraphics, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2);
+        this.message.render(guiGraphics, MultiLineLabel.Align.CENTER, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2, font.lineHeight, true, -1);
     }
 
     class MismatchInfoPanel extends ScrollPanel {
@@ -256,6 +258,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
             }
         }
 
+        @Nullable
         public Style getComponentStyleAt(double x, double y) {
             if (this.isMouseOver(x, y)) {
                 double relativeY = y - this.top + this.scrollDistance - border;
@@ -272,13 +275,13 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        public boolean mouseClicked(final double mouseX, final double mouseY, final int button) {
-            Style style = getComponentStyleAt(mouseX, mouseY);
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            Style style = getComponentStyleAt(event.x(), event.y());
             if (style != null) {
                 handleComponentClicked(style);
                 return true;
             }
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, doubleClick);
         }
 
         @Override

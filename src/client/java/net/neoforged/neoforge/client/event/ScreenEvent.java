@@ -15,18 +15,13 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.client.event.ScreenEvent.CharacterTyped;
-import net.neoforged.neoforge.client.event.ScreenEvent.Init;
-import net.neoforged.neoforge.client.event.ScreenEvent.KeyPressed;
-import net.neoforged.neoforge.client.event.ScreenEvent.KeyReleased;
-import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed;
-import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonReleased;
-import net.neoforged.neoforge.client.event.ScreenEvent.MouseDragged;
-import net.neoforged.neoforge.client.event.ScreenEvent.MouseScrolled;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -112,7 +107,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>before</b> the screen's overridable initialization method is fired.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the initialization method will not be called, and the widgets and children lists
          * will not be cleared.</p>
          *
@@ -129,7 +124,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>after</b> the screen's overridable initialization method is called.
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -196,7 +191,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>before</b> the screen is drawn.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen will not be drawn.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -230,7 +225,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>after</b> the screen is drawn.
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -248,7 +243,7 @@ public abstract class ScreenEvent extends Event {
      * Can be used to select the size of the effects display (full or compact) or even hide or replace vanilla's rendering entirely.
      * This event can also be used to modify the horizontal position of the stack of effects being rendered.
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}.
      * Cancelling this event will prevent vanilla rendering.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -353,12 +348,18 @@ public abstract class ScreenEvent extends Event {
      * @see MouseButtonPressed.Post
      */
     public static abstract class MouseButtonPressed extends MouseInput {
-        private final int button;
+        private final MouseButtonEvent mouseEvent;
+        private final boolean doubleClick;
 
         @ApiStatus.Internal
-        public MouseButtonPressed(Screen screen, double mouseX, double mouseY, int button) {
-            super(screen, mouseX, mouseY);
-            this.button = button;
+        public MouseButtonPressed(Screen screen, MouseButtonEvent mouseEvent, boolean doubleClick) {
+            super(screen, mouseEvent.x(), mouseEvent.y());
+            this.mouseEvent = mouseEvent;
+            this.doubleClick = doubleClick;
+        }
+
+        public MouseButtonEvent getMouseButtonEvent() {
+            return this.mouseEvent;
         }
 
         /**
@@ -368,13 +369,18 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
         public int getButton() {
-            return button;
+            return this.mouseEvent.button();
+        }
+
+        /** {@return whether the user double-clicked} */
+        public boolean isDoubleClick() {
+            return doubleClick;
         }
 
         /**
          * Fired <b>before</b> the mouse click is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's mouse click handler will be bypassed
          * and the corresponding {@link MouseButtonPressed.Post} will not be fired.</p>
          *
@@ -383,8 +389,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends MouseButtonPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int button) {
-                super(screen, mouseX, mouseY, button);
+            public Pre(Screen screen, MouseButtonEvent mouseEvent, boolean doubleClick) {
+                super(screen, mouseEvent, doubleClick);
             }
         }
 
@@ -399,8 +405,8 @@ public abstract class ScreenEvent extends Event {
             private Result result = Result.DEFAULT;
 
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
-                super(screen, mouseX, mouseY, button);
+            public Post(Screen screen, MouseButtonEvent mouseEvent, boolean doubleClick, boolean handled) {
+                super(screen, mouseEvent, doubleClick);
                 this.handled = handled;
             }
 
@@ -444,7 +450,7 @@ public abstract class ScreenEvent extends Event {
                 FORCE_HANDLED,
 
                 /**
-                 * The result of {@link Screen#mouseClicked(double, double, int)} will be used to determine if the click was handled.
+                 * The result of {@link Screen#mouseClicked(MouseButtonEvent, boolean)} will be used to determine if the click was handled.
                  *
                  * @see {@link Post#wasClickHandled()}
                  */
@@ -466,12 +472,16 @@ public abstract class ScreenEvent extends Event {
      * @see MouseButtonReleased.Post
      */
     public static abstract class MouseButtonReleased extends MouseInput {
-        private final int button;
+        private final MouseButtonEvent mouseEvent;
 
         @ApiStatus.Internal
-        public MouseButtonReleased(Screen screen, double mouseX, double mouseY, int button) {
-            super(screen, mouseX, mouseY);
-            this.button = button;
+        public MouseButtonReleased(Screen screen, MouseButtonEvent mouseEvent) {
+            super(screen, mouseEvent.x(), mouseEvent.y());
+            this.mouseEvent = mouseEvent;
+        }
+
+        public MouseButtonEvent getMouseButtonEvent() {
+            return this.mouseEvent;
         }
 
         /**
@@ -481,13 +491,13 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
         public int getButton() {
-            return button;
+            return this.mouseEvent.button();
         }
 
         /**
          * Fired <b>before</b> the mouse release is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's mouse release handler will be bypassed
          * and the corresponding {@link MouseButtonReleased.Post} will not be fired.</p>
          *
@@ -496,8 +506,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends MouseButtonReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int button) {
-                super(screen, mouseX, mouseY, button);
+            public Pre(Screen screen, MouseButtonEvent mouseEvent) {
+                super(screen, mouseEvent);
             }
         }
 
@@ -512,8 +522,8 @@ public abstract class ScreenEvent extends Event {
             private Result result = Result.DEFAULT;
 
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
-                super(screen, mouseX, mouseY, button);
+            public Post(Screen screen, MouseButtonEvent mouseEvent, boolean handled) {
+                super(screen, mouseEvent);
                 this.handled = handled;
             }
 
@@ -557,7 +567,7 @@ public abstract class ScreenEvent extends Event {
                 FORCE_HANDLED,
 
                 /**
-                 * The result of {@link Screen#mouseReleased(double, double, int)} will be used to determine if the click was handled.
+                 * The result of {@link Screen#mouseReleased(MouseButtonEvent)} will be used to determine if the click was handled.
                  *
                  * @see {@link Post#wasReleaseHandled()}
                  */
@@ -579,16 +589,20 @@ public abstract class ScreenEvent extends Event {
      * @see MouseDragged.Post
      */
     public static abstract class MouseDragged extends MouseInput {
-        private final int mouseButton;
+        private final MouseButtonEvent mouseEvent;
         private final double dragX;
         private final double dragY;
 
         @ApiStatus.Internal
-        public MouseDragged(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-            super(screen, mouseX, mouseY);
-            this.mouseButton = mouseButton;
+        public MouseDragged(Screen screen, MouseButtonEvent mouseEvent, double dragX, double dragY) {
+            super(screen, mouseEvent.x(), mouseEvent.y());
+            this.mouseEvent = mouseEvent;
             this.dragX = dragX;
             this.dragY = dragY;
+        }
+
+        public MouseButtonEvent getMouseButtonEvent() {
+            return this.mouseEvent;
         }
 
         /**
@@ -598,7 +612,7 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
         public int getMouseButton() {
-            return mouseButton;
+            return this.mouseEvent.button();
         }
 
         /**
@@ -618,7 +632,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>before</b> the mouse drag is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's mouse drag handler will be bypassed
          * and the corresponding {@link MouseDragged.Post} will not be fired.</p>
          *
@@ -627,8 +641,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends MouseDragged implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-                super(screen, mouseX, mouseY, mouseButton, dragX, dragY);
+            public Pre(Screen screen, MouseButtonEvent mouseEvent, double dragX, double dragY) {
+                super(screen, mouseEvent, dragX, dragY);
             }
         }
 
@@ -636,7 +650,7 @@ public abstract class ScreenEvent extends Event {
          * Fired <b>after</b> the mouse drag is handled, if not handled by the screen
          * and the corresponding {@link MouseDragged.Pre} is not cancelled.
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the mouse drag will be set as handled.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -644,8 +658,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends MouseDragged {
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-                super(screen, mouseX, mouseY, mouseButton, dragX, dragY);
+            public Post(Screen screen, MouseButtonEvent mouseEvent, double dragX, double dragY) {
+                super(screen, mouseEvent, dragX, dragY);
             }
         }
     }
@@ -685,7 +699,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Fired <b>before</b> the mouse scroll is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's mouse scroll handler will be bypassed
          * and the corresponding {@link MouseScrolled.Post} will not be fired.</p>
          *
@@ -703,7 +717,7 @@ public abstract class ScreenEvent extends Event {
          * Fired <b>after</b> the mouse scroll is handled, if not handled by the screen
          * and the corresponding {@link MouseScrolled.Pre} is not cancelled.
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the mouse scroll will be set as handled.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -727,16 +741,16 @@ public abstract class ScreenEvent extends Event {
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_key" target="_top">the online GLFW documentation</a>
      */
     private static abstract class KeyInput extends ScreenEvent {
-        private final int keyCode;
-        private final int scanCode;
-        private final int modifiers;
+        private final KeyEvent keyEvent;
 
         @ApiStatus.Internal
-        protected KeyInput(Screen screen, int keyCode, int scanCode, int modifiers) {
+        protected KeyInput(Screen screen, KeyEvent keyEvent) {
             super(screen);
-            this.keyCode = keyCode;
-            this.scanCode = scanCode;
-            this.modifiers = modifiers;
+            this.keyEvent = keyEvent;
+        }
+
+        public KeyEvent getKeyEvent() {
+            return keyEvent;
         }
 
         /**
@@ -747,7 +761,7 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__keys.html" target="_top">the online GLFW documentation</a>
          */
         public int getKeyCode() {
-            return keyCode;
+            return this.keyEvent.key();
         }
 
         /**
@@ -757,10 +771,10 @@ public abstract class ScreenEvent extends Event {
          * Scan codes are platform-specific but consistent over time, so keys will have different scan codes depending
          * on the platform but they are safe to save to disk as custom key bindings.
          *
-         * @see InputConstants#getKey(int, int)
+         * @see InputConstants#getKey(KeyEvent)
          */
         public int getScanCode() {
-            return scanCode;
+            return this.keyEvent.scancode();
         }
 
         /**
@@ -775,7 +789,7 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
         public int getModifiers() {
-            return modifiers;
+            return this.keyEvent.modifiers();
         }
     }
 
@@ -788,14 +802,14 @@ public abstract class ScreenEvent extends Event {
      */
     public static abstract class KeyPressed extends KeyInput {
         @ApiStatus.Internal
-        public KeyPressed(Screen screen, int keyCode, int scanCode, int modifiers) {
-            super(screen, keyCode, scanCode, modifiers);
+        public KeyPressed(Screen screen, KeyEvent keyEvent) {
+            super(screen, keyEvent);
         }
 
         /**
          * Fired <b>before</b> the key press is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's key press handler will be bypassed
          * and the corresponding {@link KeyPressed.Post} will not be fired.</p>
          *
@@ -804,8 +818,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends KeyPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, int keyCode, int scanCode, int modifiers) {
-                super(screen, keyCode, scanCode, modifiers);
+            public Pre(Screen screen, KeyEvent keyEvent) {
+                super(screen, keyEvent);
             }
         }
 
@@ -813,7 +827,7 @@ public abstract class ScreenEvent extends Event {
          * Fired <b>after</b> the key press is handled, if not handled by the screen
          * and the corresponding {@link KeyPressed.Pre} is not cancelled.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the key press will be set as handled.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -821,8 +835,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends KeyPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Post(Screen screen, int keyCode, int scanCode, int modifiers) {
-                super(screen, keyCode, scanCode, modifiers);
+            public Post(Screen screen, KeyEvent keyEvent) {
+                super(screen, keyEvent);
             }
         }
     }
@@ -836,14 +850,14 @@ public abstract class ScreenEvent extends Event {
      */
     public static abstract class KeyReleased extends KeyInput {
         @ApiStatus.Internal
-        public KeyReleased(Screen screen, int keyCode, int scanCode, int modifiers) {
-            super(screen, keyCode, scanCode, modifiers);
+        public KeyReleased(Screen screen, KeyEvent keyEvent) {
+            super(screen, keyEvent);
         }
 
         /**
          * Fired <b>before</b> the key release is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's key release handler will be bypassed
          * and the corresponding {@link KeyReleased.Post} will not be fired.</p>
          *
@@ -852,8 +866,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends KeyReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, int keyCode, int scanCode, int modifiers) {
-                super(screen, keyCode, scanCode, modifiers);
+            public Pre(Screen screen, KeyEvent keyEvent) {
+                super(screen, keyEvent);
             }
         }
 
@@ -861,7 +875,7 @@ public abstract class ScreenEvent extends Event {
          * Fired <b>after</b> the key release is handled, if not handled by the screen
          * and the corresponding {@link KeyReleased.Pre} is not cancelled.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the key release will be set as handled.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -869,8 +883,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends KeyReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Post(Screen screen, int keyCode, int scanCode, int modifiers) {
-                super(screen, keyCode, scanCode, modifiers);
+            public Post(Screen screen, KeyEvent keyEvent) {
+                super(screen, keyEvent);
             }
         }
     }
@@ -884,21 +898,23 @@ public abstract class ScreenEvent extends Event {
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_char" target="_top">the online GLFW documentation</a>
      */
     public static abstract class CharacterTyped extends ScreenEvent {
-        private final char codePoint;
-        private final int modifiers;
+        private final CharacterEvent charEvent;
 
         @ApiStatus.Internal
-        public CharacterTyped(Screen screen, char codePoint, int modifiers) {
+        public CharacterTyped(Screen screen, CharacterEvent charEvent) {
             super(screen);
-            this.codePoint = codePoint;
-            this.modifiers = modifiers;
+            this.charEvent = charEvent;
+        }
+
+        public CharacterEvent getCharacterEvent() {
+            return charEvent;
         }
 
         /**
          * {@return the character code point}
          */
-        public char getCodePoint() {
-            return codePoint;
+        public int getCodePoint() {
+            return this.charEvent.codepoint();
         }
 
         /**
@@ -913,13 +929,13 @@ public abstract class ScreenEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
         public int getModifiers() {
-            return modifiers;
+            return this.charEvent.modifiers();
         }
 
         /**
          * Fired <b>before</b> the character input is handled by the screen.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the screen's character input handler will be bypassed
          * and the corresponding {@link CharacterTyped.Post} will not be fired.</p>
          *
@@ -928,8 +944,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends CharacterTyped implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, char codePoint, int modifiers) {
-                super(screen, codePoint, modifiers);
+            public Pre(Screen screen, CharacterEvent charEvent) {
+                super(screen, charEvent);
             }
         }
 
@@ -937,7 +953,7 @@ public abstract class ScreenEvent extends Event {
          * Fired <b>after</b> the character input is handled, if not handled by the screen
          * and the corresponding {@link CharacterTyped.Pre} is not cancelled.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, the character input will be set as handled.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -945,8 +961,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends CharacterTyped {
             @ApiStatus.Internal
-            public Post(Screen screen, char codePoint, int modifiers) {
-                super(screen, codePoint, modifiers);
+            public Post(Screen screen, CharacterEvent charEvent) {
+                super(screen, charEvent);
             }
         }
     }
@@ -955,7 +971,7 @@ public abstract class ScreenEvent extends Event {
      * Fired before any {@link Screen} is opened, to allow changing it or preventing it from being opened.
      * All screen layers on the screen are closed before this event is fired.
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}.
      * If this event is cancelled, then the {@code Screen} shall be prevented from opening and any previous screen
      * will remain open. However, cancelling this event will not prevent the closing of screen layers which happened before
      * this event fired.</p>
@@ -1005,7 +1021,7 @@ public abstract class ScreenEvent extends Event {
      * Fired before a {@link Screen} is closed.
      * All screen layers on the screen are closed before this event is fired.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

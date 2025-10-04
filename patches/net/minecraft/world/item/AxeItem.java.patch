@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -62,7 +_,7 @@
+@@ -26,6 +_,8 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
+ public class AxeItem extends Item {
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
++    @Deprecated
+     protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
+         .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
+         .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
+@@ -64,7 +_,7 @@
          if (playerHasBlockingItemUseIntent(p_40529_)) {
              return InteractionResult.PASS;
          } else {
@@ -9,7 +18,7 @@
              if (optional.isEmpty()) {
                  return InteractionResult.PASS;
              } else {
-@@ -89,20 +_,19 @@
+@@ -91,19 +_,18 @@
              && !player.isSecondaryUseActive();
      }
  
@@ -24,27 +33,32 @@
 -            Optional<BlockState> optional1 = WeatheringCopper.getPrevious(p_308900_);
 +            Optional<BlockState> optional1 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ItemAbilities.AXE_SCRAPE, false));
              if (optional1.isPresent()) {
-                 p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                 p_308922_.levelEvent(p_309192_, 3005, p_308899_, 0);
+                 spawnSoundAndParticle(p_308922_, p_308899_, p_309192_, p_308900_, SoundEvents.AXE_SCRAPE, 3005);
                  return optional1;
              } else {
 -                Optional<BlockState> optional2 = Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(p_308900_.getBlock()))
 -                    .map(p_150694_ -> p_150694_.withPropertiesOf(p_308900_));
 +                Optional<BlockState> optional2 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ItemAbilities.AXE_WAX_OFF, false));
                  if (optional2.isPresent()) {
-                     p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
-                     p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -114,8 +_,19 @@
+                     spawnSoundAndParticle(p_308922_, p_308899_, p_309192_, p_308900_, SoundEvents.AXE_WAX_OFF, 3004);
+                     return optional2;
+@@ -126,8 +_,25 @@
          }
      }
  
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
++        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
++        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        if (strippable != null) {
++            return Optional.of(strippable.strippedBlock().withPropertiesOf(p_150691_));
++        }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +    }

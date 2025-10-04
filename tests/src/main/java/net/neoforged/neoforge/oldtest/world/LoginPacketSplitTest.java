@@ -44,14 +44,16 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.InclusiveRange;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -95,7 +97,7 @@ public class LoginPacketSplitTest {
                 }
             });
 
-            if (FMLLoader.getDist().isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
                         .executes(context -> {
                             context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().lookupOrThrow(BIG_DATA).size() + " entries."), true);
@@ -155,10 +157,12 @@ public class LoginPacketSplitTest {
             this.info = info;
 
             final JsonObject mcmeta = new JsonObject();
-            final JsonObject packJson = new JsonObject();
-            packJson.addProperty("description", "A virtual resource pack.");
-            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA));
-            mcmeta.add("pack", packJson);
+            mcmeta.add("pack", PackMetadataSection.SERVER_TYPE
+                    .codec()
+                    .encodeStart(JsonOps.INSTANCE, new PackMetadataSection(
+                            Component.literal("A virtual resource pack."),
+                            new InclusiveRange<>(SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA))))
+                    .getOrThrow());
 
             putRoot("pack.mcmeta", mcmeta);
         }

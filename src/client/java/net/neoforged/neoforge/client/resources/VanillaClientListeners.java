@@ -8,9 +8,8 @@ package net.neoforged.neoforge.client.resources;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.client.PeriodicNotificationManager;
-import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.gui.font.FontManager;
-import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.CloudRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -22,11 +21,10 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DryFoliageColorReloadListener;
 import net.minecraft.client.resources.FoliageColorReloadListener;
 import net.minecraft.client.resources.GrassColorReloadListener;
-import net.minecraft.client.resources.MapDecorationTextureManager;
-import net.minecraft.client.resources.PaintingTextureManager;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.client.resources.WaypointStyleManager;
 import net.minecraft.client.resources.language.LanguageManager;
+import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.sounds.SoundManager;
@@ -58,6 +56,8 @@ public class VanillaClientListeners {
 
     public static final ResourceLocation SPLASHES = key(SplashManager.class);
 
+    public static final ResourceLocation ATLASES = key(AtlasManager.class);
+
     public static final ResourceLocation FONTS = key(FontManager.class);
 
     public static final ResourceLocation GRASS_COLOR = key(GrassColorReloadListener.class);
@@ -70,19 +70,13 @@ public class VanillaClientListeners {
 
     public static final ResourceLocation EQUIPMENT_ASSETS = key(EquipmentAssetManager.class);
 
-    public static final ResourceLocation MAP_DECORATIONS = key(MapDecorationTextureManager.class);
-
     public static final ResourceLocation BLOCK_RENDERER = key(BlockRenderDispatcher.class);
 
     public static final ResourceLocation ENTITY_RENDERER = key(EntityRenderDispatcher.class);
 
     public static final ResourceLocation BLOCK_ENTITY_RENDERER = key(BlockEntityRenderDispatcher.class);
 
-    public static final ResourceLocation PARTICLE_ENGINE = key(ParticleEngine.class);
-
-    public static final ResourceLocation PAINTING_TEXTURES = key(PaintingTextureManager.class);
-
-    public static final ResourceLocation GUI_SPRITES = key(GuiSpriteManager.class);
+    public static final ResourceLocation PARTICLE_RESOURCES = key(ParticleResources.class);
 
     public static final ResourceLocation WAYPOINT_STYLES = key(WaypointStyleManager.class);
 

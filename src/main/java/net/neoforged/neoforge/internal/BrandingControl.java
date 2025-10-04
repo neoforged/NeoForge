@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
-import net.minecraft.DetectedVersion;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
@@ -33,7 +33,7 @@ public class BrandingControl {
     private static void computeBranding() {
         if (brandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
-            brd.add("Minecraft " + DetectedVersion.BUILT_IN.name());
+            brd.add("Minecraft " + SharedConstants.getCurrentVersion().name());
             int modCount = ModList.get().size();
             brd.add(FMLTranslations.parseMessage("fml.menu.branding", ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion(), modCount));
             brandings = brd.build();

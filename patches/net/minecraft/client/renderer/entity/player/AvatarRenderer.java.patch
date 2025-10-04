@@ -1,0 +1,76 @@
+--- a/net/minecraft/client/renderer/entity/player/AvatarRenderer.java
++++ b/net/minecraft/client/renderer/entity/player/AvatarRenderer.java
+@@ -92,6 +_,11 @@
+     }
+ 
+     private static HumanoidModel.ArmPose getArmPose(Avatar p_446397_, ItemStack p_446508_, InteractionHand p_445956_) {
++        var extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_446508_);
++        var armPose = extensions.getArmPose(p_446397_, p_445956_, p_446508_);
++        if (armPose != null) {
++            return armPose;
++        }
+         if (p_446508_.isEmpty()) {
+             return HumanoidModel.ArmPose.EMPTY;
+         } else if (!p_446397_.swinging && p_446508_.is(Items.CROSSBOW) && CrossbowItem.isCharged(p_446508_)) {
+@@ -141,6 +_,13 @@
+         p_445727_.scale(0.9375F, 0.9375F, 0.9375F);
+     }
+ 
++    @Override
++    public void submit(AvatarRenderState p_433493_, PoseStack p_434615_, SubmitNodeCollector p_433768_, CameraRenderState p_450931_) {
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre<>(p_433493_, this, p_433493_.partialTick, p_434615_, p_433768_)).isCanceled()) return;
++        super.submit(p_433493_, p_434615_, p_433768_, p_450931_);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Post<>(p_433493_, this, p_433493_.partialTick, p_434615_, p_433768_));
++    }
++
+     protected void submitNameTag(AvatarRenderState p_447013_, PoseStack p_446358_, SubmitNodeCollector p_446248_, CameraRenderState p_451056_) {
+         p_446358_.pushPose();
+         int i = p_447013_.showExtraEars ? -10 : 0;
+@@ -159,6 +_,8 @@
+         }
+ 
+         if (p_447013_.nameTag != null) {
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_447013_, p_447013_.nameTag, this, p_446358_, p_446248_, p_451056_, p_447013_.partialTick);
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
+             p_446248_.submitNameTag(
+                 p_446358_,
+                 p_447013_.nameTagAttachment,
+@@ -209,7 +_,7 @@
+         p_446472_.heldOnHead.clear();
+         if (p_446472_.isUsingItem) {
+             ItemStack itemstack = p_445469_.getItemInHand(p_446472_.useItemHand);
+-            if (itemstack.is(Items.SPYGLASS)) {
++            if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE)) {
+                 this.itemModelResolver.updateForLiving(p_446472_.heldOnHead, itemstack, ItemDisplayContext.HEAD, p_445469_);
+             }
+         }
+@@ -255,11 +_,29 @@
+         p_446374_.capeFlap = p_446374_.capeFlap + Mth.sin(f2 * 6.0F) * 32.0F * f1;
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #renderRightHand(PoseStack, SubmitNodeCollector, int, ResourceLocation, boolean, net.minecraft.client.player.AbstractClientPlayer)} instead
++     */
++    @Deprecated
+     public void renderRightHand(PoseStack p_446962_, SubmitNodeCollector p_445938_, int p_445470_, ResourceLocation p_445487_, boolean p_446672_) {
++        this.renderRightHand(p_446962_, p_445938_, p_445470_, p_445487_, p_446672_, net.minecraft.client.Minecraft.getInstance().player);
++    }
++
++    public void renderRightHand(PoseStack p_446962_, SubmitNodeCollector p_445938_, int p_445470_, ResourceLocation p_445487_, boolean p_446672_, net.minecraft.client.player.AbstractClientPlayer player) {
++        if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(p_446962_, p_445938_, p_445470_, player, HumanoidArm.RIGHT))
+         this.renderHand(p_446962_, p_445938_, p_445470_, p_445487_, this.model.rightArm, p_446672_);
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #renderLeftHand(PoseStack, SubmitNodeCollector, int, ResourceLocation, boolean, net.minecraft.client.player.AbstractClientPlayer)} instead
++     */
++    @Deprecated
+     public void renderLeftHand(PoseStack p_445618_, SubmitNodeCollector p_447076_, int p_446116_, ResourceLocation p_446675_, boolean p_446755_) {
++        this.renderLeftHand(p_445618_, p_447076_, p_446116_, p_446675_, p_446755_, net.minecraft.client.Minecraft.getInstance().player);
++    }
++
++    public void renderLeftHand(PoseStack p_445618_, SubmitNodeCollector p_447076_, int p_446116_, ResourceLocation p_446675_, boolean p_446755_, net.minecraft.client.player.AbstractClientPlayer player) {
++        if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(p_445618_, p_447076_, p_446116_, player, HumanoidArm.LEFT))
+         this.renderHand(p_445618_, p_447076_, p_446116_, p_446675_, this.model.leftArm, p_446755_);
+     }
+ 

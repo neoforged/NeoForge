@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -28,7 +28,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
     }
 
     public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E, ?>>> renderer) {
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             helper.eventListeners().accept((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
         }
         return this;

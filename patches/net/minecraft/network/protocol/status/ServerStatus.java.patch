@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/status/ServerStatus.java
 +++ b/net/minecraft/network/protocol/status/ServerStatus.java
-@@ -21,7 +_,8 @@
+@@ -20,7 +_,8 @@
      Optional<ServerStatus.Players> players,
      Optional<ServerStatus.Version> version,
      Optional<ServerStatus.Favicon> favicon,
@@ -10,7 +10,7 @@
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          p_337519_ -> p_337519_.group(
-@@ -29,10 +_,19 @@
+@@ -28,10 +_,19 @@
                  ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
                  ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
                  ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
