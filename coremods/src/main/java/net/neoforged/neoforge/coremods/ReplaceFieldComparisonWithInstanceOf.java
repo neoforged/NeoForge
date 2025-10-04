@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.coremods;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TargetType;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import net.neoforged.neoforgespi.transformation.ProcessorName;
+import net.neoforged.neoforgespi.transformation.SimpleMethodProcessor;
+import net.neoforged.neoforgespi.transformation.SimpleTransformationContext;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
  * as {@code itemstack.getItem() instanceof CrossbowItem}.
  * This transformer targets a set of methods to replace the occurrence of a single field-comparison.
  */
-public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<MethodNode> {
+public class ReplaceFieldComparisonWithInstanceOf extends SimpleMethodProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(ReplaceFieldComparisonWithInstanceOf.class);
 
-    private final Set<Target<MethodNode>> targets;
+    private final Set<Target> targets;
     private final String fieldOwner;
     private final String fieldName;
     private final String replacementClassName;
@@ -42,7 +42,7 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<Method
     public ReplaceFieldComparisonWithInstanceOf(String fieldOwner,
             String fieldName,
             String replacementClassName,
-            List<Target<MethodNode>> methodsToScan) {
+            List<Target> methodsToScan) {
         this.targets = Set.copyOf(methodsToScan);
 
         this.fieldOwner = fieldOwner;
@@ -51,17 +51,19 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<Method
     }
 
     @Override
-    public TargetType<MethodNode> getTargetType() {
-        return TargetType.METHOD;
+    public ProcessorName name() {
+        var owner = fieldOwner.toLowerCase(Locale.ROOT).replace('$', '.');
+        var name = fieldName.toLowerCase(Locale.ROOT);
+        return new ProcessorName("neoforge.coremods", "field_comparison_to_instanceof." + owner + "." + name);
     }
 
     @Override
-    public Set<Target<MethodNode>> targets() {
+    public Set<Target> targets() {
         return targets;
     }
 
     @Override
-    public MethodNode transform(MethodNode methodNode, ITransformerVotingContext votingContext) {
+    public void transform(MethodNode methodNode, SimpleTransformationContext context) {
         var count = 0;
         for (var node = methodNode.instructions.getFirst(); node != null; node = node.getNext()) {
             if (node instanceof JumpInsnNode jumpNode && (jumpNode.getOpcode() == Opcodes.IF_ACMPEQ || jumpNode.getOpcode() == Opcodes.IF_ACMPNE)) {
@@ -77,12 +79,5 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<Method
 
         LOG.trace("Transforming: {}.", methodNode.name);
         LOG.trace("field_to_instance: Replaced {} checks", count);
-
-        return methodNode;
-    }
-
-    @Override
-    public TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
     }
 }

@@ -124,7 +124,6 @@ dependencies {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
     }
-    libraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
     libraries "net.neoforged:accesstransformers:${project.accesstransformers_version}"
     libraries "net.neoforged:bus:${project.eventbus_version}"
     libraries "net.neoforged:mergetool:${project.mergetool_version}:api"
