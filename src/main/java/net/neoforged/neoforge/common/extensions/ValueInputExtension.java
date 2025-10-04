@@ -32,7 +32,7 @@ public interface ValueInputExtension {
      * Note that the object will only read the child <strong>ONLY</strong> if it's present.
      *
      * @param key    the key to read the child from
-     * @param object the object to read from given key
+     * @param object the object to read from the given key
      */
     default void readChild(String key, ValueIOSerializable object) {
         self().child(key).ifPresent(object::deserialize);
