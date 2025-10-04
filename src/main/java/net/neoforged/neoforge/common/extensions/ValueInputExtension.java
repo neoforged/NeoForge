@@ -6,10 +6,11 @@
 package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.serialization.MapCodec;
-import java.util.Set;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
+
+import java.util.Set;
 
 /**
  * Extension class for {@link ValueInput}
@@ -28,23 +29,13 @@ public interface ValueInputExtension {
     }
 
     /**
-     * Read the given {@code child} object from the given {@code key}, with the possibility that the {@code child} object may be empty.
-     *
-     * @param key   the key to read the child from
-     * @param child the child to read from given key
-     */
-    default void readChildOrEmpty(String key, ValueIOSerializable child) {
-        child.deserialize(self().childOrEmpty(key));
-    }
-
-    /**
      * Read the given {@code child} object from the given {@code key}.
      * Note that the object will only read the child <strong>ONLY</strong> if it's present.
      *
-     * @param key   the key to read the child from
-     * @param child the child to read from given key
+     * @param key    the key to read the child from
+     * @param object the object to read from given key
      */
-    default void readChild(String key, ValueIOSerializable child) {
-        self().child(key).ifPresent(child::deserialize);
+    default void readChild(String key, ValueIOSerializable object) {
+        self().child(key).ifPresent(object::deserialize);
     }
 }
