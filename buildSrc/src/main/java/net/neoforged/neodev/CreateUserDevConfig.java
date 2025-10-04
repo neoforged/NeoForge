@@ -159,7 +159,7 @@ record UserDevConfig(
         UserDevFeatures features) {}
 
 record UserDevFeatures(
-    boolean usesClasspathForRuntimeDetection) {}
+    boolean noLegacyClasspath) {}
 
 record BinpatcherConfig(
         String version,
