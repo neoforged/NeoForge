@@ -257,7 +257,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
-         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)), skullTexture);
