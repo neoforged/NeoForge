@@ -28,6 +28,12 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
         this.entries = entries;
     }
 
+    /**
+     * Registers a new {@link DebugScreenEntry} to allow it to be used for debug rendering and state toggling.
+     *
+     * @param id    Registration ID for this entry.
+     * @param entry Screen entry to be registered.
+     */
     public void register(ResourceLocation id, DebugScreenEntry entry) {
         if (entries.putIfAbsent(id, entry) != null)
             throw new IllegalStateException("Duplicate DebugScreenEntry registration: " + id);
