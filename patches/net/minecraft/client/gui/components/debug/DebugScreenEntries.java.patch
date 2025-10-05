@@ -1,11 +1,37 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -93,6 +_,8 @@
+@@ -61,7 +_,8 @@
+     }
+ 
+     static {
+-        Map<ResourceLocation, DebugScreenEntryStatus> map = Map.of(
++        // Neo: Make maps mutable for custom entry inclusions
++        Map<ResourceLocation, DebugScreenEntryStatus> map = new HashMap<>(Map.of(
+             THREE_DIMENSIONAL_CROSSHAIR,
+             DebugScreenEntryStatus.IN_F3,
+             GAME_VERSION,
+@@ -80,8 +_,8 @@
+             DebugScreenEntryStatus.IN_F3,
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_F3
-         );
+-        );
+-        Map<ResourceLocation, DebugScreenEntryStatus> map1 = Map.of(
++        ));
++        Map<ResourceLocation, DebugScreenEntryStatus> map1 = new HashMap<>(Map.of(
+             TPS,
+             DebugScreenEntryStatus.IN_F3,
+             FPS,
+@@ -92,7 +_,11 @@
+             DebugScreenEntryStatus.IN_F3,
+             SIMPLE_PERFORMANCE_IMPACTORS,
+             DebugScreenEntryStatus.IN_F3
+-        );
+-        PROFILES = Map.of(DebugScreenProfile.DEFAULT, map, DebugScreenProfile.PERFORMANCE, map1);
++        ));
 +        // Neo: Allow registering custom entries
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION));
-         PROFILES = Map.of(DebugScreenProfile.DEFAULT, map, DebugScreenProfile.PERFORMANCE, map1);
++        var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1));
++        net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent.validateProfiles(event);
++        // Neo: Make the profile maps immutable again
++        PROFILES = Map.of(DebugScreenProfile.DEFAULT, Map.copyOf(map), DebugScreenProfile.PERFORMANCE, Map.copyOf(map1));
      }
  }

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.debug;
 
+import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
+import net.minecraft.client.gui.components.debug.DebugScreenProfile;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -24,9 +26,8 @@ public interface DebugEntryTests {
         var modBus = test.eventListeners().mod();
 
         modBus.addListener((RegisterDebugEntriesEvent event) -> {
-            event.register(id, (displayer, level, clientChunk, serverChunk) -> {
-                displayer.addLine("Test Debug Screen Entry!!!!");
-            });
+            event.register(id, (displayer, level, clientChunk, serverChunk) -> displayer.addLine("Test Debug Screen Entry!!!!"));
+            event.includeInProfile(id, DebugScreenProfile.DEFAULT, DebugScreenEntryStatus.ALWAYS_ON);
 
             test.pass();
         });
