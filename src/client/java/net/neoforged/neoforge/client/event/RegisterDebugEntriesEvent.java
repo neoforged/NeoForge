@@ -8,6 +8,8 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minecraft.client.gui.components.debug.DebugEntrySystemSpecs;
+import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
@@ -24,6 +26,9 @@ import org.jetbrains.annotations.Nullable;
  * Event fired when debug entries are registered.
  * <p>
  * This event is fired during the {@link DebugScreenEntries} initialization to allow registration of custom entries.
+ * <p>
+ * Existing entries cannot be modified or amended directly. However new lines can be appended to existing groups,
+ * such as the {@link DebugEntrySystemSpecs#GROUP "System Specs"}, by using {@link DebugScreenDisplayer#addToGroup(ResourceLocation, java.lang.String)}.
  * <p>
  * This event is fired on the mod event bus.
  */
