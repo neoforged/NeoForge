@@ -97,8 +97,8 @@
 +    }
 +
 +    @Override
-+    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
-+        return server;
++    public net.minecraft.network.PacketProcessor getPacketProcessor() {
++        return this.server.packetProcessor();
 +    }
 +
 +    @Override
