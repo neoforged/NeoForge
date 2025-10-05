@@ -21,7 +21,7 @@
              TPS,
              DebugScreenEntryStatus.IN_F3,
              FPS,
-@@ -92,7 +_,11 @@
+@@ -92,7 +_,10 @@
              DebugScreenEntryStatus.IN_F3,
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_F3
@@ -29,8 +29,7 @@
 -        PROFILES = Map.of(DebugScreenProfile.DEFAULT, map, DebugScreenProfile.PERFORMANCE, map1);
 +        ));
 +        // Neo: Allow registering custom entries
-+        var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1));
-+        net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent.validateProfiles(event);
++        net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1)).validateProfiles();
 +        // Neo: Make the profile maps immutable again
 +        PROFILES = Map.of(DebugScreenProfile.DEFAULT, Map.copyOf(map), DebugScreenProfile.PERFORMANCE, Map.copyOf(map1));
      }

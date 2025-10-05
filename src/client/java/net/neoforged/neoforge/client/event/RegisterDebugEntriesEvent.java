@@ -89,10 +89,10 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     }
 
     @ApiStatus.Internal
-    public static void validateProfiles(RegisterDebugEntriesEvent event) {
+    public void validateProfiles() {
         // we delegate validation to its own method to allow people to call 'includeInProfile' before 'register'
-        var defaultError = validateProfile(event, DebugScreenProfile.DEFAULT);
-        var performanceError = validateProfile(event, DebugScreenProfile.PERFORMANCE);
+        var defaultError = validateProfile(DebugScreenProfile.DEFAULT);
+        var performanceError = validateProfile(DebugScreenProfile.PERFORMANCE);
 
         // we delay throwing the error to allow both profiles to be validated in the same run
         // we should still validate 'performance' if 'default' is invalid
@@ -109,9 +109,9 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     }
 
     @Nullable
-    private static IllegalStateException validateProfile(RegisterDebugEntriesEvent event, DebugScreenProfile profile) {
-        var profileMap = event.getProfileMap(profile);
-        var invalidIds = Sets.difference(profileMap.keySet(), event.entries.keySet());
+    private IllegalStateException validateProfile(DebugScreenProfile profile) {
+        var profileMap = getProfileMap(profile);
+        var invalidIds = Sets.difference(profileMap.keySet(), entries.keySet());
 
         if (!invalidIds.isEmpty()) {
             var logger = LogUtils.getLogger();
