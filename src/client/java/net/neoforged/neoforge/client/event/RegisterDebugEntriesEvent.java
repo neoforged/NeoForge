@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.client.gui.components.debug.DebugEntrySystemSpecs;
@@ -18,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,15 +113,14 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
         var invalidIds = Sets.difference(profileMap.keySet(), event.entries.keySet());
 
         if (!invalidIds.isEmpty()) {
-            var logger = LogManager.getLogger();
-            var msg = logger.getMessageFactory().newMessage("Found {} unregistered debug entries in profile: {}", invalidIds.size(), profile.getSerializedName());
+            var logger = LogUtils.getLogger();
 
-            logger.fatal(msg.getFormattedMessage());
-            logger.fatal("Unregistered debug entries: {}", invalidIds.stream().map(ResourceLocation::toString).collect(Collectors.joining(",", "[", "]")));
+            logger.error("Found {} unregistered debug entries in profile: {}", invalidIds.size(), profile.getSerializedName());
+            logger.error("Unregistered debug entries: {}", invalidIds.stream().map(ResourceLocation::toString).collect(Collectors.joining(",", "[", "]")));
 
             // throw in dev to ensure people are correctly registering their entries when including them in profiles
             if (!FMLEnvironment.isProduction())
-                return new IllegalStateException(msg.getFormattedMessage());
+                return new IllegalStateException("Fatal error occurred while validating DebugScreenProfile: " + profile.getSerializedName());
         }
 
         return null;
