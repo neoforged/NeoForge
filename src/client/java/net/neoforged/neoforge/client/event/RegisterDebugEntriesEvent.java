@@ -101,10 +101,11 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
             error.addSuppressed(defaultError);
             error.addSuppressed(performanceError);
             throw error;
-        } else if (defaultError != null)
+        } else if (defaultError != null) {
             throw defaultError;
-        else if (performanceError != null)
+        } else if (performanceError != null) {
             throw performanceError;
+        }
     }
 
     @Nullable
