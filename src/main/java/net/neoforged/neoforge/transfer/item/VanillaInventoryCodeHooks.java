@@ -33,6 +33,7 @@ public class VanillaInventoryCodeHooks {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             var itemResource = handler.getResource(index);
+            if (itemResource.isEmpty()) continue;
             try (var tx = Transaction.open(null)) {
                 int extracted = handler.extract(index, itemResource, 1, tx);
                 if (extracted == 0) {

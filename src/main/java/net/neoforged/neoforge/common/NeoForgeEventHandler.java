@@ -23,7 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
@@ -175,6 +175,8 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void logTransformationsOnGameShutdown(GameShuttingDownEvent event) {
-        ModLoader.logTransformationSummary();
+        ClassTransformStatistics.logTransformationSummary();
+        // Also check if anyone appears to be performing mass-ASM and log a warning if so
+        ClassTransformStatistics.checkTransformationBehavior();
     }
 }

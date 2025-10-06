@@ -7,7 +7,6 @@ package net.neoforged.neoforge.resource;
 
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
-import cpw.mods.jarhandling.JarContents;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.neoforged.fml.jarcontents.JarContents;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
