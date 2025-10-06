@@ -23,7 +23,7 @@
   "fml.menu.mods.info.childmods": "子模组：%1$s",
   "fml.menu.mods.info.updateavailable": "可用更新：%1$s",
   "fml.menu.mods.info.changelogheader": "更新日志：",
-  "fml.menu.multiplayer.compatible": "兼容的 FML 服务器\n有 {0,choice,0<%1$s 个} 模组",
+  "fml.menu.multiplayer.compatible": "兼容的 FML 模组服务器\n{0,choice,1#1 个模组|1<%1$s 个模组} 已安装",
   "fml.menu.multiplayer.incompatible": "不兼容的 FML 模组服务器",
   "fml.menu.multiplayer.incompatible.extra": "不兼容的 FML 模组服务器\n%1$s",
   "fml.menu.multiplayer.truncated": "由于协议大小限制，数据可能不准确。",
