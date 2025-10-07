@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -41,13 +42,13 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.StringUtil;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -62,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModListScreen extends Screen {
     private static String stripControlCodes(String value) {
-        return net.minecraft.util.StringUtil.stripColor(value);
+        return StringUtil.stripColor(value);
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -90,13 +91,13 @@ public class ModListScreen extends Screen {
 
         @Override
         public int compare(ModContainer o1, ModContainer o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getModInfo().getDisplayName()));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getModInfo().getDisplayName()));
+            String name1 = stripControlCodes(o1.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT);
+            String name2 = stripControlCodes(o2.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT);
             return compare(name1, name2);
         }
 
         Component getButtonText() {
-            return Component.translatable("fml.menu.mods." + StringUtils.toLowerCase(name()));
+            return Component.translatable("fml.menu.mods." + name().toLowerCase(Locale.ROOT));
         }
     }
 
@@ -124,8 +125,8 @@ public class ModListScreen extends Screen {
     public ModListScreen(Screen parentScreen) {
         super(Component.translatable("fml.menu.mods.title"));
         this.parentScreen = parentScreen;
-        this.mods = Collections.unmodifiableList(ModList.get().getSortedMods());
-        this.unsortedMods = Collections.unmodifiableList(this.mods);
+        this.unsortedMods = Collections.unmodifiableList(ModList.get().getSortedMods());
+        this.mods = this.unsortedMods;
     }
 
     class InfoPanel extends ScrollPanel {
@@ -327,7 +328,7 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getModInfo().getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> stripControlCodes(mi.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT).contains(search.getValue().toLowerCase(Locale.ROOT))).toList();
         lastFilterText = search.getValue();
     }
 

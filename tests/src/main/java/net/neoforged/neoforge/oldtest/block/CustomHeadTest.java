@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import java.util.Locale;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
@@ -107,12 +108,12 @@ public class CustomHeadTest {
         BLAZE;
 
         SkullType() {
-            TYPES.put(name().toLowerCase(), this);
+            TYPES.put(getSerializedName(), this);
         }
 
         @Override
         public String getSerializedName() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 

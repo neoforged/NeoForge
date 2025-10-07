@@ -9,6 +9,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.io.File;
+import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.StringUtils;
 
 public class ConfigCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -32,7 +32,7 @@ public class ConfigCommand {
         SERVER;
 
         public String extension() {
-            return StringUtils.toLowerCase(name());
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 
