@@ -1165,11 +1165,10 @@ public class ClientHooks {
         // filter out to match search text
         // - blank/empty string, accept everything
         // - accept entries whose namespace/path match given text
-        DebugScreenEntries.allEntries().entrySet().forEach(entry -> {
-            var id = entry.getKey();
-
-            if (text.isBlank() || SharedSuggestionProvider.matchesSubStr(text, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(text, id.getPath()))
-                byCategory.put(entry.getValue().category(), id);
+        DebugScreenEntries.allEntries().forEach((id, value) -> {
+            if (text.isBlank() || SharedSuggestionProvider.matchesSubStr(text, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(text, id.getPath())) {
+                byCategory.put(value.category(), id);
+            }
         });
 
         // sort categories by the 'sortKey'
