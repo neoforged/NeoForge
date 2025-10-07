@@ -23,3 +23,21 @@
              if (!this.isAllowed && p_439889_ && p_439217_ < k) {
                  p_439423_.setTooltipForNextFrame(DebugOptionsScreen.NOT_ALLOWED_TOOLTIP, p_439217_, p_439543_);
              }
+@@ -309,6 +_,9 @@
+ 
+         public void updateSearch(String p_433180_) {
+             this.clearEntries();
++            // Neo: Custom entry appending logic to better handle searching, categories and sorting
++            net.neoforged.neoforge.client.ClientHooks.updateDebugScreenEntriesForSearch(p_433180_, category -> addEntry(new CategoryEntry(category.label())), id -> addEntry(new OptionEntry(id)));
++            if(false){
+             List<Map.Entry<ResourceLocation, DebugScreenEntry>> list = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
+             list.sort(COMPARATOR);
+             DebugEntryCategory debugentrycategory = null;
+@@ -323,6 +_,7 @@
+ 
+                     this.addEntry(DebugOptionsScreen.this.new OptionEntry(entry.getKey()));
+                 }
++            }
+             }
+ 
+             this.notifyListUpdated();
