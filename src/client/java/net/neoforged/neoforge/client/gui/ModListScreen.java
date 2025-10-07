@@ -328,7 +328,7 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> stripControlCodes(mi.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT).contains(search.getValue().toLowerCase(Locale.ROOT))).toList();
+        this.mods = this.unsortedMods.stream().filter(mi -> stripControlCodes(mi.getModInfo().getDisplayName()).toLowerCase(Locale.ROOT).contains(search.getValue().toLowerCase(Locale.ROOT))).collect(Collectors.toCollection(ArrayList::new));
         lastFilterText = search.getValue();
     }
 
