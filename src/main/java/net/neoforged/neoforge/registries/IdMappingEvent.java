@@ -25,6 +25,7 @@ import net.neoforged.bus.api.Event;
  * this event to update caches or other in-mod artifacts that might be impacted by an ID
  * change.
  * <p>
+ * 
  * @deprecated This event is no longer fired, use {@link DeferredRegister#addAlias(ResourceLocation, ResourceLocation)} or {@link IRegistryExtension#addAlias(ResourceLocation, ResourceLocation)} instead
  */
 @Deprecated(forRemoval = true, since = "1.20.2")
