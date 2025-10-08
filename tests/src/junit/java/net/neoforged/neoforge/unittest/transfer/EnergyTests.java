@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 class EnergyTests {
     @Test
     void testEmptyEnergyHandler() {
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             ensureEmpty(EmptyEnergyHandler.INSTANCE, transaction);
         }
     }
@@ -42,7 +42,7 @@ class EnergyTests {
         var simpleHandler = new SimpleEnergyHandler(100, 5, 7);
         assertEquals(0, simpleHandler.getAmountAsLong());
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             assertEquals(5, simpleHandler.insert(100, transaction));
             assertEquals(3, simpleHandler.insert(3, transaction));
             assertEquals(8, simpleHandler.getAmountAsLong());
@@ -52,7 +52,7 @@ class EnergyTests {
 
         assertEquals(0, simpleHandler.getAmountAsLong());
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             assertEquals(5, simpleHandler.insert(100, transaction));
             assertEquals(3, simpleHandler.insert(3, transaction));
             assertEquals(8, simpleHandler.getAmountAsLong());
@@ -75,7 +75,7 @@ class EnergyTests {
         // Create the energy handler
         var energyHandler = new ItemAccessEnergyHandler(itemAccess, TestMod.ENERGY.get(), 60, 50, 30);
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             // Insertion of 200 should only insert 100 (50 per item).
             assertEquals(100, energyHandler.insert(200, transaction));
             assertEquals(50, itemAccess.getResource().get(TestMod.ENERGY));
