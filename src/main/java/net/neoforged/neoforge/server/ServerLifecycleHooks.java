@@ -61,6 +61,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jspecify.annotations.Nullable;
 
 public class ServerLifecycleHooks {
@@ -147,16 +148,18 @@ public class ServerLifecycleHooks {
 
     private static final ArrayList<SchemaComponent> SCHEMA_REGISTRY_VIEW = new ArrayList<>();
 
+    @Internal
     public static List<SchemaComponent> getSchemaRegistry() {
         return SCHEMA_REGISTRY_VIEW;
     }
 
+    @Internal
     public static void fireSchemaRegistryEvent() {
-        final Map<ResourceLocation, SchemaComponent> schemaRegistry = new ConcurrentSkipListMap<>(ResourceLocation::compareNamespaced);
+        final Map<String, SchemaComponent> schemaRegistry = new ConcurrentSkipListMap<>(String::compareTo);
 
         // fill with vanilla values
         for (SchemaComponent schemaComponent : SCHEMA_REGISTRY_VIEW) {
-            schemaRegistry.put(ResourceLocation.tryParse(schemaComponent.name()), schemaComponent);
+            schemaRegistry.put(schemaComponent.name(), schemaComponent);
         }
 
         // post the registration event
@@ -176,9 +179,8 @@ public class ServerLifecycleHooks {
                 })
                 .map(URI::toString)
                 .filter(uri -> uri.startsWith("#/components/schemas/"))
-                .map(uri -> ResourceLocation.tryParse(uri.substring("#/components/schemas/".length())))
-                .filter(name -> name != null && !schemaRegistry.containsKey(name))
-                .map(ResourceLocation::toString)
+                .map(uri -> uri.substring("#/components/schemas/".length()))
+                .filter(name -> !schemaRegistry.containsKey(name))
                 .collect(Collectors.toSet());
 
         if (!missing.isEmpty()) {
