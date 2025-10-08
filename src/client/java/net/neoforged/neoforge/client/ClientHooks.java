@@ -90,6 +90,7 @@ import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -975,7 +976,7 @@ public class ClientHooks {
         resourceManager.updateListenersFrom(rlEvent);
 
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType, SkullBlockRenderer.SKIN_BY_TYPE));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
