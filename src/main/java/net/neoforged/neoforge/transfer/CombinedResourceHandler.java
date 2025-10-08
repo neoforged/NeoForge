@@ -31,7 +31,7 @@ public class CombinedResourceHandler<T extends Resource> implements ResourceHand
     private final int sizeCache;
 
     @SuppressWarnings("unchecked")
-    public CombinedResourceHandler(SequencedCollection<ResourceHandler<T>> handlers) {
+    public CombinedResourceHandler(SequencedCollection<? extends ResourceHandler<T>> handlers) {
         this(handlers.toArray(ResourceHandler[]::new));
     }
 
