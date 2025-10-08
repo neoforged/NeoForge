@@ -871,7 +871,7 @@ public class ClientHooks {
         return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), materials, bufferSource);
     }
 
-    public static boolean renderBlockOverlay(Player player, PoseStack mat, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, MaterialSet materials, MultiBufferSource bufferSource) {
+    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, MaterialSet materials, MultiBufferSource bufferSource) {
         return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos, materials, bufferSource)).isCanceled();
     }
 
