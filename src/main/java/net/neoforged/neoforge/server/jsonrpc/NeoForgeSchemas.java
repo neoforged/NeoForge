@@ -10,7 +10,9 @@ import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.neoforged.neoforge.event.server.RegisterSchemaEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
+@Internal
 public final class NeoForgeSchemas {
     private NeoForgeSchemas() {}
 

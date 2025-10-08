@@ -19,8 +19,12 @@ import net.minecraft.server.jsonrpc.methods.ClientInfo;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-public class NeoForgeRpcMethods {
+@Internal
+public final class NeoForgeRpcMethods {
+    private NeoForgeRpcMethods() {}
+
     public static void register(RegisterEvent event) {
         event.register(Registries.INCOMING_RPC_METHOD, NeoForgeRpcMethods::registerIncoming);
     }
