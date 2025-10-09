@@ -78,6 +78,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * @throws IllegalStateException If a transaction is already active on the current thread.
      */
     public static Transaction openRoot() {
+        // Don't delegate to other method due to getCallerClass()
         return TransactionManager.getManagerForThread().open(null, STACK_WALKER.getCallerClass());
     }
 
@@ -98,6 +99,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
     public static Transaction open(@Nullable TransactionContext parent) {
+        // Don't delegate to other method due to getCallerClass()
         return TransactionManager.getManagerForThread().open(parent, STACK_WALKER.getCallerClass());
     }
 
