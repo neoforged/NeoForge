@@ -84,6 +84,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
     @Override
     protected void onRootCommit(Float originalState) {
+        // TODO: what if the composter is gone?
+
         // Apply pending action
         if (increaseProbability.equals(EXTRACT_BONEMEAL)) {
             // Mimic ComposterBlock#empty logic.

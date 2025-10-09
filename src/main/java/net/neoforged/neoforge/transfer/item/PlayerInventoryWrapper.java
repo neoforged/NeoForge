@@ -219,6 +219,8 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
 
         @Override
         protected void onRootCommit(Integer originalState) {
+            // TODO: use a queue in case of re-entrant rootCommit
+
             // actually drop the stacks
             for (DropInfo dropInfo : entries) {
                 int remainder = dropInfo.amount;

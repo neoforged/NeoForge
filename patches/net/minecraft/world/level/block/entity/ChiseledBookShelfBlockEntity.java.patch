@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
-@@ -88,12 +_,47 @@
+@@ -88,12 +_,48 @@
  
      @Override
      public void setItem(int p_256610_, ItemStack p_255789_) {
@@ -38,6 +38,7 @@
 +        }
 +        @Override
 +        protected void onRootCommit(Integer originalState) {
++            // TODO: what if the BE is gone?
 +            updateState(lastInteractedSlot);
 +        }
 +    };

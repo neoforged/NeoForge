@@ -199,6 +199,8 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
 
     @Override
     protected void onRootCommit(BlockState originalState) {
+        // TODO: what if the cauldron is gone?
+
         // State as it was after this root transaction got committed.
         BlockState state = location.getBlockState();
 
