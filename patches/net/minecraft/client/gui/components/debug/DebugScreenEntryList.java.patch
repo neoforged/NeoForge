@@ -6,7 +6,7 @@
  
 -        this.currentlyEnabled.sort(ResourceLocation::compareTo);
 +        // Neo: Sort enabled debug entries to match order displayed in config screen
-+        net.neoforged.neoforge.client.ClientHooks.sortByNamespaceVanillaFirst(this.currentlyEnabled);
++        this.currentlyEnabled.sort(net.neoforged.neoforge.client.ClientHooks.CMP_BY_NAMESPACE_VANILLA_FIRST);
          this.currentlyEnabledVersion++;
      }
  

@@ -25,7 +25,6 @@ import it.unimi.dsi.fastutil.floats.FloatComparators;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1160,6 +1159,11 @@ public class ClientHooks {
         return glDevice;
     }
 
+    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
+            .<ResourceLocation, Boolean>comparing(location -> location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
+            .reversed()
+            .thenComparing(ResourceLocation::compareNamespaced);
+
     @ApiStatus.Internal
     public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
         var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
@@ -1181,24 +1185,12 @@ public class ClientHooks {
             // add category label to screen
             addCategory.accept(category);
 
-            // add entries to screen
+            // sort entries by their ids (vanilla first)
             var entries = byCategory.get(category);
-            sortByNamespaceVanillaFirst(entries);
+            entries.sort(CMP_BY_NAMESPACE_VANILLA_FIRST);
+            // add entry to screen
             entries.forEach(addEntry);
         });
-    }
-
-    public static void sortByNamespaceVanillaFirst(Collection<ResourceLocation> collection) {
-        // group by namespace, tree sets used to sort entries
-        var byNamespace = MultimapBuilder.treeKeys().treeSetValues(ResourceLocation::compareNamespaced).<String, ResourceLocation>build();
-        collection.forEach(id -> byNamespace.put(id.getNamespace(), id));
-
-        // clear out old values
-        collection.clear();
-        // add all vanilla back first
-        collection.addAll(byNamespace.removeAll(ResourceLocation.DEFAULT_NAMESPACE));
-        // add all remaining values
-        collection.addAll(byNamespace.values());
     }
 
     private static boolean isValidDebugEntryForSearch(String searchText, ResourceLocation id) {
