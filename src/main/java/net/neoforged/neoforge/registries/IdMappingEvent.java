@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Called whenever the ID mapping might have changed. If you register for this event, you
@@ -26,8 +25,10 @@ import net.neoforged.neoforge.common.NeoForge;
  * this event to update caches or other in-mod artifacts that might be impacted by an ID
  * change.
  * <p>
- * Fired on the {@link NeoForge#EVENT_BUS forge bus}.
+ * 
+ * @deprecated This event is no longer fired, use {@link DeferredRegister#addAlias(ResourceLocation, ResourceLocation)} or {@link IRegistryExtension#addAlias(ResourceLocation, ResourceLocation)} instead
  */
+@Deprecated(forRemoval = true, since = "1.20.2")
 public class IdMappingEvent extends Event {
     public static class ModRemapping {
         public final ResourceLocation registry;
