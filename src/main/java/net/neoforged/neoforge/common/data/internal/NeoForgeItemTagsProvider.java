@@ -185,7 +185,8 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                 Items.MUSIC_DISC_PRECIPICE, Items.MUSIC_DISC_LAVA_CHICKEN);
         tag(Tags.Items.NETHER_STARS).add(Items.NETHER_STAR);
         copy(Tags.Blocks.NETHERRACKS, Tags.Items.NETHERRACKS);
-        tag(Tags.Items.NUGGETS).addTags(Tags.Items.NUGGETS_GOLD, Tags.Items.NUGGETS_IRON);
+        tag(Tags.Items.NUGGETS).addTags(Tags.Items.NUGGETS_COPPER, Tags.Items.NUGGETS_IRON, Tags.Items.NUGGETS_GOLD);
+        tag(Tags.Items.NUGGETS_COPPER).add(Items.COPPER_NUGGET);
         tag(Tags.Items.NUGGETS_IRON).add(Items.IRON_NUGGET);
         tag(Tags.Items.NUGGETS_GOLD).add(Items.GOLD_NUGGET);
         copy(Tags.Blocks.OBSIDIANS, Tags.Items.OBSIDIANS);

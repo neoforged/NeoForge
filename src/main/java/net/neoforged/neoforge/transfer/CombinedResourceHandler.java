@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.util.SequencedCollection;
 import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -28,6 +29,11 @@ public class CombinedResourceHandler<T extends Resource> implements ResourceHand
      * The total number of indices in the combined handler, which is the sum of the sizes of all wrapped handlers.
      */
     private final int sizeCache;
+
+    @SuppressWarnings("unchecked")
+    public CombinedResourceHandler(SequencedCollection<? extends ResourceHandler<T>> handlers) {
+        this(handlers.toArray(ResourceHandler[]::new));
+    }
 
     @SafeVarargs
     public CombinedResourceHandler(ResourceHandler<T>... handlers) {

@@ -180,7 +180,7 @@ public final class FluidUtil {
                 return FluidStack.EMPTY;
             }
             // Try to insert it into the destination
-            try (var tx = Transaction.open(null)) {
+            try (var tx = Transaction.openRoot()) {
                 var resource = FluidResource.of(fluid);
                 int inserted = destination.insert(resource, FluidType.BUCKET_VOLUME, tx);
                 if (inserted != FluidType.BUCKET_VOLUME) {
@@ -248,7 +248,7 @@ public final class FluidUtil {
             if (resource.isEmpty()) {
                 continue;
             }
-            try (var tx = Transaction.open(null)) {
+            try (var tx = Transaction.openRoot()) {
                 int amount = source.extract(index, resource, FluidType.BUCKET_VOLUME, tx);
                 if (amount != FluidType.BUCKET_VOLUME) {
                     continue;

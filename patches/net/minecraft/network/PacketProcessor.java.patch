@@ -1,0 +1,31 @@
+--- a/net/minecraft/network/PacketProcessor.java
++++ b/net/minecraft/network/PacketProcessor.java
+@@ -11,7 +_,7 @@
+ 
+ public class PacketProcessor implements AutoCloseable {
+     static final Logger LOGGER = LogUtils.getLogger();
+-    private final Queue<PacketProcessor.ListenerAndPacket<?>> packetsToBeHandled = Queues.newConcurrentLinkedQueue();
++    private final Queue<net.neoforged.neoforge.network.handling.QueuedPacket> packetsToBeHandled = Queues.newConcurrentLinkedQueue();
+     private final Thread runningThread;
+     private boolean closed;
+ 
+@@ -28,6 +_,19 @@
+             throw new RejectedExecutionException("Server already shutting down");
+         } else {
+             this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(p_446530_, p_445832_));
++        }
++    }
++
++    /**
++     * Neo: Enqueue a main thread task from a custom payload packet handler.
++     * Use via {@link net.neoforged.neoforge.network.handling.IPayloadContext#enqueueWork}
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void scheduleIfPossible(Runnable task) {
++        if (this.closed) {
++            throw new RejectedExecutionException("Server already shutting down");
++        } else {
++            this.packetsToBeHandled.add(new net.neoforged.neoforge.network.handling.QueuedPacket.CustomPayload(task));
+         }
+     }
+ 

@@ -24,7 +24,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
@@ -121,7 +121,9 @@ public class ClientNeoForgeMod {
 
         NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
             if (event.isInitial()) {
-                ModLoader.logTransformationSummary();
+                ClassTransformStatistics.logTransformationSummary();
+                // Also check if anyone appears to be performing mass-ASM and log a warning if so
+                ClassTransformStatistics.checkTransformationBehavior();
             }
         });
 
@@ -130,7 +132,7 @@ public class ClientNeoForgeMod {
                     Commands.literal("neoforge")
                             .then(Commands.literal("debug_class_loading_transformations")
                                     .executes(ctx -> {
-                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ModLoader.getTransformationSummary(), ModLoader.getMixinParsedClassesSummary()), false);
+                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ClassTransformStatistics.getTransformationSummary(), ClassTransformStatistics.getMixinParsedClassesSummary()), false);
                                         return Command.SINGLE_SUCCESS;
                                     })));
         });

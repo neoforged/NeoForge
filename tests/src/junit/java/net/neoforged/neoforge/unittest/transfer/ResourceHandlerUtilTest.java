@@ -197,7 +197,7 @@ public class ResourceHandlerUtilTest {
         void transactionIsRespected() {
             var handler = handler(EMPTY_SLOT, EMPTY_SLOT);
 
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 int inserted = ResourceHandlerUtil.insertStacking(handler, TestResource.SOME, 10, tx);
                 assertEquals(10, inserted);
                 assertThat(describeStacks(handler))
@@ -326,7 +326,7 @@ public class ResourceHandlerUtilTest {
         void transactionIsRespected() {
             var handler = handlerForStacks(stack(TestResource.SOME, 10), EMPTY_STACK);
 
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 var result = ResourceHandlerUtil.extractFirst(handler, r -> true, 5, tx);
 
                 assertEquals(new ResourceStack<>(TestResource.SOME, 5), result);
@@ -483,7 +483,7 @@ public class ResourceHandlerUtilTest {
             var source = handlerForStacks(stack(TestResource.SOME, 10));
             var target = handler(EMPTY_SLOT);
 
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 int moved = ResourceHandlerUtil.move(source, target, r -> true, 5, tx);
 
                 assertEquals(5, moved);
@@ -618,7 +618,7 @@ public class ResourceHandlerUtilTest {
             var source = handlerForStacks(stack(TestResource.SOME, 10));
             var target = handler(EMPTY_SLOT);
 
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 var result = ResourceHandlerUtil.moveFirst(source, target, r -> true, 5, tx);
 
                 assertEquals(new ResourceStack<>(TestResource.SOME, 5), result);
@@ -747,7 +747,7 @@ public class ResourceHandlerUtilTest {
             var handler = handlerForStacks(stack(TestResource.SOME, 5));
 
             // This call should not modify the handler since findExtractableResource uses a nested transaction
-            try (var tx = Transaction.open(null)) {
+            try (var tx = Transaction.openRoot()) {
                 ResourceHandlerUtil.findExtractableResource(handler, r -> true, tx);
 
                 // Verify handler state is unchanged even within the transaction
