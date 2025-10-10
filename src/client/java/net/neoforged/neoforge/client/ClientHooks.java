@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.floats.FloatComparators;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1180,12 +1181,24 @@ public class ClientHooks {
             // add category label to screen
             addCategory.accept(category);
 
-            // sort entries by their ids (namespace first)
+            // add entries to screen
             var entries = byCategory.get(category);
-            entries.sort(ResourceLocation::compareNamespaced);
-            // add entry to screen
+            sortByNamespaceVanillaFirst(entries);
             entries.forEach(addEntry);
         });
+    }
+
+    public static void sortByNamespaceVanillaFirst(Collection<ResourceLocation> collection) {
+        // group by namespace, tree sets used to sort entries
+        var byNamespace = MultimapBuilder.treeKeys().treeSetValues(ResourceLocation::compareNamespaced).<String, ResourceLocation>build();
+        collection.forEach(id -> byNamespace.put(id.getNamespace(), id));
+
+        // clear out old values
+        collection.clear();
+        // add all vanilla back first
+        collection.addAll(byNamespace.removeAll(ResourceLocation.DEFAULT_NAMESPACE));
+        // add all remaining values
+        collection.addAll(byNamespace.values());
     }
 
     private static boolean isValidDebugEntryForSearch(String searchText, ResourceLocation id) {
