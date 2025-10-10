@@ -13,6 +13,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class TransactionTests {
@@ -97,11 +98,11 @@ public class TransactionTests {
         //Providing a way we can open transactions while inside a method that may not have the context available
         try (Transaction transaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
             Assertions.assertNotNull(transaction);
-            Assertions.assertTrue(Transaction.hasActiveTransaction());
+            Assertions.assertEquals(Transaction.Lifecycle.OPEN, Transaction.getLifecycle());
         }
 
         Assertions.assertNull(Transaction.getCurrentOpenedTransaction());
-        Assertions.assertFalse(Transaction.hasActiveTransaction());
+        Assertions.assertEquals(Transaction.Lifecycle.NONE, Transaction.getLifecycle());
 
         try (Transaction transaction = Transaction.openRoot()) {
             Assertions.assertEquals(transaction, Transaction.getCurrentOpenedTransaction());
@@ -178,59 +179,143 @@ public class TransactionTests {
         assertThat(journal.rootCommits).isOne();
     }
 
-    @Test
-    void testTransactionInsideRootCommit() {
+    /**
+     * Tests for "recursive" root transactions, i.e. opened from {@link SnapshotJournal#onRootCommit}.
+     */
+    @Nested
+    class RootCommitTransactions {
+        /**
+         * Keeps track of the state of a journal for each call to {@link SnapshotJournal#onRootCommit}.
+         */
         record RootCommit(int originalState, int currentState) {}
 
-        var rootCommits1 = new ArrayList<RootCommit>();
-        var rootCommits2 = new ArrayList<RootCommit>();
+        @Test
+        void testModifyingOtherJournalLast() {
+            var rootCommits1 = new ArrayList<RootCommit>();
+            var rootCommits2 = new ArrayList<RootCommit>();
 
-        var transactionalInt1 = new TransactionalInt() {
-            @Override
-            protected void onRootCommit(Integer originalState) {
-                rootCommits1.add(new RootCommit(originalState, value));
-            }
-        };
-        var transactionalInt2 = new TransactionalInt() {
-            @Override
-            protected void onRootCommit(Integer originalState) {
-                rootCommits2.add(new RootCommit(originalState, value));
-                // Trigger a nested transaction which will modify 2
-                try (Transaction tx = Transaction.openRoot()) {
-                    transactionalInt1.set(10, tx);
-                    tx.commit();
+            var transactionalInt1 = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits1.add(new RootCommit(originalState, value));
                 }
+            };
+            var transactionalInt2 = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits2.add(new RootCommit(originalState, value));
+                    // Trigger a nested transaction which will modify 2
+                    try (Transaction tx = Transaction.openRoot()) {
+                        transactionalInt1.set(10, tx);
+                        tx.commit();
+                    }
+                }
+            };
+
+            // Modify 1 first, then 2.
+            // Root commit callbacks should be 1, then 2, then 1 again during 2's callback
+            try (var tx = Transaction.openRoot()) {
+                transactionalInt1.set(1, tx);
+                transactionalInt2.set(2, tx);
+                tx.commit();
             }
-        };
-
-        // Modify 1 first, then 2.
-        // Root commit callbacks should be 1, then 2, then 1 again during 2's callback
-        try (var tx = Transaction.openRoot()) {
-            transactionalInt1.set(1, tx);
-            transactionalInt2.set(2, tx);
-            tx.commit();
+            assertThat(rootCommits1)
+                    .containsExactly(new RootCommit(0, 1), new RootCommit(1, 10));
+            assertThat(rootCommits2)
+                    .containsExactly(new RootCommit(0, 2));
         }
-        assertThat(rootCommits1)
-                .containsExactly(new RootCommit(0, 1), new RootCommit(1, 10));
-        assertThat(rootCommits2)
-                .containsExactly(new RootCommit(0, 2));
 
-        rootCommits1.clear();
-        rootCommits2.clear();
+        @Test
+        void testModifyingOtherJournalFirst() {
+            var rootCommits1 = new ArrayList<RootCommit>();
+            var rootCommits2 = new ArrayList<RootCommit>();
 
-        // Modify 2 first, then 1.
-        // Root commit callbacks should be 2, and 1 during 2's callback.
-        // The callback of 1 will not be called again from the outer transaction since it was not modified in the meanwhile.
-        try (var tx = Transaction.openRoot()) {
-            transactionalInt2.set(2, tx);
-            transactionalInt1.set(1, tx);
-            tx.commit();
+            var transactionalInt1 = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits1.add(new RootCommit(originalState, value));
+                }
+            };
+            var transactionalInt2 = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits2.add(new RootCommit(originalState, value));
+                    // Trigger a nested transaction which will modify 2
+                    try (Transaction tx = Transaction.openRoot()) {
+                        transactionalInt1.set(10, tx);
+                        tx.commit();
+                    }
+                }
+            };
+
+            // Modify 2 first, then 1.
+            // Root commit callbacks should be 2, and 1 during 2's callback.
+            // The callback of 1 will not be called again from the outer transaction since it was not modified in the meanwhile.
+            try (var tx = Transaction.openRoot()) {
+                transactionalInt2.set(2, tx);
+                transactionalInt1.set(1, tx);
+                tx.commit();
+            }
+            assertThat(rootCommits1)
+                    .containsExactly(new RootCommit(0, 10)); // straight from 0 to 10
+            assertThat(rootCommits2)
+                    .containsExactly(new RootCommit(0, 2));
         }
-        assertThat(rootCommits1)
-                .containsExactly(new RootCommit(0, 10)); // straight from 0 to 10
-        assertThat(rootCommits2)
-                .containsExactly(new RootCommit(0, 2));
+
+        @Test
+        void testModifyingSelf() {
+            var rootCommits = new ArrayList<RootCommit>();
+
+            var transactionalInt = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits.add(new RootCommit(originalState, value));
+                    if (value < 5) {
+                        try (var tx = Transaction.openRoot()) {
+                            set(value + 1, tx);
+                            tx.commit();
+                        }
+                    }
+                }
+            };
+
+            try (var tx = Transaction.openRoot()) {
+                transactionalInt.set(1, tx);
+                tx.commit();
+            }
+
+            assertThat(rootCommits).containsExactly(
+                    new RootCommit(0, 1),
+                    new RootCommit(1, 2),
+                    new RootCommit(2, 3),
+                    new RootCommit(3, 4),
+                    new RootCommit(4, 5));
+        }
+
+        @Test
+        void testModifyingSelfThenAbort() {
+            var rootCommits = new ArrayList<RootCommit>();
+
+            var transactionalInt = new TransactionalInt() {
+                @Override
+                protected void onRootCommit(Integer originalState) {
+                    rootCommits.add(new RootCommit(originalState, value));
+                    if (value < 5) {
+                        try (var tx = Transaction.openRoot()) {
+                            set(value + 1, tx);
+                            // Don't commit it
+                        }
+                    }
+                }
+            };
+
+            try (var tx = Transaction.openRoot()) {
+                transactionalInt.set(1, tx);
+                tx.commit();
+            }
+
+            assertThat(rootCommits).containsExactly(
+                    new RootCommit(0, 1));
+        }
     }
-
-    // TODO: test re-entrant callback
 }
