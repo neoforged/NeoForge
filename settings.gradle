@@ -34,13 +34,6 @@ dependencyResolutionManagement {
                 includeModule("net.neoforged.installertools", "zipinject")
             }
         }
-        maven {
-            name = "Maven for PR #47" // https://github.com/neoforged/LegacyInstaller/pull/47
-            url = uri("https://prmaven.neoforged.net/LegacyInstaller/pr47")
-            content {
-                includeModule("net.neoforged", "legacyinstaller")
-            }
-        }
     }
 }
 
