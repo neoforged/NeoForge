@@ -207,6 +207,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1159,14 +1160,14 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static void updateDebugScreenEntriesForSearch(String text, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
+    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
         var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
 
         // filter out to match search text
         // - blank/empty string, accept everything
         // - accept entries whose namespace/path match given text
         DebugScreenEntries.allEntries().forEach((id, value) -> {
-            if (text.isBlank() || SharedSuggestionProvider.matchesSubStr(text, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(text, id.getPath())) {
+            if (isValidDebugEntryForSearch(searchText, id)) {
                 byCategory.put(value.category(), id);
             }
         });
@@ -1185,5 +1186,18 @@ public class ClientHooks {
             // add entry to screen
             entries.forEach(addEntry);
         });
+    }
+
+    private static boolean isValidDebugEntryForSearch(String searchText, ResourceLocation id) {
+        if (searchText.isBlank()) {
+            // no search provided, accept everything
+            return true;
+        } else if (StringUtils.contains(searchText, ResourceLocation.NAMESPACE_SEPARATOR)) {
+            // search text contains ':' separator, accept all whose full id match
+            return SharedSuggestionProvider.matchesSubStr(searchText, id.toString());
+        } else {
+            // default, accept all whose namespace or path match
+            return SharedSuggestionProvider.matchesSubStr(searchText, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(searchText, id.getPath());
+        }
     }
 }
