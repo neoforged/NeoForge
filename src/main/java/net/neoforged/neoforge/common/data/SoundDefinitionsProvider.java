@@ -134,7 +134,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      *
      * <p>This method should be preferred when a {@code SoundEvent} is already
      * available in the method context. If you already have a {@code Holder} for
-     * it, refer to {@link #add(Holder, SoundDefinition)} (Holder, SoundDefinition)}.</p>
+     * it, refer to {@link #add(Holder, SoundDefinition)}.</p>
      *
      * @param soundEvent A {@link SoundEvent}.
      * @param definition The {@link SoundDefinition} that defines the given event.
