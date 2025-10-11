@@ -228,6 +228,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
                 int maxStackSize = dropInfo.resource.getMaxStackSize();
                 while (remainder > 0) {
                     int dropped = Math.min(maxStackSize, remainder);
+                    // TODO: this will not trigger ItemTossEvent, unlike Inventory#placeItemBackInInventory
                     inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
                     remainder -= dropped;
                 }

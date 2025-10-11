@@ -11,9 +11,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -37,16 +39,22 @@ import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ComposterWrapper;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.LivingEntityEquipmentWrapper;
 import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
+import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -289,6 +297,114 @@ public class VanillaHandlersTests {
         }
 
         helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test the onRootCommit for chiseled bookshelves in case the bookshelf gets deleted by another onRootCommit before.")
+    public static void chiseledBookshelfRemovedBeforeOnRootCommit(ExtendedGameTestHelper helper) {
+        ItemResource book = ItemResource.of(Items.BOOK);
+
+        BlockPos pos = new BlockPos(0, 1, 0);
+        helper.setBlock(pos, Blocks.CHISELED_BOOKSHELF.defaultBlockState());
+        var resourceHandler = helper.requireCapability(Capabilities.Item.BLOCK, pos, null);
+
+        var deleteTheBookshelf = new RootCommitJournal(() -> helper.destroyBlock(pos));
+
+        try (var tx = Transaction.openRoot()) {
+            // This will trigger the destruction of the bookshelf before its onRootCommit get to run.
+            deleteTheBookshelf.updateSnapshots(tx);
+            int inserted = resourceHandler.insert(book, 1, tx);
+            helper.assertValueEqual(1, inserted, "books inserted");
+            tx.commit();
+        }
+
+        helper.assertBlockNotPresent(Blocks.CHISELED_BOOKSHELF, pos);
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test the onRootCommit for cauldrons in case the cauldron gets deleted by another onRootCommit before.")
+    public static void cauldronRemovedBeforeOnRootCommit(ExtendedGameTestHelper helper) {
+        FluidResource water = FluidResource.of(Fluids.WATER);
+
+        BlockPos pos = new BlockPos(0, 1, 0);
+        helper.setBlock(pos, Blocks.CAULDRON.defaultBlockState());
+        var resourceHandler = helper.requireCapability(Capabilities.Fluid.BLOCK, pos, null);
+
+        var deleteTheCauldron = new RootCommitJournal(() -> helper.destroyBlock(pos));
+
+        try (var tx = Transaction.openRoot()) {
+            // This will trigger the destruction of the cauldron before its onRootCommit get to run.
+            deleteTheCauldron.updateSnapshots(tx);
+            int inserted = resourceHandler.insert(water, FluidType.BUCKET_VOLUME, tx);
+            helper.assertValueEqual(FluidType.BUCKET_VOLUME, inserted, "water inserted");
+            tx.commit();
+        }
+
+        helper.assertBlockNotPresent(Blocks.CAULDRON, pos);
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test the onRootCommit for composters in case the composter gets deleted by another onRootCommit before.")
+    public static void composterRemovedBeforeOnRootCommit(ExtendedGameTestHelper helper) {
+        ItemResource leaves = ItemResource.of(Items.OAK_LEAVES);
+
+        BlockPos pos = new BlockPos(0, 1, 0);
+        helper.setBlock(pos, Blocks.COMPOSTER.defaultBlockState());
+        var resourceHandler = helper.requireCapability(Capabilities.Item.BLOCK, pos, Direction.UP);
+
+        var deleteTheComposter = new RootCommitJournal(() -> helper.destroyBlock(pos));
+
+        try (var tx = Transaction.openRoot()) {
+            // This will trigger the destruction of the composter before its onRootCommit get to run.
+            deleteTheComposter.updateSnapshots(tx);
+            // Since this is the first insert, it will always trigger a level increase regardless of the probability.
+            int inserted = resourceHandler.insert(leaves, 1, tx);
+            helper.assertValueEqual(1, inserted, "leaves inserted");
+            tx.commit();
+        }
+
+        helper.assertBlockNotPresent(Blocks.COMPOSTER, pos);
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test the onRootCommit for a player's DroppedItems in case an event triggered by the dropping triggers more drops.")
+    public static void playerInventoryDropWhileDropping(DynamicTest test) {
+        // When dropping a carrot, drop a golden carrot in front of all fake players
+        test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
+            if (event.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().is(Items.CARROT)) {
+                // TODO: this doesn't work because the fake players are not in the level
+                for (var player : event.getLevel().players()) {
+                    if (!(player instanceof ServerPlayer)) {
+                        try (var tx = Transaction.openRoot()) {
+                            PlayerInventoryWrapper.of(player).drop(ItemResource.of(Items.GOLDEN_CARROT), 1, false, false, tx);
+                            tx.commit();
+                        }
+                    }
+                }
+            }
+        });
+
+        test.onGameTest(helper -> {
+            var player = helper.makeMockPlayer();
+            player.setPos(helper.getBounds().getCenter());
+
+            var inventory = PlayerInventoryWrapper.of(player);
+            try (var tx = Transaction.openRoot()) {
+                inventory.drop(ItemResource.of(Items.CARROT), 1, false, false, tx);
+                inventory.drop(ItemResource.of(Items.CARROT), 1, false, false, tx);
+                tx.commit();
+            }
+
+            // 2 carrots and 2 golden carrots
+            helper.assertEntitiesPresent(EntityType.ITEM, 4);
+        });
     }
 
     @GameTest

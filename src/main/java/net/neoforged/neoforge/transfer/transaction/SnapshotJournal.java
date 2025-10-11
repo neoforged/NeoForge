@@ -88,6 +88,12 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
      * and {@code onRootCommit} will be called again later.</li>
      * </ul>
      *
+     * <p>Given the large amount of actions that can happen between the last modification and the call to {@code onRootCommit},
+     * journals should not depend on {@code onRootCommit} being called immediately for correctness,
+     * and implementations of this method should be careful (e.g. in case the journal got removed from the level).
+     * For example, skipping block change notifications because the block was removed from the level
+     * is preferable than crashing or silently overwriting the block.
+     *
      * @param originalState state of this journal before the transactional operations.
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operations.
      */
