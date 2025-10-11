@@ -26,6 +26,10 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
         var tasks = project.getTasks();
         var neoDevBuildDir = project.getLayout().getBuildDirectory().dir("neodev");
 
+        var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
+        var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
+        var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
+
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
 
         var modulePathDependency = projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-moddev-module-path");
@@ -51,7 +55,8 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 neoForgeConfigOnly,
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 configureLegacyClasspath,
-                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
+                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
+                mcAndNeoFormVersion
         );
 
         var testExtension = project.getExtensions().create(NeoDevTestExtension.NAME, NeoDevTestExtension.class);
@@ -67,7 +72,8 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 testExtension.getTestedMod(),
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 configureLegacyClasspath,
-                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
+                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
+                mcAndNeoFormVersion
         );
     }
 

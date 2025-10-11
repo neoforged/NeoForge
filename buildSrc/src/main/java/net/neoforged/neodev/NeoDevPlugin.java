@@ -190,7 +190,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                     })));
                     legacyClassPath.extendsFrom(configurations.libraries, configurations.moduleLibraries, configurations.userdevCompileOnly);
                 },
-                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
+                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
+                mcAndNeoFormVersion
         );
         // TODO: Gradle run tasks should be moved to gradle group GROUP
 
