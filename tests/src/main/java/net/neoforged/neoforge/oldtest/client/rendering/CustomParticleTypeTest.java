@@ -57,8 +57,8 @@ public class CustomParticleTypeTest {
         public static void onRegisterParticleGroups(RegisterParticleGroupsEvent event) {
             if (!ENABLED) return;
 
-            event.registerAfterAll(CUSTOM_TYPE, pe -> new QuadParticleGroup(pe, CUSTOM_TYPE));
-            event.registerAfterAll(CUSTOM_TYPE_TWO, pe -> new QuadParticleGroup(pe, CUSTOM_TYPE_TWO));
+            event.register(CUSTOM_TYPE, pe -> new QuadParticleGroup(pe, CUSTOM_TYPE));
+            event.register(CUSTOM_TYPE_TWO, pe -> new QuadParticleGroup(pe, CUSTOM_TYPE_TWO));
         }
 
         @SubscribeEvent
