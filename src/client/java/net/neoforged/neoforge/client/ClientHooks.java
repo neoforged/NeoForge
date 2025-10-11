@@ -203,6 +203,7 @@ import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.BrandingControl;
@@ -1159,10 +1160,6 @@ public class ClientHooks {
         return glDevice;
     }
 
-    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
-            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
-            .thenComparing(ResourceLocation::compareNamespaced);
-
     @ApiStatus.Internal
     public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
         var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
@@ -1186,7 +1183,7 @@ public class ClientHooks {
 
             // sort entries by their ids (vanilla first)
             var entries = byCategory.get(category);
-            entries.sort(CMP_BY_NAMESPACE_VANILLA_FIRST);
+            entries.sort(CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST);
             // add entry to screen
             entries.forEach(addEntry);
         });
