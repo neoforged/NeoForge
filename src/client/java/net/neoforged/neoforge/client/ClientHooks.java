@@ -1160,8 +1160,7 @@ public class ClientHooks {
     }
 
     public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
-            .<ResourceLocation, Boolean>comparing(location -> location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
-            .reversed()
+            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
             .thenComparing(ResourceLocation::compareNamespaced);
 
     @ApiStatus.Internal
