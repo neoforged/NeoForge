@@ -45,7 +45,7 @@ public class TRSRTransformerTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("test", Block::new, Block.Properties.of().mapColor(MapColor.STONE));
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("test", Block::new, props -> props.mapColor(MapColor.STONE));
     @SuppressWarnings("unused")
     private static final DeferredItem<BlockItem> TEST_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 

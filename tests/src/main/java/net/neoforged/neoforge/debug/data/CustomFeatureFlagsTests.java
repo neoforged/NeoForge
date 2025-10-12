@@ -77,13 +77,13 @@ public class CustomFeatureFlagsTests {
         FeatureFlag extRangeDisabledTestFlag = FeatureFlags.REGISTRY.getFlag(ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_100"));
 
         DeferredItem<Item> baseRangeEnabledTestItem = test.registrationHelper().items()
-                .registerSimpleItem("base_range_enabled_test", new Item.Properties().requiredFeatures(baseRangeEnabledTestFlag));
+                .registerSimpleItem("base_range_enabled_test", props -> props.requiredFeatures(baseRangeEnabledTestFlag));
         DeferredItem<Item> baseRangeDisabledTestItem = test.registrationHelper().items()
-                .registerSimpleItem("base_range_disabled_test", new Item.Properties().requiredFeatures(baseRangeDisabledTestFlag));
+                .registerSimpleItem("base_range_disabled_test", props -> props.requiredFeatures(baseRangeDisabledTestFlag));
         DeferredItem<Item> extRangeEnabledTestItem = test.registrationHelper().items()
-                .registerSimpleItem("ext_range_enabled_test", new Item.Properties().requiredFeatures(extRangeEnabledTestFlag));
+                .registerSimpleItem("ext_range_enabled_test", props -> props.requiredFeatures(extRangeEnabledTestFlag));
         DeferredItem<Item> extRangeDisabledTestItem = test.registrationHelper().items()
-                .registerSimpleItem("ext_range_disabled_test", new Item.Properties().requiredFeatures(extRangeDisabledTestFlag));
+                .registerSimpleItem("ext_range_disabled_test", props -> props.requiredFeatures(extRangeDisabledTestFlag));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
             if (event.getServer() instanceof GameTestServer) return; // The gametest server enables all flags, so we're not interested in running the check

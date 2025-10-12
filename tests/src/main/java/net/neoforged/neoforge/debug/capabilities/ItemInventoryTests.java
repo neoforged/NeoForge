@@ -40,7 +40,7 @@ public class ItemInventoryTests {
     static {
         NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
-        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, new Item.Properties().component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
+        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> props.component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
     }
 
     @OnInit

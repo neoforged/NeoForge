@@ -431,7 +431,7 @@ public class DeferredRegister<T> {
          */
         @Deprecated(since = "1.21.10", forRemoval = true)
         public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
-            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.BLOCK, key))));
+            return this.registerBlock(name, func, () -> props);
         }
 
         /**
@@ -498,7 +498,7 @@ public class DeferredRegister<T> {
          */
         @Deprecated(since = "1.21.10", forRemoval = true)
         public DeferredBlock<Block> registerSimpleBlock(String name, BlockBehaviour.Properties props) {
-            return this.registerBlock(name, Block::new, props);
+            return this.registerBlock(name, Block::new, () -> props);
         }
 
         /**
@@ -604,7 +604,7 @@ public class DeferredRegister<T> {
          */
         @Deprecated(since = "1.21.10", forRemoval = true)
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-            return this.register(name, key -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, key)).useBlockDescriptionPrefix()));
+            return this.registerSimpleBlockItem(name, block, props -> properties);
         }
 
         /**
@@ -620,7 +620,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, UnaryOperator<Item.Properties> properties) {
-            return this.registerItem(name, props -> new BlockItem(block.get(), props), props -> properties.apply(props.useBlockDescriptionPrefix()));
+            return this.registerItem(name, props -> new BlockItem(block.get(), props), props -> properties.apply(props).useBlockDescriptionPrefix());
         }
 
         /**
@@ -654,7 +654,7 @@ public class DeferredRegister<T> {
          */
         @Deprecated(since = "1.21.10", forRemoval = true)
         public DeferredItem<BlockItem> registerSimpleBlockItem(Holder<Block> block, Item.Properties properties) {
-            return this.registerSimpleBlockItem(block.unwrapKey().orElseThrow().location().getPath(), block::value, properties);
+            return this.registerSimpleBlockItem(block, props -> properties);
         }
 
         /**
@@ -702,7 +702,7 @@ public class DeferredRegister<T> {
          */
         @Deprecated(since = "1.21.10", forRemoval = true)
         public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
-            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.ITEM, key))));
+            return this.registerItem(name, func, properties -> props);
         }
 
         /**
@@ -717,7 +717,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleItem(String)
          */
         public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, UnaryOperator<Item.Properties> properties) {
-            return this.register(name, key -> func.apply(properties.apply(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, key)))));
+            return this.register(name, key -> func.apply(properties.apply(new Item.Properties()).setId(ResourceKey.create(Registries.ITEM, key))));
         }
 
         /**
