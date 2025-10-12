@@ -44,6 +44,7 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -373,20 +374,15 @@ public class VanillaHandlersTests {
     }
 
     @GameTest
-    @EmptyTemplate
+    @EmptyTemplate("7x7x7") // Need enough room for the dropped items
     @TestHolder(description = "Test the onRootCommit for a player's DroppedItems in case an event triggered by the dropping triggers more drops.")
     public static void playerInventoryDropWhileDropping(DynamicTest test) {
         // When dropping a carrot, drop a golden carrot in front of all fake players
-        test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
-            if (event.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().is(Items.CARROT)) {
-                // TODO: this doesn't work because the fake players are not in the level
-                for (var player : event.getLevel().players()) {
-                    if (!(player instanceof ServerPlayer)) {
-                        try (var tx = Transaction.openRoot()) {
-                            PlayerInventoryWrapper.of(player).drop(ItemResource.of(Items.GOLDEN_CARROT), 1, false, false, tx);
-                            tx.commit();
-                        }
-                    }
+        test.eventListeners().forge().addListener((ItemTossEvent event) -> {
+            if (event.getEntity().getItem().is(Items.CARROT)) {
+                try (var tx = Transaction.openRoot()) {
+                    PlayerInventoryWrapper.of(event.getPlayer()).drop(ItemResource.of(Items.GOLDEN_CARROT), 1, false, false, tx);
+                    tx.commit();
                 }
             }
         });
@@ -404,6 +400,7 @@ public class VanillaHandlersTests {
 
             // 2 carrots and 2 golden carrots
             helper.assertEntitiesPresent(EntityType.ITEM, 4);
+            helper.succeed();
         });
     }
 
