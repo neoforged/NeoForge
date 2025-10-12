@@ -1,16 +1,11 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -93,6 +_,12 @@
+@@ -93,6 +_,7 @@
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_F3
          );
 -        PROFILES = Map.of(DebugScreenProfile.DEFAULT, map, DebugScreenProfile.PERFORMANCE, map1);
-+        // Neo: Make maps mutable for custom entry inclusions
-+        map = new HashMap<>(map);
-+        map1 = new HashMap<>(map1);
 +        // Neo: Allow registering custom entries
-+        net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1)).validateProfiles();
-+        // Neo: Make the profile maps immutable again
-+        PROFILES = Map.of(DebugScreenProfile.DEFAULT, Map.copyOf(map), DebugScreenProfile.PERFORMANCE, Map.copyOf(map1));
++        PROFILES = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1)).validateProfiles();
      }
  }

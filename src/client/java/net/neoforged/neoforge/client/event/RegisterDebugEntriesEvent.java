@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.client.gui.components.debug.DebugEntrySystemSpecs;
@@ -40,8 +41,9 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     @ApiStatus.Internal
     public RegisterDebugEntriesEvent(Map<ResourceLocation, DebugScreenEntry> entries, Map<ResourceLocation, DebugScreenEntryStatus> defaultProfile, Map<ResourceLocation, DebugScreenEntryStatus> performanceProfile) {
         this.entries = entries;
-        this.defaultProfile = defaultProfile;
-        this.performanceProfile = performanceProfile;
+        // These are immutable in vanilla, we make them mutable to allow custom entry inclusion
+        this.defaultProfile = new HashMap<>(defaultProfile);
+        this.performanceProfile = new HashMap<>(performanceProfile);
     }
 
     /**
@@ -89,7 +91,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     }
 
     @ApiStatus.Internal
-    public void validateProfiles() {
+    public Map<DebugScreenProfile, Map<ResourceLocation, DebugScreenEntryStatus>> validateProfiles() {
         // we delegate validation to its own method to allow people to call 'includeInProfile' before 'register'
         var defaultError = validateProfile(DebugScreenProfile.DEFAULT);
         var performanceError = validateProfile(DebugScreenProfile.PERFORMANCE);
@@ -106,6 +108,11 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
         } else if (performanceError != null) {
             throw performanceError;
         }
+
+        return Map.of(
+                // use 'Map.copyOf' to make our now mutable maps immutable again
+                DebugScreenProfile.DEFAULT, Map.copyOf(defaultProfile),
+                DebugScreenProfile.PERFORMANCE, Map.copyOf(performanceProfile));
     }
 
     @Nullable
