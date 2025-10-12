@@ -45,7 +45,7 @@ class ItemResourceHandlerAdapter implements IItemHandler {
         }
         // We have to limit to the max stack size, per the contract of extractItem
         amount = Math.min(amount, resource.getMaxStackSize());
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int extracted = handler.extract(slot, resource, amount, tx);
             if (!simulate) {
                 tx.commit();

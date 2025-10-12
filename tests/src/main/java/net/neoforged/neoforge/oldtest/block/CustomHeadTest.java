@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import java.util.Locale;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
@@ -31,7 +32,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialBlockModelRendererEvent;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -107,12 +107,12 @@ public class CustomHeadTest {
         BLAZE;
 
         SkullType() {
-            TYPES.put(name().toLowerCase(), this);
+            TYPES.put(getSerializedName(), this);
         }
 
         @Override
         public String getSerializedName() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 
@@ -131,19 +131,13 @@ public class CustomHeadTest {
         }
 
         @SubscribeEvent
-        static void clientSetupEvent(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png")));
-        }
-
-        @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER);
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
 
         @SubscribeEvent
         static void registerSpecialBlockRenderer(RegisterSpecialBlockModelRendererEvent event) {
             event.register(BLAZE_HEAD.get(), new SkullSpecialRenderer.Unbaked(SkullType.BLAZE));
-            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
     }
 }

@@ -33,7 +33,8 @@ public class VanillaInventoryCodeHooks {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             var itemResource = handler.getResource(index);
-            try (var tx = Transaction.open(null)) {
+            if (itemResource.isEmpty()) continue;
+            try (var tx = Transaction.openRoot()) {
                 int extracted = handler.extract(index, itemResource, 1, tx);
                 if (extracted == 0) {
                     continue;
@@ -70,7 +71,7 @@ public class VanillaInventoryCodeHooks {
         if (ResourceHandlerUtil.isFull(itemHandler)) {
             return false;
         }
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int size = hopper.getContainerSize();
             for (int i = 0; i < size; ++i) {
                 var hopperItem = hopper.getItem(i);
