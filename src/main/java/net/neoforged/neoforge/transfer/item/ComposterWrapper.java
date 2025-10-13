@@ -92,10 +92,10 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
             location.level.setBlock(location.pos, originalState, 0);
             // Now perform the change that will trigger notifications to other blocks/neighbors/clients.
             location.level.setBlockAndUpdate(location.pos, currentState);
-            location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, currentState));
+            location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(currentState));
         }
 
-        int originalLevel = currentState.getValue(ComposterBlock.LEVEL);
+        int originalLevel = originalState.getValue(ComposterBlock.LEVEL);
         int currentLevel = currentState.getValue(ComposterBlock.LEVEL);
 
         if (originalLevel < ComposterBlock.MAX_LEVEL) {
@@ -111,7 +111,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
     }
 
     /**
-     * Sets the cauldron's level, without sending notifications, which are deferred until {@link #onRootCommit}.
+     * Sets the composter's level, without sending notifications, which are deferred until {@link #onRootCommit}.
      */
     private void setLevel(BlockState state, int newLevel) {
         BlockState newState = state.setValue(ComposterBlock.LEVEL, newLevel);
@@ -143,8 +143,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
             updateSnapshots(transaction);
 
             // Always increment on first insert (like vanilla).
-            boolean increaseSuccessful = currentLevel == ComposterBlock.MIN_LEVEL || transactionalRandom.nextDouble(transaction) < value;
-            if (increaseSuccessful) {
+            if (currentLevel == ComposterBlock.MIN_LEVEL || transactionalRandom.nextDouble(transaction) < value) {
                 setLevel(state, currentLevel + 1);
             }
 

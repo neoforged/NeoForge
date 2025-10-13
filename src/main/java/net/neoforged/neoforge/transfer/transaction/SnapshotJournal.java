@@ -117,7 +117,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         if (snapshots.get(currentDepth) == NO_SNAPSHOT) {
             snapshots.set(currentDepth, createSnapshot());
 
-            // This is a special case where we need to cast to access the add journalToCommit method.
+            // This is a special case where we need to cast to access internal Transaction methods.
             // You should never, however, cast to call commit or close!
             var transactionImpl = (Transaction) transaction;
             transactionImpl.validateOpen();
@@ -163,7 +163,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     void callOnRootCommit() {
         // This is only scheduled during onClose() when the root transaction is successful,
         // hence the originalState is known to correspond to the first snapshot even if nullable.
-        var originalState = this.originalState;
+        T originalState = this.originalState;
         // Clear this.originalState immediately rather than later, because onRootCommit might trigger new transactions,
         // which might write a new value to this.originalState and schedule this journal for a root commit again.
         this.originalState = null;
