@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
+import net.minecraft.client.multiplayer.LevelLoadTracker;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +30,7 @@ public class DimensionTransitionScreenTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when exiting the Nether")
     static void netherOutgoingTransition(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerOutgoingEffect(Level.NETHER, (supplier, reason) -> new CustomLevelScreen(supplier, reason, NETHER_BG, Component.literal("This displays when returning from the nether!"))));
+        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerOutgoingEffect(Level.NETHER, (tracker, reason) -> new CustomLevelScreen(tracker, reason, NETHER_BG, Component.literal("This displays when returning from the nether!"))));
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
@@ -43,7 +43,7 @@ public class DimensionTransitionScreenTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when entering the End")
     static void endIncomingTransition(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerIncomingEffect(Level.END, (supplier, reason) -> new CustomLevelScreen(supplier, reason, END_BG, Component.literal("This displays when going to the end!"))));
+        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerIncomingEffect(Level.END, (tracker, reason) -> new CustomLevelScreen(tracker, reason, END_BG, Component.literal("This displays when going to the end!"))));
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
@@ -53,12 +53,12 @@ public class DimensionTransitionScreenTests {
         });
     }
 
-    public static class CustomLevelScreen extends ReceivingLevelScreen {
+    public static class CustomLevelScreen extends LevelLoadingScreen {
         private final ResourceLocation bgTexture;
         private final Component message;
 
-        public CustomLevelScreen(BooleanSupplier supplier, Reason reason, ResourceLocation bgTexture, Component message) {
-            super(supplier, reason);
+        public CustomLevelScreen(LevelLoadTracker tracker, Reason reason, ResourceLocation bgTexture, Component message) {
+            super(tracker, reason);
             this.bgTexture = bgTexture;
             this.message = message;
         }

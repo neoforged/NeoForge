@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -171,7 +_,7 @@
+@@ -172,7 +_,7 @@
              BlockState blockstate = p_376839_.getBlockState(blockpos);
              FluidState fluidstate = blockstate.getFluidState();
              if (fluidstate.getType().isSame(this) && canPassThroughWall(direction, p_376839_, p_76037_, p_76038_, blockpos, blockstate)) {
@@ -9,7 +9,7 @@
                      j++;
                  }
  
-@@ -179,7 +_,7 @@
+@@ -180,7 +_,7 @@
              }
          }
  
@@ -18,7 +18,7 @@
              BlockState blockstate1 = p_376839_.getBlockState(blockpos$mutableblockpos.setWithOffset(p_76037_, Direction.DOWN));
              FluidState fluidstate1 = blockstate1.getFluidState();
              if (blockstate1.isSolid() || this.isSourceBlockOfThisType(fluidstate1)) {
-@@ -257,6 +_,15 @@
+@@ -262,6 +_,15 @@
          return this.getSource().defaultFluidState().setValue(FALLING, p_76069_);
      }
  

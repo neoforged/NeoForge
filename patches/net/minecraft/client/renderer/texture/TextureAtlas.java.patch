@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -91,6 +_,8 @@
-             this.sprites = List.copyOf(list);
-             this.animatedTextures = List.copyOf(list1);
-         }
+@@ -102,6 +_,8 @@
+                     LOGGER.warn("Failed to dump atlas contents to {}", path);
+                 }
+             }
 +
-+        net.neoforged.neoforge.client.ClientHooks.onTextureAtlasStitched(this);
++            net.neoforged.neoforge.client.ClientHooks.onTextureAtlasStitched(this);
+         }
      }
  
-     @Override
-@@ -168,5 +_,9 @@
+@@ -184,5 +_,9 @@
  
      int getHeight() {
          return this.height;

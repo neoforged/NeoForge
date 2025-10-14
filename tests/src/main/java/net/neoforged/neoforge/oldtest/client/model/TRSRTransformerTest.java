@@ -50,7 +50,7 @@ public class TRSRTransformerTest {
     private static final DeferredItem<BlockItem> TEST_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public TRSRTransformerTest(IEventBus modEventBus) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modEventBus.addListener(TRSRTransformerTest::onModelBake);
         }
         BLOCKS.register(modEventBus);

@@ -12,6 +12,14 @@
          }
  
          this.minecraft.setScreen(new BackupConfirmScreen(p_307323_, (p_307085_, p_307086_) -> {
+@@ -272,6 +_,7 @@
+         try {
+             dynamic = p_330608_.getDataTag();
+             levelsummary = p_330608_.getSummary(dynamic);
++            p_330608_.readAdditionalLevelSaveData(false);
+         } catch (NbtException | ReportedNbtException | IOException ioexception) {
+             this.minecraft.setScreen(new RecoverWorldDataScreen(this.minecraft, p_329781_ -> {
+                 if (p_329781_) {
 @@ -381,10 +_,19 @@
          WorldData worlddata = p_330774_.worldData();
          boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();

@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -37,20 +38,22 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     public static final ResourceLocation LOADING_OVERLAY_TEXTURE_ID = ResourceLocation.parse("neoforge:loading_overlay");
     private final Minecraft minecraft;
     private final ReloadInstance reload;
-    private final Consumer<Optional<Throwable>> onFinish;
     private final DisplayWindow displayWindow;
     private final ProgressMeter progressMeter;
     private float currentProgress;
-    private long fadeOutStart = -1L;
 
     public NeoForgeLoadingOverlay(final Minecraft mc, final ReloadInstance reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
         super(mc, reloader, errorConsumer, false);
         this.minecraft = mc;
         this.reload = reloader;
-        this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
-        var framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
+        var gpuDevice = RenderSystem.getDevice();
+        // The loading overlay imports an existing OpenGL texture directly into the GlDevice and as such must reach around the Validation device if it is enabled
+        if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
+            gpuDevice = validationGpuDevice.getRealDevice();
+        }
+        var framebuffer = ((GlDevice) gpuDevice).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
     }
 
@@ -87,27 +90,18 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
             });
             this.minecraft.setOverlay(null);
         }
-
-        if (this.fadeOutStart == -1L && this.reload.isDone()) {
-            this.fadeOutStart = Util.getMillis();
-            try {
-                this.reload.checkExceptions();
-                this.onFinish.accept(Optional.empty());
-            } catch (Throwable throwable) {
-                this.onFinish.accept(Optional.of(throwable));
-            }
-
-            if (this.minecraft.screen != null) {
-                this.minecraft.screen.init(this.minecraft, graphics.guiWidth(), graphics.guiHeight());
-            }
-        }
     }
 
     static class ExternalTexture extends AbstractTexture {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;
             this.setFilter(false, false);
-            this.textureView = RenderSystem.getDevice().createTextureView(texture);
+            var gpuDevice = RenderSystem.getDevice();
+            // ValidationGpuDevice.createTextureView is expecting a ValidationGpuTexture instance, but the previous reach around created a GlTexture instance instead so validation must be reached around again
+            if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
+                gpuDevice = validationGpuDevice.getRealDevice();
+            }
+            this.textureView = gpuDevice.createTextureView(texture);
         }
     }
 }

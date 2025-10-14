@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -189,13 +_,19 @@
+@@ -190,13 +_,19 @@
      protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
      public static final float EXTRA_RENDER_CULLING_SIZE_WITH_BIG_HAT = 0.5F;
      public static final float DEFAULT_BABY_SCALE = 0.5F;
@@ -22,7 +22,7 @@
      };
      private static final Dynamic<?> EMPTY_BRAIN = new Dynamic<>(JavaOps.INSTANCE, Map.of("memories", Map.of()));
      private final AttributeMap attributes;
-@@ -265,6 +_,14 @@
+@@ -266,6 +_,14 @@
      );
      protected final EntityEquipment equipment;
      private Waypoint.Icon locatorBarIcon = new Waypoint.Icon();
@@ -37,7 +37,7 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
-@@ -338,7 +_,9 @@
+@@ -345,7 +_,9 @@
              .add(Attributes.MOVEMENT_EFFICIENCY)
              .add(Attributes.ATTACK_KNOCKBACK)
              .add(Attributes.CAMERA_DISTANCE)
@@ -48,7 +48,7 @@
      }
  
      @Override
-@@ -365,7 +_,8 @@
+@@ -372,7 +_,8 @@
  
                  double d7 = Math.min(0.2F + d6 / 15.0, 2.5);
                  int i = (int)(150.0 * d7);
@@ -58,7 +58,7 @@
              }
          }
  
-@@ -375,6 +_,7 @@
+@@ -382,6 +_,7 @@
          }
      }
  
@@ -66,7 +66,7 @@
      public boolean canBreatheUnderwater() {
          return this.getType().is(EntityTypeTags.CAN_BREATHE_UNDER_WATER);
      }
-@@ -419,6 +_,9 @@
+@@ -422,6 +_,9 @@
                  }
              }
  
@@ -76,7 +76,7 @@
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !serverlevel1.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
                  boolean flag1 = !this.canBreatheUnderwater()
-@@ -767,7 +_,11 @@
+@@ -774,7 +_,11 @@
          } else {
              ItemEntity itementity = this.createItemStackToDrop(p_401947_, p_401861_, p_401913_);
              if (itementity != null) {
@@ -89,7 +89,7 @@
              }
  
              return itementity;
-@@ -826,8 +_,10 @@
+@@ -833,8 +_,10 @@
                      Holder<MobEffect> holder = iterator.next();
                      MobEffectInstance mobeffectinstance = this.activeEffects.get(holder);
                      if (!mobeffectinstance.tickServer(serverlevel, this, () -> this.onEffectUpdated(mobeffectinstance, true, null))) {
@@ -100,7 +100,7 @@
                      } else if (mobeffectinstance.getDuration() % 600 == 0) {
                          this.onEffectUpdated(mobeffectinstance, false, null);
                      }
-@@ -871,8 +_,9 @@
+@@ -878,8 +_,9 @@
          List<ParticleOptions> list = this.activeEffects
              .values()
              .stream()
@@ -112,7 +112,7 @@
              .toList();
          this.entityData.set(DATA_EFFECT_PARTICLES, list);
          this.entityData.set(DATA_EFFECT_AMBIENCE_ID, areAllEffectsAmbient(this.activeEffects.values()));
-@@ -912,6 +_,7 @@
+@@ -919,6 +_,7 @@
              }
          }
  
@@ -120,7 +120,7 @@
          return d0;
      }
  
-@@ -947,8 +_,13 @@
+@@ -954,8 +_,13 @@
          } else if (this.activeEffects.isEmpty()) {
              return false;
          } else {
@@ -136,7 +136,7 @@
              this.onEffectsRemoved(map.values());
              return true;
          }
-@@ -981,11 +_,12 @@
+@@ -988,11 +_,12 @@
      }
  
      public boolean addEffect(MobEffectInstance p_147208_, @Nullable Entity p_147209_) {
@@ -150,7 +150,7 @@
              if (mobeffectinstance == null) {
                  this.activeEffects.put(p_147208_.getEffect(), p_147208_);
                  this.onEffectAdded(p_147208_, p_147209_);
-@@ -1001,6 +_,14 @@
+@@ -1008,6 +_,14 @@
          }
      }
  
@@ -165,7 +165,7 @@
      public boolean canBeAffected(MobEffectInstance p_21197_) {
          if (this.getType().is(EntityTypeTags.IMMUNE_TO_INFESTED)) {
              return !p_21197_.is(MobEffects.INFESTED);
-@@ -1014,7 +_,7 @@
+@@ -1021,7 +_,7 @@
      }
  
      public void forceAddEffect(MobEffectInstance p_147216_, @Nullable Entity p_147217_) {
@@ -174,7 +174,7 @@
              MobEffectInstance mobeffectinstance = this.activeEffects.put(p_147216_.getEffect(), p_147216_);
              if (mobeffectinstance == null) {
                  this.onEffectAdded(p_147216_, p_147217_);
-@@ -1035,6 +_,7 @@
+@@ -1042,6 +_,7 @@
      }
  
      public boolean removeEffect(Holder<MobEffect> p_316570_) {
@@ -182,7 +182,7 @@
          MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_316570_);
          if (mobeffectinstance != null) {
              this.onEffectsRemoved(List.of(mobeffectinstance));
-@@ -1126,6 +_,8 @@
+@@ -1133,6 +_,8 @@
      }
  
      public void heal(float p_21116_) {
@@ -191,7 +191,7 @@
          float f = this.getHealth();
          if (f > 0.0F) {
              this.setHealth(f + p_21116_);
-@@ -1153,11 +_,14 @@
+@@ -1160,11 +_,14 @@
          } else if (p_376460_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
@@ -206,7 +206,7 @@
              if (p_376610_ < 0.0F) {
                  p_376610_ = 0.0F;
              }
-@@ -1177,24 +_,28 @@
+@@ -1185,24 +_,28 @@
              if (Float.isNaN(p_376610_) || Float.isInfinite(p_376610_)) {
                  p_376610_ = Float.MAX_VALUE;
              }
@@ -236,7 +236,7 @@
              this.resolveMobResponsibleForDamage(p_376460_);
              this.resolvePlayerResponsibleForDamage(p_376460_);
              if (flag1) {
-@@ -1263,6 +_,7 @@
+@@ -1271,6 +_,7 @@
                  CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(serverplayer1, this, p_376460_, p_376610_, p_376610_, flag);
              }
  
@@ -244,7 +244,7 @@
              return flag2;
          }
      }
-@@ -1276,7 +_,7 @@
+@@ -1284,7 +_,7 @@
                  return 0.0F;
              } else {
                  BlocksAttacks blocksattacks = itemstack.get(DataComponents.BLOCKS_ATTACKS);
@@ -253,7 +253,7 @@
                      if (p_401067_.getDirectEntity() instanceof AbstractArrow abstractarrow && abstractarrow.getPierceLevel() > 0) {
                          return 0.0F;
                      } else {
-@@ -1292,7 +_,14 @@
+@@ -1300,7 +_,14 @@
                          }
  
                          float f = blocksattacks.resolveBlockedDamage(p_401067_, p_401377_, d0);
@@ -266,10 +266,10 @@
 +                        this.damageContainers.peek().setBlockedDamage(ev);
 +
 +                        blocksattacks.hurtBlockingItem(this.level(), itemstack, this, this.getUsedItemHand(), f, ev.shieldDamage());
-                         if (!p_401067_.is(DamageTypeTags.IS_PROJECTILE) && p_401067_.getDirectEntity() instanceof LivingEntity livingentity) {
+                         if (f > 0.0F && !p_401067_.is(DamageTypeTags.IS_PROJECTILE) && p_401067_.getDirectEntity() instanceof LivingEntity livingentity) {
                              this.blockUsingItem(p_401171_, livingentity);
                          }
-@@ -1326,9 +_,9 @@
+@@ -1334,9 +_,9 @@
          Entity entity = p_388609_.getEntity();
          if (entity instanceof Player player) {
              this.setLastHurtByPlayer(player, 100);
@@ -282,7 +282,7 @@
              } else {
                  this.lastHurtByPlayer = null;
                  this.lastHurtByPlayerMemoryTime = 0;
-@@ -1356,7 +_,7 @@
+@@ -1364,7 +_,7 @@
              for (InteractionHand interactionhand : InteractionHand.values()) {
                  ItemStack itemstack1 = this.getItemInHand(interactionhand);
                  deathprotection = itemstack1.get(DataComponents.DEATH_PROTECTION);
@@ -291,7 +291,7 @@
                      itemstack = itemstack1.copy();
                      itemstack1.shrink(1);
                      break;
-@@ -1420,6 +_,7 @@
+@@ -1428,6 +_,7 @@
      }
  
      public void die(DamageSource p_21014_) {
@@ -299,7 +299,7 @@
          if (!this.isRemoved() && !this.dead) {
              Entity entity = p_21014_.getEntity();
              LivingEntity livingentity = this.getKillCredit();
-@@ -1455,7 +_,7 @@
+@@ -1463,7 +_,7 @@
          if (this.level() instanceof ServerLevel serverlevel) {
              boolean flag = false;
              if (p_21269_ instanceof WitherBoss) {
@@ -308,15 +308,15 @@
                      BlockPos blockpos = this.blockPosition();
                      BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
-@@ -1473,6 +_,7 @@
+@@ -1481,6 +_,7 @@
      }
  
      protected void dropAllDeathLoot(ServerLevel p_348524_, DamageSource p_21192_) {
 +        this.captureDrops(new java.util.ArrayList<>());
          boolean flag = this.lastHurtByPlayerMemoryTime > 0;
-         if (this.shouldDropLoot() && p_348524_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+         if (this.shouldDropLoot(p_348524_)) {
              this.dropFromLootTable(p_348524_, p_21192_, flag);
-@@ -1481,6 +_,10 @@
+@@ -1489,6 +_,10 @@
  
          this.dropEquipment(p_348524_);
          this.dropExperience(p_348524_, p_21192_.getEntity());
@@ -327,7 +327,7 @@
      }
  
      protected void dropEquipment(ServerLevel p_376330_) {
-@@ -1492,7 +_,8 @@
+@@ -1500,7 +_,8 @@
                  this.isAlwaysExperienceDropper()
                      || this.lastHurtByPlayerMemoryTime > 0 && this.shouldDropExperience() && p_376909_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)
              )) {
@@ -337,7 +337,7 @@
          }
      }
  
-@@ -1573,6 +_,11 @@
+@@ -1605,6 +_,11 @@
      }
  
      public void knockback(double p_147241_, double p_147242_, double p_147243_) {
@@ -349,7 +349,7 @@
          p_147241_ *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(p_147241_ <= 0.0)) {
              this.hasImpulse = true;
-@@ -1646,15 +_,9 @@
+@@ -1678,15 +_,9 @@
          } else {
              BlockPos blockpos = this.blockPosition();
              BlockState blockstate = this.getInBlockState();
@@ -368,7 +368,7 @@
          }
      }
  
-@@ -1700,6 +_,11 @@
+@@ -1732,6 +_,11 @@
  
      @Override
      public boolean causeFallDamage(double p_397597_, float p_147187_, DamageSource p_147189_) {
@@ -380,7 +380,7 @@
          boolean flag = super.causeFallDamage(p_397597_, p_147187_, p_147189_);
          int i = this.calculateFallDamage(p_397597_, p_147187_);
          if (i > 0) {
-@@ -1730,10 +_,10 @@
+@@ -1762,10 +_,10 @@
              int i = Mth.floor(this.getX());
              int j = Mth.floor(this.getY() - 0.2F);
              int k = Mth.floor(this.getZ());
@@ -394,7 +394,7 @@
              }
          }
      }
-@@ -1758,6 +_,8 @@
+@@ -1790,6 +_,8 @@
          if (!(p_330394_ <= 0.0F)) {
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);
  
@@ -403,7 +403,7 @@
              for (EquipmentSlot equipmentslot : p_331314_) {
                  ItemStack itemstack = this.getItemBySlot(equipmentslot);
                  Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
-@@ -1791,6 +_,7 @@
+@@ -1823,6 +_,7 @@
                  p_21194_ = Math.max(f / 25.0F, 0.0F);
                  float f2 = f1 - p_21194_;
                  if (f2 > 0.0F && f2 < 3.4028235E37F) {
@@ -411,7 +411,7 @@
                      if (this instanceof ServerPlayer) {
                          ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f2 * 10.0F));
                      } else if (p_21193_.getEntity() instanceof ServerPlayer) {
-@@ -1813,6 +_,7 @@
+@@ -1845,6 +_,7 @@
  
                  if (f3 > 0.0F) {
                      p_21194_ = CombatRules.getDamageAfterMagicAbsorb(p_21194_, f3);
@@ -419,7 +419,7 @@
                  }
  
                  return p_21194_;
-@@ -1822,11 +_,14 @@
+@@ -1854,11 +_,14 @@
  
      protected void actuallyHurt(ServerLevel p_376745_, DamageSource p_21240_, float p_21241_) {
          if (!this.isInvulnerableTo(p_376745_, p_21240_)) {
@@ -439,7 +439,7 @@
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
-@@ -1834,9 +_,10 @@
+@@ -1866,9 +_,10 @@
              if (f1 != 0.0F) {
                  this.getCombatTracker().recordDamage(p_21240_, f1);
                  this.setHealth(this.getHealth() - f1);
@@ -451,7 +451,7 @@
          }
      }
  
-@@ -1890,6 +_,8 @@
+@@ -1922,6 +_,8 @@
      }
  
      public void swing(InteractionHand p_21012_, boolean p_21013_) {
@@ -460,7 +460,7 @@
          if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
              this.swingTime = -1;
              this.swinging = true;
-@@ -2014,8 +_,10 @@
+@@ -2046,8 +_,10 @@
  
      private void swapHandItems() {
          ItemStack itemstack = this.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -473,7 +473,22 @@
      }
  
      @Override
-@@ -2221,15 +_,18 @@
+@@ -2148,7 +_,13 @@
+     }
+ 
+     public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_) {
+-        this.onEquipItem(p_21036_, this.equipment.set(p_21036_, p_21037_), p_21037_);
++        setItemSlot(p_21036_, p_21037_, false);
++    }
++    /** Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
++     * Callers are responsible for performing the deferred side-effects, when the active transaction commits. */
++    public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_, boolean insideTransaction) {
++        var oldStack = this.equipment.set(p_21036_, p_21037_);
++        if (!insideTransaction) this.onEquipItem(p_21036_, oldStack, p_21037_);
+     }
+ 
+     public float getArmorCoverPercentage() {
+@@ -2253,15 +_,18 @@
              }
  
              this.hasImpulse = true;
@@ -494,7 +509,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2252,7 +_,8 @@
+@@ -2284,7 +_,8 @@
  
      public void travel(Vec3 p_21280_) {
          FluidState fluidstate = this.level().getFluidState(this.blockPosition());
@@ -504,7 +519,7 @@
              this.travelInFluid(p_21280_);
          } else if (this.isFallFlying()) {
              this.travelFallFlying(p_21280_);
-@@ -2283,7 +_,7 @@
+@@ -2315,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {
          BlockPos blockpos = this.getBlockPosBelowThatAffectsMyMovement();
@@ -513,7 +528,7 @@
          float f1 = f * 0.91F;
          Vec3 vec3 = this.handleRelativeFrictionAndCalculateMovement(p_362457_, f);
          double d0 = vec3.y;
-@@ -2306,11 +_,19 @@
+@@ -2338,11 +_,20 @@
          }
      }
  
@@ -530,11 +545,12 @@
          double d0 = this.getY();
          double d1 = this.getEffectiveGravity();
 -        if (this.isInWater()) {
-+        if (this.isInWater() || (this.isInFluidType(fluidState) && !this.moveInFluid(fluidState, p_365480_, d1))) {
++        // Neo: patched in to use the fluid the eye is in because fluidState is always EMPTY fluid.
++        if (this.isInWater() || (this.isInFluidType(this.getEyeInFluidType()) && !this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), p_365480_, d1))) {
              float f = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
              float f1 = 0.02F;
              float f2 = (float)this.getAttributeValue(Attributes.WATER_MOVEMENT_EFFICIENCY);
-@@ -2327,6 +_,7 @@
+@@ -2359,6 +_,7 @@
                  f = 0.96F;
              }
  
@@ -542,7 +558,7 @@
              this.moveRelative(f1, p_365480_);
              this.move(MoverType.SELF, this.getDeltaMovement());
              Vec3 vec3 = this.getDeltaMovement();
-@@ -2485,7 +_,7 @@
+@@ -2517,7 +_,7 @@
              double d0 = Mth.clamp(p_21298_.x, -0.15F, 0.15F);
              double d1 = Mth.clamp(p_21298_.z, -0.15F, 0.15F);
              double d2 = Math.max(p_21298_.y, -0.15F);
@@ -551,7 +567,7 @@
                  d2 = 0.0;
              }
  
-@@ -2649,6 +_,7 @@
+@@ -2681,6 +_,7 @@
              ItemStack itemstack = this.lastEquipmentItems.get(equipmentslot);
              ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
              if (this.equipmentHasChanged(itemstack, itemstack1)) {
@@ -559,7 +575,7 @@
                  if (map == null) {
                      map = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -2784,6 +_,9 @@
+@@ -2816,6 +_,9 @@
          profilerfiller.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double d3;
@@ -569,7 +585,7 @@
              if (this.isInLava()) {
                  d3 = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -2794,15 +_,17 @@
+@@ -2826,15 +_,17 @@
              double d4 = this.getFluidJumpThreshold();
              if (!flag || this.onGround() && !(d3 > d4)) {
                  if (!this.isInLava() || this.onGround() && !(d3 > d4)) {
@@ -589,7 +605,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3121,8 +_,11 @@
+@@ -3155,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -603,7 +619,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3166,8 +_,11 @@
+@@ -3200,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack p_147201_) {
@@ -611,12 +627,12 @@
 +            this.useItemRemaining = net.neoforged.neoforge.event.EventHooks.onItemUseTick(this, p_147201_, this.getUseItemRemainingTicks());
 +        if (this.getUseItemRemainingTicks() > 0)
          p_147201_.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
--        if (--this.useItemRemaining == 0 && !this.level().isClientSide && !p_147201_.useOnRelease()) {
-+        if (--this.useItemRemaining <= 0 && !this.level().isClientSide && !p_147201_.useOnRelease()) {
+-        if (--this.useItemRemaining == 0 && !this.level().isClientSide() && !p_147201_.useOnRelease()) {
++        if (--this.useItemRemaining <= 0 && !this.level().isClientSide() && !p_147201_.useOnRelease()) {
              this.completeUsingItem();
          }
      }
-@@ -3195,8 +_,10 @@
+@@ -3229,8 +_,10 @@
      public void startUsingItem(InteractionHand p_21159_) {
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
@@ -625,10 +641,10 @@
              this.useItem = itemstack;
 -            this.useItemRemaining = itemstack.getUseDuration(this);
 +            this.useItemRemaining = duration;
-             if (!this.level().isClientSide) {
+             if (!this.level().isClientSide()) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, p_21159_ == InteractionHand.OFF_HAND);
-@@ -3259,7 +_,8 @@
+@@ -3293,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -638,7 +654,7 @@
                      if (itemstack != this.useItem) {
                          this.setItemInHand(interactionhand, itemstack);
                      }
-@@ -3289,7 +_,11 @@
+@@ -3323,7 +_,11 @@
          ItemStack itemstack = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemstack, this.useItem)) {
              this.useItem = itemstack;
@@ -650,15 +666,15 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3299,6 +_,7 @@
+@@ -3333,6 +_,7 @@
      }
  
      public void stopUsingItem() {
 +        if (this.isUsingItem() && !this.useItem.isEmpty()) this.useItem.onStopUsing(this, useItemRemaining);
-         if (!this.level().isClientSide) {
+         if (!this.level().isClientSide()) {
              boolean flag = this.isUsingItem();
              this.setLivingEntityFlag(1, false);
-@@ -3467,8 +_,8 @@
+@@ -3501,8 +_,8 @@
          }
  
          BlockState blockstate = this.level().getBlockState(p_21141_);
@@ -669,7 +685,7 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3483,15 +_,17 @@
+@@ -3517,15 +_,17 @@
      }
  
      private boolean checkBedExists() {
@@ -690,7 +706,7 @@
                  Vec3 vec31 = BedBlock.findStandUpPosition(this.getType(), this.level(), p_261435_, direction, this.getYRot()).orElseGet(() -> {
                      BlockPos blockpos = p_261435_.above();
                      return new Vec3(blockpos.getX() + 0.5, blockpos.getY() + 0.1, blockpos.getZ() + 0.5);
-@@ -3512,7 +_,9 @@
+@@ -3546,7 +_,9 @@
      @Nullable
      public Direction getBedOrientation() {
          BlockPos blockpos = this.getSleepingPos().orElse(null);
@@ -701,7 +717,7 @@
      }
  
      @Override
-@@ -3521,7 +_,7 @@
+@@ -3555,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack p_21272_) {
@@ -710,7 +726,7 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot p_21267_) {
-@@ -3577,6 +_,8 @@
+@@ -3607,6 +_,8 @@
      }
  
      public final EquipmentSlot getEquipmentSlotForItem(ItemStack p_147234_) {

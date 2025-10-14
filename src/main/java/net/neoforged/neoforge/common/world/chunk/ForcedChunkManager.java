@@ -67,12 +67,12 @@ public class ForcedChunkManager {
     }
 
     /**
-     * Checks if a level has any forced chunks. Mainly used for seeing if a level should continue ticking with no players in it.
+     * Checks if a level has any custom forced chunks. Mainly used for seeing if a level should continue ticking with no players in it.
      */
     public static boolean hasForcedChunks(ServerLevel level) {
         TicketStorage data = level.getDataStorage().get(TicketStorage.TYPE);
         if (data == null) return false;
-        return !data.getForceLoadedChunks().isEmpty() || !data.getBlockForcedChunks().isEmpty() || !data.getEntityForcedChunks().isEmpty();
+        return !data.getBlockForcedChunks().isEmpty() || !data.getEntityForcedChunks().isEmpty();
     }
 
     /**

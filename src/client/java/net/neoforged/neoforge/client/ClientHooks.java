@@ -7,10 +7,13 @@ package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
+import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,16 +23,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -56,42 +61,44 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.AtlasSet;
+import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -126,16 +133,15 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
+import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -162,15 +168,13 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteDefaultMetadataSectionTypesEvent;
+import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
@@ -282,16 +286,12 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
     }
 
-    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
-        return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
+    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
-    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
-        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, bufferSource, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
-    }
-
-    public static boolean renderSpecificFirstPersonArm(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, HumanoidArm arm) {
-        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm)).isCanceled();
+    public static boolean renderSpecificFirstPersonArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, AbstractClientPlayer player, HumanoidArm arm) {
+        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, submitNodeCollector, packedLight, player, arm)).isCanceled();
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
@@ -303,17 +303,27 @@ public class ClientHooks {
     }
 
     /** Copies humanoid model properties from the original model to another, used for armor models */
-    @SuppressWarnings("unchecked")
-    public static <T extends HumanoidRenderState> void copyModelProperties(HumanoidModel<T> original, HumanoidModel<?> replacement) {
-        // this function does not make use of the <T> generic, so the unchecked cast should be safe
-        original.copyPropertiesTo((HumanoidModel<T>) replacement);
-        replacement.head.visible = original.head.visible;
-        replacement.hat.visible = original.hat.visible;
-        replacement.body.visible = original.body.visible;
-        replacement.rightArm.visible = original.rightArm.visible;
-        replacement.leftArm.visible = original.leftArm.visible;
-        replacement.rightLeg.visible = original.rightLeg.visible;
-        replacement.leftLeg.visible = original.leftLeg.visible;
+    public static void copyModelProperties(HumanoidModel<?> original, HumanoidModel<?> replacement) {
+        copyModelPartProperties(original.head, replacement.head);
+        copyModelPartProperties(original.hat, replacement.hat);
+        copyModelPartProperties(original.body, replacement.body);
+        copyModelPartProperties(original.rightArm, replacement.rightArm);
+        copyModelPartProperties(original.leftArm, replacement.leftArm);
+        copyModelPartProperties(original.rightLeg, replacement.rightLeg);
+        copyModelPartProperties(original.leftLeg, replacement.leftLeg);
+    }
+
+    private static void copyModelPartProperties(ModelPart original, ModelPart replacement) {
+        replacement.visible = original.visible;
+        replacement.x = original.x;
+        replacement.y = original.y;
+        replacement.z = original.z;
+        replacement.xRot = original.xRot;
+        replacement.yRot = original.yRot;
+        replacement.zRot = original.zRot;
+        replacement.xScale = original.xScale;
+        replacement.yScale = original.yScale;
+        replacement.zScale = original.zScale;
     }
 
     //This properly moves the domain, if provided, to the front of the string before concatenating
@@ -401,7 +411,7 @@ public class ClientHooks {
 
     private static void drawScreenInternal(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
-            screen.renderWithTooltip(guiGraphics, mouseX, mouseY, partialTick);
+            screen.renderWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
         NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 
@@ -428,15 +438,14 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData));
     }
 
-    public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
-        Function<Material, TextureAtlasSprite> textureGetter = material -> {
-            AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());
-            TextureAtlasSprite sprite = stitchResult.getSprite(material.texture());
+    public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, SpriteLoader.Preparations spriteLoaderPreparations, ModelBakery modelBakery) {
+        Function<ResourceLocation, TextureAtlasSprite> textureGetter = location -> {
+            TextureAtlasSprite sprite = spriteLoaderPreparations.getSprite(location);
             if (sprite != null) {
                 return sprite;
             }
-            LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
-            return stitchResult.missing();
+            LOGGER.warn("Failed to retrieve texture '{}' from the block atlas", location, new Throwable());
+            return spriteLoaderPreparations.missing();
         };
         ModLoader.postEvent(new ModelEvent.ModifyBakingResult(bakingResult, textureGetter, modelBakery));
     }
@@ -504,13 +513,15 @@ public class ClientHooks {
         }
     }
 
-    public static void loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
+    public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
         if (entity != null) {
             ResourceLocation shader = EntitySpectatorShaderManager.get(entity.getType());
             if (shader != null) {
                 gameRenderer.setPostEffect(shader);
+                return true;
             }
         }
+        return false;
     }
 
     private static int slotMainHand = 0;
@@ -554,35 +565,35 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new MovementInputUpdateEvent(player, movementInput));
     }
 
-    public static boolean onScreenMouseClickedPre(Screen guiScreen, double mouseX, double mouseY, int button) {
-        var event = new ScreenEvent.MouseButtonPressed.Pre(guiScreen, mouseX, mouseY, button);
+    public static boolean onScreenMouseClickedPre(Screen guiScreen, MouseButtonEvent mouseEvent, boolean doubleClick) {
+        var event = new ScreenEvent.MouseButtonPressed.Pre(guiScreen, mouseEvent, doubleClick);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenMouseClickedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled) {
-        var event = new ScreenEvent.MouseButtonPressed.Post(guiScreen, mouseX, mouseY, button, handled);
+    public static boolean onScreenMouseClickedPost(Screen guiScreen, MouseButtonEvent mouseEvent, boolean doubleClick, boolean handled) {
+        var event = new ScreenEvent.MouseButtonPressed.Post(guiScreen, mouseEvent, doubleClick, handled);
         NeoForge.EVENT_BUS.post(event);
         return event.getClickResult();
     }
 
-    public static boolean onScreenMouseReleasedPre(Screen guiScreen, double mouseX, double mouseY, int button) {
-        var event = new ScreenEvent.MouseButtonReleased.Pre(guiScreen, mouseX, mouseY, button);
+    public static boolean onScreenMouseReleasedPre(Screen guiScreen, MouseButtonEvent mouseEvent) {
+        var event = new ScreenEvent.MouseButtonReleased.Pre(guiScreen, mouseEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenMouseReleasedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled) {
-        var event = new ScreenEvent.MouseButtonReleased.Post(guiScreen, mouseX, mouseY, button, handled);
+    public static boolean onScreenMouseReleasedPost(Screen guiScreen, MouseButtonEvent mouseEvent, boolean handled) {
+        var event = new ScreenEvent.MouseButtonReleased.Post(guiScreen, mouseEvent, handled);
         NeoForge.EVENT_BUS.post(event);
         return event.getReleaseResult();
     }
 
-    public static boolean onScreenMouseDragPre(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-        var event = new ScreenEvent.MouseDragged.Pre(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
+    public static boolean onScreenMouseDragPre(Screen guiScreen, MouseButtonEvent mouseEvent, double dragX, double dragY) {
+        var event = new ScreenEvent.MouseDragged.Pre(guiScreen, mouseEvent, dragX, dragY);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onScreenMouseDragPost(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-        Event event = new ScreenEvent.MouseDragged.Post(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
+    public static void onScreenMouseDragPost(Screen guiScreen, MouseButtonEvent mouseEvent, double dragX, double dragY) {
+        Event event = new ScreenEvent.MouseDragged.Post(guiScreen, mouseEvent, dragX, dragY);
         NeoForge.EVENT_BUS.post(event);
     }
 
@@ -602,42 +613,42 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onScreenKeyPressedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers) {
-        var event = new ScreenEvent.KeyPressed.Pre(guiScreen, keyCode, scanCode, modifiers);
+    public static boolean onScreenKeyPressedPre(Screen guiScreen, KeyEvent keyEvent) {
+        var event = new ScreenEvent.KeyPressed.Pre(guiScreen, keyEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenKeyPressedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers) {
-        var event = new ScreenEvent.KeyPressed.Post(guiScreen, keyCode, scanCode, modifiers);
+    public static boolean onScreenKeyPressedPost(Screen guiScreen, KeyEvent keyEvent) {
+        var event = new ScreenEvent.KeyPressed.Post(guiScreen, keyEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenKeyReleasedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers) {
-        var event = new ScreenEvent.KeyReleased.Pre(guiScreen, keyCode, scanCode, modifiers);
+    public static boolean onScreenKeyReleasedPre(Screen guiScreen, KeyEvent keyEvent) {
+        var event = new ScreenEvent.KeyReleased.Pre(guiScreen, keyEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenKeyReleasedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers) {
-        var event = new ScreenEvent.KeyReleased.Post(guiScreen, keyCode, scanCode, modifiers);
+    public static boolean onScreenKeyReleasedPost(Screen guiScreen, KeyEvent keyEvent) {
+        var event = new ScreenEvent.KeyReleased.Post(guiScreen, keyEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onScreenCharTypedPre(Screen guiScreen, char codePoint, int modifiers) {
-        var event = new ScreenEvent.CharacterTyped.Pre(guiScreen, codePoint, modifiers);
+    public static boolean onScreenCharTypedPre(Screen guiScreen, CharacterEvent charEvent) {
+        var event = new ScreenEvent.CharacterTyped.Pre(guiScreen, charEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onScreenCharTypedPost(Screen guiScreen, char codePoint, int modifiers) {
-        Event event = new ScreenEvent.CharacterTyped.Post(guiScreen, codePoint, modifiers);
+    public static void onScreenCharTypedPost(Screen guiScreen, CharacterEvent charEvent) {
+        Event event = new ScreenEvent.CharacterTyped.Post(guiScreen, charEvent);
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onMouseButtonPre(int button, int action, int mods) {
-        return NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(button, action, mods)).isCanceled();
+    public static boolean onMouseButtonPre(MouseButtonInfo mouseButtonInfo, int action) {
+        return NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(mouseButtonInfo, action)).isCanceled();
     }
 
-    public static void onMouseButtonPost(int button, int action, int mods) {
-        NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(button, action, mods));
+    public static void onMouseButtonPost(MouseButtonInfo mouseButtonInfo, int action) {
+        NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(mouseButtonInfo, action));
     }
 
     public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY) {
@@ -645,8 +656,8 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onKeyInput(int key, int scanCode, int action, int modifiers) {
-        NeoForge.EVENT_BUS.post(new InputEvent.Key(key, scanCode, action, modifiers));
+    public static void onKeyInput(KeyEvent keyEvent, int action) {
+        NeoForge.EVENT_BUS.post(new InputEvent.Key(keyEvent, action));
     }
 
     public static InputEvent.InteractionKeyMappingTriggered onClickInput(int button, KeyMapping keyBinding, InteractionHand hand) {
@@ -695,12 +706,15 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.Clone(pc, oldPlayer, newPlayer, networkManager));
     }
 
-    public static void onRegisterParticleProviders(ParticleEngine particleEngine) {
-        ModLoader.postEvent(new RegisterParticleProvidersEvent(particleEngine));
+    public static void onRegisterParticleProviders(ParticleResources particleResources) {
+        ModLoader.postEvent(new RegisterParticleProvidersEvent(particleResources));
     }
 
-    public static void onRegisterKeyMappings(Options options) {
-        ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
+    @ApiStatus.Internal
+    public static void onRegisterKeyMappings(Options options, List<KeyMapping.Category> categories) {
+        RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options);
+        ModLoader.postEvent(event);
+        event.sortAndStoreCategories(categories);
     }
 
     @Nullable
@@ -820,22 +834,6 @@ public class ClientHooks {
         return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
     }
 
-    public static Comparator<ParticleRenderType> makeParticleRenderTypeComparator(List<ParticleRenderType> renderOrder) {
-        Comparator<ParticleRenderType> vanillaComparator = Comparator.comparingInt(renderOrder::indexOf);
-        return (typeOne, typeTwo) -> {
-            boolean vanillaOne = renderOrder.contains(typeOne);
-            boolean vanillaTwo = renderOrder.contains(typeTwo);
-
-            if (vanillaOne && vanillaTwo) {
-                return vanillaComparator.compare(typeOne, typeTwo);
-            }
-            if (!vanillaOne && !vanillaTwo) {
-                return Integer.compare(System.identityHashCode(typeOne), System.identityHashCode(typeTwo));
-            }
-            return vanillaOne ? -1 : 1;
-        };
-    }
-
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {
         final ScreenEvent.RenderInventoryMobEffects event = new ScreenEvent.RenderInventoryMobEffects(screen, availableSpace, compact, horizontalOffset);
         NeoForge.EVENT_BUS.post(event);
@@ -862,13 +860,6 @@ public class ClientHooks {
         return Math.min(
                 Mth.log2(Math.max(1, width)),
                 Mth.log2(Math.max(1, height)));
-    }
-
-    @ApiStatus.Internal
-    @SuppressWarnings("unchecked")
-    public static <T extends BlockEntity> boolean isBlockEntityRendererVisible(BlockEntityRenderDispatcher dispatcher, BlockEntity blockEntity, Frustum frustum) {
-        BlockEntityRenderer<T> renderer = (BlockEntityRenderer<T>) dispatcher.getRenderer(blockEntity);
-        return renderer != null && frustum.isVisible(renderer.getRenderBoundingBox((T) blockEntity));
     }
 
     /**
@@ -967,10 +958,9 @@ public class ClientHooks {
         resourceManager.updateListenersFrom(rlEvent);
 
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType, SkullBlockRenderer.SKIN_BY_TYPE));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
-        ModLoader.postEvent(new RegisterSpriteDefaultMetadataSectionTypesEvent(DEFAULT_METADATA_SECTION_TYPES));
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
@@ -1081,10 +1071,11 @@ public class ClientHooks {
         Minecraft.getInstance().levelRenderer.allChanged();
     }
 
-    public static Map<ResourceLocation, ResourceLocation> gatherMaterialAtlases(Map<ResourceLocation, ResourceLocation> vanillaAtlases) {
-        vanillaAtlases = new HashMap<>(vanillaAtlases);
-        ModLoader.postEvent(new RegisterMaterialAtlasesEvent(vanillaAtlases));
-        return Map.copyOf(vanillaAtlases);
+    public static List<AtlasManager.AtlasConfig> gatherTextureAtlases(List<AtlasManager.AtlasConfig> vanillaAtlases) {
+        SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlasMap = new LinkedHashMap<>(vanillaAtlases.size());
+        vanillaAtlases.forEach(atlas -> atlasMap.put(atlas.definitionLocation(), atlas));
+        ModLoader.postEvent(new RegisterTextureAtlasesEvent(atlasMap));
+        return List.copyOf(atlasMap.values());
     }
 
     @ApiStatus.Internal
@@ -1127,5 +1118,20 @@ public class ClientHooks {
         vanillaRenderers = new ArrayList<>(vanillaRenderers);
         ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers));
         return List.copyOf(vanillaRenderers);
+    }
+
+    public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
+        final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
+        boolean enableValidation;
+        try {
+            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getAsBoolean();
+        } catch (NullPointerException | IllegalStateException e) {
+            // We're in an early error state, config is not available. Assume environment default.
+            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getDefault();
+        }
+        if (enableValidation) {
+            return new ValidationGpuDevice(glDevice, true);
+        }
+        return glDevice;
     }
 }

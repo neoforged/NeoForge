@@ -13,16 +13,16 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
 public class KeyMappingLookup {
-    private static final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = new EnumMap<>(KeyModifier.class);
-    static {
+    private final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = Util.make(new EnumMap<>(KeyModifier.class), map -> {
         for (KeyModifier modifier : KeyModifier.values()) {
             map.put(modifier, Maps.newConcurrentMap());
         }
-    }
+    });
 
     /**
      * Returns all active keys associated with the given key code and the active
@@ -63,7 +63,7 @@ public class KeyMappingLookup {
 
                     // Loop through all modifier codes
                     for (var otherModifierCode : otherModifier.codes()) {
-                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), otherModifierCode.getValue())) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), otherModifierCode.getValue())) {
                             matchingBindings.addAll(findKeybinds(otherModifierCode, modifier));
                         }
                     }

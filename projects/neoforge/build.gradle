@@ -1,8 +1,9 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
-import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
+import net.neoforged.neodev.ProvideCompatibilityCheckJar
+import net.neoforged.neodev.DownloadFile
 
 plugins {
     id 'java-library'
@@ -51,12 +52,15 @@ final checkVersion = JCCPlugin.providePreviousVersion(
         project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
         project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
-final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
-    // Use the same jar that the patches were generated against
-    cleanJar.set(tasks.generateClientBinPatches.cleanJar)
-    maven.set('https://maven.neoforged.net/releases')
-    artifact.set('net.neoforged:neoforge')
-    version.set(checkVersion)
+def downloadPreviousVersionInstaller = tasks.register('downloadPreviousVersionInstaller', DownloadFile) {
+    url = checkVersion.map { "https://maven.neoforged.net/releases/net/neoforged/neoforge/${it}/neoforge-${it}-installer.jar".toString() }
+    destination = layout.buildDirectory.file("createCompatibilityCheckJar/installer.jar")
+}
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideCompatibilityCheckJar) {
+    installer.from(downloadPreviousVersionInstaller)
+    installationDir = layout.buildDirectory.dir("createCompatibilityCheckJar")
+    output = layout.buildDirectory.file("createCompatibilityCheckJar/merged.jar")
+    version = checkVersion
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(java_version)
     }
@@ -100,10 +104,10 @@ dependencies {
         }
         endorseStrictVersions()
     }
+    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}")
 
-    moduleLibraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
-        moduleLibraries(asmModule) {
+        libraries(asmModule) {
             // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
             // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
             version {
@@ -111,9 +115,6 @@ dependencies {
             }
         }
     }
-    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
-
     libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
@@ -190,7 +191,7 @@ neoDev {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
-            sourceSet = sourceSets.main
+            sourceSet = sourceSets.client
             loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
@@ -283,7 +284,7 @@ generateAccessTransformers {
     )
 }
 
-tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
     group generateAccessTransformers.group
     description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
     input = generateAccessTransformers.input
@@ -303,6 +304,26 @@ tasks.withType(Javadoc.class).configureEach {
     ]
     options.addStringOption('Xdoclint:all,-missing', '-public')
 }
+
+// Generates the neoforge.mods.toml so it contains a fully realized version number
+final generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    group = 'build'
+    from(rootProject.file('src/main/neoforge.mods.toml')) {
+        rename '(.*)', 'META-INF/$1'
+    }
+    into 'build/generated/modMetadata'
+
+    // Exposed project properties
+    Map<String, String> projectProperties = [
+            'version',
+    ].collectEntries { [it, project[it]] }
+
+    // Ensure the resources get re-evaluate when the version changes
+    inputs.properties projectProperties
+    expand projectProperties
+}
+sourceSets.main.resources.srcDir generateModMetadata
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateModMetadata)
 
 AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
 // Ensure the two default variants are not published, since they
@@ -391,7 +412,7 @@ configurations {
     modDevApiElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, userdevCompileOnly, neoFormDependencies
+        extendsFrom libraries, userdevCompileOnly, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -405,7 +426,7 @@ configurations {
     modDevRuntimeElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, neoFormDependencies
+        extendsFrom libraries, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -416,10 +437,10 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    // Deprecated, but we'll keep it empty for backwards compatibility
     modDevModulePath {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom moduleLibraries
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))

@@ -11,9 +11,13 @@
          SectionCompiler.Results sectioncompiler$results = new SectionCompiler.Results();
          BlockPos blockpos = p_350790_.origin();
          BlockPos blockpos1 = blockpos.offset(15, 15, 15);
-@@ -51,6 +_,7 @@
+@@ -49,8 +_,10 @@
+         PoseStack posestack = new PoseStack();
+         ModelBlockRenderer.enableCaching();
          Map<ChunkSectionLayer, BufferBuilder> map = new EnumMap<>(ChunkSectionLayer.class);
-         RandomSource randomsource = RandomSource.create();
+-        RandomSource randomsource = RandomSource.create();
++        // Neo: use a SingleThreadedRandomSource to avoid overhead of atomics
++        RandomSource randomsource = new net.minecraft.world.level.levelgen.SingleThreadedRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed());
          List<BlockModelPart> list = new ObjectArrayList<>();
 +        java.util.function.Function<ChunkSectionLayer, com.mojang.blaze3d.vertex.VertexConsumer> bufferLookup = renderType -> this.getOrBeginLayer(map, p_350612_, renderType);
  

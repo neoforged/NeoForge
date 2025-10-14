@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -32,8 +32,8 @@ public final class SelfTest {
     public static void initCommon() {
         var serverSelfTestDestination = System.getenv("NEOFORGE_DEDICATED_SERVER_SELFTEST");
         if (serverSelfTestDestination != null) {
-            if (FMLLoader.getDist() != Dist.DEDICATED_SERVER) {
-                LOGGER.error("The server self-test ran with a dist of {} instead of dedicated server!", FMLLoader.getDist());
+            if (FMLEnvironment.getDist() != Dist.DEDICATED_SERVER) {
+                LOGGER.error("The server self-test ran with a dist of {} instead of dedicated server!", FMLEnvironment.getDist());
                 System.exit(1);
             }
             NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre e) -> {

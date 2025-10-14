@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.MapDecorationTextureManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import org.joml.Matrix4f;
 
 @ForEachTest(side = Dist.CLIENT, groups = MapDecorationRenderTests.GROUP)
 public class MapDecorationRenderTests {
@@ -115,9 +113,9 @@ public class MapDecorationRenderTests {
         public boolean render(
                 MapRenderState.MapDecorationRenderState decoration,
                 PoseStack poseStack,
-                MultiBufferSource bufferSource,
+                SubmitNodeCollector submitNodeCollector,
                 MapRenderState mapRenderState,
-                MapDecorationTextureManager decorationTextures,
+                TextureAtlas decorationSprites,
                 boolean inItemFrame,
                 int packedLight,
                 int index) {
@@ -126,7 +124,6 @@ public class MapDecorationRenderTests {
             poseStack.mulPose(Axis.ZP.rotationDegrees((float) (decoration.rot * 360) / 16.0F));
             poseStack.scale(4.0F, 4.0F, 3.0F);
             poseStack.translate(-0.125F, 0.125F, 0.0F);
-            Matrix4f pose = poseStack.last().pose();
 
             TextureAtlasSprite sprite = decoration.atlasSprite;
             float u0 = sprite.getU0();
@@ -140,11 +137,13 @@ public class MapDecorationRenderTests {
                 color = decoration.getRenderDataOrThrow(customColorKey);
             }
 
-            VertexConsumer buffer = bufferSource.getBuffer(RenderType.text(sprite.atlasLocation()));
-            buffer.addVertex(pose, -1.0F, 1.0F, index * -0.001F).setColor(color).setUv(u0, v0).setLight(packedLight);
-            buffer.addVertex(pose, 1.0F, 1.0F, index * -0.001F).setColor(color).setUv(u1, v0).setLight(packedLight);
-            buffer.addVertex(pose, 1.0F, -1.0F, index * -0.001F).setColor(color).setUv(u1, v1).setLight(packedLight);
-            buffer.addVertex(pose, -1.0F, -1.0F, index * -0.001F).setColor(color).setUv(u0, v1).setLight(packedLight);
+            final int finalColor = color;
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderType.text(sprite.atlasLocation()), (pose, consumer) -> {
+                consumer.addVertex(pose, -1.0F, 1.0F, index * -0.001F).setColor(finalColor).setUv(u0, v0).setLight(packedLight);
+                consumer.addVertex(pose, 1.0F, 1.0F, index * -0.001F).setColor(finalColor).setUv(u1, v0).setLight(packedLight);
+                consumer.addVertex(pose, 1.0F, -1.0F, index * -0.001F).setColor(finalColor).setUv(u1, v1).setLight(packedLight);
+                consumer.addVertex(pose, -1.0F, -1.0F, index * -0.001F).setColor(finalColor).setUv(u0, v1).setLight(packedLight);
+            });
 
             poseStack.popPose();
 

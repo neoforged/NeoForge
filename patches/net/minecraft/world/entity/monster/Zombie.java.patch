@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -260,6 +_,7 @@
+@@ -259,6 +_,7 @@
      }
  
      protected void doUnderWaterConversion() {
@@ -8,7 +8,7 @@
          this.convertToZombieType(EntityType.DROWNED);
          if (!this.isSilent()) {
              this.level().levelEvent(null, 1040, this.blockPosition(), 0);
-@@ -270,7 +_,10 @@
+@@ -269,7 +_,10 @@
          this.convertTo(
              p_34311_,
              ConversionParams.single(this, true, true),
@@ -20,7 +20,7 @@
          );
      }
  
-@@ -290,6 +_,7 @@
+@@ -289,6 +_,7 @@
                  p_370686_.setGossips(p_371444_.getGossips().copy());
                  p_370686_.setTradeOffers(p_371444_.getOffers().copy());
                  p_370686_.setVillagerXp(p_371444_.getVillagerXp());
@@ -28,12 +28,27 @@
                  if (!this.isSilent()) {
                      p_371466_.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -443,7 +_,7 @@
+@@ -442,7 +_,7 @@
      @Override
-     public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
-         boolean flag = super.killedEntity(p_219160_, p_219161_);
+     public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_, DamageSource p_432761_) {
+         boolean flag = super.killedEntity(p_219160_, p_219161_, p_432761_);
 -        if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager) {
 +        if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(p_219161_, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
              if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                  return flag;
              }
+@@ -564,10 +_,14 @@
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 0.25 + 0.5, AttributeModifier.Operation.ADD_VALUE)
+                 );
++            var damageTaken = getMaxHealth() - getHealth();
+             this.getAttribute(Attributes.MAX_HEALTH)
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+                 );
++            // Neo: fix MC-219981 by resetting the leader zombie's health based on the new max health
++            // without disregarding damage already taken (if any)
++            setHealth(getMaxHealth() - damageTaken);
+             this.setCanBreakDoors(true);
+         }
+     }

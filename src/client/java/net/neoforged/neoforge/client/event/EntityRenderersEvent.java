@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -16,17 +17,20 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -106,7 +110,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param blockEntityType             the block entity type to register a renderer for
          * @param blockEntityRendererProvider the renderer provider
          */
-        public <T extends BlockEntity> void registerBlockEntityRenderer(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
+        public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+                BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T, S> blockEntityRendererProvider) {
             BlockEntityRenderers.register(blockEntityType, blockEntityRendererProvider);
         }
     }
@@ -122,13 +127,19 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class AddLayers extends EntityRenderersEvent {
         private final Map<EntityType<?>, EntityRenderer<?, ?>> renderers;
-        private final Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> skinMap;
+        private final Map<PlayerModelType, AvatarRenderer<AbstractClientPlayer>> playerRenderers;
+        private final Map<PlayerModelType, AvatarRenderer<ClientMannequin>> mannequinRenderers;
         private final EntityRendererProvider.Context context;
 
         @ApiStatus.Internal
-        public AddLayers(Map<EntityType<?>, EntityRenderer<?, ?>> renderers, Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> playerRenderers, EntityRendererProvider.Context context) {
+        public AddLayers(
+                Map<EntityType<?>, EntityRenderer<?, ?>> renderers,
+                Map<PlayerModelType, AvatarRenderer<AbstractClientPlayer>> playerRenderers,
+                Map<PlayerModelType, AvatarRenderer<ClientMannequin>> mannequinRenderers,
+                EntityRendererProvider.Context context) {
             this.renderers = renderers;
-            this.skinMap = playerRenderers;
+            this.playerRenderers = playerRenderers;
+            this.mannequinRenderers = mannequinRenderers;
             this.context = context;
         }
 
@@ -139,22 +150,36 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * {@linkplain ModelLayers#PLAYER regular player model} and {@code slim} for the
          * {@linkplain ModelLayers#PLAYER_SLIM slim player model}.
          */
-        public Set<PlayerSkin.Model> getSkins() {
-            return skinMap.keySet();
+        public Set<PlayerModelType> getSkins() {
+            return playerRenderers.keySet();
         }
 
         /**
          * Returns a player skin renderer for the given skin name.
          *
          * @param skinModel the skin model to get the renderer for
-         * @param <R>       the type of the skin renderer, usually {@link PlayerRenderer}
+         * @param <R>       the type of the skin renderer, usually {@link AvatarRenderer}
          * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
          * @see #getSkins()
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <R extends EntityRenderer<? extends Player, ?>> R getSkin(PlayerSkin.Model skinModel) {
-            return (R) skinMap.get(skinModel);
+        public <R extends AvatarRenderer<AbstractClientPlayer>> R getPlayerRenderer(PlayerModelType skinModel) {
+            return (R) playerRenderers.get(skinModel);
+        }
+
+        /**
+         * Returns a player skin renderer for the given skin name.
+         *
+         * @param skinModel the skin model to get the renderer for
+         * @param <R>       the type of the skin renderer, usually {@link AvatarRenderer}
+         * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
+         * @see #getSkins()
+         */
+        @Nullable
+        @SuppressWarnings("unchecked")
+        public <R extends AvatarRenderer<ClientMannequin>> R getMannequinRenderer(PlayerModelType skinModel) {
+            return (R) mannequinRenderers.get(skinModel);
         }
 
         /**
@@ -204,51 +229,60 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class CreateSkullModels extends EntityRenderersEvent {
         private final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels;
+        private final Map<SkullBlock.Type, ResourceLocation> skullTextures;
 
         @ApiStatus.Internal
-        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels) {
+        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels, Map<SkullBlock.Type, ResourceLocation> skullTextures) {
             this.skullModels = skullModels;
+            this.skullTextures = skullTextures;
         }
 
         /**
-         * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}.
+         * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
-        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation) {
-            this.registerSkullModel(type, layerLocation, SkullModel::new);
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, @Nullable ResourceLocation skullTexture) {
+            this.registerSkullModel(type, layerLocation, SkullModel::new, skullTexture);
         }
 
         /**
-         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
          * @param type          a unique skull type; an exception will be thrown if multiple mods register models
          *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
+         * @param skullTexture  the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
-        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory) {
-            this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)));
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
+            this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)), skullTexture);
         }
 
         /**
-         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}, and optionally registers a skull texture to the {@link SkullBlockRenderer#SKIN_BY_TYPE} map.
          *
-         * @param type    a unique skull type; an exception will be thrown if multiple mods register models for
-         *                the same type or a mod tries to register a model for a vanilla type
-         * @param factory the factory to create the skull model instance. A typical implementation will simply bake
-         *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
-         *                constructor for {@link SkullModel}
+         * @param type         a unique skull type; an exception will be thrown if multiple mods register models for
+         *                     the same type or a mod tries to register a model for a vanilla type
+         * @param factory      the factory to create the skull model instance. A typical implementation will simply bake
+         *                     a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
+         *                     constructor for {@link SkullModel}
+         * @param skullTexture the skull texture to put in the {@link SkullBlockRenderer#SKIN_BY_TYPE} map, if provided.
          */
-        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory) {
+        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory, @Nullable ResourceLocation skullTexture) {
             if (type instanceof SkullBlock.Types) {
                 throw new IllegalArgumentException("Cannot register skull model for vanilla skull type: " + type.getSerializedName());
             }
             if (skullModels.putIfAbsent(type, factory) != null) {
                 throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
+            }
+            if (skullTexture == null) return;
+            if (skullTextures.putIfAbsent(type, skullTexture) != null) {
+                throw new IllegalArgumentException("Texture already registered for provided skull type: " + type.getSerializedName());
             }
         }
     }

@@ -80,7 +80,6 @@ import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -122,14 +121,8 @@ public class FakePlayer extends ServerPlayer {
     public void openHorseInventory(AbstractHorse horse, Container container) {}
 
     @Override
-    public boolean startRiding(Entity entity, boolean force) {
+    public boolean startRiding(Entity p_277395_, boolean p_278062_, boolean p_434333_) {
         return false;
-    }
-
-    @Override
-    @Nullable
-    public MinecraftServer getServer() {
-        return ServerLifecycleHooks.getCurrentServer();
     }
 
     @Override

@@ -123,7 +123,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), props) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(props.spawnEgg(testEntity.get())) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);

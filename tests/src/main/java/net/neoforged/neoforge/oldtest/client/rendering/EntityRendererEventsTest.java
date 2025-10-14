@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.client.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,7 +15,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -138,9 +137,8 @@ public class EntityRendererEventsTest {
             }
 
             @Override
-            public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightness, LivingEntityRenderState renderState, float netHeadYaw, float headPitch) {
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(this.getParentModel().renderType(MyEntityRenderer.TEXTURE));
-                model.renderToBuffer(poseStack, vertexConsumer, lightness, OverlayTexture.NO_OVERLAY, color);
+            public void submit(PoseStack poseStack, SubmitNodeCollector nodeCollector, int lightness, LivingEntityRenderState renderState, float netHeadYaw, float headPitch) {
+                nodeCollector.submitModel(model, renderState, poseStack, this.getParentModel().renderType(MyEntityRenderer.TEXTURE), lightness, OverlayTexture.NO_OVERLAY, color, null);
             }
         }
     }

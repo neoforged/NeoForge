@@ -12,12 +12,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.ComponentEnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -48,8 +49,8 @@ public class ItemEnergyTests {
         COMPONENTS.register(framework.modEventBus());
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
-            e.registerItem(EnergyStorage.ITEM, (stack, ctx) -> {
-                return new ComponentEnergyStorage(stack, ENERGY_COMPONENT.get(), MAX_CAPACITY);
+            e.registerItem(Capabilities.Energy.ITEM, (stack, itemAccess) -> {
+                return new ItemAccessEnergyHandler(itemAccess, ENERGY_COMPONENT.get(), MAX_CAPACITY);
             }, BATTERY);
         });
     }
@@ -60,7 +61,9 @@ public class ItemEnergyTests {
     public static void testItemEnergy(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BATTERY.toStack();
-            IEnergyStorage energy = stack.getCapability(EnergyStorage.ITEM);
+            ItemAccess itemAccess = ItemAccess.forStack(stack);
+            // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessEnergyHandler matches the old ComponentEnergyStorage.
+            IEnergyStorage energy = IEnergyStorage.of(itemAccess.getCapability(Capabilities.Energy.ITEM));
             helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 
             helper.assertValueEqual(energy.extractEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Extracted energy should be equal to the target value.");

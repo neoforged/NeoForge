@@ -31,7 +31,7 @@
          int i = p_316118_.getValue(LEVEL);
 -        if (i < 8 && COMPOSTABLES.containsKey(p_316332_.getItem())) {
 +        if (i < 8 && getValue(p_316332_) > 0) {
-             if (i < 7 && !p_316624_.isClientSide) {
+             if (i < 7 && !p_316624_.isClientSide()) {
                  BlockState blockstate = addItem(p_316715_, p_316118_, p_316624_, p_316660_, p_316332_);
                  p_316624_.levelEvent(1500, p_316660_, p_316118_ != blockstate ? 1 : 0);
 @@ -276,7 +_,7 @@

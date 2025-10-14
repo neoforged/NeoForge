@@ -7,11 +7,15 @@ package net.neoforged.neoforge.fluids.capability.templates;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.VoidingResourceHandler;
 
 /**
  * VoidFluidHandler is a template fluid handler that can be filled indefinitely without ever getting full.
  * It does not store fluid that gets filled into it, but "destroys" it upon receiving it.
+ *
+ * @deprecated Use {@link VoidingResourceHandler} instead.
  */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class VoidFluidHandler implements IFluidHandler {
     public static final VoidFluidHandler INSTANCE = new VoidFluidHandler();
 

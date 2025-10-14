@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class RenderHandEvent extends Event implements ICancellableEvent {
     private final InteractionHand hand;
     private final PoseStack poseStack;
-    private final MultiBufferSource multiBufferSource;
+    private final SubmitNodeCollector submitNodeCollector;
     private final int packedLight;
     private final float partialTick;
     private final float interpolatedPitch;
@@ -39,12 +39,12 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     private final ItemStack stack;
 
     @ApiStatus.Internal
-    public RenderHandEvent(InteractionHand hand, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight,
+    public RenderHandEvent(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
             float partialTick, float interpolatedPitch,
             float swingProgress, float equipProgress, ItemStack stack) {
         this.hand = hand;
         this.poseStack = poseStack;
-        this.multiBufferSource = multiBufferSource;
+        this.submitNodeCollector = submitNodeCollector;
         this.packedLight = packedLight;
         this.partialTick = partialTick;
         this.interpolatedPitch = interpolatedPitch;
@@ -68,10 +68,10 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * {@return the source of rendering buffers}
+     * {@return the submit node collector}
      */
-    public MultiBufferSource getMultiBufferSource() {
-        return multiBufferSource;
+    public SubmitNodeCollector getSubmitNodeCollector() {
+        return submitNodeCollector;
     }
 
     /**

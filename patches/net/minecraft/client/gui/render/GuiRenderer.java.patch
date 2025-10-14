@@ -1,23 +1,26 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -105,7 +_,8 @@
-     private final CachedOrthoProjectionMatrixBuffer guiProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("gui", 1000.0F, 11000.0F, true);
-     private final CachedOrthoProjectionMatrixBuffer itemsProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("items", -1000.0F, 1000.0F, true);
+@@ -109,7 +_,8 @@
      private final MultiBufferSource.BufferSource bufferSource;
+     private final SubmitNodeCollector submitNodeCollector;
+     private final FeatureRenderDispatcher featureRenderDispatcher;
 -    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
 +    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
 +    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
      @Nullable
      private GpuTexture itemsAtlas;
      @Nullable
-@@ -127,16 +_,10 @@
-     @Nullable
-     private BufferBuilder bufferBuilder = null;
- 
--    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<PictureInPictureRenderer<?>> p_415849_) {
-+    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories) {
+@@ -136,19 +_,13 @@
+         MultiBufferSource.BufferSource p_415673_,
+         SubmitNodeCollector p_440036_,
+         FeatureRenderDispatcher p_439972_,
+-        List<PictureInPictureRenderer<?>> p_415849_
++        List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories
+     ) {
          this.renderState = p_416418_;
          this.bufferSource = p_415673_;
+         this.submitNodeCollector = p_440036_;
+         this.featureRenderDispatcher = p_439972_;
 -        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();
 -
 -        for (PictureInPictureRenderer<?> pictureinpicturerenderer : p_415849_) {
@@ -29,15 +32,15 @@
      }
  
      public void incrementFrameNumber() {
-@@ -156,6 +_,7 @@
+@@ -168,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
 +        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::clearUnusedRenderers);
-     }
- 
-     private void clearUnusedOversizedItemRenderers() {
-@@ -413,14 +_,31 @@
+         if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
+             RenderPipeline.updateSortKeySeed();
+             TextureSetup.updateSortKeySeed();
+@@ -429,14 +_,31 @@
  
      private void preparePictureInPicture() {
          int i = Minecraft.getInstance().getWindow().getGuiScale();
@@ -72,7 +75,7 @@
      }
  
      private void renderItemToAtlas(TrackingItemStackRenderState p_428843_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
-@@ -691,7 +_,7 @@
+@@ -710,7 +_,7 @@
              this.itemsAtlasDepthView.close();
          }
  

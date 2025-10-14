@@ -6,13 +6,13 @@
      public void thunderHit(ServerLevel p_29473_, LightningBolt p_29474_) {
 -        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL) {
 +        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
-             ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), p_427079_ -> {
+             ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), p_432544_ -> {
                  if (this.getMainHandItem().isEmpty()) {
-                     p_427079_.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+                     p_432544_.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
                  }
  
-                 p_427079_.setPersistenceRequired();
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_427079_);
+                 p_432544_.setPersistenceRequired();
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_432544_);
              });
              if (zombifiedpiglin == null) {
                  super.thunderHit(p_29473_, p_29474_);

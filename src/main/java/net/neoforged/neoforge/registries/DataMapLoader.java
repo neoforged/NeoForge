@@ -56,8 +56,8 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, Executor backgroundExecutor, Executor gameExecutor) {
-        return this.load(resourceManager, backgroundExecutor, Profiler.get())
+    public CompletableFuture<Void> reload(SharedState sharedState, Executor backgroundExecutor, PreparationBarrier preparationBarrier, Executor gameExecutor) {
+        return this.load(sharedState.resourceManager(), backgroundExecutor, Profiler.get())
                 .thenCompose(preparationBarrier::wait)
                 .thenAcceptAsync(values -> this.results = values, gameExecutor);
     }

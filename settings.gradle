@@ -25,7 +25,7 @@ dependencyResolutionManagement {
     }
 }
 
-if (rootProject.name.toLowerCase() == "neoforge") {
+if (rootProject.name.toLowerCase(Locale.ROOT) == "neoforge") {
     // Solve name clashes between projects/neoforge and the rootProject for Eclipse.
     rootProject.name = "NeoForge-Root"
 }

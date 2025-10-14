@@ -13,7 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
  */
 public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
-    private static final boolean IN_DEV = !FMLLoader.isProduction();
+    private static final boolean IN_DEV = !FMLEnvironment.isProduction();
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private void validateAttachmentType(AttachmentType<?> type) {
@@ -77,6 +77,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         if (ret == null) {
             ret = type.defaultValueSupplier.apply(getExposedHolder());
             attachments.put(type, ret);
+            syncData(type);
         }
         return ret;
     }
@@ -96,7 +97,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public <T> @Nullable T setData(AttachmentType<T> type, T data) {
         validateAttachmentType(type);
         Objects.requireNonNull(data);
-        return (T) getAttachmentMap().put(type, data);
+        var previousData = (T) getAttachmentMap().put(type, data);
+        syncData(type);
+        return previousData;
     }
 
     @Override
@@ -106,7 +109,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         if (attachments == null) {
             return null;
         }
-        return (T) attachments.remove(type);
+        var previousData = (T) attachments.remove(type);
+        syncData(type);
+        return previousData;
     }
 
     /**
@@ -133,6 +138,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     /**
      * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(ValueOutput)}.
+     *
+     * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the deserialized attachments.
      */
     protected final void deserializeAttachments(ValueInput input) {
         for (var key : input.keySet()) {
@@ -176,6 +183,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
         public void deserializeInternal(HolderLookup.Provider provider, ValueInput tag) {
             deserializeAttachments(tag);
+        }
+
+        @Override
+        public void syncData(AttachmentType<?> type) {
+            exposedHolder.syncData(type);
         }
     }
 }

@@ -1,0 +1,13 @@
+--- a/com/mojang/blaze3d/buffers/GpuBuffer.java
++++ b/com/mojang/blaze3d/buffers/GpuBuffer.java
+@@ -17,6 +_,10 @@
+     public static final int USAGE_INDEX = 64;
+     public static final int USAGE_UNIFORM = 128;
+     public static final int USAGE_UNIFORM_TEXEL_BUFFER = 256;
++    /**
++     * Neo: These bits are reserved for alternate backend specific uses
++     */
++    public static final int RESERVED_USAGE_BITS = 0xFF << 24;
+     private final int usage;
+     private final int size;
+ 

@@ -49,6 +49,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
@@ -61,7 +63,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen.ConfigurationSectionScreen.Filter;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -76,6 +78,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * A generic configuration UI.<p>
@@ -158,7 +161,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         public void finish() {
-            if (NeoForgeClientConfig.INSTANCE.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
+            if (NeoForgeClientConfig.INSTANCE.logUntranslatedConfigurationWarnings.get() && !FMLEnvironment.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("""
                         \n	Dev warning - Untranslated configuration keys encountered. Please translate your configuration keys so users can properly configure your mod.
@@ -277,7 +280,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 if (modConfig.getModId().equals(mod.getModId())) {
                     if (!headerAdded) {
                         list.addSmall(new StringWidget(BIG_BUTTON_WIDTH, Button.DEFAULT_HEIGHT,
-                                Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft(), null);
+                                Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font), null);
                         headerAdded = true;
                     }
                     btn = Button.builder(Component.translatable(SECTION, translatableConfig(modConfig, "", LANG_PREFIX + "type." + modConfig.getType().name().toLowerCase(Locale.ROOT))),
@@ -305,7 +308,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
         if (count == 1) {
             autoClose = true;
-            btn.onPress();
+            btn.onPress(new MouseButtonEvent(btn.getX() + btn.getWidth() / 2., btn.getY() + btn.getHeight() / 2., new MouseButtonInfo(GLFW.GLFW_MOUSE_BUTTON_LEFT, 0)));
         }
     }
 
@@ -593,7 +596,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         protected ConfigurationSectionScreen rebuild() {
             if (list != null) { // this may be called early, skip and wait for init() then
-                list.children().clear();
+                list.clearEntries();
                 boolean hasUndoableElements = false;
 
                 final List<@Nullable Element> elements = new ArrayList<>();
@@ -634,7 +637,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         if (element.name() == null) {
                             list.addSmall(new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.empty(), font), element.getWidget(options));
                         } else {
-                            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
+                            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font);
                             label.setTooltip(Tooltip.create(element.tooltip));
                             list.addSmall(label, element.getWidget(options));
                         }
@@ -678,7 +681,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
             if (source.get().length() > 192) {
                 // That's just too much for the UI
-                final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(source.get().substring(0, 128)), font).alignLeft();
+                final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(source.get().substring(0, 128)), font);
                 label.setTooltip(Tooltip.create(LONG_STRING));
                 return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
             }
@@ -732,7 +735,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         @Nullable
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
-            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.getRaw())), font).alignLeft();
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.getRaw())), font);
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
@@ -1049,7 +1052,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @Override
         protected ConfigurationSectionScreen rebuild() {
             if (list != null) { // this may be called early, skip and wait for init() then
-                list.children().clear();
+                list.clearEntries();
 
                 for (int idx = 0; idx < cfgList.size(); idx++) {
                     var entry = cfgList.get(idx);
@@ -1147,7 +1150,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         @Nullable
         protected Element createOtherValue(final int idx, final T entry) {
-            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(entry)), font).alignLeft();
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(entry)), font);
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
@@ -1264,7 +1267,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             protected final Button upButton = Button.builder(MOVE_LIST_ELEMENT_UP, this::up).build();
             protected final Button downButton = Button.builder(MOVE_LIST_ELEMENT_DOWN, this::down).build();
             protected final Button delButton = Button.builder(REMOVE_LIST_ELEMENT, this::rem).build();
-            protected final StringWidget label = new StringWidget(0, 0, 0, 0, Component.empty(), font).alignLeft();
+            protected final StringWidget label = new StringWidget(0, 0, 0, 0, Component.empty(), font);
             protected final int idx;
             protected final boolean isFirst;
             protected final boolean isLast;
