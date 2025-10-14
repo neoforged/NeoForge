@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.item.BlockModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
@@ -26,7 +25,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
@@ -38,6 +37,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+/**
+ * A dynamic model that applies an armor trim texture on top of an existing model when the trim component exists.
+ * <p>
+ * NOTE: If multiple mods add a trim material with the same path, only the one that gets loaded last will have its proper colors. <br>
+ * Example: if mod A and mod B register a "tin" trim material, and mod B loads after A, mod B's material will be the one used. <br>
+ * <b>Mod A's ingot will still work just fine as a trim material, it will just look like whatever mod B defined for theirs!</b> <br>
+ * All this means is that if another mod is registering the same material(s) as you and uses this system, your trim colors <i>may</i> not look exactly how you want them to.
+ */
 public class TrimmedArmorModel implements ItemModel {
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
@@ -58,8 +65,8 @@ public class TrimmedArmorModel implements ItemModel {
     }
 
     @Override
-    public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-        this.base.update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+    public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+        this.base.update(renderState, stack, itemModelResolver, displayContext, level, owner, seed);
 
         if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
             Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
@@ -68,7 +75,7 @@ public class TrimmedArmorModel implements ItemModel {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
 
-                this.trimLayers.computeIfAbsent(this.trimTexture.withSuffix("_" + suffix), this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+                this.trimLayers.computeIfAbsent(this.trimTexture.withSuffix("_" + suffix), this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, owner, seed);
             }
         }
     }
@@ -80,7 +87,7 @@ public class TrimmedArmorModel implements ItemModel {
         var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, sprite);
         var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> sprite, TRIM_STATE);
 
-        return new BlockModelWrapper(List.of(), quads, renderProperties, Sheets.translucentItemSheet());
+        return new BlockModelWrapper(List.of(), quads, renderProperties);
     }
 
     public record Unbaked(BlockModelWrapper.Unbaked baseModel, ResourceLocation trimTexture) implements ItemModel.Unbaked {
