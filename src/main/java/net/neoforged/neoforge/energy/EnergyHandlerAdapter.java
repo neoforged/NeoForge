@@ -18,7 +18,7 @@ class EnergyHandlerAdapter implements IEnergyStorage {
 
     @Override
     public int receiveEnergy(int toReceive, boolean simulate) {
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int inserted = handler.insert(toReceive, tx);
             if (!simulate) tx.commit();
             return inserted;
@@ -27,7 +27,7 @@ class EnergyHandlerAdapter implements IEnergyStorage {
 
     @Override
     public int extractEnergy(int toExtract, boolean simulate) {
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int extracted = handler.extract(toExtract, tx);
             if (!simulate) tx.commit();
             return extracted;

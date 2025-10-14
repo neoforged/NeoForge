@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -76,7 +75,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
@@ -836,22 +834,6 @@ public class ClientHooks {
             return Stream.of(component.getVisualOrderText()).map(ClientTooltipComponent::create);
         }
         return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
-    }
-
-    public static Comparator<ParticleRenderType> makeParticleRenderTypeComparator(List<ParticleRenderType> renderOrder) {
-        Comparator<ParticleRenderType> vanillaComparator = Comparator.comparingInt(renderOrder::indexOf);
-        return (typeOne, typeTwo) -> {
-            boolean vanillaOne = renderOrder.contains(typeOne);
-            boolean vanillaTwo = renderOrder.contains(typeTwo);
-
-            if (vanillaOne && vanillaTwo) {
-                return vanillaComparator.compare(typeOne, typeTwo);
-            }
-            if (!vanillaOne && !vanillaTwo) {
-                return Integer.compare(System.identityHashCode(typeOne), System.identityHashCode(typeTwo));
-            }
-            return vanillaOne ? -1 : 1;
-        };
     }
 
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {

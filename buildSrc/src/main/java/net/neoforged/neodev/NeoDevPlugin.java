@@ -201,13 +201,9 @@ public class NeoDevPlugin implements Plugin<Project> {
                 extension.getRuns(),
                 writeUserDevConfig,
                 modulePath -> {},
-                legacyClassPath -> {
-                    legacyClassPath.getDependencies().addLater(mcAndNeoFormVersion.map(v -> dependencyFactory.create("net.neoforged:neoform:" + v).capabilities(caps -> {
-                        caps.requireCapability("net.neoforged:neoform-dependencies");
-                    })));
-                    legacyClassPath.extendsFrom(configurations.libraries, configurations.userdevCompileOnly);
-                },
-                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
+                legacyClasspath -> {},
+                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
+                mcAndNeoFormVersion
         );
         // TODO: Gradle run tasks should be moved to gradle group GROUP
 

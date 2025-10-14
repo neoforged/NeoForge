@@ -26,7 +26,7 @@ public class EmptyResourceHandlerTest {
     @Test
     void testThrowsOnExtract() {
         emptyHandlerThrow(() -> {
-            try (var transaction = Transaction.open(null)) {
+            try (var transaction = Transaction.openRoot()) {
                 handler.extract(0, TestResource.SOME, 1, transaction);
             }
         });
@@ -35,7 +35,7 @@ public class EmptyResourceHandlerTest {
     @Test
     void testThrowsOnInsert() {
         emptyHandlerThrow(() -> {
-            try (var transaction = Transaction.open(null)) {
+            try (var transaction = Transaction.openRoot()) {
                 handler.insert(0, TestResource.SOME, 1, transaction);
             }
         });
@@ -73,7 +73,7 @@ public class EmptyResourceHandlerTest {
 
     @Test
     void testExtractWithoutIndexIsANoop() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             int inserted = handler.insert(TestResource.SOME, 100, transaction);
             Assertions.assertThat(0).isEqualTo(inserted);
         }
@@ -81,7 +81,7 @@ public class EmptyResourceHandlerTest {
 
     @Test
     void testInsertWithoutIndexIsANoop() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             int extracted = handler.extract(TestResource.SOME, 100, transaction);
             Assertions.assertThat(0).isEqualTo(extracted);
         }
