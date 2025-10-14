@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
-import net.minecraft.client.resources.model.AtlasIds;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.data.SpriteSourceProvider;
