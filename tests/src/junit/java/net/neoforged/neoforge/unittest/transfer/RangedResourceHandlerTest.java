@@ -92,7 +92,7 @@ public class RangedResourceHandlerTest {
     public void testInsertAtIndex() {
         var ranged = RangedResourceHandler.of(mockHandler, 2, 5);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var inserted = ranged.insert(1, TestResource.SOME, 50, transaction);
             assertEquals(50, inserted, "Should insert 50 units");
             assertEquals(50, mockHandler.getAmountAsLong(3), "Should be inserted at delegate index 3");
@@ -105,7 +105,7 @@ public class RangedResourceHandlerTest {
         mockHandler.setCapacity(50);
         var ranged = RangedResourceHandler.of(mockHandler, 2, 4);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var inserted = ranged.insert(TestResource.SOME, 101, transaction);
             assertEquals(100, inserted, "Should only be able to fill two slots, which are limited to 50.");
 
@@ -120,7 +120,7 @@ public class RangedResourceHandlerTest {
         mockHandler.setCapacity(50);
         var ranged = RangedResourceHandler.of(mockHandler, 2, 4);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var inserted = ranged.insert(TestResource.SOME, 50, transaction);
             assertEquals(50, inserted);
 
@@ -135,7 +135,7 @@ public class RangedResourceHandlerTest {
         mockHandler.set(3, TestResource.SOME, 100L);
         var ranged = RangedResourceHandler.of(mockHandler, 2, 5);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var extracted = ranged.extract(1, TestResource.SOME, 50, transaction);
             assertEquals(50, extracted, "Should extract 50 units");
             assertEquals(50, mockHandler.getAmountAsLong(3), "Should have 50 units left at delegate index 3");
@@ -149,7 +149,7 @@ public class RangedResourceHandlerTest {
         mockHandler.set(2, TestResource.SOME, 100);
         var ranged = RangedResourceHandler.ofSingleIndex(mockHandler, 1);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var extracted = ranged.extract(TestResource.SOME, 180, transaction);
             assertEquals(1, extracted, "Should extract 1 unit total");
             assertEquals(0, mockHandler.getAmountAsLong(1));
@@ -161,7 +161,7 @@ public class RangedResourceHandlerTest {
         mockHandler.set(1, TestResource.SOME, 2);
         var ranged = RangedResourceHandler.ofSingleIndex(mockHandler, 1);
 
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             var extracted = ranged.extract(TestResource.SOME, 1, transaction);
             assertEquals(1, extracted, "Should extract 1 unit total");
             assertEquals(1, mockHandler.getAmountAsLong(1));

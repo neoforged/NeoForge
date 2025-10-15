@@ -82,10 +82,6 @@ class NeoDevConfigurations {
      */
     final Configuration userdevClasspath;
     /**
-     * Resolvable {@link #userdevCompileOnly}, to add these entries to the ignore list of BootstrapLauncher.
-     */
-    final Configuration userdevCompileOnlyClasspath;
-    /**
      * Resolvable {@link #userdevTestFixtures}, to write it in the userdev jar.
      */
     final Configuration userdevTestClasspath;
@@ -142,7 +138,6 @@ class NeoDevConfigurations {
         neoFormMappingsFiles = resolvable(configurations, "neoFormMappingsFiles");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
-        userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
         launcherProfileClasspath = resolvable(configurations, "launcherProfileClasspath");
         minecraftClientClasspath = resolvable(configurations, "minecraftClientClasspath");
@@ -163,9 +158,6 @@ class NeoDevConfigurations {
 
         userdevClasspath.extendsFrom(libraries, userdevCompileOnly);
         userdevClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        userdevCompileOnlyClasspath.extendsFrom(userdevCompileOnly);
-        userdevCompileOnlyClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         userdevTestClasspath.extendsFrom(userdevTestFixtures);
         userdevTestClasspath.shouldResolveConsistentlyWith(runtimeClasspath);

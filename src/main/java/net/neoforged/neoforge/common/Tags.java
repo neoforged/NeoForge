@@ -641,6 +641,7 @@ public class Tags {
         public static final TagKey<Item> NUGGETS = tag("nuggets");
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
+        public static final TagKey<Item> NUGGETS_COPPER = tag("nuggets/copper");
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
         /**
          * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.

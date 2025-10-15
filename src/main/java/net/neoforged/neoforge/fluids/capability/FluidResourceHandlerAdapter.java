@@ -45,7 +45,7 @@ class FluidResourceHandlerAdapter implements IFluidHandler {
         if (resource.isEmpty()) {
             return 0;
         }
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int inserted = handler.insert(FluidResource.of(resource), resource.getAmount(), tx);
             if (action.execute()) {
                 tx.commit();
@@ -59,7 +59,7 @@ class FluidResourceHandlerAdapter implements IFluidHandler {
         if (resource.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             int extracted = handler.extract(FluidResource.of(resource), resource.getAmount(), tx);
             if (action.execute()) {
                 tx.commit();
@@ -73,7 +73,7 @@ class FluidResourceHandlerAdapter implements IFluidHandler {
         if (maxDrain <= 0) {
             return FluidStack.EMPTY;
         }
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             var extracted = ResourceHandlerUtil.extractFirst(handler, fr -> true, maxDrain, tx);
             if (action.execute()) {
                 tx.commit();

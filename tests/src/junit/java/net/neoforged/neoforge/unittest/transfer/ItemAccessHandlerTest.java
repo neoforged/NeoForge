@@ -34,7 +34,7 @@ class ItemAccessHandlerTest {
         ResourceHandler<FluidResource> slot1Handler = new BucketResourceHandler(new StackingItemAccess(testContainer, 1).oneByOne());
         ResourceHandler<FluidResource> slot2Handler = new BucketResourceHandler(new StackingItemAccess(testContainer, 2).oneByOne());
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             // Test extract.
             if (slot2Handler.extract(water, FluidType.BUCKET_VOLUME, transaction) != FluidType.BUCKET_VOLUME) throw new AssertionError("Should have extracted from full bucket.");
             // Test that an empty bucket was added.

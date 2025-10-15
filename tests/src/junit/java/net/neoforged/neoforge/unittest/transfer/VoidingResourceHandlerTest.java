@@ -44,21 +44,21 @@ public class VoidingResourceHandlerTest {
 
     @Test
     public void testInsertOperation() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             assertEquals(Integer.MAX_VALUE, handler.insert(0, TestResource.SOME, Integer.MAX_VALUE, transaction));
         }
     }
 
     @Test
     public void testInsertWithoutIndexOperation() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             assertEquals(Integer.MAX_VALUE, handler.insert(TestResource.SOME, Integer.MAX_VALUE, transaction));
         }
     }
 
     @Test
     public void testExtractOperation() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             assertEquals(0, handler.extract(0, TestResource.SOME, Integer.MAX_VALUE, transaction));
             assertEquals(0, handler.extract(TestResource.SOME, Integer.MAX_VALUE, transaction));
         }
@@ -66,7 +66,7 @@ public class VoidingResourceHandlerTest {
 
     @Test
     public void testExtractWithoutIndexOperation() {
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             assertEquals(0, handler.extract(TestResource.SOME, Integer.MAX_VALUE, transaction));
         }
     }

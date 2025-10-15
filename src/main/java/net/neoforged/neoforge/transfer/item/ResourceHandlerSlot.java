@@ -70,7 +70,7 @@ public class ResourceHandlerSlot extends StackCopySlot {
         if (resource.isEmpty()) {
             return false;
         }
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             // Simulated extraction
             return handler.extract(index, resource, 1, tx) == 1;
         }

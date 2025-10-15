@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 public class TransactionTests {
     @Test
     void testHierarchy() {
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             Assertions.assertEquals(0, transaction.depth());
 
             try (Transaction subTransaction = Transaction.open(transaction)) {
@@ -27,16 +27,16 @@ public class TransactionTests {
 
     @Test
     void testSimultaneousRootValidation() {
-        try (Transaction root1 = Transaction.open(null)) {
+        try (Transaction root1 = Transaction.openRoot()) {
             Assertions.assertThrows(IllegalStateException.class, () -> {
-                try (Transaction root2 = Transaction.open(null)) {
+                try (Transaction root2 = Transaction.openRoot()) {
                     throw new AssertionError("Two root transactions on the same thread were opened and permitted.");
                 }
             }, "Two root transactions should not be openable simultaneously");
 
         }
         Assertions.assertDoesNotThrow(() -> {
-            try (Transaction root2 = Transaction.open(null)) {
+            try (Transaction root2 = Transaction.openRoot()) {
 
             }
         }, "The sub transaction should be able to be opened as a root since `root1` should be closed.");
@@ -46,7 +46,7 @@ public class TransactionTests {
     void testSimultaneousParentValidation() {
         // Ensures that 2 transactions cannot share the same parent at the same time, but reusing a parent is fine
         // just as long as the transactions are fully completed before doing so.
-        try (Transaction root = Transaction.open(null)) {
+        try (Transaction root = Transaction.openRoot()) {
             try (Transaction sub1 = Transaction.open(root)) {
                 Assertions.assertThrows(IllegalStateException.class, () -> {
                     try (Transaction sub2 = Transaction.open(root)) {
@@ -69,7 +69,7 @@ public class TransactionTests {
         final Container container = new Container();
         IntSnapshotJournal journal = IntSnapshotJournal.of(container::set, container::get);
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             Assertions.assertEquals(0, transaction.depth());
             try (Transaction subTransaction = Transaction.open(transaction)) {
                 journal.updateSnapshots(subTransaction);
@@ -80,7 +80,7 @@ public class TransactionTests {
 
         Assertions.assertEquals(0, container.value);
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             Assertions.assertEquals(0, transaction.depth());
             try (Transaction subTransaction = Transaction.open(transaction)) {
                 journal.updateSnapshots(subTransaction);
@@ -104,7 +104,7 @@ public class TransactionTests {
         Assertions.assertNull(Transaction.getCurrentOpenedTransaction());
         Assertions.assertFalse(Transaction.hasActiveTransaction());
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             Assertions.assertEquals(transaction, Transaction.getCurrentOpenedTransaction());
 
             try (Transaction subTransaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
@@ -199,7 +199,7 @@ public class TransactionTests {
         }
 
         var journal = new VoidJournal();
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             journal.updateSnapshots(tx);
             assertThat(journal.createdSnapshots).isEqualTo(1);
             // Second update is a no-op because the snapshot already exists

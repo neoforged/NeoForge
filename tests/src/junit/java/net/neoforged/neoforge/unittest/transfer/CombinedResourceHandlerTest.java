@@ -113,7 +113,7 @@ public class CombinedResourceHandlerTest {
                     i,
                     new HandlerTestUtil.SlotInfo<>(resource, capacity, capacity));
 
-            try (var tx = Transaction.open(null)) {
+            try (var tx = Transaction.openRoot()) {
                 int inserted = combinedHandler.insert(i, resource, (int) remainingCapacity, tx);
                 assertEquals(remainingCapacity, inserted);
                 assertThat(describeSlots(combinedHandler)).containsExactlyElementsOf(expectedContent);
@@ -131,7 +131,7 @@ public class CombinedResourceHandlerTest {
             handler.setAllValid(underlyingSlot.index);
         }
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             int inserted = combinedHandler.insert(TestResource.SOME, Integer.MAX_VALUE, transaction);
             assertEquals(combinedHandler.size(), inserted);
 
@@ -152,7 +152,7 @@ public class CombinedResourceHandlerTest {
             var expectedContent = new ArrayList<>(EXPECTED_CONTENT);
             expectedContent.set(i, null);
 
-            try (Transaction transaction = Transaction.open(null)) {
+            try (Transaction transaction = Transaction.openRoot()) {
                 int extracted = combinedHandler.extract(i, expectedResource, Integer.MAX_VALUE, transaction);
                 assertEquals(expectedAmount, extracted);
                 assertThat(describeSlots(combinedHandler)).containsExactlyElementsOf(expectedContent);
@@ -168,7 +168,7 @@ public class CombinedResourceHandlerTest {
             handler.set(underlyingSlot.index, TestResource.SOME, 1);
         }
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             int extracted = combinedHandler.extract(TestResource.SOME, Integer.MAX_VALUE, transaction);
             assertEquals(4, extracted);
 
@@ -181,7 +181,7 @@ public class CombinedResourceHandlerTest {
         firstHandler.set(1, TestResource.SOME, 30);
         secondHandler.set(0, TestResource.SOME, 20);
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             int extracted = combinedHandler.extract(TestResource.SOME, 100, transaction);
             assertEquals(50, extracted);
             assertEquals(0, firstHandler.getAmountAsLong(1));
@@ -214,13 +214,13 @@ public class CombinedResourceHandlerTest {
         });
 
         assertThrows(IndexOutOfBoundsException.class, () -> {
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 combinedHandler.insert(combinedHandler.size(), TestResource.SOME, 1, tx);
             }
         });
 
         assertThrows(IndexOutOfBoundsException.class, () -> {
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 combinedHandler.extract(combinedHandler.size(), TestResource.SOME, 1, tx);
             }
         });

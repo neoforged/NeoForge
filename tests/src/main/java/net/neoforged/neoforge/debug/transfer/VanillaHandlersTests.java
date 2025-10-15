@@ -72,7 +72,7 @@ public class VanillaHandlersTests {
         var hopper = VanillaContainerWrapper.of(hopperEntity);
 
         // Insertion into empty hopper -> cooldown
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.insert(RESOURCE, 10, transaction);
             transaction.commit();
         }
@@ -80,7 +80,7 @@ public class VanillaHandlersTests {
         hopperEntity.setCooldown(0);
 
         // Second insertion into hopper -> no cooldown because the hopper is not empty
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.insert(RESOURCE, 10, transaction);
             transaction.commit();
         }
@@ -90,14 +90,14 @@ public class VanillaHandlersTests {
         hopperEntity.setItem(4, RESOURCE.toStack());
 
         // Insertion into non-empty (with an item at a different index) hopper -> no cooldown
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.insert(RESOURCE, 10, transaction);
             transaction.commit();
         }
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         // Extraction -> no cooldown
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.extract(RESOURCE, 15, transaction);
             transaction.commit();
         }
@@ -105,13 +105,13 @@ public class VanillaHandlersTests {
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         // Simulated insertion into empty hopper -> no cooldown
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.insert(RESOURCE, 10, transaction);
         }
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         // Insertion into empty hopper + extract in the same transaction -> cooldown
-        try (var transaction = Transaction.open(null)) {
+        try (var transaction = Transaction.openRoot()) {
             hopper.insert(RESOURCE, 10, transaction);
             helper.assertContainerContains(pos, RESOURCE.getItem());
             hopper.extract(RESOURCE, 10, transaction);
@@ -144,7 +144,7 @@ public class VanillaHandlersTests {
         helper.runAtTickTime(5, () -> {
             helper.assertTrue(cookingTimerAccessor.getAsInt() > 0, "Furnace should have started cooking.");
 
-            try (Transaction transaction = Transaction.open(null)) {
+            try (Transaction transaction = Transaction.openRoot()) {
                 if (furnaceWrapper.extract(rawIron, 64, transaction) != 64) {
                     throw helper.assertionException("Failed to extract 64 raw iron.");
                 }
@@ -152,7 +152,7 @@ public class VanillaHandlersTests {
 
             helper.assertTrue(cookingTimerAccessor.getAsInt() > 0, "Furnace should still cook after simulation.");
 
-            try (Transaction transaction = Transaction.open(null)) {
+            try (Transaction transaction = Transaction.openRoot()) {
                 if (furnaceWrapper.extract(rawIron, 64, transaction) != 64) {
                     throw helper.assertionException("Failed to extract 64 raw iron.");
                 }
@@ -192,7 +192,7 @@ public class VanillaHandlersTests {
         // comparator
         helper.setBlock(comparatorPos, Blocks.COMPARATOR.defaultBlockState().setValue(ComparatorBlock.FACING, comparatorFacing));
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             if (level.getBlockTicks().hasScheduledTick(absoluteComparatorPos, Blocks.COMPARATOR)) {
                 throw helper.assertionException("Comparator should not have a tick scheduled.");
             }
@@ -241,7 +241,7 @@ public class VanillaHandlersTests {
         var resourceHandler = VanillaContainerWrapper.of(bookshelf);
 
         // First, check that we can correctly undo insert operations, because vanilla's setItem doesn't permit it without our patches.
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             if (resourceHandler.insert(book, 2, transaction) != 2) throw helper.assertionException("Should have inserted 2 books");
 
             if (bookshelf.getItem(0).getCount() != 1) throw helper.assertionException("Bookshelf stack 0 should have size 1");
@@ -254,7 +254,7 @@ public class VanillaHandlersTests {
         if (!bookshelf.getItem(1).isEmpty()) throw helper.assertionException("Bookshelf stack 1 should be empty again after aborting transaction");
 
         // Second, check that we correctly update the last modified slot.
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             if (resourceHandler.insert(1, book, 1, tx) != 1) throw helper.assertionException("Should have inserted 1 book");
             if (bookshelf.getLastInteractedSlot() != 1) throw helper.assertionException("Last modified slot should be 1");
 
@@ -302,7 +302,7 @@ public class VanillaHandlersTests {
         for (var side : ArrayUtils.add(Direction.values(), null)) {
             var resourceHandler = new WorldlyContainerWrapper(shulker, side);
 
-            try (var tx = Transaction.open(null)) {
+            try (var tx = Transaction.openRoot()) {
                 if (resourceHandler.insert(ItemResource.of(Items.SHULKER_BOX), 1, tx) > 0) {
                     helper.fail("Expected shulker box to be rejected from side: " + side, pos);
                 }
@@ -326,7 +326,7 @@ public class VanillaHandlersTests {
         FurnaceBlockEntity furnace = helper.getBlockEntity(pos, FurnaceBlockEntity.class);
         var furnaceWrapper = VanillaContainerWrapper.of(furnace);
 
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             if (furnaceWrapper.insert(1, ItemResource.of(Items.BUCKET), 2, tx) != 1) {
                 throw helper.assertionException("Exactly 1 bucket should have been inserted");
             }
@@ -349,7 +349,7 @@ public class VanillaHandlersTests {
 
         var glassBottle = ItemResource.of(Items.GLASS_BOTTLE);
 
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             for (int bottleSlot = 0; bottleSlot < 3; ++bottleSlot) {
                 if (brewingStandWrapper.insert(bottleSlot, glassBottle, 2, tx) != 1) {
                     throw helper.assertionException("Exactly 1 glass bottle should have been inserted");
@@ -361,7 +361,7 @@ public class VanillaHandlersTests {
             }
         }
 
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             // Insertion of glass bottles should put exactly 1 bottle in each bottle slot
             if (brewingStandWrapper.insert(glassBottle, 10, tx) != 3) {
                 throw helper.assertionException("Exactly 3 glass bottles should have been inserted");
@@ -389,7 +389,7 @@ public class VanillaHandlersTests {
         ResourceHandler<ItemResource> handler = EmptyResourceHandler.instance(); // helper.requireCapability(Capabilities.ItemHandler.BLOCK, chestPos, Direction.UP);
 
         // Insert one item
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             helper.assertTrue(handler.insert(ItemResource.of(Items.DIAMOND), 1, tx) == 1, "Diamond should have been inserted");
             tx.commit();
         }
@@ -442,7 +442,7 @@ public class VanillaHandlersTests {
             helper.setBlock(pos, Blocks.COMPOSTER.defaultBlockState());
             var wrapper = ComposterWrapper.get(helper.getLevel(), helper.absolutePos(pos), Direction.UP);
 
-            try (Transaction tx = Transaction.open(null)) {
+            try (Transaction tx = Transaction.openRoot()) {
                 if (wrapper.insert(carrot, 1, tx) != 1) {
                     helper.fail("Carrot should have been inserted", pos);
                 }
@@ -467,7 +467,7 @@ public class VanillaHandlersTests {
         helper.setBlock(pos, Blocks.JUKEBOX.defaultBlockState());
         var resourceHandler = VanillaContainerWrapper.of(helper.getBlockEntity(pos, JukeboxBlockEntity.class));
 
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             resourceHandler.insert(ItemResource.of(Items.MUSIC_DISC_11), 1, tx);
             helper.assertBlockState(pos, state -> !state.getValue(JukeboxBlock.HAS_RECORD), b -> Component.literal("Jukebox should not have its state changed mid-transaction"));
             tx.commit();
@@ -501,7 +501,7 @@ public class VanillaHandlersTests {
 
             // Wait 1 tick such that the entity will start emitting (un)equip events
             helper.runAtTickTime(1, () -> {
-                try (var tx = Transaction.open(null)) {
+                try (var tx = Transaction.openRoot()) {
                     // Check that non-armor items can't be inserted
                     if (wrapper.insert(ItemResource.of(Items.DIAMOND_PICKAXE), 1, tx) != 0) {
                         helper.fail("Should have rejected diamond pickaxe as horse armor");
@@ -520,7 +520,7 @@ public class VanillaHandlersTests {
                     helper.assertValueEqual(0, unequipEvents.getPlain(), "unequip event count");
                 }
 
-                try (var tx = Transaction.open(null)) {
+                try (var tx = Transaction.openRoot()) {
                     if (wrapper.extract(ItemResource.of(Items.DIAMOND_HORSE_ARMOR), 1, tx) != 1) {
                         helper.fail("Should have extracted 1 diamond horse armor");
                     }
@@ -551,7 +551,7 @@ public class VanillaHandlersTests {
         curseOfBinding.set(helper.getHolder(Enchantments.BINDING_CURSE), 1);
         var cursedDiamondChestplate = diamondChestplate.with(DataComponents.ENCHANTMENTS, curseOfBinding.toImmutable());
 
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             if (chestWrapper.insert(ItemResource.of(Items.DIAMOND_PICKAXE), 1, tx) != 0) {
                 helper.fail("Should have rejected diamond pickaxe as player armor");
             }
@@ -573,7 +573,7 @@ public class VanillaHandlersTests {
         var survivalPlayer = helper.makeMockPlayer(GameType.SURVIVAL);
         var survivalChestWrapper = PlayerInventoryWrapper.of(survivalPlayer).getArmorSlot(EquipmentSlot.CHEST);
 
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.openRoot()) {
             if (survivalChestWrapper.insert(cursedDiamondChestplate, 1, tx) != 1) {
                 helper.fail("Should have inserted 1 cursed diamond chestplate");
             }

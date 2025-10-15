@@ -8,7 +8,7 @@
                      block.playerWillDestroy(level, p_105268_, blockstate, this.minecraft.player);
                      FluidState fluidstate = level.getFluidState(p_105268_);
 -                    boolean flag = level.setBlock(p_105268_, fluidstate.createLegacyBlock(), 11);
-+                    boolean flag = blockstate.onDestroyedByPlayer(level, p_105268_, minecraft.player, false, fluidstate);
++                    boolean flag = blockstate.onDestroyedByPlayer(level, p_105268_, minecraft.player, minecraft.player.getMainHandItem().copy(), false, fluidstate);
                      if (flag) {
 -                        block.destroy(level, p_105268_, blockstate);
 +                        block.destroy(level, p_105268_, removedBlockState);

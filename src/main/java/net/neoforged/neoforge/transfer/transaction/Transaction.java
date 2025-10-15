@@ -71,6 +71,18 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
+     * Opens a new transaction without a parent: a root transaction.
+     *
+     * <p>For opening a transaction within an already running transaction, see {@link #open(TransactionContext)}.
+     *
+     * @throws IllegalStateException If a transaction is already active on the current thread.
+     */
+    public static Transaction openRoot() {
+        // Don't delegate to other method due to getCallerClass()
+        return TransactionManager.getManagerForThread().open(null, STACK_WALKER.getCallerClass());
+    }
+
+    /**
      * Opens a new transaction with a specified parent. The example below, we open the outermost layer or the `root`.
      *
      * <pre>
@@ -80,12 +92,14 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * }
      * }</pre>
      *
-     * @param parent the parent transaction, or null if this is the root transaction
+     * @param parent the parent transaction, or null if this is the root transaction. Passing {@code null} is equivalent
+     *               to calling {@link #openRoot()}.
      * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
      * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
     public static Transaction open(@Nullable TransactionContext parent) {
+        // Don't delegate to other method due to getCallerClass()
         return TransactionManager.getManagerForThread().open(parent, STACK_WALKER.getCallerClass());
     }
 

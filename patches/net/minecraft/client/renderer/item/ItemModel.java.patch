@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/renderer/item/ItemModel.java
++++ b/net/minecraft/client/renderer/item/ItemModel.java
+@@ -36,7 +_,22 @@
+         PlayerSkinRenderCache playerSkinRenderCache,
+         ItemModel missingItemModel,
+         @Nullable RegistryContextSwapper contextSwapper
++        , net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
+     ) implements SpecialModelRenderer.BakingContext {
++        /**
++         * @deprecated Neo: use {@link #BakingContext(ModelBaker, EntityModelSet, MaterialSet, PlayerSkinRenderCache, ItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
++         */
++        @Deprecated
++        public BakingContext(
++                ModelBaker blockModelBaker,
++                EntityModelSet entityModelSet,
++                MaterialSet materials,
++                PlayerSkinRenderCache playerSkinRenderCache,
++                ItemModel missingItemModel,
++                @Nullable RegistryContextSwapper contextSwapper
++        ) {
++            this(blockModelBaker, entityModelSet, materials, playerSkinRenderCache, missingItemModel, contextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

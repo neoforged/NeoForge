@@ -35,14 +35,14 @@ public class ItemTests {
         ItemStack stack = container.getItem(0);
 
         // Simulate should correctly reset the stack.
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             containerWrapper.extract(ItemResource.of(Items.DIAMOND), 2, tx);
         }
 
         if (stack != container.getItem(0)) throw new AssertionError("Stack should have stayed the same.");
 
         // Commit should modify the count of the original stack.
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             containerWrapper.extract(ItemResource.of(Items.DIAMOND), 1, tx);
             tx.commit();
         }
@@ -53,7 +53,7 @@ public class ItemTests {
         ItemResource oldResource = ItemResource.of(Items.DIAMOND);
         ItemResource newResource = oldResource.with(DataComponents.MAX_DAMAGE, 10);
 
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             containerWrapper.extract(oldResource, 1, tx);
             containerWrapper.insert(newResource, 5, tx);
             tx.commit();
@@ -80,7 +80,7 @@ public class ItemTests {
         for (int iter = 0; iter < 2; ++iter) {
             // First time, abort.
             // Second time, commit.
-            try (Transaction transaction = Transaction.open(null)) {
+            try (Transaction transaction = Transaction.openRoot()) {
                 // Insert bucket from down - should fail.
                 if (downWrapper.insert(emptyBucket, 1, transaction) != 0) throw new AssertionError("Bucket should not have been inserted.");
                 // Insert bucket unsided - should go in slot 1 (canPlaceItem returns false for slot 0).
@@ -110,7 +110,7 @@ public class ItemTests {
         SimpleContainer simpleContainer = new SimpleContainer(oversizedStack);
         var wrapper = VanillaContainerWrapper.of(simpleContainer);
 
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             assertEquals(0L, wrapper.insert(ItemResource.of(oversizedStack), 10, transaction));
             transaction.commit();
         }
@@ -167,7 +167,7 @@ public class ItemTests {
         var wrapper = VanillaContainerWrapper.of(container);
 
         // Should only be able to insert 2 diamonds per stack * 3 stacks = 6 diamonds.
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             if (wrapper.insert(diamond, 1000, transaction) != 6) {
                 throw new AssertionError("Only 6 diamonds should have been inserted.");
             }
@@ -186,7 +186,7 @@ public class ItemTests {
         var wrapper = VanillaContainerWrapper.of(container);
 
         // Should only be able to insert 5 pickaxes, as the item limits stack counts to 1.
-        try (Transaction transaction = Transaction.open(null)) {
+        try (Transaction transaction = Transaction.openRoot()) {
             if (wrapper.insert(diamondPickaxe, 1000, transaction) != 5) {
                 throw new AssertionError("Only 5 pickaxes should have been inserted.");
             }
@@ -232,12 +232,12 @@ public class ItemTests {
         ItemResource diamond = ItemResource.of(Items.DIAMOND);
 
         // Simulation should not trigger notifications.
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             wrapper.insert(diamond, 1000, tx);
         }
 
         // But commit after modification should.
-        try (Transaction tx = Transaction.open(null)) {
+        try (Transaction tx = Transaction.openRoot()) {
             wrapper.insert(diamond, 1000, tx);
 
             simpleContainer.throwOnSetChanges = false;
