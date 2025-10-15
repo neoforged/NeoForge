@@ -172,8 +172,8 @@ public class ModListScreen extends Screen {
         public int getContentHeight() {
             int height = 50;
             height += (lines.size() * font.lineHeight);
-            if (height < this.bottom - this.top - 8)
-                height = this.bottom - this.top - 8;
+            if (height < this.getBottom() - this.getY() - 8)
+                height = this.getBottom() - this.getY() - 8;
             return height;
         }
 
@@ -187,13 +187,13 @@ public class ModListScreen extends Screen {
             if (logoPath != null) {
                 // Draw the logo image inscribed in a rectangle with width entryWidth (minus some padding) and height 50
                 int headerHeight = 50;
-                guiGraphics.blitInscribed(logoPath, left + PADDING, relativeY, width - (PADDING * 2), headerHeight, logoDims.width, logoDims.height, false, true);
+                guiGraphics.blitInscribed(logoPath, this.x + PADDING, relativeY, width - (PADDING * 2), headerHeight, logoDims.width, logoDims.height, false, true);
                 relativeY += headerHeight + PADDING;
             }
 
             for (FormattedCharSequence line : lines) {
                 if (line != null) {
-                    guiGraphics.drawString(ModListScreen.this.font, line, left + PADDING, relativeY, 0xFFFFFFFF);
+                    guiGraphics.drawString(ModListScreen.this.font, line, this.x + PADDING, relativeY, 0xFFFFFFFF);
                 }
                 relativeY += font.lineHeight;
             }
@@ -209,7 +209,7 @@ public class ModListScreen extends Screen {
             if (!isMouseOver(mouseX, mouseY))
                 return null;
 
-            double offset = (mouseY - top - PADDING - border) + scrollDistance;
+            double offset = (mouseY - this.y - PADDING - border) + scrollDistance;
             if (logoPath != null) {
                 offset -= 50;
             }
@@ -222,7 +222,7 @@ public class ModListScreen extends Screen {
 
             FormattedCharSequence line = lines.get(lineIdx);
             if (line != null) {
-                return font.getSplitter().componentStyleAtWidth(line, mouseX - left - border - 1);
+                return font.getSplitter().componentStyleAtWidth(line, mouseX - this.x - border - 1);
             }
             return null;
         }

@@ -223,8 +223,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
         protected int getContentHeight() {
             int height = contentSize * (font.lineHeight + 3);
 
-            if (height < bottom - top - 4)
-                height = bottom - top - 4;
+            if (height < getBottom() - getY() - 4)
+                height = getBottom() - getY() - 4;
 
             return height;
         }
@@ -239,10 +239,10 @@ public class ModMismatchDisconnectedScreen extends Screen {
                 //Since font#draw does not respect the color of the given component, we have to read it out here and then use it as the last parameter
                 int color = ARGB.opaque(Optional.ofNullable(font.getSplitter().componentStyleAtWidth(name, 0)).map(Style::getColor).map(TextColor::getValue).orElse(0xFFFFFF));
                 //Only indent the given name if a version string is present. This makes it easier to distinguish table section headers and mod entries
-                int nameLeft = left + border + (reasons == null ? 0 : nameIndent);
+                int nameLeft = x + border + (reasons == null ? 0 : nameIndent);
                 guiGraphics.drawString(font, name, nameLeft, relativeY + i * 12, color, false);
                 if (reasons != null) {
-                    guiGraphics.drawString(font, reasons, left + border + nameIndent + nameWidth, relativeY + i * 12, color, false);
+                    guiGraphics.drawString(font, reasons, x + border + nameIndent + nameWidth, relativeY + i * 12, color, false);
                 }
 
                 i++;
@@ -261,11 +261,11 @@ public class ModMismatchDisconnectedScreen extends Screen {
         @Nullable
         public Style getComponentStyleAt(double x, double y) {
             if (this.isMouseOver(x, y)) {
-                double relativeY = y - this.top + this.scrollDistance - border;
+                double relativeY = y - this.y + this.scrollDistance - border;
                 int slotIndex = (int) (relativeY + (border / 2)) / 12;
                 if (slotIndex < contentSize) {
                     //The relative x needs to take the potentially missing indent of the row into account. It does that by checking if the line has a version associated to it
-                    double relativeX = x - left - border - (lineTable.get(slotIndex).getRight() == null ? 0 : nameIndent);
+                    double relativeX = x - x - border - (lineTable.get(slotIndex).getRight() == null ? 0 : nameIndent);
                     if (relativeX >= 0)
                         return font.getSplitter().componentStyleAtWidth(lineTable.get(slotIndex).getLeft(), (int) relativeX);
                 }
