@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client.gui.widget;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -46,7 +45,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client the minecraft instance this ScrollPanel should use
      * @param width  the width
      * @param height the height
-     * @param y    the offset from the top (y coord)
+     * @param y      the offset from the top (y coord)
      * @param left   the offset from the left (x coord)
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int left) {
@@ -57,8 +56,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client the minecraft instance this ScrollPanel should use
      * @param width  the width
      * @param height the height
-     * @param y    the offset from the top (y coord)
-     * @param x   the offset from the left (x coord)
+     * @param y      the offset from the top (y coord)
+     * @param x      the offset from the left (x coord)
      * @param border the size of the border
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border) {
@@ -69,8 +68,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client   the minecraft instance this ScrollPanel should use
      * @param width    the width
      * @param height   the height
-     * @param y      the offset from the top (y coord)
-     * @param x     the offset from the left (x coord)
+     * @param y        the offset from the top (y coord)
+     * @param x        the offset from the left (x coord)
      * @param border   the size of the border
      * @param barWidth the width of the scroll bar
      */
@@ -84,8 +83,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client         the minecraft instance this ScrollPanel should use
      * @param width          the width
      * @param height         the height
-     * @param y            the offset from the y (y coord)
-     * @param x           the offset from the left (x coord)
+     * @param y              the offset from the y (y coord)
+     * @param x              the offset from the left (x coord)
      * @param border         the size of the border
      * @param barWidth       the width of the scroll bar
      * @param barBgColor     the color for the scroll bar background
