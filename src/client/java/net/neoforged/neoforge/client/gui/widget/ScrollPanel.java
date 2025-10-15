@@ -7,26 +7,30 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 
 /**
  * Abstract scroll panel class.
  */
-public abstract class ScrollPanel extends AbstractContainerEventHandler implements Renderable, NarratableEntry {
+public abstract class ScrollPanel extends AbstractContainerEventHandler implements Renderable, NarratableEntry, LayoutElement {
     private final Minecraft client;
-    protected final int width;
-    protected final int height;
-    protected final int top;
-    protected final int bottom;
-    protected final int right;
-    protected final int left;
+    protected int width;
+    protected int height;
+    protected int y;
+    protected int x;
     private boolean scrolling;
     protected float scrollDistance;
     protected boolean captureMouse = true;
@@ -42,36 +46,36 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client the minecraft instance this ScrollPanel should use
      * @param width  the width
      * @param height the height
-     * @param top    the offset from the top (y coord)
+     * @param y    the offset from the top (y coord)
      * @param left   the offset from the left (x coord)
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left) {
-        this(client, width, height, top, left, 4);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int left) {
+        this(client, width, height, y, left, 4);
     }
 
     /**
      * @param client the minecraft instance this ScrollPanel should use
      * @param width  the width
      * @param height the height
-     * @param top    the offset from the top (y coord)
-     * @param left   the offset from the left (x coord)
+     * @param y    the offset from the top (y coord)
+     * @param x   the offset from the left (x coord)
      * @param border the size of the border
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border) {
-        this(client, width, height, top, left, border, 6);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border) {
+        this(client, width, height, y, x, border, 6);
     }
 
     /**
      * @param client   the minecraft instance this ScrollPanel should use
      * @param width    the width
      * @param height   the height
-     * @param top      the offset from the top (y coord)
-     * @param left     the offset from the left (x coord)
+     * @param y      the offset from the top (y coord)
+     * @param x     the offset from the left (x coord)
      * @param border   the size of the border
      * @param barWidth the width of the scroll bar
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth) {
-        this(client, width, height, top, left, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth) {
+        this(client, width, height, y, x, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
     }
 
     /**
@@ -80,23 +84,21 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param client         the minecraft instance this ScrollPanel should use
      * @param width          the width
      * @param height         the height
-     * @param top            the offset from the top (y coord)
-     * @param left           the offset from the left (x coord)
+     * @param y            the offset from the y (y coord)
+     * @param x           the offset from the left (x coord)
      * @param border         the size of the border
      * @param barWidth       the width of the scroll bar
      * @param barBgColor     the color for the scroll bar background
      * @param barColor       the color for the scroll bar handle
      * @param barBorderColor the border color for the scroll bar handle
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int barBgColor, int barColor, int barBorderColor) {
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, int barBgColor, int barColor, int barBorderColor) {
         this.client = client;
         this.width = width;
         this.height = height;
-        this.top = top;
-        this.left = left;
-        this.bottom = height + this.top;
-        this.right = width + this.left;
-        this.barLeft = this.left + this.width - barWidth;
+        this.y = y;
+        this.x = x;
+        this.barLeft = this.x + this.width - barWidth;
         this.border = border;
         this.barWidth = barWidth;
         this.barBgColor = barBgColor;
@@ -110,7 +112,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, float partialTick) {
-        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.left, this.top, 0f, 0f, this.width, this.height);
+        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.x, this.y, 0f, 0f, this.width, this.height);
     }
 
     /**
@@ -159,8 +161,13 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return mouseX >= this.left && mouseX < this.right &&
-                mouseY >= this.top && mouseY < this.bottom;
+        return mouseX >= this.x && mouseX < this.getRight() &&
+                mouseY >= this.y && mouseY < this.getBottom();
+    }
+
+    @Override
+    public ScreenRectangle getRectangle() {
+        return super.getRectangle();
     }
 
     @Override
@@ -168,13 +175,13 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         if (super.mouseClicked(event, doubleClick))
             return true;
 
-        this.scrolling = event.button() == 0 && event.x() >= barLeft && event.x() < right && event.y() >= top && event.y() < bottom;
+        this.scrolling = event.button() == 0 && event.x() >= barLeft && event.x() < getRight() && event.y() >= y && event.y() < getBottom();
         if (this.scrolling) {
             return true;
         }
-        int mouseListY = ((int) event.y()) - this.top - this.getContentHeight() + (int) this.scrollDistance - border;
-        if (event.x() >= left && event.x() < right && mouseListY < 0) {
-            return this.clickPanel(event.x() - left, event.y() - this.top + (int) this.scrollDistance - border, event);
+        int mouseListY = ((int) event.y()) - this.y - this.getContentHeight() + (int) this.scrollDistance - border;
+        if (event.x() >= x && event.x() < getRight() && mouseListY < 0) {
+            return this.clickPanel(event.x() - x, event.y() - this.y + (int) this.scrollDistance - border, event);
         }
         return false;
     }
@@ -213,23 +220,23 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.enableScissor(this.left, this.top, this.right, this.bottom);
+        guiGraphics.enableScissor(this.x, this.y, this.getRight(), this.getBottom());
 
         this.drawBackground(guiGraphics, partialTick);
 
-        int baseY = this.top + border - (int) this.scrollDistance;
-        this.drawPanel(guiGraphics, right, baseY, mouseX, mouseY);
+        int baseY = this.y + border - (int) this.scrollDistance;
+        this.drawPanel(guiGraphics, getRight(), baseY, mouseX, mouseY);
 
         int extraHeight = (this.getContentHeight() + border) - height;
         if (extraHeight > 0) {
             int barHeight = getBarHeight();
 
-            int barTop = (int) this.scrollDistance * (height - barHeight) / extraHeight + this.top;
-            if (barTop < this.top) {
-                barTop = this.top;
+            int barTop = (int) this.scrollDistance * (height - barHeight) / extraHeight + this.y;
+            if (barTop < this.y) {
+                barTop = this.y;
             }
 
-            guiGraphics.fill(this.barLeft, this.top, this.barLeft + this.barWidth, this.bottom, this.barBgColor);
+            guiGraphics.fill(this.barLeft, this.y, this.barLeft + this.barWidth, this.getBottom(), this.barBgColor);
 
             guiGraphics.fill(this.barLeft, barTop, this.barLeft + this.barWidth, barTop + barHeight, this.barColor);
 
@@ -247,4 +254,53 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     public List<? extends GuiEventListener> children() {
         return Collections.emptyList();
     }
+
+    @Override
+    public void setX(int p_265236_) {
+        this.x = p_265236_;
+    }
+
+    @Override
+    public void setY(int p_265404_) {
+        this.y = p_265404_;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    public int getBottom() {
+        return this.y + this.height;
+    }
+
+    public int getRight() {
+        return this.x + this.width;
+    }
+
+    @Override
+    public void visitWidgets(Consumer<AbstractWidget> p_265082_) {}
+
+    @Override
+    public NarrationPriority narrationPriority() {
+        return null;
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {}
 }
