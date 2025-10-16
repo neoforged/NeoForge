@@ -67,12 +67,35 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     protected void releaseSnapshot(T snapshot) {}
 
     /**
-     * Called after the root transaction succeeded,
+     * Called after the root transaction was successfully committed,
      * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
      *
-     * @param originalState state of this journal before the transactional operation.
-     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
-     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
+     * <p>When a root transaction is being closed,
+     * all journals for which {@code onRootCommit} will be called are stored in a global thread-local queue.
+     * The processing of this queue starts <strong>immediately after</strong> the root transaction is closed.
+     * As such, new root transactions can safely be opened from this method.
+     *
+     * <p>When a root transaction is opened from {@code onRootCommit},
+     * any journal might be modified, leading to more {@code onRootCommit} callbacks being enqueued:
+     * <ul>
+     * <li>A journal that is already enqueued for {@code onRootCommit} will not be enqueued a second time.
+     * It will thus be notified a single time for changes that spanned multiple transactions.
+     * The {@code originalState} will be the state at the beginning of the first of these transactions.</li>
+     * <li>A journal whose {@code onRootCommit} was already processed will be enqueued again.
+     * The journal will be notified a second time, with {@code originalState} the state at the beginning of the <strong>second</strong> transaction.</li>
+     * <li>In particular, a journal is removed from the queue immediately before {@code onRootCommit} is called.
+     * Should the journal be modified again from its own {@code onRootCommit}, it will be added to the queue,
+     * and {@code onRootCommit} will be called again later.</li>
+     * </ul>
+     *
+     * <p>Given the large amount of actions that can happen between the last modification and the call to {@code onRootCommit},
+     * journals should not depend on {@code onRootCommit} being called immediately for correctness,
+     * and implementations of this method should be careful (e.g. in case the journal got removed from the level).
+     * For example, skipping block change notifications because the block was removed from the level
+     * is preferable than crashing or silently overwriting the block.
+     *
+     * @param originalState state of this journal before the transactional operations.
+     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operations.
      */
     protected void onRootCommit(T originalState) {}
 
@@ -94,20 +117,18 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         if (snapshots.get(currentDepth) == NO_SNAPSHOT) {
             snapshots.set(currentDepth, createSnapshot());
 
-            // This is a special case where we need to cast to access the add journalToCommit method.
+            // This is a special case where we need to cast to access internal Transaction methods.
             // You should never, however, cast to call commit or close!
-            ((Transaction) transaction).addClosingJournal(this);
+            var transactionImpl = (Transaction) transaction;
+            transactionImpl.validateOpen();
+            transactionImpl.journalsToClose.add(this);
         }
     }
 
     /**
-     * Perform an action when a transaction is closed.
-     *
-     * @param transaction The closed transaction. Only {@link Transaction#depth()}, {@link Transaction#lifecycle()}, {@link Transaction#addCommittingJournal(SnapshotJournal)},
-     *                    {@link Transaction#addClosingJournal(SnapshotJournal)}, and {@link Transaction#addClosingJournalToPrevDepth(SnapshotJournal)} may be called on that transaction.
-     * @param wasAborted  {@code true} if the transaction was aborted, {@code false} if it should be committed.
+     * Perform the required state management when a transaction is closed.
      */
-    void close(Transaction transaction, boolean wasAborted) {
+    void onClose(Transaction transaction, boolean wasAborted) {
         int currentDepth = transaction.depth();
 
         // Get and remove the relevant snapshot.
@@ -119,24 +140,34 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
             releaseSnapshot(snapshot);
         } else if (currentDepth <= 0) {
             // The transaction is the root.
-            originalState = snapshot;
-            transaction.addCommittingJournal(this);
+            if (originalState == null) {
+                originalState = snapshot;
+                transaction.manager.rootCommitQueue.add(this);
+            } else {
+                // If originalState was not null, it means that an onRootCommit callback is already scheduled.
+                // This means that this journal got modified in a transaction opened from some onRootCommit callback.
+                // In this case we just wait for the already-registered callback to run.
+                releaseSnapshot(snapshot);
+            }
         } else if (snapshots.get(currentDepth - 1) == NO_SNAPSHOT) {
             // No snapshot yet, so move the snapshot one depth up.
             snapshots.set(currentDepth - 1, snapshot);
             // This is the first snapshot at this level: we need to add the closing journal to the previous depth.
-            transaction.addClosingJournalToPrevDepth(this);
+            transaction.manager.getOpenTransaction(currentDepth - 1).journalsToClose.add(this);
         } else {
             // There is already an older snapshot at the depth above, just release the newer one.
             releaseSnapshot(snapshot);
         }
     }
 
-    final void commit() {
+    void callOnRootCommit() {
         // This is only scheduled during onClose() when the root transaction is successful,
         // hence the originalState is known to correspond to the first snapshot even if nullable.
+        T originalState = this.originalState;
+        // Clear this.originalState immediately rather than later, because onRootCommit might trigger new transactions,
+        // which might write a new value to this.originalState and schedule this journal for a root commit again.
+        this.originalState = null;
         onRootCommit(originalState);
         releaseSnapshot(originalState);
-        originalState = null;
     }
 }

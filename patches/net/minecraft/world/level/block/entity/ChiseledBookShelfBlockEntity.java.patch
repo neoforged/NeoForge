@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
-@@ -88,12 +_,47 @@
+@@ -88,12 +_,50 @@
  
      @Override
      public void setItem(int p_256610_, ItemStack p_255789_) {
@@ -38,7 +38,10 @@
 +        }
 +        @Override
 +        protected void onRootCommit(Integer originalState) {
-+            updateState(lastInteractedSlot);
++            // If the block entity was removed, skip updateState to avoid the setBlock call that would overwrite the current block
++            if (!isRemoved()) {
++                updateState(lastInteractedSlot);
++            }
 +        }
 +    };
 +

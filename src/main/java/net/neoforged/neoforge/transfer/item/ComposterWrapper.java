@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * {@code ResourceHandler<ItemResource>} implementation for the composter block.
  */
 @ApiStatus.Internal
-public class ComposterWrapper extends SnapshotJournal<Float> {
+public class ComposterWrapper extends SnapshotJournal<BlockState> {
     /**
      * To make sure multiple accesses to the same composter return the same wrapper,
      * we maintain a {@code (Level, BlockPos) -> Wrapper} cache.
@@ -58,13 +59,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
     private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
 
-    // Floats to avoid boxing and unboxing when taking a snapshot or assigning.
-    private static final Float DO_NOTHING = 0f;
-    private static final Float EXTRACT_BONEMEAL = -1f;
-
     private final WrapperLocation location;
-    // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
-    private Float increaseProbability = DO_NOTHING;
+    private final TransactionalRandom transactionalRandom = new TransactionalRandom();
     private final ResourceHandler<ItemResource> topHandler = new Top();
     private final ResourceHandler<ItemResource> bottomHandler = new Bottom();
 
@@ -73,54 +69,53 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     }
 
     @Override
-    protected Float createSnapshot() {
-        return increaseProbability;
+    protected BlockState createSnapshot() {
+        return location.getBlockState();
     }
 
     @Override
-    protected void revertToSnapshot(Float snapshot) {
-        increaseProbability = snapshot;
+    protected void revertToSnapshot(BlockState snapshot) {
+        location.level.setBlock(location.pos, snapshot, 0);
     }
 
     @Override
-    protected void onRootCommit(Float originalState) {
-        // Apply pending action
-        if (increaseProbability.equals(EXTRACT_BONEMEAL)) {
-            // Mimic ComposterBlock#empty logic.
-            BlockState newState = location.getBlockState().setValue(ComposterBlock.LEVEL, ComposterBlock.MIN_LEVEL);
-            location.level.setBlockAndUpdate(location.pos, newState);
-            location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
-        } else {
-            BlockState state = location.getBlockState();
-            // Always increment on first insert (like vanilla).
-            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == ComposterBlock.MIN_LEVEL || location.level.getRandom().nextDouble() < increaseProbability;
+    protected void onRootCommit(BlockState originalState) {
+        BlockState currentState = location.getBlockState();
 
-            if (increaseSuccessful) {
-                // Mimic ComposterBlock#addItem logic.
-                int newLevel = state.getValue(ComposterBlock.LEVEL) + 1;
-                BlockState newState = state.setValue(ComposterBlock.LEVEL, newLevel);
-                location.level.setBlockAndUpdate(location.pos, newState);
-                location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
+        // Skip updating if the composter was removed
+        if (!currentState.is(Blocks.COMPOSTER)) return;
 
-                if (newLevel == ComposterBlock.MAX_LEVEL) {
-                    location.level.scheduleTick(location.pos, state.getBlock(), SharedConstants.TICKS_PER_SECOND);
-                }
-            }
-
-            location.level.levelEvent(LevelEvent.COMPOSTER_FILL, location.pos, increaseSuccessful ? 1 : 0);
+        // Note: even if originalState == currentState, we want to send the COMPOSTER_FILL level event below
+        if (originalState != currentState) {
+            // Revert back to the blockstate before any changes happened so that the next
+            // call will not short-circuit due to the blockstate not really changing.
+            location.level.setBlock(location.pos, originalState, 0);
+            // Now perform the change that will trigger notifications to other blocks/neighbors/clients.
+            location.level.setBlockAndUpdate(location.pos, currentState);
+            location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(currentState));
         }
 
-        // Reset after successful commit.
-        increaseProbability = DO_NOTHING;
-    }
+        int originalLevel = originalState.getValue(ComposterBlock.LEVEL);
+        int currentLevel = currentState.getValue(ComposterBlock.LEVEL);
 
-    private boolean hasBoneMeal() {
-        // We only have bone meal if the level is READY and no action was scheduled.
-        return increaseProbability.equals(DO_NOTHING) && location.getBlockState().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
+        if (originalLevel < ComposterBlock.MAX_LEVEL) {
+            if (currentLevel == ComposterBlock.MAX_LEVEL) {
+                location.level.scheduleTick(location.pos, currentState.getBlock(), SharedConstants.TICKS_PER_SECOND);
+            }
+            location.level.levelEvent(LevelEvent.COMPOSTER_FILL, location.pos, currentLevel > originalLevel ? 1 : 0);
+        }
     }
 
     private static float getComposterValue(ItemResource resource) {
         return ComposterBlock.getValue(resource.toStack());
+    }
+
+    /**
+     * Sets the composter's level, without sending notifications, which are deferred until {@link #onRootCommit}.
+     */
+    private void setLevel(BlockState state, int newLevel) {
+        BlockState newState = state.setValue(ComposterBlock.LEVEL, newLevel);
+        location.level.setBlock(location.pos, newState, 0);
     }
 
     private class Top implements ResourceHandler<ItemResource> {
@@ -136,17 +131,22 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
             // Check amount.
             if (amount < 1) return 0;
-            // Check that no action is scheduled.
-            if (!increaseProbability.equals(DO_NOTHING)) return 0;
             // Check that the composter can accept items.
-            if (location.getBlockState().getValue(ComposterBlock.LEVEL) >= ComposterBlock.MAX_LEVEL) return 0;
+            BlockState state = location.getBlockState();
+            int currentLevel = state.getValue(ComposterBlock.LEVEL);
+            if (currentLevel >= ComposterBlock.MAX_LEVEL) return 0;
             // Check that the item is compostable.
-            float insertedIncreaseProbability = getComposterValue(resource);
-            if (insertedIncreaseProbability <= 0) return 0;
+            float value = getComposterValue(resource);
+            if (value <= 0) return 0;
 
-            // Schedule insertion.
+            // Always update snapshots even if increaseSuccessful below is false, to send the COMPOSTER_FILL level event
             updateSnapshots(transaction);
-            increaseProbability = insertedIncreaseProbability;
+
+            // Always increment on first insert (like vanilla).
+            if (currentLevel == ComposterBlock.MIN_LEVEL || transactionalRandom.nextDouble(transaction) < value) {
+                setLevel(state, currentLevel + 1);
+            }
+
             return 1;
         }
 
@@ -204,23 +204,23 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
             // Check that the resource is bone meal.
             if (!BONE_MEAL.equals(resource)) return 0;
             // Check that there is bone meal to extract.
-            if (!hasBoneMeal()) return 0;
+            BlockState state = location.getBlockState();
+            if (state.getValue(ComposterBlock.LEVEL) != ComposterBlock.READY) return 0;
 
             updateSnapshots(transaction);
-            increaseProbability = EXTRACT_BONEMEAL;
+            setLevel(state, ComposterBlock.MIN_LEVEL);
             return 1;
         }
 
         @Override
         public ItemResource getResource(int index) {
             Objects.checkIndex(index, size());
-            return hasBoneMeal() ? BONE_MEAL : ItemResource.EMPTY;
+            return location.getBlockState().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY ? BONE_MEAL : ItemResource.EMPTY;
         }
 
         @Override
         public long getAmountAsLong(int index) {
-            Objects.checkIndex(index, size());
-            return hasBoneMeal() ? 1 : 0;
+            return getResource(index).equals(BONE_MEAL) ? 1 : 0;
         }
 
         @Override
