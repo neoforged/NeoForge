@@ -11,20 +11,17 @@ import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.layouts.LayoutElement;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Abstract scroll panel class.
  */
-public abstract class ScrollPanel extends AbstractContainerEventHandler implements Renderable, NarratableEntry, LayoutElement {
+public abstract class ScrollPanel extends AbstractWidget implements ContainerEventHandler {
     private final Minecraft client;
     protected int width;
     protected int height;
@@ -48,8 +45,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param y      the offset from the top (y coord)
      * @param left   the offset from the left (x coord)
      */
-    public ScrollPanel(Minecraft client, int width, int height, int y, int left) {
-        this(client, width, height, y, left, 4);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int left, Component component) {
+        this(client, width, height, y, left, 4, component);
     }
 
     /**
@@ -60,8 +57,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param x      the offset from the left (x coord)
      * @param border the size of the border
      */
-    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border) {
-        this(client, width, height, y, x, border, 6);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, Component component) {
+        this(client, width, height, y, x, border, 6, component);
     }
 
     /**
@@ -73,8 +70,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param border   the size of the border
      * @param barWidth the width of the scroll bar
      */
-    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth) {
-        this(client, width, height, y, x, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, Component component) {
+        this(client, width, height, y, x, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0, component);
     }
 
     /**
@@ -91,7 +88,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param barColor       the color for the scroll bar handle
      * @param barBorderColor the border color for the scroll bar handle
      */
-    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, int barBgColor, int barColor, int barBorderColor) {
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, int barBgColor, int barColor, int barBorderColor, Component component) {
+        super(x, y, width, height, component);
         this.client = client;
         this.width = width;
         this.height = height;
@@ -218,7 +216,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.enableScissor(this.x, this.y, this.getRight(), this.getBottom());
 
         this.drawBackground(guiGraphics, partialTick);
@@ -300,6 +298,34 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         return null;
     }
 
+    private GuiEventListener focused;
+    private boolean isDragging;
+
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {}
+    public final boolean isDragging() {
+        return this.isDragging;
+    }
+
+    @Override
+    public final void setDragging(boolean p_94681_) {
+        this.isDragging = p_94681_;
+    }
+
+    @Override
+    public GuiEventListener getFocused() {
+        return this.focused;
+    }
+
+    @Override
+    public void setFocused(GuiEventListener p_94677_) {
+        if (this.focused != null) {
+            this.focused.setFocused(false);
+        }
+
+        if (p_94677_ != null) {
+            p_94677_.setFocused(true);
+        }
+
+        this.focused = p_94677_;
+    }
 }

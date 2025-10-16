@@ -135,8 +135,8 @@ public class ModListScreen extends Screen {
         private Size2i logoDims = new Size2i(0, 0);
         private List<FormattedCharSequence> lines = Collections.emptyList();
 
-        InfoPanel(Minecraft mcIn, int widthIn, int heightIn, int topIn) {
-            super(mcIn, widthIn, heightIn, topIn, modList.getRight() + PADDING);
+        InfoPanel(Minecraft mcIn, int widthIn, int heightIn, int topIn, Component title) {
+            super(mcIn, widthIn, heightIn, topIn, modList.getRight() + PADDING, title);
         }
 
         void setInfo(List<String> lines, ResourceLocation logoPath, Size2i logoDims) {
@@ -243,7 +243,7 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput p_169152_) {}
+        protected void updateWidgetNarration(NarrationElementOutput p_259858_) {}
     }
 
     @Override
@@ -269,7 +269,7 @@ public class ModListScreen extends Screen {
 
         this.modList = new ModListWidget(this, listWidth, fullButtonHeight, search.getY() - getFontRenderer().lineHeight - PADDING);
         this.modList.setX(6);
-        this.modInfo = new InfoPanel(this.minecraft, modInfoWidth, this.height - PADDING - fullButtonHeight, PADDING);
+        this.modInfo = new InfoPanel(this.minecraft, modInfoWidth, this.height - PADDING - fullButtonHeight, PADDING, Component.literal("mod list scrolling panel"));
 
         this.addRenderableWidget(modList);
         this.addRenderableWidget(modInfo);

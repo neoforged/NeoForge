@@ -80,7 +80,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
         int upperButtonHeight = Math.min((this.height + this.listHeight) / 2 + 25, this.height - 50);
         int lowerButtonHeight = Math.min((this.height + this.listHeight) / 2 + 50, this.height - 25);
-        this.addRenderableWidget(this.scrollList = new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft));
+        this.addRenderableWidget(this.scrollList = new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft, Component.literal("mismatched info scroll panel")));
 
         int buttonWidth = Math.min(210, this.width / 2 - 20);
         this.addRenderableWidget(CycleButton.onOffBuilder(true)
@@ -112,8 +112,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
         private int contentSize;
         private boolean oneChannelPerEntry = true;
 
-        public MismatchInfoPanel(Minecraft client, int width, int height, int top, int left) {
-            super(client, width, height, top, left);
+        public MismatchInfoPanel(Minecraft client, int width, int height, int top, int left, Component title) {
+            super(client, width, height, top, left, title);
             updateListContent();
         }
 
@@ -250,7 +250,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             super.render(guiGraphics, mouseX, mouseY, partialTicks);
             Style style = getComponentStyleAt(mouseX, mouseY);
             if (style != null && style.getHoverEvent() != null) {
@@ -290,6 +290,6 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput output) {}
+        protected void updateWidgetNarration(NarrationElementOutput p_259858_) {}
     }
 }
