@@ -62,7 +62,7 @@ public class CompositeModelTest {
                     box(0, 11.2, 11.2, 4.8, 16, 16),
                     box(11.2, 11.2, 11.2, 16, 16, 16));
         }
-    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    }, props -> props.mapColor(MapColor.WOOD).strength(10));
 
     public static DeferredItem<Item> composite_item = ITEMS.registerItem("composite_block", props -> new BlockItem(composite_block.get(), props.useBlockDescriptionPrefix()) {
         @Override

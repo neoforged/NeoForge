@@ -58,7 +58,7 @@ public class ClientFluidTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if blocks can prevent neighboring fluids from rendering against them")
     static void testWaterGlassFaceRemoval(final DynamicTest test, final RegistrationHelper reg) {
-        final var glass = reg.blocks().registerBlock("water_glass", WaterGlassBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS))
+        final var glass = reg.blocks().registerBlock("water_glass", WaterGlassBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS))
                 .withLang("Water Glass")
                 .withBlockItem();
 
