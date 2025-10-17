@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -76,12 +_,12 @@
+@@ -76,12 +_,13 @@
          OptionSpec<Integer> optionspec12 = optionparser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
          OptionSpec<String> optionspec13 = optionparser.accepts("proxyUser").withRequiredArg();
          OptionSpec<String> optionspec14 = optionparser.accepts("proxyPass").withRequiredArg();
@@ -11,6 +11,7 @@
          OptionSpec<String> optionspec18 = optionparser.accepts("xuid").withOptionalArg().defaultsTo("");
          OptionSpec<String> optionspec19 = optionparser.accepts("clientId").withOptionalArg().defaultsTo("");
 -        OptionSpec<String> optionspec20 = optionparser.accepts("accessToken").withRequiredArg().required();
++        // Neo: Make accessToken optional to auto-enable offlineDeveloperMode in development
 +        OptionSpec<String> optionspec20 = net.neoforged.neoforge.client.ClientHooks.optionalInDev(optionparser.accepts("accessToken").withRequiredArg(), "0");
          OptionSpec<String> optionspec21 = optionparser.accepts("version").withRequiredArg().required();
          OptionSpec<Integer> optionspec22 = optionparser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
@@ -30,11 +31,12 @@
              s1 = "Argument parsing";
              List<String> list = optionset.valuesOf(optionspec28);
              if (!list.isEmpty()) {
-@@ -174,7 +_,7 @@
+@@ -174,7 +_,8 @@
                  new GameConfig.UserData(user, proxy),
                  new DisplayData(i, j, optionalint, optionalint1, flag),
                  new GameConfig.FolderData(file1, file3, file2, s6),
 -                new GameConfig.GameData(flag1, s, s5, flag2, flag3, flag4, flag5, optionset.has(optionspec16)),
++                // Neo: Auto-enable offlineDeveloperMode if no accessToken is passed
 +                new GameConfig.GameData(flag1, s, s5, flag2, flag3, flag4, flag5, optionset.has(optionspec16) || !optionset.has(optionspec20)),
                  new GameConfig.QuickPlayData(s9, gameconfig$quickplayvariant)
              );

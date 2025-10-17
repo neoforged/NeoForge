@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.ValueConverter;
 import net.minecraft.client.Camera;
