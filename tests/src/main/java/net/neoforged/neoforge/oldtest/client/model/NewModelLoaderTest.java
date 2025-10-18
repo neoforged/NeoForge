@@ -68,11 +68,11 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, props -> props.mapColor(MapColor.WOOD).strength(10));
 
     // Same at obj_block except all the parts in the obj model have the same name,
     // this is a test for neoforged/NeoForge#1755 that was fixed by neoforged/NeoForge#1759
-    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, props -> props.mapColor(MapColor.WOOD).strength(10));
 
     public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override

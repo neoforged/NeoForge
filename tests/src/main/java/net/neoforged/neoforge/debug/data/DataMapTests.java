@@ -43,7 +43,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -408,10 +407,10 @@ public class DataMapTests {
     static void oxidizablesAndWaxablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
         BlockPos blockPos = new BlockPos(1, 1, 1);
 
-        Holder<Block> lightlyOxidizedIron = reg.blocks().registerBlock("lightly_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, props), BlockBehaviour.Properties.of());
-        Holder<Block> moreOxidizedIron = reg.blocks().registerBlock("more_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, props), BlockBehaviour.Properties.of());
+        Holder<Block> lightlyOxidizedIron = reg.blocks().registerBlock("lightly_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, props));
+        Holder<Block> moreOxidizedIron = reg.blocks().registerBlock("more_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, props));
 
-        Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new, BlockBehaviour.Properties.of());
+        Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new);
 
         reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override

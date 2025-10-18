@@ -34,7 +34,7 @@ public class HideNeighborFaceTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.registerBlock("glass_slab", GlassSlab::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
+    private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.registerBlock("glass_slab", GlassSlab::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
     private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerSimpleBlockItem(GLASS_SLAB);
 
     public HideNeighborFaceTest(IEventBus bus) {
