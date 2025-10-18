@@ -23,10 +23,6 @@ import net.minecraft.network.chat.Component;
  */
 public abstract class ScrollPanel extends AbstractWidget implements ContainerEventHandler {
     private final Minecraft client;
-    protected int width;
-    protected int height;
-    protected int y;
-    protected int x;
     private boolean scrolling;
     protected float scrollDistance;
     protected boolean captureMouse = true;
@@ -43,10 +39,11 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
      * @param width  the width
      * @param height the height
      * @param y      the offset from the top (y coord)
-     * @param left   the offset from the left (x coord)
+     * @param x   the offset from the left (x coord)
+     * @param component      The component used by the narrator to describe this widget
      */
-    public ScrollPanel(Minecraft client, int width, int height, int y, int left, Component component) {
-        this(client, width, height, y, left, 4, component);
+    public ScrollPanel(Minecraft client, int width, int height, int y, int x, Component component) {
+        this(client, width, height, y, x, 4, component);
     }
 
     /**
@@ -56,6 +53,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
      * @param y      the offset from the top (y coord)
      * @param x      the offset from the left (x coord)
      * @param border the size of the border
+     * @param component      The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, Component component) {
         this(client, width, height, y, x, border, 6, component);
@@ -69,6 +67,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
      * @param x        the offset from the left (x coord)
      * @param border   the size of the border
      * @param barWidth the width of the scroll bar
+     * @param component      The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, Component component) {
         this(client, width, height, y, x, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0, component);
@@ -87,15 +86,14 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
      * @param barBgColor     the color for the scroll bar background
      * @param barColor       the color for the scroll bar handle
      * @param barBorderColor the border color for the scroll bar handle
+     * @param component      The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, int barBgColor, int barColor, int barBorderColor, Component component) {
         super(x, y, width, height, component);
         this.client = client;
         this.width = width;
         this.height = height;
-        this.y = y;
-        this.x = x;
-        this.barLeft = this.x + this.width - barWidth;
+        this.barLeft = this.getX() + this.width - barWidth;
         this.border = border;
         this.barWidth = barWidth;
         this.barBgColor = barBgColor;
@@ -109,7 +107,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, float partialTick) {
-        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.x, this.y, 0f, 0f, this.width, this.height);
+        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.getX(), this.getY(), 0f, 0f, this.width, this.height);
     }
 
     /**
@@ -158,8 +156,8 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return mouseX >= this.x && mouseX < this.getRight() &&
-                mouseY >= this.y && mouseY < this.getBottom();
+        return mouseX >= this.getX() && mouseX < this.getRight() &&
+                mouseY >= this.getY() && mouseY < this.getBottom();
     }
 
     @Override
@@ -172,13 +170,13 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
         if (super.mouseClicked(event, doubleClick))
             return true;
 
-        this.scrolling = event.button() == 0 && event.x() >= barLeft && event.x() < getRight() && event.y() >= y && event.y() < getBottom();
+        this.scrolling = event.button() == 0 && event.x() >= barLeft && event.x() < getRight() && event.y() >= this.getY() && event.y() < getBottom();
         if (this.scrolling) {
             return true;
         }
-        int mouseListY = ((int) event.y()) - this.y - this.getContentHeight() + (int) this.scrollDistance - border;
-        if (event.x() >= x && event.x() < getRight() && mouseListY < 0) {
-            return this.clickPanel(event.x() - x, event.y() - this.y + (int) this.scrollDistance - border, event);
+        int mouseListY = ((int) event.y()) - this.getY() - this.getContentHeight() + (int) this.scrollDistance - border;
+        if (event.x() >= this.getX() && event.x() < getRight() && mouseListY < 0) {
+            return this.clickPanel(event.x() - this.getX(), event.y() - this.getY() + (int) this.scrollDistance - border, event);
         }
         return false;
     }
@@ -217,23 +215,23 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.enableScissor(this.x, this.y, this.getRight(), this.getBottom());
+        guiGraphics.enableScissor(this.getX(), this.getY(), this.getRight(), this.getBottom());
 
         this.drawBackground(guiGraphics, partialTick);
 
-        int baseY = this.y + border - (int) this.scrollDistance;
+        int baseY = this.getY() + border - (int) this.scrollDistance;
         this.drawPanel(guiGraphics, getRight(), baseY, mouseX, mouseY);
 
         int extraHeight = (this.getContentHeight() + border) - height;
         if (extraHeight > 0) {
             int barHeight = getBarHeight();
 
-            int barTop = (int) this.scrollDistance * (height - barHeight) / extraHeight + this.y;
-            if (barTop < this.y) {
-                barTop = this.y;
+            int barTop = (int) this.scrollDistance * (height - barHeight) / extraHeight + this.getY();
+            if (barTop < this.getY()) {
+                barTop = this.getY();
             }
 
-            guiGraphics.fill(this.barLeft, this.y, this.barLeft + this.barWidth, this.getBottom(), this.barBgColor);
+            guiGraphics.fill(this.barLeft, this.getY(), this.barLeft + this.barWidth, this.getBottom(), this.barBgColor);
 
             guiGraphics.fill(this.barLeft, barTop, this.barLeft + this.barWidth, barTop + barHeight, this.barColor);
 
@@ -252,50 +250,20 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
         return Collections.emptyList();
     }
 
-    @Override
-    public void setX(int p_265236_) {
-        this.x = p_265236_;
-    }
-
-    @Override
-    public void setY(int p_265404_) {
-        this.y = p_265404_;
-    }
-
-    @Override
-    public int getX() {
-        return x;
-    }
-
-    @Override
-    public int getY() {
-        return y;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
     public int getBottom() {
-        return this.y + this.height;
+        return this.getY() + this.height;
     }
 
     public int getRight() {
-        return this.x + this.width;
+        return this.getX() + this.width;
     }
 
     @Override
-    public void visitWidgets(Consumer<AbstractWidget> p_265082_) {}
+    public void visitWidgets(Consumer<AbstractWidget> widgetConsumer) {}
 
     @Override
     public NarrationPriority narrationPriority() {
-        return null;
+        return NarrationPriority.NONE;
     }
 
     private GuiEventListener focused;
@@ -307,8 +275,8 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     }
 
     @Override
-    public final void setDragging(boolean p_94681_) {
-        this.isDragging = p_94681_;
+    public final void setDragging(boolean isDragging) {
+        this.isDragging = isDragging;
     }
 
     @Override
@@ -317,15 +285,15 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     }
 
     @Override
-    public void setFocused(GuiEventListener p_94677_) {
+    public void setFocused(GuiEventListener listener) {
         if (this.focused != null) {
             this.focused.setFocused(false);
         }
 
-        if (p_94677_ != null) {
-            p_94677_.setFocused(true);
+        if (listener != null) {
+            listener.setFocused(true);
         }
 
-        this.focused = p_94677_;
+        this.focused = listener;
     }
 }
