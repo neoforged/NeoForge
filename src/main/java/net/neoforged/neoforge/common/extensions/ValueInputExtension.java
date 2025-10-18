@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.serialization.MapCodec;
+import java.util.Collections;
 import java.util.Set;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
@@ -24,7 +25,7 @@ public interface ValueInputExtension {
      */
     default Set<String> keySet() {
         //noinspection deprecation
-        return self().read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseThrow().keySet();
+        return self().read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).map(CompoundTag::keySet).orElse(Collections.emptySet());
     }
 
     /**

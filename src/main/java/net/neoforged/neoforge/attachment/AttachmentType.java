@@ -14,6 +14,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -213,6 +215,16 @@ public final class AttachmentType<T> {
                 @Override
                 public T read(IAttachmentHolder holder, ValueInput input) {
                     final Optional<T> parsingResult = input.read(codec);
+                    if (parsingResult.isPresent()) {
+                        return parsingResult.get();
+                    }
+
+                    if (input.keySet().isEmpty()) {
+                        return codec.codec()
+                                .parse(NbtOps.INSTANCE, new CompoundTag())
+                                .result()
+                                .orElseThrow(() -> new IllegalStateException("Codec failed to decode an empty CompoundTag."));
+                    }
                     return parsingResult.orElseThrow(() -> buildException("read"));
                 }
 
