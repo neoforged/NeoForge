@@ -35,39 +35,39 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     private final int barBorderColor;
 
     /**
-     * @param client the minecraft instance this ScrollPanel should use
-     * @param width  the width
-     * @param height the height
-     * @param y      the offset from the top (y coord)
-     * @param x   the offset from the left (x coord)
-     * @param component      The component used by the narrator to describe this widget
+     * @param client    the minecraft instance this ScrollPanel should use
+     * @param width     the width
+     * @param height    the height
+     * @param y         the offset from the top (y coord)
+     * @param x         the offset from the left (x coord)
+     * @param component The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, Component component) {
         this(client, width, height, y, x, 4, component);
     }
 
     /**
-     * @param client the minecraft instance this ScrollPanel should use
-     * @param width  the width
-     * @param height the height
-     * @param y      the offset from the top (y coord)
-     * @param x      the offset from the left (x coord)
-     * @param border the size of the border
-     * @param component      The component used by the narrator to describe this widget
+     * @param client    the minecraft instance this ScrollPanel should use
+     * @param width     the width
+     * @param height    the height
+     * @param y         the offset from the top (y coord)
+     * @param x         the offset from the left (x coord)
+     * @param border    the size of the border
+     * @param component The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, Component component) {
         this(client, width, height, y, x, border, 6, component);
     }
 
     /**
-     * @param client   the minecraft instance this ScrollPanel should use
-     * @param width    the width
-     * @param height   the height
-     * @param y        the offset from the top (y coord)
-     * @param x        the offset from the left (x coord)
-     * @param border   the size of the border
-     * @param barWidth the width of the scroll bar
-     * @param component      The component used by the narrator to describe this widget
+     * @param client    the minecraft instance this ScrollPanel should use
+     * @param width     the width
+     * @param height    the height
+     * @param y         the offset from the top (y coord)
+     * @param x         the offset from the left (x coord)
+     * @param border    the size of the border
+     * @param barWidth  the width of the scroll bar
+     * @param component The component used by the narrator to describe this widget
      */
     public ScrollPanel(Minecraft client, int width, int height, int y, int x, int border, int barWidth, Component component) {
         this(client, width, height, y, x, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0, component);
