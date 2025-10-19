@@ -37,4 +37,19 @@ public interface ValueInputExtension {
     default void readChild(String key, ValueIOSerializable object) {
         self().child(key).ifPresent(object::deserialize);
     }
+
+    /**
+     * Reads the {@code child} object from the given {@code key},
+     * or provides an empty {@link ValueInput} if the child does not exist.
+     * Unlike {@link ValueInput#childOrEmpty(String)}, this will not attempt
+     * to use an empty context if no data exists in the backing object.
+     * <br>
+     * If not implemented, defaults to {@link ValueInput#childOrEmpty(String)}.
+     *
+     * @param key the key to read the child from
+     * @return the {@link ValueInput} of the child, or an empty input
+     */
+    default ValueInput rawChildOrEmpty(String key) {
+        return self().childOrEmpty(key);
+    }
 }
