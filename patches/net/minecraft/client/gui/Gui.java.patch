@@ -13,7 +13,7 @@
      private Pair<Gui.ContextualInfo, ContextualBarRenderer> contextualInfoBar = Pair.of(Gui.ContextualInfo.EMPTY, ContextualBarRenderer.EMPTY);
      private final Map<Gui.ContextualInfo, Supplier<ContextualBarRenderer>> contextualInfoBarRenderers;
      private float scopeScale;
-+    private final net.neoforged.neoforge.client.gui.GuiLayerManager layerManager = new net.neoforged.neoforge.client.gui.GuiLayerManager();
++    private final net.neoforged.neoforge.client.gui.GuiLayerManager layerManager = new net.neoforged.neoforge.client.gui.GuiLayerManager(this);
 +    /**
 +     * Neo: This variable controls the height of overlays on the left of the hotbar (e.g. health, armor).
 +     */
@@ -33,7 +33,7 @@
      }
  
      public void resetTitleTimes() {
-@@ -214,28 +_,47 @@
+@@ -214,28 +_,41 @@
  
      public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
          if (!(this.minecraft.screen instanceof LevelLoadingScreen)) {
@@ -45,14 +45,26 @@
 -                this.renderEffects(p_282884_, p_348630_);
 -                this.renderBossOverlay(p_282884_, p_348630_);
 -            }
+-
+-            this.renderSleepOverlay(p_282884_, p_348630_);
+-            if (!this.minecraft.options.hideGui) {
+-                this.renderDemoOverlay(p_282884_, p_348630_);
+-                this.renderScoreboardSidebar(p_282884_, p_348630_);
+-                this.renderOverlayMessage(p_282884_, p_348630_);
+-                this.renderTitle(p_282884_, p_348630_);
+-                this.renderChat(p_282884_, p_348630_);
+-                this.renderTabList(p_282884_, p_348630_);
+-                this.renderSubtitleOverlay(p_282884_, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
+-            } else if (this.minecraft.screen != null && this.minecraft.screen.isInGameUi()) {
+-                this.renderSubtitleOverlay(p_282884_, true);
+-            }
 +            leftHeight = 39;
 +            rightHeight = 39;
 +            updateContextualBarRenderer();
 +            layerManager.render(p_282884_, p_348630_);
-+        }
+         }
 +    }
- 
--            this.renderSleepOverlay(p_282884_, p_348630_);
++
 +    private void registerVanillaLayers() {
 +        java.util.function.BooleanSupplier guiVisible = () -> !this.minecraft.options.hideGui;
 +        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean();
@@ -80,22 +92,7 @@
 +        layerManager.add(TITLE, this::renderTitle, guiVisible);
 +        layerManager.add(CHAT, this::renderChat, guiVisible);
 +        layerManager.add(TAB_LIST, this::renderTabList, guiVisible);
-+        layerManager.add(SUBTITLE_OVERLAY, (graphics, deltaTracker) -> {
-             if (!this.minecraft.options.hideGui) {
--                this.renderDemoOverlay(p_282884_, p_348630_);
--                this.renderScoreboardSidebar(p_282884_, p_348630_);
--                this.renderOverlayMessage(p_282884_, p_348630_);
--                this.renderTitle(p_282884_, p_348630_);
--                this.renderChat(p_282884_, p_348630_);
--                this.renderTabList(p_282884_, p_348630_);
--                this.renderSubtitleOverlay(p_282884_, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
-+                this.renderSubtitleOverlay(graphics, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
-             } else if (this.minecraft.screen != null && this.minecraft.screen.isInGameUi()) {
--                this.renderSubtitleOverlay(p_282884_, true);
-+                this.renderSubtitleOverlay(graphics, true);
-             }
--        }
-+        });
++        layerManager.add(SUBTITLE_OVERLAY, (graphics, deltaTracker) -> this.subtitleOverlay.render(graphics));
      }
  
      private void renderBossOverlay(GuiGraphics p_416128_, DeltaTracker p_416660_) {
@@ -408,6 +405,17 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
+@@ -1196,6 +_,10 @@
+         this.autosaveIndicatorValue = Mth.lerp(0.2F, this.autosaveIndicatorValue, flag ? 1.0F : 0.0F);
+     }
+ 
++    public void setDeferredSubtitles(@Nullable Runnable deferredSubtitles){
++        this.deferredSubtitles = deferredSubtitles;
++    }
++
+     public void setNowPlaying(Component p_93056_) {
+         Component component = Component.translatable("record.nowPlaying", p_93056_);
+         this.setOverlayMessage(component, true);
 @@ -1461,12 +_,27 @@
                  gui$hearttype = NORMAL;
              }

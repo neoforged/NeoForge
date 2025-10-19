@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +31,11 @@ import org.jetbrains.annotations.ApiStatus;
 public class GuiLayerManager {
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
+    private final Gui gui;
+
+    public GuiLayerManager(Gui gui) {
+        this.gui = gui;
+    }
 
     public record NamedLayer(ResourceLocation name, GuiLayer layer) {}
 
@@ -72,10 +78,28 @@ public class GuiLayerManager {
 
     private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
         for (var layer : this.layers) {
-            if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
-                layer.layer().render(guiGraphics, partialTick);
-                NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
+            if (layer.name.equals(VanillaGuiLayers.SUBTITLE_OVERLAY)) {
+                Minecraft minecraft = Minecraft.getInstance();
+                boolean shouldRender = !minecraft.options.hideGui || (minecraft.screen != null && minecraft.screen.isInGameUi());
+                if (shouldRender) {
+                    if (minecraft.screen == null || minecraft.screen.isInGameUi()) {
+                        gui.setDeferredSubtitles(() -> renderLayer(guiGraphics, partialTick, layer));
+                        continue;
+                    }
+                    gui.setDeferredSubtitles(null);
+                } else {
+                    continue;
+                }
             }
+
+            renderLayer(guiGraphics, partialTick, layer);
+        }
+    }
+
+    private void renderLayer(GuiGraphics guiGraphics, DeltaTracker partialTick, NamedLayer layer) {
+        if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
+            layer.layer().render(guiGraphics, partialTick);
+            NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
         }
     }
 
