@@ -169,7 +169,7 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        public int getContentHeight() {
+        public int contentHeight() {
             int height = 50;
             height += (lines.size() * font.lineHeight);
             if (height < this.getBottom() - this.getY() - 8)
@@ -178,7 +178,7 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        protected int getScrollAmount() {
+        protected double scrollRate() {
             return font.lineHeight * 3;
         }
 
@@ -187,13 +187,13 @@ public class ModListScreen extends Screen {
             if (logoPath != null) {
                 // Draw the logo image inscribed in a rectangle with width entryWidth (minus some padding) and height 50
                 int headerHeight = 50;
-                guiGraphics.blitInscribed(logoPath, this.x + PADDING, relativeY, width - (PADDING * 2), headerHeight, logoDims.width, logoDims.height, false, true);
+                guiGraphics.blitInscribed(logoPath, this.getX() + PADDING, relativeY, width - (PADDING * 2), headerHeight, logoDims.width, logoDims.height, false, true);
                 relativeY += headerHeight + PADDING;
             }
 
             for (FormattedCharSequence line : lines) {
                 if (line != null) {
-                    guiGraphics.drawString(ModListScreen.this.font, line, this.x + PADDING, relativeY, 0xFFFFFFFF);
+                    guiGraphics.drawString(ModListScreen.this.font, line, this.getX() + PADDING, relativeY, 0xFFFFFFFF);
                 }
                 relativeY += font.lineHeight;
             }
@@ -209,7 +209,7 @@ public class ModListScreen extends Screen {
             if (!isMouseOver(mouseX, mouseY))
                 return null;
 
-            double offset = (mouseY - this.y - PADDING - border) + scrollDistance;
+            double offset = (mouseY - this.getY() - PADDING - border) + scrollDistance;
             if (logoPath != null) {
                 offset -= 50;
             }
@@ -222,7 +222,7 @@ public class ModListScreen extends Screen {
 
             FormattedCharSequence line = lines.get(lineIdx);
             if (line != null) {
-                return font.getSplitter().componentStyleAtWidth(line, mouseX - this.x - border - 1);
+                return font.getSplitter().componentStyleAtWidth(line, mouseX - this.getX() - border - 1);
             }
             return null;
         }

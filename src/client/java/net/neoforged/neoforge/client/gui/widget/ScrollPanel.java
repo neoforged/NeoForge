@@ -7,11 +7,9 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,7 +19,7 @@ import net.minecraft.network.chat.Component;
 /**
  * Abstract scroll panel class.
  */
-public abstract class ScrollPanel extends AbstractWidget implements ContainerEventHandler {
+public abstract class ScrollPanel extends AbstractContainerWidget {
     private final Minecraft client;
     private boolean scrolling;
     protected float scrollDistance;
@@ -101,8 +99,6 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
         this.barBorderColor = barBorderColor;
     }
 
-    protected abstract int getContentHeight();
-
     /**
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
@@ -121,7 +117,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     }
 
     private int getMaxScroll() {
-        return this.getContentHeight() - (this.height - this.border);
+        return this.contentHeight() - (this.height - this.border);
     }
 
     private void applyScrollLimits() {
@@ -143,15 +139,16 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     @Override
     public boolean mouseScrolled(double p_94686_, double p_94687_, double p_94688_, double p_294830_) {
         if (p_294830_ != 0) {
-            this.scrollDistance += (float) (-p_294830_ * getScrollAmount());
+            this.scrollDistance += (float) (-p_294830_ * scrollRate());
             applyScrollLimits();
             return true;
         }
         return false;
     }
 
-    protected int getScrollAmount() {
-        return 20;
+    @Override
+    protected double scrollRate() {
+        return 20d;
     }
 
     @Override
@@ -174,7 +171,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
         if (this.scrolling) {
             return true;
         }
-        int mouseListY = ((int) event.y()) - this.getY() - this.getContentHeight() + (int) this.scrollDistance - border;
+        int mouseListY = ((int) event.y()) - this.getY() - this.contentHeight() + (int) this.scrollDistance - border;
         if (event.x() >= this.getX() && event.x() < getRight() && mouseListY < 0) {
             return this.clickPanel(event.x() - this.getX(), event.y() - this.getY() + (int) this.scrollDistance - border, event);
         }
@@ -191,7 +188,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
     }
 
     private int getBarHeight() {
-        int barHeight = (height * height) / this.getContentHeight();
+        int barHeight = (height * height) / this.contentHeight();
 
         if (barHeight < 32) barHeight = 32;
 
@@ -222,7 +219,7 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
         int baseY = this.getY() + border - (int) this.scrollDistance;
         this.drawPanel(guiGraphics, getRight(), baseY, mouseX, mouseY);
 
-        int extraHeight = (this.getContentHeight() + border) - height;
+        int extraHeight = (this.contentHeight() + border) - height;
         if (extraHeight > 0) {
             int barHeight = getBarHeight();
 
@@ -256,44 +253,5 @@ public abstract class ScrollPanel extends AbstractWidget implements ContainerEve
 
     public int getRight() {
         return this.getX() + this.width;
-    }
-
-    @Override
-    public void visitWidgets(Consumer<AbstractWidget> widgetConsumer) {}
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return NarrationPriority.NONE;
-    }
-
-    private GuiEventListener focused;
-    private boolean isDragging;
-
-    @Override
-    public final boolean isDragging() {
-        return this.isDragging;
-    }
-
-    @Override
-    public final void setDragging(boolean isDragging) {
-        this.isDragging = isDragging;
-    }
-
-    @Override
-    public GuiEventListener getFocused() {
-        return this.focused;
-    }
-
-    @Override
-    public void setFocused(GuiEventListener listener) {
-        if (this.focused != null) {
-            this.focused.setFocused(false);
-        }
-
-        if (listener != null) {
-            listener.setFocused(true);
-        }
-
-        this.focused = listener;
     }
 }
