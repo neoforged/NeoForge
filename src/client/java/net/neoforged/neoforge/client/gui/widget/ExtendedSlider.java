@@ -123,6 +123,7 @@ public class ExtendedSlider extends AbstractSliderButton {
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        this.dragging = this.active;
         this.setValueFromMouse(event.x());
     }
 
