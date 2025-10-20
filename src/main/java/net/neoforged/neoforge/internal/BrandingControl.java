@@ -15,8 +15,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
-import net.neoforged.neoforge.neoforge.snapshots.NeoForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.neoforge.snapshots.NeoForgeSnapshotsMod;
 import org.jetbrains.annotations.Nullable;
 
 public class BrandingControl {
