@@ -106,7 +106,7 @@
          StringBuilder stringbuilder = new StringBuilder("Minecraft");
          if (checkModStatus().shouldReportAsModified()) {
 -            stringbuilder.append("*");
-+            stringbuilder.append(' ').append(net.neoforged.neoforge.neoforge.snapshots.ForgeSnapshotsMod.BRANDING_NAME).append('*');
++            stringbuilder.append(' ').append(net.neoforged.neoforge.neoforge.snapshots.NeoForgeSnapshotsMod.BRANDING_NAME).append('*');
          }
  
          stringbuilder.append(" ");
