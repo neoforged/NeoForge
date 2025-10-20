@@ -8,7 +8,6 @@ package net.neoforged.testframework.gametest;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
