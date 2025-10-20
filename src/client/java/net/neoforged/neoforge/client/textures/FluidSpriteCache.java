@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
@@ -50,9 +51,8 @@ public final class FluidSpriteCache {
     }
 
     @ApiStatus.Internal
-    @SuppressWarnings("deprecation")
     public static void reload() {
-        TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS);
+        TextureAtlas atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS);
         textureLookup = atlas.getTextures();
         missingSprite = textureLookup.get(MissingTextureAtlasSprite.getLocation());
     }

@@ -1,0 +1,94 @@
+++++ REJECTED HUNK: 1
+@@ -189,9 +189,15 @@
+         Entity entity = this.minecraft.getCameraEntity();
+         this.block = entity.pick(20.0, 0.0F, false);
+         this.liquid = entity.pick(20.0, 0.0F, true);
+-        this.drawGameInformation(p_281427_);
+-        this.drawSystemInformation(p_281427_);
+         p_281427_.nextStratum();
++
++        final List<String> gameInformation = this.collectGameInformationText();
++        final List<String> systemInformation = this.collectSystemInformationText();
++        var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getDeltaTracker(), gameInformation, systemInformation);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++        this.renderLines(p_281427_, gameInformation, true);
++        this.renderLines(p_281427_, systemInformation, false);
++
+         this.profilerPieChart.setBottomOffset(10);
+         if (this.renderFpsCharts) {
+             int i = p_281427_.guiWidth();
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -224,7 +230,11 @@
+         profilerfiller.pop();
+     }
+ 
+-    protected void drawGameInformation(GuiGraphics p_281525_) {
++    /**
++     * Neo: Extracted body of {@link DebugScreenOverlay#drawGameInformation} to return game information
++     * without drawing for {@link net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText} to modify
++     */
++    protected List<String> collectGameInformationText() {
+         List<String> list = this.getGameInformation();
+         list.add("");
+         boolean flag = this.minecraft.getSingleplayerServer() != null;
+++++ END HUNK
+
+++++ REJECTED HUNK: 3
+@@ -239,11 +249,25 @@
+                 + (this.renderNetworkCharts ? " visible" : " hidden")
+         );
+         list.add("For help: press F3 + Q");
++        return list;
++    }
++
++    protected void drawGameInformation(GuiGraphics p_281525_) {
++        List<String> list = this.collectGameInformationText();
+         this.renderLines(p_281525_, list, true);
+     }
+ 
+-    protected void drawSystemInformation(GuiGraphics p_281261_) {
++    /**
++     * Neo: Extracted body of {@link DebugScreenOverlay#drawSystemInformation} to return system information
++     * without drawing for {@link net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText} to modify
++     */
++    protected List<String> collectSystemInformationText() {
+         List<String> list = this.getSystemInformation();
++        return list;
++    }
++
++    protected void drawSystemInformation(GuiGraphics p_281261_) {
++        List<String> list = this.collectSystemInformationText();
+         this.renderLines(p_281261_, list, false);
+     }
+ 
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -573,6 +597,13 @@
+             gpudevice.getRenderer(),
+             String.format(Locale.ROOT, "%s %s", gpudevice.getBackendName(), gpudevice.getVersion())
+         );
++        if (this.minecraft.isDemo()) {
++            if (this.minecraft.level.getGameTime() >= 120500L) {
++                list.add(0, net.minecraft.network.chat.Component.translatable("demo.demoExpired").getString());
++            } else {
++                list.add(0, net.minecraft.network.chat.Component.translatable("demo.remainingTime", net.minecraft.util.StringUtil.formatTickDuration((int)(120500L - this.minecraft.level.getGameTime()), this.minecraft.level.tickRateManager().tickrate())).getString());
++            }
++        }
+         if (this.minecraft.showOnlyReducedInfo()) {
+             return list;
+         } else {
+++++ END HUNK
+
+++++ REJECTED HUNK: 5
+@@ -609,6 +640,7 @@
+                 list.add("");
+                 list.add(ChatFormatting.UNDERLINE + "Targeted Entity");
+                 list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));
++                entity.getType().builtInRegistryHolder().tags().forEach(t -> list.add("#" + t.location()));
+             }
+ 
+             return list;
+++++ END HUNK

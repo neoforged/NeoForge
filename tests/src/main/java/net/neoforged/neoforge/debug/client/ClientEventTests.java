@@ -10,13 +10,15 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -134,7 +136,11 @@ public class ClientEventTests {
             listeners.forge().addListener((final RenderPlayerEvent.Post event) -> {
                 event.getPoseStack().pushPose();
                 event.getPoseStack().translate(0, 2, 0);
-                Minecraft.getInstance().getItemRenderer().renderStatic(itemStack, ItemDisplayContext.GROUND, event.getPackedLight(), OverlayTexture.NO_OVERLAY, event.getPoseStack(), event.getMultiBufferSource(), Minecraft.getInstance().level, 0);
+
+                ItemStackRenderState renderState = new ItemStackRenderState();
+                Minecraft.getInstance().getItemModelResolver().updateForTopItem(renderState, itemStack, ItemDisplayContext.GROUND, null, null, 0);
+                renderState.submit(event.getPoseStack(), event.getSubmitNodeCollector(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+
                 event.getPoseStack().popPose();
             });
             test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Is an iron block rendered above you in third-person?"));
@@ -147,7 +153,7 @@ public class ClientEventTests {
         var numRenderAttachmentKey = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "times_to_render"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
-            event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
+            event.registerEntityModifier(PigRenderer.class, (entity, renderState) -> {
                 renderState.setRenderData(rotationKey, 45f);
             });
             event.registerEntityModifier(new TypeToken<LivingEntityRenderer<? extends LivingEntity, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {
@@ -171,7 +177,7 @@ public class ClientEventTests {
                     return;
                 }
                 float xRotation = event.getRenderState().getRenderDataOrDefault(rotationKey, 0f);
-                if (event.getRenderer() instanceof PlayerRenderer && numRender == 0) {
+                if (event.getRenderer() instanceof PigRenderer && numRender == 0) {
                     test.fail("Custom render data not set for player");
                     return;
                 }
@@ -183,14 +189,12 @@ public class ClientEventTests {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
                     poseStack.mulPose(Axis.XP.rotation(xRotation));
-                    Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
-                            Blocks.CALCITE.defaultBlockState(),
+                    event.getSubmitNodeCollector().submitBlock(
                             poseStack,
-                            event.getMultiBufferSource(),
-                            event.getPackedLight(),
+                            Blocks.CALCITE.defaultBlockState(),
+                            event.getRenderState().lightCoords,
                             OverlayTexture.NO_OVERLAY,
-                            EmptyBlockAndTintGetter.INSTANCE,
-                            BlockPos.ZERO);
+                            -1);
                     poseStack.popPose();
                 }
                 poseStack.popPose();
@@ -208,7 +212,7 @@ public class ClientEventTests {
                         var randomSource = new SingleThreadedRandomSource(0);
                         var state = Blocks.GOLD_BLOCK.defaultBlockState();
                         var stack = event.getPoseStack();
-                        var camera = event.getCamera().getPosition();
+                        var camera = event.getLevelRenderState().cameraRenderState.pos;
                         event.getRenderableSections().forEach(section -> {
                             if (section.isEmpty()) {
                                 return;
@@ -224,7 +228,7 @@ public class ClientEventTests {
                             Minecraft.getInstance().getBlockRenderer().renderBatched(
                                     state,
                                     section.getRenderOrigin(),
-                                    Minecraft.getInstance().level,
+                                    EmptyBlockAndTintGetter.INSTANCE,
                                     stack,
                                     csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
                                     false,

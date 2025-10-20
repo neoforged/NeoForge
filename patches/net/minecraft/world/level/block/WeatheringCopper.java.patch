@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -10,6 +_,10 @@
+@@ -15,6 +_,10 @@
  import net.minecraft.world.level.block.state.BlockState;
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
@@ -11,8 +11,8 @@
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
              .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
-@@ -41,16 +_,20 @@
-             .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+@@ -58,16 +_,20 @@
+             .putAll(Blocks.COPPER_CHAIN.weatheringMapping())
              .build()
      );
 +    /**
@@ -34,7 +34,7 @@
              block = block1;
          }
  
-@@ -62,7 +_,7 @@
+@@ -79,7 +_,7 @@
      }
  
      static Optional<Block> getNext(Block p_154905_) {

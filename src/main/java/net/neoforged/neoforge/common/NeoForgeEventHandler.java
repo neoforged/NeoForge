@@ -23,10 +23,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -77,13 +79,7 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void preServerTick(ServerTickEvent.Pre event) {
-        WorldWorkerManager.tick(true);
-    }
-
-    @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
-        WorldWorkerManager.tick(false);
         ConfigSync.syncPendingConfigs(event.getServer());
     }
 
@@ -104,7 +100,7 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().getName());
+        UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().name());
     }
 
     @SubscribeEvent
@@ -175,5 +171,12 @@ public class NeoForgeEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.isSpawnCancelled()) {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public void logTransformationsOnGameShutdown(GameShuttingDownEvent event) {
+        ClassTransformStatistics.logTransformationSummary();
+        // Also check if anyone appears to be performing mass-ASM and log a warning if so
+        ClassTransformStatistics.checkTransformationBehavior();
     }
 }

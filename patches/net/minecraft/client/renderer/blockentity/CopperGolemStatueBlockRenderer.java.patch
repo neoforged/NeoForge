@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
+@@ -65,4 +_,10 @@
+             p_438983_.popPose();
+         }
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(CopperGolemStatueBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1.5, pos.getZ() + 1);
++    }
+ }

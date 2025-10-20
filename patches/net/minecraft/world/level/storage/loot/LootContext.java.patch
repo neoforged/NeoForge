@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -87,15 +_,40 @@
-         return new LootContext.VisitedEntry<>(LootDataType.MODIFIER, p_279163_);
+@@ -109,15 +_,40 @@
+         }
      }
  
 +    // Neo: Keep track of the original loot table ID through modifications
@@ -41,7 +41,7 @@
          public LootContext.Builder withOptionalRandomSeed(long p_78966_) {
              if (p_78966_ != 0L) {
                  this.random = RandomSource.create(p_78966_);
-@@ -109,6 +_,11 @@
+@@ -131,6 +_,11 @@
              return this;
          }
  
@@ -53,7 +53,7 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -119,7 +_,7 @@
+@@ -141,7 +_,7 @@
              RandomSource randomsource = Optional.ofNullable(this.random)
                  .or(() -> p_298622_.map(serverlevel::getRandomSequence))
                  .orElseGet(serverlevel::getRandom);
@@ -62,7 +62,7 @@
          }
      }
  
-@@ -140,6 +_,11 @@
+@@ -164,6 +_,11 @@
  
          public ContextKey<? extends Entity> getParam() {
              return this.param;

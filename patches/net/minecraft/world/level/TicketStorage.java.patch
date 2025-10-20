@@ -18,7 +18,7 @@
      }
  
      public TicketStorage() {
-@@ -158,6 +_,7 @@
+@@ -174,6 +_,7 @@
          if (p_394469_.getType().equals(TicketType.FORCED)) {
              this.chunksWithForcedTickets.add(p_394247_);
          }
@@ -26,7 +26,7 @@
  
          this.setDirty();
          return true;
-@@ -241,6 +_,7 @@
+@@ -261,6 +_,7 @@
                  if (p_394054_.getType().equals(TicketType.FORCED)) {
                      this.updateForcedChunks();
                  }
@@ -34,22 +34,22 @@
  
                  this.setDirty();
                  return true;
-@@ -274,11 +_,14 @@
+@@ -303,11 +_,14 @@
  
      public void deactivateTicketsOnClosing() {
-         this.removeTicketIf((p_428691_, p_394604_) -> p_394604_.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
+         this.removeTicketIf((p_394604_, p_435717_) -> p_394604_.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
 +        blockForcedChunks.deactivateTicketsOnClosing();
 +        entityForcedChunks.deactivateTicketsOnClosing();
      }
  
-     public void removeTicketIf(BiPredicate<Long, Ticket> p_428720_, @Nullable Long2ObjectOpenHashMap<List<Ticket>> p_393746_) {
+     public void removeTicketIf(TicketStorage.TicketPredicate p_435606_, @Nullable Long2ObjectOpenHashMap<List<Ticket>> p_393746_) {
          ObjectIterator<Entry<List<Ticket>>> objectiterator = this.tickets.long2ObjectEntrySet().fastIterator();
          boolean flag = false;
 +        boolean updateNaturalSpawning = false;
  
          while (objectiterator.hasNext()) {
              Entry<List<Ticket>> entry = objectiterator.next();
-@@ -307,6 +_,7 @@
+@@ -336,6 +_,7 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
                          flag = true;
                      }
@@ -57,7 +57,7 @@
                  }
              }
  
-@@ -329,6 +_,7 @@
+@@ -358,6 +_,7 @@
          if (flag) {
              this.updateForcedChunks();
          }
@@ -65,10 +65,10 @@
      }
  
      public void replaceTicketLevelOfType(int p_393875_, TicketType p_394261_) {
-@@ -378,5 +_,26 @@
-     @FunctionalInterface
-     public interface ChunkUpdated {
-         void update(long p_393671_, int p_393764_, boolean p_393905_);
+@@ -411,5 +_,26 @@
+ 
+     public interface TicketPredicate {
+         boolean test(Ticket p_434782_, long p_434387_);
 +    }
 +
 +    // Neo: Keep track of forced loaded chunks caused by entities or blocks.

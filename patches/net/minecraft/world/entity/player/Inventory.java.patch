@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -168,7 +_,7 @@
+@@ -169,7 +_,7 @@
  
          for (int k = 0; k < 9; k++) {
              int l = (this.selected + k) % 9;
@@ -9,7 +9,7 @@
                  return l;
              }
          }
-@@ -289,6 +_,8 @@
+@@ -290,6 +_,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");

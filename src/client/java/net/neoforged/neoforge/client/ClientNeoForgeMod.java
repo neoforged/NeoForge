@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.client;
 
-import java.util.Optional;
+import com.mojang.brigadier.Command;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
@@ -23,7 +24,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
@@ -33,6 +36,7 @@ import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -97,17 +101,40 @@ public class ClientNeoForgeMod {
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
-        // Reset WORLD type config caches
         NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut event) -> {
+            // Reset WORLD type config caches
             ModConfigs.getFileMap().values().forEach(config -> {
                 if (config.getSpec() instanceof ModConfigSpec spec) {
                     spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
+
+            // Unload SERVER configs only when disconnecting from a remote server
+            if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
+                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+            }
         });
 
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
             ClientConfigCommand.register(event.getDispatcher());
+        });
+
+        NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
+            if (event.isInitial()) {
+                ClassTransformStatistics.logTransformationSummary();
+                // Also check if anyone appears to be performing mass-ASM and log a warning if so
+                ClassTransformStatistics.checkTransformationBehavior();
+            }
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
+            event.getDispatcher().register(
+                    Commands.literal("neoforge")
+                            .then(Commands.literal("debug_class_loading_transformations")
+                                    .executes(ctx -> {
+                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ClassTransformStatistics.getTransformationSummary(), ClassTransformStatistics.getMixinParsedClassesSummary()), false);
+                                        return Command.SINGLE_SUCCESS;
+                                    })));
         });
     }
 
@@ -117,10 +144,9 @@ public class ClientNeoForgeMod {
         // having to juggle two generated resources folders and two runs for no additional benefit.
 
         event.createProvider(output -> new PackMetadataGenerator(output)
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(
+                .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
-                        DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+                        new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
 
         event.createProvider(NeoForgeAdvancementProvider::new);
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
@@ -157,7 +183,10 @@ public class ClientNeoForgeMod {
         event.addDependency(NeoForgeReloadListeners.BRANDING, VanillaClientListeners.FIRST);
 
         event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjLoader.INSTANCE);
+
         event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
+        // Animations need to be loaded before entity renderers are instantiated
+        event.addDependency(NeoForgeReloadListeners.ENTITY_ANIMATIONS, VanillaClientListeners.ENTITY_RENDERER);
     }
 
     @SubscribeEvent

@@ -8,17 +8,17 @@ package net.neoforged.neoforge.debug.client;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
-import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteDefaultMetadataSectionTypesEvent;
+import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -32,17 +32,17 @@ public class TextureAtlasTests {
     static void testMaterialAtlas(final DynamicTest test) {
         String modId = test.createModId();
         ResourceLocation atlasLoc = ResourceLocation.fromNamespaceAndPath(modId, "textures/atlas/material_test.png");
+        ResourceLocation infoLoc = ResourceLocation.fromNamespaceAndPath(modId, "material_test");
 
-        test.framework().modEventBus().addListener(RegisterMaterialAtlasesEvent.class, event -> {
-            ResourceLocation infoLoc = ResourceLocation.fromNamespaceAndPath(modId, "material_test");
-            event.register(atlasLoc, infoLoc);
+        test.framework().modEventBus().addListener(RegisterTextureAtlasesEvent.class, event -> {
+            event.register(new AtlasManager.AtlasConfig(atlasLoc, infoLoc, false));
         });
 
         test.framework().modEventBus().addListener(AddClientReloadListenersEvent.class, event -> {
             event.addListener(LISTENER_NAME, (ResourceManagerReloadListener) manager -> {
                 try {
-                    Minecraft.getInstance().getModelManager().getAtlas(atlasLoc);
-                } catch (NullPointerException npe) {
+                    Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(infoLoc);
+                } catch (IllegalArgumentException iae) {
                     test.fail("Atlas was not registered");
                     return;
                 } catch (Throwable t) {
@@ -52,7 +52,7 @@ public class TextureAtlasTests {
 
                 try {
                     Material material = new Material(atlasLoc, ResourceLocation.withDefaultNamespace("block/stone"));
-                    TextureAtlasSprite sprite = material.sprite();
+                    TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager().get(material);
                     if (sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
                         test.fail("Expected sprite was not stitched");
                         return;
@@ -73,14 +73,14 @@ public class TextureAtlasTests {
         var testResource = ResourceLocation.fromNamespaceAndPath(modId, "block/resource");
         var sectionType = new MetadataSectionType<>("default_metadata_test", Codec.BOOL);
 
-        test.framework().modEventBus().addListener(RegisterSpriteDefaultMetadataSectionTypesEvent.class, event -> {
-            event.register(sectionType);
+        test.framework().modEventBus().addListener(RegisterTextureAtlasesEvent.class, event -> {
+            event.addAdditionalMetadata(AtlasIds.BLOCKS, sectionType);
         });
 
         test.eventListeners().forge().addListener((ClientResourceLoadFinishedEvent event) -> {
             var atlas = Minecraft.getInstance()
-                    .getModelManager()
-                    .getAtlas(TextureAtlas.LOCATION_BLOCKS);
+                    .getAtlasManager()
+                    .getAtlasOrThrow(AtlasIds.BLOCKS);
 
             var sprite = atlas.getSprite(testResource);
             var missingno = atlas.getSprite(MissingTextureAtlasSprite.getLocation());
@@ -89,7 +89,7 @@ public class TextureAtlasTests {
                 return;
             }
 
-            var section = sprite.contents().metadata().getSection(sectionType);
+            var section = sprite.contents().getAdditionalMetadata(sectionType);
             if (section.isEmpty()) {
                 test.fail("Required section was not found in sprite contents metadata");
                 return;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -180,7 +_,7 @@
+@@ -179,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
              boolean flag = p_312925_.getIndirectSourceEntity() instanceof Player;
@@ -9,7 +9,7 @@
                  BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_365148_.getBlockEntity(p_312489_) : null;
                  LootParams.Builder lootparams$builder = new LootParams.Builder(p_365148_)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(p_312489_))
-@@ -195,8 +_,7 @@
+@@ -194,8 +_,7 @@
                  p_311951_.getDrops(lootparams$builder).forEach(p_311752_ -> p_312073_.accept(p_311752_, p_312489_));
              }
  
@@ -19,7 +19,7 @@
          }
      }
  
-@@ -346,8 +_,8 @@
+@@ -349,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
@@ -30,7 +30,7 @@
          }
      }
  
-@@ -387,10 +_,13 @@
+@@ -390,10 +_,13 @@
          return this.isRandomlyTicking;
      }
  
@@ -44,7 +44,7 @@
      protected ItemStack getCloneItemStack(LevelReader p_382795_, BlockPos p_383120_, BlockState p_382830_, boolean p_388788_) {
          return new ItemStack(this.asItem());
      }
-@@ -407,6 +_,10 @@
+@@ -410,6 +_,10 @@
          return this.properties.destroyTime;
      }
  
@@ -55,7 +55,7 @@
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private static final Direction[] DIRECTIONS = Direction.values();
          private static final VoxelShape[] EMPTY_OCCLUSION_SHAPES = Util.make(
-@@ -508,7 +_,12 @@
+@@ -511,7 +_,12 @@
                  this.occlusionShapesByFace = new VoxelShape[DIRECTIONS.length];
  
                  for (Direction direction : DIRECTIONS) {
@@ -69,7 +69,7 @@
                  }
              }
  
-@@ -563,12 +_,14 @@
+@@ -566,14 +_,18 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -84,8 +84,12 @@
 +            return this.getBlock().isAir((BlockState)this);
          }
  
++        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#ignitedByLava(BlockGetter, BlockPos, Direction)} instead */
++        @Deprecated
          public boolean ignitedByLava() {
-@@ -581,9 +_,11 @@
+             return this.ignitedByLava;
+         }
+@@ -584,9 +_,11 @@
          }
  
          public MapColor getMapColor(BlockGetter p_285002_, BlockPos p_285293_) {
@@ -98,7 +102,7 @@
          public BlockState rotate(Rotation p_60718_) {
              return this.getBlock().rotate(this.asState(), p_60718_);
          }
-@@ -637,6 +_,8 @@
+@@ -640,6 +_,8 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -107,7 +111,7 @@
              return this.pushReaction;
          }
  
-@@ -764,6 +_,9 @@
+@@ -766,6 +_,9 @@
          }
  
          public InteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
@@ -117,7 +121,7 @@
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
-@@ -873,6 +_,7 @@
+@@ -879,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
@@ -125,7 +129,7 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -1002,7 +_,7 @@
+@@ -1008,7 +_,7 @@
          BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (p_360193_, p_360194_, p_360195_, p_360196_) -> p_360193_.isFaceSturdy(
                  p_360194_, p_360195_, Direction.UP
              )

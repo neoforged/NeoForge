@@ -9,17 +9,17 @@
 +
 +    public void hurtBlockingItem(Level p_400285_, ItemStack p_399533_, LivingEntity p_400149_, InteractionHand p_400151_, float p_399754_, int fixedDamage) {
          if (p_400149_ instanceof Player player) {
-             if (!p_400285_.isClientSide) {
+             if (!p_400285_.isClientSide()) {
                  player.awardStat(Stats.ITEM_USED.get(p_399533_.getItem()));
              }
  
 -            int i = this.itemDamage.apply(p_399754_);
 -            if (i > 0) {
--                p_399533_.hurtAndBreak(i, p_400149_, LivingEntity.getSlotForHand(p_400151_));
+-                p_399533_.hurtAndBreak(i, p_400149_, p_400151_.asEquipmentSlot());
 +            int i = fixedDamage < 0 ? this.itemDamage.apply(p_399754_) : fixedDamage;
 +            if (i > 0 && p_400285_ instanceof ServerLevel serverLevel) {
 +                p_399533_.hurtAndBreak(i, serverLevel, p_400149_, item -> {
-+                    p_400149_.onEquippedItemBroken(item, LivingEntity.getSlotForHand(p_400151_));
++                    p_400149_.onEquippedItemBroken(item, p_400151_.asEquipmentSlot());
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, player.getUseItem(), p_400151_);
 +                    player.stopUsingItem(); // Neo: Fix MC-168573 ("After breaking a shield, the player's off-hand can't finish using some items")
 +                });

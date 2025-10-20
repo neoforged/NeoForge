@@ -46,9 +46,10 @@ public abstract class BlockTagCopyingItemTagProvider extends IntrinsicHolderTags
         return super.createContentsProvider().thenCombine(this.blockTags, (provider, blockTags) -> {
             this.tagsToCopy.forEach((fromBlockTag, toItemTag) -> {
                 var toBuilder = this.getOrCreateRawBuilder(toItemTag);
-                var fromBuilder = blockTags.apply(fromBlockTag);
-                var fromTags = fromBuilder.orElseThrow(() -> new IllegalStateException("Missing block tag " + toItemTag.location())).build();
+                var fromBuilder = blockTags.apply(fromBlockTag).orElseThrow(() -> new IllegalStateException("Missing block tag " + toItemTag.location()));
+                var fromTags = fromBuilder.build();
                 fromTags.forEach(toBuilder::add);
+                fromBuilder.getRemoveEntries().forEach(toBuilder::remove);
             });
             return provider;
         });

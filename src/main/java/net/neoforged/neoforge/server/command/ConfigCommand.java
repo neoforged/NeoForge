@@ -9,6 +9,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.io.File;
+import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -18,8 +19,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.StringUtils;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class ConfigCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -32,7 +32,7 @@ public class ConfigCommand {
         SERVER;
 
         public String extension() {
-            return StringUtils.toLowerCase(name());
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 
@@ -52,7 +52,7 @@ public class ConfigCommand {
                 // Click action not allowed on dedicated servers or connected LAN players as neither cannot click a link to a file on the server/LAN owner.
                 // Only provide click action for single player world owners calling this command from in-game.
                 ServerPlayer caller = context.getSource().getPlayer();
-                if (FMLLoader.getDist().isClient() && caller != null && caller.connection.getConnection().isMemoryConnection()) {
+                if (FMLEnvironment.getDist().isClient() && caller != null && caller.connection.getConnection().isMemoryConnection()) {
                     fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(f)));
                 }
 

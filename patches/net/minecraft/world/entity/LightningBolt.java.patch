@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
-@@ -40,6 +_,7 @@
+@@ -39,6 +_,7 @@
      private ServerPlayer cause;
      private final Set<Entity> hitEntities = Sets.newHashSet();
      private int blocksSetOnFire;
@@ -8,14 +8,7 @@
  
      public LightningBolt(EntityType<? extends LightningBolt> p_20865_, Level p_20866_) {
          super(p_20865_, p_20866_);
-@@ -69,11 +_,20 @@
-     private void powerLightningRod() {
-         BlockPos blockpos = this.getStrikePosition();
-         BlockState blockstate = this.level().getBlockState(blockpos);
--        if (blockstate.is(Blocks.LIGHTNING_ROD)) {
-+        // Neo: support custom LightningRodBlocks
-+        if (blockstate.getBlock() instanceof LightningRodBlock) {
-             ((LightningRodBlock)blockstate.getBlock()).onLightningStrike(blockstate, this.level(), blockpos);
+@@ -73,6 +_,14 @@
          }
      }
  
@@ -30,7 +23,7 @@
      @Override
      public void tick() {
          super.tick();
-@@ -152,6 +_,7 @@
+@@ -151,6 +_,7 @@
                      );
  
                  for (Entity entity : list1) {
@@ -38,13 +31,3 @@
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }
  
-@@ -192,7 +_,8 @@
-         BlockState blockstate = p_147151_.getBlockState(p_147152_);
-         BlockPos blockpos;
-         BlockState blockstate1;
--        if (blockstate.is(Blocks.LIGHTNING_ROD)) {
-+        // Neo: support custom LightningRodBlocks
-+        if (blockstate.getBlock() instanceof LightningRodBlock) {
-             blockpos = p_147152_.relative(blockstate.getValue(LightningRodBlock.FACING).getOpposite());
-             blockstate1 = p_147151_.getBlockState(blockpos);
-         } else {

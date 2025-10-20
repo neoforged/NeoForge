@@ -43,7 +43,7 @@ public class CustomPlantTypeTest {
     public static void registerBlocks(RegisterEvent event) {
         event.register(Registries.BLOCK, helper -> {
             helper.register(CUSTOM_SOIL.getId(), new CustomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).setId(CUSTOM_SOIL.unwrapKey().orElseThrow())));
-            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().sound(SoundType.GRASS).setId(CUSTOM_PLANT.unwrapKey().orElseThrow())));
+            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().sound(SoundType.GRASS).setId(CUSTOM_PLANT.unwrapKey().orElseThrow())));
         });
     }
 

@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
@@ -47,11 +46,11 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final ModelBakery.BakingResult bakingResult;
-        private final Function<Material, TextureAtlasSprite> textureGetter;
+        private final Function<ResourceLocation, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<ResourceLocation, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
             this.bakingResult = bakingResult;
             this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
@@ -65,13 +64,11 @@ public abstract class ModelEvent extends Event {
         }
 
         /**
-         * Returns a lookup function to retrieve {@link TextureAtlasSprite}s by name from any of the atlases handled by
-         * the {@link ModelManager}. See {@link ModelManager#VANILLA_ATLASES} for the atlases accessible through the
-         * returned function
+         * Returns a lookup function to retrieve {@link TextureAtlasSprite}s by name from the block atlas.
          *
          * @return a function to lookup sprites from an atlas by name
          */
-        public Function<Material, TextureAtlasSprite> getTextureGetter() {
+        public Function<ResourceLocation, TextureAtlasSprite> getTextureGetter() {
             return textureGetter;
         }
 

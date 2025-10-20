@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
-@@ -23,6 +_,11 @@
+@@ -25,6 +_,11 @@
      public long lastKeySelection;
      private KeyBindsList keyBindsList;
      private Button resetButton;
@@ -12,7 +12,7 @@
  
      public KeyBindsScreen(Screen p_344996_, Options p_344771_) {
          super(p_344996_, p_344771_, TITLE);
-@@ -41,7 +_,7 @@
+@@ -43,7 +_,7 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
              for (KeyMapping keymapping : this.options.keyMappings) {
@@ -21,65 +21,64 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -72,18 +_,68 @@
+@@ -74,18 +_,67 @@
      @Override
-     public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
+     public boolean keyPressed(KeyEvent p_446842_) {
          if (this.selectedKey != null) {
--            if (p_345810_ == 256) {
-+            var key = InputConstants.getKey(p_345810_, p_345447_);
-+            if (lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
-+                lastPressedModifier = key;
-+                isLastModifierHeldDown = true;
+-            if (p_446842_.isEscape()) {
++            var key = InputConstants.getKey(p_446842_);
++            if (this.lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
++                this.lastPressedModifier = key;
++                this.isLastModifierHeldDown = true;
 +            } else {
-+                lastPressedKey = key;
-+                isLastKeyHeldDown = true;
++                this.lastPressedKey = key;
++                this.isLastKeyHeldDown = true;
 +            }
 +            return true;
 +        } else {
-+            return super.keyPressed(p_345810_, p_345447_, p_344981_);
++            return super.keyPressed(p_446842_);
 +        }
 +    }
 +
-+    // Neo: This method is overridden to more easily handle modifier keys
 +    @Override
-+    public boolean keyReleased(int p_94715_, int p_94716_, int p_94717_) {
++    public boolean keyReleased(KeyEvent event) {
 +        // We ignore events from keys with the scan code 63 as they're emitted
 +        // (only as RELEASE, not PRESS) by Mac systems to indicate that "Fn" is being pressed
 +        // See https://github.com/neoforged/NeoForge/issues/1683
-+        if (this.selectedKey != null && (!net.minecraft.client.Minecraft.ON_OSX || p_94716_ != 63)) {
-+            if (p_94715_ == 256) {
++        if (this.selectedKey != null && (!net.minecraft.client.input.InputQuirks.ON_OSX || event.scancode() != 63)) {
++            if (event.isEscape()) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);
-+                lastPressedKey = InputConstants.UNKNOWN;
-+                lastPressedModifier = InputConstants.UNKNOWN;
-+                isLastKeyHeldDown = false;
-+                isLastModifierHeldDown = false;
++                this.lastPressedKey = InputConstants.UNKNOWN;
++                this.lastPressedModifier = InputConstants.UNKNOWN;
++                this.isLastKeyHeldDown = false;
++                this.isLastModifierHeldDown = false;
              } else {
--                this.selectedKey.setKey(InputConstants.getKey(p_345810_, p_345447_));
+-                this.selectedKey.setKey(InputConstants.getKey(p_446842_));
 -            }
-+                var key = InputConstants.getKey(p_94715_, p_94716_);
-+                if (lastPressedKey.equals(key)) {
-+                    isLastKeyHeldDown = false;
-+                } else if (lastPressedModifier.equals(key)) {
-+                    isLastModifierHeldDown = false;
++                var key = InputConstants.getKey(event);
++                if (this.lastPressedKey.equals(key)) {
++                    this.isLastKeyHeldDown = false;
++                } else if (this.lastPressedModifier.equals(key)) {
++                    this.isLastModifierHeldDown = false;
 +                }
  
-+                if (!isLastKeyHeldDown && !isLastModifierHeldDown) {
-+                    if (!lastPressedKey.equals(InputConstants.UNKNOWN)) {
++                if (!this.isLastKeyHeldDown && !this.isLastModifierHeldDown) {
++                    if (!this.lastPressedKey.equals(InputConstants.UNKNOWN)) {
 +                        this.selectedKey.setKeyModifierAndCode(
-+                                net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(lastPressedModifier),
-+                                lastPressedKey
++                                net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(this.lastPressedModifier),
++                                this.lastPressedKey
 +                        );
-+                        this.selectedKey.setKey(lastPressedKey);
++                        this.selectedKey.setKey(this.lastPressedKey);
 +                    } else {
 +                        this.selectedKey.setKeyModifierAndCode(
 +                                net.neoforged.neoforge.client.settings.KeyModifier.NONE,
-+                                lastPressedModifier
++                                this.lastPressedModifier
 +                        );
-+                        this.selectedKey.setKey(lastPressedModifier);
++                        this.selectedKey.setKey(this.lastPressedModifier);
 +                    }
-+                    lastPressedKey = InputConstants.UNKNOWN;
-+                    lastPressedModifier = InputConstants.UNKNOWN;
++                    this.lastPressedKey = InputConstants.UNKNOWN;
++                    this.lastPressedModifier = InputConstants.UNKNOWN;
 +                } else {
 +                    return true;
 +                }
@@ -89,8 +88,8 @@
              this.keyBindsList.resetMappingAndUpdateButtons();
              return true;
          } else {
--            return super.keyPressed(p_345810_, p_345447_, p_344981_);
-+            return super.keyReleased(p_94715_, p_94716_, p_94717_);
+-            return super.keyPressed(p_446842_);
++            return super.keyReleased(event);
          }
      }
  

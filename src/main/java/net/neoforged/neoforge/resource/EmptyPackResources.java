@@ -30,7 +30,7 @@ public class EmptyPackResources extends AbstractPackResources {
     @Nullable
     @Override
     public <T> T getMetadataSection(MetadataSectionType<T> type) {
-        return PackMetadataSection.TYPE.equals(type) ? (T) this.packMeta : null;
+        return PackMetadataSection.CLIENT_TYPE.equals(type) || PackMetadataSection.SERVER_TYPE.equals(type) ? (T) this.packMeta : null;
     }
 
     @Override

@@ -418,9 +418,9 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, boolean includeName) {
         player.captureDrops(Lists.newArrayList());
-        ItemEntity ret = player.drop(item, false, includeName);
+        ItemEntity ret = player.drop(item, dropAround, includeName);
         player.captureDrops(null);
 
         if (ret == null)
@@ -430,7 +430,7 @@ public class CommonHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return null;
 
-        if (!player.level().isClientSide)
+        if (!player.level().isClientSide())
             player.level().addFreshEntity(event.getEntity());
         return event.getEntity();
     }
@@ -770,10 +770,19 @@ public class CommonHooks {
         return e.getXp();
     }
 
+    /**
+     * @deprecated Use {@link #onGrindstoneTake(Container, ContainerLevelAccess, Player, Function) the player version} instead
+     */
+    @Deprecated(forRemoval = true, since = "1.21.8")
     public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction) {
+        return onGrindstoneTake(inputSlots, access, null, xpFunction);
+    }
+
+    //TODO remove nullable annotation from player once method above is removed
+    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, @Nullable Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
-            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
+            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(access, player, inputSlots.getItem(0), inputSlots.getItem(1), xp);
             if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
                 return;
             }
@@ -1034,7 +1043,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }
@@ -1455,7 +1464,7 @@ public class CommonHooks {
             }
         }
 
-        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
+        if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
         }
     }

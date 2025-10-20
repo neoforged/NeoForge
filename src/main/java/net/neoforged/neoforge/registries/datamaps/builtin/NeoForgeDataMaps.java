@@ -13,21 +13,27 @@ import net.minecraft.world.entity.ai.sensing.VillagerHostilesSensor;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -98,7 +104,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code next_oxidized_stage}, a block that the object should convert into once it changes oxidizing states</li>
+     * <li>{@code next_oxidation_stage}, a block that the object should convert into once it changes oxidizing states</li>
      * </ul>
      *
      * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}
@@ -129,6 +135,20 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
+
+    /**
+     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code stripped_block} - the stripped equivalent of the block after being right-clicked on by an axe.</li>
+     * </ul>
+     *
+     * Note that, upon stripping, all common properties will be copied from the unstripped state to the stripped state.
+     * If you want more advanced behavior, see {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)} and {@link BlockToolModificationEvent}.
+     */
+    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
 
     /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
@@ -182,6 +202,7 @@ public class NeoForgeDataMaps {
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
+        event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);

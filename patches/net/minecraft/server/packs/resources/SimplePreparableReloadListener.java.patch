@@ -8,4 +8,4 @@
 +public abstract class SimplePreparableReloadListener<T> extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener {
      @Override
      public final CompletableFuture<Void> reload(
-         PreparableReloadListener.PreparationBarrier p_10780_, ResourceManager p_10781_, Executor p_10784_, Executor p_10785_
+         PreparableReloadListener.SharedState p_434245_, Executor p_10784_, PreparableReloadListener.PreparationBarrier p_10780_, Executor p_10785_

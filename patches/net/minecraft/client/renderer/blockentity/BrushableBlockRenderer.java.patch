@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BrushableBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BrushableBlockRenderer.java
-@@ -81,4 +_,10 @@
+@@ -92,4 +_,10 @@
  
          return afloat;
      }

@@ -28,6 +28,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -75,7 +77,8 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        protected boolean isValidClickButton(int button) {
+        protected boolean isValidClickButton(MouseButtonInfo buttonInfo) {
+            int button = buttonInfo.button();
             return button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
         }
 
@@ -151,13 +154,13 @@ public abstract class AbstractTestScreen extends Screen {
             public abstract void reset();
 
             @Override
-            public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-                if (pButton == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean p_432750_) {
+                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     setSelected(this);
                     return true;
-                } else if (pButton == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                } else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     enable(!isEnabled());
-                } else if (pButton == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+                } else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
                     reset();
                 }
                 return false;
@@ -174,20 +177,17 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void render(GuiGraphics graphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
-                pLeft += 2;
-                pTop += 2;
-
+            public void renderContent(GuiGraphics graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
                 final Test.Status status = framework.tests().getStatus(test.id());
 
                 final int alpha = 0x73000000;
                 final boolean renderTransparent = !isEnabled();
 
                 ResourceLocation icon = TestsOverlay.ICON_BY_RESULT.get(status.result());
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, pLeft, pTop, 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, getContentX(), getContentY(), 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
 
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
-                graphics.drawString(font, title, pLeft + 11, pTop, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+                graphics.drawString(font, title, getContentX() + 11, getContentY(), renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
             }
 
             @Override
@@ -249,13 +249,13 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void render(GuiGraphics graphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void renderContent(GuiGraphics graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
                 if (isTitle) {
-                    graphics.drawCenteredString(font, getTitle(), pLeft + pWidth / 2, pTop + 2, 0xffffffff);
+                    graphics.drawCenteredString(font, getTitle(), getContentXMiddle(), getContentY(), 0xffffffff);
                 } else {
-                    graphics.drawString(font, getTitle(), pLeft + 11, pTop + 2, 0xffffffff);
-                    this.browseButton.setX(pLeft + pWidth - 53);
-                    this.browseButton.setY(pTop - 1);
+                    graphics.drawString(font, getTitle(), getX() + 11, getContentY(), 0xffffffff);
+                    this.browseButton.setX(getX() + getWidth() - 53);
+                    this.browseButton.setY(getY() - 1);
                     // TODO 1.21.6: nextStratum instead? Was increasing z by 100 before.
                     browseButton.render(graphics, pMouseX, pMouseY, pPartialTick);
                 }
@@ -280,15 +280,15 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean p_432750_) {
                 if (isTitle) return false;
 
-                if (browseButton.isMouseOver(pMouseX, pMouseY)) return browseButton.mouseClicked(pMouseX, pMouseY, pButton);
-                if (pButton == GLFW.GLFW_MOUSE_BUTTON_LEFT && (Screen.hasShiftDown() || Screen.hasControlDown())) {
+                if (browseButton.isMouseOver(event.x(), event.y())) return browseButton.mouseClicked(event, p_432750_);
+                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && (event.hasShiftDown() || event.hasControlDown())) {
                     openBrowseGUI();
                     return false;
                 }
-                return super.mouseClicked(pMouseX, pMouseY, pButton);
+                return super.mouseClicked(event, p_432750_);
             }
 
             private void openBrowseGUI() {

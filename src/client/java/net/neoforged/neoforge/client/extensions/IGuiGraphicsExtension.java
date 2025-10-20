@@ -43,7 +43,7 @@ public interface IGuiGraphicsExtension {
         if (textWidth <= maxWidth) {
             self().drawString(font, text, minX, y, color);
         } else {
-            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color);
+            AbstractWidget.renderScrollingString(self(), font, text, minX, y - 1, maxX, y + font.lineHeight, color);
         }
     }
 

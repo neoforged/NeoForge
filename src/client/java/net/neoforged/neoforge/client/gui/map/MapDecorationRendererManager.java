@@ -8,9 +8,9 @@ package net.neoforged.neoforge.client.gui.map;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.MapRenderState;
-import net.minecraft.client.resources.MapDecorationTextureManager;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,15 +25,15 @@ public final class MapDecorationRendererManager {
     public static boolean render(
             MapRenderState.MapDecorationRenderState decorationRenderState,
             PoseStack poseStack,
-            MultiBufferSource bufferSource,
+            SubmitNodeCollector submitNodeCollector,
             MapRenderState mapRenderState,
-            MapDecorationTextureManager decorationTextures,
+            TextureAtlas decorationSprites,
             boolean inItemFrame,
             int packedLight,
             int index) {
         IMapDecorationRenderer decorationRenderer = RENDERERS.get(decorationRenderState.type.value());
         if (decorationRenderer != null) {
-            return decorationRenderer.render(decorationRenderState, poseStack, bufferSource, mapRenderState, decorationTextures, inItemFrame, packedLight, index);
+            return decorationRenderer.render(decorationRenderState, poseStack, submitNodeCollector, mapRenderState, decorationSprites, inItemFrame, packedLight, index);
         }
         return false;
     }

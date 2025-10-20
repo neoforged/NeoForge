@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -167,6 +_,7 @@
+@@ -168,6 +_,7 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
@@ -8,7 +8,7 @@
          ItemStack itemstack = p_155293_.get(3);
          PotionBrewing potionbrewing = p_155291_.potionBrewing();
  
-@@ -174,8 +_,9 @@
+@@ -175,8 +_,9 @@
              p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
          }
  
@@ -19,7 +19,7 @@
          if (!itemstack1.isEmpty()) {
              if (itemstack.isEmpty()) {
                  itemstack = itemstack1;
-@@ -211,13 +_,13 @@
+@@ -212,13 +_,13 @@
  
      @Override
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {

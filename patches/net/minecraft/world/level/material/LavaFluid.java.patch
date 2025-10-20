@@ -20,7 +20,7 @@
                          }
                      }
                  }
-@@ -123,7 +_,7 @@
+@@ -124,7 +_,7 @@
  
      private boolean hasFlammableNeighbours(LevelReader p_76228_, BlockPos p_76229_) {
          for (Direction direction : Direction.values()) {
@@ -29,7 +29,7 @@
                  return true;
              }
          }
-@@ -131,10 +_,20 @@
+@@ -132,10 +_,20 @@
          return false;
      }
  
@@ -44,13 +44,13 @@
 +            return false;
 +        }
 +        BlockState state = level.getBlockState(pos);
-+        return state.ignitedByLava() && state.isFlammable(level, pos, face);
++        return state.ignitedByLava(level, pos, face);
 +    }
 +
      @Nullable
      @Override
      public ParticleOptions getDripParticle() {
-@@ -206,7 +_,7 @@
+@@ -207,7 +_,7 @@
              FluidState fluidstate = p_76220_.getFluidState(p_76221_);
              if (this.is(FluidTags.LAVA) && fluidstate.is(FluidTags.WATER)) {
                  if (p_76222_.getBlock() instanceof LiquidBlock) {

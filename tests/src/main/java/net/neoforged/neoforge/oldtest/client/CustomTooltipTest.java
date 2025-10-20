@@ -19,6 +19,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -52,7 +53,7 @@ public class CustomTooltipTest {
 
     public CustomTooltipTest(IEventBus modEventBus) {
         if (ENABLED) {
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 NeoForge.EVENT_BUS.register(ClientEventHandler.class);
                 modEventBus.register(ClientModBusEventHandler.class);
             }
@@ -98,7 +99,7 @@ public class CustomTooltipTest {
 
         @Override
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
-            if (level.isClientSide && FMLEnvironment.dist.isClient()) {
+            if (level.isClientSide() && FMLEnvironment.getDist().isClient()) {
                 TooltipTestScreen.show();
             }
             return InteractionResult.SUCCESS;
@@ -208,7 +209,7 @@ public class CustomTooltipTest {
         }
 
         private Component getTestComponent(boolean testFont) {
-            return Component.literal("test").withStyle(s -> s.withFont(testFont ? Minecraft.UNIFORM_FONT : Minecraft.DEFAULT_FONT));
+            return Component.literal("test").withStyle(s -> s.withFont(new FontDescription.Resource(testFont ? Minecraft.UNIFORM_FONT : Minecraft.DEFAULT_FONT)));
         }
 
         private void test1(GuiGraphics graphics, int mouseX, int mouseY) {

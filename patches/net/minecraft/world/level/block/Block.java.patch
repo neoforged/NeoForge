@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -70,7 +_,7 @@
+@@ -74,7 +_,7 @@
      public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
@@ -9,7 +9,7 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -228,7 +_,7 @@
+@@ -232,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -18,8 +18,8 @@
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);
-@@ -246,12 +_,22 @@
-             || p_152464_.is(BlockTags.SHULKER_BOXES);
+@@ -288,12 +_,22 @@
+         }
      }
  
 +    /**
@@ -41,7 +41,7 @@
          } else if (voxelshape == Shapes.empty()) {
              return true;
          } else {
-@@ -324,24 +_,30 @@
+@@ -366,24 +_,30 @@
  
      public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
          if (p_49952_ instanceof ServerLevel) {
@@ -76,7 +76,7 @@
          }
      }
  
-@@ -369,19 +_,26 @@
+@@ -411,19 +_,26 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
@@ -106,7 +106,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -451,6 +_,7 @@
+@@ -493,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -114,7 +114,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -534,6 +_,35 @@
+@@ -576,6 +_,35 @@
          return p_394311_.setValue(p_394352_, (T)p_394525_);
      }
  

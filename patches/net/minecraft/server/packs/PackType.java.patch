@@ -7,6 +7,6 @@
 +
 +    @Override
 +    public String getSerializedName() {
-+        return name().toLowerCase();
++        return name().toLowerCase(java.util.Locale.ROOT);
 +    }
  }

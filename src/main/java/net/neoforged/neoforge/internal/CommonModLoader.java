@@ -58,7 +58,7 @@ public abstract class CommonModLoader {
 
         if (!datagen) {
             ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) {
+                if (FMLEnvironment.getDist() == Dist.CLIENT) {
                     ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
                 }
                 ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
@@ -73,7 +73,7 @@ public abstract class CommonModLoader {
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
-                FMLEnvironment.dist.isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
+                FMLEnvironment.getDist().isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
 
         ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
     }

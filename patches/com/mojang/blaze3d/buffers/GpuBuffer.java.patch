@@ -9,5 +9,5 @@
 +     */
 +    public static final int RESERVED_USAGE_BITS = 0xFF << 24;
      private final int usage;
-     public int size;
+     private final int size;
  

@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -91,6 +_,10 @@
-     protected final Map<ResourceLocation, byte[]> serverCookies;
-     protected Map<String, String> customReportDetails;
+@@ -96,6 +_,10 @@
      private ServerLinks serverLinks;
+     protected final Map<UUID, PlayerInfo> seenPlayers;
+     protected boolean seenInsecureChatWarning;
 +    /**
 +     * Holds the current connection type, based on the types of payloads that have been received so far.
 +     */
@@ -11,16 +11,16 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -102,6 +_,8 @@
-         this.serverCookies = p_294647_.serverCookies();
-         this.customReportDetails = p_294647_.customReportDetails();
+@@ -109,6 +_,8 @@
          this.serverLinks = p_294647_.serverLinks();
+         this.seenPlayers = new HashMap<>(p_294647_.seenPlayers());
+         this.seenInsecureChatWarning = p_294647_.seenInsecureChatWarning();
 +        // Neo: Set the connection type based on the cookie from the previous phase.
 +        this.connectionType = p_294647_.connectionType();
      }
  
      public ServerLinks serverLinks() {
-@@ -153,6 +_,33 @@
+@@ -160,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -53,8 +53,8 @@
 +
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
-             PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -346,6 +_,8 @@
+             PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft.packetProcessor());
+@@ -353,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -63,7 +63,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -477,5 +_,15 @@
+@@ -510,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          record PendingRequest(UUID id, URL url, String hash) {
          }
@@ -75,7 +75,7 @@
 +    }
 +
 +    @Override
-+    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
-+        return Minecraft.getInstance();
++    public net.minecraft.network.PacketProcessor getPacketProcessor() {
++        return this.minecraft.packetProcessor();
      }
  }

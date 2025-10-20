@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
 +++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
-@@ -210,9 +_,9 @@
+@@ -212,9 +_,9 @@
                  }
  
                  boolean flag = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().getString("id").isPresent();
@@ -13,7 +13,7 @@
  
                  mob.setPersistenceRequired();
                  spawndata.getEquipment().ifPresent(mob::equip);
-@@ -416,5 +_,14 @@
+@@ -418,5 +_,14 @@
          TrialSpawnerState getState();
  
          void markUpdated();

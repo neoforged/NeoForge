@@ -63,7 +63,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
      */
     public void setRespawnLevel(ResourceKey<Level> respawnLevelResourceKey) {
         MinecraftServer server = Objects.requireNonNull(
-                getEntity().getServer(), "The player is not in a ServerLevel somehow?");
+                getEntity().level().getServer(), "The player is not in a ServerLevel somehow?");
         ServerLevel level = Objects.requireNonNull(
                 server.getLevel(respawnLevelResourceKey), "Level " + respawnLevelResourceKey + " does not exist!");
         TeleportTransition dt = getTeleportTransition();
