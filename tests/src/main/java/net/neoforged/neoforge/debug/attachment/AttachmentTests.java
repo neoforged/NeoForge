@@ -9,9 +9,14 @@ import static net.minecraft.commands.Commands.literal;
 
 import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ProblemReporter;
@@ -22,9 +27,12 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
@@ -36,6 +44,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "attachment")
 public class AttachmentTests {
@@ -157,5 +166,74 @@ public class AttachmentTests {
             });
             helper.succeed();
         });
+    }
+
+    @TestHolder(description = "Tests serialization for an empty object", enabledByDefault = true)
+    static void pseudoEmptyAttachmentSerialization(DynamicTest test, RegistrationHelper reg) {
+        class EmptyObject {
+            @Nullable
+            public Integer value;
+
+            public EmptyObject(Optional<Integer> value) {
+                this.value = value.orElse(null);
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof EmptyObject empty)) return false;
+                return Objects.equals(this.value, empty.value);
+            }
+        }
+
+        class HolderTest extends AttachmentHolder implements ValueIOSerializable {
+            @Override
+            public void serialize(ValueOutput output) {
+                this.serializeAttachments(output);
+            }
+
+            @Override
+            public void deserialize(ValueInput input) {
+                this.deserializeAttachments(input);
+            }
+        }
+
+        var nullableAttachment = reg.attachments()
+                .register("nullable_attachment", () -> AttachmentType.builder(() -> new EmptyObject(Optional.of(1)))
+                        .serialize(RecordCodecBuilder.mapCodec(
+                                instance -> instance.group(
+                                        Codec.INT.optionalFieldOf("value").forGetter(obj -> Optional.ofNullable(obj.value))).apply(instance, EmptyObject::new)))
+                        .build());
+
+        test.framework().modEventBus().addListener((FMLLoadCompleteEvent event) -> event.enqueueWork(() -> {
+            // Serialize and deserialize object
+            var lookup = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+
+            var originalHolder = new HolderTest();
+            originalHolder.setData(nullableAttachment, new EmptyObject(Optional.empty()));
+
+            var output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, lookup);
+            originalHolder.serializeAttachments(output);
+
+            var anotherHolder = new HolderTest();
+            try {
+                // Try to deserialize
+                anotherHolder.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, lookup, output.buildResult()));
+            } catch (Exception e) {
+                // If an exception is thrown
+                test.fail(e.getMessage());
+            }
+
+            // Check if deserialized successfully
+            if (!anotherHolder.hasData(nullableAttachment)) {
+                test.fail("Unable to find nullable attachment data after deserialiation.");
+            }
+
+            // Check if data matches original
+            if (!originalHolder.getData(nullableAttachment).equals(anotherHolder.getData(nullableAttachment))) {
+                test.fail("Data from holder does not match after serialization loop.");
+            }
+
+            test.pass();
+        }));
     }
 }
