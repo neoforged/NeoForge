@@ -13,7 +13,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.neoforged.bus.api.IEventBus;
@@ -33,7 +32,7 @@ public class RedstoneSidedConnectivityTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.registerBlock(BLOCK_ID, EastRedstoneBlock::new, BlockBehaviour.Properties.of());
+    private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.registerBlock(BLOCK_ID, EastRedstoneBlock::new);
     private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerSimpleBlockItem(TEST_REDSTONE_BLOCK);
 
     public RedstoneSidedConnectivityTest(IEventBus modBus) {

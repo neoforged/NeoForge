@@ -473,6 +473,21 @@
      }
  
      @Override
+@@ -2148,7 +_,13 @@
+     }
+ 
+     public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_) {
+-        this.onEquipItem(p_21036_, this.equipment.set(p_21036_, p_21037_), p_21037_);
++        setItemSlot(p_21036_, p_21037_, false);
++    }
++    /** Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
++     * Callers are responsible for performing the deferred side-effects, when the active transaction commits. */
++    public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_, boolean insideTransaction) {
++        var oldStack = this.equipment.set(p_21036_, p_21037_);
++        if (!insideTransaction) this.onEquipItem(p_21036_, oldStack, p_21037_);
+     }
+ 
+     public float getArmorCoverPercentage() {
 @@ -2253,15 +_,18 @@
              }
  

@@ -418,9 +418,9 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, boolean includeName) {
         player.captureDrops(Lists.newArrayList());
-        ItemEntity ret = player.drop(item, false, includeName);
+        ItemEntity ret = player.drop(item, dropAround, includeName);
         player.captureDrops(null);
 
         if (ret == null)

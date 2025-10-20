@@ -53,6 +53,10 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
     @TaskAction
     public void writeUserDevConfig() throws IOException {
+        var features = new UserDevFeatures(
+            true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+        );
+
         var config = new UserDevConfig(
                 2,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
@@ -67,7 +71,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 getLibraries().get(),
                 getTestLibraries().get(),
                 new LinkedHashMap<>(),
-                List.of() /* deprecated: modules */);
+                List.of() /* deprecated: modules */,
+                features);
 
         for (var runType : RunType.values()) {
             List<String> args = new ArrayList<>();
@@ -150,7 +155,11 @@ record UserDevConfig(
         List<String> libraries,
         List<String> testLibraries,
         Map<String, UserDevRunType> runs,
-        List<String> modules) {}
+        List<String> modules,
+        UserDevFeatures features) {}
+
+record UserDevFeatures(
+    boolean noLegacyClasspath) {}
 
 record BinpatcherConfig(
         String version,

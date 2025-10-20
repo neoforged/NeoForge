@@ -1,23 +1,24 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -57,7 +_,12 @@
+@@ -57,7 +_,13 @@
      private final Map<ResourceLocation, ClientItem> clientInfos;
      final Map<ResourceLocation, ResolvedModel> resolvedModels;
      final ResolvedModel missingModel;
 +    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
++    private final net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations;
  
 +    /**
-+     * @deprecated Neo: use {@link #ModelBakery(EntityModelSet, MaterialSet, PlayerSkinRenderCache, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels)} instead
++     * @deprecated Neo: use {@link #ModelBakery(EntityModelSet, MaterialSet, PlayerSkinRenderCache, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
 +     */
 +    @Deprecated
      public ModelBakery(
          EntityModelSet p_388903_,
          MaterialSet p_434703_,
-@@ -67,6 +_,19 @@
+@@ -67,6 +_,20 @@
          Map<ResourceLocation, ResolvedModel> p_388404_,
          ResolvedModel p_404940_
      ) {
-+        this(p_388903_, p_434703_, p_440085_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY);
++        this(p_388903_, p_434703_, p_440085_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +    }
 +
 +    public ModelBakery(
@@ -28,19 +29,29 @@
 +        Map<ResourceLocation, ClientItem> p_250416_,
 +        Map<ResourceLocation, ResolvedModel> p_388404_,
 +        ResolvedModel p_404940_,
-+        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels
++        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels,
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
 +    ) {
          this.entityModelSet = p_388903_;
          this.materials = p_434703_;
          this.playerSkinRenderCache = p_440085_;
-@@ -74,6 +_,7 @@
+@@ -74,6 +_,8 @@
          this.clientInfos = p_250416_;
          this.resolvedModels = p_388404_;
          this.missingModel = p_404940_;
 +        this.standaloneModels = standaloneModels;
++        this.pendingAnimations = pendingAnimations;
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(SpriteGetter p_404922_, Executor p_405407_) {
+@@ -102,6 +_,7 @@
+                                 this.playerSkinRenderCache,
+                                 modelbakery$missingmodels.item,
+                                 p_438822_.registrySwapper()
++                                , this.pendingAnimations
+                             )
+                         );
+                 } catch (Exception exception) {
 @@ -111,6 +_,8 @@
              },
              p_405407_

@@ -75,7 +75,7 @@
 +    }
 +
 +    @Override
-+    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
-+        return Minecraft.getInstance();
++    public net.minecraft.network.PacketProcessor getPacketProcessor() {
++        return this.minecraft.packetProcessor();
      }
  }

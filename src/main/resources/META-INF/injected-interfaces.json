@@ -38,6 +38,9 @@
   "net/minecraft/client/renderer/blockentity/BlockEntityRenderer": [
     "net/neoforged/neoforge/client/extensions/IBlockEntityRendererExtension<T>"
   ],
+  "net/minecraft/client/renderer/texture/atlas/SpriteSource": [
+    "net/neoforged/neoforge/client/extensions/SpriteSourceExtension"
+  ],
   "net/minecraft/client/resources/model/BakedModel": [
     "net/neoforged/neoforge/client/extensions/IBakedModelExtension"
   ],
@@ -101,6 +104,9 @@
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
   ],
+  "net/minecraft/network/PacketProcessor$ListenerAndPacket": [
+    "net/neoforged/neoforge/network/handling/QueuedPacket"
+  ],
   "net/minecraft/network/protocol/PacketFlow": [
     "net/neoforged/neoforge/common/extensions/IPacketFlowExtension"
   ],
@@ -133,6 +139,9 @@
   ],
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
+  ],
+  "net/minecraft/world/Container": [
+    "net/neoforged/neoforge/common/extensions/ContainerExtension"
   ],
   "net/minecraft/world/MenuProvider": [
     "net/neoforged/neoforge/common/extensions/IMenuProviderExtension"

@@ -273,6 +273,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.NETHER_STARS, "Nether Stars");
         add(Tags.Items.NETHERRACKS, "Netherracks");
         add(Tags.Items.NUGGETS, "Nuggets");
+        add(Tags.Items.NUGGETS_COPPER, "Copper Nuggets");
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
         add(Tags.Items.OBSIDIANS, "Obsidians");

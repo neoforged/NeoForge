@@ -91,7 +91,7 @@
      @Nullable
      public ItemEntity drop(ItemStack p_36177_, boolean p_36178_) {
 -        return this.drop(p_36177_, false, p_36178_);
-+        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, p_36177_, p_36178_);
++        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, p_36177_, false, p_36178_);
      }
  
 +    /**

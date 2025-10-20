@@ -108,6 +108,65 @@
      }
  
      private static int getTotalCookTime(ServerLevel p_380169_, AbstractFurnaceBlockEntity p_222694_) {
+@@ -306,17 +_,57 @@
+ 
+     @Override
+     public void setItem(int p_58333_, ItemStack p_58334_) {
++        setItem(p_58333_, p_58334_, false);
++    }
++
++    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
++    @Override
++    public void setItem(int p_58333_, ItemStack p_58334_, boolean insideTransaction) {
+         ItemStack itemstack = this.items.get(p_58333_);
+         boolean flag = !p_58334_.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, p_58334_);
+         this.items.set(p_58333_, p_58334_);
+         p_58334_.limitSize(this.getMaxStackSize(p_58334_));
+-        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel) {
++        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel && !insideTransaction) {
+             this.cookingTotalTime = getTotalCookTime(serverlevel, this);
+             this.cookingTimer = 0;
+             this.setChanged();
+         }
+     }
+ 
++    // Neo: Reset cooking time when the input changes inside a transaction
++    private boolean needsCookingReset = false;
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> cookingResetJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean>() {
++        @Override
++        protected Boolean createSnapshot() {
++            return needsCookingReset;
++        }
++        @Override
++        protected void revertToSnapshot(Boolean snapshot) {
++            needsCookingReset = snapshot;
++        }
++        @Override
++        protected void onRootCommit(Boolean originalState) {
++            if (needsCookingReset) {
++                if (level instanceof ServerLevel serverLevel) {
++                    cookingTotalTime = getTotalCookTime(serverLevel, AbstractFurnaceBlockEntity.this);
++                    cookingTimer = 0;
++                }
++                needsCookingReset = false;
++            }
++        }
++    };
++
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        if (slot == 0) {
++            int currentAmount = getItem(slot).getCount();
++            if (currentAmount == 0 || currentAmount == amountChange) {
++                cookingResetJournal.updateSnapshots(transaction);
++                needsCookingReset = true;
++            }
++        }
++    }
++
+     @Override
+     public boolean canPlaceItem(int p_58389_, ItemStack p_58390_) {
+         if (p_58389_ == 2) {
 @@ -325,7 +_,7 @@
              return true;
          } else {

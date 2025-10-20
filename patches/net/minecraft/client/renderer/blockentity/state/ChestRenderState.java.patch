@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
++++ b/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
+@@ -10,6 +_,8 @@
+     public float open;
+     public float angle;
+     public ChestRenderState.ChestMaterialType material = ChestRenderState.ChestMaterialType.REGULAR;
++    @org.jetbrains.annotations.Nullable
++    public net.minecraft.client.resources.model.Material customMaterial;
+ 
+     @OnlyIn(Dist.CLIENT)
+     public static enum ChestMaterialType {

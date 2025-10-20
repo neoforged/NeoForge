@@ -40,7 +40,7 @@
              return false;
          } else {
              BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-@@ -268,30 +_,45 @@
+@@ -268,30 +_,46 @@
                  return false;
              } else {
                  BlockState blockstate = block.playerWillDestroy(this.level, p_9281_, blockstate1, this.player);
@@ -54,7 +54,7 @@
 -                }
  
                  if (this.player.preventsBlockDrops()) {
-+                    removeBlock(p_9281_, blockstate, false);
++                    removeBlock(p_9281_, blockstate, false, player.getMainHandItem().copy());
                      return true;
                  } else {
                      ItemStack itemstack = this.player.getMainHandItem();
@@ -62,7 +62,7 @@
 -                    boolean flag = this.player.hasCorrectToolForDrops(blockstate);
 +                    boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
                      itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
-+                    boolean flag = removeBlock(p_9281_, blockstate, flag1);
++                    boolean flag = removeBlock(p_9281_, blockstate, flag1, itemstack1.copy());
 +
                      if (flag1 && flag) {
                          block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
@@ -85,10 +85,11 @@
 +     * @param pos The block pos of the destroyed block
 +     * @param state The state of the destroyed block
 +     * @param canHarvest If the player breaking the block can harvest the drops of the block
++     * @param toolStack The players main-hand prior to destroying the block and applying damage to the tool.
 +     * @return If the block was removed, as reported by {@link BlockState#onDestroyedByPlayer}.
 +     */
-+    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest) {
-+        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, canHarvest, this.level.getFluidState(pos));
++    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest, ItemStack toolStack) {
++        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, toolStack, canHarvest, this.level.getFluidState(pos));
 +        if (removed)
 +            state.getBlock().destroy(this.level, pos, state);
 +        return removed;
