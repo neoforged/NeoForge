@@ -8,7 +8,7 @@
 +    }
 +
 +    @Override
-+    protected void dropEquipment(ServerLevel p_348640_) { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
++    protected void dropEquipment(ServerLevel p_348640_) { // NeoForge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
 +        super.dropEquipment(p_348640_);
          ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
          if (!itemstack.isEmpty()) {

@@ -43,7 +43,7 @@ public class ScreenshotEvent extends Event implements ICancellableEvent {
         this.image = image;
         this.screenshotFile = screenshotFile;
         try {
-            this.screenshotFile = screenshotFile.getCanonicalFile(); // FORGE: Fix errors on Windows with paths that include \.\
+            this.screenshotFile = screenshotFile.getCanonicalFile(); // NEOFORGE: Fix errors on Windows with paths that include \.\
         } catch (IOException ignored) {}
     }
 

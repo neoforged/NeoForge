@@ -4,7 +4,7 @@
  
      @Override
      protected void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
-+        if (!p_220909_.isAreaLoaded(p_220910_, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
++        if (!p_220909_.isAreaLoaded(p_220910_, 1)) return; // NeoForge: prevent growing cactus from loading unloaded chunks with block update
          if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
              p_220909_.destroyBlock(p_220910_, true);
          }

@@ -13,7 +13,7 @@
          this.reloadCallback.accept(clientlanguage);
      }
  
-+    private java.util.Locale javaLocale; // Forge: add locale information for modders
++    private java.util.Locale javaLocale; // NeoForge: add locale information for modders
 +    public java.util.Locale getJavaLocale() { return javaLocale; }
      public void setSelected(String p_265224_) {
          this.currentCode = p_265224_;

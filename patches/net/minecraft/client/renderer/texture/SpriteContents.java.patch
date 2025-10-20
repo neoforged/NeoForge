@@ -25,7 +25,7 @@
                  int j = SpriteContents.this.width >> i;
                  int k = SpriteContents.this.height >> i;
 -                this.activeFrame[i] = new NativeImage(j, k, false);
-+                // Forge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
++                // NeoForge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
 +                this.activeFrame[i] = new NativeImage(Math.max(1, j), Math.max(1, k), false);
              }
          }
@@ -34,7 +34,7 @@
                  for (int k = 0; k < this.activeFrame.length; k++) {
                      int l = SpriteContents.this.width >> k;
                      int i1 = SpriteContents.this.height >> k;
-+                    // Forge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
++                    // NeoForge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
 +                    if (l < 1 || i1 < 1)
 +                        continue;
  

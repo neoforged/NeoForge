@@ -68,7 +68,7 @@
          return ResourceLocation.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + p_350882_ + ".png");
      }
  
-+    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
++    /** @deprecated NeoForge: use {@link #builder()} **/ @Deprecated
      public static CreativeModeTab.Builder builder(CreativeModeTab.Row p_259342_, int p_260312_) {
          return new CreativeModeTab.Builder(p_259342_, p_260312_);
      }

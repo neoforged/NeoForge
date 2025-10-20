@@ -104,7 +104,7 @@ public class AnvilUpdateEventTests {
         final int CUSTOM_COST = 7;
         final int CUSTOM_MATERIAL_COST = 3;
 
-        test.whenEnabled(listeners -> listeners.forge().addListener((AnvilUpdateEvent e) -> {
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((AnvilUpdateEvent e) -> {
             e.setOutput(MOCK_OUTPUT.copy());
             e.setXpCost(CUSTOM_COST);
             e.setMaterialCost(CUSTOM_MATERIAL_COST);
@@ -136,7 +136,7 @@ public class AnvilUpdateEventTests {
     @TestHolder(description = "Cancelled event clears output")
     static void cancelClearsOutputTest(DynamicTest test) {
         AtomicBoolean cancel = new AtomicBoolean(false);
-        test.whenEnabled(listeners -> listeners.forge().addListener(
+        test.whenEnabled(listeners -> listeners.neoForge().addListener(
                 (AnvilUpdateEvent e) -> e.setCanceled(cancel.get())));
 
         final String CUSTOM_NAME = "Hoe - 3719436245";
@@ -206,7 +206,7 @@ public class AnvilUpdateEventTests {
     @TestHolder(description = "Slot-specific event firing: right should not fire, left should fire")
     static void slotSpecificEventFiringTest(DynamicTest test) {
         AtomicBoolean eventFired = new AtomicBoolean(false);
-        test.whenEnabled(listeners -> listeners.forge().addListener((AnvilUpdateEvent e) -> eventFired.set(true)));
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((AnvilUpdateEvent e) -> eventFired.set(true)));
 
         withAnvil(test, ctx -> {
             ctx.player.getInventory().setItem(INVENTORY_SLOT_FIRST, sampleStack().copy());

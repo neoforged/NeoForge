@@ -48,7 +48,7 @@ public class PistonTests {
                 .set(1, 0, 0, Blocks.PISTON.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.UP))
                 .set(1, 1, 0, Blocks.COBBLESTONE.defaultBlockState()));
 
-        test.eventListeners().forge().addListener((final PistonEvent.Pre event) -> {
+        test.eventListeners().neoForge().addListener((final PistonEvent.Pre event) -> {
             if (!(event.getLevel() instanceof Level level)) return;
 
             if (event.getPistonMoveType() == PistonEvent.PistonMoveType.EXTEND) {

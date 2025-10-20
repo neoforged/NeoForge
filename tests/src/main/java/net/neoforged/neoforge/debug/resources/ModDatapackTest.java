@@ -45,7 +45,7 @@ public class ModDatapackTest {
             return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
         });
 
-        test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {
+        test.eventListeners().neoForge().addListener((OnDatapackSyncEvent event) -> {
             if (event.getPlayerList().getServer().getAdvancements().get(testAdvancement) != null) {
                 test.pass();
             } else {

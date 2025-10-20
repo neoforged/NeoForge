@@ -23,7 +23,7 @@
      }
  
 +    /**
-+     * @deprecated Forge: Use {@link BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)} instead.
++     * @deprecated NeoForge: Use {@link BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)} instead.
 +     */
 +    @Deprecated
      public static boolean canDestroy(BlockState p_31492_) {

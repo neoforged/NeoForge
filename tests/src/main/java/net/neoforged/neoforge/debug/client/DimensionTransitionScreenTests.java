@@ -32,7 +32,7 @@ public class DimensionTransitionScreenTests {
     static void netherOutgoingTransition(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerOutgoingEffect(Level.NETHER, (tracker, reason) -> new CustomLevelScreen(tracker, reason, NETHER_BG, Component.literal("This displays when returning from the nether!"))));
 
-        test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+        test.eventListeners().neoForge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
             if (event.getFrom() == Level.NETHER) {
                 test.requestConfirmation(player, Component.literal("Did the screen display a netherrack background when traveling through the portal?"));
@@ -45,7 +45,7 @@ public class DimensionTransitionScreenTests {
     static void endIncomingTransition(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerIncomingEffect(Level.END, (tracker, reason) -> new CustomLevelScreen(tracker, reason, END_BG, Component.literal("This displays when going to the end!"))));
 
-        test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+        test.eventListeners().neoForge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
             if (event.getTo() == Level.END) {
                 test.requestConfirmation(player, Component.literal("Did the screen display an end stone background when traveling through the portal?"));

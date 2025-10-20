@@ -243,7 +243,7 @@ public class DataMapTests {
         });
 
         // This is to make sure that sync work
-        test.eventListeners().forge().addListener((final UseItemOnBlockEvent event) -> {
+        test.eventListeners().neoForge().addListener((final UseItemOnBlockEvent event) -> {
             if (event.getLevel().isClientSide() && event.getHand() == InteractionHand.MAIN_HAND) {
                 event.getPlayer().displayClientMessage(Component.literal("Attachment value: " + event.getItemStack().getItemHolder()
                         .getData(someData)), true);
@@ -290,7 +290,7 @@ public class DataMapTests {
             }
         });
 
-        test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
+        test.eventListeners().neoForge().addListener((final LivingDamageEvent.Post event) -> {
             final ExperienceGrant grant = event.getSource().typeHolder().getData(xpGrant);
             if (grant != null && event.getEntity() instanceof Player player) {
                 player.giveExperiencePoints(grant.amount());
@@ -322,7 +322,7 @@ public class DataMapTests {
             }
         });
 
-        test.eventListeners().forge().addListener((final BlockEvent.EntityPlaceEvent event) -> {
+        test.eventListeners().neoForge().addListener((final BlockEvent.EntityPlaceEvent event) -> {
             var table = event.getPlacedBlock().getBlock().getLootTable();
             if (table.isEmpty()) return;
             final var grant = event.getLevel().getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(table.get()).getData(effectGrant);

@@ -4,7 +4,7 @@
  import net.minecraft.world.entity.EntityType;
  
  public class EntityTypeTagsProvider extends IntrinsicHolderTagsProvider<EntityType<?>> {
-+    /** @deprecated Forge: Use the {@linkplain #EntityTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #EntityTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public EntityTypeTagsProvider(PackOutput p_256095_, CompletableFuture<HolderLookup.Provider> p_256572_) {
 -        super(p_256095_, Registries.ENTITY_TYPE, p_256572_, p_256665_ -> p_256665_.builtInRegistryHolder().key());

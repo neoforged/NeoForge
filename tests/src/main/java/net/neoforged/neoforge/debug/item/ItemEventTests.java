@@ -26,7 +26,7 @@ public class ItemEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ItemAttributeModifierEvent allows modifying attributes")
     static void itemAttributeModifier(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ItemAttributeModifierEvent event) -> {
+        test.eventListeners().neoForge().addListener((final ItemAttributeModifierEvent event) -> {
             if (event.getItemStack().getItem() == Items.APPLE) {
                 ResourceLocation modifierId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "apple_armor");
                 event.addModifier(Attributes.ARMOR, new AttributeModifier(modifierId, 10f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);

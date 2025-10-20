@@ -41,7 +41,7 @@ public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec
         return elementCodec;
     }
 
-    @Override // FORGE: Modified from decode() in BaseMapCodec
+    @Override // NEOFORGE: Modified from decode() in BaseMapCodec
     public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
         final ImmutableMap.Builder<K, V> read = ImmutableMap.builder();
 

@@ -26,7 +26,7 @@
          @Nullable
          private RandomSource random;
 +        @Nullable
-+        private ResourceLocation queriedLootTableId; // Forge: correctly pass around loot table ID with copy constructor
++        private ResourceLocation queriedLootTableId; // NeoForge: correctly pass around loot table ID with copy constructor
  
          public Builder(LootParams p_287628_) {
              this.params = p_287628_;
@@ -68,7 +68,7 @@
              return this.param;
 +        }
 +
-+        // Forge: This method is patched in to expose the same name used in getByName so that ContextNbtProvider#forEntity serializes it properly
++        // NeoForge: This method is patched in to expose the same name used in getByName so that ContextNbtProvider#forEntity serializes it properly
 +        public String getName() {
 +            return this.name;
          }

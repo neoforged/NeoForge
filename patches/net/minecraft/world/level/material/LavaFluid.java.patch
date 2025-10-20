@@ -33,7 +33,7 @@
          return false;
      }
  
-+    /** @deprecated Forge: use {@link LavaFluid#isFlammable(LevelReader,BlockPos,Direction)} instead */
++    /** @deprecated NeoForge: use {@link LavaFluid#isFlammable(LevelReader,BlockPos,Direction)} instead */
 +    @Deprecated
      private boolean isFlammable(LevelReader p_76246_, BlockPos p_76247_) {
          return p_76246_.isInsideBuildHeight(p_76247_.getY()) && !p_76246_.hasChunkAt(p_76247_) ? false : p_76246_.getBlockState(p_76247_).ignitedByLava();

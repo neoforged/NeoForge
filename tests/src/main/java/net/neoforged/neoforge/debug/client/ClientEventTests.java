@@ -133,7 +133,7 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             var item = Items.IRON_BLOCK;
             var itemStack = item.getDefaultInstance();
-            listeners.forge().addListener((final RenderPlayerEvent.Post event) -> {
+            listeners.neoForge().addListener((final RenderPlayerEvent.Post event) -> {
                 event.getPoseStack().pushPose();
                 event.getPoseStack().translate(0, 2, 0);
 
@@ -170,7 +170,7 @@ public class ClientEventTests {
             } catch (IllegalArgumentException ignored) {}
         });
         test.whenEnabled(listeners -> {
-            listeners.forge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
+            listeners.neoForge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
                 int numRender = event.getRenderState().getRenderDataOrDefault(numRenderAttachmentKey, -1);
                 if (numRender == -1) {
                     test.fail("Attachment render data not set");
@@ -206,7 +206,7 @@ public class ClientEventTests {
     @TestHolder(description = { "Tests if rendering custom geometry on visible chunks works", "When the message \"gold block\" is sent in chat, gold blocks should render at the origin of every visible section with blocks" })
     static void renderLevelStageWithSectionData(final DynamicTest test) {
         test.whenEnabled(listeners -> {
-            listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
+            listeners.neoForge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
                     NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterOpaqueBlocks event) -> {
                         var randomSource = new SingleThreadedRandomSource(0);

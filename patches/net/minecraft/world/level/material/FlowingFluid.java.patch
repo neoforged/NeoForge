@@ -28,7 +28,7 @@
 +    }
 +
 +    /**
-+     * @deprecated Forge: Use {@link #canConvertToSource(FluidState, ServerLevel, BlockPos)} instead.
++     * @deprecated NeoForge: Use {@link #canConvertToSource(FluidState, ServerLevel, BlockPos)} instead.
 +     */
 +    @Deprecated
      protected abstract boolean canConvertToSource(ServerLevel p_376940_);

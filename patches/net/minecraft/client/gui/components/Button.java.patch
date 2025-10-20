@@ -6,7 +6,7 @@
  
 +    protected Button(Builder builder) {
 +        this(builder.x, builder.y, builder.width, builder.height, builder.message, builder.onPress, builder.createNarration);
-+        setTooltip(builder.tooltip); // Forge: Make use of the Builder tooltip
++        setTooltip(builder.tooltip); // NeoForge: Make use of the Builder tooltip
 +    }
 +
      @Override

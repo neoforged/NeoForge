@@ -138,7 +138,7 @@ import net.neoforged.neoforge.fluids.crafting.SimpleFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.display.FluidSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
+import net.neoforged.neoforge.neoforge.snapshots.NeoForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
@@ -531,7 +531,7 @@ public class NeoForgeMod {
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), SharedConstants.getCurrentVersion().name());
-        ForgeSnapshotsMod.logStartupWarning();
+        NeoForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
 

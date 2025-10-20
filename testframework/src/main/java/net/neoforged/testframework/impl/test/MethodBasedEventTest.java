@@ -52,7 +52,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
     @Override
     public void onEnabled(Test.EventListenerGroup buses) {
         super.onEnabled(buses);
-        (modBus ? buses.mod() : buses.forge()).addListener(priority, receiveCancelled, eventClass, event -> {
+        (modBus ? buses.mod() : buses.neoForge()).addListener(priority, receiveCancelled, eventClass, event -> {
             try {
                 handle.invoke(event, this);
             } catch (Throwable throwable) {

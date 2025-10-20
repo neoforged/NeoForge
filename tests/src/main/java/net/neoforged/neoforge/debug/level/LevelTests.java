@@ -49,7 +49,7 @@ public class LevelTests {
         final GameRules.Key<GameRules.BooleanValue> booleanGameRule = GameRules.register("%s:custom_boolean_game_rule".formatted(test.createModId()), GameRules.Category.MISC, GameRules.BooleanValue.create(true));
         final GameRules.Key<GameRules.IntegerValue> integerGameRule = GameRules.register("%s:custom_integer_game_rule".formatted(test.createModId()), GameRules.Category.MISC, GameRules.IntegerValue.create(1337));
 
-        test.eventListeners().forge().addListener((EntityTickEvent.Pre event) -> {
+        test.eventListeners().neoForge().addListener((EntityTickEvent.Pre event) -> {
             if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().name().equals("test-mock-player")) {
                 if (player.level().getServer().getGameRules().getBoolean(booleanGameRule)) {
                     player.setHealth(player.getHealth() - player.level().getServer().getGameRules().getInt(integerGameRule));

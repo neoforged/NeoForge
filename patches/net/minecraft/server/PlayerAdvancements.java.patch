@@ -4,7 +4,7 @@
      }
  
      public boolean award(AdvancementHolder p_300979_, String p_135990_) {
-+        // Forge: don't grant advancements for fake players
++        // NeoForge: don't grant advancements for fake players
 +        if (this.player instanceof net.neoforged.neoforge.common.util.FakePlayer) return false;
          boolean flag = false;
          AdvancementProgress advancementprogress = this.getOrStartProgress(p_300979_);

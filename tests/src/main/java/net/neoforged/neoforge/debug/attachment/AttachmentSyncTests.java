@@ -77,7 +77,7 @@ public class AttachmentSyncTests {
 
         test.whenEnabled(listeners -> {
             var value = new Random().nextInt(Integer.MAX_VALUE);
-            listeners.forge().addListener((final PlayerTickEvent.Post tickEvent) -> {
+            listeners.neoForge().addListener((final PlayerTickEvent.Post tickEvent) -> {
                 if (tickEvent.getEntity() instanceof ServerPlayer sp && sp.getData(attachment) != value) {
                     sp.setData(attachment, value);
                     PacketDistributor.sendToPlayer(sp, new ExpectAttachmentValuePayload(value));

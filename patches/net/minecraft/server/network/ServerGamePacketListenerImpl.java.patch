@@ -103,7 +103,7 @@
 -                Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
 +                Component component = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent());
                  this.chatMessageChain.append(completablefuture, p_300785_ -> {
-+                    if (component == null) return; // Forge: ServerChatEvent was canceled if this is null.
++                    if (component == null) return; // NeoForge: ServerChatEvent was canceled if this is null.
                      PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                      this.broadcastChatMessage(playerchatmessage1);
                  });

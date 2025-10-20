@@ -120,7 +120,7 @@
      }
  
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
++    @Deprecated // NEOFORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> p_204045_) {
 +        this.jumpInLiquidInternal(() -> super.jumpInLiquid(p_204045_));
 +    }

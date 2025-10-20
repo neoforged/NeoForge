@@ -4,7 +4,7 @@
  import net.minecraft.world.level.block.entity.BannerPatterns;
  
  public class BannerPatternTagsProvider extends KeyTagProvider<BannerPattern> {
-+    /** @deprecated Forge: Use the {@linkplain #BannerPatternTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #BannerPatternTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_) {
          super(p_256451_, Registries.BANNER_PATTERN, p_256420_);

@@ -29,7 +29,7 @@ public class CraftingEventTests {
     static void itemSmeltedEventTest(final DynamicTest test) {
         AtomicInteger timesFired = new AtomicInteger(0);
         test.whenEnabled(listeners -> {
-            listeners.forge().addListener((final PlayerEvent.ItemSmeltedEvent event) -> {
+            listeners.neoForge().addListener((final PlayerEvent.ItemSmeltedEvent event) -> {
                 timesFired.incrementAndGet();
                 var removed = event.getAmountRemoved();
                 if (removed != 32) {

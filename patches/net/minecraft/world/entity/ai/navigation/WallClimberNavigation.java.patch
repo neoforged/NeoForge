@@ -5,7 +5,7 @@
          } else {
              if (this.pathToPosition != null) {
 -                if (!this.pathToPosition.closerToCenterThan(this.mob.position(), this.mob.getBbWidth())
-+                // FORGE: Fix MC-94054
++                // NEOFORGE: Fix MC-94054
 +                if (!this.pathToPosition.closerToCenterThan(this.mob.position(), Math.max(this.mob.getBbWidth(), 1.0D))
                      && (
                          !(this.mob.getY() > this.pathToPosition.getY())

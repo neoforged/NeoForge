@@ -77,7 +77,7 @@ public class TextureAtlasTests {
             event.addAdditionalMetadata(AtlasIds.BLOCKS, sectionType);
         });
 
-        test.eventListeners().forge().addListener((ClientResourceLoadFinishedEvent event) -> {
+        test.eventListeners().neoForge().addListener((ClientResourceLoadFinishedEvent event) -> {
             var atlas = Minecraft.getInstance()
                     .getAtlasManager()
                     .getAtlasOrThrow(AtlasIds.BLOCKS);

@@ -60,7 +60,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the player NameFormat event allows changing a player's name")
     static void playerNameEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.NameFormat event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerEvent.NameFormat event) -> {
             if (event.getEntity().getGameProfile().name().equals("test-mock-player")) {
                 event.setDisplayname(Component.literal("hello world"));
             }
@@ -81,7 +81,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the UseItemOnBlockEvent fires, cancelling item logic if dirt is placed on top of dispenser")
     static void useItemOnBlockEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final UseItemOnBlockEvent event) -> {
+        test.eventListeners().neoForge().addListener((final UseItemOnBlockEvent event) -> {
             UseOnContext context = event.getUseOnContext();
             Level level = context.getLevel();
             // cancel item logic if dirt is placed on top of dispenser
@@ -116,7 +116,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the on entity interact event is fired")
     static void entityInteractEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerInteractEvent.EntityInteractSpecific event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerInteractEvent.EntityInteractSpecific event) -> {
             if (event.getTarget().getType() == EntityType.ILLUSIONER) {
                 String oldName = event.getTarget().getName().getString();
                 event.getTarget().setCustomName(Component.literal(oldName + " entityInteractEventTest"));
@@ -136,7 +136,7 @@ public class PlayerEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ItemPickupEvent fires")
     public static void itemPickupEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((ItemEntityPickupEvent.Post event) -> {
+        test.eventListeners().neoForge().addListener((ItemEntityPickupEvent.Post event) -> {
             if (event.getOriginalStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too
@@ -165,7 +165,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerChangeGameModeEvent is fired and can modify the outcome")
     static void playerChangeGameModeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerChangeGameModeEvent event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerEvent.PlayerChangeGameModeEvent event) -> {
             // Only affect the players with a custom name to not interfere with other tests
             if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("gamemode-changes"))) {
                 return;
@@ -197,7 +197,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PermissionsChangedEvent is fired, by preventing players from being de-op'd")
     static void permissionsChangedEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PermissionsChangedEvent event) -> {
+        test.eventListeners().neoForge().addListener((final PermissionsChangedEvent event) -> {
             if (Objects.equals(event.getEntity().getCustomName(), Component.literal("permschangedevent")) && event.getOldLevel() == Commands.LEVEL_ADMINS) {
                 event.setCanceled(true);
                 test.pass();
@@ -218,12 +218,12 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the StatsAwardEvent properly modifies stats stored per player")
     static void changeStatAward(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
+        test.eventListeners().neoForge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
             //when damage is dealt, instead record this stat as a bell ring
             if (event.getStat().equals(Stats.CUSTOM.get(Stats.DAMAGE_TAKEN)))
                 event.setStat(Stats.CUSTOM.get(Stats.BELL_RING));
         });
-        test.eventListeners().forge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
+        test.eventListeners().neoForge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
             //when awarded stats for breeding, multiply the value by 10
             if (event.getStat().equals(Stats.CUSTOM.get(Stats.ANIMALS_BRED)))
                 event.setValue(event.getValue() * 10);
@@ -246,7 +246,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if ArmorHurtEvent fires and prevents armor damage.")
     static void armorHurtEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ArmorHurtEvent event) -> {
+        test.eventListeners().neoForge().addListener((final ArmorHurtEvent event) -> {
             if (event.getEntity() instanceof Player player && player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE))
                 event.setNewDamage(EquipmentSlot.CHEST, 5);
         });
@@ -268,7 +268,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerRespawnPositionEvent fires correctly and can change where the player respawns")
     static void playerRespawnPositionEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerRespawnPositionEvent event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerRespawnPositionEvent event) -> {
             // Only affect the players with a custom name to not interfere with other tests
             if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("respawn-position-test"))) {
                 return;
@@ -303,7 +303,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can modify the player after respawning")
     static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerRespawnEvent event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerEvent.PlayerRespawnEvent event) -> {
             event.getEntity().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.APPLE));
         });
 

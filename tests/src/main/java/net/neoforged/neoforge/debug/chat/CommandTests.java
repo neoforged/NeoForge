@@ -43,7 +43,7 @@ public class CommandTests {
     @EmptyTemplate
     @TestHolder(description = { "Tests if the command event works", "Redirects /attribute with no arguments to effect" })
     static void commandEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final CommandEvent event) -> {
+        test.eventListeners().neoForge().addListener((final CommandEvent event) -> {
             CommandDispatcher<CommandSourceStack> dispatcher = event.getParseResults().getContext().getDispatcher();
             List<ParsedCommandNode<CommandSourceStack>> nodes = event.getParseResults().getContext().getNodes();
             CommandSourceStack source = event.getParseResults().getContext().getSource();

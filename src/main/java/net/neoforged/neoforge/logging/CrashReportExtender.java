@@ -22,7 +22,7 @@ import net.neoforged.fml.ISystemReportExtender;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.logging.TransformingThrowablePatternConverter;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
+import net.neoforged.neoforge.neoforge.snapshots.NeoForgeSnapshotsMod;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +37,7 @@ public class CrashReportExtender {
     }
 
     public static void addCrashReportHeader(StringBuilder stringbuilder, CrashReport crashReport) {
-        ForgeSnapshotsMod.addCrashReportHeader(stringbuilder, crashReport);
+        NeoForgeSnapshotsMod.addCrashReportHeader(stringbuilder, crashReport);
     }
 
     public static String generateEnhancedStackTrace(final Throwable throwable) {

@@ -4,7 +4,7 @@
  import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
  
  public class BiomeTagsProvider extends KeyTagProvider<Biome> {
-+    /** @deprecated Forge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_) {
          super(p_255800_, Registries.BIOME, p_256205_);

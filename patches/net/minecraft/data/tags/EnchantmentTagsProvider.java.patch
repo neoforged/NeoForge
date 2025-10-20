@@ -4,7 +4,7 @@
  import net.minecraft.world.item.enchantment.Enchantment;
  
  public abstract class EnchantmentTagsProvider extends KeyTagProvider<Enchantment> {
-+    /** @deprecated Forge: Use the {@linkplain #EnchantmentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #EnchantmentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public EnchantmentTagsProvider(PackOutput p_341044_, CompletableFuture<HolderLookup.Provider> p_341146_) {
          super(p_341044_, Registries.ENCHANTMENT, p_341146_);

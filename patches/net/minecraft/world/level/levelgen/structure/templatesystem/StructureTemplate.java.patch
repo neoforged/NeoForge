@@ -43,7 +43,7 @@
      }
  
 +    /**
-+     * @deprecated Forge: Use {@link #processBlockInfos(ServerLevelAccessor, BlockPos, BlockPos, StructurePlaceSettings, List, StructureTemplate)} instead.
++     * @deprecated NeoForge: Use {@link #processBlockInfos(ServerLevelAccessor, BlockPos, BlockPos, StructurePlaceSettings, List, StructureTemplate)} instead.
 +     */
 +    @Deprecated
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
@@ -105,12 +105,12 @@
 +
 +    private void addEntitiesToWorld(ServerLevelAccessor p_74524_, BlockPos p_74525_, StructurePlaceSettings placementIn, ProblemReporter p_421857_) {
 +        for(StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : processEntityInfos(this, p_74524_, p_74525_, placementIn, this.entityInfoList)) {
-+            BlockPos blockpos = structuretemplate$structureentityinfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
++            BlockPos blockpos = structuretemplate$structureentityinfo.blockPos; // NEOFORGE: Position will have already been transformed by processEntityInfos
 +            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
                  CompoundTag compoundtag = structuretemplate$structureentityinfo.nbt.copy();
 -                Vec3 vec3 = transform(structuretemplate$structureentityinfo.pos, p_74526_, p_74527_, p_74528_);
 -                Vec3 vec31 = vec3.add(p_74525_.getX(), p_74525_.getY(), p_74525_.getZ());
-+                Vec3 vec31 = structuretemplate$structureentityinfo.pos; // FORGE: Position will have already been transformed by processEntityInfos
++                Vec3 vec31 = structuretemplate$structureentityinfo.pos; // NEOFORGE: Position will have already been transformed by processEntityInfos
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));

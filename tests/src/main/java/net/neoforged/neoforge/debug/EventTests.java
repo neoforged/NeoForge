@@ -26,7 +26,7 @@ public class EventTests {
     @TestHolder(description = "Tests if the datapack sync event works, by giving each player a fence on login")
     static void datapackSyncEvent(final DynamicTest test) {
         final Consumer<ServerPlayer> logger = player -> test.framework().logger().info("Sending modded datapack data to {}", player.getName().getString());
-        test.eventListeners().forge().addListener((final OnDatapackSyncEvent event) -> {
+        test.eventListeners().neoForge().addListener((final OnDatapackSyncEvent event) -> {
             // Fired for a specific player on login
             if (event.getPlayer() != null) {
                 logger.accept(event.getPlayer());

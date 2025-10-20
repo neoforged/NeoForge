@@ -120,7 +120,7 @@ public interface Test extends Groupable {
         /**
          * {@return the listener collector for the {@link NeoForge#EVENT_BUS game event bus}}
          */
-        EventListenerCollector forge();
+        EventListenerCollector neoForge();
 
         /**
          * A collector of event listeners which automatically unregisters listeners when a test is disabled.

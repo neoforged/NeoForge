@@ -11,7 +11,7 @@
                  } else {
                      NativeImage nativeimage = anativeimage[i - 1];
 -                    NativeImage nativeimage1 = new NativeImage(nativeimage.getWidth() >> 1, nativeimage.getHeight() >> 1, false);
-+                    // Forge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
++                    // NeoForge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
 +                    NativeImage nativeimage1 = new NativeImage(Math.max(1, nativeimage.getWidth() >> 1), Math.max(1, nativeimage.getHeight() >> 1), false);
 +                    if (i <= maxMipmapLevel) {
                      int j = nativeimage1.getWidth();

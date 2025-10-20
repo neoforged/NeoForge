@@ -72,7 +72,7 @@ public class LivingEntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the living swap items event is fired")
     static void livingSwapItems(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final LivingSwapItemsEvent.Hands event) -> {
+        test.eventListeners().neoForge().addListener((final LivingSwapItemsEvent.Hands event) -> {
             if (event.getEntity() instanceof Allay) {
                 event.setItemSwappedToMainHand(new ItemStack(Items.CHEST));
             }
@@ -98,12 +98,12 @@ public class LivingEntityEventTests {
     static void livingConversionEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var shouldConvert = reg.attachments().registerSimpleAttachment("should_convert", () -> true);
 
-        test.eventListeners().forge().addListener((final LivingConversionEvent.Pre event) -> {
+        test.eventListeners().neoForge().addListener((final LivingConversionEvent.Pre event) -> {
             if (event.getEntity() instanceof ZombieVillager zombie) {
                 event.setCanceled(!zombie.getData(shouldConvert));
             }
         });
-        test.eventListeners().forge().addListener((final LivingConversionEvent.Post event) -> {
+        test.eventListeners().neoForge().addListener((final LivingConversionEvent.Post event) -> {
             if (event.getOutcome() instanceof Villager villager) {
                 villager.addEffect(new MobEffectInstance(MobEffects.LUCK, 5));
             }
@@ -142,7 +142,7 @@ public class LivingEntityEventTests {
     @TestHolder(description = "Tests if the LivingGetProjectileEvent allows changing the projectile")
     static void getProjectileEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var shootsFireRes = reg.attachments().registerSimpleAttachment("shoots_fireres", () -> false);
-        test.eventListeners().forge().addListener((final LivingGetProjectileEvent event) -> {
+        test.eventListeners().neoForge().addListener((final LivingGetProjectileEvent event) -> {
             if (event.getEntity().getData(shootsFireRes)) {
                 event.setProjectileItemStack(new ItemStack(Items.TIPPED_ARROW));
                 event.getProjectileItemStack().set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.FIRE_RESISTANCE));
@@ -170,7 +170,7 @@ public class LivingEntityEventTests {
     @TestHolder(description = "Tests if the LivingChangeTargetEvent can be successfully cancelled")
     static void setAttackTargetEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var specialAggro = reg.attachments().registerSimpleAttachment("special_aggro", () -> false);
-        test.eventListeners().forge().addListener((final LivingChangeTargetEvent event) -> {
+        test.eventListeners().neoForge().addListener((final LivingChangeTargetEvent event) -> {
             if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET &&
                     event.getEntity().getData(specialAggro) && event.getNewAboutToBeSetTarget() instanceof Player player && player.isHolding(Items.STICK)) {
                 event.setCanceled(true);
@@ -202,7 +202,7 @@ public class LivingEntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ShieldBlockEvent is fired")
     static void shieldBlockEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final LivingShieldBlockEvent event) -> {
+        test.eventListeners().neoForge().addListener((final LivingShieldBlockEvent event) -> {
             if (event.getBlocked() && event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
                 zombie.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.STONE));
                 event.setBlockedDamage(event.getOriginalBlockedDamage() / 2);
@@ -211,7 +211,7 @@ public class LivingEntityEventTests {
         });
 
         // Make sure that the zombie keeps using the shield
-        test.eventListeners().forge().addListener((final LivingEntityUseItemEvent event) -> {
+        test.eventListeners().neoForge().addListener((final LivingEntityUseItemEvent event) -> {
             if (event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
                 event.setDuration(100);
             }
@@ -238,7 +238,7 @@ public class LivingEntityEventTests {
     static void slimeSplitEvent(final DynamicTest test) {
         Set<Mob> childSlimes = new HashSet<>();
 
-        test.eventListeners().forge().addListener((MobSplitEvent event) -> {
+        test.eventListeners().neoForge().addListener((MobSplitEvent event) -> {
             CompoundTag nbt = event.getParent().getPersistentData();
 
             if (nbt.getBooleanOr("test.no_split_slime", false)) {
@@ -257,7 +257,7 @@ public class LivingEntityEventTests {
 
         AtomicBoolean throwIfSlimeSpawns = new AtomicBoolean(false);
 
-        test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
+        test.eventListeners().neoForge().addListener((EntityJoinLevelEvent event) -> {
             if (event.getEntity() instanceof Slime) {
                 if (throwIfSlimeSpawns.get()) {
                     throw new GameTestAssertException(Component.translatable("Slime should not have been spawned."), -1);
@@ -309,7 +309,7 @@ public class LivingEntityEventTests {
 
         /* This event listener watches for the first event in the damage sequence.  At this stage we expect to  add our
          * reduction functions and replace the incoming damage amount with a new value. */
-        test.eventListeners().forge().addListener((final LivingIncomingDamageEvent event) -> {
+        test.eventListeners().neoForge().addListener((final LivingIncomingDamageEvent event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
                 event.addReductionModifier(DamageContainer.Reduction.ARMOR, (container, reductionIn) -> reductionIn + 2);
                 event.addReductionModifier(DamageContainer.Reduction.ENCHANTMENTS, (container, reductionIn) -> reductionIn + 2);
@@ -326,7 +326,7 @@ public class LivingEntityEventTests {
         *
         *  This event also allows a post-reductions change to the damage amount which will be  subsequently applied to
         *  the player's health.  The current damage amount is captured for later checks and a new value is set.*/
-        test.eventListeners().forge().addListener((final LivingDamageEvent.Pre event) -> {
+        test.eventListeners().neoForge().addListener((final LivingDamageEvent.Pre event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
                 player.setData(VALUE_ARMOR, event.getContainer().getReduction(DamageContainer.Reduction.ARMOR));
                 player.setData(VALUE_ENCHANTMENTS, event.getContainer().getReduction(DamageContainer.Reduction.ENCHANTMENTS));
@@ -337,7 +337,7 @@ public class LivingEntityEventTests {
         });
 
         /* This event captures the change in new damage from the previous event for use in checks.*/
-        test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
+        test.eventListeners().neoForge().addListener((final LivingDamageEvent.Post event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
                 player.setData(VALUE_ABSORPTION, event.getReduction(DamageContainer.Reduction.ABSORPTION));
                 player.setData(VALUE_NEW_DAMAGE, event.getNewDamage());

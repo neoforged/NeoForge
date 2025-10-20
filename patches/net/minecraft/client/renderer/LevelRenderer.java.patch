@@ -191,7 +191,7 @@
                      if (entityrenderstate.appearsGlowing() && flag) {
                          p_450957_.haveGlowingEntities = true;
                      }
-+                    else if (flag && entity.hasCustomOutlineRendering(this.minecraft.player)) { // FORGE: allow custom outline rendering
++                    else if (flag && entity.hasCustomOutlineRendering(this.minecraft.player)) { // NEOFORGE: allow custom outline rendering
 +                        p_450957_.haveGlowingEntities = true;
 +                    }
                  }

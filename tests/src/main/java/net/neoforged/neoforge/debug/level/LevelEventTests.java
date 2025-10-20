@@ -39,7 +39,7 @@ public class LevelEventTests {
     @EmptyTemplate(value = "9x9x9", floor = true)
     @TestHolder(description = "Tests if the sapling grow tree event is fired, replacing spruce with birch")
     static void saplingGrowTreeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final BlockGrowFeatureEvent event) -> {
+        test.eventListeners().neoForge().addListener((final BlockGrowFeatureEvent event) -> {
             if (event.getFeature() != null && event.getFeature().is(TreeFeatures.SPRUCE)) {
                 event.setFeature(TreeFeatures.BIRCH_BEES_005);
             }
@@ -64,7 +64,7 @@ public class LevelEventTests {
                 .set(7, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(8, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState()));
 
-        test.eventListeners().forge().addListener((final AlterGroundEvent event) -> {
+        test.eventListeners().neoForge().addListener((final AlterGroundEvent event) -> {
             final AlterGroundEvent.StateProvider old = event.getStateProvider();
             event.setStateProvider((rand, pos) -> {
                 final BlockState state = old.getState(rand, pos);
@@ -91,7 +91,7 @@ public class LevelEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests the vanilla game event by hurting entities that are sheared in the overworld")
     static void vanillaGameEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final VanillaGameEvent event) -> {
+        test.eventListeners().neoForge().addListener((final VanillaGameEvent event) -> {
             if (event.getVanillaEvent().is(GameEvent.SHEAR) && event.getLevel().dimension() == Level.OVERWORLD) {
                 final var entities = event.getLevel().getEntitiesOfClass(Entity.class, new AABB(BlockPos.containing(event.getEventPosition())), e -> e instanceof Shearable);
                 entities.get(0).hurt(event.getLevel().damageSources().generic(), event.getCause() == null ? 1 : 3);

@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.forge.snapshots;
+package net.neoforged.neoforge.neoforge.snapshots;
 
 import net.minecraft.CrashReport;
 
-public class ForgeSnapshotsMod {
+public class NeoForgeSnapshotsMod {
     public static final String BRANDING_NAME = "NeoForge";
     public static final String BRANDING_ID = "neoforge";
 

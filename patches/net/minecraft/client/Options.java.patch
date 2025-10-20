@@ -4,7 +4,7 @@
              }
          },
          new OptionInstance.LazyEnum<>(
-+            // FORGE: fix incorrect string comparison - PR #8767
++            // NEOFORGE: fix incorrect string comparison - PR #8767
              () -> Stream.concat(Stream.of(""), Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().stream()).toList(),
              p_232011_ -> Minecraft.getInstance().isRunning()
 -                    && p_232011_ != ""

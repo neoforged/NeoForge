@@ -4,7 +4,7 @@
      @VisibleForTesting
      public static Tag readUnnamedTag(DataInput p_128931_, NbtAccounter p_128933_) throws IOException {
          byte b0 = p_128931_.readByte();
-+        p_128933_.accountBytes(1); // Forge: Count everything!
++        p_128933_.accountBytes(1); // NeoForge: Count everything!
          if (b0 == 0) {
              return EndTag.INSTANCE;
          } else {

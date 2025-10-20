@@ -5,7 +5,7 @@
              this.handleChatInput(this.input.getValue(), true);
              this.exitReason = ChatScreen.ExitReason.DONE;
 -            this.minecraft.setScreen(null);
-+            // FORGE: Prevent closing the screen if another screen has been opened.
++            // NEOFORGE: Prevent closing the screen if another screen has been opened.
 +            if (minecraft.screen == this) {
 +                this.minecraft.setScreen(null);
 +            }

@@ -5,7 +5,7 @@
  
  public class HoeItem extends Item {
 +    /**
-+     * @deprecated Forge: This map is patched out of vanilla code.
++     * @deprecated NeoForge: This map is patched out of vanilla code.
 +     * Listen to {@link net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent}
 +     * or override {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getToolModifiedState(BlockState, UseOnContext, net.neoforged.neoforge.common.ItemAbility, boolean)}.
 +     */

@@ -81,7 +81,7 @@ public class ClientTests {
             event.register(stickKey);
         });
 
-        test.eventListeners().forge().addListener((ClientTickEvent.Pre event) -> {
+        test.eventListeners().neoForge().addListener((ClientTickEvent.Pre event) -> {
             if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK)) {
@@ -116,7 +116,7 @@ public class ClientTests {
             event.registerCategory(categoryTwo);
         });
 
-        test.eventListeners().forge().addListener((final ClientStartedEvent event) -> {
+        test.eventListeners().neoForge().addListener((final ClientStartedEvent event) -> {
             List<KeyMapping.Category> sortedVanillaCategories = categories.stream()
                     .filter(cat -> cat.id().getNamespace().equals("minecraft"))
                     .toList();
@@ -182,14 +182,14 @@ public class ClientTests {
                 }
             }, item);
         });
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
             test.requestConfirmation(event.getEntity(), Component.literal("Does stone cover the screen when wearing the *_custom_helmet_rendering:neo_helmet?"));
         });
     }
 
     @TestHolder(description = "Checks existence of enum and texture location", enabledByDefault = true)
     static void customEquipmentLayerType(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ClientResourceLoadFinishedEvent event) -> {
+        test.eventListeners().neoForge().addListener((final ClientResourceLoadFinishedEvent event) -> {
             var layerType = EquipmentClientInfo.LayerType.valueOf("NEOTESTS_LAYER_TYPE");
             // Check serialized name uses slash
             if (layerType.getSerializedName().contains(":")) {

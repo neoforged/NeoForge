@@ -51,7 +51,7 @@ public class MapDecorationRenderTests {
             event.register(decorationType.value(), new TestDecorationRenderer(null));
         });
 
-        test.eventListeners().forge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+        test.eventListeners().neoForge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             Player player = event.getEntity();
             ItemStack mapItem = MapItem.create((ServerLevel) player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
             MapItemSavedData data = MapItem.getSavedData(mapItem, player.level());
@@ -87,7 +87,7 @@ public class MapDecorationRenderTests {
             });
         });
 
-        test.eventListeners().forge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+        test.eventListeners().neoForge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             Player player = event.getEntity();
             ItemStack mapItem = MapItem.create((ServerLevel) player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
             MapItemSavedData data = MapItem.getSavedData(mapItem, player.level());

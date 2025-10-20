@@ -45,7 +45,7 @@ public class EntityEventTests {
     @EmptyTemplate(value = "15x5x15", floor = true)
     @TestHolder(description = "Tests if the entity teleport event is fired")
     static void entityTeleportEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final EntityTeleportEvent.ItemConsumption event) -> {
+        test.eventListeners().neoForge().addListener((final EntityTeleportEvent.ItemConsumption event) -> {
             if (event.getEntity() instanceof Pig) {
                 event.setCanceled(true);
             } else if (event.getEntity() instanceof Cow cow) {
@@ -93,7 +93,7 @@ public class EntityEventTests {
     @TestHolder(description = "Tests if EntityInvulnerabilityCheckEvent prevents damage when modified.")
     static void entityInvulnerabilityCheckEvent(final DynamicTest test, final RegistrationHelper reg) {
         final Component NAME = Component.literal("invulnerable_entity");
-        test.eventListeners().forge().addListener((final EntityInvulnerabilityCheckEvent event) -> {
+        test.eventListeners().neoForge().addListener((final EntityInvulnerabilityCheckEvent event) -> {
             if (event.getEntity() instanceof GameTestPlayer entity && entity.hasCustomName() && Objects.equals(entity.getCustomName(), NAME))
                 event.setInvulnerable(false);
         });
@@ -112,7 +112,7 @@ public class EntityEventTests {
     @EmptyTemplate(value = "15x5x15", floor = true)
     @TestHolder(description = "Tests if the pig only gets vertical knockback from explosion knockback event")
     static void entityVerticalExplosionKnockbackEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ExplosionKnockbackEvent event) -> {
+        test.eventListeners().neoForge().addListener((final ExplosionKnockbackEvent event) -> {
             if (event.getAffectedEntity() instanceof Pig) {
                 event.setKnockbackVelocity(new Vec3(0, event.getKnockbackVelocity().y(), 0));
             }
@@ -131,7 +131,7 @@ public class EntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the EntityTravelToDimensionEvent fires correctly and if cancelling it prevents the transition")
     static void entityTravelToDimensionEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final EntityTravelToDimensionEvent event) -> {
+        test.eventListeners().neoForge().addListener((final EntityTravelToDimensionEvent event) -> {
             // Only affect the entities with a custom name to not interfere with other tests
             if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("travel-to-dimension-test"))) {
                 return;
@@ -177,7 +177,7 @@ public class EntityEventTests {
         // Identify the entity we spawn in this test by their spawn location, since we do not have
         // access to the entity object at all before the event is emitted.
         AtomicReference<BlockPos> spawnPosRef = new AtomicReference<>();
-        test.eventListeners().forge().addListener((final FinalizeSpawnEvent event) -> {
+        test.eventListeners().neoForge().addListener((final FinalizeSpawnEvent event) -> {
             if (Objects.equals(spawnPosRef.get(), event.getEntity().blockPosition())) {
                 event.setSpawnCancelled(true);
                 test.pass();

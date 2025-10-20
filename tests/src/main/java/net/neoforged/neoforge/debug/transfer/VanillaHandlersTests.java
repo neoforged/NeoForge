@@ -375,7 +375,7 @@ public class VanillaHandlersTests {
     @TestHolder(description = "Test the onRootCommit for a player's DroppedItems in case an event triggered by the dropping triggers more drops.")
     public static void playerInventoryDropWhileDropping(DynamicTest test) {
         // When dropping a carrot, drop a golden carrot in front of all fake players
-        test.eventListeners().forge().addListener((ItemTossEvent event) -> {
+        test.eventListeners().neoForge().addListener((ItemTossEvent event) -> {
             if (event.getEntity().getItem().is(Items.CARROT)) {
                 try (var tx = Transaction.openRoot()) {
                     PlayerInventoryWrapper.of(event.getPlayer()).drop(ItemResource.of(Items.GOLDEN_CARROT), 1, false, false, tx);
@@ -593,7 +593,7 @@ public class VanillaHandlersTests {
     public static void testHorseArmorWrapper(DynamicTest test) {
         AtomicInteger equipEvents = new AtomicInteger();
         AtomicInteger unequipEvents = new AtomicInteger();
-        test.whenEnabled(listeners -> listeners.forge().addListener((VanillaGameEvent event) -> {
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((VanillaGameEvent event) -> {
             if (event.getVanillaEvent() == GameEvent.EQUIP) {
                 equipEvents.incrementAndGet();
             }

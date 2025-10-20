@@ -142,7 +142,7 @@
              this.advancements.put(uuid, playeradvancements);
          }
  
-+        // Forge: don't overwrite active player with a fake one.
++        // NeoForge: don't overwrite active player with a fake one.
 +        if (!(p_11297_ instanceof net.neoforged.neoforge.common.util.FakePlayer))
          playeradvancements.setPlayer(p_11297_);
          return playeradvancements;

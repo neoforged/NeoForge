@@ -11,7 +11,7 @@
 +            org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass().getName());
 +            logger.warn("=========================================================");
 +            logger.warn("WARNING!! the username was not set for this session, typically");
-+            logger.warn("this means you installed Forge incorrectly. We have set your");
++            logger.warn("this means you installed NeoForge incorrectly. We have set your");
 +            logger.warn("name to \"MissingName\" and your session to nothing. Please");
 +            logger.warn("check your installation and post a console log from the launcher");
 +            logger.warn("when asking for help!");

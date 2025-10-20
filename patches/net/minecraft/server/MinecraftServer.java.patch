@@ -78,7 +78,7 @@
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
              }
 +            net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStopping(this);
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // NeoForge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
          } catch (Throwable throwable2) {
              LOGGER.error("Encountered an unexpected exception", throwable2);
              CrashReport crashreport = constructOrExtractCrashReport(throwable2);
@@ -86,7 +86,7 @@
                  LOGGER.error("We were unable to save this crash report to disk.");
              }
  
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // NeoForge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
              this.onServerCrash(crashreport);
          } finally {
              try {

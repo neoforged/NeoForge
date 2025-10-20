@@ -49,7 +49,7 @@ public interface ConditionalRecipeTest {
             }
         });
 
-        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+        test.eventListeners().neoForge().addListener((ServerStartedEvent event) -> {
             var recipe = event.getServer().getRecipeManager().recipeMap().byKey(recipeName);
 
             if (recipe == null)

@@ -363,7 +363,7 @@
          Inventory inventory = this.getInventory();
 +        ItemStack selected = inventory.getSelectedItem();
 +        if (selected.isEmpty() || !selected.onDroppedByPlayer(this)) return false;
-+        if (isUsingItem() && getUsedItemHand() == InteractionHand.MAIN_HAND && (p_182295_ || selected.getCount() == 1)) stopUsingItem(); // Forge: fix MC-231097 on the serverside
++        if (isUsingItem() && getUsedItemHand() == InteractionHand.MAIN_HAND && (p_182295_ || selected.getCount() == 1)) stopUsingItem(); // NeoForge: fix MC-231097 on the serverside
          ItemStack itemstack = inventory.removeFromSelected(p_182295_);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())

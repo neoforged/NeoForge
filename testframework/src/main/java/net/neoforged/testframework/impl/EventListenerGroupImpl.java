@@ -29,7 +29,7 @@ public class EventListenerGroupImpl implements Test.EventListenerGroup {
     }
 
     @Override
-    public EventListenerCollector forge() {
+    public EventListenerCollector neoForge() {
         return game;
     }
 

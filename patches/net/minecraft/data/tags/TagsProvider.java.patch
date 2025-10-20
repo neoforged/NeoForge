@@ -7,7 +7,7 @@
 +    protected final String modId;
  
 +    /**
-+     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, String) mod id variant}
++     * @deprecated NeoForge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, String) mod id variant}
 +     */
 +    @Deprecated
      protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_) {
@@ -19,7 +19,7 @@
      }
  
 +    /**
-+     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String) mod id variant}
++     * @deprecated NeoForge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String) mod id variant}
 +     */
 +    @Deprecated
      protected TagsProvider(
@@ -39,7 +39,7 @@
 +        this.modId = modId;
 +    }
 +
-+    // Forge: Allow customizing the path for a given tag or returning null
++    // NeoForge: Allow customizing the path for a given tag or returning null
 +    @org.jetbrains.annotations.Nullable
 +    protected Path getPath(ResourceLocation id) {
 +        return this.pathProvider.json(id);

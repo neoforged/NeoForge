@@ -1,11 +1,11 @@
-Minecraft Forge: Credits/Thank You
+Minecraft NeoForge: Credits/Thank You
 
-Forge is a set of tools and modifications to the Minecraft base game code to assist 
+NeoForge is a set of tools and modifications to the Minecraft base game code to assist
 mod developers in creating new and exciting content. It has been in development for 
 several years now, but I would like to take this time thank a few people who have 
 helped it along it's way.
 
-First, the people who originally created the Forge projects way back in Minecraft 
+First, the people who originally created the NeoForge projects way back in Minecraft
 alpha. Eloraam of RedPower, and SpaceToad of Buildcraft, without their acceptiance 
 of me taking over the project, who knows what Minecraft modding would be today.
 
@@ -15,16 +15,16 @@ FML, which stabelized the client and server modding ecosystem. As well as the ba
 loading system that allows us to modify Minecraft's code as elegently as possible.
 
 Mezz, who has stepped up as the issue and pull request manager. Helping to keep me
-sane as well as guiding the community into creating better additions to Forge.
+sane as well as guiding the community into creating better additions to NeoForge.
 
 Searge, Bspks, Fesh0r, ProfMobious, and all the rest over on the MCP team {of which 
 I am a part}. For creating some of the core tools needed to make Minecraft modding 
 both possible, and as stable as can be.
   On that note, here is some specific information of the MCP data we use:
     * Minecraft Coder Pack (MCP) *
-      Forge Mod Loader and Minecraft Forge have permission to distribute and automatically 
+      NeoForge Mod Loader and Minecraft NeoForge have permission to distribute and automatically
       download components of MCP and distribute MCP data files. This permission is not 
-      transitive and others wishing to redistribute the Minecraft Forge source independently
+      transitive and others wishing to redistribute the Minecraft NeoForge source independently
       should seek permission of MCP or remove the MCP data files and request their users 
       to download MCP separately.
       
@@ -35,7 +35,7 @@ pull requests, and just helping out the community in general. Thank you.
 
 =========================================================================
 
-This is Forge Mod Loader.
+This is NeoForge Mod Loader.
 
 You can find the source code at all times at https://github.com/MinecraftForge/MinecraftForge/tree/1.12.x/src/main/java/net/minecraftforge/fml
 

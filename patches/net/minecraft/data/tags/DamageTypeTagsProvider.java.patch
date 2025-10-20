@@ -4,7 +4,7 @@
  import net.minecraft.world.damagesource.DamageTypes;
  
  public class DamageTypeTagsProvider extends KeyTagProvider<DamageType> {
-+    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
          super(p_270719_, Registries.DAMAGE_TYPE, p_270256_);

@@ -5,7 +5,7 @@
      private static final Map<Class<?>, ArgumentTypeInfo<?, ?>> BY_CLASS = Maps.newHashMap();
  
 +    /**
-+     * Forge: Use this in conjunction with a
++     * NeoForge: Use this in conjunction with a
 +     * {@link net.neoforged.neoforge.registries.DeferredRegister#register(String, java.util.function.Supplier) DeferredRegister#register(String, Supplier)}
 +     * call to both populate the {@code BY_CLASS} map and register the argument type info so it can be used in commands.
 +     *

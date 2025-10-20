@@ -85,7 +85,7 @@ public class CustomFeatureFlagsTests {
         DeferredItem<Item> extRangeDisabledTestItem = test.registrationHelper().items()
                 .registerSimpleItem("ext_range_disabled_test", props -> props.requiredFeatures(extRangeDisabledTestFlag));
 
-        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+        test.eventListeners().neoForge().addListener((ServerStartedEvent event) -> {
             if (event.getServer() instanceof GameTestServer) return; // The gametest server enables all flags, so we're not interested in running the check
 
             FeatureFlagSet flagSet = event.getServer().getLevel(Level.OVERWORLD).enabledFeatures();
@@ -134,7 +134,7 @@ public class CustomFeatureFlagsTests {
             }
         });
 
-        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+        test.eventListeners().neoForge().addListener((ServerStartedEvent event) -> {
             var server = event.getServer();
             var isFlagEnabled = server.getWorldData().enabledFeatures().contains(flag);
             var recipeMap = server.getRecipeManager().recipeMap();

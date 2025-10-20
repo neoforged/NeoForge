@@ -126,7 +126,7 @@
 +        return this.isInFluidType();
      }
  
-+    @Deprecated // Forge: Use updateInWaterStateAndDoWaterCurrentPushing with bool param instead
++    @Deprecated // NeoForge: Use updateInWaterStateAndDoWaterCurrentPushing with bool param instead
      void updateInWaterStateAndDoWaterCurrentPushing() {
 +        this.updateInWaterStateAndDoWaterCurrentPushing(true);
 +    }
@@ -180,7 +180,7 @@
          }
      }
  
-+    @Deprecated // Forge: Use isEyeInFluidType instead
++    @Deprecated // NeoForge: Use isEyeInFluidType instead
      public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
 +        if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
 +        else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
@@ -265,7 +265,7 @@
          return this.passengers.isEmpty();
      }
  
-+    /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
++    /** @deprecated NeoForge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
 +    @Deprecated
      protected boolean couldAcceptPassenger() {
          return true;
@@ -293,7 +293,7 @@
  
      protected Component getTypeName() {
 -        return this.type.getDescription();
-+        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
++        return this.getType().getDescription(); // NeoForge: Use getter to allow overriding by mods
      }
  
      public boolean is(Entity p_20356_) {
@@ -322,7 +322,7 @@
          return this.stringUUID;
      }
  
-+    @Deprecated // Forge: Use FluidType sensitive version
++    @Deprecated // NeoForge: Use FluidType sensitive version
      public boolean isPushedByFluid() {
          return true;
      }
@@ -339,7 +339,7 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
-+    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
++    @Deprecated // NeoForge: Use no parameter version instead, only for vanilla Tags
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
 +        this.updateFluidHeightAndDoFluidPushing();
 +        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
@@ -462,7 +462,7 @@
          return !this.level().hasChunksAt(i, k, j, l);
      }
  
-+    @Deprecated // Forge: Use getFluidTypeHeight instead
++    @Deprecated // NeoForge: Use getFluidTypeHeight instead
      public double getFluidHeight(TagKey<Fluid> p_204037_) {
 +        if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
 +        else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());

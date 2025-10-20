@@ -12,7 +12,7 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
-+        // FORGE: Move mouse and keyboard handler setup further below
++        // NEOFORGE: Move mouse and keyboard handler setup further below
          this.mouseHandler = new MouseHandler(this);
 -        this.mouseHandler.setup(this.window);
          this.keyboardHandler = new KeyboardHandler(this);

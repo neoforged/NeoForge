@@ -22,7 +22,7 @@ public class PlayerXpTests {
     @GameTest(batch = "level.entity.player.event.xp.pickup") // Isolate this test as it can be impacted by the xp change one
     @TestHolder(description = "Tests if the player pickup xp event is fired")
     static void playerPickupXp(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerXpEvent.PickupXp event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerXpEvent.PickupXp event) -> {
             if (event.getEntity().experienceLevel >= 2) {
                 event.setCanceled(true);
             }
@@ -47,7 +47,7 @@ public class PlayerXpTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the player xp level change event is fired")
     static void playerLevelChange(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerXpEvent.LevelChange event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerXpEvent.LevelChange event) -> {
             event.setLevels(event.getLevels() * 2);
             test.pass();
         });
@@ -66,7 +66,7 @@ public class PlayerXpTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the player xp change event is fired")
     static void playerXpChange(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerXpEvent.XpChange event) -> {
+        test.eventListeners().neoForge().addListener((final PlayerXpEvent.XpChange event) -> {
             event.setAmount(event.getAmount() * 3);
             test.pass();
         });

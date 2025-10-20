@@ -22,7 +22,7 @@
              return this.summary;
 +        }
 +
-+        // FORGE: Patch in experimental warning icon for worlds in the world selection screen
++        // NEOFORGE: Patch in experimental warning icon for worlds in the world selection screen
 +        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = this.getContentX() + this.getContentWidth();

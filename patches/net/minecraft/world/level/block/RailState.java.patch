@@ -41,7 +41,7 @@
              railshape = RailShape.NORTH_SOUTH;
          }
  
-+        if (!this.block.isValidRailShape(railshape)) { // Forge: allow rail block to decide if the new shape is valid
++        if (!this.block.isValidRailShape(railshape)) { // NeoForge: allow rail block to decide if the new shape is valid
 +            this.connections.remove(p_55442_.pos);
 +            return;
 +        }
@@ -71,7 +71,7 @@
          }
  
 -        if (railshape == null) {
-+        if (railshape == null || !this.block.isValidRailShape(railshape)) { // Forge: allow rail block to decide if the new shape is valid
++        if (railshape == null || !this.block.isValidRailShape(railshape)) { // NeoForge: allow rail block to decide if the new shape is valid
              railshape = p_55434_;
          }
  

@@ -45,7 +45,7 @@ import org.joml.Vector3f;
 public class GuiTests {
     @TestHolder(description = "Adds a button to containers that prompts the user a layered GUI and asks them whether they saw it")
     static void testGuiLayering(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ScreenEvent.Init.Post event) -> {
+        test.eventListeners().neoForge().addListener((final ScreenEvent.Init.Post event) -> {
             if (event.getScreen() instanceof AbstractContainerScreen) {
                 event.addListener(Button.builder(Component.literal("Test Gui Layering"), btn -> {
                     Minecraft.getInstance().pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
@@ -137,7 +137,7 @@ public class GuiTests {
             event.registerAbove(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
         });
 
-        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+        test.eventListeners().neoForge().addListener((ClientChatEvent chatEvent) -> {
             if (chatEvent.getMessage().equalsIgnoreCase("gui layer test")) {
                 test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
                         """
@@ -220,7 +220,7 @@ public class GuiTests {
             });
         });
 
-        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+        test.eventListeners().neoForge().addListener((ClientChatEvent chatEvent) -> {
             if (chatEvent.getMessage().equalsIgnoreCase("gui layer depth test")) {
                 test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
                         "Do you see a red square in the top right corner of the screen?"));
@@ -243,7 +243,7 @@ public class GuiTests {
                 InventoryScreen.renderEntityInInventory(graphics, maxX - 50, 20, maxX - 10, 80, 25.0F, armorStandTranslation, armorStandAngle, null, entityTwo.get());
             });
         });
-        test.eventListeners().forge().addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
+        test.eventListeners().neoForge().addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
             entityOne.invalidate();
             entityTwo.invalidate();
         });

@@ -13,7 +13,7 @@
  
      @Override
      protected void randomTick(BlockState p_221050_, ServerLevel p_221051_, BlockPos p_221052_, RandomSource p_221053_) {
-+        if (!p_221051_.isAreaLoaded(p_221052_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
++        if (!p_221051_.isAreaLoaded(p_221052_, 1)) return; // NeoForge: prevent loading unloaded chunks when checking neighbor's light
          if (p_221051_.getRawBrightness(p_221052_, 0) >= 9) {
              int i = this.getAge(p_221050_);
              if (i < this.getMaxAge()) {

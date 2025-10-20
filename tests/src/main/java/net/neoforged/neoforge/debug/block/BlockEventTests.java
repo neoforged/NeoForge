@@ -35,7 +35,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent prevents dropping items and experience when cancelled.")
     public static void blockDropsEventCancel(final DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((final BlockDropsEvent event) -> {
             // Make Nether Quartz drop nothing when broken with an Iron Pickaxe.
             if (event.getState().getBlock() == Blocks.NETHER_QUARTZ_ORE) {
                 // Set the xp drop to a nonzero value to test the positive case
@@ -70,7 +70,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent can modify dropped experience.")
     public static void blockDropsEventExperience(final DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((final BlockDropsEvent event) -> {
             if (event.getState().getBlock() == Blocks.EMERALD_BLOCK) {
                 // Make emerald blocks drop experience, which doesn't normally occur.
                 event.setDroppedExperience(150);
@@ -94,7 +94,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent can move dropped items.")
     public static void blockDropsEventMovement(final DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+        test.whenEnabled(listeners -> listeners.neoForge().addListener((final BlockDropsEvent event) -> {
             if (event.getState().getBlock() == Blocks.IRON_BLOCK) {
                 // Move the item entity by (-2, -2), which should shift it from relative (2, 1, 2) to (0, 1, 0).
                 event.getDrops().forEach(i -> i.setPos(i.position().subtract(2, 0, 2)));
@@ -118,7 +118,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the entity place event is fired")
     public static void entityPlacedEvent(final DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge()
+        test.whenEnabled(listeners -> listeners.neoForge()
                 .addListener((final BlockEvent.EntityPlaceEvent event) -> {
                     if (event.getPlacedBlock().getBlock() == Blocks.CHEST && event.getPlacedAgainst().getBlock() != Blocks.DIAMOND_BLOCK) {
                         event.setCanceled(true);
@@ -149,7 +149,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the block modification event is fired")
     public static void blockModificationEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
+        test.eventListeners().neoForge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
             if (event.getItemAbility() == ItemAbilities.AXE_STRIP) {
                 if (event.getLevel().getBlockState(event.getContext().getClickedPos()).is(Blocks.ACACIA_LOG)) {
                     event.setCanceled(true);
@@ -177,7 +177,7 @@ public class BlockEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the neighbor notify event is fired")
     public static void neighborNotifyEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final BlockEvent.NeighborNotifyEvent event) -> {
+        test.eventListeners().neoForge().addListener((final BlockEvent.NeighborNotifyEvent event) -> {
             if (event.getState().getBlock() == Blocks.COMPARATOR) {
                 event.setCanceled(true);
             }
@@ -203,7 +203,7 @@ public class BlockEventTests {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
                 .placeSustainedWater(1, 1, 1, Blocks.FARMLAND.defaultBlockState()));
 
-        test.eventListeners().forge().addListener((final BlockEvent.FarmlandTrampleEvent event) -> {
+        test.eventListeners().neoForge().addListener((final BlockEvent.FarmlandTrampleEvent event) -> {
             if (event.getEntity().getType() != EntityType.GOAT) {
                 event.setCanceled(true);
             }

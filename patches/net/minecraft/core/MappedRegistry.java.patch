@@ -31,7 +31,7 @@
                  reference.bindKey(p_256252_);
              } else {
                  reference = this.byKey.computeIfAbsent(p_256252_, p_367800_ -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)p_367800_));
-+                // Forge: Bind the value immediately so it can be queried while the registry is not frozen
++                // NeoForge: Bind the value immediately so it can be queried while the registry is not frozen
 +                reference.bindValue(p_256591_);
              }
  
@@ -100,7 +100,7 @@
          return this.byKey.containsKey(p_175392_);
      }
  
-+    /** @deprecated Forge: For internal use only. Use the Register events when registering values. */
++    /** @deprecated NeoForge: For internal use only. Use the Register events when registering values. */
 +    @Deprecated
 +    @Override
 +    public void unfreeze(boolean clearTags) {

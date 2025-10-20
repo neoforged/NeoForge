@@ -15,7 +15,7 @@
              if (chunkholder == null) {
                  return null;
              } else {
-+                if (chunkholder.currentlyLoading != null) return chunkholder.currentlyLoading; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
++                if (chunkholder.currentlyLoading != null) return chunkholder.currentlyLoading; // NeoForge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
                  ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
                  if (chunkaccess1 != null) {
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);

@@ -34,7 +34,7 @@ public class EnchantmentLevelTests {
     @EmptyTemplate
     @TestHolder(description = "Tests whether the GetEnchantmentLevelEvent can properly modify enchantment levels.")
     static void getEnchLevelEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((GetEnchantmentLevelEvent e) -> {
+        test.eventListeners().neoForge().addListener((GetEnchantmentLevelEvent e) -> {
             ItemEnchantments.Mutable enchants = e.getEnchantments();
 
             // Increase the level of sharpness by 1 in all cases.
@@ -75,7 +75,7 @@ public class EnchantmentLevelTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerEnchantedItemEvent fired.")
     static void playerEnchantItemTest(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((PlayerEnchantItemEvent event) -> {
+        test.eventListeners().neoForge().addListener((PlayerEnchantItemEvent event) -> {
             event.getEnchantedItem().setDamageValue(1); //change a value we can reference in our test sequence
         });
         final BlockPos pos = new BlockPos(1, 2, 1);

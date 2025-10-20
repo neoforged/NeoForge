@@ -13,7 +13,7 @@
          }
      }
  
-+    @Deprecated // Forge: Use the version below that takes in a Predicate<Item> instead of an Item
++    @Deprecated // NeoForge: Use the version below that takes in a Predicate<Item> instead of an Item
      public static InteractionHand getWeaponHoldingHand(LivingEntity p_37298_, Item p_37299_) {
          return p_37298_.getMainHandItem().is(p_37299_) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 +    }

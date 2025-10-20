@@ -219,7 +219,7 @@ public class LootPoolTest {
                                 List.of(new ModLoadedCondition("doesnt_exist"))), LootContextParamSets.ALL_PARAMS)),
                 event.getLookupProvider()));
 
-        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+        test.eventListeners().neoForge().addListener((ServerStartedEvent event) -> {
             ResourceManager resourceManager = event.getServer().getResourceManager();
             if (resourceManager.getResource(tableOneLoc).isEmpty()) {
                 test.fail("Test loot table one (conditions directly on builder) is missing");

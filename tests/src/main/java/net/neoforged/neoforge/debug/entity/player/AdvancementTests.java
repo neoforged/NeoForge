@@ -39,7 +39,7 @@ public class AdvancementTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the advancement earn event is fired", groups = "event")
     static void playerAdvancementEarn(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final AdvancementEvent.AdvancementEarnEvent event) -> {
+        test.eventListeners().neoForge().addListener((final AdvancementEvent.AdvancementEarnEvent event) -> {
             if (event.getAdvancement().id().equals(ResourceLocation.withDefaultNamespace("story/root")) && event.getEntity() instanceof ServerPlayer player) {
                 player.getAdvancements().award(
                         Objects.requireNonNull(player.level().getServer().getAdvancements().get(ResourceLocation.withDefaultNamespace("story/mine_stone"))),
@@ -63,7 +63,7 @@ public class AdvancementTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the advancement progress event is fired", groups = "event")
     static void playerAdvancementProgress(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final AdvancementEvent.AdvancementProgressEvent event) -> {
+        test.eventListeners().neoForge().addListener((final AdvancementEvent.AdvancementProgressEvent event) -> {
             if (event.getAdvancement().id().equals(ResourceLocation.withDefaultNamespace("story/obtain_armor")) && event.getProgressType() == AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT && event.getEntity() instanceof ServerPlayer player) {
                 player.getAdvancements().getOrStartProgress(event.getAdvancement())
                         .getRemainingCriteria().forEach(criteria -> player.getAdvancements().award(event.getAdvancement(), criteria));

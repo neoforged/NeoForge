@@ -4,7 +4,7 @@
  import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  
  public class PoiTypeTagsProvider extends KeyTagProvider<PoiType> {
-+    /** @deprecated Forge: Use the {@linkplain #PoiTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /** @deprecated NeoForge: Use the {@linkplain #PoiTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_) {
          super(p_256012_, Registries.POINT_OF_INTEREST_TYPE, p_256617_);

@@ -41,7 +41,7 @@
      }
  
 +    /**
-+     * @deprecated Forge: Use {@link BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.AbstractMinecart)} for enhanced ability
++     * @deprecated NeoForge: Use {@link BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.AbstractMinecart)} for enhanced ability
 +     * If you do change this property be aware that other functions in this/subclasses may break as they can make assumptions about this property
 +     */
 +    @Deprecated

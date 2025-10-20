@@ -5,7 +5,7 @@
      @Override
      public void onLand(Level p_52068_, BlockPos p_52069_, BlockState p_52070_, BlockState p_52071_, FallingBlockEntity p_52072_) {
 -        if (shouldSolidify(p_52068_, p_52069_, p_52071_)) {
-+        if (shouldSolidify(p_52068_, p_52069_, p_52070_, p_52071_.getFluidState())) { // Forge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
++        if (shouldSolidify(p_52068_, p_52069_, p_52070_, p_52071_.getFluidState())) { // NeoForge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
              p_52068_.setBlock(p_52069_, this.concrete.defaultBlockState(), 3);
          }
      }

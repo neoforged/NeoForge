@@ -5,7 +5,7 @@
  import net.minecraft.resources.ResourceKey;
  
 +/**
-+ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} instead
++ * @deprecated NeoForge: Use {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} instead
 + */
 +@Deprecated
  public class RegistriesDatapackGenerator implements DataProvider {

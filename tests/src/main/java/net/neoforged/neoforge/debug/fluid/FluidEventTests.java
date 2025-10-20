@@ -23,7 +23,7 @@ public class FluidEventTests {
     @GameTest
     @TestHolder(description = "Tests if the CreateFluidSourceEvent is fired and allows modifying the result")
     static void createFluidSourceEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final CreateFluidSourceEvent event) -> {
+        test.eventListeners().neoForge().addListener((final CreateFluidSourceEvent event) -> {
             final BlockState state = event.getState();
             final FluidState fluidState = state.getFluidState();
             if (fluidState.getType().isSame(Fluids.WATER)) {
