@@ -361,7 +361,7 @@
              .findSlot(inventory, inventory.getSelectedSlot())
              .ifPresent(p_401732_ -> this.containerMenu.setRemoteSlot(p_401732_, inventory.getSelectedItem()));
 -        return this.drop(itemstack, false, true) != null;
-+        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemstack, true) != null;
++        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemstack, false, true) != null;
      }
  
      @Override

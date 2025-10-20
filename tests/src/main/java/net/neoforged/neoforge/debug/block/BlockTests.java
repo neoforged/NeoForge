@@ -96,7 +96,7 @@ public class BlockTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void woodlessFenceGate(final DynamicTest test, final RegistrationHelper reg) {
-        final var gate = reg.blocks().registerBlock("gate", props -> new FenceGateBlock(props, SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE), BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE))
+        final var gate = reg.blocks().registerBlock("gate", props -> new FenceGateBlock(props, SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE))
                 .withLang("Woodless Fence Gate")
                 .withBlockItem();
 
@@ -178,12 +178,12 @@ public class BlockTests {
     @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
     static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var upwardBubbleColumnSustainingBlock = reg.blocks()
-                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.UPWARD), BlockBehaviour.Properties.of())
+                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.UPWARD))
                 .withLang("Upward Bubble Column Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
         final var downwardBubbleColumnSustainingBlock = reg.blocks()
-                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.DOWNWARD), BlockBehaviour.Properties.of())
+                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.DOWNWARD))
                 .withLang("Downward Bubble Column Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();

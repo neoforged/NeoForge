@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,13 +19,12 @@ import org.jetbrains.annotations.Nullable;
 final class TransactionManager {
     private static final ThreadLocal<TransactionManager> MANAGERS = ThreadLocal.withInitial(TransactionManager::new);
     final Thread thread = Thread.currentThread();
+
     final List<Transaction> stack = new ArrayList<>();
-    final List<SnapshotJournal<?>> journalsToCommitWithRoot = new ArrayList<>();
     int currentDepth = -1;
 
-    boolean isOpen() {
-        return currentDepth > -1;
-    }
+    final Queue<SnapshotJournal<?>> rootCommitQueue = new ArrayDeque<>();
+    boolean processingRootCommitQueue = false;
 
     /**
      * @return The manager for the current thread.
@@ -37,8 +38,7 @@ final class TransactionManager {
             Transaction parentImpl = (Transaction) parent;
             validateCurrentTransaction(parentImpl);
             parentImpl.validateOpen();
-        } else if (isOpen()) {
-            //get the root's name
+        } else if (currentDepth >= 0) {
             String currentRoot = getOpenTransaction(0).getDebugName();
             throw new IllegalStateException("A root transaction of `" + currentRoot + "` is already active on this thread " + thread + " when `" + callerClass + "` tried to open.");
         }
@@ -49,8 +49,9 @@ final class TransactionManager {
             stack.add(current);
         } else {
             current = stack.get(currentDepth);
+            current.callerClass = callerClass;
         }
-        current.lifecycle = Transaction.Lifecycle.OPEN;
+        current.open = true;
         return current;
     }
 
@@ -93,17 +94,45 @@ final class TransactionManager {
         if (currentDepth != -1 && stack.get(currentDepth) == transaction)
             return;
 
-        String self = transaction.getDebugName();
-        String actual = getOpenTransaction(currentDepth).getDebugName();
-
         String errorMessage = String.format(
                 "Transaction function was called on a transaction (%s) with depth `%d`, " +
                         "but the current transaction (%s) has depth `%d`.",
-                actual,
+                transaction.getDebugName(),
                 transaction.depth(),
-                self,
+                stack.get(currentDepth).getDebugName(),
                 currentDepth);
         throw new IllegalStateException(errorMessage);
+    }
+
+    @Nullable
+    RuntimeException processRootCommitQueue(@Nullable RuntimeException closeException) {
+        if (processingRootCommitQueue) {
+            // onRootCommit callbacks can trigger more transactions, which will trigger more onRootCommit callbacks.
+            // When this happens, the additional callbacks are added to the back of the queue of the transaction manager,
+            // such that they are eventually processed.
+            // The queue is already being processed higher up the call stack.
+            // Let control resume to queue processing of the "true" root transaction.
+            return closeException;
+        }
+
+        processingRootCommitQueue = true;
+
+        // Invoke root close callbacks
+        while (!rootCommitQueue.isEmpty()) {
+            SnapshotJournal<?> journal = rootCommitQueue.remove();
+            try {
+                journal.callOnRootCommit();
+            } catch (Exception exception) {
+                if (closeException == null) {
+                    closeException = new RuntimeException("Encountered an exception while invoking a journal's onRootCommit method.", exception);
+                } else {
+                    closeException.addSuppressed(exception);
+                }
+            }
+        }
+
+        processingRootCommitQueue = false;
+        return closeException;
     }
 
     private TransactionManager() {}

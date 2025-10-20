@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>Modifications to game state can then happen.</li>
  * <li>Calling {@link #commit} validates the modifications that happened during the transaction,
  * essentially discarding the checkpoint.</li>
- * <li>Calling {@link #close} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
+ * <li>Calling {@link #close()} or doing nothing and letting the transaction be {@linkplain #close() closed} at the end
  * of the try-with-resources block cancels any modification that happened during the transaction,
  * reverting to the checkpoint.</li>
  * <li>Calling {@link Transaction#open} with a non-{@code null} parent creates a new inner transaction, i.e. a new checkpoint with the current state.
@@ -33,32 +33,25 @@ import org.jetbrains.annotations.Nullable;
  * <p>This is illustrated in the following example.
  *
  * <pre>{@code
- * try (Transaction rootTransaction = TransactionManager.open(null)) {
+ * try (Transaction rootTransaction = Transaction.openRoot()) {
  *     // (A) some transaction operations
- *     try (Transaction innerTransaction = TransactionManager.open(rootTransaction)) {
+ *     try (Transaction innerTransaction = Transaction.open(rootTransaction)) {
  *         // (B) more operations
  *         innerTransaction.commit();
  *         // Commit the changes that happened in this transaction.
  *         // This is an inner transaction, so changes will only be applied if the root
  *         // transaction is committed too.
- *         // auto-close the transaction when exiting the try block
  *     }
  *     // (C) even more operations
  *     rootTransaction.commit();
  *     // This is a root transaction: changes (A), (B) and (C) are applied.
- *     // auto-close the transaction when exiting the try block
  * }
  * // If we hadn't committed the rootTransaction, all changes (A), (B) and (C) would have been reverted.
  * }</pre>
  *
- * <p>Journals are responsible for upholding this contract themselves, by using {@link SnapshotJournal#close}
- * to react to transaction close events and properly validate or revert changes.
- * Any action that modifies the state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
- * should be deferred until {@linkplain SnapshotJournal#onRootCommit(Object) after the root transaction is closed}
- * to give every journal a chance to react to transaction close events.
- *
- * <p>This is very low-level for most applications, and most journals should subclass {@link SnapshotJournal}
- * that will take care of properly maintaining their state.
+ * <p>Transaction-aware objects are responsible for upholding this contract themselves,
+ * by subclassing {@link SnapshotJournal} and using it to manage their state.
+ * See the documentation of {@link SnapshotJournal} for detailed instructions.
  *
  * <p>Every transaction is only valid on the thread it was opened on,
  * and attempts to use it on another thread will throw an exception.
@@ -75,7 +68,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      *
      * <p>For opening a transaction within an already running transaction, see {@link #open(TransactionContext)}.
      *
-     * @throws IllegalStateException If a transaction is already active on the current thread.
+     * @throws IllegalStateException If a transaction is already open or closing on the current thread.
      */
     public static Transaction openRoot() {
         // Don't delegate to other method due to getCallerClass()
@@ -94,7 +87,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      *
      * @param parent the parent transaction, or null if this is the root transaction. Passing {@code null} is equivalent
      *               to calling {@link #openRoot()}.
-     * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
+     * @throws IllegalStateException If no parent is passed, but a transaction is already open or closing on the current thread.
      * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
@@ -108,16 +101,12 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      */
     public static Lifecycle getLifecycle() {
         TransactionManager manager = TransactionManager.getManagerForThread();
-        return manager.currentDepth == -1 ? Lifecycle.NONE : manager.stack.get(manager.currentDepth).lifecycle();
-    }
-
-    /**
-     * Indicates if there is an active transaction on the current thread.
-     *
-     * @return {@code true} if a transaction is open or closing on the current thread, and {@code false} otherwise.
-     */
-    public static boolean hasActiveTransaction() {
-        return getLifecycle().isActive();
+        int currentDepth = manager.currentDepth;
+        if (currentDepth == -1) {
+            return manager.processingRootCommitQueue ? Lifecycle.ROOT_CLOSING : Lifecycle.NONE;
+        } else {
+            return manager.stack.get(currentDepth).open ? Lifecycle.OPEN : Lifecycle.CLOSING;
+        }
     }
 
     /**
@@ -136,11 +125,12 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     public static TransactionContext getCurrentOpenedTransaction() {
         TransactionManager manager = TransactionManager.getManagerForThread();
         // This should also handle the case of LifeCycle is NONE without having to explicitly check
+        // We return null even though onRootCommit callbacks might still be running
         if (manager.currentDepth == -1) return null;
 
         Transaction transaction = manager.stack.get(manager.currentDepth);
-        if (transaction.lifecycle.isOpen()) return transaction;
-        // The life cycle is either CLOSING or ROOT_CLOSING
+        if (transaction.open) return transaction;
+        // The transaction is currently being closed
         throw new IllegalStateException("`getCurrentOpenedTransaction()` cannot be called while a transaction is closing.");
     }
 
@@ -154,7 +144,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      *                               this transaction is not the current transaction, or this transaction was closed.
      */
     public void commit() {
-        close(Result.COMMITTED);
+        close(false);
     }
 
     /**
@@ -163,8 +153,8 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     @Override
     public void close() {
         // check that a transaction is open on this thread and that this transaction is open.
-        if (manager.isOpen() && lifecycle.isOpen()) {
-            close(Result.ABORTED);
+        if (manager.currentDepth >= depth && open) {
+            close(true);
         }
     }
 
@@ -174,42 +164,21 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         return depth;
     }
 
-    public void addClosingJournal(SnapshotJournal<?> journal) {
-        manager.validateCurrentThread();
-        validateOpen();
-        journalsToClose.add(journal);
-    }
-
-    public void addClosingJournalToPrevDepth(SnapshotJournal<?> journal) {
-        manager.getOpenTransaction(depth - 1).addClosingJournal(journal);
-    }
-
-    public void addCommittingJournal(SnapshotJournal<?> journal) {
-        manager.validateCurrentThread();
-        // Note: we don't call validateOpen() because this transaction may not be open if this is called during a CloseCallback.
-        // We rely on a currentDepth check instead, as the depth is only set to -1 at the very end of close(Result).
-
-        if (manager.currentDepth == -1) {
-            throw new IllegalStateException("There is no open transaction on this thread.");
-        }
-
-        manager.journalsToCommitWithRoot.add(journal);
-    }
-
     @Override
     public String toString() {
-        return "Transaction[depth=%d, lifecycle=%s, thread=%s]".formatted(depth, lifecycle.name(), manager.thread.getName());
+        return "Transaction[depth=%d, open=%s, thread=%s]".formatted(depth, open, manager.thread.getName());
     }
 
     // Internals
-    Lifecycle lifecycle = Lifecycle.NONE;
-
-    private final TransactionManager manager;
+    final TransactionManager manager;
     private final int depth;
-    private final List<SnapshotJournal<?>> journalsToClose = new ArrayList<>();
-    private final Class<?> callerClass;
+    /**
+     * {@code true} when the transaction is open, {@code false} when it is closing or closed.
+     */
+    boolean open = false;
+    final List<SnapshotJournal<?>> journalsToClose = new ArrayList<>();
+    Class<?> callerClass;
 
-    // Package protected constructor
     Transaction(TransactionManager manager, int depth, Class<?> callerClass) {
         this.manager = manager;
         this.depth = depth;
@@ -218,14 +187,9 @@ public final class Transaction implements AutoCloseable, TransactionContext {
 
     // Validate that this transaction is open.
     void validateOpen() {
-        if (!lifecycle.isOpen()) {
+        if (!open) {
             throw new IllegalStateException("Transaction operation cannot be applied to a closed or closing transaction.");
         }
-    }
-
-    Lifecycle lifecycle() {
-        manager.validateCurrentThread();
-        return lifecycle;
     }
 
     /**
@@ -235,11 +199,14 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         return callerClass.toString();
     }
 
-    private void close(Result result) {
+    /**
+     * @param wasAborted {@code true} if the transaction was aborted, {@code false} if it was committed
+     */
+    private void close(boolean wasAborted) {
         manager.validateCurrentTransaction(this);
         validateOpen();
         // Block transaction operations
-        lifecycle = Lifecycle.CLOSING;
+        open = false;
 
         // Note: it is important that we don't let exceptions corrupt the global state of the transaction manager.
         // That is why every callback has to run inside its own try-with-resources block.
@@ -248,7 +215,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         // Invoke callbacks
         for (SnapshotJournal<?> journal : journalsToClose) {
             try {
-                journal.close(this, result.wasAborted());
+                journal.onClose(this, wasAborted);
             } catch (Exception exception) {
                 if (closeException == null) {
                     closeException = new RuntimeException("Encountered an exception while invoking a transaction close callback.", exception);
@@ -260,28 +227,13 @@ public final class Transaction implements AutoCloseable, TransactionContext {
 
         journalsToClose.clear();
 
-        if (manager.currentDepth == 0) {
-            lifecycle = Lifecycle.ROOT_CLOSING;
-
-            // Invoke root close callbacks
-            for (SnapshotJournal<?> journal : manager.journalsToCommitWithRoot) {
-                try {
-                    journal.commit();
-                } catch (Exception exception) {
-                    if (closeException == null) {
-                        closeException = new RuntimeException("Encountered an exception while invoking a transaction root close callback.", exception);
-                    } else {
-                        closeException.addSuppressed(exception);
-                    }
-                }
-            }
-
-            manager.journalsToCommitWithRoot.clear();
-        }
-
-        // Only this check will allow openOuter operations.
+        // After this decrement, transactions can again be opened
         manager.currentDepth--;
-        lifecycle = Lifecycle.NONE;
+
+        // Root transaction: process all onRootCommit callbacks.
+        if (manager.currentDepth == -1) {
+            closeException = manager.processRootCommitQueue(closeException);
+        }
 
         // Throw exception if necessary
         if (closeException != null) {
@@ -289,6 +241,9 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         }
     }
 
+    /**
+     * The different possible states of the transaction stack.
+     */
     public enum Lifecycle {
         /**
          * No transaction is currently open or closing.
@@ -299,40 +254,12 @@ public final class Transaction implements AutoCloseable, TransactionContext {
          */
         OPEN,
         /**
-         * The current transaction is invoking its close callbacks.
+         * The current transaction is currently being closed.
          */
         CLOSING,
         /**
-         * The current transaction is invoking its root close callbacks.
+         * {@link SnapshotJournal#onRootCommit} callbacks are being executed, and no transaction is currently open or being closed.
          */
         ROOT_CLOSING;
-
-        /**
-         * Indicates if there is any activity in the life cycle. In other words anything other than {@link #NONE}
-         *
-         * @return {@code true} if is open or closing, and {@code false} otherwise.
-         */
-        boolean isActive() {
-            return this != NONE;
-        }
-
-        public boolean isOpen() {
-            return this == OPEN;
-        }
-    }
-
-    /**
-     * The result of a transaction operation.
-     */
-    private enum Result {
-        ABORTED,
-        COMMITTED;
-
-        /**
-         * @return true if the transaction was aborted, false if it was committed.
-         */
-        public boolean wasAborted() {
-            return this == ABORTED;
-        }
     }
 }

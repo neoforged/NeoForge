@@ -41,7 +41,6 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
@@ -75,7 +74,7 @@ public class FullPotsAccessorDemo {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final DeferredBlock<Block> DIORITE_POT = BLOCKS.registerBlock("diorite_pot", DioriteFlowerPotBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.NONE).instabreak().noOcclusion());
+    private static final DeferredBlock<Block> DIORITE_POT = BLOCKS.registerBlock("diorite_pot", DioriteFlowerPotBlock::new, props -> props.mapColor(MapColor.NONE).instabreak().noOcclusion());
     private static final DeferredItem<BlockItem> DIORITE_POT_ITEM = ITEMS.registerSimpleBlockItem(DIORITE_POT);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DioriteFlowerPotBlockEntity>> DIORITE_POT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "diorite_pot",

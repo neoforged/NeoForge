@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -32,7 +31,7 @@ public class PistonTests {
             "This test mod makes black wool pushed by a piston drop after being pushed."
     })
     static void pistonEvent(final DynamicTest test, final RegistrationHelper reg) {
-        final var shiftOnPistonMove = reg.blocks().registerSimpleBlock("shift_on_piston_move", BlockBehaviour.Properties.of())
+        final var shiftOnPistonMove = reg.blocks().registerSimpleBlock("shift_on_piston_move")
                 .withDefaultWhiteModel()
                 .withBlockItem()
                 .withLang("Shift on piston move");
@@ -114,7 +113,7 @@ public class PistonTests {
             public boolean isStickyBlock(BlockState state) {
                 return true;
             }
-        }, Block.Properties.of()).withBlockItem().withLang("Blue block").withDefaultWhiteModel().withColor(0x0000ff);
+        }).withBlockItem().withLang("Blue block").withDefaultWhiteModel().withColor(0x0000ff);
 
         final var redBlock = reg.blocks().registerBlock("red_block", props -> new Block(props) {
             @Override
@@ -132,7 +131,7 @@ public class PistonTests {
                 if (other.getBlock() == Blocks.SLIME_BLOCK) return false;
                 return state.isStickyBlock() || other.isStickyBlock();
             }
-        }, Block.Properties.of()).withBlockItem().withLang("Red block").withDefaultWhiteModel().withColor(0xff0000);
+        }).withBlockItem().withLang("Red block").withDefaultWhiteModel().withColor(0xff0000);
 
         test.registerGameTestTemplate(() -> StructureTemplateBuilder.withSize(2, 5, 1)
                 .placeFloorLever(1, 1, 0, false)
