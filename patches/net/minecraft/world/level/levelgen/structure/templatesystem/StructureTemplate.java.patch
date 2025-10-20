@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -258,6 +_,10 @@
+@@ -259,6 +_,10 @@
          return transform(p_74565_, p_74564_.getMirror(), p_74564_.getRotation(), p_74564_.getRotationPivot());
      }
  
@@ -11,7 +11,7 @@
      public boolean placeInWorld(
          ServerLevelAccessor p_230329_, BlockPos p_230330_, BlockPos p_230331_, StructurePlaceSettings p_230332_, RandomSource p_230333_, int p_230334_
      ) {
-@@ -279,7 +_,7 @@
+@@ -280,7 +_,7 @@
                  int l = Integer.MIN_VALUE;
                  int i1 = Integer.MIN_VALUE;
                  int j1 = Integer.MIN_VALUE;
@@ -20,7 +20,7 @@
  
                  try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(LOGGER)) {
                      for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : list4) {
-@@ -398,16 +_,7 @@
+@@ -399,16 +_,7 @@
                      }
  
                      if (!p_230332_.isIgnoreEntities()) {
@@ -38,7 +38,7 @@
                      }
                  }
  
-@@ -448,6 +_,10 @@
+@@ -449,6 +_,10 @@
          );
      }
  
@@ -49,7 +49,7 @@
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor p_278297_,
          BlockPos p_74519_,
-@@ -455,6 +_,10 @@
+@@ -456,6 +_,10 @@
          StructurePlaceSettings p_74521_,
          List<StructureTemplate.StructureBlockInfo> p_74522_
      ) {
@@ -60,7 +60,7 @@
          List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> list1 = new ArrayList<>();
  
-@@ -469,7 +_,7 @@
+@@ -470,7 +_,7 @@
  
              while (structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
                  structuretemplate$structureblockinfo1 = iterator.next()
@@ -69,7 +69,7 @@
              }
  
              if (structuretemplate$structureblockinfo1 != null) {
-@@ -485,22 +_,29 @@
+@@ -486,22 +_,29 @@
          return list1;
      }
  
@@ -114,21 +114,23 @@
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -510,10 +_,10 @@
-                 createEntityIgnoreException(p_421857_, p_74524_, compoundtag)
-                     .ifPresent(
-                         p_275190_ -> {
--                            float f = p_275190_.rotate(p_74527_);
--                            f += p_275190_.mirror(p_74526_) - p_275190_.getYRot();
-+                            float f = p_275190_.rotate(placementIn.getRotation());
-+                            f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
-                             p_275190_.snapTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
--                            if (p_74530_ && p_275190_ instanceof Mob) {
-+                            if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                                 ((Mob)p_275190_)
-                                     .finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
-                             }
-@@ -869,7 +_,7 @@
+@@ -509,12 +_,12 @@
+                 compoundtag.put("Pos", listtag);
+                 compoundtag.remove("UUID");
+                 createEntityIgnoreException(p_421857_, p_74524_, compoundtag).ifPresent(p_432733_ -> {
+-                    float f = p_432733_.rotate(p_74527_);
+-                    f += p_432733_.mirror(p_74526_) - p_432733_.getYRot();
++                    float f = p_432733_.rotate(placementIn.getRotation());
++                    f += p_432733_.mirror(placementIn.getMirror()) - p_432733_.getYRot();
+                     p_432733_.snapTo(vec31.x, vec31.y, vec31.z, f, p_432733_.getXRot());
+                     p_432733_.setYBodyRot(f);
+                     p_432733_.setYHeadRot(f);
+-                    if (p_74530_ && p_432733_ instanceof Mob mob) {
++                    if (placementIn.shouldFinalizeEntities() && p_432733_ instanceof Mob mob) {
+                         mob.finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
+                     }
+ 
+@@ -868,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

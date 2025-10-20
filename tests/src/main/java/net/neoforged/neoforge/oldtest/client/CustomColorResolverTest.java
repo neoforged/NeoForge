@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -32,7 +31,7 @@ public class CustomColorResolverTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
 
-    private static final DeferredBlock<Block> BLOCK = BLOCKS.registerBlock("test_block", Block::new, BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    private static final DeferredBlock<Block> BLOCK = BLOCKS.registerBlock("test_block", Block::new, props -> props.mapColor(MapColor.STONE));
 
     public CustomColorResolverTest(IEventBus modBus) {
         ITEMS.register(modBus);

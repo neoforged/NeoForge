@@ -74,8 +74,8 @@
     },
     "fluid_level_floodedness": 0.0,
     "fluid_level_spread": 0.0,
-    "initial_density_without_jaggedness": 0.0,
     "lava": 0.0,
+    "preliminary_surface_level": 0.0,
     "ridges": 0.0,
     "temperature": {
       "type": "minecraft:shifted_noise",

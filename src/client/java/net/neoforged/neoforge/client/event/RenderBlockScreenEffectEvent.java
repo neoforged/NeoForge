@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Fired before a block texture will be overlaid on the player's view.
  *
- * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}.
  * If this event is cancelled, then the overlay will not be rendered.</p>
  *
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -50,14 +52,18 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
     private final OverlayType overlayType;
     private final BlockState blockState;
     private final BlockPos blockPos;
+    private final MaterialSet materials;
+    private final MultiBufferSource bufferSource;
 
     @ApiStatus.Internal
-    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos) {
+    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos, MaterialSet materials, MultiBufferSource bufferSource) {
         this.player = player;
         this.poseStack = poseStack;
         this.overlayType = type;
         this.blockState = block;
         this.blockPos = blockPos;
+        this.materials = materials;
+        this.bufferSource = bufferSource;
     }
 
     /**
@@ -93,5 +99,19 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
      */
     public BlockPos getBlockPos() {
         return blockPos;
+    }
+
+    /**
+     * {@return the materials used in rendering}
+     */
+    public MaterialSet getMaterials() {
+        return materials;
+    }
+
+    /**
+     * {@return the buffer source used in rendering}
+     */
+    public MultiBufferSource getBufferSource() {
+        return bufferSource;
     }
 }

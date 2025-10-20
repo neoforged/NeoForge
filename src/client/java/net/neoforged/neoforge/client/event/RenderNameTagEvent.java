@@ -6,9 +6,10 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
@@ -144,15 +145,15 @@ public abstract class RenderNameTagEvent extends Event {
     public static class DoRender extends RenderNameTagEvent implements ICancellableEvent {
         private final Component content;
         private final PoseStack poseStack;
-        private final MultiBufferSource multiBufferSource;
-        private final int packedLight;
+        private final SubmitNodeCollector submitNodeCollector;
+        private final CameraRenderState cameraRenderState;
 
-        public DoRender(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, float partialTick) {
+        public DoRender(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, float partialTick) {
             super(renderState, entityRenderer, partialTick);
             this.content = content;
             this.poseStack = poseStack;
-            this.multiBufferSource = multiBufferSource;
-            this.packedLight = packedLight;
+            this.submitNodeCollector = submitNodeCollector;
+            this.cameraRenderState = cameraRenderState;
         }
 
         /**
@@ -172,17 +173,15 @@ public abstract class RenderNameTagEvent extends Event {
         /**
          * {@return the source of rendering buffers}
          */
-        public MultiBufferSource getMultiBufferSource() {
-            return this.multiBufferSource;
+        public SubmitNodeCollector getSubmitNodeCollector() {
+            return this.submitNodeCollector;
         }
 
         /**
-         * {@return the amount of packed (sky and block) light for rendering}
-         *
-         * @see net.minecraft.client.renderer.LightTexture
+         * {@return the render state of the camera from which the name tag is being observed}
          */
-        public int getPackedLight() {
-            return this.packedLight;
+        public CameraRenderState getCameraRenderState() {
+            return cameraRenderState;
         }
     }
 }

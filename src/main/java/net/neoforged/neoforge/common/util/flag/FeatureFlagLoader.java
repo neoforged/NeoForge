@@ -11,8 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.BufferedReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.flag.FeatureFlagRegistry;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.jarcontents.JarResource;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,23 +32,23 @@ public final class FeatureFlagLoader {
     private FeatureFlagLoader() {}
 
     public static void loadModdedFlags(FeatureFlagRegistry.Builder builder) {
-        Map<IModInfo, Path> pathPerMod = new HashMap<>();
-        LoadingModList.get()
+        Map<IModInfo, JarResource> pathPerMod = new HashMap<>();
+        FMLLoader.getCurrent().getLoadingModList()
                 .getModFiles()
                 .stream()
                 .map(ModFileInfo::getMods)
                 .flatMap(List::stream)
                 .forEach(mod -> mod.getConfig().<String>getConfigElement("featureFlags").ifPresent(file -> {
-                    Path path = mod.getOwningFile().getFile().findResource(file);
-                    if (!Files.isRegularFile(path)) {
-                        ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.file_not_found", path).withAffectedMod(mod));
+                    var resource = mod.getOwningFile().getFile().getContents().get(file);
+                    if (resource == null) {
+                        ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.file_not_found", file).withAffectedMod(mod));
                         return;
                     }
-                    pathPerMod.put(mod, path);
+                    pathPerMod.put(mod, resource);
                 }));
 
-        pathPerMod.forEach((mod, path) -> {
-            try (BufferedReader reader = Files.newBufferedReader(path)) {
+        pathPerMod.forEach((mod, resource) -> {
+            try (BufferedReader reader = resource.bufferedReader()) {
                 JsonObject obj = GSON.fromJson(reader, JsonObject.class);
                 JsonArray flagArray = GsonHelper.getAsJsonArray(obj, "flags");
                 for (JsonElement elem : flagArray) {
@@ -62,7 +61,7 @@ public final class FeatureFlagLoader {
                     builder.create(flagLocation, true);
                 }
             } catch (Throwable e) {
-                ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.loading_error", path)
+                ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.loading_error", resource)
                         .withAffectedMod(mod)
                         .withCause(e));
             }

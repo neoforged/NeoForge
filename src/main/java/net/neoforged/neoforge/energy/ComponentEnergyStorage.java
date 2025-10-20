@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
 
 /**
  * Variant of {@link EnergyStorage} for use with data components.
@@ -19,7 +20,10 @@ import net.neoforged.neoforge.common.MutableDataComponentHolder;
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
+ *
+ * @deprecated Use {@link ItemAccessEnergyHandler} instead.
  */
+@Deprecated(since = "1.21.9", forRemoval = true)
 public class ComponentEnergyStorage implements IEnergyStorage {
     protected final MutableDataComponentHolder parent;
     protected final DataComponentType<Integer> energyComponent;

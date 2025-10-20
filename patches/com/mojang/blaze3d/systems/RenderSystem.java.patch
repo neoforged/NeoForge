@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -101,6 +_,7 @@
+@@ -94,6 +_,7 @@
      @Nullable
      private static DynamicUniforms dynamicUniforms;
      private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
@@ -8,7 +8,7 @@
  
      public static void initRenderThread() {
          if (renderThread != null) {
-@@ -214,7 +_,7 @@
+@@ -207,7 +_,7 @@
      public static void initRenderer(
          long p_409720_, int p_69581_, boolean p_69582_, BiFunction<ResourceLocation, ShaderType, String> p_410113_, boolean p_410401_
      ) {
@@ -16,8 +16,8 @@
 +        DEVICE = net.neoforged.neoforge.client.ClientHooks.createGpuDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
          apiDescription = getDevice().getImplementationInformation();
          dynamicUniforms = new DynamicUniforms();
- 
-@@ -423,6 +_,40 @@
+     }
+@@ -381,6 +_,40 @@
          if (gpubufferslice2 != null) {
              p_418212_.setUniform("Lighting", gpubufferslice2);
          }

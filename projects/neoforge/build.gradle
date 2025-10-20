@@ -104,10 +104,7 @@ dependencies {
         }
         endorseStrictVersions()
     }
-
-    moduleLibraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}")
 
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
         libraries(asmModule) {
@@ -194,7 +191,7 @@ neoDev {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
-            sourceSet = sourceSets.main
+            sourceSet = sourceSets.client
             loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
@@ -287,7 +284,7 @@ generateAccessTransformers {
     )
 }
 
-tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
     group generateAccessTransformers.group
     description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
     input = generateAccessTransformers.input
@@ -307,6 +304,26 @@ tasks.withType(Javadoc.class).configureEach {
     ]
     options.addStringOption('Xdoclint:all,-missing', '-public')
 }
+
+// Generates the neoforge.mods.toml so it contains a fully realized version number
+final generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    group = 'build'
+    from(rootProject.file('src/main/neoforge.mods.toml')) {
+        rename '(.*)', 'META-INF/$1'
+    }
+    into 'build/generated/modMetadata'
+
+    // Exposed project properties
+    Map<String, String> projectProperties = [
+            'version',
+    ].collectEntries { [it, project[it]] }
+
+    // Ensure the resources get re-evaluate when the version changes
+    inputs.properties projectProperties
+    expand projectProperties
+}
+sourceSets.main.resources.srcDir generateModMetadata
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateModMetadata)
 
 AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
 // Ensure the two default variants are not published, since they
@@ -395,7 +412,7 @@ configurations {
     modDevApiElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, userdevCompileOnly, neoFormDependencies
+        extendsFrom libraries, userdevCompileOnly, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -409,7 +426,7 @@ configurations {
     modDevRuntimeElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, neoFormDependencies
+        extendsFrom libraries, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -420,10 +437,10 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    // Deprecated, but we'll keep it empty for backwards compatibility
     modDevModulePath {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom moduleLibraries
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))

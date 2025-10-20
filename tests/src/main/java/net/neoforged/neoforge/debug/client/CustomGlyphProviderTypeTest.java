@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.font.providers.GlyphProviderDefinition;
 import net.minecraft.client.gui.font.providers.GlyphProviderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -44,9 +45,9 @@ public class CustomGlyphProviderTypeTest {
                 final Minecraft minecraft = Minecraft.getInstance();
                 final MutableComponent component = Component.literal("iiiii");
                 final int vanillaWidth = minecraft.font.width(component.withStyle(s -> s
-                        .withFont(ResourceLocation.withDefaultNamespace("uniform"))));
+                        .withFont(new FontDescription.Resource(ResourceLocation.withDefaultNamespace("uniform")))));
                 final int moddedWidth = minecraft.font.width(component.withStyle(s -> s
-                        .withFont(ResourceLocation.fromNamespaceAndPath("custom_glyph_provider_type_test", "vanilla"))));
+                        .withFont(new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath("custom_glyph_provider_type_test", "vanilla")))));
 
                 if (moddedWidth != vanillaWidth) {
                     test.fail("Width of modded text is " + moddedWidth + ", but " + vanillaWidth + " was expected.");

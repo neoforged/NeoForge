@@ -1,20 +1,26 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
-@@ -485,6 +_,10 @@
+@@ -209,6 +_,14 @@
          return this.itemInHandRenderer;
      }
  
-+    public Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> getSkinMap() {
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getPlayerRenderers() {
 +        return java.util.Collections.unmodifiableMap(playerRenderers);
++    }
++
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getMannequinRenderers() {
++        return java.util.Collections.unmodifiableMap(mannequinRenderers);
 +    }
 +
      @Override
      public void onResourceManagerReload(ResourceManager p_174004_) {
          EntityRendererProvider.Context entityrendererprovider$context = new EntityRendererProvider.Context(
-@@ -492,5 +_,6 @@
-         );
+@@ -226,5 +_,8 @@
          this.renderers = EntityRenderers.createEntityRenderers(entityrendererprovider$context);
-         this.playerRenderers = EntityRenderers.createPlayerRenderers(entityrendererprovider$context);
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(renderers, playerRenderers, entityrendererprovider$context));
+         this.playerRenderers = EntityRenderers.createAvatarRenderers(entityrendererprovider$context);
+         this.mannequinRenderers = EntityRenderers.createAvatarRenderers(entityrendererprovider$context);
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(
++                renderers, playerRenderers, mannequinRenderers, entityrendererprovider$context
++        ));
      }
  }

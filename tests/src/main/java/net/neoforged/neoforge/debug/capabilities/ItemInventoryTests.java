@@ -11,11 +11,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -39,15 +40,15 @@ public class ItemInventoryTests {
     static {
         NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
-        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, new Item.Properties().component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
+        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> props.component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
     }
 
     @OnInit
     static void init(final TestFramework framework) {
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
-            e.registerItem(ItemHandler.ITEM, (stack, ctx) -> {
-                return new ComponentItemHandler(stack, DataComponents.CONTAINER, SLOTS);
+            e.registerItem(Capabilities.Item.ITEM, (stack, itemAccess) -> {
+                return new ItemAccessItemHandler(itemAccess, DataComponents.CONTAINER, SLOTS);
             }, BACKPACK);
         });
     }
@@ -58,7 +59,9 @@ public class ItemInventoryTests {
     public static void testItemInventory(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BACKPACK.toStack();
-            IItemHandler items = stack.getCapability(ItemHandler.ITEM);
+            ItemAccess itemAccess = ItemAccess.forStack(stack);
+            // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
+            IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
 
             ItemStack storedStick = items.getStackInSlot(STICK_SLOT);
             helper.assertValueEqual(storedStick.getItem(), Items.STICK, "Default contents should contain a stick at slot " + STICK_SLOT);

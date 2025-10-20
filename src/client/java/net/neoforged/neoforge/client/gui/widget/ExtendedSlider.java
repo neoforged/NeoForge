@@ -5,15 +5,17 @@
 
 package net.neoforged.neoforge.client.gui.widget;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Slider widget implementation which allows inputting values in a certain range with optional step size.
@@ -120,20 +122,21 @@ public class ExtendedSlider extends AbstractSliderButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        this.setValueFromMouse(mouseX);
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        this.dragging = this.active;
+        this.setValueFromMouse(event.x());
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        super.onDrag(mouseX, mouseY, dragX, dragY);
-        this.setValueFromMouse(mouseX);
+    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
+        super.onDrag(event, dragX, dragY);
+        this.setValueFromMouse(event.x());
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean flag = keyCode == GLFW.GLFW_KEY_LEFT;
-        if (flag || keyCode == GLFW.GLFW_KEY_RIGHT) {
+    public boolean keyPressed(KeyEvent keyEvent) {
+        boolean flag = keyEvent.isLeft();
+        if (flag || keyEvent.isRight()) {
             if (this.minValue > this.maxValue)
                 flag = !flag;
             float f = flag ? -1F : 1F;
@@ -205,5 +208,8 @@ public class ExtendedSlider extends AbstractSliderButton {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getHandleSprite(), this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 8, this.getHeight(), ARGB.white(this.alpha));
         int i = this.active ? 16777215 : 10526880;
         this.renderScrollingString(guiGraphics, minecraft.font, 2, i | Mth.ceil(this.alpha * 255.0F) << 24);
+
+        if (this.isHovered())
+            guiGraphics.requestCursor(this.dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
     }
 }

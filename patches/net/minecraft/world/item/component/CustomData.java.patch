@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/component/CustomData.java
++++ b/net/minecraft/world/item/component/CustomData.java
+@@ -62,6 +_,10 @@
+         return this.tag.copy();
+     }
+ 
++    public boolean contains(String key) {
++        return this.tag.contains(key);
++    }
++
+     @Override
+     public boolean equals(Object p_331195_) {
+         if (p_331195_ == this) {

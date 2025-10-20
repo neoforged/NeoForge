@@ -5,12 +5,13 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
@@ -27,6 +29,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 /**
  * A parser for parsing JSON-based entity animation files.
@@ -114,8 +117,8 @@ public final class AnimationParser {
      */
     private static final Codec<Pair<String, AnimationChannel>> NAMED_CHANNEL_CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                    Codec.STRING.fieldOf("bone").forGetter(Pair::key),
-                    CHANNEL_CODEC.forGetter(Pair::value)).apply(instance, Pair::of));
+                    Codec.STRING.fieldOf("bone").forGetter(Pair::getFirst),
+                    CHANNEL_CODEC.forGetter(Pair::getSecond)).apply(instance, Pair::of));
 
     /**
      * {@snippet lang = JSON :
@@ -146,7 +149,7 @@ public final class AnimationParser {
                                     list -> {
                                         final var result = new HashMap<String, List<AnimationChannel>>();
                                         for (final var animation : list) {
-                                            result.computeIfAbsent(animation.key(), k -> new ArrayList<>()).add(animation.value());
+                                            result.computeIfAbsent(animation.getFirst(), k -> new ArrayList<>()).add(animation.getSecond());
                                         }
                                         return result;
                                     },
@@ -178,16 +181,34 @@ public final class AnimationParser {
         return RecordCodecBuilder.create(
                 instance -> instance.group(
                         Codec.FLOAT.fieldOf("timestamp").forGetter(Keyframe::timestamp),
-                        ExtraCodecs.VECTOR3F
-                                .xmap(
-                                        keyframeTargetToUnaryOp(target.keyframeTarget()),
-                                        keyframeTargetToUnaryOp(target.inverseKeyframeTarget()))
-                                .fieldOf("target")
-                                .forGetter(Keyframe::target),
-                        INTERPOLATION_CODEC.fieldOf("interpolation").forGetter(Keyframe::interpolation)).apply(instance, Keyframe::new));
+                        Codec.mapEither(
+                                Codec.mapPair(
+                                        targetCodec(target).fieldOf("preTarget"),
+                                        targetCodec(target).fieldOf("postTarget")),
+                                targetCodec(target).fieldOf("target")).forGetter(keyframe -> {
+                                    if (keyframe.preTarget().equals(keyframe.postTarget())) {
+                                        return Either.right(keyframe.preTarget());
+                                    }
+                                    return Either.left(Pair.of(keyframe.preTarget(), keyframe.postTarget()));
+                                }),
+                        INTERPOLATION_CODEC.fieldOf("interpolation").forGetter(Keyframe::interpolation)).apply(instance, AnimationParser::constructKeyframe));
     }
 
-    private static UnaryOperator<Vector3f> keyframeTargetToUnaryOp(AnimationKeyframeTarget target) {
-        return vec -> target.apply(vec.x, vec.y, vec.z);
+    private static Codec<Vector3fc> targetCodec(AnimationTarget target) {
+        return ExtraCodecs.VECTOR3F
+                .xmap(vec -> (Vector3fc) vec, vec -> vec instanceof Vector3f vector3f ? vector3f : new Vector3f(vec))
+                .xmap(
+                        keyframeTargetToUnaryOp(target.keyframeTarget()),
+                        keyframeTargetToUnaryOp(target.inverseKeyframeTarget()));
+    }
+
+    private static Keyframe constructKeyframe(float timestamp, Either<Pair<Vector3fc, Vector3fc>, Vector3fc> target, AnimationChannel.Interpolation interpolation) {
+        Vector3fc preTarget = target.map(Pair::getFirst, Function.identity());
+        Vector3fc postTarget = target.map(Pair::getSecond, Function.identity());
+        return new Keyframe(timestamp, preTarget, postTarget, interpolation);
+    }
+
+    private static UnaryOperator<Vector3fc> keyframeTargetToUnaryOp(AnimationKeyframeTarget target) {
+        return vec -> target.apply(vec.x(), vec.y(), vec.z());
     }
 }

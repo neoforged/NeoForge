@@ -7,8 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,18 +33,15 @@ public abstract class RenderLivingEvent<T extends LivingEntity, S extends Living
     private final LivingEntityRenderer<T, S, M> renderer;
     private final float partialTick;
     private final PoseStack poseStack;
-    private final MultiBufferSource multiBufferSource;
-    private final int packedLight;
+    private final SubmitNodeCollector submitNodeCollector;
 
     @ApiStatus.Internal
-    protected RenderLivingEvent(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack,
-            MultiBufferSource multiBufferSource, int packedLight) {
+    protected RenderLivingEvent(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         this.renderState = renderState;
         this.renderer = renderer;
         this.partialTick = partialTick;
         this.poseStack = poseStack;
-        this.multiBufferSource = multiBufferSource;
-        this.packedLight = packedLight;
+        this.submitNodeCollector = submitNodeCollector;
     }
 
     /**
@@ -77,19 +73,10 @@ public abstract class RenderLivingEvent<T extends LivingEntity, S extends Living
     }
 
     /**
-     * {@return the source of rendering buffers}
+     * {@return the submit node collector}
      */
-    public MultiBufferSource getMultiBufferSource() {
-        return multiBufferSource;
-    }
-
-    /**
-     * {@return the amount of packed (sky and block) light for rendering}
-     *
-     * @see LightTexture
-     */
-    public int getPackedLight() {
-        return packedLight;
+    public SubmitNodeCollector getSubmitNodeCollector() {
+        return submitNodeCollector;
     }
 
     /**
@@ -108,8 +95,8 @@ public abstract class RenderLivingEvent<T extends LivingEntity, S extends Living
      */
     public static class Pre<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends RenderLivingEvent<T, S, M> implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-            super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+        public Pre(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+            super(renderState, renderer, partialTick, poseStack, submitNodeCollector);
         }
     }
 
@@ -126,8 +113,8 @@ public abstract class RenderLivingEvent<T extends LivingEntity, S extends Living
      */
     public static class Post<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends RenderLivingEvent<T, S, M> {
         @ApiStatus.Internal
-        public Post(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-            super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+        public Post(S renderState, LivingEntityRenderer<T, S, M> renderer, float partialTick, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+            super(renderState, renderer, partialTick, poseStack, submitNodeCollector);
         }
     }
 }

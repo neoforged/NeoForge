@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -59,6 +58,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -129,16 +129,15 @@ public class DataGeneratorTest {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
-                .add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
-                .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(
+                .add(GeneratingOverlayMetadataSection.neoforgeType(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
+                .add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "pack_overlays_test")),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_disabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
+                .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
-                        DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+                        new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
@@ -599,7 +598,7 @@ public class DataGeneratorTest {
 
         @Override
         protected void addDescriptions() {
-            this.sprite(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
+            this.spriteSet(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
 
             this.spriteSet(ParticleTypes.CLOUD, ResourceLocation.withDefaultNamespace("generic"), 8, true);
 

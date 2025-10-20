@@ -1,14 +1,14 @@
 --- a/com/mojang/blaze3d/pipeline/RenderTarget.java
 +++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
-@@ -25,6 +_,7 @@
-     public int viewHeight;
+@@ -21,6 +_,7 @@
+     public int height;
      protected final String label;
      public final boolean useDepth;
 +    public final boolean useStencil;
      @Nullable
      protected GpuTexture colorTexture;
      @Nullable
-@@ -36,8 +_,16 @@
+@@ -32,8 +_,16 @@
      public FilterMode filterMode;
  
      public RenderTarget(@Nullable String p_405387_, boolean p_166199_) {
@@ -25,7 +25,7 @@
      }
  
      public void resize(int p_83942_, int p_83943_) {
-@@ -92,7 +_,8 @@
+@@ -86,7 +_,8 @@
              this.width = p_83951_;
              this.height = p_83952_;
              if (this.useDepth) {

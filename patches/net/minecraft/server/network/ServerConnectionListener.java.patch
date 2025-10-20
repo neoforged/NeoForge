@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/net/minecraft/server/network/ServerConnectionListener.java
-@@ -48,11 +_,12 @@
+@@ -49,11 +_,12 @@
  
  public class ServerConnectionListener {
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -15,7 +15,7 @@
      );
      final MinecraftServer server;
      public volatile boolean running;
-@@ -65,6 +_,8 @@
+@@ -66,6 +_,8 @@
      }
  
      public void startTcpServerListener(@Nullable InetAddress p_9712_, int p_9713_) throws IOException {
@@ -24,7 +24,7 @@
          synchronized (this.channels) {
              Class<? extends ServerSocketChannel> oclass;
              EventLoopGroup eventloopgroup;
-@@ -86,7 +_,7 @@
+@@ -87,7 +_,7 @@
                      } catch (ChannelException channelexception) {
                      }
  

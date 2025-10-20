@@ -1,19 +1,19 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -71,10 +_,12 @@
-         this.setPvpAllowed(true);
-         this.setFlightAllowed(true);
+@@ -77,10 +_,12 @@
+         LOGGER.info("Starting integrated minecraft server version {}", SharedConstants.getCurrentVersion().name());
+         this.setUsesAuthentication(true);
          this.initializeKeyPair();
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
          GameProfile gameprofile = this.getSingleplayerProfile();
          String s = this.getWorldData().getLevelName();
-         this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);
+         this.setMotd(gameprofile != null ? gameprofile.name() + " - " + s : s);
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
          return true;
      }
  
-@@ -218,6 +_,7 @@
+@@ -225,6 +_,7 @@
  
      @Override
      public void halt(boolean p_120053_) {

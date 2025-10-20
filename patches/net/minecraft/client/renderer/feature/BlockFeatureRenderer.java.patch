@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
++++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
+@@ -26,7 +_,7 @@
+             MovingBlockRenderState movingblockrenderstate = submitnodestorage$movingblocksubmit.movingBlockRenderState();
+             BlockState blockstate = movingblockrenderstate.blockState;
+             List<BlockModelPart> list = p_432881_.getBlockModel(blockstate)
+-                .collectParts(RandomSource.create(blockstate.getSeed(movingblockrenderstate.randomSeedPos)));
++                .collectParts(movingblockrenderstate.level, movingblockrenderstate.blockPos, movingblockrenderstate.blockState, RandomSource.create(blockstate.getSeed(movingblockrenderstate.randomSeedPos)));
+             PoseStack posestack = new PoseStack();
+             posestack.mulPose(submitnodestorage$movingblocksubmit.pose());
+             p_432881_.getModelRenderer()
+@@ -36,7 +_,8 @@
+                     blockstate,
+                     movingblockrenderstate.blockPos,
+                     posestack,
+-                    p_434682_.getBuffer(ItemBlockRenderTypes.getMovingBlockRenderType(blockstate)),
++                    // TODO: this needs further thought as it violates the "one submit == one rendertype" contract
++                    renderType -> p_434682_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType)),
+                     false,
+                     OverlayTexture.NO_OVERLAY
+                 );

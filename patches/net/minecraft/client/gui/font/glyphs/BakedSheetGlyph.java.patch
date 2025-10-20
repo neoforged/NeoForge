@@ -1,0 +1,34 @@
+--- a/net/minecraft/client/gui/font/glyphs/BakedSheetGlyph.java
++++ b/net/minecraft/client/gui/font/glyphs/BakedSheetGlyph.java
+@@ -222,6 +_,15 @@
+             this.glyph.renderEffect(this, p_440671_, p_439075_, p_439912_, false);
+         }
+ 
++        /**
++         * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++         */
++        public RenderType renderType(Font.DisplayMode p_181388_, boolean blur) {
++            return this.glyph.renderTypes.select(p_181388_, blur);
++        }
++
++        /** @deprecated Neo: Use {@link #renderType(Font.DisplayMode, boolean)} instead */
++        @Deprecated
+         @Override
+         public RenderType renderType(Font.DisplayMode p_440152_) {
+             return this.glyph.renderTypes.select(p_440152_);
+@@ -270,6 +_,15 @@
+             this.glyph.renderChar(this, p_439203_, p_440403_, p_439729_, p_439133_);
+         }
+ 
++        /**
++         * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++         */
++        public RenderType renderType(Font.DisplayMode p_181388_, boolean blur) {
++            return this.glyph.renderTypes.select(p_181388_, blur);
++        }
++
++        /** @deprecated Neo: Use {@link #renderType(Font.DisplayMode, boolean)} instead */
++        @Deprecated
+         @Override
+         public RenderType renderType(Font.DisplayMode p_439720_) {
+             return this.glyph.renderTypes.select(p_439720_);

@@ -1,19 +1,16 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -42,6 +_,7 @@
+@@ -43,6 +_,7 @@
              Path path2 = path.resolve(p_78434_.getStringUUID() + ".dat");
              Path path3 = path.resolve(p_78434_.getStringUUID() + ".dat_old");
              Util.safeReplaceFile(path2, path1, path3);
 +            net.neoforged.neoforge.event.EventHooks.firePlayerSavingEvent(p_78434_, playerDir, p_78434_.getStringUUID());
          } catch (Exception exception) {
-             LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
+             LOGGER.warn("Failed to save player data for {}", p_78434_.getPlainTextName());
          }
-@@ -84,7 +_,12 @@
-             p_427223_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_427223_, i);
-             ValueInput valueinput = TagValueInput.create(p_421744_, p_78436_.registryAccess(), p_427223_);
-             p_78436_.load(valueinput);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
-             return valueinput;
+@@ -85,5 +_,9 @@
+             int i = NbtUtils.getDataVersion(p_432736_, -1);
+             return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_432736_, i);
          });
 +    }
 +

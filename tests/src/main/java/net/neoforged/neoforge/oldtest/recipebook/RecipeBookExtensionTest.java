@@ -66,7 +66,7 @@ public class RecipeBookExtensionTest {
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getLevel().isClientSide)
+        if (event.getLevel().isClientSide())
             return;
         if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.GRASS_BLOCK) {
             event.getEntity().openMenu(new SimpleMenuProvider((id, inv, p) -> new RecipeBookTestMenu(id, inv, ContainerLevelAccess.create(event.getLevel(), event.getPos())), Component.literal("Test")));

@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.piston.PistonBaseBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.PistonType;
@@ -35,7 +34,7 @@ public class OnDestroyedByPushReactionTests {
                 .registerBlock(
                         "destroy_on_piston_move",
                         properties -> new DestroyedByPushReactionListeningBlock(properties, callback),
-                        BlockBehaviour.Properties.of()
+                        props -> props
                                 .pushReaction(PushReaction.DESTROY))
                 .withDefaultWhiteModel()
                 .withBlockItem()
@@ -47,7 +46,7 @@ public class OnDestroyedByPushReactionTests {
                 .registerBlock(
                         "push_on_piston_move",
                         properties -> new DestroyedByPushReactionListeningBlock(properties, callback),
-                        BlockBehaviour.Properties.of()
+                        props -> props
                                 .pushReaction(PushReaction.PUSH_ONLY))
                 .withDefaultWhiteModel()
                 .withBlockItem()

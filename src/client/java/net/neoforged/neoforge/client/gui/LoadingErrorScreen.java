@@ -143,10 +143,11 @@ public class LoadingErrorScreen extends ErrorScreen {
             }
 
             @Override
-            public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, final int entryWidth, final int entryHeight, final int mouseX, final int mouseY, final boolean p_194999_5_, final float partialTick) {
+            public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
                 Font font = Minecraft.getInstance().font;
                 final List<FormattedCharSequence> strings = font.split(message, LoadingEntryList.this.width - 20);
-                int y = top + 2;
+                int left = getContentX();
+                int y = getContentY() + 2;
                 for (FormattedCharSequence string : strings) {
                     if (center)
                         guiGraphics.drawString(font, string, left + (width - font.width(string)) / 2, y, 0xFFFFFFFF, false);

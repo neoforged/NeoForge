@@ -4,8 +4,8 @@
  
  public class FenceGateBlock extends HorizontalDirectionalBlock {
      public static final MapCodec<FenceGateBlock> CODEC = RecordCodecBuilder.mapCodec(
--        p_368422_ -> p_368422_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(p_304842_ -> p_304842_.type), propertiesCodec())
--            .apply(p_368422_, FenceGateBlock::new)
+-        p_432664_ -> p_432664_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(p_304842_ -> p_304842_.type), propertiesCodec())
+-            .apply(p_432664_, FenceGateBlock::new)
 +        p_308823_ -> p_308823_.group(WoodType.CODEC.optionalFieldOf("wood_type").forGetter(p_304842_ -> java.util.Optional.ofNullable(p_304842_.type)), propertiesCodec(),
 +                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("open_sound").forGetter(fence -> java.util.Optional.of(fence.openSound).filter(s -> fence.type == null || s != fence.type.fenceGateOpen())),
 +                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("close_sound").forGetter(fence -> java.util.Optional.of(fence.closeSound).filter(s -> fence.type == null || s != fence.type.fenceGateClose())))

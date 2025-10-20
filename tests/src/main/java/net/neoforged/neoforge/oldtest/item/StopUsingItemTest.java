@@ -109,13 +109,13 @@ public class StopUsingItemTest {
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
             player.startUsingItem(hand);
             player.getAbilities().mayfly = true;
-            if (player.level().isClientSide)
+            if (player.level().isClientSide())
                 fovChange = 10f;
             return InteractionResult.CONSUME;
         }
 
         public static void removeFov(LivingEntity living) {
-            if (living.level().isClientSide)
+            if (living.level().isClientSide())
                 fovChange = 1f;
             if (living instanceof Player player) {
                 player.getAbilities().mayfly = player.isCreative();

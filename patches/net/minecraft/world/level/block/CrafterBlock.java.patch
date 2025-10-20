@@ -22,7 +22,7 @@
 +                if (container != null) {
 +                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
 +                } else {
-+                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
++                    itemstack = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(containerOrHandler.itemHandler(), itemstack, false, null);
 +                }
                  if (i == itemstack.getCount()) {
                      break;

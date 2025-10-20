@@ -10,7 +10,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -42,7 +41,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     private static final boolean REGISTER_FOR_SERVER = true;
     private static final boolean REGISTER_FOR_CLIENT = true;
 
-    private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.dist == Dist.CLIENT ? "V1" : "V2";
+    private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.getDist().isClient() ? "V1" : "V2";
 
     public ModMismatchTest(IEventBus modBus) {
         if (ENABLED) {
@@ -51,7 +50,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     }
 
     private void onRegisterPacketHandler(RegisterPayloadHandlersEvent event) {
-        if ((FMLEnvironment.dist == Dist.DEDICATED_SERVER && REGISTER_FOR_SERVER) || (FMLEnvironment.dist == Dist.CLIENT && REGISTER_FOR_CLIENT)) {
+        if ((FMLEnvironment.getDist().isDedicatedServer() && REGISTER_FOR_SERVER) || (FMLEnvironment.getDist().isClient() && REGISTER_FOR_CLIENT)) {
             event
                     .registrar(CHANNEL_PROTOCOL_VERSION)
                     .configurationBidirectional(

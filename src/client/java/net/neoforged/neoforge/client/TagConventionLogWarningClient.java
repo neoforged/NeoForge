@@ -13,10 +13,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.TagConventionLogWarning;
 import net.neoforged.neoforge.common.Tags;
@@ -43,11 +41,11 @@ public final class TagConventionLogWarningClient {
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
             TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeCommonConfig.INSTANCE.logUntranslatedItemTagWarnings.get();
-            if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
+            if (FMLEnvironment.getDist().isClient() && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_SHORT ||
                         untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;
 
-                if (!FMLLoader.isProduction() == isConfigSetToDev) {
+                if (!FMLEnvironment.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> untranslatedTags = new ObjectArrayList<>();
                     RegistryAccess.Frozen registryAccess = serverStartingEvent.getServer().registryAccess();
                     extractUnregisteredModdedTags(registryAccess.lookupOrThrow(Registries.ITEM), untranslatedTags);

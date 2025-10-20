@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityWithBoundingBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityWithBoundingBoxRenderer.java
-@@ -133,4 +_,9 @@
+@@ -209,4 +_,9 @@
      public int getViewDistance() {
          return 96;
      }

@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
+@@ -29,6 +_,8 @@
+     protected final StateDefinition<Fluid, FluidState> stateDefinition;
+     private FluidState defaultFluidState;
+     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
++    @Nullable
++    private net.neoforged.neoforge.transfer.fluid.FluidResource defaultResource;
+ 
+     protected Fluid() {
+         StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
 @@ -64,6 +_,9 @@
      }
  
@@ -22,7 +31,7 @@
      @Nullable
      public AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
          if (this.isEmpty()) {
-@@ -125,5 +_,13 @@
+@@ -125,5 +_,22 @@
      @Deprecated
      public Holder.Reference<Fluid> builtInRegistryHolder() {
          return this.builtInRegistryHolder;
@@ -34,5 +43,14 @@
 +    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
 +        if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
 +        return forgeFluidType;
++    }
++
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.fluid.FluidResource#of} instead. */
++    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    public net.neoforged.neoforge.transfer.fluid.FluidResource computeDefaultResource(java.util.function.Function<Fluid, net.neoforged.neoforge.transfer.fluid.FluidResource> resourceConstructor) {
++        if (this.defaultResource == null) {
++            this.defaultResource = resourceConstructor.apply(this);
++        }
++        return this.defaultResource;
      }
  }

@@ -87,7 +87,7 @@ public class ContainerTypeTest {
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        if (!event.getLevel().isClientSide && event.getHand() == InteractionHand.MAIN_HAND) {
+        if (!event.getLevel().isClientSide() && event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.SPONGE) {
                 String text = "Hello World!";
                 event.getEntity().openMenu(new MenuProvider() {

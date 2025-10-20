@@ -122,12 +122,12 @@ public class AttachmentTests {
             player.setData(lostOnDeathBoolean, true);
             player.setData(keptOnDeathBoolean, true);
 
-            var returningPlayer = player.getServer().getPlayerList().respawn(player, true, Entity.RemovalReason.CHANGED_DIMENSION);
+            var returningPlayer = player.level().getServer().getPlayerList().respawn(player, true, Entity.RemovalReason.CHANGED_DIMENSION);
 
             helper.assertTrue(returningPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should have remained after end portal respawning.");
             helper.assertTrue(returningPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after end portal respawning.");
 
-            var respawnedPlayer = player.getServer().getPlayerList().respawn(returningPlayer, false, Entity.RemovalReason.KILLED);
+            var respawnedPlayer = player.level().getServer().getPlayerList().respawn(returningPlayer, false, Entity.RemovalReason.KILLED);
 
             helper.assertFalse(respawnedPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should not have remained after respawning.");
             helper.assertTrue(respawnedPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after respawning.");

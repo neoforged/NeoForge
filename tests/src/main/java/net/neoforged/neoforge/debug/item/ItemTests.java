@@ -123,7 +123,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), props) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(props.spawnEgg(testEntity.get())) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
@@ -189,7 +189,7 @@ public class ItemTests {
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
         final Rarity rarity = Rarity.valueOf("NEOTESTS_CUSTOM");
-        final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
+        final Supplier<Item> item = reg.items().registerSimpleItem("test", props -> props.rarity(rarity))
                 .withLang("Custom rarity test");
 
         test.onGameTest(helper -> helper.startSequence(() -> item.get().getDefaultInstance())

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Creates the userdev configuration file used by the various Gradle plugins used to develop
@@ -28,9 +29,6 @@ import java.util.Map;
 abstract class CreateUserDevConfig extends DefaultTask {
     @Inject
     public CreateUserDevConfig() {}
-
-    @Input
-    abstract Property<String> getFmlVersion();
 
     @Input
     abstract Property<String> getMinecraftVersion();
@@ -45,13 +43,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
     abstract ListProperty<String> getLibraries();
 
     @Input
-    abstract ListProperty<String> getModules();
-
-    @Input
     abstract ListProperty<String> getTestLibraries();
-
-    @Input
-    abstract ListProperty<String> getIgnoreList();
 
     @Input
     abstract Property<String> getBinpatcherGav();
@@ -61,6 +53,10 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
     @TaskAction
     public void writeUserDevConfig() throws IOException {
+        var features = new UserDevFeatures(
+            true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+        );
+
         var config = new UserDevConfig(
                 2,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
@@ -75,21 +71,11 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 getLibraries().get(),
                 getTestLibraries().get(),
                 new LinkedHashMap<>(),
-                getModules().get());
+                List.of() /* deprecated: modules */,
+                features);
 
         for (var runType : RunType.values()) {
-            var launchTarget = switch (runType) {
-                case CLIENT -> "neoforgeclientdev";
-                case CLIENT_DATA -> "neoforgeclientdatadev";
-                case SERVER_DATA -> "neoforgeserverdatadev";
-                case SERVER -> "neoforgeserverdev";
-                case GAME_TEST_SERVER -> "neoforgegametestserverdev";
-                case JUNIT -> "neoforgejunitdev";
-            };
-
             List<String> args = new ArrayList<>();
-            Collections.addAll(args,
-                    "--launchTarget", launchTarget);
 
             if (runType == RunType.CLIENT || runType == RunType.JUNIT) {
                 // TODO: this is copied from NG but shouldn't it be the MC version?
@@ -104,15 +90,12 @@ abstract class CreateUserDevConfig extends DefaultTask {
             }
 
             Collections.addAll(args,
-                    "--fml.fmlVersion", getFmlVersion().get(),
                     "--fml.mcVersion", getMinecraftVersion().get(),
                     "--fml.neoForgeVersion", getNeoForgeVersion().get(),
                     "--fml.neoFormVersion", getRawNeoFormVersion().get());
 
             Map<String, String> systemProperties = new LinkedHashMap<>();
             systemProperties.put("java.net.preferIPv6Addresses", "system");
-            systemProperties.put("ignoreList", String.join(",", getIgnoreList().get()));
-            systemProperties.put("legacyClassPath.file", "{minecraft_classpath_file}");
 
             if (runType == RunType.CLIENT || runType == RunType.GAME_TEST_SERVER) {
                 systemProperties.put("neoforge.enableGameTest", "true");
@@ -120,14 +103,11 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
             config.runs().put(runType.jsonName, new UserDevRunType(
                     runType != RunType.JUNIT,
-                    "cpw.mods.bootstraplauncher.BootstrapLauncher",
+                    // Archloom crashes when reading a userconfig without a main class
+                    Objects.requireNonNullElse(runType.mainClass, "NONE"),
                     args,
                     List.of(
-                            "-p", "{modules}",
-                            "--add-modules", "ALL-MODULE-PATH",
-                            "--add-opens", "java.base/java.util.jar=cpw.mods.securejarhandler",
-                            "--add-opens", "java.base/java.lang.invoke=cpw.mods.securejarhandler",
-                            "--add-exports", "java.base/sun.security.util=cpw.mods.securejarhandler",
+                            "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
                             "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"),
                     runType == RunType.CLIENT || runType == RunType.JUNIT || runType == RunType.CLIENT_DATA,
                     runType == RunType.GAME_TEST_SERVER || runType == RunType.SERVER || runType == RunType.SERVER_DATA,
@@ -143,22 +123,22 @@ abstract class CreateUserDevConfig extends DefaultTask {
         FileUtils.writeStringSafe(
                 getUserDevConfig().getAsFile().get().toPath(),
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(config),
-                // TODO: Not sure what this should be? Most likely the file is ASCII.
                 StandardCharsets.UTF_8);
     }
 
     private enum RunType {
-        CLIENT("client"),
-        CLIENT_DATA("clientData"),
-        SERVER_DATA("serverData"),
-        GAME_TEST_SERVER("gameTestServer"),
-        SERVER("server"),
-        JUNIT("junit");
-
+        CLIENT("client", "net.neoforged.fml.startup.Client"),
+        CLIENT_DATA("clientData", "net.neoforged.fml.startup.DataClient"),
+        SERVER_DATA("serverData", "net.neoforged.fml.startup.DataServer"),
+        GAME_TEST_SERVER("gameTestServer", "net.neoforged.fml.startup.GameTestServer"),
+        SERVER("server", "net.neoforged.fml.startup.Server"),
+        JUNIT("junit", null);
         private final String jsonName;
+        private final String mainClass;
 
-        RunType(String jsonName) {
+        RunType(String jsonName, String mainClass) {
             this.jsonName = jsonName;
+            this.mainClass = mainClass;
         }
     }
 }
@@ -175,7 +155,11 @@ record UserDevConfig(
         List<String> libraries,
         List<String> testLibraries,
         Map<String, UserDevRunType> runs,
-        List<String> modules) {}
+        List<String> modules,
+        UserDevFeatures features) {}
+
+record UserDevFeatures(
+    boolean noLegacyClasspath) {}
 
 record BinpatcherConfig(
         String version,

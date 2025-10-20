@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client;
 
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -44,6 +44,7 @@ public record ClientTooltipFlag(boolean advanced, boolean creative, boolean shif
     }
 
     public static TooltipFlag of(TooltipFlag other) {
-        return new ClientTooltipFlag(other.isAdvanced(), other.isCreative(), Screen.hasShiftDown(), Screen.hasControlDown(), Screen.hasAltDown());
+        Minecraft mc = Minecraft.getInstance();
+        return new ClientTooltipFlag(other.isAdvanced(), other.isCreative(), mc.hasShiftDown(), mc.hasControlDown(), mc.hasAltDown());
     }
 }
