@@ -43,6 +43,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -126,6 +127,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -198,7 +200,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
@@ -206,9 +207,11 @@ import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeBuildType;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.internal.BrandingControl;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.internal.NeoForgeVersionCheck;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
@@ -376,22 +379,25 @@ public class ClientHooks {
         return event.getDistance();
     }
 
-    /**
-     * Initialization of Forge Renderers.
-     */
-    static {
-        //FluidRegistry.renderIdFluid = RenderingRegistry.getNextAvailableRenderId();
-        //RenderingRegistry.registerBlockHandler(RenderBlockFluid.instance);
-    }
-
     public static void renderMainMenu(TitleScreen gui, GuiGraphics guiGraphics, Font font, int width, int height, int alpha) {
-        ForgeSnapshotsModClient.renderMainMenuWarning(NeoForgeVersion.getVersion(), guiGraphics, font, width, height, alpha);
+        switch (NeoForgeVersion.getBuildType()) {
+            case NeoForgeBuildType.PULL_REQUEST -> {
+                guiGraphics.drawCenteredString(font, Component.translatable("loadwarning.neoforge.prbuild"), width / 2, 4 + (font.lineHeight + 1) / 2, ARGB.color(alpha, 0xFFFFFF));
+            }
+            case NeoForgeBuildType.BETA -> {
+                // Render a warning at the top of the screen
+                Component line = Component.translatable("neoforge.update.beta.1", ChatFormatting.RED.toString(), ChatFormatting.RESET.toString()).withStyle(ChatFormatting.RED);
+                guiGraphics.drawCenteredString(font, line, width / 2, 4 + (0 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
+                line = Component.translatable("neoforge.update.beta.2");
+                guiGraphics.drawCenteredString(font, line, width / 2, 4 + (1 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
+            }
+        }
 
-        BrandingControl.setForgeStatusLine(switch (NeoForgeVersion.getStatus()) {
+        BrandingControl.setForgeStatusLine(switch (NeoForgeVersionCheck.getStatus()) {
             // case FAILED -> " Version check failed";
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
-            case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersion.getTarget());
+            case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersionCheck.getTarget());
             default -> null;
         });
     }
@@ -702,7 +708,7 @@ public class ClientHooks {
         return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
     }
 
-    private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/icons.png");
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));

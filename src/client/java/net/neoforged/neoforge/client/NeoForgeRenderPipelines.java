@@ -13,9 +13,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeMod.MOD_ID)
 public final class NeoForgeRenderPipelines {
     // Duplicate of RenderPipelines.ENTITY_TRANSLUCENT with directional shading and lighting disabled
     public static final RenderPipeline ENTITY_UNLIT_TRANSLUCENT = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)

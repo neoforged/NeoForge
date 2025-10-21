@@ -2,6 +2,7 @@ import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
+
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
 
@@ -312,25 +313,55 @@ tasks.withType(Javadoc.class).configureEach {
     options.addStringOption('Xdoclint:all,-missing', '-public')
 }
 
-// Generates the neoforge.mods.toml so it contains a fully realized version number
-final generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+final static boolean isPRBuild(String neoVersion) {
+    // The -pr- being inside the actual version and a branch name is important.
+    // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
+    // the regex will match PR builds published to Packages, but that it will not match local PR branches
+    // since those usually have the name `pr|pull/<number>`
+    return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
+}
+
+// Placeholders for source and resource generation.
+// Exposed project properties
+Map<String, String> placeholders = [
+        'version' : project.version.toString(),
+        'neoform_version' : project.neoform_version,
+        'minecraft_version' : project.minecraft_version,
+        'build_type' : isPRBuild(project.version.toString()) ? "PULL_REQUEST" : (project.version.toString().contains("-beta") ? "BETA" : "STABLE")
+]
+
+// Generates the neoforge.mods.toml and version.properties, so they contain fully realized version numbers
+final generateResources = tasks.register('generateResources', ProcessResources) {
     group = 'build'
-    from(rootProject.file('src/main/neoforge.mods.toml')) {
+    from(rootProject.file('src/main/templates/neoforge.mods.toml')) {
         rename '(.*)', 'META-INF/$1'
     }
-    into 'build/generated/modMetadata'
-
-    // Exposed project properties
-    Map<String, String> projectProperties = [
-            'version',
-    ].collectEntries { [it, project[it]] }
+    from(rootProject.file('src/main/templates/version.properties')) {
+        rename '(.*)', 'net/neoforged/neoforge/common/$1'
+    }
+    into 'build/generated/sources/neoforge/resources'
 
     // Ensure the resources get re-evaluate when the version changes
-    inputs.properties projectProperties
-    expand projectProperties
+    inputs.properties placeholders
+    expand placeholders
 }
-sourceSets.main.resources.srcDir generateModMetadata
-net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateModMetadata)
+sourceSets.main.resources.srcDir generateResources
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateResources)
+
+// Generates the NeoForgeVersion.java source file
+final generateSources = tasks.register('generateSources', ProcessResources) {
+    group = 'build'
+    from(rootProject.file('src/main/templates/NeoForgeVersion.java')) {
+        rename '(.*)', 'net/neoforged/neoforge/common/$1'
+    }
+    into 'build/generated/sources/neoforge/java'
+
+    // Ensure the resources get re-evaluate when the version changes
+    inputs.properties placeholders
+    expand placeholders
+}
+sourceSets.main.java.srcDir generateSources
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateSources)
 
 AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
 // Ensure the two default variants are not published, since they

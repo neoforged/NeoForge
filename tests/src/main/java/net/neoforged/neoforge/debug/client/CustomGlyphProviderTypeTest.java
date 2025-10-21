@@ -20,7 +20,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -30,7 +30,7 @@ public class CustomGlyphProviderTypeTest {
     public static final EnumProxy<GlyphProviderType> REFERENCE_2_PARAMS = new EnumProxy<>(
             GlyphProviderType.class, "neotests:reference_2", Reference2.CODEC);
 
-    public static final ResourceLocation LISTENER_NAME = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "glyph_test");
+    public static final ResourceLocation LISTENER_NAME = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "glyph_test");
 
     @TestHolder(description = "Tests if custom GlyphProviderTypes were used for loading resources", enabledByDefault = true)
     static void setupGlyphProviderTypeTest(DynamicTest test) {

@@ -10,12 +10,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record ClientboundCustomSetTimePayload(long gameTime, long dayTime, boolean gameRule, float dayTimeFraction, float dayTimePerTick) implements CustomPacketPayload {
-    public static final Type<ClientboundCustomSetTimePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "custom_time_packet"));
+    public static final Type<ClientboundCustomSetTimePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "custom_time_packet"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSetTimePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_LONG, ClientboundCustomSetTimePayload::gameTime,

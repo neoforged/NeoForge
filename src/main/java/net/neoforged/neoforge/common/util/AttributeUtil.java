@@ -42,7 +42,6 @@ import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,7 +69,7 @@ public class AttributeUtil {
      * <p>
      * Should not be used by any real attribute modifiers for gameplay purposes.
      */
-    public static final ResourceLocation FAKE_MERGED_ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "fake_merged_modifier");
+    public static final ResourceLocation FAKE_MERGED_ID = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "fake_merged_modifier");
 
     /**
      * Comparator for {@link AttributeModifier}. First compares by operation, then amount, then the ID.

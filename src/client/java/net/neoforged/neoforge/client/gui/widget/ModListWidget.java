@@ -18,7 +18,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.client.gui.ModListScreen;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforgespi.language.IModInfo;
 
 public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
@@ -26,7 +26,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         return net.minecraft.util.StringUtil.stripColor(value);
     }
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
     private final int listWidth;
 
     private ModListScreen parent;

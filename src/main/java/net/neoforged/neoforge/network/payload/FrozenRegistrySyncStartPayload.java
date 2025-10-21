@@ -11,7 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record FrozenRegistrySyncStartPayload(List<ResourceLocation> toAccess) implements CustomPacketPayload {
-    public static final Type<FrozenRegistrySyncStartPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry_sync_start"));
+    public static final Type<FrozenRegistrySyncStartPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "frozen_registry_sync_start"));
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncStartPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()),
             FrozenRegistrySyncStartPayload::toAccess,
