@@ -341,7 +341,7 @@
  
 +    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
-+        this.updateFluidHeightAndDoFluidPushing();
++        this.updateFluidHeightAndDoFluidPushing(true);
 +        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
 +        else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
 +        else return false;
@@ -350,8 +350,8 @@
 +    public boolean updateFluidHeightAndDoCanPushEntityFluidPushing(boolean performFluidPushing) {
 +        if (performFluidPushing) {
 +            this.forgeFluidTypeHeight.clear();
-+            this.updateFluidHeightAndDoFluidPushing();
 +        }
++        this.updateFluidHeightAndDoFluidPushing(performFluidPushing);
 +
 +        if (this.forgeFluidTypeHeight.isEmpty()) {
 +            return false;
@@ -366,7 +366,7 @@
 +        return false;
 +    }
 +
-+    public void updateFluidHeightAndDoFluidPushing() {
++    public void updateFluidHeightAndDoFluidPushing(boolean doFluidPushing) {
          if (this.touchingUnloadedChunk()) {
 -            return false;
 +            return;
@@ -426,7 +426,7 @@
 -                    vec3 = vec3.scale(1.0 / k1);
 +            if(interimCalcs != null) {
 +            interimCalcs.forEach((fluidType, interim) -> {
-+            if (interim.flowVector.length() > 0.0D) {
++            if (doFluidPushing && interim.flowVector.length() > 0.0D) {
 +                if (interim.blockCount > 0) {
 +                    interim.flowVector = interim.flowVector.scale(1.0D / (double)interim.blockCount);
                  }
