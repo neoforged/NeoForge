@@ -41,8 +41,9 @@ public interface ValueInputExtension {
     /**
      * Reads the {@code child} object from the given {@code key},
      * or provides an empty {@link ValueInput} if the child does not exist.
-     * Unlike {@link ValueInput#childOrEmpty(String)}, this will not attempt
-     * to use an empty context if no data exists in the backing object.
+     * Unlike {@link ValueInput#childOrEmpty(String)}, this will not return
+     * an empty context if there are no keys (as reported by {@link #keySet()}),
+     * within the child.
      * <br>
      * If not implemented, defaults to {@link ValueInput#childOrEmpty(String)}.
      *
