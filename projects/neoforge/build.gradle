@@ -5,7 +5,7 @@ import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.jarcompatibilitychecker' version '0.1.10'
+    id 'net.neoforged.jarcompatibilitychecker' version '0.1.15'
 }
 
 apply plugin: 'net.neoforged.gradleutils'
