@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.pipeline.MainTarget;
@@ -19,6 +21,7 @@ import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.floats.FloatComparators;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
@@ -55,6 +58,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
+import net.minecraft.client.gui.components.debug.DebugEntryCategory;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -85,6 +90,7 @@ import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.BlockElement;
@@ -105,11 +111,13 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.MusicInfo;
 import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.locale.Language;
@@ -201,10 +209,12 @@ import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -849,16 +859,16 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
-    public static boolean renderFireOverlay(Player player, PoseStack mat) {
-        return renderBlockOverlay(player, mat, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition());
+    public static boolean renderFireOverlay(Player player, PoseStack poseStack, MaterialSet materials, MultiBufferSource bufferSource) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), materials, bufferSource);
     }
 
-    public static boolean renderWaterOverlay(Player player, PoseStack mat) {
-        return renderBlockOverlay(player, mat, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition());
+    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, MaterialSet materials, MultiBufferSource bufferSource) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), materials, bufferSource);
     }
 
-    public static boolean renderBlockOverlay(Player player, PoseStack mat, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos) {
-        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos)).isCanceled();
+    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, MaterialSet materials, MultiBufferSource bufferSource) {
+        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, materials, bufferSource)).isCanceled();
     }
 
     public static int getMaxMipmapLevel(int width, int height) {
@@ -1177,5 +1187,47 @@ public class ClientHooks {
     public static <T> ArgumentAcceptingOptionSpec<T> optionalInDev(ArgumentAcceptingOptionSpec<T> option, T defaultValue) {
         if (FMLEnvironment.isProduction()) return option.required();
         return option.defaultsTo(defaultValue);
+    }
+  
+    @ApiStatus.Internal
+    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
+        var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
+
+        // filter out to match search text
+        // - blank/empty string, accept everything
+        // - accept entries whose namespace/path match given text
+        DebugScreenEntries.allEntries().forEach((id, value) -> {
+            if (isValidDebugEntryForSearch(searchText, id)) {
+                byCategory.put(value.category(), id);
+            }
+        });
+
+        // sort categories by the 'sortKey'
+        var sortedCategories = Lists.newArrayList(byCategory.keySet());
+        sortedCategories.sort((a, b) -> FloatComparators.NATURAL_COMPARATOR.compare(a.sortKey(), b.sortKey()));
+
+        sortedCategories.forEach(category -> {
+            // add category label to screen
+            addCategory.accept(category);
+
+            // sort entries by their ids (vanilla first)
+            var entries = byCategory.get(category);
+            entries.sort(CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST);
+            // add entry to screen
+            entries.forEach(addEntry);
+        });
+    }
+
+    private static boolean isValidDebugEntryForSearch(String searchText, ResourceLocation id) {
+        if (searchText.isBlank()) {
+            // no search provided, accept everything
+            return true;
+        } else if (StringUtils.contains(searchText, ResourceLocation.NAMESPACE_SEPARATOR)) {
+            // search text contains ':' separator, accept all whose full id match
+            return SharedSuggestionProvider.matchesSubStr(searchText, id.toString());
+        } else {
+            // default, accept all whose namespace or path match
+            return SharedSuggestionProvider.matchesSubStr(searchText, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(searchText, id.getPath());
+        }
     }
 }

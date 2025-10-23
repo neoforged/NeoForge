@@ -21,7 +21,7 @@
              RenderType.textIntensitySeeThrough(p_285411_),
              RenderType.textIntensityPolygonOffset(p_285411_),
 -            RenderPipelines.GUI_TEXT_INTENSITY
-+            RenderPipelines.TEXT_INTENSITY,
++            RenderPipelines.GUI_TEXT_INTENSITY,
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityFiltered(p_285411_),
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensitySeeThroughFiltered(p_285411_),
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityPolygonOffsetFiltered(p_285411_)
@@ -31,7 +31,7 @@
      public static GlyphRenderTypes createForColorTexture(ResourceLocation p_285486_) {
          return new GlyphRenderTypes(
 -            RenderType.text(p_285486_), RenderType.textSeeThrough(p_285486_), RenderType.textPolygonOffset(p_285486_), RenderPipelines.GUI_TEXT
-+            RenderType.text(p_285486_), RenderType.textSeeThrough(p_285486_), RenderType.textPolygonOffset(p_285486_), RenderPipelines.TEXT,
++            RenderType.text(p_285486_), RenderType.textSeeThrough(p_285486_), RenderType.textPolygonOffset(p_285486_), RenderPipelines.GUI_TEXT,
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextFiltered(p_285486_),
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextSeeThroughFiltered(p_285486_),
 +            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextPolygonOffsetFiltered(p_285486_)

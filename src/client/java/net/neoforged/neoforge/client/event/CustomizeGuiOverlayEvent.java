@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
-import java.util.List;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Fired when an overlay is about to be rendered to the screen to allow the user to modify it.
  *
  * @see BossEventProgress
- * @see DebugText
  * @see Chat
  */
 public abstract class CustomizeGuiOverlayEvent extends Event {
@@ -106,41 +104,6 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
          */
         public void setIncrement(int increment) {
             this.increment = increment;
-        }
-    }
-
-    /**
-     * Fired <b>before</b> textual information is rendered to the debug screen.
-     * This can be used to add or remove text information.
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-     *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
-    public static class DebugText extends CustomizeGuiOverlayEvent {
-        private final List<String> left;
-        private final List<String> right;
-
-        @ApiStatus.Internal
-        public DebugText(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, List<String> left, List<String> right) {
-            super(window, guiGraphics, partialTick);
-            this.left = left;
-            this.right = right;
-        }
-
-        /**
-         * @return the modifiable list of text to render on the left side
-         */
-        public List<String> getLeft() {
-            return left;
-        }
-
-        /**
-         * @return the modifiable list of text to render on the right side
-         */
-        public List<String> getRight() {
-            return right;
         }
     }
 

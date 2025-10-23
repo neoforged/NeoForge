@@ -104,7 +104,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code next_oxidized_stage}, a block that the object should convert into once it changes oxidizing states</li>
+     * <li>{@code next_oxidation_stage}, a block that the object should convert into once it changes oxidizing states</li>
      * </ul>
      *
      * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}

@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
++++ b/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
+@@ -187,6 +_,10 @@
+             DebugScreenEntry debugscreenentry = DebugScreenEntries.getEntry(p_434775_);
+             this.isAllowed = debugscreenentry != null && debugscreenentry.isAllowed(DebugOptionsScreen.this.minecraft.showOnlyReducedInfo());
+             String s = p_434775_.getPath();
++            // Neo: Display the full RL for modded entries
++            if(!p_434775_.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
++                s = p_434775_.toString();
++            }
+             if (this.isAllowed) {
+                 this.name = s;
+             } else {
+@@ -245,8 +_,10 @@
+         public void renderContent(GuiGraphics p_439423_, int p_439217_, int p_439543_, boolean p_439889_, float p_439319_) {
+             int i = this.getContentX();
+             int j = this.getContentY();
+-            p_439423_.drawString(DebugOptionsScreen.this.minecraft.font, this.name, i, j + 5, this.isAllowed ? -1 : -8355712);
++            // Neo: Moved 'k' up for 'maxX' calculation for scrolling string render
+             int k = i + this.getContentWidth() - this.never.getWidth() - this.f3.getWidth() - this.always.getWidth();
++            // Neo: Scroll entry names that go out of bounds
++            p_439423_.drawScrollingString(DebugOptionsScreen.this.minecraft.font, Component.literal(this.name), i, k, j + 5, this.isAllowed ? -1 : -8355712);
+             if (!this.isAllowed && p_439889_ && p_439217_ < k) {
+                 p_439423_.setTooltipForNextFrame(DebugOptionsScreen.NOT_ALLOWED_TOOLTIP, p_439217_, p_439543_);
+             }
+@@ -309,6 +_,9 @@
+ 
+         public void updateSearch(String p_433180_) {
+             this.clearEntries();
++            // Neo: Custom entry appending logic to better handle searching, categories and sorting
++            net.neoforged.neoforge.client.ClientHooks.updateDebugScreenEntriesForSearch(p_433180_, category -> addEntry(new CategoryEntry(category.label())), id -> addEntry(new OptionEntry(id)));
++            if(false){
+             List<Map.Entry<ResourceLocation, DebugScreenEntry>> list = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
+             list.sort(COMPARATOR);
+             DebugEntryCategory debugentrycategory = null;
+@@ -323,6 +_,7 @@
+ 
+                     this.addEntry(DebugOptionsScreen.this.new OptionEntry(entry.getKey()));
+                 }
++            }
+             }
+ 
+             this.notifyListUpdated();
