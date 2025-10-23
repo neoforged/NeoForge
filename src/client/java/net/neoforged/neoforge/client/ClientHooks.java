@@ -1188,7 +1188,7 @@ public class ClientHooks {
         if (FMLEnvironment.isProduction()) return option.required();
         return option.defaultsTo(defaultValue);
     }
-  
+
     @ApiStatus.Internal
     public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
         var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
