@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.common;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public final class NeoForgeVersion {
     private NeoForgeVersion() {}
 
@@ -12,14 +15,6 @@ public final class NeoForgeVersion {
 
     public static String getVersion() {
         return "${version}";
-    }
-
-    public static String getNeoFormVersion() {
-        return "${minecraft_version}-${neoform_version}";
-    }
-
-    public static String getMinecraftVersion() {
-        return "${minecraft_version}";
     }
 
     public static NeoForgeBuildType getBuildType() {

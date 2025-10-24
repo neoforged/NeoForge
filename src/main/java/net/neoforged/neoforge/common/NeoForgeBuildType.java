@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.common;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public enum NeoForgeBuildType {
     STABLE,
     BETA,
