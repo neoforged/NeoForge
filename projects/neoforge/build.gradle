@@ -2,7 +2,6 @@ import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
-
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
 

@@ -166,7 +166,9 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 @Mod(NeoForgeMod.MOD_ID)
 public class NeoForgeMod {
-    // This is NeoForge's Mod Id, used for the NeoForgeMod and resource locations
+    /**
+     * This is NeoForge's Mod Id, used for the NeoForgeMod and resource locations
+     */
     public static final String MOD_ID = "neoforge";
 
     public static final String VERSION_CHECK_CAT = "version_checking";
