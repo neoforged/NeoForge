@@ -8,6 +8,7 @@ package net.neoforged.testframework.gametest;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -137,6 +138,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                 }
             }
         };
+        // This constructor internally calls callbacks that associate it with the connection
+        new EmbeddedChannel(connection);
         NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
