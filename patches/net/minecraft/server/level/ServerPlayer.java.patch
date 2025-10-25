@@ -349,6 +349,14 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
+@@ -2024,6 +_,7 @@
+     }
+ 
+     private GameType calculateGameModeForNewPlayer(@Nullable GameType p_143424_) {
++        if (isFakePlayer()) return GameType.SURVIVAL; // Neo: Always default fake players to survival
+         GameType gametype = this.server.getForcedGameType();
+         if (gametype != null) {
+             return gametype;
 @@ -2060,11 +_,14 @@
  
      public boolean drop(boolean p_182295_) {

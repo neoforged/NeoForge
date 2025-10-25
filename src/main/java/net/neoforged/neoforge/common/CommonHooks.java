@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,10 @@ import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
  * Class for various common (i.e. client and server-side) hooks.
  */
 public class CommonHooks {
+    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
+            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
+            .thenComparing(ResourceLocation::compareNamespaced);
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
 

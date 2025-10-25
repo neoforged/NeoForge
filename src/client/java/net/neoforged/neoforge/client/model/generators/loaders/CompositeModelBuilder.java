@@ -18,14 +18,14 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class CompositeModelBuilder extends CustomLoaderBuilder {
     private final Map<String, Either<ResourceLocation, InlineChild>> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     public CompositeModelBuilder() {
-        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "composite"), false);
     }
 
     /**

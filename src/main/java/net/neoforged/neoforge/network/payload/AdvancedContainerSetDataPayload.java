@@ -11,7 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record AdvancedContainerSetDataPayload(byte containerId, short dataId, int value) implements CustomPacketPayload {
-    public static final Type<AdvancedContainerSetDataPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "advanced_container_set_data"));
+    public static final Type<AdvancedContainerSetDataPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "advanced_container_set_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedContainerSetDataPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BYTE,
             AdvancedContainerSetDataPayload::containerId,

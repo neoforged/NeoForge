@@ -37,7 +37,7 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
-@@ -345,7 +_,9 @@
+@@ -345,13 +_,15 @@
              .add(Attributes.MOVEMENT_EFFICIENCY)
              .add(Attributes.ATTACK_KNOCKBACK)
              .add(Attributes.CAMERA_DISTANCE)
@@ -48,6 +48,13 @@
      }
  
      @Override
+     protected void checkFallDamage(double p_20990_, boolean p_20991_, BlockState p_20992_, BlockPos p_20993_) {
+         if (!this.isInWater()) {
+-            this.updateInWaterStateAndDoWaterCurrentPushing();
++            this.updateInWaterStateAndDoWaterCurrentPushing(false);
+         }
+ 
+         if (this.level() instanceof ServerLevel serverlevel && p_20991_ && this.fallDistance > 0.0) {
 @@ -372,7 +_,8 @@
  
                  double d7 = Math.min(0.2F + d6 / 15.0, 2.5);

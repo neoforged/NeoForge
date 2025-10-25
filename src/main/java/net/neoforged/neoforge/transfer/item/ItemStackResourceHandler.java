@@ -8,6 +8,9 @@ package net.neoforged.neoforge.transfer.item;
 import java.util.Objects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -21,7 +24,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>{@link #isValid} can be used for more precise control over which items may be stored.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
  */
-public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource> {
+public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack> implements ResourceHandler<ItemResource>, ValueIOSerializable {
+    public static final String VALUE_IO_KEY = "stack";
+
     /**
      * Return the stack of this handler. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #setStack}.
@@ -158,6 +163,18 @@ public abstract class ItemStackResourceHandler extends SnapshotJournal<ItemStack
     @Override
     protected void revertToSnapshot(ItemStack snapshot) {
         setStack(snapshot);
+    }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        if (!this.getStack().isEmpty()) {
+            output.store(VALUE_IO_KEY, ItemStack.CODEC, this.getStack());
+        }
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        this.setStack(input.read(VALUE_IO_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY));
     }
 
     @Override
