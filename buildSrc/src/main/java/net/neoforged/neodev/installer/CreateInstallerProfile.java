@@ -1,6 +1,20 @@
 package net.neoforged.neodev.installer;
 
 import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.MavenIdentifier;
 import org.gradle.api.DefaultTask;
@@ -17,29 +31,13 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
 /**
  * Creates the JSON profile used by legacyinstaller for installing the client into the vanilla launcher,
  * or installing a dedicated server.
  */
 public abstract class CreateInstallerProfile extends DefaultTask {
     @Inject
-    public CreateInstallerProfile() {
-    }
+    public CreateInstallerProfile() {}
 
     @Input
     public abstract Property<String> getMinecraftVersion();
@@ -131,8 +129,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--from", "data/run.bat", "--to", "{ROOT}/run.bat",
                         "--from", "data/user_jvm_args.txt", "--to", "{ROOT}/user_jvm_args.txt", "--optional", "{ROOT}/user_jvm_args.txt",
                         "--from", "data/win_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/win_args.txt".formatted(getNeoForgeVersion().get()),
-                        "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get()))
-        );
+                        "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get())));
 
         var neoformMappingsDependency = "net.neoforged:neoform:" + getMcAndNeoFormVersion().get() + ":mappings@tsrg.lzma";
         // Validate it will actually be downloaded
@@ -146,8 +143,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         // This task will be auto-replaced by legacyinstaller and is mostly here for other launchers that
         // never implemented the optimization of downloading mojmaps ahead of time.
         commonProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
-                List.of("--task", "DOWNLOAD_MOJMAPS", "--version", getMinecraftVersion().get(), "--side", "{SIDE}", "--output", "{MOJMAPS}")
-        );
+                List.of("--task", "DOWNLOAD_MOJMAPS", "--version", getMinecraftVersion().get(), "--side", "{SIDE}", "--output", "{MOJMAPS}"));
 
         commonProcessor.accept(
                 InstallerProcessor.INSTALLERTOOLS,
@@ -165,9 +161,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--neoform-data",
                         String.format("[%s]", neoformMappingsDependency),
                         "--apply-patches",
-                        "{BINPATCH}"
-                )
-        );
+                        "{BINPATCH}"));
 
         getLogger().info("Collecting libraries for Installer Profile");
         // Remove potential duplicates.
@@ -204,8 +198,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                                 getNeoForgeVersion().get()),
                         "net/neoforged/neoforge/%s/neoforge-%s-universal.jar".formatted(
                                 getNeoForgeVersion().get(),
-                                getNeoForgeVersion().get())
-                ))));
+                                getNeoForgeVersion().get())))));
 
         printDownloadStatistic(libraries);
 
@@ -223,14 +216,12 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                 data,
                 processors,
                 libraries,
-                "{LIBRARY_DIR}/net/minecraft/server/{MINECRAFT_VERSION}/server-{MINECRAFT_VERSION}.jar"
-        );
+                "{LIBRARY_DIR}/net/minecraft/server/{MINECRAFT_VERSION}/server-{MINECRAFT_VERSION}.jar");
 
         FileUtils.writeStringSafe(
                 getInstallerProfile().getAsFile().get().toPath(),
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(profile),
-                StandardCharsets.UTF_8
-        );
+                StandardCharsets.UTF_8);
     }
 
     private Set<MavenIdentifier> getUniversalLibraries() {
@@ -255,8 +246,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                 downloadSize / 1024 / 1024);
         var downloadsByHost = downloads.stream().collect(Collectors.groupingBy(
                 l -> URI.create(l.url()).getHost(),
-                Collectors.summingLong(LibraryArtifact::size)
-        ));
+                Collectors.summingLong(LibraryArtifact::size)));
         for (var entry : downloadsByHost.entrySet()) {
             getLogger().lifecycle("  from {} = {} MB", entry.getKey(), entry.getValue() / 1024 / 1024);
         }
@@ -277,8 +267,7 @@ record InstallerProfile(
         Map<String, LauncherDataEntry> data,
         List<ProcessorEntry> processors,
         List<Library> libraries,
-        String serverJarPath) {
-}
+        String serverJarPath) {}
 
 record LauncherDataEntry(
         String client,
@@ -289,9 +278,7 @@ record LauncherDataEntry(
 }
 
 record ProcessorEntry(
-        @Nullable
-        List<String> sides,
+        @Nullable List<String> sides,
         String jar,
         List<String> classpath,
-        List<String> args) {
-}
+        List<String> args) {}
