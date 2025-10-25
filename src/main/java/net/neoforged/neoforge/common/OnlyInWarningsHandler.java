@@ -13,14 +13,13 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
 @ApiStatus.Internal
 @SuppressWarnings("unused")
-@Mod(NeoForgeVersion.MOD_ID)
+@Mod(NeoForgeMod.MOD_ID)
 public class OnlyInWarningsHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final boolean HIDE_WARNING_SCREEN = Boolean.getBoolean("neoforge.warnings.onlyin.hide");

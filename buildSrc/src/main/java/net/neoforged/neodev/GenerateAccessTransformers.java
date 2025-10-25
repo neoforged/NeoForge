@@ -1,5 +1,12 @@
 package net.neoforged.neodev;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.SerializablePredicate;
 import net.neoforged.neodev.utils.structure.ClassInfo;
@@ -14,16 +21,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This task is used to generate access transformers based on a set of rules defined in the buildscript.
@@ -165,8 +164,7 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
     }
 
     public record AtGroup(String name, Modifier modifier, SerializablePredicate<ClassInfo> classMatch,
-                          @Nullable SerializablePredicate<MethodInfo> methodMatch, @Nullable SerializablePredicate<FieldInfo> fieldMatch) implements Serializable {
-    }
+            @Nullable SerializablePredicate<MethodInfo> methodMatch, @Nullable SerializablePredicate<FieldInfo> fieldMatch) implements Serializable {}
 
     public record Modifier(String name, boolean isFinal, int... validOpcodes) implements Serializable {
         public boolean test(int value) {

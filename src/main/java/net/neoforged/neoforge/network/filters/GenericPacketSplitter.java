@@ -24,7 +24,7 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.SplitPacketPayload;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.ApiStatus;
  * A generic packet splitter that can be used to split packets that are too large to be sent in one go.
  */
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(modid = NeoForgeMod.MOD_ID)
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 

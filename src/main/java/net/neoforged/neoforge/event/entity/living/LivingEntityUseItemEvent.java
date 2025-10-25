@@ -57,14 +57,6 @@ public class LivingEntityUseItemEvent extends LivingEvent {
      *
      */
     public static class Start extends LivingEntityUseItemEvent implements ICancellableEvent {
-        /**
-         * @deprecated Use {@link Start#Start(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
-         */
-        @Deprecated(since = "1.21.5", forRemoval = true)
-        public Start(LivingEntity entity, ItemStack item, int duration) {
-            super(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
-        }
-
         public Start(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
             super(entity, item, hand, duration);
         }

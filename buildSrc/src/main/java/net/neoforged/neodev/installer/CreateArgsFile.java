@@ -1,18 +1,5 @@
 package net.neoforged.neodev.installer;
 
-import net.neoforged.neodev.utils.DependencyUtils;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.ArchiveOperations;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.inject.Inject;
+import net.neoforged.neodev.utils.DependencyUtils;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ArchiveOperations;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 
 /**
  * Creates the JVM/program argument files used by the dedicated server launcher.

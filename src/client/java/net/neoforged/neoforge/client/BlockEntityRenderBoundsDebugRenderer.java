@@ -29,12 +29,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeMod.MOD_ID)
 public final class BlockEntityRenderBoundsDebugRenderer {
     private static final ContextKey<List<BlockEntityRenderBoundsRenderState>> DATA_KEY = new ContextKey<>(
-            ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block_entity_render_bounds"));
+            ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block_entity_render_bounds"));
     private static boolean enabled = false;
 
     @SubscribeEvent

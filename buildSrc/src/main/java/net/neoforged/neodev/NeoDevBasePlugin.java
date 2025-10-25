@@ -46,9 +46,7 @@ public class NeoDevBasePlugin implements Plugin<Project> {
         var runtimeClasspath = project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME);
         runtimeClasspath.getDependencies().add(
                 dependencyFactory.create(
-                        project.files(createSources.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))
-                )
-        );
+                        project.files(createSources.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))));
         NeoDevFacade.setupRuns(
                 project,
                 neoDevBuildDir,
@@ -59,7 +57,6 @@ public class NeoDevBasePlugin implements Plugin<Project> {
                 modulePath -> {},
                 legacyClasspath -> {},
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
-                mcAndNeoFormVersion
-        );
+                mcAndNeoFormVersion);
     }
 }

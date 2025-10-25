@@ -1,13 +1,9 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -104,6 +_,11 @@
+@@ -104,6 +_,7 @@
      public final void renderWithTooltipAndSubtitles(GuiGraphics p_434220_, int p_435721_, int p_435145_, float p_435742_) {
          p_434220_.nextStratum();
          this.renderBackground(p_434220_, p_435721_, p_435145_, p_435742_);
-+        // Neo: We cannot post this event in the renderBackground method, since many screens override it and don't call super.
-+        if (this instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(containerScreen, p_434220_, p_435721_, p_435145_));
-+        }
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, p_434220_, p_435721_, p_435145_, p_435742_));
          p_434220_.nextStratum();
          this.render(p_434220_, p_435721_, p_435145_, p_435742_);

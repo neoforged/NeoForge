@@ -1,5 +1,12 @@
 package net.neoforged.neodev;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.inject.Inject;
 import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
@@ -13,14 +20,6 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Runs <a href="https://github.com/neoforged/JavaSourceTransformer">JavaSourceTransformer</a> over the Minecraft source code.
@@ -67,18 +66,15 @@ abstract class TransformSources extends JavaExec {
         }
 
         var args = new ArrayList<>(Arrays.asList(
-                "--libraries-list", getLibrariesFile().getAsFile().get().getAbsolutePath()
-        ));
+                "--libraries-list", getLibrariesFile().getAsFile().get().getAbsolutePath()));
 
         if (!getAccessTransformers().isEmpty()) {
             args.addAll(Arrays.asList(
                     "--enable-accesstransformers",
-                    "--access-transformer-validation", getValidateAccessTransformers().get() ? "error" : "log"
-            ));
+                    "--access-transformer-validation", getValidateAccessTransformers().get() ? "error" : "log"));
             for (var file : getAccessTransformers().getFiles()) {
                 args.addAll(Arrays.asList(
-                        "--access-transformer", file.getAbsolutePath()
-                ));
+                        "--access-transformer", file.getAbsolutePath()));
             }
         }
 
@@ -87,8 +83,7 @@ abstract class TransformSources extends JavaExec {
 
             for (var file : getInterfaceInjectionData().getFiles()) {
                 args.addAll(Arrays.asList(
-                        "--interface-injection-data", file.getAbsolutePath()
-                ));
+                        "--interface-injection-data", file.getAbsolutePath()));
             }
         }
 

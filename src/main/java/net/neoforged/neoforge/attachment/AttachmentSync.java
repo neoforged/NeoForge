@@ -26,9 +26,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -38,7 +38,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(modid = NeoForgeMod.MOD_ID)
 public final class AttachmentSync {
     /**
      * Contains all entries added to {@link NeoForgeRegistries#ATTACHMENT_TYPES} with a sync handler.
@@ -51,7 +51,7 @@ public final class AttachmentSync {
      */
     public static final Registry<AttachmentType<?>> SYNCED_ATTACHMENT_TYPES = new RegistryBuilder<>(
             ResourceKey.<AttachmentType<?>>createRegistryKey(
-                    ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "synced_attachment_types")))
+                    ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "synced_attachment_types")))
                             .sync(true)
                             .callback((AddCallback<AttachmentType<?>>) (registry, id, key, value) -> {
                                 // Sanity check to ensure that no entries are added to this registry by accident

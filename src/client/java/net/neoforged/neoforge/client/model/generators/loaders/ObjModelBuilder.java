@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 public class ObjModelBuilder extends CustomLoaderBuilder {
@@ -27,7 +27,7 @@ public class ObjModelBuilder extends CustomLoaderBuilder {
     private ResourceLocation mtlOverride;
 
     public ObjModelBuilder() {
-        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "obj"), false);
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "obj"), false);
     }
 
     public ObjModelBuilder modelLocation(ResourceLocation modelLocation) {

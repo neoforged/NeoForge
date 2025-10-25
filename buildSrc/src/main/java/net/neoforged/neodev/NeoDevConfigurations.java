@@ -1,5 +1,8 @@
 package net.neoforged.neodev;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -7,10 +10,6 @@ import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Helper class to keep track of the many {@link Configuration}s used for the {@code neoforge} project.
@@ -29,6 +28,10 @@ class NeoDevConfigurations {
      * Does not contain the dependencies to run vanilla Minecraft.
      */
     final Configuration neoFormData;
+    /**
+     * Only the NeoForm mappings file.
+     */
+    final Configuration neoFormMappings;
     /**
      * Only the NeoForm dependencies.
      * These are the dependencies required to run NeoForm-decompiled Minecraft.
@@ -62,11 +65,11 @@ class NeoDevConfigurations {
     //
 
     /**
-     * Resolved {@link #neoFormData}.
-     * This is used to add NeoForm to the installer libraries.
-     * Only the zip is used (for the mappings), not the NeoForm tools, so it's not transitive.
+     * Resolved {@link #neoFormMappings}.
+     * This is used to add the parameter mappings file from NeoForm to the installer libraries.
+     * Only the mappings file is used, not the entire data file or the NeoForm tools, so it's not transitive.
      */
-    final Configuration neoFormDataOnly;
+    final Configuration neoFormMappingsFiles;
     /**
      * Resolvable {@link #neoFormDependencies}.
      */
@@ -124,13 +127,14 @@ class NeoDevConfigurations {
         var configurations = project.getConfigurations();
 
         neoFormData = dependencyScope(configurations, "neoFormData");
+        neoFormMappings = dependencyScope(configurations, "neoFormMappings");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
         minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");
 
-        neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
+        neoFormMappingsFiles = resolvable(configurations, "neoFormMappingsFiles");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
@@ -146,8 +150,8 @@ class NeoDevConfigurations {
         // Make sure that any classpath we resolve is consistent with it.
         var runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 
-        neoFormDataOnly.setTransitive(false);
-        neoFormDataOnly.extendsFrom(neoFormData);
+        neoFormMappingsFiles.setTransitive(false);
+        neoFormMappingsFiles.extendsFrom(neoFormMappings);
 
         neoFormClasspath.extendsFrom(neoFormDependencies);
 
@@ -163,12 +167,10 @@ class NeoDevConfigurations {
 
         minecraftClientClasspath.extendsFrom(minecraftDependencies);
         minecraftClientClasspath.getAttributes().attribute(
-                Attribute.of("net.neoforged.distribution", String.class), "client"
-        );
+                Attribute.of("net.neoforged.distribution", String.class), "client");
         minecraftServerClasspath.extendsFrom(minecraftDependencies);
         minecraftServerClasspath.getAttributes().attribute(
-                Attribute.of("net.neoforged.distribution", String.class), "server"
-        );
+                Attribute.of("net.neoforged.distribution", String.class), "server");
 
         toolClasspaths = createToolClasspaths(project);
     }

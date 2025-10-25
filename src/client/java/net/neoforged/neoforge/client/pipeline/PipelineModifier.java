@@ -10,7 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
  * Functional interface for modifying or replacing {@link RenderPipeline}s in arbitrary render paths on the fly.
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
  */
 @FunctionalInterface
 public interface PipelineModifier {
-    ResourceKey<Registry<PipelineModifier>> MODIFIERS_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "pipeline_modifiers"));
+    ResourceKey<Registry<PipelineModifier>> MODIFIERS_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "pipeline_modifiers"));
 
     /**
      * Apply modifications to the provided {@link RenderPipeline} (see {@link RenderPipeline#toBuilder()}), return

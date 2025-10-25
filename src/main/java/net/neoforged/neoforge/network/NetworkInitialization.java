@@ -7,7 +7,7 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -35,7 +35,7 @@ import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(modid = NeoForgeMod.MOD_ID)
 final class NetworkInitialization {
     private NetworkInitialization() {}
 
