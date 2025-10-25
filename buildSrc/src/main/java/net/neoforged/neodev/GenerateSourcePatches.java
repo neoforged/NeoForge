@@ -4,6 +4,8 @@ import io.codechicken.diffpatch.cli.CliOperation;
 import io.codechicken.diffpatch.cli.DiffOperation;
 import io.codechicken.diffpatch.util.Input.MultiInput;
 import io.codechicken.diffpatch.util.Output.MultiOutput;
+import java.io.IOException;
+import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
@@ -12,9 +14,6 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
-import java.io.IOException;
 
 abstract class GenerateSourcePatches extends DefaultTask {
     @InputFile

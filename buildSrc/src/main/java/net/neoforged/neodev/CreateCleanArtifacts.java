@@ -1,10 +1,9 @@
 package net.neoforged.neodev;
 
+import javax.inject.Inject;
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.OutputFile;
-
-import javax.inject.Inject;
 
 abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
     /**

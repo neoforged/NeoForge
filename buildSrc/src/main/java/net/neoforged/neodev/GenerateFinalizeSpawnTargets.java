@@ -1,6 +1,11 @@
 package net.neoforged.neodev;
 
 import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import net.neoforged.neodev.utils.AsmUtils;
 import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.DefaultTask;
@@ -12,12 +17,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * This task is used to generate targets for the finalizeSpawn MethodRedirector coremod.
