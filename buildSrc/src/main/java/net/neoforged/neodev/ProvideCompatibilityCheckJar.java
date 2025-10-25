@@ -4,6 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import net.neoforged.neodev.e2e.InstallProductionClient;
@@ -36,7 +39,7 @@ public abstract class ProvideCompatibilityCheckJar extends InstallProductionClie
 
         var installationDir = getInstallationDir().getAsFile().get();
 
-        var patchedMinecraftPath = new File(installationDir, "libraries/net/neoforged/neoforge/" + nfVersion + "/neoforge-" + nfVersion + "-client.jar");
+        var patchedMinecraftPath = new File(installationDir, "libraries/net/neoforged/minecraft-client-patched/" + nfVersion + "/minecraft-client-patched-" + nfVersion + ".jar");
         var neoforgePath = new File(installationDir, "libraries/net/neoforged/neoforge/" + nfVersion + "/neoforge-" + nfVersion + "-universal.jar");
 
         if (!patchedMinecraftPath.isFile()) {
@@ -47,21 +50,26 @@ public abstract class ProvideCompatibilityCheckJar extends InstallProductionClie
         }
 
         // Merge the patched Minecraft classes with the Neoforge classes
+        var dirsAdded = new HashSet<String>();
         File outputFile = getOutput().getAsFile().get();
         try (var mcIn = new ZipFile(patchedMinecraftPath);
                 var nfIn = new ZipFile(neoforgePath);
                 var zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
-            copyEntries(mcIn, zout);
-            copyEntries(nfIn, zout);
+            copyEntries(mcIn, zout, dirsAdded, name -> nfIn.getEntry(name) != null);
+            copyEntries(nfIn, zout, dirsAdded, ignored -> false);
         } catch (IOException e) {
             throw new GradleException("Failed to merge the patched MC and NF jars.", e);
         }
     }
 
-    private static void copyEntries(ZipFile zf, ZipOutputStream out) throws IOException {
+    private static void copyEntries(ZipFile zf, ZipOutputStream out, Set<String> directoriesAdded, Predicate<String> skipEntry) throws IOException {
         var it = zf.entries();
         while (it.hasMoreElements()) {
             var entry = it.nextElement();
+            if (entry.isDirectory() && !directoriesAdded.add(entry.getName()) || skipEntry.test(entry.getName())) {
+                continue;
+            }
+
             try (var in = zf.getInputStream(entry)) {
                 out.putNextEntry(entry);
                 in.transferTo(out);
