@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,10 @@ import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
  * Class for various common (i.e. client and server-side) hooks.
  */
 public class CommonHooks {
+    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
+            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
+            .thenComparing(ResourceLocation::compareNamespaced);
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
 
@@ -770,16 +775,7 @@ public class CommonHooks {
         return e.getXp();
     }
 
-    /**
-     * @deprecated Use {@link #onGrindstoneTake(Container, ContainerLevelAccess, Player, Function) the player version} instead
-     */
-    @Deprecated(forRemoval = true, since = "1.21.8")
-    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction) {
-        return onGrindstoneTake(inputSlots, access, null, xpFunction);
-    }
-
-    //TODO remove nullable annotation from player once method above is removed
-    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, @Nullable Player player, Function<Level, Integer> xpFunction) {
+    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
             GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(access, player, inputSlots.getItem(0), inputSlots.getItem(1), xp);

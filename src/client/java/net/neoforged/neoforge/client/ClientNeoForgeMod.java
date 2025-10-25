@@ -77,7 +77,6 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -254,8 +253,8 @@ public class ClientNeoForgeMod {
         }, NeoForgeMod.LAVA_TYPE.value());
 
         NeoForgeMod.MILK_TYPE.asOptional().ifPresent(milkType -> event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_still");
-            private static final ResourceLocation MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_flowing");
+            private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_still");
+            private static final ResourceLocation MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_flowing");
 
             @Override
             public ResourceLocation getStillTexture() {

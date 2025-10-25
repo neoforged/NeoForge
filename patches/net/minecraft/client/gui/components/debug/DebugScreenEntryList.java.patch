@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
++++ b/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
+@@ -164,7 +_,8 @@
+             }
+         }
+ 
+-        this.currentlyEnabled.sort(ResourceLocation::compareTo);
++        // Neo: Sort enabled debug entries to match order displayed in config screen
++        this.currentlyEnabled.sort(net.neoforged.neoforge.common.CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST);
+         this.currentlyEnabledVersion++;
+     }
+ 

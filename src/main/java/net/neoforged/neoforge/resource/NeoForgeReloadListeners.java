@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.resource;
 
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
  * Keys for Neo-added resource listeners, for use in dependency ordering in the relevant events.
@@ -35,6 +35,6 @@ public class NeoForgeReloadListeners {
     public static final ResourceLocation ENTITY_ANIMATIONS = key("entity_animations");
 
     private static ResourceLocation key(String path) {
-        return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, path);
     }
 }

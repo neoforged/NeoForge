@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.gui.widget;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -122,6 +123,7 @@ public class ExtendedSlider extends AbstractSliderButton {
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        this.dragging = this.active;
         this.setValueFromMouse(event.x());
     }
 
@@ -206,5 +208,8 @@ public class ExtendedSlider extends AbstractSliderButton {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getHandleSprite(), this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 8, this.getHeight(), ARGB.white(this.alpha));
         int i = this.active ? 16777215 : 10526880;
         this.renderScrollingString(guiGraphics, minecraft.font, 2, i | Mth.ceil(this.alpha * 255.0F) << 24);
+
+        if (this.isHovered())
+            guiGraphics.requestCursor(this.dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
     }
 }

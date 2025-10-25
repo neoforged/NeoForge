@@ -11,9 +11,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record AdvancedAddEntityPayload(int entityId, byte[] customPayload) implements CustomPacketPayload {
-    public static final Type<AdvancedAddEntityPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "advanced_add_entity"));
+    public static final Type<AdvancedAddEntityPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "advanced_add_entity"));
     public static final StreamCodec<FriendlyByteBuf, AdvancedAddEntityPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             AdvancedAddEntityPayload::entityId,

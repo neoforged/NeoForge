@@ -85,6 +85,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -97,7 +98,6 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -133,7 +133,7 @@ public class DataGeneratorTest {
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeMod.MOD_ID)),
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_disabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
@@ -486,7 +486,7 @@ public class DataGeneratorTest {
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .add(TagEntry.optionalElement(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw")))
-                    .add(TagEntry.optionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby")));
+                    .add(TagEntry.optionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "storage_blocks/ruby")));
 
             // Hopefully sorting issues
             tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))
@@ -582,7 +582,7 @@ public class DataGeneratorTest {
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "dummy_parent"))
+                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "dummy_parent"))
                     .save(saver, ResourceLocation.withDefaultNamespace("good_parent"));
         }
     }

@@ -138,8 +138,6 @@ import net.neoforged.neoforge.fluids.crafting.SimpleFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.display.FluidSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -166,20 +164,23 @@ import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
-@Mod(NeoForgeVersion.MOD_ID)
+@Mod(NeoForgeMod.MOD_ID)
 public class NeoForgeMod {
+    /**
+     * This is NeoForge's Mod Id, used for the NeoForgeMod and resource locations
+     */
+    public static final String MOD_ID = "neoforge";
+
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
-    private static boolean isPRBuild;
-
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, MOD_ID);
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, MOD_ID);
 
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -344,13 +345,13 @@ public class NeoForgeMod {
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
 
-    private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, MOD_ID);
 
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidSlotDisplay>> FLUID_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid", () -> new SlotDisplay.Type<>(FluidSlotDisplay.MAP_CODEC, FluidSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidStackSlotDisplay>> FLUID_STACK_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_stack", () -> new SlotDisplay.Type<>(FluidStackSlotDisplay.MAP_CODEC, FluidStackSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidTagSlotDisplay>> FLUID_TAG_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_tag", () -> new SlotDisplay.Type<>(FluidTagSlotDisplay.MAP_CODEC, FluidTagSlotDisplay.STREAM_CODEC));
 
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, MOD_ID);
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DataComponentIngredient>> DATA_COMPONENT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("components", () -> new IngredientType<>(DataComponentIngredient.CODEC));
@@ -359,7 +360,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<BlockTagIngredient>> BLOCK_TAG_INGREDIENT = INGREDIENT_TYPES.register("block_tag", () -> new IngredientType<>(BlockTagIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<CustomDisplayIngredient>> CUSTOM_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("custom_display", () -> new IngredientType<>(CustomDisplayIngredient.CODEC));
 
-    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, MOD_ID);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SimpleFluidIngredient>> SIMPLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("simple", FluidIngredientCodecs::simpleType);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CompoundFluidIngredient>> COMPOUND_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("compound", () -> new FluidIngredientType<>(CompoundFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DataComponentFluidIngredient>> DATA_COMPONENT_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("components", () -> new FluidIngredientType<>(DataComponentFluidIngredient.CODEC));
@@ -367,7 +368,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CustomDisplayFluidIngredient>> CUSTOM_DISPLAY_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("custom_display", () -> new FluidIngredientType<>(CustomDisplayFluidIngredient.CODEC, CustomDisplayFluidIngredient.STREAM_CODEC));
 
-    private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<NeverCondition>> NEVER_CONDITION = CONDITION_CODECS.register("never", () -> NeverCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RegisteredCondition<?>>> REGISTERED_CONDITION = CONDITION_CODECS.register("registered", () -> RegisteredCondition.CODEC);
@@ -378,16 +379,16 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AlwaysCondition>> ALWAYS_CONDITION = CONDITION_CODECS.register("always", () -> AlwaysCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FeatureFlagsEnabledCondition>> FEATURE_FLAGS_ENABLED_CONDITION = CONDITION_CODECS.register("feature_flags_enabled", () -> FeatureFlagsEnabledCondition.CODEC);
 
-    private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<SnowBootsEntityPredicate>> SNOW_BOOTS_PREDICATE = ENTITY_PREDICATE_CODECS.register("snow_boots", () -> SnowBootsEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<TridentEntityPredicate>> IS_TRIDENT_PREDICATE = ENTITY_PREDICATE_CODECS.register("is_trident", () -> TridentEntityPredicate.CODEC);
 
-    private static final DeferredRegister<DataComponentPredicate.Type<?>> DATA_COMPONENT_PREDICATE_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<DataComponentPredicate.Type<?>> DATA_COMPONENT_PREDICATE_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_PREDICATE_TYPE, MOD_ID);
     public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<ItemAbilityPredicate>> ITEM_ABILITY_PREDICATE = DATA_COMPONENT_PREDICATE_TYPES.register("item_ability", () -> ItemAbilityPredicate.TYPE);
     public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<PiglinCurrencyItemPredicate>> PIGLIN_CURRENCY_PREDICATE = DATA_COMPONENT_PREDICATE_TYPES.register("piglin_currency", () -> PiglinCurrencyItemPredicate.TYPE);
 
-    private static final DeferredRegister<TicketType> TICKET_TYPES = DeferredRegister.create(Registries.TICKET_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<TicketType> TICKET_TYPES = DeferredRegister.create(Registries.TICKET_TYPE, MOD_ID);
     public static final Holder<TicketType> GENERATE_FORCED_TICKET = TICKET_TYPES.register("generate_forced", () -> new TicketType(0L, TicketType.FLAG_LOADING));
     //Note: We don't persist the tickets via the TicketType, as we keep handle persisting multiple backing sources of the ticket at once and will reinstate any ones that are still valid
     public static final Holder<TicketType> BLOCK_TICKET = TICKET_TYPES.register("block", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION));
@@ -497,7 +498,7 @@ public class NeoForgeMod {
      *
      * @see Tags.DamageTypes#IS_POISON
      */
-    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "poison"));
+    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "poison"));
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
@@ -531,7 +532,6 @@ public class NeoForgeMod {
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), SharedConstants.getCurrentVersion().name());
-        ForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
 
@@ -599,8 +599,7 @@ public class NeoForgeMod {
 
         modEventBus.register(SpawnEggItem.class); // Registers dispenser behaviour for eggs
 
-        if (isPRBuild(container.getModInfo().getVersion().toString())) {
-            isPRBuild = true;
+        if (NeoForgeVersion.getBuildType() == NeoForgeBuildType.PULL_REQUEST) {
             ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));
         }
     }
@@ -662,22 +661,10 @@ public class NeoForgeMod {
         LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
     }
 
-    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
+    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(MOD_ID, "use_entity_selectors",
             PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && player.hasPermissions(Commands.LEVEL_GAMEMASTERS));
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
         event.addNodes(USE_SELECTORS_PERMISSION);
-    }
-
-    private static boolean isPRBuild(String neoVersion) {
-        // The -pr- being inside the actual version and a branch name is important.
-        // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
-        // the regex will match PR builds published to Packages, but that it will not match local PR branches
-        // since those usually have the name `pr|pull/<number>`
-        return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
-    }
-
-    public static boolean isPRBuild() {
-        return isPRBuild;
     }
 }
