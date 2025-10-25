@@ -31,7 +31,7 @@
          LOGGER.error("########## GL ERROR ##########");
          LOGGER.error("@ {}", this.errorSection);
          LOGGER.error("{}: {}", p_85383_, s);
-@@ -510,5 +_,26 @@
+@@ -510,5 +_,27 @@
          WindowInitFailed(String p_85455_) {
              super(p_85455_);
          }
@@ -52,8 +52,9 @@
 +        var width = new int[1];
 +        var height = new int[1];
 +        GLFW.glfwGetWindowSize(window, width, height);
-+        this.width = this.windowedWidth = width[0];
-+        this.height = this.windowedHeight = height[0];
++        // The window height and width can be 0 if minimized
++        this.width = this.windowedWidth = Math.max(width[0], 1);
++        this.height = this.windowedHeight = Math.max(height[0], 1);
 +
 +        return window;
      }
