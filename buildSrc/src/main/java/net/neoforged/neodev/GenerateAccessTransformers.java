@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.SerializablePredicate;
 import net.neoforged.neodev.utils.structure.ClassInfo;
@@ -22,6 +21,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 
 /**
