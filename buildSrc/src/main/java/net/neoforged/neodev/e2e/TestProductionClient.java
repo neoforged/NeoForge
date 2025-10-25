@@ -1,12 +1,11 @@
 package net.neoforged.neodev.e2e;
 
-import org.gradle.api.GradleException;
-import org.gradle.process.ExecOperations;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import javax.inject.Inject;
+import org.gradle.api.GradleException;
+import org.gradle.process.ExecOperations;
 
 /**
  * Runs a production client using {@link RunProductionClient} and passes the environment variable

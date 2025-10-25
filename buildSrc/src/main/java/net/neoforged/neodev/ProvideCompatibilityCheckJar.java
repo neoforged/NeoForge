@@ -1,18 +1,17 @@
 package net.neoforged.neodev;
 
-import net.neoforged.neodev.e2e.InstallProductionClient;
-import org.gradle.api.GradleException;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.OutputFile;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import net.neoforged.neodev.e2e.InstallProductionClient;
+import org.gradle.api.GradleException;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputFile;
 
 /**
  * Produces a merged production Jar file with Minecraft and NeoForge classes for any given NeoForge version.
@@ -50,8 +49,8 @@ public abstract class ProvideCompatibilityCheckJar extends InstallProductionClie
         // Merge the patched Minecraft classes with the Neoforge classes
         File outputFile = getOutput().getAsFile().get();
         try (var mcIn = new ZipFile(patchedMinecraftPath);
-             var nfIn = new ZipFile(neoforgePath);
-             var zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
+                var nfIn = new ZipFile(neoforgePath);
+                var zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
             copyEntries(mcIn, zout);
             copyEntries(nfIn, zout);
         } catch (IOException e) {

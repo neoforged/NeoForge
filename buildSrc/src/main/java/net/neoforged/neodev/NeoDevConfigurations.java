@@ -1,5 +1,8 @@
 package net.neoforged.neodev;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -7,10 +10,6 @@ import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Helper class to keep track of the many {@link Configuration}s used for the {@code neoforge} project.
@@ -163,12 +162,10 @@ class NeoDevConfigurations {
 
         minecraftClientClasspath.extendsFrom(minecraftDependencies);
         minecraftClientClasspath.getAttributes().attribute(
-                Attribute.of("net.neoforged.distribution", String.class), "client"
-        );
+                Attribute.of("net.neoforged.distribution", String.class), "client");
         minecraftServerClasspath.extendsFrom(minecraftDependencies);
         minecraftServerClasspath.getAttributes().attribute(
-                Attribute.of("net.neoforged.distribution", String.class), "server"
-        );
+                Attribute.of("net.neoforged.distribution", String.class), "server");
 
         toolClasspaths = createToolClasspaths(project);
     }

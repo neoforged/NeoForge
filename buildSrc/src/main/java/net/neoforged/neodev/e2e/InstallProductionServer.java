@@ -1,5 +1,10 @@
 package net.neoforged.neodev.e2e;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import javax.inject.Inject;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
@@ -8,12 +13,6 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 
 /**
  * Runs the installer produced by the main build to install a dedicated server in a chosen directory.

@@ -1,5 +1,12 @@
 package net.neoforged.neodev;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin;
 import net.neoforged.moddevgradle.internal.NeoDevFacade;
 import net.neoforged.moddevgradle.tasks.JarJar;
@@ -34,14 +41,6 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.Zip;
-
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 public class NeoDevPlugin implements Plugin<Project> {
     static final String GROUP = "neoforge development";
@@ -97,8 +96,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // 2. Apply AT to the source jar from 1.
         var atFiles = List.of(
                 project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg"),
-                genAts
-        );
+                genAts);
         var applyAt = configureAccessTransformer(
                 project,
                 createSourceArtifacts,
@@ -106,7 +104,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 atFiles);
 
         applyAt.configure(task -> task.mustRunAfter(genAtsTask));
-        
+
         var splitUnpatchedSources = tasks.register("splitUnpatchedSources", SplitMergedSources.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getMergedJar().set(applyAt.flatMap(TransformSources::getOutputJar));
@@ -191,9 +189,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var runtimeClasspath = project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME);
         runtimeClasspath.getDependencies().add(
                 dependencyFactory.create(
-                        project.files(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))
-                )
-        );
+                        project.files(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))));
         // 3. Let MDG do the rest of the setup. :)
         NeoDevFacade.setupRuns(
                 project,
@@ -203,8 +199,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 modulePath -> {},
                 legacyClasspath -> {},
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
-                mcAndNeoFormVersion
-        );
+                mcAndNeoFormVersion);
         // TODO: Gradle run tasks should be moved to gradle group GROUP
 
         /*
@@ -318,8 +313,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 joinedJar,
                 neoDevBuildDir,
                 genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder),
-                genCommonProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
-        );
+                genCommonProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder));
 
         var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
@@ -483,8 +477,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 installerJar,
                 minecraftVersion,
                 neoForgeVersion,
-                createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar)
-        );
+                createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
         setupProductionServerTest(project, installerJar);
     }
 
@@ -517,7 +510,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             TaskProvider<CreateMinecraftArtifacts> createSourceArtifacts,
             Provider<Directory> neoDevBuildDir,
             List<File> atFiles) {
-
         // Pass -PvalidateAccessTransformers to validate ATs.
         var validateAts = project.getProviders().gradleProperty("validateAccessTransformers").map(p -> true).orElse(false);
         return project.getTasks().register("applyAccessTransformer", TransformSources.class, task -> {
@@ -529,12 +521,12 @@ public class NeoDevPlugin implements Plugin<Project> {
     }
 
     private static BinaryPatchOutputs configureBinaryPatchCreation(Project project,
-                                                                   NeoDevConfigurations configurations,
-                                                                   TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
-                                                                   TaskProvider<Jar> joinedJar,
-                                                                   Provider<Directory> neoDevBuildDir,
-                                                                   Provider<Directory> sourcesPatchesFolder,
-                                                                   Provider<Directory> sourcesServerPatchesFolder) {
+            NeoDevConfigurations configurations,
+            TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
+            TaskProvider<Jar> joinedJar,
+            Provider<Directory> neoDevBuildDir,
+            Provider<Directory> sourcesPatchesFolder,
+            Provider<Directory> sourcesServerPatchesFolder) {
         var tasks = project.getTasks();
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
@@ -593,16 +585,13 @@ public class NeoDevPlugin implements Plugin<Project> {
         return new BinaryPatchOutputs(
                 generateMergedBinPatches.flatMap(GenerateBinaryPatches::getOutputFile),
                 generateClientBinPatches.flatMap(GenerateBinaryPatches::getOutputFile),
-                generateServerBinPatches.flatMap(GenerateBinaryPatches::getOutputFile)
-        );
+                generateServerBinPatches.flatMap(GenerateBinaryPatches::getOutputFile));
     }
 
     private record BinaryPatchOutputs(
             Provider<RegularFile> binaryPatchesForMerged,
             Provider<RegularFile> binaryPatchesForClient,
-            Provider<RegularFile> binaryPatchesForServer
-    ) {
-    }
+            Provider<RegularFile> binaryPatchesForServer) {}
 
     /**
      * Sets up NFRT, and creates the sources and resources artifacts.
@@ -655,14 +644,12 @@ public class NeoDevPlugin implements Plugin<Project> {
     }
 
     private void setupProductionClientTest(Project project,
-                                      NeoDevConfigurations configurations,
-                                      TaskProvider<? extends DownloadAssets> downloadAssets,
-                                      TaskProvider<? extends AbstractArchiveTask> installer,
-                                      Provider<String> minecraftVersion,
-                                           Provider<String> neoForgeVersion,
-                                           Provider<RegularFile> originalClientJar
-    ) {
-
+            NeoDevConfigurations configurations,
+            TaskProvider<? extends DownloadAssets> downloadAssets,
+            TaskProvider<? extends AbstractArchiveTask> installer,
+            Provider<String> minecraftVersion,
+            Provider<String> neoForgeVersion,
+            Provider<RegularFile> originalClientJar) {
         var installClient = project.getTasks().register("installProductionClient", InstallProductionClient.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.setDescription("Runs the installer produced by this build and installs a production client.");

@@ -1,6 +1,17 @@
 package net.neoforged.neodev.installer;
 
 import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.neoforged.neodev.utils.DependencyUtils;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.MavenIdentifier;
@@ -15,18 +26,6 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Creates the JSON file for running NeoForge via the Vanilla launcher.
@@ -129,14 +128,12 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 "net.neoforged.fml.startup.Client",
                 getMinecraftVersion().get(),
                 arguments,
-                libraries
-        );
+                libraries);
 
         FileUtils.writeStringSafe(
                 getLauncherProfile().getAsFile().get().toPath(),
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(profile),
-                StandardCharsets.UTF_8
-        );
+                StandardCharsets.UTF_8);
     }
 }
 
@@ -148,6 +145,4 @@ record LauncherProfile(
         String mainClass,
         String inheritsFrom,
         Map<String, List<String>> arguments,
-        List<Library> libraries) {
-}
-
+        List<Library> libraries) {}

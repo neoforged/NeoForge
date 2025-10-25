@@ -1,17 +1,16 @@
 package net.neoforged.neodev;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 /**
  * Downloads a file from a given URL.

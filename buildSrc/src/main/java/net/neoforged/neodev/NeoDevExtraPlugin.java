@@ -46,8 +46,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 legacyClasspath -> {},
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
-                mcAndNeoFormVersion
-        );
+                mcAndNeoFormVersion);
 
         var testExtension = project.getExtensions().create(NeoDevTestExtension.NAME, NeoDevTestExtension.class);
         var testTask = tasks.register("junitTest", Test.class, test -> test.setGroup("verification"));
@@ -63,8 +62,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 legacyClasspath -> {},
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
-                mcAndNeoFormVersion
-        );
+                mcAndNeoFormVersion);
     }
 
     private static ProjectDependency projectDep(DependencyFactory dependencyFactory, Project project, String capabilityNotation) {

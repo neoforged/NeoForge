@@ -1,16 +1,6 @@
 package net.neoforged.neodev;
 
 import com.google.gson.GsonBuilder;
-import net.neoforged.neodev.utils.FileUtils;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -19,6 +9,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.inject.Inject;
+import net.neoforged.neodev.utils.FileUtils;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 
 /**
  * Creates the userdev configuration file used by the various Gradle plugins used to develop
@@ -54,7 +53,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @TaskAction
     public void writeUserDevConfig() throws IOException {
         var features = new UserDevFeatures(
-            true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+                true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
         );
 
         var config = new UserDevConfig(
@@ -116,8 +115,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                     runType == RunType.JUNIT,
                     Map.of(
                             "MOD_CLASSES", "{source_roots}"),
-                    systemProperties
-            ));
+                    systemProperties));
         }
 
         FileUtils.writeStringSafe(
@@ -133,6 +131,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
         GAME_TEST_SERVER("gameTestServer", "net.neoforged.fml.startup.GameTestServer"),
         SERVER("server", "net.neoforged.fml.startup.Server"),
         JUNIT("junit", null);
+
         private final String jsonName;
         private final String mainClass;
 
@@ -159,7 +158,7 @@ record UserDevConfig(
         UserDevFeatures features) {}
 
 record UserDevFeatures(
-    boolean noLegacyClasspath) {}
+        boolean noLegacyClasspath) {}
 
 record BinpatcherConfig(
         String version,
