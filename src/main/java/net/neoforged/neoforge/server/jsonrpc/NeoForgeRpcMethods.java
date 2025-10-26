@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.server.jsonrpc;
 
-import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -17,7 +16,7 @@ import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.internalapi.MinecraftApi;
 import net.minecraft.server.jsonrpc.methods.ClientInfo;
 import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -36,20 +35,20 @@ public final class NeoForgeRpcMethods {
                 .description("Get a list of all mods installed on the server")
                 .build());
         helper.register(rl("registries"), IncomingRpcMethod
-                .method(NeoForgeRpcMethods::listRegistries, Codec.STRING.listOf())
-                .response(new ResultInfo("registries", Schema.STRING_SCHEMA.asArray()))
+                .method(NeoForgeRpcMethods::listRegistries, RegistryInfo.CODEC.listOf())
+                .response(new ResultInfo("registries", NeoForgeSchemas.REGISTRY_SCHEMA.asArray()))
                 .description("List all registries on the server")
                 .build());
         helper.register(rl("registry"), IncomingRpcMethod
-                .method(NeoForgeRpcMethods::listRegistryContents, ResourceLocation.CODEC, ResourceLocation.CODEC.listOf())
-                .response(new ResultInfo("registry", Schema.STRING_SCHEMA.asArray()))
+                .method(NeoForgeRpcMethods::listRegistryContents, ResourceLocation.CODEC, RegistryInfo.CODEC)
+                .response(new ResultInfo("registry", NeoForgeSchemas.REGISTRY_SCHEMA_WITH_ENTRIES.asRef()))
                 .param(new ParamInfo("registryId", Schema.STRING_SCHEMA, true))
-                .description("List all keys in the given registry")
+                .description("Get the information for the given registry")
                 .build());
     }
 
     private static ResourceLocation rl(String path) {
-        return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, path);
     }
 
     private static List<ModRecord> getModList(MinecraftApi api) {
@@ -61,20 +60,17 @@ public final class NeoForgeRpcMethods {
                 .toList();
     }
 
-    private static List<String> listRegistries(MinecraftApi api) {
+    private static List<RegistryInfo> listRegistries(MinecraftApi api) {
         return api.getServer()
                 .registryAccess()
-                .listRegistryKeys()
-                .map(reg -> reg.location().toString())
+                .listRegistries()
+                .map(reg -> RegistryInfo.from(reg, false))
                 .toList();
     }
 
-    private static List<ResourceLocation> listRegistryContents(MinecraftApi api, ResourceLocation registryId, ClientInfo clientInfo) {
-        return api.getServer()
+    private static RegistryInfo listRegistryContents(MinecraftApi api, ResourceLocation registryId, ClientInfo clientInfo) {
+        return RegistryInfo.from(api.getServer()
                 .registryAccess()
-                .lookupOrThrow(ResourceKey.createRegistryKey(registryId))
-                .listElementIds()
-                .map(ResourceKey::location)
-                .toList();
+                .lookupOrThrow(ResourceKey.createRegistryKey(registryId)), true);
     }
 }

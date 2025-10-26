@@ -11,12 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +44,7 @@ import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
@@ -146,19 +147,19 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    private static final ArrayList<SchemaComponent> SCHEMA_REGISTRY_VIEW = new ArrayList<>();
+    private static final ArrayList<SchemaComponent> SCHEMA_REGISTRY = new ArrayList<>();
 
     @Internal
     public static List<SchemaComponent> getSchemaRegistry() {
-        return SCHEMA_REGISTRY_VIEW;
+        return SCHEMA_REGISTRY;
     }
 
     @Internal
     public static void fireSchemaRegistryEvent() {
-        final Map<String, SchemaComponent> schemaRegistry = new ConcurrentSkipListMap<>(String::compareTo);
+        final Map<String, SchemaComponent> schemaRegistry = new HashMap<>();
 
         // fill with vanilla values
-        for (SchemaComponent schemaComponent : SCHEMA_REGISTRY_VIEW) {
+        for (SchemaComponent schemaComponent : SCHEMA_REGISTRY) {
             schemaRegistry.put(schemaComponent.name(), schemaComponent);
         }
 
@@ -166,9 +167,22 @@ public class ServerLifecycleHooks {
         NeoForge.EVENT_BUS.post(new RegisterSchemaEvent(schemaRegistry));
 
         // mirror final contents back to the list
-        SCHEMA_REGISTRY_VIEW.clear();
-        SCHEMA_REGISTRY_VIEW.ensureCapacity(schemaRegistry.size());
-        SCHEMA_REGISTRY_VIEW.addAll(schemaRegistry.values());
+        SCHEMA_REGISTRY.clear();
+        SCHEMA_REGISTRY.ensureCapacity(schemaRegistry.size());
+        SCHEMA_REGISTRY.addAll(schemaRegistry.values());
+        SCHEMA_REGISTRY.sort((o1, o2) -> {
+            ResourceLocation rl1 = ResourceLocation.tryParse(o1.name());
+            ResourceLocation rl2 = ResourceLocation.tryParse(o2.name());
+            if (rl1 == null && rl2 == null) {
+                return o1.name().compareTo(o2.name());
+            } else if (rl1 == null) {
+                return 1;
+            } else if (rl2 == null) {
+                return -1;
+            } else {
+                return CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST.compare(rl1, rl2);
+            }
+        });
 
         Set<String> missing = Stream.concat(
                 BuiltInRegistries.INCOMING_RPC_METHOD.stream().map(IncomingRpcMethod::info),
