@@ -46,7 +46,7 @@ public interface ValueInputExtension {
      */
     default Set<String> keySet() {
         //noinspection deprecation
-        return self().read(EXTRACT_KEYS).orElse(Set.of());
+        return self().read(EXTRACT_KEYS).orElseThrow();
     }
 
     /**
