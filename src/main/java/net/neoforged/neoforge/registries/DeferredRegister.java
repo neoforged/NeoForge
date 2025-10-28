@@ -618,6 +618,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(String, Supplier, UnaryOperator)
          * @see #registerSimpleBlockItem(String, Supplier)
          * @see #registerSimpleBlockItem(Holder, Supplier)
+         * @see #registerSimpleBlockItem(Holder, UnaryOperator)
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Supplier<Item.Properties> properties) {
@@ -634,6 +635,7 @@ public class DeferredRegister<T> {
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerSimpleBlockItem(String, Supplier, Supplier)
          * @see #registerSimpleBlockItem(String, Supplier)
+         * @see #registerSimpleBlockItem(Holder, Supplier)
          * @see #registerSimpleBlockItem(Holder, UnaryOperator)
          * @see #registerSimpleBlockItem(Holder)
          */
