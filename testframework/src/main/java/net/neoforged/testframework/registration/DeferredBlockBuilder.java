@@ -52,11 +52,17 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     /**
-     * @deprecated Use {@link #withBlockItem(UnaryOperator, Consumer)} instead
+     * @deprecated Use {@link #withBlockItem(Supplier, Consumer)} or {@link #withBlockItem(UnaryOperator, Consumer)} instead
      */
     @Deprecated(since = "1.21.10", forRemoval = true)
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        consumer.accept(helper.items().registerSimpleBlockItem(this, props -> properties));
+        consumer.accept(helper.items().registerSimpleBlockItem(this, () -> properties));
+        hasItem = true;
+        return this;
+    }
+
+    public DeferredBlockBuilder<T> withBlockItem(Supplier<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
+        consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
         hasItem = true;
         return this;
     }
