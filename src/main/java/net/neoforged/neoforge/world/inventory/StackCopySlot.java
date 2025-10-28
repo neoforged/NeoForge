@@ -63,7 +63,7 @@ public abstract class StackCopySlot extends Slot {
         // Verify that the stack has actually changed before setting it.
         // Vanilla menu logic (like AbstractContainerMenu#moveItemStackTo) often already sets the stack through Slot#setByPlayer.
         // This is done to prevent slot change logic from running multiple times when not necessary.
-        if (cachedReturnedStack != null && !ItemStack.isSameItemSameComponents(cachedReturnedStack, getStackCopy())) {
+        if (cachedReturnedStack != null && !ItemStack.matches(cachedReturnedStack, getStackCopy())) {
             set(cachedReturnedStack);
         }
     }
