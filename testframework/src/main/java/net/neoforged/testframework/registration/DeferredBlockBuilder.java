@@ -8,6 +8,7 @@ package net.neoforged.testframework.registration;
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
