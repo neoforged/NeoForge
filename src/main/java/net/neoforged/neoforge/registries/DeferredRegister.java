@@ -640,7 +640,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, UnaryOperator<Item.Properties> properties) {
-            return this.registerItem(name, props -> new BlockItem(block.get(), props), props -> properties.apply(props).useBlockDescriptionPrefix());
+            return this.registerSimpleBlockItem(name, block, () -> properties.apply(new Item.Properties()));
         }
 
         /**
@@ -712,7 +712,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(Holder<Block> block, UnaryOperator<Item.Properties> properties) {
-            return this.registerSimpleBlockItem(block.unwrapKey().orElseThrow().location().getPath(), block::value, properties);
+            return this.registerSimpleBlockItem(block, () -> properties.apply(new Item.Properties()));
         }
 
         /**

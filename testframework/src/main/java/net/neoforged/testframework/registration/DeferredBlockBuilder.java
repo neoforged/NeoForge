@@ -57,9 +57,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
      */
     @Deprecated(since = "1.21.10", forRemoval = true)
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        consumer.accept(helper.items().registerSimpleBlockItem(this, () -> properties));
-        hasItem = true;
-        return this;
+        return this.withBlockItem(() -> properties, consumer);
     }
 
     public DeferredBlockBuilder<T> withBlockItem(Supplier<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
