@@ -282,6 +282,9 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        public static final TagKey<Block> NETHER_NATURAL_LOGS = tag("nether_natural_logs");
+        public static final TagKey<Block> NATURAL_LOGS = tag("natural_logs");
+        public static final TagKey<Block> NATURAL_WOODS = tag("natural_woods");
         public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
         public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
@@ -809,6 +812,9 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
+        public static final TagKey<Item> NETHER_NATURAL_LOGS = tag("nether_natural_logs");
+        public static final TagKey<Item> NATURAL_LOGS = tag("natural_logs");
+        public static final TagKey<Item> NATURAL_WOODS = tag("natural_woods");
         public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
         public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");

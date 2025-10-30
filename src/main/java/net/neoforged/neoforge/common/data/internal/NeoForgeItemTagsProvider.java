@@ -279,6 +279,9 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         copy(Tags.Blocks.STORAGE_BLOCKS_SLIME, Tags.Items.STORAGE_BLOCKS_SLIME);
         copy(Tags.Blocks.STORAGE_BLOCKS_WHEAT, Tags.Items.STORAGE_BLOCKS_WHEAT);
         tag(Tags.Items.STRINGS).add(Items.STRING);
+        copy(Tags.Blocks.NETHER_NATURAL_LOGS, Tags.Items.NETHER_NATURAL_LOGS);
+        copy(Tags.Blocks.NATURAL_LOGS, Tags.Items.NATURAL_LOGS);
+        copy(Tags.Blocks.NATURAL_WOODS, Tags.Items.NATURAL_WOODS);
         copy(Tags.Blocks.STRIPPED_LOGS, Tags.Items.STRIPPED_LOGS);
         copy(Tags.Blocks.STRIPPED_WOODS, Tags.Items.STRIPPED_WOODS);
         tag(Tags.Items.VILLAGER_JOB_SITES).add(
