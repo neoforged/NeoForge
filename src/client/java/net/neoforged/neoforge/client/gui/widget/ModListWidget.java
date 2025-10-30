@@ -36,7 +36,6 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         this.parent = parent;
         this.listWidth = listWidth;
         //this.setRenderBackground(false); // TODO: Porting 1.20.5 still needed?
-        this.refreshList();
     }
 
     @Override
