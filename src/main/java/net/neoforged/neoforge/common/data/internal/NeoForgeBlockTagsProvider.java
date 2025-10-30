@@ -152,7 +152,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.STORAGE_BLOCKS_SLIME).add(Blocks.SLIME_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_WHEAT).add(Blocks.HAY_BLOCK);
         tag(Tags.Blocks.NETHER_NATURAL_LOGS).add(
-                Blocks.STRIPPED_CRIMSON_STEM, Blocks.STRIPPED_WARPED_STEM);
+                Blocks.CRIMSON_STEM, Blocks.WARPED_STEM);
         tag(Tags.Blocks.NATURAL_LOGS).addOptionalTags(
                 BlockTags.OVERWORLD_NATURAL_LOGS, Tags.Blocks.NETHER_NATURAL_LOGS);
         tag(Tags.Blocks.NATURAL_WOODS).add(
