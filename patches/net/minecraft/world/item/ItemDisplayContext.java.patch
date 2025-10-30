@@ -33,10 +33,17 @@
      }
  
      @Override
-@@ -42,5 +_,18 @@
+@@ -37,10 +_,23 @@
+     }
+ 
+     public boolean firstPerson() {
+-        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND || (fallback() != null && fallback().firstPerson());
+     }
  
      public boolean leftHand() {
-         return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
+-        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND || (fallback() != null && fallback().leftHand());
 +    }
 +
 +    public boolean isModded() {
