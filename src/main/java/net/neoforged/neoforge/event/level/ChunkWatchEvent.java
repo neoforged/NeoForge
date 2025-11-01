@@ -22,7 +22,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
 public abstract class ChunkWatchEvent extends Event {
@@ -66,7 +66,7 @@ public abstract class ChunkWatchEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class Watch extends ChunkWatchEvent {
@@ -90,7 +90,7 @@ public abstract class ChunkWatchEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class Sent extends ChunkWatchEvent {
@@ -116,7 +116,7 @@ public abstract class ChunkWatchEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class UnWatch extends ChunkWatchEvent {

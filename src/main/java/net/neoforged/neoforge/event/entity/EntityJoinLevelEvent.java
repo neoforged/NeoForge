@@ -24,7 +24,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * If the event is canceled, the entity will not be added to the level.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
  * on both logical sides.
  **/
 public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEvent {

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Fired for hooking into {@link AbstractContainerScreen} events.
  * See the subclasses to listen for specific events.
  *
- * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see Render.Foreground
@@ -41,7 +41,7 @@ public abstract class ContainerScreenEvent extends Event {
      * Fired every time an {@link AbstractContainerScreen} renders.
      * See the two subclasses to listen for foreground or background rendering.
      *
-     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see Foreground
@@ -90,7 +90,7 @@ public abstract class ContainerScreenEvent extends Event {
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          *
          * @see ScreenEvent.Render.Background ScreenEvent.Render.Background, for listening to the background being drawn

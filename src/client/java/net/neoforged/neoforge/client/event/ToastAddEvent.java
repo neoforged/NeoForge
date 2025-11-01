@@ -18,7 +18,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * Cancelling the event stops the toast from being queued, which means it never renders.</p>
  *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class ToastAddEvent extends Event implements ICancellableEvent {

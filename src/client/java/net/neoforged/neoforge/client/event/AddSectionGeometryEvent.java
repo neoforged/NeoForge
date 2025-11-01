@@ -49,7 +49,7 @@ import net.neoforged.neoforge.common.NeoForge;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}</p>
  *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}, only on the
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}, only on the
  * {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class AddSectionGeometryEvent extends Event {

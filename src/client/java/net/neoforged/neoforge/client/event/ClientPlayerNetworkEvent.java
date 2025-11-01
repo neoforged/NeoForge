@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * Fired for different client connectivity events.
  * See the various subclasses to listen for specific events.
  *
- * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see LoggingIn
@@ -63,7 +63,7 @@ public abstract class ClientPlayerNetworkEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class LoggingIn extends ClientPlayerNetworkEvent {
@@ -78,7 +78,7 @@ public abstract class ClientPlayerNetworkEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     @SuppressWarnings("NullableProblems")
@@ -129,7 +129,7 @@ public abstract class ClientPlayerNetworkEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Clone extends ClientPlayerNetworkEvent {

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If the event is cancelled, the command will not be executed.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
 public class CommandEvent extends Event implements ICancellableEvent {

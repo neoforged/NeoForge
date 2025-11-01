@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If the event is cancelled, the loot table will be made empty.</p>
  *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>
  */
 public class LootTableLoadEvent extends Event implements ICancellableEvent {

@@ -51,7 +51,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * Cancelling this event will prevent the given bar from rendering.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class BossEventProgress extends CustomizeGuiOverlayEvent implements ICancellableEvent {
@@ -112,7 +112,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.<p/>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Chat extends CustomizeGuiOverlayEvent {

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * These can be used for customizing the visual features visible to the player.
  * See the various subclasses for listening to different features.
  *
- * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see RenderFog
@@ -67,7 +67,7 @@ public abstract class ViewportEvent extends Event {
     /**
      * Fired for <b>rendering</b> custom fog. The plane distances are based on the player's render distance.
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RenderFog extends ViewportEvent {
@@ -166,7 +166,7 @@ public abstract class ViewportEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ComputeFogColor extends ViewportEvent {
@@ -237,7 +237,7 @@ public abstract class ViewportEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ComputeCameraAngles extends ViewportEvent {
@@ -308,7 +308,7 @@ public abstract class ViewportEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see ComputeFovModifierEvent

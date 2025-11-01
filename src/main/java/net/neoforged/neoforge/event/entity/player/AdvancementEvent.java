@@ -37,7 +37,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementProgress#isDone()
@@ -53,7 +53,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementEarnEvent

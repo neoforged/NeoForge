@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Superclass for sound related events.
  *
- * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see SoundSourceEvent
@@ -41,7 +41,7 @@ public abstract class SoundEvent extends Event {
     /**
      * Superclass for when a sound has started to play on an audio channel.
      *
-     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see PlaySoundSourceEvent

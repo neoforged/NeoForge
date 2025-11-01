@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
  * <p>
- * All children of this event are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}.
+ * All children of this event are fired on the {@linkplain NeoForge#EVENT_BUS game event bus}.
  */
 public abstract class LevelEvent extends Event {
     private final LevelAccessor level;
@@ -48,7 +48,7 @@ public abstract class LevelEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * on both logical sides.
      **/
     public static class Load extends LevelEvent {
@@ -66,7 +66,7 @@ public abstract class LevelEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * on both logical sides.
      **/
     public static class Unload extends LevelEvent {
@@ -82,7 +82,7 @@ public abstract class LevelEvent extends Event {
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class Save extends LevelEvent {
@@ -98,7 +98,7 @@ public abstract class LevelEvent extends Event {
      * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * If the event is canceled, the vanilla logic to choose a spawn position will be skipped.
      * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @see ServerLevelData#isInitialized()

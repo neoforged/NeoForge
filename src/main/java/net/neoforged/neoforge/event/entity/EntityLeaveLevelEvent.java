@@ -16,7 +16,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain net.neoforged.bus.api.Event.HasResult have a result}.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus}
  * on both logical sides.
  **/
 public class EntityLeaveLevelEvent extends EntityEvent {

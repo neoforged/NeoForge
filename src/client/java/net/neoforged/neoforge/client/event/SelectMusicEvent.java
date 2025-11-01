@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * This event is {@linkplain ICancellableEvent cancellable}.<br>
  * If the event is canceled, then whatever the latest music set was will be used as the music.
  * <br>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},<br>
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},<br>
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
  *
  */

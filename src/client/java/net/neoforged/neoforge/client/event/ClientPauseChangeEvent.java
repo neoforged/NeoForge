@@ -14,7 +14,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * Fired when game pause state is about to change
  *
- * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public abstract class ClientPauseChangeEvent extends Event {
@@ -30,7 +30,7 @@ public abstract class ClientPauseChangeEvent extends Event {
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      * Cancelling this event will prevent the game change pause state even if the conditions match
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Pre extends ClientPauseChangeEvent implements ICancellableEvent {
@@ -44,7 +44,7 @@ public abstract class ClientPauseChangeEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Post extends ClientPauseChangeEvent {

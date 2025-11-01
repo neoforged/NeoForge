@@ -26,7 +26,7 @@ import net.neoforged.neoforge.common.NeoForge;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancelable}, and does not {@linkplain HasResult have a result}.</p>
  *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
  * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}. </p>
  *
  * @see StructuresBecomeConfiguredFix

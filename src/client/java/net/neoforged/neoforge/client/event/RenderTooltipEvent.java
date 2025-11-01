@@ -105,7 +105,7 @@ public abstract class RenderTooltipEvent extends Event {
      * If this event is cancelled, then the list of components will be empty, causing the tooltip to not be rendered and
      * the corresponding {@link RenderTooltipEvent.Pre} and {@link RenderTooltipEvent.Texture} to not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class GatherComponents extends Event implements ICancellableEvent {
@@ -185,7 +185,7 @@ public abstract class RenderTooltipEvent extends Event {
      * If this event is cancelled, then the tooltip will not be rendered and the corresponding
      * {@link RenderTooltipEvent.Texture} will not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Pre extends RenderTooltipEvent implements ICancellableEvent {
@@ -256,7 +256,7 @@ public abstract class RenderTooltipEvent extends Event {
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Texture extends RenderTooltipEvent {

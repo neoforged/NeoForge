@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable}.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus} only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus} only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
  * <p>
  * This event is fired on worker threads, meaning it is unsafe to access external global state.<br>
  * Doing so may induce {@link ConcurrentModificationException} or deadlocks.
