@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.server.RegisterSchemaEvent;
+import net.neoforged.neoforge.event.server.RegisterRpcSchemaEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 @Internal
@@ -27,7 +27,7 @@ public final class NeoForgeSchemas {
             .withField("displayName", Schema.STRING_SCHEMA)
             .withField("description", Schema.STRING_SCHEMA));
 
-    public static void registerSchemas(RegisterSchemaEvent event) {
+    public static void registerSchemas(RegisterRpcSchemaEvent event) {
         event.register(MOD_SCHEMA);
         event.register(REGISTRY_SCHEMA);
         event.register(REGISTRY_SCHEMA_WITH_ENTRIES);

@@ -17,11 +17,11 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * Event to register {@link SchemaComponent SchemaComponents} used in incoming and outgoing JSON-RPC methods.<br>
  * Fired before the {@link ManagementServer} is instantiated in {@link DedicatedServer#initServer()}.
  */
-public class RegisterSchemaEvent extends Event {
+public class RegisterRpcSchemaEvent extends Event {
     private final Map<String, SchemaComponent> components;
 
     @Internal
-    public RegisterSchemaEvent(Map<String, SchemaComponent> components) {
+    public RegisterRpcSchemaEvent(Map<String, SchemaComponent> components) {
         this.components = components;
     }
 

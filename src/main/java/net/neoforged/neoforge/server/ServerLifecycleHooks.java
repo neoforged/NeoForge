@@ -48,7 +48,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
-import net.neoforged.neoforge.event.server.RegisterSchemaEvent;
+import net.neoforged.neoforge.event.server.RegisterRpcSchemaEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -164,7 +164,7 @@ public class ServerLifecycleHooks {
         }
 
         // post the registration event
-        NeoForge.EVENT_BUS.post(new RegisterSchemaEvent(schemaRegistry));
+        NeoForge.EVENT_BUS.post(new RegisterRpcSchemaEvent(schemaRegistry));
 
         // mirror final contents back to the list
         SCHEMA_REGISTRY.clear();

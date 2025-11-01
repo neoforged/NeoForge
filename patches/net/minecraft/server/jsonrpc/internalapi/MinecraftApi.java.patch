@@ -7,7 +7,7 @@
 +    private final @org.jetbrains.annotations.Nullable DedicatedServer server;
 +    private final @org.jetbrains.annotations.Nullable JsonRpcLogger logger;
 +
-+    // Neo: Use the constructor with the server and logger instead
++    /** @deprecated Neo: Use the constructor with the server and logger instead **/
 +    @Deprecated
 +    public MinecraftApi(
 +            NotificationManager p_449655_,
