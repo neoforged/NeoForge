@@ -52,7 +52,7 @@ public class NetworkFilters {
     public static void cleanIfNecessary(Connection manager) {
         ChannelPipeline pipeline = manager.channel().pipeline();
 
-        //Grab the pipeline filters to remove in a seperate list to avoid a ConcurrentModificationException
+        //Grab the pipeline filters to remove in a separate list to avoid a ConcurrentModificationException
         final List<DynamicChannelHandler> toRemove = pipeline.names()
                 .stream()
                 .map(pipeline::get)

@@ -998,7 +998,7 @@ public class ModConfigSpec implements IConfigSpec {
             this.min = min;
             this.max = max;
             if (min.compareTo(max) > 0) {
-                throw new IllegalArgumentException("Range min must be less then max.");
+                throw new IllegalArgumentException("Range min must be less than max.");
             }
         }
 

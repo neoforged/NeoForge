@@ -60,7 +60,7 @@ public abstract class BlockEvent extends Event {
      * <ul>
      * <li>If {@link Player#blockActionRestricted} is true.</li>
      * <li>If the target block is a {@link GameMasterBlock} and {@link Player#canUseGameMasterBlocks()} is false.</li>
-     * <li>If the the player is holding an item, and {@link Item#canAttackBlock} is false.</li>
+     * <li>If the player is holding an item, and {@link Item#canAttackBlock} is false.</li>
      * </ul>
      *
      * In the first two cases, un-cancelling the event will not permit the block to be broken.

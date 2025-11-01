@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * If the music is set to {@code null} by a modder, it will cancel any music that was already playing.<br>
  * <br>
  * Note that the higher priority you make your event listener, the earlier the music will be set.<br>
- * Because of this, if you want your music to take precedence over others (perhaps you want to have seperate nighttime music for a biome for instance) then you may want it to have a lower priority.<br>
+ * Because of this, if you want your music to take precedence over others (perhaps you want to have separate nighttime music for a biome for instance) then you may want it to have a lower priority.<br>
  * <br>
  * To make your music instantly play rather than waiting for the playing music to stop, set the music to one that {@linkplain Music#replaceCurrentMusic() is set to replace the current music.}<br>
  * <br>
