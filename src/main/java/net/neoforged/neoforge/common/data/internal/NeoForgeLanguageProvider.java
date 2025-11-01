@@ -133,6 +133,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_RESIN, "Resin Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
+        add(Tags.Blocks.OVERWORLD_NATURAL_LOGS, "Overworld Natural Logs");
         add(Tags.Blocks.NETHER_NATURAL_LOGS, "Nether Natural Logs");
         add(Tags.Blocks.NATURAL_LOGS, "Natural Logs");
         add(Tags.Blocks.NATURAL_WOODS, "Natural Woods");
@@ -363,6 +364,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
+        add(Tags.Items.OVERWORLD_NATURAL_LOGS, "Overworld Natural Logs");
         add(Tags.Items.NETHER_NATURAL_LOGS, "Nether Natural Logs");
         add(Tags.Items.NATURAL_LOGS, "Natural Logs");
         add(Tags.Items.NATURAL_WOODS, "Natural Woods");
