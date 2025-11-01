@@ -12,8 +12,9 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * PlayerXpEvent is fired whenever an event involving player experience occurs. <br>
- * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
- * receive every child event of this class.<br>
+ * <br>
+ * This is an abstract class and cannot be listened to directly.
+ * Listeners should register to one of its subclasses instead.<br>
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  */

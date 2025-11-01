@@ -14,8 +14,9 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * EntityEvent is fired when an event involving any Entity occurs.<br>
- * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
- * receive every child event of this class.<br>
+ * <br>
+ * This is an abstract class and cannot be listened to directly.
+ * Listeners should register to one of its subclasses instead.<br>
  * <br>
  * {@link #entity} contains the entity that caused this event to occur.<br>
  * <br>
