@@ -41,9 +41,12 @@ public interface ValueInputExtension {
     /**
      * Reads the {@code child} object from the given {@code key},
      * or provides an empty {@link ValueInput} if the child does not exist.
-     * Unlike {@link ValueInput#childOrEmpty(String)}, this will not return
-     * an empty context if there are no keys (as reported by {@link #keySet()}),
-     * within the child.
+     * This function behaves differently than {@link ValueInput#childOrEmpty(String)}
+     * in the case where the child exists (as reported by {@link #keySet()}) but is empty.
+     * While {@link ValueInput#childOrEmpty(String)} will return an empty {@code ValueInput}
+     * from which nothing can ever be read with a codec, this function will instead return a
+     * a wrapper around the empty child, allowing values to be read with a codec,
+     * provided that the codec can deserialize empty map-like objects.
      * <br>
      * If not implemented, defaults to {@link ValueInput#childOrEmpty(String)}.
      *
