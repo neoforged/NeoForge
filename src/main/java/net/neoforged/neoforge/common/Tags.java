@@ -282,7 +282,30 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        /**
+         * For logs found naturally in the Overworld, does not include Stripped Logs.
+         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
+         */
+        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /**
+         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
+         */
+        public static final TagKey<Block> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /**
+         * For logs, including Stems, found naturally that have not been stripped.
+         */
+        public static final TagKey<Block> NATURAL_LOGS = tag("natural_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
+         */
+        public static final TagKey<Block> NATURAL_WOODS = tag("natural_woods");
+        /**
+         * For logs, including Stems, found naturally that have been stripped.
+         */
         public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
+         */
         public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
@@ -809,7 +832,30 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
+        /**
+         * For logs found naturally in the Overworld, does not include Stripped Logs.
+         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
+         */
+        public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /**
+         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
+         */
+        public static final TagKey<Item> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /**
+         * For logs, including Stems, found naturally that have not been stripped.
+         */
+        public static final TagKey<Item> NATURAL_LOGS = tag("natural_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
+         */
+        public static final TagKey<Item> NATURAL_WOODS = tag("natural_woods");
+        /**
+         * For logs, including Stems, found naturally that have been stripped.
+         */
         public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
+         */
         public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 

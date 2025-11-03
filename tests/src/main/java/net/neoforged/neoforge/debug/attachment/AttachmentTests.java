@@ -9,9 +9,13 @@ import static net.minecraft.commands.Commands.literal;
 
 import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ProblemReporter;
@@ -22,9 +26,12 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
@@ -157,5 +164,58 @@ public class AttachmentTests {
             });
             helper.succeed();
         });
+    }
+
+    @TestHolder(description = "Regression test for neoforged/Neoforge#2728", enabledByDefault = true)
+    static void pseudoEmptyAttachmentSerialization(DynamicTest test, RegistrationHelper reg) {
+        record EmptyObject(int value) {}
+
+        class TestAttachmentHolder extends AttachmentHolder {
+            public void deserialize(ValueInput input) {
+                // Deserialize is protected final, so we need a wrapper method
+                this.deserializeAttachments(input);
+            }
+        }
+
+        var nullableAttachment = reg.attachments()
+                .register("nullable_attachment", () -> AttachmentType.builder(() -> new EmptyObject(1))
+                        .serialize(RecordCodecBuilder.mapCodec(
+                                instance -> instance.group(
+                                        Codec.INT.optionalFieldOf("value", 0).forGetter(EmptyObject::value)).apply(instance, EmptyObject::new)))
+                        .build());
+
+        test.framework().modEventBus().addListener((FMLLoadCompleteEvent event) -> event.enqueueWork(() -> {
+            // Serialize and deserialize object
+            var lookup = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+
+            var originalHolder = new TestAttachmentHolder();
+            originalHolder.setData(nullableAttachment, new EmptyObject(0));
+
+            var output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, lookup);
+            originalHolder.serializeAttachments(output);
+
+            var anotherHolder = new TestAttachmentHolder();
+            try {
+                // Try to deserialize
+                anotherHolder.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, lookup, output.buildResult()));
+            } catch (Exception e) {
+                // If an exception is thrown
+                test.fail(e.getMessage());
+            }
+
+            // Check if deserialized successfully
+            if (!anotherHolder.hasData(nullableAttachment)) {
+                test.fail("Unable to find nullable attachment data after deserialiation.");
+            }
+
+            // Check if data matches original
+            if (!Objects.equals(
+                    originalHolder.getData(nullableAttachment).value,
+                    anotherHolder.getData(nullableAttachment).value)) {
+                test.fail("Data from holder does not match after serialization loop.");
+            }
+
+            test.pass();
+        }));
     }
 }

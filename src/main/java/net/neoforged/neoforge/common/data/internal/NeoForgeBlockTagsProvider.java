@@ -151,6 +151,17 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.STORAGE_BLOCKS_RESIN).add(Blocks.RESIN_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_SLIME).add(Blocks.SLIME_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_WHEAT).add(Blocks.HAY_BLOCK);
+        tag(Tags.Blocks.OVERWORLD_NATURAL_LOGS).addOptionalTags(
+                BlockTags.OVERWORLD_NATURAL_LOGS);
+        tag(Tags.Blocks.NETHER_NATURAL_LOGS).add(
+                Blocks.CRIMSON_STEM, Blocks.WARPED_STEM);
+        tag(Tags.Blocks.NATURAL_LOGS).addOptionalTags(
+                Tags.Blocks.OVERWORLD_NATURAL_LOGS, Tags.Blocks.NETHER_NATURAL_LOGS);
+        tag(Tags.Blocks.NATURAL_WOODS).add(
+                Blocks.ACACIA_WOOD, Blocks.BIRCH_WOOD, Blocks.CHERRY_WOOD,
+                Blocks.DARK_OAK_WOOD, Blocks.JUNGLE_WOOD, Blocks.MANGROVE_WOOD,
+                Blocks.OAK_WOOD, Blocks.PALE_OAK_WOOD, Blocks.SPRUCE_WOOD,
+                Blocks.CRIMSON_HYPHAE, Blocks.WARPED_HYPHAE);
         tag(Tags.Blocks.STRIPPED_LOGS).add(
                 Blocks.STRIPPED_ACACIA_LOG, Blocks.STRIPPED_BAMBOO_BLOCK, Blocks.STRIPPED_BIRCH_LOG,
                 Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_JUNGLE_LOG,
