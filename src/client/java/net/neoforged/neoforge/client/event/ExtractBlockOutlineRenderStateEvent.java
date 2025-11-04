@@ -37,6 +37,8 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
     private final BlockState state;
     private final BlockHitResult hitResult;
     private final CollisionContext collisionContext;
+    private final boolean inTranslucentPass;
+    private final boolean highContrast;
     private final Camera camera;
     private final LevelRenderState levelRenderState;
     private final List<CustomBlockOutlineRenderer> customRenderers = new ArrayList<>();
@@ -49,6 +51,8 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
             BlockState state,
             BlockHitResult hitResult,
             CollisionContext collisionContext,
+            boolean inTranslucentPass,
+            boolean highContrast,
             Camera camera,
             LevelRenderState levelRenderState) {
         this.levelRenderer = levelRenderer;
@@ -57,6 +61,8 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
         this.state = state;
         this.hitResult = hitResult;
         this.collisionContext = collisionContext;
+        this.inTranslucentPass = inTranslucentPass;
+        this.highContrast = highContrast;
         this.camera = camera;
         this.levelRenderState = levelRenderState;
     }
@@ -108,6 +114,20 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
      */
     public CollisionContext getCollisionContext() {
         return this.collisionContext;
+    }
+
+    /**
+     * {@return whether the targeted block has translucent geometry and therefore needs to render its outline in the translucent pass}
+     */
+    public boolean isInTranslucentPass() {
+        return inTranslucentPass;
+    }
+
+    /**
+     * {@return whether the high-contrast outline setting is enabled in the accessibility settings}
+     */
+    public boolean isHighContrast() {
+        return highContrast;
     }
 
     public Camera getCamera() {

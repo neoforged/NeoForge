@@ -255,7 +255,7 @@
 +                    boolean flag = net.neoforged.neoforge.client.ClientHooks.isInTranslucentBlockOutlinePass(this.level, blockpos, blockstate);
                      boolean flag1 = this.minecraft.options.highContrastBlockOutline().get();
                      CollisionContext collisioncontext = CollisionContext.of(p_451355_.getEntity());
-+                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, blockpos, blockstate, blockhitresult, collisioncontext, p_451355_, p_451261_);
++                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, blockpos, blockstate, blockhitresult, collisioncontext, flag, flag1, p_451355_, p_451261_);
 +                    if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
 +                        return;
 +                    }
