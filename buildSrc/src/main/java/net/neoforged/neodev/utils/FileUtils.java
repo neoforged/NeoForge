@@ -11,8 +11,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 public final class FileUtils {
-    private FileUtils() {
-    }
+    private FileUtils() {}
 
     public static void writeStringSafe(Path destination, String content, Charset charset) throws IOException {
         if (!charset.newEncoder().canEncode(content)) {
@@ -46,8 +45,7 @@ public final class FileUtils {
                 } finally {
                     try {
                         Files.deleteIfExists(tempFile);
-                    } catch (IOException ignored) {
-                    }
+                    } catch (IOException ignored) {}
                     closed[0] = true;
                 }
             }

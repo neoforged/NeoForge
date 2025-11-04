@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.event;
 
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -115,19 +117,24 @@ public abstract class GrindstoneEvent extends Event {
         private ItemStack newTop = ItemStack.EMPTY;
         private ItemStack newBottom = ItemStack.EMPTY;
 
-        public OnTakeItem(ItemStack top, ItemStack bottom, int xp) {
+        private final ContainerLevelAccess access;
+        private final Player player;
+
+        public OnTakeItem(ContainerLevelAccess access, Player player, ItemStack top, ItemStack bottom, int xp) {
             super(top, bottom, xp);
+            this.access = access;
+            this.player = player;
         }
 
         /**
-         * @return The item in that will be in the top input grindstone slot after the event. <br>
+         * {@return the item in that will be in the top input grindstone slot after the event}
          */
         public ItemStack getNewTopItem() {
             return newTop;
         }
 
         /**
-         * @return The item in that will be in the bottom input grindstone slot after the event. <br>
+         * {@return the item in that will be in the bottom input grindstone slot after the event}
          */
         public ItemStack getNewBottomItem() {
             return newBottom;
@@ -158,6 +165,20 @@ public abstract class GrindstoneEvent extends Event {
          */
         public int getXp() {
             return super.getXp();
+        }
+
+        /**
+         * {@return an accessor for the grindstone's level and position}
+         */
+        public ContainerLevelAccess getContainerAccess() {
+            return this.access;
+        }
+
+        /**
+         * {@return the player currently using the grindstone}
+         */
+        public Player getPlayer() {
+            return this.player;
         }
     }
 }

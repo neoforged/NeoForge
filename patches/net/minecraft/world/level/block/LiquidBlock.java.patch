@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -137,7 +_,7 @@
+@@ -141,7 +_,7 @@
  
      @Override
      protected void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
@@ -9,7 +9,7 @@
              p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
          }
      }
-@@ -162,11 +_,12 @@
+@@ -166,11 +_,12 @@
  
      @Override
      protected void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, @Nullable Orientation p_361226_, boolean p_54714_) {

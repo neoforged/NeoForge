@@ -8,6 +8,7 @@ package net.neoforged.testframework.registration;
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -27,7 +28,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -43,14 +44,24 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     public DeferredBlockBuilder<T> withBlockItem() {
-        return withBlockItem(new Item.Properties(), c -> {});
+        return withBlockItem(UnaryOperator.identity(), c -> {});
     }
 
     public DeferredBlockBuilder<T> withBlockItem(Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        return withBlockItem(new Item.Properties(), consumer);
+        return withBlockItem(UnaryOperator.identity(), consumer);
     }
 
+    /**
+     * @deprecated Use {@link #withBlockItem(UnaryOperator, Consumer)} instead
+     */
+    @Deprecated(since = "1.21.10", forRemoval = true)
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
+        consumer.accept(helper.items().registerSimpleBlockItem(this, props -> properties));
+        hasItem = true;
+        return this;
+    }
+
+    public DeferredBlockBuilder<T> withBlockItem(UnaryOperator<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
         consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
         hasItem = true;
         return this;
@@ -65,7 +76,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private boolean hasColor = false;
 
     public DeferredBlockBuilder<T> withDefaultWhiteModel() {
-        if (!FMLLoader.getDist().isClient()) {
+        if (!FMLEnvironment.getDist().isClient()) {
             return this;
         }
 
@@ -113,7 +124,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     public DeferredBlockBuilder<T> withColor(int color) {
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             colorInternal(color);
         }
         hasColor = true;

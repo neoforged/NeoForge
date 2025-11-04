@@ -1,18 +1,5 @@
 package net.neoforged.neodev.installer;
 
-import net.neoforged.neodev.utils.DependencyUtils;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.ArchiveOperations;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.inject.Inject;
+import net.neoforged.neodev.utils.DependencyUtils;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ArchiveOperations;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 
 /**
  * Creates the JVM/program argument files used by the dedicated server launcher.
@@ -30,9 +28,6 @@ public abstract class CreateArgsFile extends DefaultTask {
 
     @InputFile
     public abstract RegularFileProperty getTemplate();
-
-    @Input
-    public abstract Property<String> getFmlVersion();
 
     @Input
     public abstract Property<String> getMinecraftVersion();
@@ -47,18 +42,11 @@ public abstract class CreateArgsFile extends DefaultTask {
     protected abstract Property<String> getPathSeparator();
 
     @Input
-    protected abstract Property<String> getModules();
-
-    @Input
-    public abstract ListProperty<String> getIgnoreList();
-
-    @Input
     protected abstract Property<String> getClasspath();
 
-    public void setLibraries(String separator, Configuration classpath, Configuration modulePath) {
+    public void setLibraries(String separator, Configuration classpath) {
         getPathSeparator().set(separator);
         getClasspath().set(DependencyUtils.configurationToClasspath(classpath, "libraries/", separator));
-        getModules().set(DependencyUtils.configurationToClasspath(modulePath, "libraries/", separator));
     }
 
     @InputFile
@@ -103,15 +91,8 @@ public abstract class CreateArgsFile extends DefaultTask {
     @TaskAction
     public void createArgsFile() throws IOException {
         var replacements = new HashMap<String, String>();
-        replacements.put("@MODULE_PATH@", getModules().get());
-        replacements.put("@MODULES@", "ALL-MODULE-PATH");
-        replacements.put("@IGNORE_LIST@", String.join(",", getIgnoreList().get()));
-        replacements.put("@PLUGIN_LAYER_LIBRARIES@", "");
-        replacements.put("@GAME_LAYER_LIBRARIES@", "");
         replacements.put("@CLASS_PATH@", resolveClasspath());
-        replacements.put("@TASK@", "neoforgeserver");
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
-        replacements.put("@FML_VERSION@", getFmlVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());
         replacements.put("@MCP_VERSION@", getRawNeoFormVersion().get());
 

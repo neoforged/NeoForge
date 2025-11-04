@@ -3,7 +3,7 @@
 @@ -115,7 +_,9 @@
      @Override
      protected InteractionResult useWithoutItem(BlockState p_316441_, Level p_316774_, BlockPos p_316344_, Player p_316884_, BlockHitResult p_316631_) {
-         if (!p_316774_.isClientSide) {
+         if (!p_316774_.isClientSide()) {
 -            p_316441_ = p_316441_.cycle(NOTE);
 +            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_316774_, p_316344_, p_316441_, p_316441_.getValue(NOTE), p_316441_.cycle(NOTE).getValue(NOTE));
 +            if (_new == -1) return InteractionResult.FAIL;

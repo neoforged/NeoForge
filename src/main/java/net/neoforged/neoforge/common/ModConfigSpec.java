@@ -916,7 +916,7 @@ public class ModConfigSpec implements IConfigSpec {
 
         public String buildComment(final List<String> path) {
             if (comment.stream().allMatch(String::isBlank)) {
-                if (FMLEnvironment.production)
+                if (FMLEnvironment.isProduction())
                     LOGGER.warn(Logging.CORE, "Detected a comment that is all whitespace for config option {}, which causes obscure bugs in NeoForge's config system and will cause a crash in the future. Please report this to the mod author.",
                             DOT_JOINER.join(path));
                 else

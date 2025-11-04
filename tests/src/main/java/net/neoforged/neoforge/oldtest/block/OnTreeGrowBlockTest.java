@@ -16,7 +16,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.MapColor;
@@ -56,13 +55,13 @@ public class OnTreeGrowBlockTest {
                 return true;
             }
         }
-    }, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f));
+    }, props -> props.mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f));
     public static final Holder<Block> TEST_DIRT = BLOCKS.registerBlock("test_dirt", props -> new Block(props) {
         @Override
         public TriState canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, BlockState plantable) {
             return plantable.getBlock() instanceof SaplingBlock ? TriState.TRUE : TriState.DEFAULT;
         }
-    }, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f));
+    }, props -> props.mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f));
     public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_GRASS_BLOCK);
     public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.registerSimpleBlockItem(TEST_DIRT);
 

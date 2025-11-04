@@ -1,19 +1,19 @@
 --- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
-@@ -11,7 +_,7 @@
+@@ -13,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public class EntityRenderState {
 +public class EntityRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     public static final int NO_OUTLINE = 0;
      public EntityType<?> entityType;
      public double x;
-     public double y;
-@@ -36,6 +_,7 @@
-     public HitboxesRenderState hitboxesRenderState;
-     @Nullable
+@@ -43,6 +_,7 @@
      public ServerHitboxesRenderState serverHitboxesRenderState;
+     public float shadowRadius;
+     public final List<EntityRenderState.ShadowPiece> shadowPieces = new ArrayList<>();
 +    public float partialTick;
  
-     public void fillCrashReportCategory(CrashReportCategory p_412401_) {
-         p_412401_.setDetail("EntityRenderState", this.getClass().getCanonicalName());
+     public boolean appearsGlowing() {
+         return this.outlineColor != 0;

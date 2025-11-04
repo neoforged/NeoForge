@@ -14,7 +14,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -36,7 +35,7 @@ public class ValidRailShapeTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.registerBlock("rail_slope", RailSlopeBlock::new, Properties.of());
+    private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.registerBlock("rail_slope", RailSlopeBlock::new);
     private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerSimpleBlockItem(RAIL_SLOPE_BLOCK);
 
     public ValidRailShapeTest(IEventBus bus) {
@@ -51,7 +50,7 @@ public class ValidRailShapeTest {
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isSlope);
 
         protected RailSlopeBlock(Properties properties) {
-            super(true, properties.noCollission().strength(0.7F).sound(SoundType.METAL));
+            super(true, properties.noCollision().strength(0.7F).sound(SoundType.METAL));
         }
 
         @Override

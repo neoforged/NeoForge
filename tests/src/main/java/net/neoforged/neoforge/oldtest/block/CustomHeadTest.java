@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import java.util.Locale;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
@@ -24,14 +25,12 @@ import net.minecraft.world.level.block.WallSkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialBlockModelRendererEvent;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -53,8 +52,8 @@ public class CustomHeadTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    private static final DeferredBlock<Block> BLAZE_HEAD = BLOCKS.registerBlock("blaze_head", props -> new CustomSkullBlock(SkullType.BLAZE, props), BlockBehaviour.Properties.of().strength(1.0F));
-    private static final DeferredBlock<Block> BLAZE_HEAD_WALL = BLOCKS.registerBlock("blaze_wall_head", props -> new CustomWallSkullBlock(SkullType.BLAZE, props.strength(1.0F).overrideLootTable(BLAZE_HEAD.get().getLootTable())), BlockBehaviour.Properties.of());
+    private static final DeferredBlock<Block> BLAZE_HEAD = BLOCKS.registerBlock("blaze_head", props -> new CustomSkullBlock(SkullType.BLAZE, props), props -> props.strength(1.0F));
+    private static final DeferredBlock<Block> BLAZE_HEAD_WALL = BLOCKS.registerBlock("blaze_wall_head", props -> new CustomWallSkullBlock(SkullType.BLAZE, props.strength(1.0F).overrideLootTable(BLAZE_HEAD.get().getLootTable())));
     private static final DeferredItem<Item> BLAZE_HEAD_ITEM = ITEMS.registerItem("blaze_head", props -> new StandingAndWallBlockItem(BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get(), Direction.DOWN, props.rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)));
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomSkullBlockEntity>> CUSTOM_SKULL = BLOCK_ENTITIES.register("custom_skull", () -> new BlockEntityType<>(CustomSkullBlockEntity::new, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get()));
 
@@ -107,12 +106,12 @@ public class CustomHeadTest {
         BLAZE;
 
         SkullType() {
-            TYPES.put(name().toLowerCase(), this);
+            TYPES.put(getSerializedName(), this);
         }
 
         @Override
         public String getSerializedName() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 
@@ -131,19 +130,13 @@ public class CustomHeadTest {
         }
 
         @SubscribeEvent
-        static void clientSetupEvent(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png")));
-        }
-
-        @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER);
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
 
         @SubscribeEvent
         static void registerSpecialBlockRenderer(RegisterSpecialBlockModelRendererEvent event) {
             event.register(BLAZE_HEAD.get(), new SkullSpecialRenderer.Unbaked(SkullType.BLAZE));
-            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
     }
 }

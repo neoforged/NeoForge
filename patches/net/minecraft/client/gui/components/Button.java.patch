@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/Button.java
 +++ b/net/minecraft/client/gui/components/Button.java
-@@ -31,6 +_,11 @@
+@@ -32,6 +_,11 @@
          this.createNarration = p_259552_;
      }
  
@@ -10,9 +10,9 @@
 +    }
 +
      @Override
-     public void onPress() {
+     public void onPress(InputWithModifiers p_446034_) {
          this.onPress.onPress(this);
-@@ -95,9 +_,11 @@
+@@ -96,9 +_,11 @@
          }
  
          public Button build() {

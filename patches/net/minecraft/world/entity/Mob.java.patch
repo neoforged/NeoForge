@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -129,6 +_,11 @@
+@@ -139,6 +_,11 @@
      private Leashable.LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
      private int homeRadius = -1;
@@ -12,7 +12,7 @@
  
      protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
          super(p_21368_, p_21369_);
-@@ -225,7 +_,10 @@
+@@ -235,7 +_,10 @@
      }
  
      public void setTarget(@Nullable LivingEntity p_21544_) {
@@ -24,8 +24,8 @@
      }
  
      @Override
-@@ -321,6 +_,12 @@
-         if (!this.level().isClientSide && this.tickCount % 5 == 0) {
+@@ -331,6 +_,12 @@
+         if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
              this.updateControlFlags();
          }
 +
@@ -37,7 +37,7 @@
      }
  
      protected void updateControlFlags() {
-@@ -365,6 +_,9 @@
+@@ -375,6 +_,9 @@
          if (this.isNoAi()) {
              p_421640_.putBoolean("NoAI", this.isNoAi());
          }
@@ -47,7 +47,7 @@
      }
  
      @Override
-@@ -383,6 +_,14 @@
+@@ -393,6 +_,14 @@
          this.lootTable = p_422339_.read("DeathLootTable", LootTable.KEY_CODEC);
          this.lootTableSeed = p_422339_.getLongOr("DeathLootTableSeed", 0L);
          this.setNoAi(p_422339_.getBooleanOr("NoAI", false));
@@ -62,7 +62,7 @@
      }
  
      @Override
-@@ -437,7 +_,7 @@
+@@ -447,7 +_,7 @@
              && this.canPickUpLoot()
              && this.isAlive()
              && !this.dead
@@ -71,7 +71,7 @@
              Vec3i vec3i = this.getPickupReach();
  
              for (ItemEntity itementity : this.level()
-@@ -559,6 +_,8 @@
+@@ -569,6 +_,8 @@
      private double getApproximateAttributeWith(ItemStack p_371461_, Holder<Attribute> p_371421_, EquipmentSlot p_371891_) {
          double d0 = this.getAttributes().hasAttribute(p_371421_) ? this.getAttributeBaseValue(p_371421_) : 0.0;
          ItemAttributeModifiers itemattributemodifiers = p_371461_.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -80,15 +80,15 @@
          return itemattributemodifiers.compute(d0, p_371891_);
      }
  
-@@ -601,6 +_,7 @@
+@@ -607,6 +_,7 @@
  
      @Override
      public void checkDespawn() {
 +        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
-         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-@@ -1005,6 +_,11 @@
+@@ -1009,6 +_,11 @@
          }
      }
  
@@ -100,7 +100,7 @@
      @Nullable
      public SpawnGroupData finalizeSpawn(
          ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, EntitySpawnReason p_363352_, @Nullable SpawnGroupData p_21437_
-@@ -1018,6 +_,7 @@
+@@ -1022,6 +_,7 @@
          }
  
          this.setLeftHanded(randomsource.nextFloat() < 0.05F);
@@ -108,7 +108,7 @@
          return p_21437_;
      }
  
-@@ -1154,6 +_,7 @@
+@@ -1168,6 +_,7 @@
              } else {
                  p_371709_.type().convert(this, t, p_371709_);
                  p_371266_.finalizeConversion(t);
@@ -116,7 +116,7 @@
                  if (this.level() instanceof ServerLevel serverlevel) {
                      serverlevel.addFreshEntity(t);
                  }
-@@ -1326,14 +_,24 @@
+@@ -1340,14 +_,24 @@
      }
  
      @Override
@@ -142,9 +142,9 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(p_351790_ -> true);
-@@ -1369,5 +_,40 @@
-         if (p_363635_.is(Attributes.FOLLOW_RANGE) || p_363635_.is(Attributes.TEMPT_RANGE)) {
-             this.getNavigation().updatePathfinderMaxVisitedNodes();
+@@ -1407,5 +_,40 @@
+         if (!this.brain.isBrainDead()) {
+             p_449943_.register(DebugSubscriptions.BRAINS, () -> DebugBrainDump.takeBrainDump(p_449468_, this));
          }
 +    }
 +

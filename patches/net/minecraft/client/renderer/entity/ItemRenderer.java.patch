@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -120,7 +_,7 @@
+@@ -113,7 +_,7 @@
                  f3 = 1.0F;
              }
  
@@ -8,4 +8,4 @@
 +            p_115164_.putBulkData(posestack$pose, bakedquad, f1, f2, f3, f, p_115167_, p_115168_, true);
          }
      }
- 
+ }

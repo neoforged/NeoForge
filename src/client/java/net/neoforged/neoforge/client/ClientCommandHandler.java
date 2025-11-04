@@ -39,6 +39,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ClientCommandHandler {
+    private static final ResourceLocation ASK_SERVER_ID = ResourceLocation.withDefaultNamespace("ask_server");
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static CommandDispatcher<CommandSourceStack> commands = null;
 
@@ -77,7 +79,7 @@ public class ClientCommandHandler {
         CommandHelper.mergeCommandNode(commands.getRoot(), newServerCommands.getRoot(), new IdentityHashMap<>(), getSource(), (context) -> 0, (suggestions) -> {
             ResourceLocation id = SuggestionProviders.getName(suggestions);
             SuggestionProvider<ClientSuggestionProvider> suggestionProvider;
-            if (SuggestionProviders.getProvider(id) == SuggestionProviders.ASK_SERVER) {
+            if (id.equals(ASK_SERVER_ID)) {
                 suggestionProvider = (context, builder) -> {
                     ClientCommandSourceStack source = getSource();
                     StringReader reader = new StringReader(context.getInput());

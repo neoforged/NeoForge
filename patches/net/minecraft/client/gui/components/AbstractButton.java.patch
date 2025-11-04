@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/gui/components/AbstractButton.java
 +++ b/net/minecraft/client/gui/components/AbstractButton.java
-@@ -38,7 +_,7 @@
+@@ -41,7 +_,7 @@
              this.getHeight(),
              ARGB.white(this.alpha)
          );
 -        int i = ARGB.color(this.alpha, this.active ? -1 : -6250336);
 +        int i = ARGB.color(this.alpha, getFGColor());
          this.renderString(p_281670_, minecraft.font, i);
-     }
- 
+         if (this.isHovered()) {
+             p_281670_.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);

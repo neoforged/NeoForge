@@ -20,11 +20,9 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record InsertingContents(int index) implements ComponentContents {
-    public static final MapCodec<InsertingContents> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+    public static final MapCodec<InsertingContents> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("index").forGetter(InsertingContents::index))
             .apply(i, InsertingContents::new));
-
-    public static final ComponentContents.Type<InsertingContents> TYPE = new ComponentContents.Type<>(CODEC, "neoforge:inserting");
 
     private static final ThreadLocal<Deque<TranslatableContents>> TRANSLATION_STACK = ThreadLocal.withInitial(ArrayDeque::new);
 
@@ -78,7 +76,7 @@ public record InsertingContents(int index) implements ComponentContents {
     }
 
     @Override
-    public Type<?> type() {
-        return TYPE;
+    public MapCodec<InsertingContents> codec() {
+        return MAP_CODEC;
     }
 }

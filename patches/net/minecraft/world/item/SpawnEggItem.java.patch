@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -190,4 +_,45 @@
+@@ -197,4 +_,45 @@
  
          return false;
      }
@@ -9,7 +9,7 @@
 +        @Override
 +        protected ItemStack execute(net.minecraft.core.dispenser.BlockSource source, ItemStack egg) {
 +            Direction direction = source.state().getValue(net.minecraft.world.level.block.DispenserBlock.FACING);
-+            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(source.level().registryAccess(), egg);
++            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(egg);
 +
 +            try {
 +                entitytype.spawn(

@@ -7,6 +7,8 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -39,15 +41,17 @@ public abstract class InputEvent extends Event {
      * @see Post
      */
     public static abstract class MouseButton extends InputEvent {
-        private final int button;
+        private final MouseButtonInfo mouseButtonInfo;
         private final int action;
-        private final int modifiers;
 
         @ApiStatus.Internal
-        protected MouseButton(int button, int action, int modifiers) {
-            this.button = button;
+        protected MouseButton(MouseButtonInfo mouseButtonInfo, int action) {
+            this.mouseButtonInfo = mouseButtonInfo;
             this.action = action;
-            this.modifiers = modifiers;
+        }
+
+        public MouseButtonInfo getMouseButtonInfo() {
+            return mouseButtonInfo;
         }
 
         /**
@@ -57,7 +61,7 @@ public abstract class InputEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
         public int getButton() {
-            return this.button;
+            return this.mouseButtonInfo.button();
         }
 
         /**
@@ -82,13 +86,13 @@ public abstract class InputEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
         public int getModifiers() {
-            return this.modifiers;
+            return this.mouseButtonInfo.modifiers();
         }
 
         /**
          * Fired when a mouse button is pressed/released, <b>before</b> being processed by vanilla.
          *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
          * If the event is cancelled, then the mouse event will not be processed by vanilla (e.g. keymappings and screens) </p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -98,15 +102,15 @@ public abstract class InputEvent extends Event {
          */
         public static class Pre extends MouseButton implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(int button, int action, int modifiers) {
-                super(button, action, modifiers);
+            public Pre(MouseButtonInfo mouseButtonInfo, int action) {
+                super(mouseButtonInfo, action);
             }
         }
 
         /**
          * Fired when a mouse button is pressed/released, <b>after</b> processing.
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -115,8 +119,8 @@ public abstract class InputEvent extends Event {
          */
         public static class Post extends MouseButton {
             @ApiStatus.Internal
-            public Post(int button, int action, int modifiers) {
-                super(button, action, modifiers);
+            public Post(MouseButtonInfo mouseButtonInfo, int action) {
+                super(mouseButtonInfo, action);
             }
         }
     }
@@ -125,7 +129,7 @@ public abstract class InputEvent extends Event {
      * Fired when a mouse scroll wheel is used outside of a screen and a player is loaded, <b>before</b> being
      * processed by vanilla.
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}.
      * If the event is cancelled, then the mouse scroll event will not be processed further.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
@@ -206,23 +210,23 @@ public abstract class InputEvent extends Event {
     /**
      * Fired when a keyboard key input occurs, such as pressing, releasing, or repeating a key.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Key extends InputEvent {
-        private final int key;
-        private final int scanCode;
+        private final KeyEvent keyEvent;
         private final int action;
-        private final int modifiers;
 
         @ApiStatus.Internal
-        public Key(int key, int scanCode, int action, int modifiers) {
-            this.key = key;
-            this.scanCode = scanCode;
+        public Key(KeyEvent keyEvent, int action) {
+            this.keyEvent = keyEvent;
             this.action = action;
-            this.modifiers = modifiers;
+        }
+
+        public KeyEvent getKeyEvent() {
+            return keyEvent;
         }
 
         /**
@@ -233,7 +237,7 @@ public abstract class InputEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__keys.html" target="_top">the online GLFW documentation</a>
          */
         public int getKey() {
-            return this.key;
+            return this.keyEvent.key();
         }
 
         /**
@@ -243,10 +247,10 @@ public abstract class InputEvent extends Event {
          * Scan codes are platform-specific but consistent over time, so keys will have different scan codes depending
          * on the platform but they are safe to save to disk as custom key bindings.
          *
-         * @see InputConstants#getKey(int, int)
+         * @see InputConstants#getKey(KeyEvent)
          */
         public int getScanCode() {
-            return this.scanCode;
+            return this.keyEvent.scancode();
         }
 
         /**
@@ -272,7 +276,7 @@ public abstract class InputEvent extends Event {
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
         public int getModifiers() {
-            return this.modifiers;
+            return this.keyEvent.modifiers();
         }
     }
 
@@ -286,7 +290,7 @@ public abstract class InputEvent extends Event {
      * <li><b>Attack</b> - defaults to <em>right mouse click</em></li>
      * </ul>
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}.
      * If this event is cancelled, then the keymapping's action is not processed further, and the hand will be swung
      * according to {@link #shouldSwingHand()}.</p>
      *

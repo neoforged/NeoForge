@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.config;
 
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
@@ -55,7 +55,7 @@ public final class NeoForgeServerConfig {
         advertiseDedicatedServerToLan = builder
                 .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
                 .translation("neoforge.configgui.advertiseDedicatedServerToLan")
-                .define("advertiseDedicatedServerToLan", !FMLLoader.isProduction());
+                .define("advertiseDedicatedServerToLan", !FMLEnvironment.isProduction());
     }
 
     static {

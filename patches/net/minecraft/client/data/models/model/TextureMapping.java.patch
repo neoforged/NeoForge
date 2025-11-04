@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/model/TextureMapping.java
 +++ b/net/minecraft/client/data/models/model/TextureMapping.java
-@@ -424,4 +_,12 @@
+@@ -428,4 +_,12 @@
          ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(p_386842_);
          return resourcelocation.withPath(p_387396_ -> "item/" + p_387396_ + p_386898_);
      }

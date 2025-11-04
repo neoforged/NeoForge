@@ -5,10 +5,10 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
 +    @Deprecated
-     private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_401711_ -> {
+     private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_436495_ -> {
          ChunkSectionLayer chunksectionlayer = ChunkSectionLayer.TRIPWIRE;
-         p_401711_.put(Blocks.TRIPWIRE, chunksectionlayer);
-@@ -359,6 +_,8 @@
+         p_436495_.put(Blocks.TRIPWIRE, chunksectionlayer);
+@@ -363,6 +_,8 @@
      });
      private static boolean renderCutout;
  
@@ -17,7 +17,7 @@
      public static ChunkSectionLayer getChunkRenderType(BlockState p_109283_) {
          Block block = p_109283_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -369,6 +_,8 @@
+@@ -373,6 +_,8 @@
          }
      }
  
@@ -26,7 +26,7 @@
      public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
          Block block = p_109294_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -389,11 +_,15 @@
+@@ -393,11 +_,15 @@
          }
      }
  
@@ -42,7 +42,7 @@
      public static RenderType getRenderType(ItemStack p_366701_) {
          if (p_366701_.getItem() instanceof BlockItem blockitem) {
              Block block = blockitem.getBlock();
-@@ -410,5 +_,30 @@
+@@ -414,5 +_,30 @@
  
      public static void setFancy(boolean p_109292_) {
          renderCutout = p_109292_;

@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChorusPlantBlock;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -38,7 +37,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityLilyPadTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -83,7 +82,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityRedMushroomTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -147,7 +146,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityWheatTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -191,7 +190,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityPitcherCropTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -235,7 +234,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityBambooTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -283,7 +282,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityCactusTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -326,7 +325,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityDeadBushTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -377,7 +376,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityOakSaplingTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -415,7 +414,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityHangingMangrovePropaguleTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -449,7 +448,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilitySugarCaneTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -507,7 +506,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilitySmallDripleafTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -565,7 +564,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityBigDripleafTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -619,7 +618,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityChorusPlantTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -661,7 +660,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityChorusFlowerTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
@@ -704,7 +703,7 @@ public class CanSustainPlantTests {
     })
     static void survivabilityCocoaTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.logging;
 
-import cpw.mods.modlauncher.log.TransformingThrowablePatternConverter;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +21,7 @@ import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ISystemReportExtender;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.i18n.FMLTranslations;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
+import net.neoforged.fml.logging.TransformingThrowablePatternConverter;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.logging.log4j.Logger;
@@ -36,9 +35,7 @@ public class CrashReportExtender {
         }
     }
 
-    public static void addCrashReportHeader(StringBuilder stringbuilder, CrashReport crashReport) {
-        ForgeSnapshotsMod.addCrashReportHeader(stringbuilder, crashReport);
-    }
+    public static void addCrashReportHeader(StringBuilder stringbuilder, CrashReport crashReport) {}
 
     public static String generateEnhancedStackTrace(final Throwable throwable) {
         return generateEnhancedStackTrace(throwable, true);

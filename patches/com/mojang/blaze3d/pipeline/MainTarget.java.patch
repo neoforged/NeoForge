@@ -13,7 +13,7 @@
          this.createFrameBuffer(p_166137_, p_166138_);
      }
  
-@@ -94,7 +_,8 @@
+@@ -92,7 +_,8 @@
      @Nullable
      private GpuTexture allocateDepthAttachment(MainTarget.Dimension p_166145_) {
          try {

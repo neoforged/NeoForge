@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
-@@ -119,6 +_,7 @@
+@@ -117,6 +_,7 @@
              this.onStopHovering(slot);
          }
  
@@ -8,7 +8,7 @@
          p_418314_.pose().popMatrix();
      }
  
-@@ -205,6 +_,7 @@
+@@ -203,6 +_,7 @@
                      this.font,
                      this.getTooltipFromContainerItem(itemstack),
                      itemstack.getTooltipImage(),
@@ -16,7 +16,7 @@
                      p_282171_,
                      p_281909_,
                      itemstack.get(DataComponents.TOOLTIP_STYLE)
-@@ -223,7 +_,8 @@
+@@ -221,7 +_,8 @@
  
      private void renderFloatingItem(GuiGraphics p_282567_, ItemStack p_281330_, int p_281772_, int p_281689_, @Nullable String p_282568_) {
          p_282567_.renderItem(p_281330_, p_281772_, p_281689_);
@@ -26,7 +26,7 @@
      }
  
      protected void renderLabels(GuiGraphics p_281635_, int p_282681_, int p_283686_) {
-@@ -278,6 +_,13 @@
+@@ -276,6 +_,13 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
@@ -40,7 +40,7 @@
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
-@@ -285,7 +_,8 @@
+@@ -283,7 +_,8 @@
                  p_281607_.renderItem(itemstack, i, j, j1);
              }
  
@@ -50,100 +50,100 @@
          }
      }
  
-@@ -324,7 +_,8 @@
-         if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
+@@ -322,7 +_,8 @@
+         if (super.mouseClicked(p_446548_, p_432883_)) {
              return true;
          } else {
--            boolean flag = this.minecraft.options.keyPickItem.matchesMouse(p_97750_) && this.minecraft.player.hasInfiniteMaterials();
-+            InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(p_97750_);
+-            boolean flag = this.minecraft.options.keyPickItem.matchesMouse(p_446548_) && this.minecraft.player.hasInfiniteMaterials();
++            var mouseKey = com.mojang.blaze3d.platform.InputConstants.Type.MOUSE.getOrCreate(p_446548_.button());
 +            boolean flag = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey);
-             Slot slot = this.getHoveredSlot(p_97748_, p_97749_);
-             long i = Util.getMillis();
-             this.doubleclick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == p_97750_;
-@@ -335,6 +_,7 @@
-                 int j = this.leftPos;
-                 int k = this.topPos;
-                 boolean flag1 = this.hasClickedOutside(p_97748_, p_97749_, j, k, p_97750_);
+             Slot slot = this.getHoveredSlot(p_446548_.x(), p_446548_.y());
+             this.doubleclick = this.lastClickSlot == slot && p_432883_;
+             this.skipNextRelease = false;
+@@ -332,6 +_,7 @@
+                 int i = this.leftPos;
+                 int j = this.topPos;
+                 boolean flag1 = this.hasClickedOutside(p_446548_.x(), p_446548_.y(), i, j);
 +                if (slot != null) flag1 = false; // Forge, prevent dropping of items through slots outside of GUI boundaries
-                 int l = -1;
+                 int k = -1;
                  if (slot != null) {
-                     l = slot.index;
-@@ -360,7 +_,7 @@
+                     k = slot.index;
+@@ -357,7 +_,7 @@
                          }
                      } else if (!this.isQuickCrafting) {
                          if (this.menu.getCarried().isEmpty()) {
 -                            if (flag) {
 +                            if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
-                                 this.slotClicked(slot, l, p_97750_, ClickType.CLONE);
+                                 this.slotClicked(slot, k, p_446548_.button(), ClickType.CLONE);
                              } else {
-                                 boolean flag2 = l != -999
-@@ -388,7 +_,7 @@
+                                 boolean flag2 = k != -999 && p_446548_.hasShiftDown();
+@@ -381,7 +_,7 @@
                                  this.quickCraftingType = 0;
-                             } else if (p_97750_ == 1) {
+                             } else if (p_446548_.button() == 1) {
                                  this.quickCraftingType = 1;
 -                            } else if (flag) {
 +                            } else if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
                                  this.quickCraftingType = 2;
                              }
                          }
-@@ -464,10 +_,13 @@
+@@ -458,10 +_,13 @@
  
      @Override
-     public boolean mouseReleased(double p_97812_, double p_97813_, int p_97814_) {
-+        super.mouseReleased(p_97812_, p_97813_, p_97814_); //Forge, Call parent to release buttons
-         Slot slot = this.getHoveredSlot(p_97812_, p_97813_);
+     public boolean mouseReleased(MouseButtonEvent p_446114_) {
++        super.mouseReleased(p_446114_); //Forge: call parent to release buttons
+         Slot slot = this.getHoveredSlot(p_446114_.x(), p_446114_.y());
          int i = this.leftPos;
          int j = this.topPos;
-         boolean flag = this.hasClickedOutside(p_97812_, p_97813_, i, j, p_97814_);
+         boolean flag = this.hasClickedOutside(p_446114_.x(), p_446114_.y(), i, j);
 +        if (slot != null) flag = false; // Forge, prevent dropping of items through slots outside of GUI boundaries
-+        InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(p_97814_);
++        var mouseKey = com.mojang.blaze3d.platform.InputConstants.Type.MOUSE.getOrCreate(p_446114_.button());
          int k = -1;
          if (slot != null) {
              k = slot.index;
-@@ -484,7 +_,7 @@
+@@ -478,7 +_,7 @@
                          if (slot2 != null
                              && slot2.mayPickup(this.minecraft.player)
                              && slot2.hasItem()
 -                            && slot2.container == slot.container
 +                            && slot2.isSameInventory(slot)
                              && AbstractContainerMenu.canItemQuickReplace(slot2, this.lastQuickMoved, true)) {
-                             this.slotClicked(slot2, slot2.index, p_97814_, ClickType.QUICK_MOVE);
+                             this.slotClicked(slot2, slot2.index, p_446114_.button(), ClickType.QUICK_MOVE);
                          }
-@@ -550,7 +_,7 @@
+@@ -543,7 +_,7 @@
  
                  this.slotClicked(null, -999, AbstractContainerMenu.getQuickcraftMask(2, this.quickCraftingType), ClickType.QUICK_CRAFT);
              } else if (!this.menu.getCarried().isEmpty()) {
--                if (this.minecraft.options.keyPickItem.matchesMouse(p_97814_)) {
+-                if (this.minecraft.options.keyPickItem.matchesMouse(p_446114_)) {
 +                if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
-                     this.slotClicked(slot, k, p_97814_, ClickType.CLONE);
+                     this.slotClicked(slot, k, p_446114_.button(), ClickType.CLONE);
                  } else {
-                     boolean flag1 = k != -999
-@@ -627,34 +_,39 @@
+                     boolean flag1 = k != -999 && p_446114_.hasShiftDown();
+@@ -612,34 +_,40 @@
  
      @Override
-     public boolean keyPressed(int p_97765_, int p_97766_, int p_97767_) {
-+        InputConstants.Key mouseKey = InputConstants.getKey(p_97765_, p_97766_);
-         if (super.keyPressed(p_97765_, p_97766_, p_97767_)) {
+     public boolean keyPressed(KeyEvent p_445387_) {
++        var key = com.mojang.blaze3d.platform.InputConstants.getKey(p_445387_);
+         if (super.keyPressed(p_445387_)) {
              return true;
--        } else if (this.minecraft.options.keyInventory.matches(p_97765_, p_97766_)) {
-+        } else if (this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
+-        } else if (this.minecraft.options.keyInventory.matches(p_445387_)) {
++        } else if (this.minecraft.options.keyInventory.isActiveAndMatches(key)) {
              this.onClose();
              return true;
          } else {
--            this.checkHotbarKeyPressed(p_97765_, p_97766_);
-+            boolean handled = this.checkHotbarKeyPressed(p_97765_, p_97766_);// Forge MC-146650: Needs to return true when the key is handled
+-            this.checkHotbarKeyPressed(p_445387_);
++            boolean handled = this.checkHotbarKeyPressed(p_445387_); // Forge MC-146650: Needs to return true when the key is handled
              if (this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
--                if (this.minecraft.options.keyPickItem.matches(p_97765_, p_97766_)) {
-+                if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
+-                if (this.minecraft.options.keyPickItem.matches(p_445387_)) {
++                if (this.minecraft.options.keyPickItem.isActiveAndMatches(key)) {
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 0, ClickType.CLONE);
--                } else if (this.minecraft.options.keyDrop.matches(p_97765_, p_97766_)) {
+-                } else if (this.minecraft.options.keyDrop.matches(p_445387_)) {
 +                    handled = true;
-+                } else if (this.minecraft.options.keyDrop.isActiveAndMatches(mouseKey)) {
-                     this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, hasControlDown() ? 1 : 0, ClickType.THROW);
++                } else if (this.minecraft.options.keyDrop.isActiveAndMatches(key)) {
+                     this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, p_445387_.hasControlDown() ? 1 : 0, ClickType.THROW);
 +                    handled = true;
                  }
-+            } else if (this.minecraft.options.keyDrop.isActiveAndMatches(mouseKey)) {
-+                 handled = true; // Forge MC-146650: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over a item.
++            } else if (this.minecraft.options.keyDrop.isActiveAndMatches(key)) {
++                handled = true; // Forge MC-146650: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over a item.
              }
  
 -            return true;
@@ -151,21 +151,22 @@
          }
      }
  
-     protected boolean checkHotbarKeyPressed(int p_97806_, int p_97807_) {
+     protected boolean checkHotbarKeyPressed(KeyEvent p_446813_) {
++        var key = com.mojang.blaze3d.platform.InputConstants.getKey(p_446813_);
          if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null) {
--            if (this.minecraft.options.keySwapOffhand.matches(p_97806_, p_97807_)) {
-+            if (this.minecraft.options.keySwapOffhand.isActiveAndMatches(InputConstants.getKey(p_97806_, p_97807_))) {
+-            if (this.minecraft.options.keySwapOffhand.matches(p_446813_)) {
++            if (this.minecraft.options.keySwapOffhand.isActiveAndMatches(key)) {
                  this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 40, ClickType.SWAP);
                  return true;
              }
  
              for (int i = 0; i < 9; i++) {
--                if (this.minecraft.options.keyHotbarSlots[i].matches(p_97806_, p_97807_)) {
-+                if (this.minecraft.options.keyHotbarSlots[i].isActiveAndMatches(InputConstants.getKey(p_97806_, p_97807_))) {
+-                if (this.minecraft.options.keyHotbarSlots[i].matches(p_446813_)) {
++                if (this.minecraft.options.keyHotbarSlots[i].isActiveAndMatches(key)) {
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ClickType.SWAP);
                      return true;
                  }
-@@ -692,6 +_,18 @@
+@@ -682,6 +_,18 @@
      @Override
      public T getMenu() {
          return this.menu;

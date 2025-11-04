@@ -29,13 +29,13 @@ public class PotionEventTest {
 
     @SubscribeEvent
     public static void onPotionAdded(MobEffectEvent.Added event) {
-        if (!event.getEntity().level().isClientSide)
+        if (!event.getEntity().level().isClientSide())
             LOGGER.info("{} has a new PotionEffect {} from {}, the old one was {}", event.getEntity(), event.getEffectInstance(), event.getEffectSource(), event.getOldEffectInstance());
     }
 
     @SubscribeEvent
     public static void isPotionApplicable(MobEffectEvent.Applicable event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             event.setResult(Applicable.Result.APPLY);
             if (event.getEffectSource() != null)
                 LOGGER.info("Allowed Potion {} for Entity {} from Source Entity {}", event.getEffectInstance(), event.getEntity(), event.getEffectSource());
@@ -46,13 +46,13 @@ public class PotionEventTest {
 
     @SubscribeEvent
     public static void onPotionRemove(MobEffectEvent.Remove event) {
-        if (!event.getEntity().level().isClientSide)
+        if (!event.getEntity().level().isClientSide())
             LOGGER.info("Effect {} got Removed from {}", event.getEffectInstance(), event.getEntity());
     }
 
     @SubscribeEvent
     public static void onPotionExpiry(MobEffectEvent.Expired event) {
-        if (!event.getEntity().level().isClientSide)
+        if (!event.getEntity().level().isClientSide())
             LOGGER.info("Effect {} expired from {}", event.getEffectInstance(), event.getEntity());
     }
 }

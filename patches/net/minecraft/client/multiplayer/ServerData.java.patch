@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/multiplayer/ServerData.java
 +++ b/net/minecraft/client/multiplayer/ServerData.java
-@@ -37,6 +_,7 @@
-     private byte[] iconBytes;
+@@ -38,6 +_,7 @@
      private ServerData.Type type;
+     private int acceptedCodeOfConduct;
      private ServerData.State state = ServerData.State.INITIAL;
 +    public net.neoforged.neoforge.client.ExtendedServerListData neoForgeData = null;
  

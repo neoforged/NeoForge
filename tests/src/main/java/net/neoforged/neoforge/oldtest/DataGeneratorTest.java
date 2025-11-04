@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -59,6 +58,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -85,6 +85,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -97,7 +98,6 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -129,16 +129,15 @@ public class DataGeneratorTest {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
-                .add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
-                .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(
+                .add(GeneratingOverlayMetadataSection.neoforgeType(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
+                .add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "pack_overlays_test")),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeMod.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_disabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
+                .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
-                        DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+                        new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
@@ -487,7 +486,7 @@ public class DataGeneratorTest {
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .add(TagEntry.optionalElement(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw")))
-                    .add(TagEntry.optionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby")));
+                    .add(TagEntry.optionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "storage_blocks/ruby")));
 
             // Hopefully sorting issues
             tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))
@@ -583,7 +582,7 @@ public class DataGeneratorTest {
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "dummy_parent"))
+                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "dummy_parent"))
                     .save(saver, ResourceLocation.withDefaultNamespace("good_parent"));
         }
     }
@@ -599,7 +598,7 @@ public class DataGeneratorTest {
 
         @Override
         protected void addDescriptions() {
-            this.sprite(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
+            this.spriteSet(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
 
             this.spriteSet(ParticleTypes.CLOUD, ResourceLocation.withDefaultNamespace("generic"), 8, true);
 

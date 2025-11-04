@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.client;
 
-import java.util.Optional;
+import com.mojang.brigadier.Command;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
@@ -23,6 +24,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.classloading.transformation.ClassTransformStatistics;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
@@ -34,6 +36,7 @@ import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -74,7 +77,6 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -115,6 +117,24 @@ public class ClientNeoForgeMod {
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
             ClientConfigCommand.register(event.getDispatcher());
         });
+
+        NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
+            if (event.isInitial()) {
+                ClassTransformStatistics.logTransformationSummary();
+                // Also check if anyone appears to be performing mass-ASM and log a warning if so
+                ClassTransformStatistics.checkTransformationBehavior();
+            }
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
+            event.getDispatcher().register(
+                    Commands.literal("neoforge")
+                            .then(Commands.literal("debug_class_loading_transformations")
+                                    .executes(ctx -> {
+                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ClassTransformStatistics.getTransformationSummary(), ClassTransformStatistics.getMixinParsedClassesSummary()), false);
+                                        return Command.SINGLE_SUCCESS;
+                                    })));
+        });
     }
 
     @SubscribeEvent
@@ -123,10 +143,9 @@ public class ClientNeoForgeMod {
         // having to juggle two generated resources folders and two runs for no additional benefit.
 
         event.createProvider(output -> new PackMetadataGenerator(output)
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(
+                .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
-                        DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+                        new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
 
         event.createProvider(NeoForgeAdvancementProvider::new);
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
@@ -234,8 +253,8 @@ public class ClientNeoForgeMod {
         }, NeoForgeMod.LAVA_TYPE.value());
 
         NeoForgeMod.MILK_TYPE.asOptional().ifPresent(milkType -> event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_still");
-            private static final ResourceLocation MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_flowing");
+            private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_still");
+            private static final ResourceLocation MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_flowing");
 
             @Override
             public ResourceLocation getStillTexture() {

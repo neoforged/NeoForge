@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -1093,6 +_,11 @@
-     private final float spawnDimensionsScale;
+@@ -1201,6 +_,11 @@
      private final FeatureFlagSet requiredFeatures;
+     private final boolean allowedInPeaceful;
  
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
@@ -12,40 +12,41 @@
      private static <T extends Entity> EntityType<T> register(ResourceKey<EntityType<?>> p_368669_, EntityType.Builder<T> p_368714_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_368669_, p_368714_.build(p_368669_));
      }
-@@ -1129,6 +_,29 @@
-         Optional<ResourceKey<LootTable>> p_368696_,
-         FeatureFlagSet p_273518_
+@@ -1238,6 +_,30 @@
+         FeatureFlagSet p_273518_,
+         boolean p_434970_
      ) {
-+        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_368582_, p_368696_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, false);
++        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_368582_, p_368696_, p_273518_, p_434970_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, false);
 +    }
 +
 +    public EntityType(
-+        EntityType.EntityFactory<T> p_273268_,
-+        MobCategory p_272918_,
-+        boolean p_273417_,
-+        boolean p_273389_,
-+        boolean p_273556_,
-+        boolean p_272654_,
-+        ImmutableSet<Block> p_273631_,
-+        EntityDimensions p_272946_,
-+        float p_338404_,
-+        int p_272895_,
-+        int p_273451_,
-+        String p_368582_,
-+        Optional<ResourceKey<LootTable>> p_368696_,
-+        FeatureFlagSet p_273518_,
-+        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+        boolean onlyOpCanSetNbt
++            EntityType.EntityFactory<T> p_273268_,
++            MobCategory p_272918_,
++            boolean p_273417_,
++            boolean p_273389_,
++            boolean p_273556_,
++            boolean p_272654_,
++            ImmutableSet<Block> p_273631_,
++            EntityDimensions p_272946_,
++            float p_338404_,
++            int p_272895_,
++            int p_273451_,
++            String p_368582_,
++            Optional<ResourceKey<LootTable>> p_368696_,
++            FeatureFlagSet p_273518_,
++            boolean p_434970_,
++            final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
++            final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
++            final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++            boolean onlyOpCanSetNbt
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -1143,6 +_,10 @@
-         this.descriptionId = p_368582_;
+@@ -1253,6 +_,10 @@
          this.lootTable = p_368696_;
          this.requiredFeatures = p_273518_;
+         this.allowedInPeaceful = p_434970_;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
@@ -53,7 +54,7 @@
      }
  
      @Nullable
-@@ -1227,6 +_,13 @@
+@@ -1337,6 +_,13 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
                  mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_360546_, null);
@@ -67,7 +68,7 @@
              }
  
              if (p_262629_ != null) {
-@@ -1400,14 +_,23 @@
+@@ -1557,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -91,7 +92,7 @@
          return this != PLAYER
              && this != LLAMA_SPIT
              && this != WITHER
-@@ -1460,9 +_,12 @@
+@@ -1621,9 +_,12 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -104,10 +105,10 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1481,6 +_,10 @@
-             ResourceKey.create(Registries.LOOT_TABLE, p_367917_.location().withPrefix("entities/"))
+@@ -1643,6 +_,10 @@
          );
          private final DependantName<EntityType<?>, String> descriptionId = p_367918_ -> Util.makeDescriptionId("entity", p_367918_.location());
+         private boolean allowedInPeaceful = true;
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
@@ -115,7 +116,7 @@
  
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
-@@ -1594,6 +_,26 @@
+@@ -1761,6 +_,26 @@
              return this;
          }
  
@@ -142,12 +143,12 @@
          public EntityType<T> build(ResourceKey<EntityType<?>> p_368626_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_368626_.location().toString());
-@@ -1613,7 +_,11 @@
-                 this.updateInterval,
+@@ -1781,7 +_,11 @@
                  this.descriptionId.get(p_368626_),
                  this.lootTable.get(p_368626_),
--                this.requiredFeatures
-+                this.requiredFeatures,
+                 this.requiredFeatures,
+-                this.allowedInPeaceful
++                this.allowedInPeaceful,
 +                this.velocityUpdateSupplier,
 +                this.trackingRangeSupplier,
 +                this.updateIntervalSupplier,

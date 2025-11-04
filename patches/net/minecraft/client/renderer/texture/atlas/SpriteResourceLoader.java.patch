@@ -1,20 +1,20 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
-@@ -25,7 +_,7 @@
+@@ -26,7 +_,7 @@
      Logger LOGGER = LogUtils.getLogger();
  
-     static SpriteResourceLoader create(Collection<MetadataSectionType<?>> p_296204_) {
--        return (p_389362_, p_389363_) -> {
-+        return (p_389362_, p_389363_, constructor) -> {
-             ResourceMetadata resourcemetadata;
+     static SpriteResourceLoader create(Set<MetadataSectionType<?>> p_434463_) {
+-        return (p_432311_, p_432312_) -> {
++        return (p_432311_, p_432312_, constructor) -> {
+             Optional<AnimationMetadataSection> optional;
+             List<MetadataSectionType.WithValue<?>> list;
              try {
-                 resourcemetadata = p_389363_.metadata().copySections(p_296204_);
-@@ -62,10 +_,15 @@
+@@ -65,10 +_,15 @@
                  framesize = new FrameSize(nativeimage.getWidth(), nativeimage.getHeight());
              }
  
--            return new SpriteContents(p_389362_, framesize, nativeimage, resourcemetadata);
-+            return constructor.create(p_389362_, framesize, nativeimage, resourcemetadata);
+-            return new SpriteContents(p_432311_, framesize, nativeimage, optional, list);
++            return constructor.create(p_432311_, framesize, nativeimage, optional, list);
          };
      }
  

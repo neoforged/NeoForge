@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
-@@ -60,4 +_,10 @@
-         p_312703_.render(p_312223_, 0.0, 0.0, 0.0, p_311943_, p_312805_, p_312394_, p_311996_);
-         p_312805_.popPose();
+@@ -63,4 +_,10 @@
+         p_438990_.submit(p_446169_, p_451126_, 0.0, 0.0, 0.0, p_439357_, p_439460_);
+         p_439357_.popPose();
      }
 +
 +    @Override

@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/font/TextRenderable.java
++++ b/net/minecraft/client/gui/font/TextRenderable.java
+@@ -13,6 +_,15 @@
+ public interface TextRenderable {
+     void render(Matrix4f p_438890_, VertexConsumer p_439958_, int p_439123_, boolean p_439351_);
+ 
++    /**
++     * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++     */
++    default RenderType renderType(Font.DisplayMode displayMode, boolean blur) {
++        return renderType(displayMode);
++    }
++
++    /** @deprecated Neo: Use {@link #renderType(Font.DisplayMode, boolean)} instead */
++    @Deprecated
+     RenderType renderType(Font.DisplayMode p_439293_);
+ 
+     GpuTextureView textureView();

@@ -12,7 +12,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -36,7 +35,7 @@ public class CustomSoundTypeTest {
     private static final SoundType TEST_SOUND_TYPE = new DeferredSoundType(1.0F, 1.0F, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT);
 
     private static final DeferredBlock<Block> TEST_STEP_BLOCK = BLOCKS.registerSimpleBlock("test_block",
-            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(TEST_SOUND_TYPE));
+            props -> props.mapColor(MapColor.WOOD).sound(TEST_SOUND_TYPE));
 
     private static final DeferredItem<BlockItem> TEST_STEP_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_STEP_BLOCK);
 

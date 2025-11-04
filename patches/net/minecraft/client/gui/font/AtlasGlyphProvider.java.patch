@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/font/AtlasGlyphProvider.java
++++ b/net/minecraft/client/gui/font/AtlasGlyphProvider.java
+@@ -88,6 +_,15 @@
+             p_439466_.addVertex(p_438913_, f1, f2, p_439476_).setUv(this.sprite.getU1(), this.sprite.getV0()).setColor(p_439047_).setLight(p_440363_);
+         }
+ 
++        /**
++         * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++         */
++        public RenderType renderType(Font.DisplayMode p_181388_, boolean blur) {
++            return this.renderTypes.select(p_181388_, blur);
++        }
++
++        /** @deprecated Neo: Use {@link #renderType(Font.DisplayMode, boolean)} instead */
++        @Deprecated
+         @Override
+         public RenderType renderType(Font.DisplayMode p_440474_) {
+             return this.renderTypes.select(p_440474_);

@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -41,8 +40,8 @@ public class BlockEntityTypeValidBlocksEventTests {
     @Mod(value = MOD_ID)
     public static class BlockEntityTypeValidBlocksEventTestMod {
         private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-        private static final DeferredBlock<Block> TEST_SIGN_BLOCK = BLOCKS.registerBlock("test_sign_block", (properties) -> new StandingSignBlock(WoodType.BAMBOO, properties), BlockBehaviour.Properties.of());
-        private static final DeferredBlock<Block> TEST_BED_BLOCK = BLOCKS.registerBlock("test_bed_block", (properties) -> new BedBlock(DyeColor.BLUE, properties), BlockBehaviour.Properties.of());
+        private static final DeferredBlock<Block> TEST_SIGN_BLOCK = BLOCKS.registerBlock("test_sign_block", (properties) -> new StandingSignBlock(WoodType.BAMBOO, properties));
+        private static final DeferredBlock<Block> TEST_BED_BLOCK = BLOCKS.registerBlock("test_bed_block", (properties) -> new BedBlock(DyeColor.BLUE, properties));
 
         public BlockEntityTypeValidBlocksEventTestMod(IEventBus eventBus) {
             BLOCKS.register(eventBus);

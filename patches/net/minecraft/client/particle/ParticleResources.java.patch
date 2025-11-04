@@ -1,0 +1,41 @@
+--- a/net/minecraft/client/particle/ParticleResources.java
++++ b/net/minecraft/client/particle/ParticleResources.java
+@@ -44,7 +_,7 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final FileToIdConverter PARTICLE_LISTER = FileToIdConverter.json("particles");
+     private final Map<ResourceLocation, ParticleResources.MutableSpriteSet> spriteSets = Maps.newHashMap();
+-    private final Int2ObjectMap<ParticleProvider<?>> providers = new Int2ObjectOpenHashMap<>();
++    private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
+     @Nullable
+     private Runnable onReload;
+ 
+@@ -174,14 +_,18 @@
+         this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
+     }
+ 
++    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
++    @Deprecated
+     public <T extends ParticleOptions> void register(ParticleType<T> p_445584_, ParticleProvider<T> p_446772_) {
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_445584_), p_446772_);
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_445584_), p_446772_);
+     }
+ 
++    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
++    @Deprecated
+     public <T extends ParticleOptions> void register(ParticleType<T> p_447257_, ParticleResources.SpriteParticleRegistration<T> p_446302_) {
+         ParticleResources.MutableSpriteSet particleresources$mutablespriteset = new ParticleResources.MutableSpriteSet();
+         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_447257_), particleresources$mutablespriteset);
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_447257_), p_446302_.create(particleresources$mutablespriteset));
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_447257_), p_446302_.create(particleresources$mutablespriteset));
+     }
+ 
+     @Override
+@@ -274,7 +_,7 @@
+         }
+     }
+ 
+-    public Int2ObjectMap<ParticleProvider<?>> getProviders() {
++    public Map<ResourceLocation, ParticleProvider<?>> getProviders() {
+         return this.providers;
+     }
+ 

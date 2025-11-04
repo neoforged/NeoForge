@@ -138,10 +138,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                 }
             }
         };
-        EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
-        // TODO - check if needs to be ported
-        // embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
-        // embeddedchannel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND));
+        // This constructor internally calls callbacks that associate it with the connection
+        new EmbeddedChannel(connection);
         NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);

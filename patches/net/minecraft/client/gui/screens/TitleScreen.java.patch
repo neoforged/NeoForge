@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -105,11 +_,17 @@
+@@ -106,11 +_,17 @@
          int i = this.font.width(COPYRIGHT_TEXT);
          int j = this.width - i - 2;
          int k = 24;
@@ -19,16 +19,16 @@
          }
  
          l = this.createTestWorldButton(l, 24);
-@@ -151,7 +_,7 @@
-         if (SharedConstants.IS_RUNNING_IN_IDE) {
-             this.addRenderableWidget(
-                 Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
+@@ -154,7 +_,7 @@
+                 Button.builder(
+                         Component.literal("Create Test World"), p_438731_ -> CreateWorldScreen.testWorld(this.minecraft, () -> this.minecraft.setScreen(this))
+                     )
 -                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 200, 20)
-+                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 98, 20) // Neo: reduce button width to fit the mods button next to it
++                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 98, 20)
                      .build()
              );
          }
-@@ -291,6 +_,7 @@
+@@ -294,6 +_,7 @@
          this.renderPanorama(p_282860_, p_282628_);
          super.render(p_282860_, p_281753_, p_283539_, p_282628_);
          this.logoRenderer.renderLogo(p_282860_, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : f);
@@ -36,7 +36,7 @@
          if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
              this.splash.render(p_282860_, this.width, this.font, f);
          }
-@@ -306,7 +_,13 @@
+@@ -309,7 +_,13 @@
              s = s + I18n.get("menu.modded");
          }
  

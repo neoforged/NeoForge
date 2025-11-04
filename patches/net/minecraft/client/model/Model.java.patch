@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/Model.java
 +++ b/net/minecraft/client/model/Model.java
-@@ -22,6 +_,10 @@
+@@ -23,6 +_,10 @@
          this.allParts = p_368583_.getAllParts();
      }
  

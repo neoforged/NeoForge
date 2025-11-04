@@ -92,30 +92,12 @@ public abstract class ContainerScreenEvent extends Event {
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         *
+         * @see ScreenEvent.Render.Background ScreenEvent.Render.Background, for listening to the background being drawn
          */
         public static class Foreground extends Render {
             @ApiStatus.Internal
             public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-                super(guiContainer, guiGraphics, mouseX, mouseY);
-            }
-        }
-
-        /**
-         * Fired after the container screen's background layer and elements are drawn.
-         * This can be used for rendering new background elements.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         *
-         * @deprecated use the new {@link ScreenEvent.Render.Background} event
-         */
-        @SuppressWarnings("DeprecatedIsStillUsed")
-        @Deprecated(forRemoval = true, since = "1.21.7")
-        public static class Background extends Render {
-            @ApiStatus.Internal
-            public Background(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
                 super(guiContainer, guiGraphics, mouseX, mouseY);
             }
         }

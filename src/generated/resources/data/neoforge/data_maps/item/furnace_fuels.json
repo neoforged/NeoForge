@@ -42,6 +42,9 @@
     "#minecraft:wooden_pressure_plates": {
       "burn_time": 300
     },
+    "#minecraft:wooden_shelves": {
+      "burn_time": 300
+    },
     "#minecraft:wooden_slabs": {
       "burn_time": 150
     },

@@ -14,7 +14,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModList;
@@ -74,7 +73,7 @@ public class ClientModLoader extends CommonModLoader {
      * <p>
      * It is used as the entrypoint for client mod loading, which starts when {@link Minecraft} triggers the first resource reload.
      */
-    public static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final Executor asyncExecutor, final Executor syncExecutor) {
+    public static CompletableFuture<Void> onResourceReload(PreparableReloadListener.SharedState sharedState, Executor asyncExecutor, PreparableReloadListener.PreparationBarrier stage, Executor syncExecutor) {
         return CompletableFuture.runAsync(() -> startModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor())
                 .thenCompose(stage::wait)
                 .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());

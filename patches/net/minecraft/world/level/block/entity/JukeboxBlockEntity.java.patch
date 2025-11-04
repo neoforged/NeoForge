@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
+@@ -108,9 +_,34 @@
+         return itemstack;
+     }
+ 
++    // Neo: Support deferring non-transactional notification and song player update until the end of a transaction
++    private final net.neoforged.neoforge.transfer.transaction.RootCommitJournal itemChangedJournal =
++            new net.neoforged.neoforge.transfer.transaction.RootCommitJournal(() -> {
++                if (!isRemoved()) {
++                    itemChanged();
++                }
++            });
++    @Override
++    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        itemChangedJournal.updateSnapshots(transaction);
++    }
++
++    @Override
++    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
++        if (slot == 0) {
++            if (insideTransaction) {
++                this.item = stack;
++            } else {
++                setTheItem(stack);
++            }
++        }
++    }
+     @Override
+     public void setTheItem(ItemStack p_304781_) {
+         this.item = p_304781_;
++        itemChanged();
++    }
++    private void itemChanged() {
+         boolean flag = !this.item.isEmpty();
+         Optional<Holder<JukeboxSong>> optional = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
+         this.notifyItemChangedInJukebox(flag);

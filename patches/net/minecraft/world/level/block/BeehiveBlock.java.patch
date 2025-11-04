@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/net/minecraft/world/level/block/BeehiveBlock.java
-@@ -139,7 +_,7 @@
+@@ -148,7 +_,7 @@
          boolean flag = false;
          if (i >= 5) {
              Item item = p_316844_.getItem();
--            if (p_316844_.is(Items.SHEARS)) {
-+            if (p_316844_.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST)) {
-                 p_316306_.playSound(p_316824_, p_316824_.getX(), p_316824_.getY(), p_316824_.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
-                 dropHoneycomb(p_316306_, p_316497_);
-                 p_316844_.hurtAndBreak(1, p_316824_, LivingEntity.getSlotForHand(p_316436_));
+-            if (p_316306_ instanceof ServerLevel serverlevel && p_316844_.is(Items.SHEARS)) {
++            if (p_316306_ instanceof ServerLevel serverlevel && p_316844_.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST)) {
+                 dropHoneycomb(serverlevel, p_316844_, p_316365_, p_316306_.getBlockEntity(p_316497_), p_316824_, p_316497_);
+                 p_316306_.playSound(null, p_316824_.getX(), p_316824_.getY(), p_316824_.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 p_316844_.hurtAndBreak(1, p_316824_, p_316436_.asEquipmentSlot());

@@ -1,14 +1,15 @@
 package net.neoforged.neodev;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.attributes.Bundling;
-import org.gradle.api.plugins.JavaPlugin;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.attributes.Attribute;
+import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Usage;
+import org.gradle.api.plugins.JavaPlugin;
 
 /**
  * Helper class to keep track of the many {@link Configuration}s used for the {@code neoforge} project.
@@ -28,6 +29,10 @@ class NeoDevConfigurations {
      */
     final Configuration neoFormData;
     /**
+     * Only the NeoForm mappings file.
+     */
+    final Configuration neoFormMappings;
+    /**
      * Only the NeoForm dependencies.
      * These are the dependencies required to run NeoForm-decompiled Minecraft.
      * Does not contain the dependencies to run the NeoForm process itself.
@@ -39,12 +44,6 @@ class NeoDevConfigurations {
      */
     final Configuration libraries;
     /**
-     * Libraries used by NeoForge at compilation and runtime that need to be placed on the jvm's module path to end up in the boot layer.
-     * Currently, this only contains the few dependencies that are needed to create the MC-BOOTSTRAP module layer.
-     * (i.e. BootstrapLauncher and its dependencies).
-     */
-    final Configuration moduleLibraries;
-    /**
      * Libraries that should be accessible in mod development environments at compilation time only.
      * Currently, this is only used for MixinExtras, which is already available at runtime via JiJ in the NeoForge universal jar.
      */
@@ -54,35 +53,33 @@ class NeoDevConfigurations {
      * Currently, this only contains the fml-junit test fixtures.
      */
     final Configuration userdevTestFixtures;
+    /**
+     * The libraries used by Minecraft itself.
+     * Used to know which libraries can be removed from the launcher and installer profiles.
+     * Note that the client&server dependencies are differentiated by attributes on the resolving configuration.
+     */
+    final Configuration minecraftDependencies;
 
     //
     // Resolvable configurations.
     //
 
     /**
-     * Resolved {@link #neoFormData}.
-     * This is used to add NeoForm to the installer libraries.
-     * Only the zip is used (for the mappings), not the NeoForm tools, so it's not transitive.
+     * Resolved {@link #neoFormMappings}.
+     * This is used to add the parameter mappings file from NeoForm to the installer libraries.
+     * Only the mappings file is used, not the entire data file or the NeoForm tools, so it's not transitive.
      */
-    final Configuration neoFormDataOnly;
+    final Configuration neoFormMappingsFiles;
     /**
      * Resolvable {@link #neoFormDependencies}.
      */
     final Configuration neoFormClasspath;
-    /**
-     * Resolvable {@link #moduleLibraries}.
-     */
-    final Configuration modulePath;
     /**
      * Userdev dependencies (written to a json file in the userdev jar).
      * This should contain all of NeoForge's additional dependencies for userdev,
      * but does not need to include Minecraft or NeoForm's libraries.
      */
     final Configuration userdevClasspath;
-    /**
-     * Resolvable {@link #userdevCompileOnly}, to add these entries to the ignore list of BootstrapLauncher.
-     */
-    final Configuration userdevCompileOnlyClasspath;
     /**
      * Resolvable {@link #userdevTestFixtures}, to write it in the userdev jar.
      */
@@ -93,6 +90,14 @@ class NeoDevConfigurations {
      * This is also used to produce the legacy classpath file for server installs.
      */
     final Configuration launcherProfileClasspath;
+    /**
+     * Resolvable {@link #minecraftDependencies} for the client-side.
+     */
+    final Configuration minecraftClientClasspath;
+    /**
+     * Resolvable {@link #minecraftDependencies} for the server-side.
+     */
+    final Configuration minecraftServerClasspath;
 
     //
     // The configurations for resolution only are declared in the build.gradle file.
@@ -122,47 +127,50 @@ class NeoDevConfigurations {
         var configurations = project.getConfigurations();
 
         neoFormData = dependencyScope(configurations, "neoFormData");
+        neoFormMappings = dependencyScope(configurations, "neoFormMappings");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
-        moduleLibraries = dependencyScope(configurations, "moduleLibraries");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
+        minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");
 
-        neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
+        neoFormMappingsFiles = resolvable(configurations, "neoFormMappingsFiles");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
-        modulePath = resolvable(configurations, "modulePath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
-        userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
         launcherProfileClasspath = resolvable(configurations, "launcherProfileClasspath");
+        minecraftClientClasspath = resolvable(configurations, "minecraftClientClasspath");
+        minecraftServerClasspath = resolvable(configurations, "minecraftServerClasspath");
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
-        configurations.getByName("api").extendsFrom(libraries, moduleLibraries, neoFormDependencies);
+        configurations.getByName("api").extendsFrom(libraries, neoFormDependencies);
 
         // runtimeClasspath is our reference for all MC dependency versions.
         // Make sure that any classpath we resolve is consistent with it.
         var runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 
-        neoFormDataOnly.setTransitive(false);
-        neoFormDataOnly.extendsFrom(neoFormData);
+        neoFormMappingsFiles.setTransitive(false);
+        neoFormMappingsFiles.extendsFrom(neoFormMappings);
 
         neoFormClasspath.extendsFrom(neoFormDependencies);
 
-        modulePath.extendsFrom(moduleLibraries);
-        modulePath.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        userdevClasspath.extendsFrom(libraries, moduleLibraries, userdevCompileOnly);
+        userdevClasspath.extendsFrom(libraries, userdevCompileOnly);
         userdevClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        userdevCompileOnlyClasspath.extendsFrom(userdevCompileOnly);
-        userdevCompileOnlyClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         userdevTestClasspath.extendsFrom(userdevTestFixtures);
         userdevTestClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
-        launcherProfileClasspath.extendsFrom(libraries, moduleLibraries);
+        launcherProfileClasspath.extendsFrom(libraries);
         launcherProfileClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
+        launcherProfileClasspath.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
+
+        minecraftClientClasspath.extendsFrom(minecraftDependencies);
+        minecraftClientClasspath.getAttributes().attribute(
+                Attribute.of("net.neoforged.distribution", String.class), "client");
+        minecraftServerClasspath.extendsFrom(minecraftDependencies);
+        minecraftServerClasspath.getAttributes().attribute(
+                Attribute.of("net.neoforged.distribution", String.class), "server");
 
         toolClasspaths = createToolClasspaths(project);
     }

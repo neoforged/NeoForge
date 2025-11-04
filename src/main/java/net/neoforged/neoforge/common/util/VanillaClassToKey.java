@@ -25,14 +25,14 @@ public class VanillaClassToKey {
         Preconditions.checkArgument(!cls.getSimpleName().isEmpty(), "Automatic name conversion can only happen for identifiable classes (per Class#getSimpleName()). Provided: " + cls.getName());
 
         StringBuilder sb = new StringBuilder();
-        cls.getSimpleName().chars().mapMulti((value, consumer) -> {
-            if (Character.isUpperCase((char) value)) {
-                consumer.accept('_');
-                consumer.accept(Character.toLowerCase((char) value));
+        cls.getSimpleName().codePoints().forEachOrdered(value -> {
+            if (Character.isUpperCase(value)) {
+                sb.append('_');
+                sb.append(Character.toString(Character.toLowerCase(value)));
             } else {
-                consumer.accept(value);
+                sb.append(Character.toString(value));
             }
-        }).forEach(i -> sb.append((char) i));
+        });
 
         return ResourceLocation.withDefaultNamespace(sb.substring(1)); // The string will be prefixed with an additional `_` since the first character is uppercase.
     }

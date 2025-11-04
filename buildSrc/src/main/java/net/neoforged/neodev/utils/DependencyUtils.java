@@ -1,17 +1,18 @@
 package net.neoforged.neodev.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.provider.Provider;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public final class DependencyUtils {
-    private DependencyUtils() {
-    }
+    private static final Pattern EXT_PATTERN = Pattern.compile("\\.([a-z]{1,4}(?:\\.[a-z]{1,4})*)$");
+
+    private DependencyUtils() {}
 
     /**
      * Given a resolved artifact, try to guess which Maven GAV it was resolved from.
@@ -24,10 +25,10 @@ public final class DependencyUtils {
         String classifier = "";
 
         var filename = result.getFile().getName();
-        var startOfExt = filename.lastIndexOf('.');
-        if (startOfExt != -1) {
-            ext = filename.substring(startOfExt + 1);
-            filename = filename.substring(0, startOfExt);
+        var extMatcher = EXT_PATTERN.matcher(filename);
+        if (extMatcher.find()) {
+            ext = extMatcher.group(1);
+            filename = filename.substring(0, extMatcher.start());
         }
 
         if (result.getId() instanceof ModuleComponentArtifactIdentifier moduleId) {
@@ -71,14 +72,13 @@ public final class DependencyUtils {
      * Turns a configuration into a classpath string,
      * assuming that the contents of the configuration are installed following the Maven directory layout.
      *
-     * @param prefix string to add in front of each classpath entry
+     * @param prefix    string to add in front of each classpath entry
      * @param separator separator to add between each classpath entry
      */
     public static Provider<String> configurationToClasspath(Configuration configuration, String prefix, String separator) {
         return configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(
                 results -> results.stream()
-                    .map(artifact -> prefix + guessMavenIdentifier(artifact).repositoryPath())
-                    .collect(Collectors.joining(separator))
-        );
+                        .map(artifact -> prefix + guessMavenIdentifier(artifact).repositoryPath())
+                        .collect(Collectors.joining(separator)));
     }
 }
