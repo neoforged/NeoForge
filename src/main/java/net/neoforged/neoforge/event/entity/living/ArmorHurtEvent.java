@@ -75,7 +75,7 @@ public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {
     }
 
     /** {@return the {@link DamageSource} causing the damage} */
-    public DamageSource getSource() {
+    public DamageSource getDamageSource() {
         return source;
     }
 }
