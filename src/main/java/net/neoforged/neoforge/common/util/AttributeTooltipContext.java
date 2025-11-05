@@ -39,6 +39,7 @@ public interface AttributeTooltipContext extends Item.TooltipContext {
     public static AttributeTooltipContext of(@Nullable Player player, Item.TooltipContext itemCtx, TooltipDisplay tooltipDisplay, TooltipFlag flag) {
         return new AttributeTooltipContext() {
             @Override
+            @Nullable
             public Provider registries() {
                 return itemCtx.registries();
             }
@@ -49,13 +50,20 @@ public interface AttributeTooltipContext extends Item.TooltipContext {
             }
 
             @Override
+            @Nullable
             public MapItemSavedData mapData(MapId id) {
                 return itemCtx.mapData(id);
             }
 
             @Override
+            @Nullable
             public Level level() {
                 return itemCtx.level();
+            }
+
+            @Override
+            public boolean isPeaceful() {
+                return itemCtx.isPeaceful();
             }
 
             @Nullable

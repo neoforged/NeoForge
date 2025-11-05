@@ -153,6 +153,19 @@ public interface IBlockExtension {
     }
 
     /**
+     * Called when lava is updating, checks if a block face can catch fire from lava.
+     *
+     * @param state     The current state
+     * @param level     The current level
+     * @param pos       Block position in level
+     * @param direction The direction that the fire is coming from
+     * @return True if the face can catch fire from lava, false otherwise.
+     */
+    default boolean ignitedByLava(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return state.ignitedByLava();
+    }
+
+    /**
      * Checks if a player or entity can use this block to 'climb' like a ladder.
      *
      * @param state  The current state
@@ -214,13 +227,14 @@ public interface IBlockExtension {
      *
      * @param state       The current state.
      * @param level       The current level
-     * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
+     * @param player      The player damaging the block, may be null
+     * @param toolStack   The players main-hand prior to destroying the block and applying damage to the tool.
      * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid state at current position
      * @return True if the block is actually destroyed.
      */
-    default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         if (level.isClientSide()) {
             // On the client, vanilla calls Level#setBlock, per MultiPlayerGameMode#destroyBlock
             return level.setBlock(pos, fluid.createLegacyBlock(), 11);
@@ -814,7 +828,7 @@ public interface IBlockExtension {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {
-                if (!simulate && !context.getLevel().isClientSide) {
+                if (!simulate && !context.getLevel().isClientSide()) {
                     Block.popResourceFromFace(context.getLevel(), context.getClickedPos(), context.getClickedFace(), new ItemStack(Items.HANGING_ROOTS));
                 }
                 return Blocks.DIRT.defaultBlockState();

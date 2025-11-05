@@ -209,7 +209,7 @@ public abstract class AbstractTest implements Test {
                             .append(" ").append(
                                     Component.literal("No").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)
                                             .withClickEvent(internal.setStatusCommand(
-                                                    id(), Result.FAILED, player.getGameProfile().getName() + " denied seeing the effects of the test"))))),
+                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))),
                     false);
         }
     }
@@ -291,16 +291,16 @@ public abstract class AbstractTest implements Test {
             final StringBuilder modId = new StringBuilder()
                     .append(framework().id().getNamespace()).append('_');
             boolean isInUpper = false;
-            for (char c : id().toCharArray()) {
-                if (Character.isUpperCase(c)) {
+            for (int value : id().codePoints().toArray()) {
+                if (Character.isUpperCase(value)) {
                     if (!isInUpper) {
                         isInUpper = true;
                         modId.append('_');
                     }
-                    modId.append(Character.toLowerCase(c));
+                    modId.append(Character.toString(Character.toLowerCase(value)));
                 } else {
                     isInUpper = false;
-                    modId.append(c);
+                    modId.append(Character.toString(value));
                 }
             }
             return modId.toString();

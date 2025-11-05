@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
-@@ -41,8 +_,8 @@
+@@ -41,12 +_,14 @@
              p_380905_ -> p_380905_.group(
                      LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_380906_ -> p_380906_.paramSet),
                      ResourceLocation.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
@@ -11,6 +11,12 @@
                  )
                  .apply(p_380905_, LootTable::new)
          )
+     );
++    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<LootTable>>> CONDITIONAL_DIRECT_CODEC =
++            net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC);
+     public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.create(Registries.LOOT_TABLE, DIRECT_CODEC);
+     public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
+     private final ContextKeySet paramSet;
 @@ -58,7 +_,7 @@
      LootTable(ContextKeySet p_380952_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
          this.paramSet = p_380952_;
@@ -65,12 +71,10 @@
          return objectarraylist;
      }
  
-@@ -218,6 +_,62 @@
- 
-     public static LootTable.Builder lootTable() {
+@@ -220,11 +_,68 @@
          return new LootTable.Builder();
-+    }
-+
+     }
+ 
 +    // Neo: Implement LootTable freezing to prevent manipulation outside of Neo APIs
 +    private boolean isFrozen = false;
 +
@@ -125,6 +129,35 @@
 +        if (pools.stream().anyMatch(e -> e == pool || e.getName() != null && e.getName().equals(pool.getName())))
 +            throw new RuntimeException("Attempted to add a duplicate pool to loot table: " + pool.getName());
 +        this.pools.add(pool);
-     }
- 
++    }
++
      public static class Builder implements FunctionUserBuilder<LootTable.Builder> {
+         private final ImmutableList.Builder<LootPool> pools = ImmutableList.builder();
+         private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
+         private ContextKeySet paramSet = LootTable.DEFAULT_PARAM_SET;
+         private Optional<ResourceLocation> randomSequence = Optional.empty();
++        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new java.util.ArrayList<>();
+ 
+         public LootTable.Builder withPool(LootPool.Builder p_79162_) {
+             this.pools.add(p_79162_.build());
+@@ -252,6 +_,20 @@
+ 
+         public LootTable build() {
+             return new LootTable(this.paramSet, this.randomSequence, this.pools.build(), this.functions.build());
++        }
++
++        public LootTable.Builder withCondition(net.neoforged.neoforge.common.conditions.ICondition condition) {
++            this.conditions.add(condition);
++            return this;
++        }
++
++        public LootTable.Builder withConditions(List<net.neoforged.neoforge.common.conditions.ICondition> conditions) {
++            this.conditions.addAll(conditions);
++            return this;
++        }
++
++        public List<net.neoforged.neoforge.common.conditions.ICondition> buildConditions() {
++            return List.copyOf(this.conditions);
+         }
+     }
+ }

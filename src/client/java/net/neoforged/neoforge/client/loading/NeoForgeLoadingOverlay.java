@@ -38,17 +38,14 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     public static final ResourceLocation LOADING_OVERLAY_TEXTURE_ID = ResourceLocation.parse("neoforge:loading_overlay");
     private final Minecraft minecraft;
     private final ReloadInstance reload;
-    private final Consumer<Optional<Throwable>> onFinish;
     private final DisplayWindow displayWindow;
     private final ProgressMeter progressMeter;
     private float currentProgress;
-    private long fadeOutStart = -1L;
 
     public NeoForgeLoadingOverlay(final Minecraft mc, final ReloadInstance reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
         super(mc, reloader, errorConsumer, false);
         this.minecraft = mc;
         this.reload = reloader;
-        this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
         var gpuDevice = RenderSystem.getDevice();
@@ -92,20 +89,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
                 this.displayWindow.close();
             });
             this.minecraft.setOverlay(null);
-        }
-
-        if (this.fadeOutStart == -1L && this.reload.isDone()) {
-            this.fadeOutStart = Util.getMillis();
-            try {
-                this.reload.checkExceptions();
-                this.onFinish.accept(Optional.empty());
-            } catch (Throwable throwable) {
-                this.onFinish.accept(Optional.of(throwable));
-            }
-
-            if (this.minecraft.screen != null) {
-                this.minecraft.screen.init(this.minecraft, graphics.guiWidth(), graphics.guiHeight());
-            }
         }
     }
 

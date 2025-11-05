@@ -90,6 +90,18 @@ public interface IBlockStateExtension {
     }
 
     /**
+     * Called when lava is updating, checks if a block face can catch fire from lava.
+     *
+     * @param level The current level
+     * @param pos   Block position in level
+     * @param face  The face that the fire is coming from
+     * @return True if the face can catch fire from lava, false otherwise.
+     */
+    default boolean ignitedByLava(BlockGetter level, BlockPos pos, Direction face) {
+        return self().getBlock().ignitedByLava(self(), level, pos, face);
+    }
+
+    /**
      * Checks if a player or entity can use this block to 'climb' like a ladder.
      *
      * @param level  The current level
@@ -124,14 +136,15 @@ public interface IBlockStateExtension {
      * This function is called on both the logical client and logical server.
      *
      * @param level       The current level
-     * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
+     * @param player      The player damaging the block, may be null
+     * @param toolStack   The players main-hand prior to destroying the block and applying damage to the tool.
      * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid and block state for the position in the level.
      * @return True if the block is actually destroyed.
      */
-    default boolean onDestroyedByPlayer(Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        return self().getBlock().onDestroyedByPlayer(self(), level, pos, player, willHarvest, fluid);
+    default boolean onDestroyedByPlayer(Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
+        return self().getBlock().onDestroyedByPlayer(self(), level, pos, player, toolStack, willHarvest, fluid);
     }
 
     /**

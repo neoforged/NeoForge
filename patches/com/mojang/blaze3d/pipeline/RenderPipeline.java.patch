@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -41,7 +_,10 @@
+@@ -42,7 +_,10 @@
      private final float depthBiasConstant;
      private final int sortKey;
      private static int sortKeySeed;
@@ -11,7 +11,7 @@
      protected RenderPipeline(
          ResourceLocation p_405403_,
          ResourceLocation p_405389_,
-@@ -63,6 +_,31 @@
+@@ -64,6 +_,31 @@
          float p_409999_,
          int p_415862_
      ) {
@@ -43,7 +43,7 @@
          this.location = p_405403_;
          this.vertexShader = p_405389_;
          this.fragmentShader = p_404945_;
-@@ -82,6 +_,7 @@
+@@ -83,6 +_,7 @@
          this.depthBiasScaleFactor = p_410755_;
          this.depthBiasConstant = p_409999_;
          this.sortKey = p_415862_;
@@ -51,7 +51,7 @@
      }
  
      public int getSortKey() {
-@@ -176,6 +_,51 @@
+@@ -177,6 +_,51 @@
              || this.writeDepth;
      }
  
@@ -103,7 +103,7 @@
      public static RenderPipeline.Builder builder(RenderPipeline.Snippet... p_405781_) {
          RenderPipeline.Builder renderpipeline$builder = new RenderPipeline.Builder();
  
-@@ -208,6 +_,7 @@
+@@ -209,6 +_,7 @@
          private Optional<VertexFormat.Mode> vertexFormatMode = Optional.empty();
          private float depthBiasScaleFactor;
          private float depthBiasConstant;
@@ -111,7 +111,7 @@
  
          Builder() {
          }
-@@ -364,6 +_,16 @@
+@@ -365,6 +_,16 @@
              return this;
          }
  
@@ -128,7 +128,7 @@
          void withSnippet(RenderPipeline.Snippet p_405255_) {
              if (p_405255_.vertexShader.isPresent()) {
                  this.vertexShader = p_405255_.vertexShader;
-@@ -438,6 +_,10 @@
+@@ -439,6 +_,10 @@
              if (p_405255_.vertexFormatMode.isPresent()) {
                  this.vertexFormatMode = p_405255_.vertexFormatMode;
              }
@@ -139,7 +139,7 @@
          }
  
          public RenderPipeline.Snippet buildSnippet() {
-@@ -456,7 +_,8 @@
+@@ -457,7 +_,8 @@
                  this.writeDepth,
                  this.colorLogic,
                  this.vertexFormat,
@@ -149,7 +149,7 @@
              );
          }
  
-@@ -491,7 +_,8 @@
+@@ -492,7 +_,8 @@
                      this.vertexFormatMode.get(),
                      this.depthBiasScaleFactor,
                      this.depthBiasConstant,
@@ -159,7 +159,7 @@
                  );
              }
          }
-@@ -514,8 +_,30 @@
+@@ -515,8 +_,30 @@
          Optional<Boolean> writeDepth,
          Optional<LogicOp> colorLogic,
          Optional<VertexFormat> vertexFormat,

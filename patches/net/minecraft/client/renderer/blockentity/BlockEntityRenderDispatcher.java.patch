@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
++++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
+@@ -76,14 +_,26 @@
+         this.cameraPos = p_173566_.getPosition();
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #tryExtractRenderState(BlockEntity, float, ModelFeatureRenderer.CrumblingOverlay, net.minecraft.client.renderer.culling.Frustum)} instead
++     */
+     @Nullable
+     public <E extends BlockEntity, S extends BlockEntityRenderState> S tryExtractRenderState(
+         E p_445799_, float p_446989_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_447358_
+     ) {
++        return tryExtractRenderState(p_445799_, p_446989_, p_447358_, null);
++    }
++
++    @Nullable
++    public <E extends BlockEntity, S extends BlockEntityRenderState> S tryExtractRenderState(
++            E p_445799_, float p_446989_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_447358_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum
++    ) {
+         BlockEntityRenderer<E, S> blockentityrenderer = this.getRenderer(p_445799_);
+         if (blockentityrenderer == null) {
+             return null;
+         } else if (!p_445799_.hasLevel() || !p_445799_.getType().isValid(p_445799_.getBlockState())) {
++            return null;
++        } else if (frustum != null && !frustum.isVisible(blockentityrenderer.getRenderBoundingBox(p_445799_))) {
+             return null;
+         } else if (!blockentityrenderer.shouldRender(p_445799_, this.cameraPos)) {
+             return null;

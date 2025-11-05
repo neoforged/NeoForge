@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -43,6 +_,8 @@
-     private final Function<ResourceLocation, FontSet> fonts;
-     final boolean filterFishyGlyphs;
+@@ -41,6 +_,8 @@
+     private final RandomSource random = RandomSource.create();
+     final Font.Provider provider;
      private final StringSplitter splitter;
 +    /** Neo: enables linear filtering on text */
 +    public boolean enableTextTextureLinearFiltering = false;
  
-     public Font(Function<ResourceLocation, FontSet> p_243253_, boolean p_243245_) {
-         this.fonts = p_243253_;
-@@ -219,6 +_,8 @@
+     public Font(Font.Provider p_433313_) {
+         this.provider = p_433313_;
+@@ -226,6 +_,8 @@
      public StringSplitter getSplitter() {
          return this.splitter;
      }

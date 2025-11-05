@@ -6,5 +6,5 @@
          });
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent(sequencedmap));
          this.bufferSource = MultiBufferSource.immediateWithBuffers(sequencedmap, new ByteBufferBuilder(786432));
-         this.outlineBufferSource = new OutlineBufferSource(this.bufferSource);
+         this.outlineBufferSource = new OutlineBufferSource();
          SequencedMap<RenderType, ByteBufferBuilder> sequencedmap1 = Util.make(

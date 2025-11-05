@@ -52,7 +52,7 @@
     "erosion": 0,
     "depth": 0,
     "ridges": 0,
-    "initial_density_without_jaggedness": 0,
+    "preliminary_surface_level": 0,
     "final_density": {
       "type": "minecraft:interpolated",
       "argument": "minecraft:overworld/base_3d_noise"

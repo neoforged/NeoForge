@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,10 @@ import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
  * Class for various common (i.e. client and server-side) hooks.
  */
 public class CommonHooks {
+    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
+            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
+            .thenComparing(ResourceLocation::compareNamespaced);
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
 
@@ -418,9 +423,9 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, boolean includeName) {
         player.captureDrops(Lists.newArrayList());
-        ItemEntity ret = player.drop(item, false, includeName);
+        ItemEntity ret = player.drop(item, dropAround, includeName);
         player.captureDrops(null);
 
         if (ret == null)
@@ -430,7 +435,7 @@ public class CommonHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return null;
 
-        if (!player.level().isClientSide)
+        if (!player.level().isClientSide())
             player.level().addFreshEntity(event.getEntity());
         return event.getEntity();
     }
@@ -770,10 +775,10 @@ public class CommonHooks {
         return e.getXp();
     }
 
-    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction) {
+    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
-            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
+            GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(access, player, inputSlots.getItem(0), inputSlots.getItem(1), xp);
             if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
                 return;
             }
@@ -1034,7 +1039,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }
@@ -1455,7 +1460,7 @@ public class CommonHooks {
             }
         }
 
-        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
+        if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
         }
     }

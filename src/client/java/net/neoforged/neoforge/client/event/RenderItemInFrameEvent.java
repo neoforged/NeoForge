@@ -6,8 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -34,18 +33,15 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     private final ItemFrameRenderState frameRenderState;
     private final ItemFrameRenderer<?> renderer;
     private final PoseStack poseStack;
-    private final MultiBufferSource multiBufferSource;
-    private final int packedLight;
+    private final SubmitNodeCollector submitNodeCollector;
 
     @ApiStatus.Internal
-    public RenderItemInFrameEvent(ItemFrameRenderState frameRenderState, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
-            MultiBufferSource multiBufferSource, int packedLight) {
+    public RenderItemInFrameEvent(ItemFrameRenderState frameRenderState, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         this.itemStack = frameRenderState.item;
         this.frameRenderState = frameRenderState;
         this.renderer = renderItemFrame;
         this.poseStack = poseStack;
-        this.multiBufferSource = multiBufferSource;
-        this.packedLight = packedLight;
+        this.submitNodeCollector = submitNodeCollector;
     }
 
     /**
@@ -77,18 +73,9 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * {@return the source of rendering buffers}
+     * {@return the submit node collector}
      */
-    public MultiBufferSource getMultiBufferSource() {
-        return multiBufferSource;
-    }
-
-    /**
-     * {@return the amount of packed (sky and block) light for rendering}
-     *
-     * @see LightTexture
-     */
-    public int getPackedLight() {
-        return packedLight;
+    public SubmitNodeCollector getSubmitNodeCollector() {
+        return submitNodeCollector;
     }
 }

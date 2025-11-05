@@ -42,8 +42,8 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
 import net.neoforged.neoforge.network.configuration.CommonVersionTask;
 import net.neoforged.neoforge.network.connection.ConnectionType;

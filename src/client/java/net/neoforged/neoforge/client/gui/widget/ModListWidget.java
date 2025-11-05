@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.gui.widget;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -17,7 +18,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.client.gui.ModListScreen;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforgespi.language.IModInfo;
 
 public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
@@ -25,7 +26,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         return net.minecraft.util.StringUtil.stripColor(value);
     }
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
     private final int listWidth;
 
     private ModListScreen parent;
@@ -34,8 +35,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         super(parent.getMinecraftInstance(), listWidth, bottom - top, top, parent.getFontRenderer().lineHeight * 2 + 8);
         this.parent = parent;
         this.listWidth = listWidth;
-        //this.setRenderBackground(false); // Porting 1.20.5 still needed?
-        this.refreshList();
+        //this.setRenderBackground(false); // TODO: Porting 1.20.5 still needed?
     }
 
     @Override
@@ -68,21 +68,24 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
             Component name = Component.literal(stripControlCodes(container.getModInfo().getDisplayName()));
             Component version = Component.literal(stripControlCodes(MavenVersionTranslator.artifactVersionToString(container.getModInfo().getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(container.getModInfo());
+            int left = getContentX();
+            int top = getContentY();
             Font font = this.parent.getFontRenderer();
             guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(name, listWidth))), left + 3, top + 2, 0xFFFFFFFF, false);
             guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(version, listWidth))), left + 3, top + 2 + font.lineHeight, 0xFFCCCCCC, false);
             if (vercheck.status().shouldDraw()) {
                 //TODO: Consider adding more icons for visualization
+                int entryHeight = getContentHeight();
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
             }
         }
 
         @Override
-        public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             // clicking on a selected item a second time unselects it
             parent.setSelected(isFocused() ? null : this);
             ModListWidget.this.setSelected(isFocused() ? null : this);

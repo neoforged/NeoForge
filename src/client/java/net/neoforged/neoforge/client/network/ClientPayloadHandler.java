@@ -34,10 +34,10 @@ import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = NeoForgeMod.MOD_ID, value = Dist.CLIENT)
 final class ClientPayloadHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientPayloadHandler.class);
     private static final Set<ResourceLocation> toSynchronize = Sets.newConcurrentHashSet();

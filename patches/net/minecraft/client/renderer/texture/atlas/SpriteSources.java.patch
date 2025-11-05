@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
+@@ -17,7 +_,7 @@
+ public class SpriteSources {
+     private static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends SpriteSource>> ID_MAPPER = new ExtraCodecs.LateBoundIdMapper<>();
+     public static final Codec<SpriteSource> CODEC = ID_MAPPER.codec(ResourceLocation.CODEC).dispatch(SpriteSource::codec, p_399350_ -> p_399350_);
+-    public static final Codec<List<SpriteSource>> FILE_CODEC = CODEC.listOf().fieldOf("sources").codec();
++    public static final Codec<List<SpriteSource>> FILE_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(CODEC).fieldOf("sources").codec();
+ 
+     public static void bootstrap() {
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("single"), SingleFile.MAP_CODEC);
 @@ -25,5 +_,7 @@
          ID_MAPPER.put(ResourceLocation.withDefaultNamespace("filter"), SourceFilter.MAP_CODEC);
          ID_MAPPER.put(ResourceLocation.withDefaultNamespace("unstitch"), Unstitcher.MAP_CODEC);

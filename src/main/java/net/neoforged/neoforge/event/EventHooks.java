@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
@@ -38,6 +37,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -100,7 +100,6 @@ import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDeco
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.portal.TeleportTransition;
-import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -445,14 +444,6 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt)).isCanceled();
     }
 
-    /**
-     * @deprecated Use {@link #onItemUseStart(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
-     */
-    @Deprecated(since = "1.21.5", forRemoval = true)
-    public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
-        return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
-    }
-
     public static int onItemUseStart(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
         var event = new LivingEntityUseItemEvent.Start(entity, item, hand, duration);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
@@ -481,16 +472,12 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.StopTracking(player, entity));
     }
 
-    public static void firePlayerLoadingEvent(Player player, File playerDirectory, String uuidString) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.LoadFromFile(player, playerDirectory, uuidString));
+    public static void firePlayerLoadingEvent(Player player, PlayerList playerList, String uuidString) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.LoadFromFile(player, playerList.getPlayerIo().getPlayerDir(), uuidString));
     }
 
     public static void firePlayerSavingEvent(Player player, File playerDirectory, String uuidString) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.SaveToFile(player, playerDirectory, uuidString));
-    }
-
-    public static void firePlayerLoadingEvent(Player player, PlayerDataStorage playerFileData, String uuidString) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.LoadFromFile(player, playerFileData.getPlayerDir(), uuidString));
     }
 
     @Nullable
@@ -876,9 +863,9 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean onPermissionChanged(GameProfile gameProfile, int newLevel, PlayerList playerList) {
-        int oldLevel = playerList.getServer().getProfilePermissions(gameProfile);
-        ServerPlayer player = playerList.getPlayer(gameProfile.getId());
+    public static boolean onPermissionChanged(NameAndId nameAndId, int newLevel, PlayerList playerList) {
+        int oldLevel = playerList.getServer().getProfilePermissions(nameAndId);
+        ServerPlayer player = playerList.getPlayer(nameAndId.id());
         if (newLevel != oldLevel && player != null) {
             return NeoForge.EVENT_BUS.post(new PermissionsChangedEvent(player, newLevel, oldLevel)).isCanceled();
         }

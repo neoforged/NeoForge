@@ -7,5 +7,5 @@
 +        InteractionResult ret = super.interact(p_38562_, p_38563_);
 +        if (ret.consumesAction()) return ret;
          ItemStack itemstack = p_38562_.getItemInHand(p_38563_);
-         if (itemstack.is(ItemTags.FURNACE_MINECART_FUEL) && this.fuel + 3600 <= 32000) {
+         if (this.addFuel(p_38562_.position(), itemstack)) {
              itemstack.consume(1, p_38562_);

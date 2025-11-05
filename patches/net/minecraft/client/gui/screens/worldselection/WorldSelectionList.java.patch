@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
-@@ -74,6 +_,7 @@
+@@ -78,6 +_,7 @@
      static final ResourceLocation WARNING_SPRITE = ResourceLocation.withDefaultNamespace("world_list/warning");
      static final ResourceLocation JOIN_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace("world_list/join_highlighted");
      static final ResourceLocation JOIN_SPRITE = ResourceLocation.withDefaultNamespace("world_list/join");
@@ -8,34 +8,26 @@
      static final Logger LOGGER = LogUtils.getLogger();
      static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -403,6 +_,7 @@
-             p_281612_.drawString(this.minecraft.font, s1, p_282820_ + 32 + 3, p_283181_ + 9 + 3, -8355712);
-             p_281612_.drawString(this.minecraft.font, component, p_282820_ + 32 + 3, p_283181_ + 9 + 9 + 3, -8355712);
-             p_281612_.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), p_282820_, p_283181_, 0.0F, 0.0F, 32, 32, 32, 32);
-+            renderExperimentalWarning(p_281612_, p_283204_, p_283025_, p_283181_, p_282820_);
-             if (this.minecraft.options.touchscreen().get() || p_283396_) {
-                 p_281612_.fill(p_282820_, p_283181_, p_282820_ + 32, p_283181_ + 32, -1601138544);
-                 int j = p_283204_ - p_282820_;
-@@ -510,6 +_,7 @@
-                                 this.doDeleteWorld();
-                             }
- 
-+                            if (this.minecraft.screen instanceof ProgressScreen || this.minecraft.screen instanceof ConfirmScreen) // Neo - fix MC-251068
-                             this.minecraft.setScreen(this.screen);
-                         },
-                         Component.translatable("selectWorld.deleteQuestion"),
-@@ -646,6 +_,19 @@
- 
-         public String getLevelName() {
-             return this.summary.getLevelName();
+@@ -524,6 +_,7 @@
+             this.infoText.setPosition(i, this.getContentY() + 9 + 9 + 3);
+             this.infoText.render(p_439856_, p_439492_, p_440095_, p_439455_);
+             p_439856_.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++            renderExperimentalWarning(p_439856_, p_439492_, p_440095_, p_438893_);
+             if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && (this.minecraft.options.touchscreen().get() || p_438893_)) {
+                 p_439856_.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
+                 int j = p_439492_ - this.getContentX();
+@@ -781,6 +_,19 @@
+         @Override
+         public LevelSummary getLevelSummary() {
+             return this.summary;
 +        }
 +
 +        // FORGE: Patch in experimental warning icon for worlds in the world selection screen
-+        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, int top, int left) {
++        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
-+                int leftStart = left + WorldSelectionList.this.getRowWidth();
-+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, top, 0.0F, 0.0F, 32, 32, 32, 32);
-+                if (WorldSelectionList.this.getEntryAtPosition(mouseX, mouseY) == this && mouseX > leftStart - 36 && mouseX < leftStart) {
++                int leftStart = this.getContentX() + this.getContentWidth();
++                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++                if (hovered && mouseX > leftStart - 36 && mouseX < leftStart) {
 +                    var font = Minecraft.getInstance().font;
 +                    List<net.minecraft.util.FormattedCharSequence> tooltip = font.split(Component.translatable("neoforge.experimentalsettings.tooltip"), 200);
 +                    guiGraphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);

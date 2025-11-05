@@ -9,6 +9,7 @@ import java.util.Objects;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
@@ -35,6 +36,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.storage.LevelData;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
@@ -59,7 +61,7 @@ public class PlayerEventTests {
     @TestHolder(description = "Tests if the player NameFormat event allows changing a player's name")
     static void playerNameEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final PlayerEvent.NameFormat event) -> {
-            if (event.getEntity().getGameProfile().getName().equals("test-mock-player")) {
+            if (event.getEntity().getGameProfile().name().equals("test-mock-player")) {
                 event.setDisplayname(Component.literal("hello world"));
             }
             test.pass();
@@ -89,7 +91,7 @@ public class PlayerEventTests {
                 if (item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.DIRT) {
                     BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
                     if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER) {
-                        if (!level.isClientSide) {
+                        if (!level.isClientSide()) {
                             context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
                         }
                         test.pass();
@@ -205,10 +207,10 @@ public class PlayerEventTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE).moveToCorner())
                 .thenExecute(player -> player.setCustomName(Component.literal("permschangedevent")))
                 // Make sure the player isn't OP by default
-                .thenExecute(player -> player.getServer().getPlayerList().getOps().add(new ServerOpListEntry(
-                        player.getGameProfile(), Commands.LEVEL_ADMINS, true)))
-                .thenExecute(player -> player.getServer().getPlayerList().deop(player.getGameProfile()))
-                .thenExecute(player -> helper.assertTrue(player.getServer().getProfilePermissions(player.getGameProfile()) == Commands.LEVEL_ADMINS, "Player was de-op'd"))
+                .thenExecute(player -> player.level().getServer().getPlayerList().getOps().add(new ServerOpListEntry(
+                        player.nameAndId(), Commands.LEVEL_ADMINS, true)))
+                .thenExecute(player -> player.level().getServer().getPlayerList().deop(player.nameAndId()))
+                .thenExecute(player -> helper.assertTrue(player.level().getServer().getProfilePermissions(player.nameAndId()) == Commands.LEVEL_ADMINS, "Player was de-op'd"))
                 .thenSucceed());
     }
 
@@ -289,10 +291,10 @@ public class PlayerEventTests {
                 .thenExecute(player -> player.setCustomName(Component.literal("respawn-position-test")))
                 .thenExecute(player -> {
                     ServerPlayer.RespawnConfig oldConfig = player.getRespawnConfig();
-                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.dimension() : Level.OVERWORLD;
-                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(dimension, helper.absolutePos(new BlockPos(0, 1, 0)), 0, false), true);
+                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.respawnData().dimension() : Level.OVERWORLD;
+                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(GlobalPos.of(dimension, helper.absolutePos(new BlockPos(0, 1, 0))), 0, 0), false), true);
                 })
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
+                .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
                 .thenSucceed());
     }
@@ -308,10 +310,10 @@ public class PlayerEventTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(player -> {
                     ServerPlayer.RespawnConfig oldConfig = player.getRespawnConfig();
-                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.dimension() : Level.OVERWORLD;
-                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(dimension, helper.absolutePos(new BlockPos(0, 1, 1)), 0, true), true);
+                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.respawnData().dimension() : Level.OVERWORLD;
+                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(GlobalPos.of(dimension, helper.absolutePos(new BlockPos(0, 1, 1))), 0, 0), true), true);
                 })
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
+                .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
                 .thenSucceed());
     }

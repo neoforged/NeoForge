@@ -1,11 +1,11 @@
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-@@ -47,7 +_,7 @@
-     static final Logger LOGGER = LogUtils.getLogger();
-     private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
-     private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults();
+@@ -51,7 +_,7 @@
+     public static final String MANAGEMENT_SERVER_TLS_ENABLED_KEY = "management-server-tls-enabled";
+     public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_KEY = "management-server-tls-keystore";
+     public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_PASSWORD_KEY = "management-server-tls-keystore-password";
 -    public final boolean onlineMode = this.get("online-mode", true);
 +    public final boolean onlineMode = this.get("online-mode", !net.minecraft.SharedConstants.IS_RUNNING_IN_IDE);
      public final boolean preventProxyConnections = this.get("prevent-proxy-connections", false);
      public final String serverIp = this.get("server-ip", "");
-     public final boolean pvp = this.get("pvp", true);
+     public final Settings<DedicatedServerProperties>.MutableValue<Boolean> allowFlight = this.getMutable("allow-flight", false);

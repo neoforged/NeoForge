@@ -1,14 +1,13 @@
 package net.neoforged.neodev;
 
+import java.io.File;
+import java.util.Arrays;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
-
-import java.io.File;
-import java.util.Arrays;
 
 /**
  * This task fails the build if client classes are accidentally put into the common source-set
@@ -58,7 +57,5 @@ public abstract class CheckSplitSources extends DefaultTask {
             }
 
         }
-
     }
-
 }

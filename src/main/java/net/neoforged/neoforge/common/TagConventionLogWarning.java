@@ -19,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
@@ -500,7 +500,7 @@ public final class TagConventionLogWarning {
                 boolean isConfigSetToDev = legacyTagWarningMode == LogWarningMode.DEV_SHORT ||
                         legacyTagWarningMode == LogWarningMode.DEV_VERBOSE;
 
-                if (!FMLLoader.isProduction() == isConfigSetToDev) {
+                if (!FMLEnvironment.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> legacyTags = new ObjectArrayList<>();
                     RegistryAccess.Frozen registryAccess = serverStartingEvent.getServer().registryAccess();
 

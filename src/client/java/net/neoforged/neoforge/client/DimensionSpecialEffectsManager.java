@@ -53,5 +53,9 @@ public final class DimensionSpecialEffectsManager {
         return overworldEffects;
     }
 
+    public static DimensionSpecialEffects getDefaultEffects() {
+        return DEFAULT_EFFECTS;
+    }
+
     private DimensionSpecialEffectsManager() {}
 }

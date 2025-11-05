@@ -5,8 +5,12 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
@@ -75,6 +79,24 @@ public class GrindstoneEventTest {
             top.shrink(1);
             event.setNewBottomItem(bottom);
             event.setNewTopItem(top);
+        }
+
+        //do some effects when disenchanting a netherite helmet
+        if (topItem.is(Items.NETHERITE_HELMET) && EnchantmentHelper.hasAnyEnchantments(topItem)) {
+            //give the player an enchanted book with the item's enchants
+            ItemStack reward = new ItemStack(Items.ENCHANTED_BOOK);
+            reward.set(DataComponents.STORED_ENCHANTMENTS, topItem.getTagEnchantments());
+            if (!event.getPlayer().getInventory().add(reward)) {
+                event.getPlayer().drop(reward, false);
+            }
+
+            //summon visual lightning above the grindstone
+            event.getContainerAccess().execute((level, pos) -> {
+                LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+                bolt.setPos(pos.getCenter());
+                bolt.setVisualOnly(true);
+                level.addFreshEntity(bolt);
+            });
         }
     }
 }

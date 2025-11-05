@@ -26,9 +26,6 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/client/gui/components/AbstractWidget": [
-    "net/neoforged/neoforge/client/extensions/IAbstractWidgetExtension"
-  ],
   "net/minecraft/client/renderer/DimensionSpecialEffects": [
     "net/neoforged/neoforge/client/extensions/IDimensionSpecialEffectsExtension"
   ],
@@ -40,6 +37,9 @@
   ],
   "net/minecraft/client/renderer/blockentity/BlockEntityRenderer": [
     "net/neoforged/neoforge/client/extensions/IBlockEntityRendererExtension<T>"
+  ],
+  "net/minecraft/client/renderer/texture/atlas/SpriteSource": [
+    "net/neoforged/neoforge/client/extensions/SpriteSourceExtension"
   ],
   "net/minecraft/client/resources/model/BakedModel": [
     "net/neoforged/neoforge/client/extensions/IBakedModelExtension"
@@ -89,6 +89,9 @@
   "net/minecraft/core/component/DataComponentMap$Builder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
+  "net/minecraft/data/loot/LootTableSubProvider": [
+    "net/neoforged/neoforge/common/extensions/LootTableSubProviderExtension"
+  ],
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
   ],
@@ -100,6 +103,9 @@
   ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
+  ],
+  "net/minecraft/network/PacketProcessor$ListenerAndPacket": [
+    "net/neoforged/neoforge/network/handling/QueuedPacket"
   ],
   "net/minecraft/network/protocol/PacketFlow": [
     "net/neoforged/neoforge/common/extensions/IPacketFlowExtension"
@@ -133,6 +139,9 @@
   ],
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
+  ],
+  "net/minecraft/world/Container": [
+    "net/neoforged/neoforge/common/extensions/ContainerExtension"
   ],
   "net/minecraft/world/MenuProvider": [
     "net/neoforged/neoforge/common/extensions/IMenuProviderExtension"
@@ -304,6 +313,9 @@
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/client/resources/model/EquipmentClientInfo$LayerType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ]
 }

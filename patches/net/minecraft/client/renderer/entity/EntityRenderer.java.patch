@@ -1,42 +1,40 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -114,6 +_,8 @@
-         }
+@@ -132,6 +_,8 @@
  
-         if (p_364816_.nameTag != null) {
-+            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_364816_, p_364816_.nameTag, this, p_114488_, p_114489_, p_114490_, p_364816_.partialTick);
+     protected void submitNameTag(S p_436016_, PoseStack p_433473_, SubmitNodeCollector p_434265_, CameraRenderState p_451278_) {
+         if (p_436016_.nameTag != null) {
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_436016_, p_436016_.nameTag, this, p_433473_, p_434265_, p_451278_, p_436016_.partialTick);
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
-             this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
-         }
-     }
-@@ -228,6 +_,7 @@
-     public final S createRenderState(T p_361382_, float p_360885_) {
-         S s = this.reusedState;
+             p_434265_.submitNameTag(
+                 p_433473_,
+                 p_436016_.nameTagAttachment,
+@@ -164,6 +_,7 @@
+         S s = this.createRenderState();
          this.extractRenderState(p_361382_, s, p_360885_);
+         this.finalizeRenderState(p_361382_, s);
 +        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(this, p_361382_, s);
          return s;
      }
  
-@@ -254,9 +_,11 @@
-         }
- 
-         p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
--        boolean flag1 = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
-+        var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(p_362104_, p_361028_, this.getNameTag(p_362104_), this, p_362204_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+        boolean flag1 = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
-         if (flag1) {
--            p_361028_.nameTag = this.getNameTag(p_362104_);
-+            p_361028_.nameTag = event.getContent();
-             p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
-         } else {
-             p_361028_.nameTag = null;
-@@ -334,6 +_,8 @@
-             p_361028_.hitboxesRenderState = null;
-             p_361028_.serverHitboxesRenderState = null;
-         }
-+
+@@ -173,6 +_,7 @@
+         p_361028_.y = Mth.lerp((double)p_362204_, p_362104_.yOld, p_362104_.getY());
+         p_361028_.z = Mth.lerp((double)p_362204_, p_362104_.zOld, p_362104_.getZ());
+         p_361028_.isInvisible = p_362104_.isInvisible();
 +        p_361028_.partialTick = p_362204_;
-     }
+         p_361028_.ageInTicks = p_362104_.tickCount + p_362204_;
+         p_361028_.boundingBoxWidth = p_362104_.getBbWidth();
+         p_361028_.boundingBoxHeight = p_362104_.getBbHeight();
+@@ -191,9 +_,10 @@
  
-     private void extractHitboxes(T p_412316_, S p_412142_, float p_412603_) {
+         if (this.entityRenderDispatcher.camera != null) {
+             p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
+-            boolean flag1 = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(p_362104_, p_361028_, this.getNameTag(p_362104_), this, p_362204_);
++            boolean flag1 = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
+             if (flag1) {
+-                p_361028_.nameTag = this.getNameTag(p_362104_);
++                p_361028_.nameTag = event.getContent();
+                 p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
+             } else {
+                 p_361028_.nameTag = null;

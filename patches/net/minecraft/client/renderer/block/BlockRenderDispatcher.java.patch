@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -54,12 +_,13 @@
+@@ -56,12 +_,13 @@
              BlockStateModel blockstatemodel = this.blockModelShaper.getBlockModel(p_110919_);
              this.singleThreadRandom.setSeed(p_110919_.getSeed(p_110920_));
              this.singleThreadPartList.clear();
@@ -16,7 +16,7 @@
      public void renderBatched(
          BlockState p_234356_,
          BlockPos p_234357_,
-@@ -69,8 +_,20 @@
+@@ -71,8 +_,20 @@
          boolean p_234361_,
          List<BlockModelPart> p_410643_
      ) {
@@ -38,7 +38,7 @@
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block in world");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Block being tesselated");
-@@ -81,6 +_,7 @@
+@@ -83,6 +_,7 @@
  
      public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
          try {
@@ -46,7 +46,7 @@
              this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
-@@ -98,7 +_,12 @@
+@@ -100,7 +_,12 @@
          return this.blockModelShaper.getBlockModel(p_110911_);
      }
  
@@ -59,19 +59,19 @@
          RenderShape rendershape = p_110913_.getRenderShape();
          if (rendershape != RenderShape.INVISIBLE) {
              BlockStateModel blockstatemodel = this.getBlockModel(p_110913_);
-@@ -107,7 +_,7 @@
+@@ -109,7 +_,7 @@
              float f1 = (i >> 8 & 0xFF) / 255.0F;
              float f2 = (i & 0xFF) / 255.0F;
              ModelBlockRenderer.renderModel(
 -                p_110914_.last(), p_110915_.getBuffer(ItemBlockRenderTypes.getRenderType(p_110913_)), blockstatemodel, f, f1, f2, p_110916_, p_110917_
-+                p_110914_.last(), p_110915_, blockstatemodel, f, f1, f2, p_110916_, p_110917_, level, pos, p_110913_
++                    p_110914_.last(), p_110915_, blockstatemodel, f, f1, f2, p_110916_, p_110917_, level, pos, p_110913_
              );
-             this.specialBlockModelRenderer.get().renderByBlock(p_110913_.getBlock(), ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
          }
-@@ -116,5 +_,9 @@
+     }
+@@ -117,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_110909_) {
-         this.liquidBlockRenderer.setupSprites();
+         this.liquidBlockRenderer.setupSprites(this.blockModelShaper, this.materials);
 +    }
 +
 +    public LiquidBlockRenderer getLiquidBlockRenderer() {

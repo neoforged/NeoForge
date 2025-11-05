@@ -23,7 +23,7 @@
                              }
 @@ -284,5 +_,12 @@
  
-     public double getoSpin() {
+     public double getOSpin() {
          return this.oSpin;
 +    }
 +

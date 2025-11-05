@@ -13,11 +13,10 @@ import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(modid = NeoForgeMod.MOD_ID)
 public class MonsterRoomHooks {
     private static WeightedList<EntityType<?>> monsterRoomMobs = WeightedList.of();
 

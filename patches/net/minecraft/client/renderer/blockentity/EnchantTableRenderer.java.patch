@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
-@@ -56,4 +_,10 @@
-         this.bookModel.renderToBuffer(p_112420_, vertexconsumer, p_112422_, p_112423_);
-         p_112420_.popPose();
+@@ -83,4 +_,10 @@
+         );
+         p_439439_.popPose();
      }
 +
 +    @Override

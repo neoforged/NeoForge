@@ -23,7 +23,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.client.network.handling.ClientPayloadContext;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.connection.ConnectionType;

@@ -10,7 +10,7 @@
  public enum ItemDisplayContext implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      NONE(0, "none"),
      THIRD_PERSON_LEFT_HAND(1, "thirdperson_lefthand"),
-@@ -20,10 +_,22 @@
+@@ -21,10 +_,22 @@
      public static final IntFunction<ItemDisplayContext> BY_ID = ByIdMap.continuous(ItemDisplayContext::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
      private final byte id;
      private final String name;
@@ -33,10 +33,17 @@
      }
  
      @Override
-@@ -41,5 +_,18 @@
+@@ -37,10 +_,23 @@
+     }
+ 
+     public boolean firstPerson() {
+-        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND || (fallback() != null && fallback().firstPerson());
+     }
  
      public boolean leftHand() {
-         return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
+-        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND || (fallback() != null && fallback().leftHand());
 +    }
 +
 +    public boolean isModded() {

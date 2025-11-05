@@ -10,16 +10,18 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
-import net.minecraft.DetectedVersion;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import org.jetbrains.annotations.Nullable;
 
 public class BrandingControl {
+    public static final String BRANDING_NAME = "NeoForge";
+    private static final String BRANDING_ID = "neoforge";
+
     @Nullable
     private static String forgeStatusLine;
 
@@ -33,9 +35,9 @@ public class BrandingControl {
     private static void computeBranding() {
         if (brandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
-            brd.add("Minecraft " + DetectedVersion.BUILT_IN.name());
+            brd.add("Minecraft " + SharedConstants.getCurrentVersion().name());
             int modCount = ModList.get().size();
-            brd.add(FMLTranslations.parseMessage("fml.menu.branding", ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion(), modCount));
+            brd.add(FMLTranslations.parseMessage("fml.menu.branding", BRANDING_NAME + ' ' + NeoForgeVersion.getVersion(), modCount));
             brandings = brd.build();
             brandingsNoMC = brandings.subList(1, brandings.size());
         }
@@ -73,11 +75,11 @@ public class BrandingControl {
     }
 
     public static String getClientBranding() {
-        return ForgeSnapshotsMod.BRANDING_ID;
+        return BRANDING_ID;
     }
 
     public static String getServerBranding() {
-        return ForgeSnapshotsMod.BRANDING_ID;
+        return BRANDING_ID;
     }
 
     public static ResourceManagerReloadListener resourceManagerReloadListener() {

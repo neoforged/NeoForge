@@ -98,16 +98,18 @@ dependencies {
         }
         endorseStrictVersions()
     }
+    neoFormMappings("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-parameter-mappings'
+        }
+    }
     neoFormDependencies("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
         capabilities {
             requireCapability 'net.neoforged:neoform-dependencies'
         }
         endorseStrictVersions()
     }
-
-    moduleLibraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}")
 
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
         libraries(asmModule) {
@@ -194,7 +196,7 @@ neoDev {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
-            sourceSet = sourceSets.main
+            sourceSet = sourceSets.client
             loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
@@ -285,9 +287,16 @@ generateAccessTransformers {
             classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
             named('<init>')
     )
+
+    // Make all DebugScreenEntry groups public
+    fieldGroup(
+            'DebugScreenEntry groups', PUBLIC,
+            classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
+            fieldsOfType(named('net/minecraft/resources/ResourceLocation'))
+    )
 }
 
-tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
     group generateAccessTransformers.group
     description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
     input = generateAccessTransformers.input
@@ -307,6 +316,56 @@ tasks.withType(Javadoc.class).configureEach {
     ]
     options.addStringOption('Xdoclint:all,-missing', '-public')
 }
+
+final static boolean isPRBuild(String neoVersion) {
+    // The -pr- being inside the actual version and a branch name is important.
+    // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
+    // the regex will match PR builds published to Packages, but that it will not match local PR branches
+    // since those usually have the name `pr|pull/<number>`
+    return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
+}
+
+// Placeholders for source and resource generation.
+// Exposed project properties
+Map<String, String> placeholders = [
+        'version' : project.version.toString(),
+        'neoform_version' : project.neoform_version,
+        'minecraft_version' : project.minecraft_version,
+        'build_type' : isPRBuild(project.version.toString()) ? "PULL_REQUEST" : (project.version.toString().contains("-beta") ? "BETA" : "STABLE")
+]
+
+// Generates the neoforge.mods.toml and version.properties, so they contain fully realized version numbers
+final generateResources = tasks.register('generateResources', ProcessResources) {
+    group = 'build'
+    from(rootProject.file('src/main/templates/neoforge.mods.toml')) {
+        rename '(.*)', 'META-INF/$1'
+    }
+    from(rootProject.file('src/main/templates/version.properties')) {
+        rename '(.*)', 'net/neoforged/neoforge/common/$1'
+    }
+    into 'build/generated/sources/neoforge/resources'
+
+    // Ensure the resources get re-evaluate when the version changes
+    inputs.properties placeholders
+    expand placeholders
+}
+sourceSets.main.resources.srcDir generateResources
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateResources)
+
+// Generates the NeoForgeVersion.java source file
+final generateSources = tasks.register('generateSources', ProcessResources) {
+    group = 'build'
+    from(rootProject.file('src/main/templates/NeoForgeVersion.java')) {
+        rename '(.*)', 'net/neoforged/neoforge/common/$1'
+    }
+    into 'build/generated/sources/neoforge/java'
+
+    // Ensure the resources get re-evaluate when the version changes
+    inputs.properties placeholders
+    expand placeholders
+}
+sourceSets.main.java.srcDir generateSources
+net.neoforged.moddevgradle.internal.NeoDevFacade.runTaskOnProjectSync(project, generateSources)
 
 AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
 // Ensure the two default variants are not published, since they
@@ -395,7 +454,7 @@ configurations {
     modDevApiElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, userdevCompileOnly, neoFormDependencies
+        extendsFrom libraries, userdevCompileOnly, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -409,7 +468,7 @@ configurations {
     modDevRuntimeElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, neoFormDependencies
+        extendsFrom libraries, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -420,10 +479,10 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    // Deprecated, but we'll keep it empty for backwards compatibility
     modDevModulePath {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom moduleLibraries
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
