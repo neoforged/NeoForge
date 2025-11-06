@@ -31,12 +31,14 @@ public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {
         }
     }
 
+    private final DamageSource source;
     private final EnumMap<EquipmentSlot, ArmorEntry> armorEntries;
 
     @ApiStatus.Internal
-    public ArmorHurtEvent(EnumMap<EquipmentSlot, ArmorEntry> armorMap, LivingEntity player) {
+    public ArmorHurtEvent(EnumMap<EquipmentSlot, ArmorEntry> armorMap, LivingEntity player, DamageSource source) {
         super(player);
         this.armorEntries = armorMap;
+        this.source = source;
     }
 
     /**
@@ -70,5 +72,10 @@ public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {
     /** Used internally to get the full map of {@link ItemStack}s to be hurt */
     public Map<EquipmentSlot, ArmorEntry> getArmorMap() {
         return armorEntries;
+    }
+
+    /** {@return the {@link DamageSource} causing the damage} */
+    public DamageSource getDamageSource() {
+        return source;
     }
 }
