@@ -479,6 +479,36 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    // TODO: these names are not great but we have designed ourselves into a corner unfortunately :(
+    // TODO: should maybe add more attributes as well
+    universalModDevApiElements {
+        canBeDeclared = false
+        canBeResolved = false
+        extendsFrom libraries, userdevCompileOnly, neoFormDependencies
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_API))
+        }
+        outgoing {
+            capability("net.neoforged:neoforge-universal-and-dependencies:${project.version}")
+        }
+        javaComponent.addVariantsFromConfiguration(it) {}
+    }
+    universalModDevRuntimeElements {
+        canBeDeclared = false
+        canBeResolved = false
+        extendsFrom libraries, neoFormDependencies
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        }
+        outgoing {
+            capability("net.neoforged:neoforge-universal-and-dependencies:${project.version}")
+        }
+        javaComponent.addVariantsFromConfiguration(it) {}
+    }
     // Deprecated, but we'll keep it empty for backwards compatibility
     modDevModulePath {
         canBeDeclared = false
@@ -537,6 +567,8 @@ artifacts {
     universalJar(universalJar) {
         setClassifier("universal")
     }
+    universalModDevApiElements(universalJar) {}
+    universalModDevRuntimeElements(universalJar) {}
     installerJar(installerJar) {
         setClassifier("installer")
     }
