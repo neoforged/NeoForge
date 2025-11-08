@@ -10,12 +10,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.BundleItemHandler;
 import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
@@ -23,6 +25,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -36,11 +39,13 @@ public class ItemInventoryTests {
 
     private static final DeferredItems ITEMS = HELPER.items();
     private static final DeferredItem<Item> BACKPACK;
+    private static final DeferredItem<Item> BUNDLEPACK;
 
     static {
         NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
         BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> props.component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
+        BUNDLEPACK = ITEMS.registerItem("test_bundlepack", Item::new, props -> props.component(DataComponents.BUNDLE_CONTENTS, new BundleContents(defaultContents)));
     }
 
     @OnInit
@@ -50,6 +55,9 @@ public class ItemInventoryTests {
             e.registerItem(Capabilities.Item.ITEM, (stack, itemAccess) -> {
                 return new ItemAccessItemHandler(itemAccess, DataComponents.CONTAINER, SLOTS);
             }, BACKPACK);
+            e.registerItem(Capabilities.Item.ITEM, (stack, itemAccess) -> {
+                return new BundleItemHandler(itemAccess, DataComponents.BUNDLE_CONTENTS, SLOTS);
+            });
         });
     }
 
@@ -58,40 +66,43 @@ public class ItemInventoryTests {
     @TestHolder(description = "Tests that ComponentItemHandler can read and write from a data component")
     public static void testItemInventory(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
-            ItemStack stack = BACKPACK.toStack();
-            ItemAccess itemAccess = ItemAccess.forStack(stack);
-            // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
-            IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
-
-            ItemStack storedStick = items.getStackInSlot(STICK_SLOT);
-            helper.assertValueEqual(storedStick.getItem(), Items.STICK, "Default contents should contain a stick at slot " + STICK_SLOT);
-
-            ItemStack toInsert = Items.APPLE.getDefaultInstance().copyWithCount(32);
-            ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
-
-            ItemStack remainder = items.insertItem(STICK_SLOT, toInsert, false);
-            helper.assertTrue(ItemStack.matches(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
-            // Check identity equality to assert that the component object was not updated at all, even to an equivalent form.
-            helper.assertTrue(contents == stack.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
-
-            remainder = items.insertItem(0, toInsert, false);
-            helper.assertTrue(remainder.isEmpty(), "Successfully inserting the entire item should return an empty stack.");
-            helper.assertTrue(ItemStack.matches(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
-
-            ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
-            helper.assertTrue(ItemStack.matches(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
-
-            ItemStack extractedApple = items.extractItem(0, 64, false);
-            helper.assertTrue(ItemStack.matches(toInsert, extractedApple), "Extracting the entire inserted item should produce the same item.");
-
-            ItemStack extractedStick = items.extractItem(STICK_SLOT, 64, false);
-            helper.assertTrue(extractedStick.getItem() == Items.STICK && extractedStick.getCount() == 64, "The extracted item from the stick slot should be a 64-count stick.");
-
-            for (int i = 0; i < SLOTS; i++) {
-                helper.assertTrue(items.getStackInSlot(i).isEmpty(), "Stack at slot " + i + " must be empty.");
-            }
-
+            testItemInventory(BACKPACK.toStack(), helper);
+            testItemInventory(BUNDLEPACK.toStack(), helper);
             helper.succeed();
         });
+    }
+
+    private static void testItemInventory(ItemStack stack, ExtendedGameTestHelper helper) {
+        ItemAccess itemAccess = ItemAccess.forStack(stack);
+        // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
+        IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
+
+        ItemStack storedStick = items.getStackInSlot(STICK_SLOT);
+        helper.assertValueEqual(storedStick.getItem(), Items.STICK, "Default contents should contain a stick at slot " + STICK_SLOT);
+
+        ItemStack toInsert = Items.APPLE.getDefaultInstance().copyWithCount(32);
+        ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+
+        ItemStack remainder = items.insertItem(STICK_SLOT, toInsert, false);
+        helper.assertTrue(ItemStack.matches(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
+        // Check identity equality to assert that the component object was not updated at all, even to an equivalent form.
+        helper.assertTrue(contents == stack.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
+
+        remainder = items.insertItem(0, toInsert, false);
+        helper.assertTrue(remainder.isEmpty(), "Successfully inserting the entire item should return an empty stack.");
+        helper.assertTrue(ItemStack.matches(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
+
+        ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
+        helper.assertTrue(ItemStack.matches(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
+
+        ItemStack extractedApple = items.extractItem(0, 64, false);
+        helper.assertTrue(ItemStack.matches(toInsert, extractedApple), "Extracting the entire inserted item should produce the same item.");
+
+        ItemStack extractedStick = items.extractItem(STICK_SLOT, 64, false);
+        helper.assertTrue(extractedStick.getItem() == Items.STICK && extractedStick.getCount() == 64, "The extracted item from the stick slot should be a 64-count stick.");
+
+        for (int i = 0; i < SLOTS; i++) {
+            helper.assertTrue(items.getStackInSlot(i).isEmpty(), "Stack at slot " + i + " must be empty.");
+        }
     }
 }
