@@ -92,6 +92,18 @@ public interface IBlockStateExtension {
     }
 
     /**
+     * Called when lava is updating, checks if a block face can catch fire from lava.
+     *
+     * @param level The current level
+     * @param pos   Block position in level
+     * @param face  The face that the fire is coming from
+     * @return True if the face can catch fire from lava, false otherwise.
+     */
+    default boolean ignitedByLava(BlockGetter level, BlockPos pos, Direction face) {
+        return self().getBlock().ignitedByLava(self(), level, pos, face);
+    }
+
+    /**
      * Checks if a player or entity can use this block to 'climb' like a ladder.
      *
      * @param level  The current level
