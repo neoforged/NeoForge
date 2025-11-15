@@ -549,24 +549,19 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(binpatcherConfig);
 
-            task.getModifiedClientJar().set(tasks.named("clientJar", Jar.class).flatMap(Jar::getArchiveFile));
+            task.getModifiedClientJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
             task.getModifiedServerJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
             task.getModifiedJoinedJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
 
-            task.getClientJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+            task.getClientJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
             task.getServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanServerJar));
-            task.getJoinedJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+            task.getJoinedJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
 
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
         });
 
         return generatePatchBundles.flatMap(GenerateBinaryPatches::getOutputJar);
     }
-
-    private record BinaryPatchOutputs(
-            Provider<RegularFile> binaryPatchesForMerged,
-            Provider<RegularFile> binaryPatchesForClient,
-            Provider<RegularFile> binaryPatchesForServer) {}
 
     /**
      * Sets up NFRT, and creates the sources and resources artifacts.

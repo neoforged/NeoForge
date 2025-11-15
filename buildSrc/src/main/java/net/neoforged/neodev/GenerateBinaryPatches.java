@@ -38,7 +38,9 @@ public abstract class GenerateBinaryPatches extends JavaExec {
         args("--base-client", getClientJar().get().getAsFile().getAbsolutePath());
         args("--base-server", getServerJar().get().getAsFile().getAbsolutePath());
         args("--base-joined", getJoinedJar().get().getAsFile().getAbsolutePath());
-        args("--modified", getModifiedJoinedJar().get().getAsFile().getAbsolutePath());
+        args("--modified-client", getModifiedClientJar().get().getAsFile().getAbsolutePath());
+        args("--modified-server", getModifiedServerJar().get().getAsFile().getAbsolutePath());
+        args("--modified-joined", getModifiedJoinedJar().get().getAsFile().getAbsolutePath());
         args("--optimize-constantpool");
         args("--output", getOutputJar().get().getAsFile().getAbsolutePath());
 
