@@ -81,6 +81,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getCleanServerJar().set(cleanArtifactsDir.map(dir -> dir.file("server.jar")));
             task.getCleanJoinedJar().set(cleanArtifactsDir.map(dir -> dir.file("joined.jar")));
             task.getMergedMappings().set(cleanArtifactsDir.map(dir -> dir.file("merged-mappings.txt")));
+            task.getClientMappings().set(cleanArtifactsDir.map(dir -> dir.file("client-mappings.txt")));
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
         });
 
@@ -539,7 +540,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.getMinecraft().from(
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
             task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
@@ -551,7 +552,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.getMinecraft().from(
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
             task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
@@ -564,7 +565,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMinecraft().from(
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar),
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
             task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-joined.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
