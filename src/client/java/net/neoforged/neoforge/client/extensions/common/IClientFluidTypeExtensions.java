@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -73,8 +74,9 @@ public interface IClientFluidTypeExtensions {
      *
      * @return the reference of the texture to apply to a source fluid
      */
+    // TODO: Make abstract in 1.22, implement missing on default
     default ResourceLocation getStillTexture() {
-        return null;
+        return MissingTextureAtlasSprite.getLocation();
     }
 
     /**
@@ -89,8 +91,9 @@ public interface IClientFluidTypeExtensions {
      *
      * @return the reference of the texture to apply to a flowing fluid
      */
+    // TODO: Make abstract in 1.22, implement missing on default
     default ResourceLocation getFlowingTexture() {
-        return null;
+        return MissingTextureAtlasSprite.getLocation();
     }
 
     /**
