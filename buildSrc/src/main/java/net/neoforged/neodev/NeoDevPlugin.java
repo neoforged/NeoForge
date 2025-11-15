@@ -310,10 +310,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 project,
                 configurations,
                 createCleanArtifacts,
-                joinedJar,
-                neoDevBuildDir,
-                genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder),
-                genCommonProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder));
+                neoDevBuildDir);
 
         var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
@@ -412,13 +409,9 @@ public class NeoDevPlugin implements Plugin<Project> {
                 spec.into("data");
                 spec.rename(s -> "win_args.txt");
             });
-            task.from(binaryPatchOutputs.binaryPatchesForClient(), spec -> {
+            task.from(binaryPatchOutputs, spec -> {
                 spec.into("data");
-                spec.rename(s -> "client.lzma");
-            });
-            task.from(binaryPatchOutputs.binaryPatchesForServer(), spec -> {
-                spec.into("data");
-                spec.rename(s -> "server.lzma");
+                spec.rename(s -> "patches.lzma");
             });
             var mavenPath = neoForgeVersion.map(v -> "net/neoforged/neoforge/" + v);
             task.getInputs().property("mavenPath", mavenPath);
@@ -450,8 +443,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.from(atFiles, spec -> {
                 spec.into("ats/");
             });
-            task.from(binaryPatchOutputs.binaryPatchesForMerged(), spec -> {
-                spec.rename(s -> "joined.lzma");
+            task.from(binaryPatchOutputs, spec -> {
+                spec.rename(s -> "patches.lzma");
             });
             task.from(project.fileTree(genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)), spec -> {
                 spec.into("patches/");
@@ -524,13 +517,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
     }
 
-    private static BinaryPatchOutputs configureBinaryPatchCreation(Project project,
+    private static Provider<RegularFile> configureBinaryPatchCreation(
+            Project project,
             NeoDevConfigurations configurations,
             TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
-            TaskProvider<Jar> joinedJar,
-            Provider<Directory> neoDevBuildDir,
-            Provider<Directory> sourcesPatchesFolder,
-            Provider<Directory> sourcesServerPatchesFolder) {
+            Provider<Directory> neoDevBuildDir) {
         var tasks = project.getTasks();
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
@@ -553,43 +544,23 @@ public class NeoDevPlugin implements Plugin<Project> {
         }
 
         var binpatcherConfig = configurations.getExecutableTool(Tools.BINPATCHER);
-        var generateMergedBinPatches = tasks.register("generateMergedBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setDescription("Creates binary patch files by diffing a merged client/server jar-file and the compiled Minecraft classes in this project.");
-            task.getCleanJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
-            // Included so that lambda names are correct in production
-            task.getIncludeClassesJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
-            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
-            task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("merged-binpatches.lzma")));
-        });
-        var generateClientBinPatches = tasks.register("generateClientBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setDescription("Creates binary patch files by diffing a merged client jar-file and the compiled Minecraft classes in this project.");
-            task.getCleanJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
-            // Included so that lambda names are correct in production
-            task.getIncludeClassesJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
-            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
-            task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("client-binpatches.lzma")));
-        });
-        var generateServerBinPatches = tasks.register("generateServerBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setDescription("Creates binary patch files by diffing a merged server jar-file and the compiled Minecraft classes in this project.");
-            task.getCleanJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
-            // Included so that lambda names are correct in production
-            task.getIncludeClassesJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
-            task.getSourcePatchesFolder().set(sourcesServerPatchesFolder);
-            task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("server-binpatches.lzma")));
-        });
-        for (var generateBinPatchesTask : List.of(generateMergedBinPatches, generateClientBinPatches, generateServerBinPatches)) {
-            generateBinPatchesTask.configure(task -> {
-                task.setGroup(INTERNAL_GROUP);
-                task.classpath(binpatcherConfig);
-                task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
-                task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
-            });
-        }
+        var generatePatchBundles = tasks.register("generatePatchBundles", GenerateBinaryPatches.class, task -> {
+            task.setDescription("Generates the binary patches.");
+            task.setGroup(INTERNAL_GROUP);
+            task.classpath(binpatcherConfig);
 
-        return new BinaryPatchOutputs(
-                generateMergedBinPatches.flatMap(GenerateBinaryPatches::getOutputFile),
-                generateClientBinPatches.flatMap(GenerateBinaryPatches::getOutputFile),
-                generateServerBinPatches.flatMap(GenerateBinaryPatches::getOutputFile));
+            task.getModifiedClientJar().set(tasks.named("clientJar", Jar.class).flatMap(Jar::getArchiveFile));
+            task.getModifiedServerJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
+            task.getModifiedJoinedJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
+
+            task.getClientJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+            task.getServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanServerJar));
+            task.getJoinedJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+
+            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
+        });
+
+        return generatePatchBundles.flatMap(GenerateBinaryPatches::getOutputJar);
     }
 
     private record BinaryPatchOutputs(
@@ -647,7 +618,8 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
     }
 
-    private void setupProductionClientTest(Project project,
+    private void setupProductionClientTest(
+            Project project,
             NeoDevConfigurations configurations,
             TaskProvider<? extends DownloadAssets> downloadAssets,
             TaskProvider<? extends AbstractArchiveTask> installer,

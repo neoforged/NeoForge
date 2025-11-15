@@ -112,7 +112,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         var data = new LinkedHashMap<String, LauncherDataEntry>();
         var neoFormVersion = getMcAndNeoFormVersion().get();
         data.put("MOJMAPS", new LauncherDataEntry(clientMappingsCoordinate, serverMappingsCoordinate));
-        data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/server.lzma"));
+        data.put("BINPATCH", new LauncherDataEntry("/data/patches.lzma", "/data/patches.lzma"));
 
         var patchedClientCoordinate = new MavenIdentifier("net.neoforged", "minecraft-client-patched", getNeoForgeVersion().get(), "", "jar");
         var patchedServerCoordinate = new MavenIdentifier("net.neoforged", "minecraft-server-patched", getNeoForgeVersion().get(), "", "jar");
