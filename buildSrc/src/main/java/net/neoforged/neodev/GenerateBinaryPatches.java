@@ -52,6 +52,5 @@ public abstract class GenerateBinaryPatches extends JavaExec {
         } catch (IOException e) {
             throw new GradleException("Failed to create binary patches.", e);
         }
-        super.exec();
     }
 }
