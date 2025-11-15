@@ -310,7 +310,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 project,
                 configurations,
                 createCleanArtifacts,
-                neoDevBuildDir);
+                neoDevBuildDir,
+                mcAndNeoFormVersion);
 
         var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
@@ -519,31 +520,58 @@ public class NeoDevPlugin implements Plugin<Project> {
 
     private static Provider<RegularFile> configureBinaryPatchCreation(
             Project project,
-            NeoDevConfigurations configurations,
+            NeoDevConfigurations neoDevConfigurations,
             TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
-            Provider<Directory> neoDevBuildDir) {
+            Provider<Directory> neoDevBuildDir, final Provider<String> mcAndNeoFormVersion) {
         var tasks = project.getTasks();
 
-        var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
-        var remapClientJar = tasks.register("remapClientJar", RemapJar.class, task -> {
-            task.setDescription("Creates a Minecraft client jar with the official mappings applied. Used as the base for generating binary patches for the client.");
-            task.getInputJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanClientJar));
-            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
+        var neoFormRuntimeDataOnly = project.getConfigurations().create("neoFormDataOnly", spec -> {
+            spec.setCanBeConsumed(false);
+            spec.setCanBeResolved(true);
+            spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
+                return project.getDependencyFactory().create("net.neoforged:neoform:" + version + ":mappings@tsrg.lzma");
+            }));
         });
-        var remapServerJar = tasks.register("remapServerJar", RemapJar.class, task -> {
-            task.setDescription("Creates a Minecraft dedicated server jar with the official mappings applied. Used as the base for generating binary patches for the client.");
-            task.getInputJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanServerJar));
-            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
-        });
-        for (var remapTask : List.of(remapClientJar, remapServerJar)) {
-            remapTask.configure(task -> {
-                task.setGroup(INTERNAL_GROUP);
-                task.classpath(artConfig);
-                task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
-            });
-        }
 
-        var binpatcherConfig = configurations.getExecutableTool(Tools.BINPATCHER);
+        var installerToolsConfig = neoDevConfigurations.getExecutableTool(Tools.INSTALLERTOOLS);
+        var baseClientJar = tasks.register("createBaseClientJar", GenerateBaseJar.class, task -> {
+            task.setDescription("Generates the base client jar used as a reference for the binary patches.");
+            task.setGroup(INTERNAL_GROUP);
+            task.getMinecraft().from(
+                    createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
+            task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
+                    .map(artifacts -> artifacts.iterator().next().getFile()));
+            task.classpath(installerToolsConfig);
+        });
+
+        var baseServerJar = tasks.register("createBaseServerJar", GenerateBaseJar.class, task -> {
+            task.setDescription("Generates the base server jar used as a reference for the binary patches.");
+            task.setGroup(INTERNAL_GROUP);
+            task.getMinecraft().from(
+                    createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
+            task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
+                    .map(artifacts -> artifacts.iterator().next().getFile()));
+            task.classpath(installerToolsConfig);
+        });
+
+        var baseJoinedJar = tasks.register("createBaseJoinedJar", GenerateBaseJar.class, task -> {
+            task.setDescription("Generates the base joined jar used as a reference for the binary patches.");
+            task.setGroup(INTERNAL_GROUP);
+            task.getMinecraft().from(
+                    createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar),
+                    createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
+            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-joined.jar")));
+            task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
+                    .map(artifacts -> artifacts.iterator().next().getFile()));
+            task.classpath(installerToolsConfig);
+        });
+
+        var binpatcherConfig = neoDevConfigurations.getExecutableTool(Tools.BINPATCHER);
         var generatePatchBundles = tasks.register("generatePatchBundles", GenerateBinaryPatches.class, task -> {
             task.setDescription("Generates the binary patches.");
             task.setGroup(INTERNAL_GROUP);
@@ -553,9 +581,9 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getModifiedServerJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
             task.getModifiedJoinedJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
 
-            task.getClientJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
-            task.getServerJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
-            task.getJoinedJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
+            task.getClientJar().set(baseClientJar.flatMap(GenerateBaseJar::getOutput));
+            task.getServerJar().set(baseServerJar.flatMap(GenerateBaseJar::getOutput));
+            task.getJoinedJar().set(baseJoinedJar.flatMap(GenerateBaseJar::getOutput));
 
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
         });
