@@ -43,7 +43,8 @@ public abstract class AbstractUnbakedModel implements UnbakedModel {
     @Nullable
     @Override
     public GuiLight guiLight() {
-        return this.parameters.guiLight();
+        GuiLight light = this.parameters.guiLight();
+        return light != null ? light : GuiLight.FRONT;
     }
 
     @Nullable
