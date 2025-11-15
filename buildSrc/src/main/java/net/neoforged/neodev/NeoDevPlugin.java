@@ -554,8 +554,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getModifiedJoinedJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
 
             task.getClientJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
-            task.getServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanServerJar));
-            task.getJoinedJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
+            task.getServerJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
+            task.getJoinedJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
 
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
         });
