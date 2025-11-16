@@ -36,6 +36,7 @@ import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
@@ -61,6 +62,9 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
         var configurations = NeoDevConfigurations.createAndSetup(project);
+
+        // Pre-create the "client" source set
+        project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets().create("client");
 
         /*
          * MINECRAFT SOURCES SETUP
@@ -541,7 +545,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMinecraft().from(
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
             task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
-            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("artifacts/remapped-client.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
             task.classpath(installerToolsConfig);
@@ -553,7 +557,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMinecraft().from(
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
-            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("artifacts/remapped-server.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
             task.classpath(installerToolsConfig);
@@ -566,10 +570,80 @@ public class NeoDevPlugin implements Plugin<Project> {
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar),
                     createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
             task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
-            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("remapped-joined.jar")));
+            task.getOutput().set(neoDevBuildDir.map(dir -> dir.file("artifacts/remapped-joined.jar")));
             task.getNeoForm().fileProvider(neoFormRuntimeDataOnly.getIncoming().getArtifacts().getResolvedArtifacts()
                     .map(artifacts -> artifacts.iterator().next().getFile()));
             task.classpath(installerToolsConfig);
+        });
+
+        // Create the target modified jar files for common(server), client and joined. This is what we want
+        // the final Minecraft Jars to look like.
+        var sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+        var mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+        var clientSourceSet = sourceSets.getByName("client");
+        var extractMinecraftClientManifest = tasks.register("extractMinecraftClientManifest", ExtractManifest.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getJarFile().set(baseClientJar.flatMap(GenerateBaseJar::getOutput));
+            task.getManifest().set(neoDevBuildDir.map(dir -> dir.file("artifacts/client-manifest.mf")));
+        });
+        var targetMinecraftClientJar = tasks.register("targetMinecraftClientJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("neodev/artifacts"));
+            task.getArchiveFileName().set("target-minecraft-client.jar");
+
+            task.from(mainSourceSet.getJava().getClassesDirectory(), spec -> {
+                spec.exclude("net/neoforged/**");
+            });
+            task.from(clientSourceSet.getJava().getClassesDirectory(), spec -> {
+                spec.exclude("net/neoforged/**");
+            });
+            task.from(project.zipTree(baseClientJar.flatMap(GenerateBaseJar::getOutput)), copySpec -> {
+                copySpec.exclude("**/*.class");
+            });
+            task.getInputs().file(extractMinecraftClientManifest.flatMap(ExtractManifest::getManifest));
+            task.getManifest().from(extractMinecraftClientManifest.flatMap(ExtractManifest::getManifest));
+        });
+        var extractMinecraftServerManifest = tasks.register("extractMinecraftServerManifest", ExtractManifest.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getJarFile().set(baseServerJar.flatMap(GenerateBaseJar::getOutput));
+            task.getManifest().set(neoDevBuildDir.map(dir -> dir.file("artifacts/server-manifest.mf")));
+        });
+        var targetMinecraftServerJar = tasks.register("targetMinecraftServerJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("neodev/artifacts"));
+            task.getArchiveFileName().set("target-minecraft-server.jar");
+
+            task.from(mainSourceSet.getJava().getClassesDirectory(), spec -> {
+                spec.exclude("net/neoforged/**");
+            });
+            task.from(project.zipTree(baseServerJar.flatMap(GenerateBaseJar::getOutput)), copySpec -> {
+                copySpec.exclude("**/*.class");
+            });
+            task.getInputs().file(extractMinecraftServerManifest.flatMap(ExtractManifest::getManifest));
+            task.getManifest().from(extractMinecraftServerManifest.flatMap(ExtractManifest::getManifest));
+        });
+        var extractMinecraftJoinedManifest = tasks.register("extractMinecraftJoinedManifest", ExtractManifest.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getJarFile().set(baseJoinedJar.flatMap(GenerateBaseJar::getOutput));
+            task.getManifest().set(neoDevBuildDir.map(dir -> dir.file("artifacts/joined-manifest.mf")));
+        });
+        var targetMinecraftJoinedJar = tasks.register("targetMinecraftJoinedJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("neodev/artifacts"));
+            task.getArchiveFileName().set("target-minecraft-joined.jar");
+
+            // The jar content should be equivalent to the client jar *except* for the manifest.
+            task.from(mainSourceSet.getJava().getClassesDirectory(), spec -> {
+                spec.exclude("net/neoforged/**");
+            });
+            task.from(clientSourceSet.getJava().getClassesDirectory(), spec -> {
+                spec.exclude("net/neoforged/**");
+            });
+            task.from(project.zipTree(baseJoinedJar.flatMap(GenerateBaseJar::getOutput)), copySpec -> {
+                copySpec.exclude("**/*.class");
+            });
+            task.getInputs().file(extractMinecraftJoinedManifest.flatMap(ExtractManifest::getManifest));
+            task.getManifest().from(extractMinecraftJoinedManifest.flatMap(ExtractManifest::getManifest));
         });
 
         var binpatcherConfig = neoDevConfigurations.getExecutableTool(Tools.BINPATCHER);
@@ -578,9 +652,9 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(binpatcherConfig);
 
-            task.getModifiedClientJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
-            task.getModifiedServerJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
-            task.getModifiedJoinedJar().set(tasks.named("joinedJar", Jar.class).flatMap(Jar::getArchiveFile));
+            task.getModifiedClientJar().set(targetMinecraftClientJar.flatMap(Jar::getArchiveFile));
+            task.getModifiedServerJar().set(targetMinecraftServerJar.flatMap(Jar::getArchiveFile));
+            task.getModifiedJoinedJar().set(targetMinecraftJoinedJar.flatMap(Jar::getArchiveFile));
 
             task.getClientJar().set(baseClientJar.flatMap(GenerateBaseJar::getOutput));
             task.getServerJar().set(baseServerJar.flatMap(GenerateBaseJar::getOutput));
