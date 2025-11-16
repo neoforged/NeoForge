@@ -29,8 +29,8 @@ dependencyResolutionManagement {
     //TODO: Remove this once InstallerTools is ready
     repositories {
         maven {
-            name = "Maven for PR #32" // https://github.com/neoforged/InstallerTools/pull/32
-            url = uri("https://prmaven.neoforged.net/InstallerTools/pr32")
+            name = "Maven for PR #32" // https://github.com/neoforged/InstallerTools/pull/30
+            url = uri("https://prmaven.neoforged.net/InstallerTools/pr30")
             content {
                 includeModule("net.neoforged.installertools", "binarypatcher")
                 includeModule("net.neoforged.installertools", "cli-utils")
