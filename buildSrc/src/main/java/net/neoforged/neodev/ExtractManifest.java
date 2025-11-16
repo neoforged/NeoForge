@@ -1,17 +1,15 @@
 package net.neoforged.neodev;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.jar.JarInputStream;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 
 public abstract class ExtractManifest extends DefaultTask {
     @InputFile
