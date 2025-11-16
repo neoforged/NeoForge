@@ -53,24 +53,24 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @TaskAction
     public void writeUserDevConfig() throws IOException {
         var features = new UserDevFeatures(
-                true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+                true, //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+                true, //Since 21.10 NeoForm and production use the same toolchain to produce the base jar, allowing bin patches to be used more effectively.
+                true //Since 21.10 FML Has support for running in a way that does not require splitting of resources and code in the minecraft jar.
         );
 
         var config = new UserDevConfig(
-                2,
+                3,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
                 "ats/",
-                "joined.lzma",
-                new BinpatcherConfig(
-                        getBinpatcherGav().get(),
-                        List.of("--clean", "{clean}", "--output", "{output}", "--apply", "{patch}")),
-                "patches/",
+                "patches.lzma",
+                new DistributionBased(
+                        "patches/client",
+                        "patches/common"),
                 "net.neoforged:neoforge:%s:sources".formatted(getNeoForgeVersion().get()),
                 "net.neoforged:neoforge:%s:universal".formatted(getNeoForgeVersion().get()),
                 getLibraries().get(),
                 getTestLibraries().get(),
                 new LinkedHashMap<>(),
-                List.of() /* deprecated: modules */,
                 features);
 
         for (var runType : RunType.values()) {
@@ -142,23 +142,27 @@ abstract class CreateUserDevConfig extends DefaultTask {
     }
 }
 
+record DistributionBased(
+        String client,
+        String common) {}
+
 record UserDevConfig(
         int spec,
-        String mcp,
+        String neoForm,
         String ats,
         String binpatches,
-        BinpatcherConfig binpatcher,
-        String patches,
+        DistributionBased patches,
         String sources,
         String universal,
         List<String> libraries,
         List<String> testLibraries,
         Map<String, UserDevRunType> runs,
-        List<String> modules,
         UserDevFeatures features) {}
 
 record UserDevFeatures(
-        boolean noLegacyClasspath) {}
+        boolean noLegacyClasspath,
+        boolean binaryPatchMode,
+        boolean nonSplitMode) {}
 
 record BinpatcherConfig(
         String version,

@@ -1,5 +1,10 @@
 package net.neoforged.neodev;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.CacheableTask;
@@ -37,8 +42,13 @@ public abstract class GenerateBaseJar extends JavaExec {
         args("--output", getOutput().get().getAsFile().getAbsolutePath());
         args("--neoform-data", getNeoForm().get().getAsFile().getAbsolutePath());
 
-        getLogger().error("Arguments: {}", String.join(" ", getArgs()));
-
-        super.exec();
+        var logFile = new File(getTemporaryDir(), "console.log");
+        try (var out = new BufferedOutputStream(new FileOutputStream(logFile))) {
+            getLogger().info("Logging jar generator console output to {}", logFile.getAbsolutePath());
+            setStandardOutput(out);
+            super.exec();
+        } catch (IOException e) {
+            throw new GradleException("Failed to create jar.", e);
+        }
     }
 }

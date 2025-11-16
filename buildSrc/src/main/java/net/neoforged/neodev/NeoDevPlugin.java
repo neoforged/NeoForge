@@ -235,12 +235,23 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getArchiveFileName().set("common-patched-sources.jar");
         });
 
-        // Generate source patches into a patch archive, based on the jar with injected interfaces.
-        var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
+        var clientSources = tasks.register("clientPatchedSources", Zip.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.files("src/client/java"));
+            task.getDestinationDirectory().set(neoDevBuildDir.map(dir -> dir.dir("artifacts/client-sources")));
+            task.getArchiveFileName().set("client-patched-sources.jar");
+        });
+
+        // Generate source patches into our patches directory.
+        // This is different from our "production"/userdev/moddev patches as these are generated form a point where minecraft
+        // already has the interface injections applied.
+        // We can generate them directly into the ./patches directory.
+        tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
             task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
+            task.getPatchesFolder().set(project.getRootProject().file("patches"));
         });
 
         // Generate source patches that are based on the production environment (without separate interface injection)
@@ -258,11 +269,11 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches-common")));
         });
 
-        // Update the patch/ folder with the current patches.
-        tasks.register("genPatches", Sync.class, task -> {
-            task.setGroup(GROUP);
-            task.from(project.zipTree(genSourcePatches.flatMap(GenerateSourcePatches::getPatchesJar)));
-            task.into(project.getRootProject().file("patches"));
+        var genClientProductionPatches = tasks.register("generateClientProductionSourcePatches", GenerateSourcePatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getOriginalJar().set(splitUnpatchedSources.flatMap(SplitMergedSources::getClientJar));
+            task.getModifiedSources().set(clientSources.flatMap(AbstractArchiveTask::getArchiveFile));
+            task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches-client")));
         });
 
         // Even the jar built only for local usage in other tasks needs the MANIFEST.MF used to tell FML it's the
@@ -452,8 +463,11 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.from(binaryPatchOutputs, spec -> {
                 spec.rename(s -> "patches.lzma");
             });
-            task.from(project.fileTree(genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)), spec -> {
-                spec.into("patches/");
+            task.from(genCommonProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder), spec -> {
+                spec.into("patches/common");
+            });
+            task.from(genClientProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder), spec -> {
+                spec.into("patches/client");
             });
         });
 
