@@ -37,9 +37,9 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
     /**
      * Registers a named {@link RenderTypeGroup}.
      *
-     * @param key                   The ID of the group
-     * @param chunkLayer            The {@link ChunkSectionLayer} to render blocks with as part of the terrain
-     * @param entityRenderType      A factory for a {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} with the atlas passed to the function
+     * @param key              The ID of the group
+     * @param chunkLayer       The {@link ChunkSectionLayer} to render blocks with as part of the terrain
+     * @param entityRenderType A factory for a {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} with the atlas passed to the function
      */
     public void register(Identifier key, ChunkSectionLayer chunkLayer, Function<Identifier, RenderType> entityRenderType) {
         Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
