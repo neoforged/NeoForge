@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -21,13 +22,18 @@ import net.neoforged.neoforge.common.util.Lazy;
 
 @SuppressWarnings("deprecation")
 public enum NeoForgeRenderTypes {
-    ITEM_LAYERED_SOLID(() -> getItemLayeredSolid(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_LAYERED_CUTOUT(() -> getItemLayeredCutout(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_LAYERED_CUTOUT_MIPPED(() -> getItemLayeredCutoutMipped(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_LAYERED_TRANSLUCENT(() -> getItemLayeredTranslucent(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_UNSORTED_TRANSLUCENT(() -> getUnsortedTranslucent(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_BLOCKS)),
-    ITEM_UNSORTED_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_BLOCKS, false));
+    BLOCK_ITEM_LAYERED_SOLID(() -> getItemLayeredSolid(TextureAtlas.LOCATION_BLOCKS)),
+    BLOCK_ITEM_LAYERED_CUTOUT(() -> getItemLayeredCutout(TextureAtlas.LOCATION_BLOCKS)),
+    BLOCK_ITEM_LAYERED_TRANSLUCENT(() -> getItemLayeredTranslucent(TextureAtlas.LOCATION_BLOCKS)),
+    BLOCK_ITEM_UNSORTED_TRANSLUCENT(() -> getUnsortedTranslucent(TextureAtlas.LOCATION_BLOCKS)),
+    BLOCK_ITEM_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_BLOCKS)),
+    BLOCK_ITEM_UNSORTED_UNLIT_TRANSLUCENT(() -> getUnlitUnsortedTranslucent(TextureAtlas.LOCATION_BLOCKS)),
+    ITEM_LAYERED_SOLID(() -> getItemLayeredSolid(TextureAtlas.LOCATION_ITEMS)),
+    ITEM_LAYERED_CUTOUT(() -> getItemLayeredCutout(TextureAtlas.LOCATION_ITEMS)),
+    ITEM_LAYERED_TRANSLUCENT(() -> getItemLayeredTranslucent(TextureAtlas.LOCATION_ITEMS)),
+    ITEM_UNSORTED_TRANSLUCENT(() -> getUnsortedTranslucent(TextureAtlas.LOCATION_ITEMS)),
+    ITEM_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_ITEMS)),
+    ITEM_UNSORTED_UNLIT_TRANSLUCENT(() -> getUnlitUnsortedTranslucent(TextureAtlas.LOCATION_ITEMS));
 
     // TODO 1.21.11: Some render types previously enabled linear filtering, this intends to be equivalent, but was not checked. Also check the mipmap flag.
     private static final Supplier<GpuSampler> LINEAR_FILTERING_SAMPLER = () -> RenderSystem.getSamplerCache()
@@ -45,13 +51,6 @@ public enum NeoForgeRenderTypes {
      */
     public static RenderType getItemLayeredCutout(Identifier textureLocation) {
         return Internal.LAYERED_ITEM_CUTOUT.apply(textureLocation);
-    }
-
-    /**
-     * @return A RenderType fit for multi-layer cutout-mipped item rendering.
-     */
-    public static RenderType getItemLayeredCutoutMipped(Identifier textureLocation) {
-        return Internal.LAYERED_ITEM_CUTOUT_MIPPED.apply(textureLocation);
     }
 
     /**
@@ -79,56 +78,55 @@ public enum NeoForgeRenderTypes {
     /**
      * @return A RenderType fit for translucent item/entity rendering, but with diffuse lighting disabled
      *         so that fullbright quads look correct.
-     * @param sortingEnabled If false, depth sorting will not be performed.
      */
-    public static RenderType getUnlitTranslucent(Identifier textureLocation, boolean sortingEnabled) {
-        return (sortingEnabled ? Internal.UNLIT_TRANSLUCENT_SORTED : Internal.UNLIT_TRANSLUCENT_UNSORTED).apply(textureLocation);
+    public static RenderType getUnlitUnsortedTranslucent(Identifier textureLocation) {
+        return Internal.UNLIT_TRANSLUCENT_UNSORTED.apply(textureLocation);
     }
 
     /**
-     * @return Same as {@link RenderType#entityCutout(Identifier)}, but with mipmapping enabled.
+     * @return Same as {@link RenderTypes#entityCutout(Identifier)}, but with mipmapping enabled.
      */
     public static RenderType getEntityCutoutMipped(Identifier textureLocation) {
         return Internal.LAYERED_ITEM_CUTOUT_MIPPED.apply(textureLocation);
     }
 
     /**
-     * @return Replacement of {@link RenderType#text(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#text(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextFiltered(Identifier locationIn) {
         return Internal.TEXT_FILTERED.apply(locationIn);
     }
 
     /**
-     * @return Replacement of {@link RenderType#textIntensity(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#textIntensity(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextIntensityFiltered(Identifier locationIn) {
         return Internal.TEXT_INTENSITY_FILTERED.apply(locationIn);
     }
 
     /**
-     * @return Replacement of {@link RenderType#textPolygonOffset(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#textPolygonOffset(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextPolygonOffsetFiltered(Identifier locationIn) {
         return Internal.TEXT_POLYGON_OFFSET_FILTERED.apply(locationIn);
     }
 
     /**
-     * @return Replacement of {@link RenderType#textIntensityPolygonOffset(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#textIntensityPolygonOffset(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextIntensityPolygonOffsetFiltered(Identifier locationIn) {
         return Internal.TEXT_INTENSITY_POLYGON_OFFSET_FILTERED.apply(locationIn);
     }
 
     /**
-     * @return Replacement of {@link RenderType#textSeeThrough(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#textSeeThrough(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextSeeThroughFiltered(Identifier locationIn) {
         return Internal.TEXT_SEETHROUGH_FILTERED.apply(locationIn);
     }
 
     /**
-     * @return Replacement of {@link RenderType#textIntensitySeeThrough(Identifier)}, but with linear texture filtering.
+     * @return Replacement of {@link RenderTypes#textIntensitySeeThrough(Identifier)}, but with linear texture filtering.
      */
     public static RenderType getTextIntensitySeeThroughFiltered(Identifier locationIn) {
         return Internal.TEXT_INTENSITY_SEETHROUGH_FILTERED.apply(locationIn);

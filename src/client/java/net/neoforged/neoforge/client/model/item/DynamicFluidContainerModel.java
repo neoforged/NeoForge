@@ -39,6 +39,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.RenderTypeGroup;
+import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.ComposedModelState;
@@ -60,9 +61,11 @@ public class DynamicFluidContainerModel implements ItemModel {
     private static final Transformation FLUID_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1, 1, 1.002f), new Quaternionf());
     private static final Transformation COVER_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1, 1, 1.004f), new Quaternionf());
     private static final ModelDebugName DEBUG_NAME = () -> "DynamicFluidContainerModel";
+    private static final RenderTypeGroup RENDER_TYPES_DEFAULT = new RenderTypeGroup(ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnsortedTranslucent);
+    private static final RenderTypeGroup RENDER_TYPES_UNLIT = new RenderTypeGroup(ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnlitTranslucent);
 
     private static RenderTypeGroup getLayerRenderTypes(boolean unlit) {
-        return new RenderTypeGroup(ChunkSectionLayer.TRANSLUCENT, unlit ? NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get() : NeoForgeRenderTypes.ITEM_UNSORTED_TRANSLUCENT.get());
+        return unlit ? RENDER_TYPES_UNLIT : RENDER_TYPES_DEFAULT;
     }
 
     private final Unbaked unbakedModel;
@@ -114,7 +117,8 @@ public class DynamicFluidContainerModel implements ItemModel {
             // Base texture
             var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, baseSprite);
             var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> baseSprite, state);
-            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties, stack -> normalRenderTypes.entity()));
+            var renderType = RenderTypeHelper.detectItemModelRenderType(quads, normalRenderTypes);
+            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties, renderType));
         }
 
         if (fluidMaskLocation != null && fluidSprite != null) {
@@ -125,10 +129,10 @@ public class DynamicFluidContainerModel implements ItemModel {
             var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> fluidSprite, transformedState); // Bake with fluid texture
 
             var emissive = unbakedModel.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
-            var renderTypes = getLayerRenderTypes(emissive);
+            var renderType = RenderTypeHelper.detectItemModelRenderType(quads, getLayerRenderTypes(emissive));
             if (emissive) QuadTransformers.settingMaxEmissivity().processInPlace(quads);
 
-            subModels.add(new BlockModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, stack -> renderTypes.entity()));
+            subModels.add(new BlockModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, renderType));
         }
 
         if (coverSprite != null) {
@@ -137,7 +141,8 @@ public class DynamicFluidContainerModel implements ItemModel {
             var transformedState = new ComposedModelState(state, COVER_TRANSFORM);
             var unbaked = UnbakedElementsHelper.createUnbakedItemMaskElements(0, coverSprite); // Use cover as mask
             var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> sprite, transformedState); // Bake with selected texture
-            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties, stack -> normalRenderTypes.entity()));
+            var renderType = RenderTypeHelper.detectItemModelRenderType(quads, normalRenderTypes);
+            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties, renderType));
         }
 
         return new CompositeModel(subModels);

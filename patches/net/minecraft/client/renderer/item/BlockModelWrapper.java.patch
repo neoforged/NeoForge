@@ -16,7 +16,7 @@
 -            Function<ItemStack, RenderType> function = BlockModelWrapper.detectRenderType(list);
 +            var renderTypeGroup = resolvedmodel.getTopAdditionalProperties().getOptional(
 +                    net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE);
-+            Function<ItemStack, RenderType> function = renderTypeGroup == null ? BlockModelWrapper.detectRenderType(list) : ignored -> renderTypeGroup.entity();
++            Function<ItemStack, RenderType> function = renderTypeGroup == null ? BlockModelWrapper.detectRenderType(list) : net.neoforged.neoforge.client.RenderTypeHelper.detectItemModelRenderType(list, renderTypeGroup);
              return new BlockModelWrapper(this.tints, list, modelrenderproperties, function);
          }
  

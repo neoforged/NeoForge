@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import java.util.Map;
+import java.util.function.Function;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
@@ -36,13 +37,12 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
     /**
      * Registers a named {@link RenderTypeGroup}.
      *
-     * @param key              The ID of the group
-     * @param chunkLayer       The {@link ChunkSectionLayer} to render blocks with as part of the terrain
-     * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
+     * @param key                   The ID of the group
+     * @param chunkLayer            The {@link ChunkSectionLayer} to render blocks with as part of the terrain
+     * @param entityRenderType      A factory for a {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} with the atlas passed to the function
      */
-    public void register(Identifier key, ChunkSectionLayer chunkLayer, RenderType entityRenderType) {
+    public void register(Identifier key, ChunkSectionLayer chunkLayer, Function<Identifier, RenderType> entityRenderType) {
         Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
-        Preconditions.checkArgument(entityRenderType.format() == DefaultVertexFormat.NEW_ENTITY, "The entity render type must use the NEW_ENTITY vertex format.");
         renderTypes.put(key, new RenderTypeGroup(chunkLayer, entityRenderType));
     }
 }

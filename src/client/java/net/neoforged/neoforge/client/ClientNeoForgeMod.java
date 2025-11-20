@@ -190,7 +190,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(Identifier.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+        event.register(Identifier.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnlitUnsortedTranslucent);
     }
 
     @SubscribeEvent
