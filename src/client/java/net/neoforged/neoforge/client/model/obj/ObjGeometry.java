@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import joptsimple.internal.Strings;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -308,10 +307,9 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         quadBaker.setSprite(texture);
         quadBaker.setTintIndex(tintIndex);
 
-        int uv2 = 0;
         if (emissiveAmbient) {
             int fakeLight = (int) ((ambientColor.x() + ambientColor.y() + ambientColor.z()) * 15 / 3.0f);
-            uv2 = LightTexture.pack(fakeLight, fakeLight);
+            quadBaker.setLightEmission(fakeLight);
             quadBaker.setShade(fakeLight == 0 && shadeQuads);
         } else {
             quadBaker.setShade(shadeQuads);
@@ -346,7 +344,6 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             quadBaker.setUv(
                     texture.getU(texCoord.x),
                     texture.getV((flipV ? 1 - texCoord.y : texCoord.y)));
-            quadBaker.setLight(uv2);
             quadBaker.setNormal(normal.x(), normal.y(), normal.z());
             if (i == 0) {
                 quadBaker.setDirection(Direction.getApproximateNearest(normal.x(), normal.y(), normal.z()));

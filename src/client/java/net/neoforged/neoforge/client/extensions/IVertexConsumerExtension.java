@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
-import java.nio.ByteBuffer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
@@ -31,43 +28,12 @@ public interface IVertexConsumerExtension {
         return self();
     }
 
-    /**
-     * Variant with no per-vertex shading.
-     */
-    default void putBulkData(PoseStack.Pose pose, BakedQuad bakedQuad, float red, float green, float blue, float alpha, int packedLight, int packedOverlay, boolean readExistingColor) {
-        self().putBulkData(
-                pose,
-                bakedQuad,
-                new float[] { 1.0F, 1.0F, 1.0F, 1.0F },
-                red,
-                green,
-                blue,
-                alpha,
-                new int[] { packedLight, packedLight, packedLight, packedLight },
-                packedOverlay
-        // TODO 1.21.11: quads no longer store baked color
-        /*, readExistingColor*/
-        );
-    }
-
-    // TODO 1.21.11: This doesn't work anymore since BakedQuad no longer has full vertexdata.
-    default int applyBakedLighting(int packedLight, ByteBuffer data) {
-        int bl = packedLight & 0xFFFF;
-        int sl = (packedLight >> 16) & 0xFFFF;
-        int offset = IQuadTransformer.UV2 * 4; // int offset for vertex 0 * 4 bytes per int
-        int blBaked = Short.toUnsignedInt(data.getShort(offset));
-        int slBaked = Short.toUnsignedInt(data.getShort(offset + 2));
-        bl = Math.max(bl, blBaked);
-        sl = Math.max(sl, slBaked);
-        return bl | (sl << 16);
-    }
-
-    // TODO 1.21.11: This doesn't work anymore since BakedQuad no longer has full vertexdata.
-    default void applyBakedNormals(Vector3f generated, ByteBuffer data, Matrix3f normalTransform) {
-        byte nx = data.get(28);
-        byte ny = data.get(29);
-        byte nz = data.get(30);
-        if (nx != 0 || ny != 0 || nz != 0) {
+    default void applyBakedNormals(Vector3f generated, BakedNormals data, int vertex, Matrix3f normalTransform) {
+        int packed = data.normals(vertex);
+        if ((packed & 0x00FFFFFF) != 0) {
+            byte nx = (byte) (packed & 0xFF);
+            byte ny = (byte) (packed >> 8 & 0xFF);
+            byte nz = (byte) (packed >> 16 & 0xFF);
             generated.set(nx / 127f, ny / 127f, nz / 127f);
             generated.mul(normalTransform);
         }

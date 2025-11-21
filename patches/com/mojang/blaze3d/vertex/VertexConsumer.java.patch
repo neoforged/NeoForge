@@ -1,22 +1,15 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -67,6 +_,11 @@
-     default void putBulkData(
-         PoseStack.Pose p_85996_, BakedQuad p_85997_, float p_85999_, float p_86000_, float p_86001_, float p_331520_, int p_86003_, int p_331548_
-     ) {
-+        // Neo: also apply alpha that's coming from the baked quad
-+        // TODO 1.21.11: Restore per-quad or per-vertex color -> int vertexAlpha = p_331268_ ? (int)((p_331416_ * (float) (bytebuffer.get(15) & 255) / 255.0F) * 255) : k;
-+        // TODO 1.21.11: Restore per-quad or per-vertex color -> int j1 = ARGB.color(vertexAlpha, (int)f3, (int)f4, (int)f5);
-+        // TODO 1.21.11: Restore pre-baked per-quad lighting? -> int k1 = applyBakedLighting(LightTexture.lightCoordsWithEmission(p_331378_[i1], l), bytebuffer);
-+
-         this.putBulkData(
-             p_85996_,
-             p_85997_,
-@@ -91,6 +_,7 @@
-         int[] p_331378_,
-         int p_85993_
-     ) {
-+        // TODO 1.21.11: Restore per-quad or per-vertex normals: applyBakedNormals(vector3f, bytebuffer, p_85988_.normal());
-         Vector3fc vector3fc = p_85989_.direction().getUnitVec3f();
-         Matrix4f matrix4f = p_85988_.pose();
-         Vector3f vector3f = p_85988_.transformNormal(vector3fc, new Vector3f());
+@@ -101,10 +_,12 @@
+             long k = p_85989_.packedUV(j);
+             float f = p_331397_[j];
+             int l = ARGB.colorFromFloat(p_331416_, f * p_85990_, f * p_85991_, f * p_85992_);
++            l = ARGB.multiply(l, ARGB.toABGR(p_85989_.bakedColors().color(j))); // Neo: apply baked color from the quad
+             int i1 = LightTexture.lightCoordsWithEmission(p_331378_[j], i);
+             Vector3f vector3f1 = matrix4f.transformPosition(vector3fc1, new Vector3f());
+             float f1 = UVPair.unpackU(k);
+             float f2 = UVPair.unpackV(k);
++            applyBakedNormals(vector3f, p_85989_.bakedNormals(), j, p_85988_.normal()); // Neo: apply baked normals from the quad
+             this.addVertex(vector3f1.x(), vector3f1.y(), vector3f1.z(), l, f1, f2, p_85993_, i1, vector3f.x(), vector3f.y(), vector3f.z());
+         }
+     }

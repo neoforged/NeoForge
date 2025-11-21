@@ -24,8 +24,7 @@ public final class FaceBuilder {
     private BlockElementFace.UVs uvs;
     private Quadrant rotation = Quadrant.R0;
     private int color = 0xFFFFFFFF;
-    private int blockLight = 0;
-    private int skyLight = 0;
+    private int lightEmission = 0;
     private boolean hasAmbientOcclusion = true;
 
     /**
@@ -79,16 +78,13 @@ public final class FaceBuilder {
     }
 
     /**
-     * Set the block and sky light of the face (0-15).
-     * Traditional "emissivity" values set both of these to the same value.
+     * Set the light emission of the face (0-15)
      *
-     * @param blockLight the block light
-     * @param skyLight   the sky light
+     * @param lightEmission the light value
      * @return this builder
      */
-    public FaceBuilder emissivity(int blockLight, int skyLight) {
-        this.blockLight = blockLight;
-        this.skyLight = skyLight;
+    public FaceBuilder lightEmission(int lightEmission) {
+        this.lightEmission = lightEmission;
         return this;
     }
 
@@ -118,7 +114,7 @@ public final class FaceBuilder {
         if (this.texture == null) {
             throw new IllegalStateException("A model face must have a texture");
         }
-        return new BlockElementFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
+        return new BlockElementFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.lightEmission, this.hasAmbientOcclusion), new MutableObject<>());
     }
 
     FaceBuilder copy() {
@@ -129,8 +125,7 @@ public final class FaceBuilder {
         builder.tintindex = this.tintindex;
         builder.uvs = this.uvs;
         builder.rotation = this.rotation;
-        builder.blockLight = this.blockLight;
-        builder.skyLight = this.skyLight;
+        builder.lightEmission = this.lightEmission;
         builder.hasAmbientOcclusion = this.hasAmbientOcclusion;
         return builder;
     }

@@ -5,18 +5,16 @@
 
 package net.neoforged.neoforge.client.model.pipeline;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.Arrays;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Util;
+import net.neoforged.neoforge.client.model.quad.BakedColors;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 import org.joml.Vector3f;
 
@@ -29,13 +27,10 @@ import org.joml.Vector3f;
  * Built quads must be retrieved after building four vertices
  */
 public class QuadBakingVertexConsumer implements VertexConsumer {
-    private final Map<VertexFormatElement, Integer> ELEMENT_OFFSETS = Util.make(new IdentityHashMap<>(), map -> {
-        for (var element : DefaultVertexFormat.BLOCK.getElements())
-            map.put(element, DefaultVertexFormat.BLOCK.getOffset(element) / 4); // Int offset
-    });
-
     private final Vector3f[] positions = new Vector3f[4];
     private final long[] uvs = new long[4];
+    private final int[] normals = new int[4];
+    private final int[] colors = new int[4];
     private int vertexIndex = 0;
     private boolean building = false;
 
@@ -65,28 +60,21 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer setNormal(float x, float y, float z) {
-        // TODO 1.21.11: quads can no longer store baked normals
-        //int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.NORMAL;
-        //quadData[offset] = ((int) (x * 127.0f) & 0xFF) |
-        //        (((int) (y * 127.0f) & 0xFF) << 8) |
-        //        (((int) (z * 127.0f) & 0xFF) << 16);
+        normals[vertexIndex] = ((int) (x * 127.0f) & 0xFF) |
+                (((int) (y * 127.0f) & 0xFF) << 8) |
+                (((int) (z * 127.0f) & 0xFF) << 16);
         return this;
     }
 
     @Override
     public VertexConsumer setColor(int packedColor) {
-        return setColor(ARGB.red(packedColor), ARGB.green(packedColor), ARGB.blue(packedColor), ARGB.alpha(packedColor));
+        colors[vertexIndex] = packedColor;
+        return this;
     }
 
     @Override
     public VertexConsumer setColor(int r, int g, int b, int a) {
-        // TODO 1.21.11: quads can no longer store baked colors
-        //int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.COLOR;
-        //quadData[offset] = ((a & 0xFF) << 24) |
-        //        ((b & 0xFF) << 16) |
-        //        ((g & 0xFF) << 8) |
-        //        (r & 0xFF);
-        return this;
+        return setColor(ARGB.color(a, r, g, b));
     }
 
     @Override
@@ -102,9 +90,6 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer setUv2(int u, int v) {
-        // TODO 1.21.11: quads can no longer store baked per-vertex lighting
-        //int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.UV2;
-        //quadData[offset] = (u & 0xFFFF) | ((v & 0xFFFF) << 16);
         return this;
     }
 
@@ -161,6 +146,8 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
                 sprite,
                 shade,
                 lightEmission,
+                BakedNormals.of(normals[0], normals[1], normals[2], normals[3]),
+                BakedColors.of(colors[0], colors[1], colors[2], colors[3]),
                 hasAmbientOcclusion);
         clear();
         return quad;
@@ -171,7 +158,10 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         building = false;
         Arrays.setAll(positions, $ -> new Vector3f());
         Arrays.fill(uvs, 0L);
+        Arrays.fill(normals, 0);
+        Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
         sprite = UnitTextureAtlasSprite.INSTANCE;
+        lightEmission = 0;
     }
 }

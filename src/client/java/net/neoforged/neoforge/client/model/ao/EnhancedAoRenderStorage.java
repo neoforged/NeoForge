@@ -48,8 +48,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             for (int vertex = 0; vertex < 4; ++vertex) {
                 // Handle each vertex separately to apply vertex normals.
 
-                // TODO 1.21.11: quads can no longer store baked normals
-                int normal = 0;//quad.vertices()[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+                int normal = quad.bakedNormals().normals(vertex);
                 // The ignored byte is padding and may be filled with user data
                 if ((normal & 0x00FFFFFF) == 0) {
                     // No normal! Try to use the quad normal.
@@ -194,8 +193,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         for (int vertex = 0; vertex < 4; ++vertex) {
             // Handle each vertex separately to apply vertex normals.
 
-            // TODO 1.21.11: quads can no longer store baked normals
-            int normal = 0;//vertices[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+            int normal = currentQuad.bakedNormals().normals(vertex);
             // The ignored byte is padding and may be filled with user data
             if ((normal & 0x00FFFFFF) == 0) {
                 // No normal! Try to use the quad normal.

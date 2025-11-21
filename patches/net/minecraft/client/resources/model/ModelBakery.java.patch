@@ -95,3 +95,26 @@
      }
  
      @OnlyIn(Dist.CLIENT)
+@@ -234,10 +_,22 @@
+     @OnlyIn(Dist.CLIENT)
+     static class PartCacheImpl implements ModelBaker.PartCache {
+         private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedNormals> normals = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedColors> colors = Interners.newStrongInterner();
+ 
+         @Override
+         public Vector3fc vector(Vector3fc p_470814_) {
+             return this.vectors.intern(p_470814_);
++        }
++
++        @Override
++        public net.neoforged.neoforge.client.model.quad.BakedNormals normals(net.neoforged.neoforge.client.model.quad.BakedNormals normals) {
++            return this.normals.intern(normals);
++        }
++
++        @Override
++        public net.neoforged.neoforge.client.model.quad.BakedColors colors(net.neoforged.neoforge.client.model.quad.BakedColors colors) {
++            return this.colors.intern(colors);
+         }
+     }
+ }

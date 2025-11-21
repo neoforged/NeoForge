@@ -9,18 +9,15 @@
              recalculateWinding(avector3fc, along, direction);
          }
  
-@@ -95,6 +_,14 @@
+@@ -93,7 +_,10 @@
+             Objects.requireNonNullElse(direction, Direction.UP),
+             p_111604_,
              p_111608_,
-             p_364857_
+-            p_364857_
++            Math.max(p_364857_, p_111603_.faceData().lightEmission()),
++            net.neoforged.neoforge.client.ClientHooks.fillNormal(p_470769_, avector3fc[0], avector3fc[1], avector3fc[2], avector3fc[3]),
++            p_470769_.colors(net.neoforged.neoforge.client.model.quad.BakedColors.of(p_111603_.faceData().color())),
++            p_111603_.faceData().ambientOcclusion()
          );
-+        // TODO 1.21.11: net.neoforged.neoforge.client.ClientHooks.fillNormal(aint);
-+        // TODO 1.21.11:var data = p_111603_.faceData();
-+        // TODO 1.21.11:var quad = new BakedQuad(aint, p_111603_.tintIndex(), direction, p_111604_, p_111608_, p_364857_, data.ambientOcclusion());
-+        // TODO 1.21.11:if (!net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(data)) {
-+        // TODO 1.21.11:    net.neoforged.neoforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
-+        // TODO 1.21.11:    net.neoforged.neoforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
-+        // TODO 1.21.11:}
-+        // TODO 1.21.11:return quad;
      }
  
-     private static void bakeVertex(

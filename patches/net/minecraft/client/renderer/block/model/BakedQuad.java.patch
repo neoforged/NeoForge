@@ -12,16 +12,18 @@
  @OnlyIn(Dist.CLIENT)
  public record BakedQuad(
      Vector3fc position0,
-@@ -20,8 +_,13 @@
+@@ -20,8 +_,15 @@
      Direction direction,
      TextureAtlasSprite sprite,
      boolean shade,
 -    int lightEmission
 +    int lightEmission,
++    net.neoforged.neoforge.client.model.quad.BakedNormals bakedNormals,
++    net.neoforged.neoforge.client.model.quad.BakedColors bakedColors,
 +    boolean hasAmbientOcclusion
  ) {
 +    public BakedQuad(Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3, long packedUV0, long packedUV1, long packedUV2, long packedUV3, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
-+        this(position0, position1, position2, position3, packedUV0, packedUV1, packedUV2, packedUV3, tintIndex, direction, sprite, shade, lightEmission, true);
++        this(position0, position1, position2, position3, packedUV0, packedUV1, packedUV2, packedUV3, tintIndex, direction, sprite, shade, lightEmission, net.neoforged.neoforge.client.model.quad.BakedNormals.UNSPECIFIED, net.neoforged.neoforge.client.model.quad.BakedColors.DEFAULT, true);
 +    }
 +
      public static final int VERTEX_COUNT = 4;

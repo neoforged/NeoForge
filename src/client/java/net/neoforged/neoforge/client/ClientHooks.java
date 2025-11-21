@@ -109,6 +109,7 @@ import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -202,6 +203,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -502,17 +504,8 @@ public class ClientHooks {
         return packedx | (packedy << 8) | (packedz << 16);
     }
 
-    /**
-     * Modifies the passed {@code faceData} to fill in the vertex normals.
-     * The normals are computed from the vertex positions, see {@link #computeQuadNormal}.
-     */
-    public static void fillNormal(Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3) {
-        int normal = computeQuadNormal(position0, position1, position2, position3);
-
-        // TODO 1.21.11: quads can no longer store baked normals
-        //for (int i = 0; i < 4; i++) {
-        //    faceData[i * 8 + 7] = normal;
-        //}
+    public static BakedNormals fillNormal(ModelBaker.PartCache partCache, Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3) {
+        return partCache.normals(BakedNormals.of(computeQuadNormal(position0, position1, position2, position3)));
     }
 
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
