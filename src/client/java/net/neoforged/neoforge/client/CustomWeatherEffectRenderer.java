@@ -1,46 +1,28 @@
 /*
- * Copyright (c) Forge Development LLC and contributors
+ * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.extensions;
+package net.neoforged.neoforge.client;
 
 import net.minecraft.client.Camera;
-import net.minecraft.client.CloudStatus;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.state.LevelRenderState;
-import net.minecraft.client.renderer.state.SkyRenderState;
 import net.minecraft.client.renderer.state.WeatherRenderState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import org.joml.Matrix4f;
 
 /**
- * Extension interface for {@link DimensionSpecialEffects}.
+ * A custom renderer for snow and rain that can be registered using {} and used with {}.
  * <p>
  * Custom render state needed for the various render methods must be extracted via {@link ExtractLevelRenderStateEvent}
  * and stored in the provided {@link LevelRenderState}.
+ *
+ * @see net.neoforged.neoforge.client.event.RegisterCustomWeatherEffectsRendererEvent
+ * @see net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_WEATHER_EFFECTS
  */
-public interface IDimensionSpecialEffectsExtension {
-    /**
-     * Renders the clouds of this dimension.
-     *
-     * @return true to prevent vanilla cloud rendering
-     */
-    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, Matrix4f modelViewMatrix) {
-        return false;
-    }
-
-    /**
-     * Renders the sky of this dimension.
-     *
-     * @return true to prevent vanilla sky rendering
-     */
-    default boolean renderSky(LevelRenderState levelRenderState, SkyRenderState skyRenderState, Matrix4f modelViewMatrix, Runnable setupFog) {
-        return false;
-    }
-
+public interface CustomWeatherEffectRenderer {
     /**
      * Renders the snow and rain effects of this dimension.
      *

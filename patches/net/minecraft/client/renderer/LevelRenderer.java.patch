@@ -9,11 +9,14 @@
          profilerfiller.popPush("blockOutline");
          this.extractBlockOutline(p_109604_, this.levelRenderState);
          profilerfiller.popPush("blockBreaking");
-@@ -504,6 +_,10 @@
+@@ -504,6 +_,13 @@
              .extract(
                  this.level.getWorldBorder(), f, vec3, this.minecraft.options.getEffectiveRenderDistance() * 16, this.levelRenderState.worldBorderRenderState
              );
 +        profilerfiller.popPush("neoforge_custom");
++        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentalEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, p_109604_.position());
++        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentalEffectsRendererManager.getCustomSkyboxRenderer(this.level, p_109604_.position());
++        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentalEffectsRendererManager.getCustomCloudsRenderer(this.level, p_109604_.position());
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
 +                this, this.levelRenderState, this.level, p_109604_, frustum, p_348530_, this.ticks
 +        ));
@@ -148,7 +151,7 @@
  
 -        framepass.executes(() -> this.cloudRenderer.render(p_362342_, p_364196_, p_362337_, p_362985_, p_469097_, p_365209_));
 +        framepass.executes(() -> {
-+            if (!this.levelRenderState.dimensionSpecialEffects.renderClouds(this.levelRenderState, p_362985_, p_364196_, p_362342_, p_362337_, modelViewMatrix)) {
++            if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, p_362985_, p_364196_, p_362342_, p_362337_, modelViewMatrix)) {
 +                this.cloudRenderer.render(p_362342_, p_364196_, p_362337_, p_362985_, p_469097_, p_365209_);
 +            }
 +        });
@@ -307,7 +310,7 @@
                      this.targets.main = framepass.readsAndWrites(this.targets.main);
                      framepass.executes(
                          () -> {
-+                            if (!this.levelRenderState.dimensionSpecialEffects.renderSky(levelRenderState, skyrenderstate, modelViewMatrix, () -> RenderSystem.setShaderFog(p_418294_))) {
++                            if (this.levelRenderState.customSkyboxRenderer == null || !this.levelRenderState.customSkyboxRenderer.renderSky(levelRenderState, skyrenderstate, modelViewMatrix, () -> RenderSystem.setShaderFog(p_418294_))) {
                              RenderSystem.setShaderFog(p_418294_);
                              if (skyrenderstate.skybox == DimensionType.Skybox.END) {
                                  skyrenderer.renderEndSky();

@@ -15,7 +15,6 @@ import net.minecraft.util.context.ContextKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.client.extensions.IDimensionSpecialEffectsExtension;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
