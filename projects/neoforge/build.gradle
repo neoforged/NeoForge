@@ -11,6 +11,7 @@ plugins {
     id 'net.neoforged.jarcompatibilitychecker' version '0.1.12'
     id 'net.neoforged.gradleutils'
     id 'neoforge.versioning'
+    id 'net.ltgt.errorprone' version '4.3.0'
 }
 
 apply plugin : net.neoforged.neodev.NeoDevPlugin
@@ -165,6 +166,9 @@ dependencies {
             requireCapability 'net.neoforged:neoforge'
         }
     }
+
+    errorprone "com.google.errorprone:error_prone_core:${project.error_prone_version}"
+    errorprone "com.uber.nullaway:nullaway:${project.nullaway_version}"
 }
 
 // Select runtimeElements rather than universalJar from the main source set
@@ -292,6 +296,13 @@ tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.clas
 tasks.withType(JavaCompile.class).configureEach {
     // Increase memory used during compilation, to avoid OutOfMemoryErrors
     options.forkOptions.memoryMaximumSize = '2g'
+
+    // Configure NullAway
+    options.errorprone {
+        disableAllChecks = true // Disable default errorprone checks
+        check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+        option("NullAway:AnnotatedPackages", "net.neoforged.neoforge")
+    }
 }
 
 tasks.withType(Javadoc.class).configureEach {
