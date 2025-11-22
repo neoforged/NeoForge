@@ -121,7 +121,6 @@ public interface Test extends Groupable {
         /**
          * A collector of event listeners which automatically unregisters listeners when a test is disabled.
          */
-        @ParametersAreNonnullByDefault
         @NullMarked
         interface EventListenerCollector {
             /**
