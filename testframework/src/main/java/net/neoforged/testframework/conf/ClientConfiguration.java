@@ -5,11 +5,6 @@
 
 package net.neoforged.testframework.conf;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import org.jspecify.annotations.NullMarked;
-
-@ParametersAreNonnullByDefault
-@NullMarked
 public record ClientConfiguration(int toggleOverlayKey, int openManagerKey) {
     public static Builder builder() {
         return new Builder();

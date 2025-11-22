@@ -7,7 +7,6 @@ package net.neoforged.testframework;
 
 import java.util.Collection;
 import java.util.Optional;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.IEventBus;
@@ -27,8 +26,6 @@ import org.slf4j.Logger;
  * @see FrameworkConfiguration#create()
  * @see MutableTestFramework
  */
-@ParametersAreNonnullByDefault
-@NullMarked
 public interface TestFramework {
     /**
      * {@return the ID of this framework instance}
@@ -87,7 +84,6 @@ public interface TestFramework {
     /**
      * Interface used for accessing a framework's tests.
      */
-    @ParametersAreNonnullByDefault
     @NullMarked
     interface Tests {
         /**

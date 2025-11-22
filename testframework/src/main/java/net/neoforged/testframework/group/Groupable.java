@@ -8,9 +8,7 @@ package net.neoforged.testframework.group;
 import java.util.List;
 import java.util.stream.Stream;
 import net.neoforged.testframework.Test;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public interface Groupable {
     /**
      * Resolves all tests in this groupable element.

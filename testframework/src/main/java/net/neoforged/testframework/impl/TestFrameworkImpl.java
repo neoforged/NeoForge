@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.gametest.framework.GameTestServer;
@@ -66,14 +65,11 @@ import net.neoforged.testframework.summary.TestSummary;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnknownNullability;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
-@ParametersAreNonnullByDefault
-@NullMarked
 public class TestFrameworkImpl implements MutableTestFramework {
     static final Set<TestFrameworkImpl> FRAMEWORKS = Collections.synchronizedSet(new HashSet<>());
 
@@ -368,8 +364,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
         }
     }
 
-    @ParametersAreNonnullByDefault
-    @NullMarked
     public final class TestsImpl implements MutableTests {
         private final Map<String, Test> tests = Collections.synchronizedMap(new LinkedHashMap<>());
         private final Map<String, Group> groups = Collections.synchronizedMap(new LinkedHashMap<>());

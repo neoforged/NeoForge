@@ -7,16 +7,13 @@ package net.neoforged.neoforge.common.util;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import javax.annotation.Nonnegative;
 
 public final class Size2i {
-    @Nonnegative
     public final int width;
-    @Nonnegative
     public final int height;
 
     @SuppressWarnings("ConstantConditions")
-    public Size2i(@Nonnegative int width, @Nonnegative int height) {
+    public Size2i(int width, int height) {
         Preconditions.checkArgument(width >= 0, "width must be greater or equal 0");
         Preconditions.checkArgument(height >= 0, "height must be greater or equal 0");
         this.width = width;

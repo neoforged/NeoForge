@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -47,12 +46,9 @@ import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-@ParametersAreNonnullByDefault
-@NullMarked
 public abstract class AbstractTest implements Test {
     protected TestFramework framework;
     protected String id;
@@ -214,7 +210,6 @@ public abstract class AbstractTest implements Test {
         }
     }
 
-    @ParametersAreNonnullByDefault
     public static abstract class Dynamic extends AbstractTest implements DynamicTest {
         @Override
         public TestFramework framework() {

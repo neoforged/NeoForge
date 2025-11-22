@@ -23,7 +23,6 @@ dependencies {
     compileOnly(platform("net.neoforged:minecraft-dependencies:${project.minecraft_version}"))
     compileOnly "org.slf4j:slf4j-api"
     compileOnly "com.google.code.gson:gson"
-    compileOnly 'com.google.code.findbugs:jsr305:3.0.2' // TODO 1.21.11
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}"

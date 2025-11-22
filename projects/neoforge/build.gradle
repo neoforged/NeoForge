@@ -146,9 +146,6 @@ dependencies {
     }
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
-    compileOnly 'org.jspecify:jspecify:1.0.0' // TODO 1.21.11
-    compileOnly 'com.google.code.findbugs:jsr305:3.0.2' // TODO 1.21.11
-    clientCompileOnly 'com.google.code.findbugs:jsr305:3.0.2' // TODO 1.21.11
 
     userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}")
 

@@ -16,16 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.testframework.impl.ReflectionUtils;
-import org.jspecify.annotations.NullMarked;
 
-@ParametersAreNonnullByDefault
-@NullMarked
 public class DynamicStructureTemplates {
     // StructureTemplateManager#sources
     private static final String SOURCES_FIELD = "sources";

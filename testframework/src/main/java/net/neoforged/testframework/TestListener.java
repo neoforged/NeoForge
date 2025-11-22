@@ -7,7 +7,6 @@ package net.neoforged.testframework;
 
 import java.lang.invoke.MethodType;
 import java.util.List;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.testframework.impl.ReflectionUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,7 +15,6 @@ import org.jspecify.annotations.Nullable;
 /**
  * A listener which listens for changes in tests.
  */
-@ParametersAreNonnullByDefault
 public interface TestListener {
     /**
      * This method is called when a test changes its status.

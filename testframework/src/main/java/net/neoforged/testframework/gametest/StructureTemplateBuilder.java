@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -27,11 +26,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.testframework.impl.ReflectionUtils;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
-@NullMarked
 public class StructureTemplateBuilder implements TemplateBuilderHelper<StructureTemplateBuilder> {
     private static final FieldHandle<StructureTemplate, List<StructureTemplate.Palette>> PALETTES = FieldHandle.getFor(StructureTemplate.class, "palettes");
     private static final FieldHandle<StructureTemplate, List<StructureTemplate.StructureEntityInfo>> ENTITY_INFO_LIST = FieldHandle.getFor(StructureTemplate.class, "entityInfoList");

@@ -10,7 +10,6 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.resources.Identifier;
@@ -20,7 +19,6 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.group.Group;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Interface with directly mutating methods for {@link TestFramework TestFrameworks}.
@@ -28,8 +26,6 @@ import org.jspecify.annotations.NullMarked;
  * @see FrameworkConfiguration#create()
  * @see TestFrameworkImpl
  */
-@ParametersAreNonnullByDefault
-@NullMarked
 public interface MutableTestFramework extends TestFramework {
     Codec<TestFramework> REFERENCE_CODEC = Identifier.CODEC.xmap(
             rl -> TestFrameworkImpl.FRAMEWORKS.stream()

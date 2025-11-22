@@ -6,15 +6,11 @@
 package net.neoforged.testframework.impl;
 
 import java.util.Optional;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.testframework.client.FrameworkClientImpl;
 import net.neoforged.testframework.conf.ClientConfiguration;
-import org.jspecify.annotations.NullMarked;
 
-@ParametersAreNonnullByDefault
-@NullMarked
 public interface FrameworkClient {
     void init(IEventBus modBus, ModContainer container);
 

@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.Permissions;
@@ -19,11 +18,8 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.summary.DefaultLogSummaryDumper;
 import net.neoforged.testframework.summary.SummaryDumper;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
-@NullMarked
 public record FrameworkConfiguration(
         Identifier id,
         Collection<Feature> enabledFeatures,

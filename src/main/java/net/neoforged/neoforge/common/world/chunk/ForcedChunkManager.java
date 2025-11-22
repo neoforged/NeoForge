@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.UUIDUtil;
@@ -42,7 +41,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
 public class ForcedChunkManager {
     private static final Logger LOGGER = LogManager.getLogger();
 

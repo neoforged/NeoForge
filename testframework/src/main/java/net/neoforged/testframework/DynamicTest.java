@@ -7,7 +7,6 @@ package net.neoforged.testframework;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -16,15 +15,12 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
  * A special type of {@linkplain Test test} which may only be linked to one {@linkplain TestFramework framework} at a time. <br>
  * This type of test can have enabled/disabled listeners added dynamically, and is as such, used primarily by method-based tests.
  */
-@ParametersAreNonnullByDefault
-@NullMarked
 public interface DynamicTest extends Test {
     /**
      * {@return the framework this test is linked to}

@@ -20,7 +20,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,11 +36,8 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jspecify.annotations.NullMarked;
 import org.lwjgl.glfw.GLFW;
 
-@NullMarked
-@ParametersAreNonnullByDefault
 public abstract class AbstractTestScreen extends Screen {
     protected final MutableTestFramework framework;
     private final Screen outer = this;

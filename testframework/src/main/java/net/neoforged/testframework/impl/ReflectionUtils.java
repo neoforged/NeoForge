@@ -12,14 +12,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestListener;
-import org.jspecify.annotations.NullMarked;
 
 @SuppressWarnings("unchecked")
-@ParametersAreNonnullByDefault
-@NullMarked
 public final class ReflectionUtils {
     public static <T> T getInstanceField(Object instance, String name) {
         try {

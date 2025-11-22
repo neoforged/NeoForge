@@ -10,7 +10,6 @@ import io.netty.channel.ChannelFutureListener;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Consumer;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -130,7 +129,6 @@ public class FakePlayer extends ServerPlayer {
         return true;
     }
 
-    @ParametersAreNonnullByDefault
     private static class FakePlayerNetHandler extends ServerGamePacketListenerImpl {
         private static final net.minecraft.network.Connection DUMMY_CONNECTION = new FakeConnection();
 

@@ -5,18 +5,14 @@
 
 package net.neoforged.testframework.gametest;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("unchecked")
-@ParametersAreNonnullByDefault
-@NullMarked
 public interface TemplateBuilderHelper<T extends TemplateBuilderHelper<T>> {
     T set(int x, int y, int z, BlockState state, @Nullable CompoundTag nbt);
 
