@@ -22,7 +22,7 @@
              this.renderInstances(p_382792_.getBuffer(rendertype), p_451561_.rainColumns, p_360652_, 1.0F, p_451561_.radius, p_451561_.intensity);
 @@ -160,6 +_,10 @@
      }
-
+ 
      public void tickRainParticles(ClientLevel p_361823_, Camera p_364990_, int p_361788_, ParticleStatus p_363302_, int p_455026_) {
 +        var customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentalEffectsRendererManager.getCustomWeatherEffectRenderer(p_361823_, p_364990_.position());
 +        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(p_361823_, p_361788_, p_364990_))
