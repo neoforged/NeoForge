@@ -26,9 +26,6 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/client/renderer/DimensionSpecialEffects": [
-    "net/neoforged/neoforge/client/extensions/IDimensionSpecialEffectsExtension"
-  ],
   "net/minecraft/client/renderer/block/model/BlockModelPart": [
     "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
   ],

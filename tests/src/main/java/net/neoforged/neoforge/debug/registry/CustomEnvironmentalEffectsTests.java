@@ -60,9 +60,9 @@ public class CustomEnvironmentalEffectsTests {
                     helper.assertValueEqual(CUSTOM_CLOUDS_ID, customClouds, "custom clouds");
 
                     // check that for an arbitrary location it returns the defaults
-                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.NO_CUSTOM_SKYBOX, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX, BlockPos.ZERO), "default skybox");
-                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.NO_CUSTOM_WEATHER_EFFECTS, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_WEATHER_EFFECTS, BlockPos.ZERO), "default weather effects");
-                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.NO_CUSTOM_CLOUDS, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS, BlockPos.ZERO), "default clouds");
+                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_SKYBOX, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX, BlockPos.ZERO), "default skybox");
+                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_WEATHER_EFFECTS, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_WEATHER_EFFECTS, BlockPos.ZERO), "default weather effects");
+                    helper.assertValueEqual(NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_CLOUDS, attributes.getValue(NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS, BlockPos.ZERO), "default clouds");
                 })
                 .thenSucceed());
     }

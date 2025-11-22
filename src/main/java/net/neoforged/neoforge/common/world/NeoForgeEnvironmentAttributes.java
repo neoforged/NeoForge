@@ -14,19 +14,19 @@ import net.minecraft.world.attribute.EnvironmentAttribute;
  * These will be filtered out when syncing to vanilla clients.
  */
 public final class NeoForgeEnvironmentAttributes {
-    public static Identifier NO_CUSTOM_CLOUDS = Identifier.withDefaultNamespace("default");
+    public static Identifier DEFAULT_CUSTOM_CLOUDS = Identifier.withDefaultNamespace("default");
     public static EnvironmentAttribute<Identifier> CUSTOM_CLOUDS = EnvironmentAttribute.builder(NeoForgeAttributeTypes.IDENTIFIER)
-            .defaultValue(NO_CUSTOM_CLOUDS)
+            .defaultValue(DEFAULT_CUSTOM_CLOUDS)
             .syncable()
             .build();
-    public static Identifier NO_CUSTOM_SKYBOX = Identifier.withDefaultNamespace("default");
+    public static Identifier DEFAULT_CUSTOM_SKYBOX = Identifier.withDefaultNamespace("default");
     public static EnvironmentAttribute<Identifier> CUSTOM_SKYBOX = EnvironmentAttribute.builder(NeoForgeAttributeTypes.IDENTIFIER)
-            .defaultValue(NO_CUSTOM_SKYBOX)
+            .defaultValue(DEFAULT_CUSTOM_SKYBOX)
             .syncable()
             .build();
-    public static Identifier NO_CUSTOM_WEATHER_EFFECTS = Identifier.withDefaultNamespace("default");
+    public static Identifier DEFAULT_CUSTOM_WEATHER_EFFECTS = Identifier.withDefaultNamespace("default");
     public static EnvironmentAttribute<Identifier> CUSTOM_WEATHER_EFFECTS = EnvironmentAttribute.builder(NeoForgeAttributeTypes.IDENTIFIER)
-            .defaultValue(NO_CUSTOM_WEATHER_EFFECTS)
+            .defaultValue(DEFAULT_CUSTOM_WEATHER_EFFECTS)
             .syncable()
             .build();
 

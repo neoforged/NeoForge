@@ -12,9 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.client.event.RegisterCustomCloudsRendererEvent;
-import net.neoforged.neoforge.client.event.RegisterCustomSkyboxRendererEvent;
-import net.neoforged.neoforge.client.event.RegisterCustomWeatherEffectsRendererEvent;
+import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRenderer;
 import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -22,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Manager for custom renderers referred to by {@link net.minecraft.world.attribute.EnvironmentAttribute}.
  */
-public final class CustomEnvironmentalEffectsRendererManager {
+public final class CustomEnvironmentEffectsRendererManager {
     private static @Nullable Map<Identifier, CustomCloudsRenderer> CUSTOM_CLOUD_RENDERERS;
     private static @Nullable Map<Identifier, CustomSkyboxRenderer> CUSTOM_SKYBOX_RENDERERS;
     private static @Nullable Map<Identifier, CustomWeatherEffectRenderer> CUSTOM_WEATHER_EFFECT_RENDERERS;
@@ -31,27 +29,43 @@ public final class CustomEnvironmentalEffectsRendererManager {
      * Finds the {@link CustomCloudsRenderer} for a given identifier, or null if none is registered.
      */
     public static @Nullable CustomCloudsRenderer getCustomCloudsRenderer(Identifier id) {
-        if (NeoForgeEnvironmentAttributes.NO_CUSTOM_CLOUDS.equals(id)) {
+        if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_CLOUDS.equals(id)) {
             return null;
         }
         return Objects.requireNonNull(CUSTOM_CLOUD_RENDERERS).get(id);
     }
 
     /**
+     * Finds the {@link CustomCloudsRenderer} to use for the given position in the given level.
+     */
+    public static @Nullable CustomCloudsRenderer getCustomCloudsRenderer(Level level, Vec3 position) {
+        var id = level.environmentAttributes().getValue(NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS, position);
+        return getCustomCloudsRenderer(id);
+    }
+
+    /**
      * Finds the {@link CustomSkyboxRenderer} for a given identifier, or null if none is registered.
      */
     public static @Nullable CustomSkyboxRenderer getCustomSkyboxRenderer(Identifier id) {
-        if (NeoForgeEnvironmentAttributes.NO_CUSTOM_SKYBOX.equals(id)) {
+        if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_SKYBOX.equals(id)) {
             return null;
         }
         return Objects.requireNonNull(CUSTOM_SKYBOX_RENDERERS).get(id);
     }
 
     /**
+     * Finds the {@link CustomSkyboxRenderer} to use for the given position in the given level.
+     */
+    public static @Nullable CustomSkyboxRenderer getCustomSkyboxRenderer(Level level, Vec3 position) {
+        var id = level.environmentAttributes().getValue(NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX, position);
+        return getCustomSkyboxRenderer(id);
+    }
+
+    /**
      * Finds the {@link CustomWeatherEffectRenderer} for a given identifier, or null if none is registered.
      */
     public static @Nullable CustomWeatherEffectRenderer getCustomWeatherEffectRenderer(Identifier id) {
-        if (NeoForgeEnvironmentAttributes.NO_CUSTOM_WEATHER_EFFECTS.equals(id)) {
+        if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_WEATHER_EFFECTS.equals(id)) {
             return null;
         }
         return Objects.requireNonNull(CUSTOM_WEATHER_EFFECT_RENDERERS).get(id);
@@ -65,43 +79,20 @@ public final class CustomEnvironmentalEffectsRendererManager {
         return getCustomWeatherEffectRenderer(id);
     }
 
-    /**
-     * Finds the {@link CustomCloudsRenderer} to use for the given position in the given level.
-     */
-    public static @Nullable CustomCloudsRenderer getCustomCloudsRenderer(Level level, Vec3 position) {
-        var id = level.environmentAttributes().getValue(NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS, position);
-        return getCustomCloudsRenderer(id);
-    }
-
-    /**
-     * Finds the {@link CustomSkyboxRenderer} to use for the given position in the given level.
-     */
-    public static @Nullable CustomSkyboxRenderer getCustomSkyboxRenderer(Level level, Vec3 position) {
-        var id = level.environmentAttributes().getValue(NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX, position);
-        return getCustomSkyboxRenderer(id);
-    }
-
     @ApiStatus.Internal
     public static void init() {
         if (CUSTOM_CLOUD_RENDERERS != null) {
             throw new IllegalStateException("Already initialized.");
         }
 
-        // Custom cloud renderers
         var customCloudRenderers = new HashMap<Identifier, CustomCloudsRenderer>();
-        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomCloudsRendererEvent(customCloudRenderers));
-        CUSTOM_CLOUD_RENDERERS = Map.copyOf(customCloudRenderers);
-
-        // Custom skybox renderers
         var customSkyboxRenderers = new HashMap<Identifier, CustomSkyboxRenderer>();
-        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomSkyboxRendererEvent(customSkyboxRenderers));
-        CUSTOM_SKYBOX_RENDERERS = Map.copyOf(customSkyboxRenderers);
-
-        // Custom cloud renderers
         var customWeatherEffectRenderers = new HashMap<Identifier, CustomWeatherEffectRenderer>();
-        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomWeatherEffectsRendererEvent(customWeatherEffectRenderers));
+        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomEnvironmentEffectRenderer(customCloudRenderers, customSkyboxRenderers, customWeatherEffectRenderers));
+        CUSTOM_CLOUD_RENDERERS = Map.copyOf(customCloudRenderers);
+        CUSTOM_SKYBOX_RENDERERS = Map.copyOf(customSkyboxRenderers);
         CUSTOM_WEATHER_EFFECT_RENDERERS = Map.copyOf(customWeatherEffectRenderers);
     }
 
-    private CustomEnvironmentalEffectsRendererManager() {}
+    private CustomEnvironmentEffectsRendererManager() {}
 }

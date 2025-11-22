@@ -906,7 +906,7 @@ public class ClientHooks {
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
         mc.gui.initModdedOverlays();
-        CustomEnvironmentalEffectsRendererManager.init();
+        CustomEnvironmentEffectsRendererManager.init();
         NamedRenderTypeManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
