@@ -1,0 +1,28 @@
+{
+  "attributes": {
+    "neoforge:custom_clouds": "x:custom_clouds",
+    "neoforge:custom_skybox": "x:custom_skybox",
+    "neoforge:custom_weather_effects": "x:custom_weather_effects"
+  },
+  "carvers": [],
+  "creature_spawn_probability": 0.0,
+  "downfall": 0.5,
+  "effects": {
+    "water_color": "#3f76e4"
+  },
+  "features": [],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "neotests:test": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.5
+}
