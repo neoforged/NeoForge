@@ -18,7 +18,7 @@ public class PacketDump {
 
         // returnString.append("Buffer contents:\n");
         int i, j; // Loop variables
-        for (i = 0; i < currentLength; i++) {
+        for (i = buffer.readerIndex(); i < currentLength; i++) {
             if ((i != 0) && (i % 16 == 0)) {
                 // If it's a multiple of 16 and i isn't null, show the ascii
                 returnString.append('\t');
