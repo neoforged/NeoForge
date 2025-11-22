@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/renderer/WeatherEffectRenderer.java
 +++ b/net/minecraft/client/renderer/WeatherEffectRenderer.java
+@@ -32,6 +_,7 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class WeatherEffectRenderer {
 @@ -91,7 +_,19 @@
          }
      }
@@ -24,7 +32,7 @@
      }
  
      public void tickRainParticles(ClientLevel p_361823_, Camera p_364990_, int p_361788_, ParticleStatus p_363302_, int p_455026_) {
-+        var customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentalEffectsRendererManager.getCustomWeatherEffectRenderer(p_361823_, p_364990_.position());
++        var customWeatherEffectRenderer = CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(p_361823_, p_364990_.position());
 +        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(p_361823_, p_361788_, p_364990_))
 +            return;
 +
