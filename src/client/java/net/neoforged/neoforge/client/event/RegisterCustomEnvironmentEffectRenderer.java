@@ -18,7 +18,8 @@ import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Allows users to register custom {@link CustomCloudsRenderer}.
+ * Allows users to register custom environmental effect renderers, such as {@link CustomCloudsRenderer},
+ * {@link CustomSkyboxRenderer} or {@link CustomWeatherEffectRenderer}.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}.
  *
