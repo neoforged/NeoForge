@@ -9,17 +9,17 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRenderer;
+import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import org.joml.Matrix4f;
 
 /**
- * A custom cloud renderer that can be registered using {@link RegisterCustomEnvironmentEffectRenderer#registerCloudRenderer)}
+ * A custom cloud renderer that can be registered using {@link RegisterCustomEnvironmentEffectRendererEvent#registerCloudRenderer)}
  * and used with {@link net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_CLOUDS}.
  * <p>
  * Custom render state needed for the various render methods must be extracted via {@link ExtractLevelRenderStateEvent}
  * and stored in the provided {@link LevelRenderState}.
  *
- * @see RegisterCustomEnvironmentEffectRenderer#registerCloudRenderer
+ * @see RegisterCustomEnvironmentEffectRendererEvent#registerCloudRenderer
  * @see net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_CLOUDS
  */
 public interface CustomCloudsRenderer {

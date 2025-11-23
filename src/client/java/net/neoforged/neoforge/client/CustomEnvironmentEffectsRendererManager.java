@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRenderer;
+import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -88,7 +88,7 @@ public final class CustomEnvironmentEffectsRendererManager {
         var customCloudRenderers = new HashMap<Identifier, CustomCloudsRenderer>();
         var customSkyboxRenderers = new HashMap<Identifier, CustomSkyboxRenderer>();
         var customWeatherEffectRenderers = new HashMap<Identifier, CustomWeatherEffectRenderer>();
-        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomEnvironmentEffectRenderer(customCloudRenderers, customSkyboxRenderers, customWeatherEffectRenderers));
+        ModLoader.postEventWrapContainerInModOrder(new RegisterCustomEnvironmentEffectRendererEvent(customCloudRenderers, customSkyboxRenderers, customWeatherEffectRenderers));
         CUSTOM_CLOUD_RENDERERS = Map.copyOf(customCloudRenderers);
         CUSTOM_SKYBOX_RENDERERS = Map.copyOf(customSkyboxRenderers);
         CUSTOM_WEATHER_EFFECT_RENDERERS = Map.copyOf(customWeatherEffectRenderers);

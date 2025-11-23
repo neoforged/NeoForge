@@ -25,13 +25,13 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterCustomEnvironmentEffectRenderer extends Event implements IModBusEvent {
+public class RegisterCustomEnvironmentEffectRendererEvent extends Event implements IModBusEvent {
     private final Map<Identifier, CustomCloudsRenderer> cloudRenderers;
     private final Map<Identifier, CustomSkyboxRenderer> skyboxRenderers;
     private final Map<Identifier, CustomWeatherEffectRenderer> weatherEffectsRenderers;
 
     @ApiStatus.Internal
-    public RegisterCustomEnvironmentEffectRenderer(Map<Identifier, CustomCloudsRenderer> cloudRenderers,
+    public RegisterCustomEnvironmentEffectRendererEvent(Map<Identifier, CustomCloudsRenderer> cloudRenderers,
             Map<Identifier, CustomSkyboxRenderer> skyboxRenderers,
             Map<Identifier, CustomWeatherEffectRenderer> weatherEffectsRenderers) {
         this.cloudRenderers = cloudRenderers;
