@@ -13,20 +13,23 @@
  
      abstract void blitFrameBuffers(
          int p_412546_,
-@@ -113,9 +_,10 @@
+@@ -113,9 +_,14 @@
          }
  
          @Override
 -        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, int p_412591_) {
 +        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, int p_412591_, boolean useStencil) {
              ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36064, p_412101_, p_412742_);
--            ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36096, p_412181_, p_412742_);
-+            int depthAttachment = useStencil ? org.lwjgl.opengl.GL32C.GL_DEPTH_STENCIL_ATTACHMENT : org.lwjgl.opengl.GL32C.GL_DEPTH_ATTACHMENT;
-+            ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, depthAttachment, p_412181_, p_412742_);
+             ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36096, p_412181_, p_412742_);
++            if (useStencil) {
++                ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, p_412181_, p_412742_);
++            } else {
++                ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 0, 0);
++            }
              if (p_412591_ != 0) {
                  GlStateManager._glBindFramebuffer(p_412591_, p_412474_);
              }
-@@ -250,12 +_,13 @@
+@@ -250,12 +_,17 @@
          }
  
          @Override
@@ -36,9 +39,12 @@
              int j = GlStateManager.getFrameBuffer(i);
              GlStateManager._glBindFramebuffer(i, p_412192_);
              GlStateManager._glFramebufferTexture2D(i, 36064, 3553, p_412614_, p_412295_);
--            GlStateManager._glFramebufferTexture2D(i, 36096, 3553, p_412332_, p_412295_);
-+            int depthAttachment = useStencil ? org.lwjgl.opengl.GL32C.GL_DEPTH_STENCIL_ATTACHMENT : org.lwjgl.opengl.GL32C.GL_DEPTH_ATTACHMENT;
-+            GlStateManager._glFramebufferTexture2D(i, depthAttachment, 3553, p_412332_, p_412295_);
+             GlStateManager._glFramebufferTexture2D(i, 36096, 3553, p_412332_, p_412295_);
++            if (useStencil) {
++                GlStateManager._glFramebufferTexture2D(i, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, p_412332_, p_412295_);
++            } else {
++                GlStateManager._glFramebufferTexture2D(i, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, 0, 0);
++            }
              if (p_412775_ == 0) {
                  GlStateManager._glBindFramebuffer(i, j);
              }

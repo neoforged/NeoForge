@@ -8,6 +8,7 @@ package net.neoforged.testframework.registration;
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
@@ -52,11 +53,15 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     /**
-     * @deprecated Use {@link #withBlockItem(UnaryOperator, Consumer)} instead
+     * @deprecated Use {@link #withBlockItem(Supplier, Consumer)} or {@link #withBlockItem(UnaryOperator, Consumer)} instead
      */
     @Deprecated(since = "1.21.10", forRemoval = true)
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        consumer.accept(helper.items().registerSimpleBlockItem(this, props -> properties));
+        return this.withBlockItem(() -> properties, consumer);
+    }
+
+    public DeferredBlockBuilder<T> withBlockItem(Supplier<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
+        consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
         hasItem = true;
         return this;
     }
