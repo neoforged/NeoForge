@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.joml.Vector3fc;
@@ -54,7 +53,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                 if (BakedNormals.isUnspecified(normal)) {
                     // No normal! Try to use the quad normal.
                     if (quadNormal == -1) {
-                        quadNormal = ClientHooks.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
+                        quadNormal = BakedNormals.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
                     }
                     normal = quadNormal;
                 }
@@ -199,7 +198,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             if (BakedNormals.isUnspecified(normal)) {
                 // No normal! Try to use the quad normal.
                 if (quadNormal == -1) {
-                    quadNormal = ClientHooks.computeQuadNormal(currentQuad.position0(), currentQuad.position1(), currentQuad.position2(), currentQuad.position3());
+                    quadNormal = BakedNormals.computeQuadNormal(currentQuad.position0(), currentQuad.position1(), currentQuad.position2(), currentQuad.position3());
                 }
                 normal = quadNormal;
             }

@@ -109,7 +109,6 @@ import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.MaterialSet;
-import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -203,7 +202,6 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
-import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -220,7 +218,6 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
-import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
@@ -473,39 +470,6 @@ public class ClientHooks {
     @SuppressWarnings("deprecation")
     public static Material getBlockMaterial(Identifier loc) {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
-    }
-
-    /**
-     * Computes the packed normal of a quad based on the stored vertex positions.
-     */
-    public static int computeQuadNormal(Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3) {
-        float dx0 = position3.x() - position1.x();
-        float dy0 = position3.y() - position1.y();
-        float dz0 = position3.z() - position1.z();
-        float dx1 = position2.x() - position0.x();
-        float dy1 = position2.y() - position0.y();
-        float dz1 = position2.z() - position0.z();
-
-        float nx = dy1 * dz0 - dz1 * dy0;
-        float ny = dz1 * dx0 - dx1 * dz0;
-        float nz = dx1 * dy0 - dy1 * dx0;
-
-        float length = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        if (length > 0) {
-            nx /= length;
-            ny /= length;
-            nz /= length;
-        }
-
-        int packedx = ((byte) Math.round(nx * 127)) & 0xFF;
-        int packedy = ((byte) Math.round(ny * 127)) & 0xFF;
-        int packedz = ((byte) Math.round(nz * 127)) & 0xFF;
-
-        return packedx | (packedy << 8) | (packedz << 16);
-    }
-
-    public static BakedNormals fillNormal(ModelBaker.PartCache partCache, Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3) {
-        return partCache.normals(BakedNormals.of(computeQuadNormal(position0, position1, position2, position3)));
     }
 
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {

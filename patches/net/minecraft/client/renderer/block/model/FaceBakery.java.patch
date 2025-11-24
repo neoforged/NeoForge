@@ -15,7 +15,7 @@
              p_111608_,
 -            p_364857_
 +            Math.max(p_364857_, p_111603_.faceData().lightEmission()),
-+            net.neoforged.neoforge.client.ClientHooks.fillNormal(p_470769_, avector3fc[0], avector3fc[1], avector3fc[2], avector3fc[3]),
++            p_470769_.normals(net.neoforged.neoforge.client.model.quad.BakedNormals.of(net.neoforged.neoforge.client.model.quad.BakedNormals.computeQuadNormal(avector3fc[0], avector3fc[1], avector3fc[2], avector3fc[3]))),
 +            p_470769_.colors(net.neoforged.neoforge.client.model.quad.BakedColors.of(p_111603_.faceData().color())),
 +            p_111603_.faceData().ambientOcclusion()
          );

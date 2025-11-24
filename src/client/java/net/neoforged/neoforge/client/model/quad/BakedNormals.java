@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.model.quad;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -16,14 +17,17 @@ import org.jspecify.annotations.Nullable;
  * The normal values are quantized to an integer between -127 and 127, truncated to a byte
  * and packed into an int, leaving the MSB unused.
  * <p>
- * Normals can also be unspecified. In that case, rendering will use the normal implied by {@link BakedQuad#direction()},
+ * Normals can also be {@linkplain #isUnspecified(int) unspecified}. In that case, rendering will use the normal implied by {@link BakedQuad#direction()},
  * while a face normal will be computed for the purposes of AO calculations.
  */
 public sealed interface BakedNormals {
     BakedNormals UNSPECIFIED = new PerQuad(0);
 
     /**
-     * @return The packed normal of the given vertex. See {@link #unpack}. It can also be {@linkplain #isUnspecified(int) unspecified}.
+     * {@return The packed normal of the given vertex}
+     * It can also be {@linkplain #isUnspecified(int) unspecified}.
+     * 
+     * @see #unpack(int, Vector3f)
      */
     int normal(int vertex);
 
@@ -138,9 +142,36 @@ public sealed interface BakedNormals {
     }
 
     /**
-     * {@return True if the packed normal represents an unspecified normal. Unspecified Normals will be computed at render-time by NeoForge}
+     * {@return true if the packed normal represents an unspecified normal}
      */
     static boolean isUnspecified(int packedNormal) {
         return (packedNormal & 0x00FFFFFF) == 0;
+    }
+
+    /**
+     * Computes the packed normal of a quad based on the given vertex positions.
+     *
+     * @return The packed representation of the computed normal.
+     */
+    static int computeQuadNormal(Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3) {
+        float dx0 = position3.x() - position1.x();
+        float dy0 = position3.y() - position1.y();
+        float dz0 = position3.z() - position1.z();
+        float dx1 = position2.x() - position0.x();
+        float dy1 = position2.y() - position0.y();
+        float dz1 = position2.z() - position0.z();
+
+        float nx = dy1 * dz0 - dz1 * dy0;
+        float ny = dz1 * dx0 - dx1 * dz0;
+        float nz = dx1 * dy0 - dy1 * dx0;
+
+        float length = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+        if (length > 0) {
+            nx /= length;
+            ny /= length;
+            nz /= length;
+        }
+
+        return pack(nx, ny, nz);
     }
 }
