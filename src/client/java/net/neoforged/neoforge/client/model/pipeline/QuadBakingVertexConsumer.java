@@ -60,9 +60,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer setNormal(float x, float y, float z) {
-        normals[vertexIndex] = ((int) (x * 127.0f) & 0xFF) |
-                (((int) (y * 127.0f) & 0xFF) << 8) |
-                (((int) (z * 127.0f) & 0xFF) << 16);
+        normals[vertexIndex] = BakedNormals.pack(x, y, z);
         return this;
     }
 

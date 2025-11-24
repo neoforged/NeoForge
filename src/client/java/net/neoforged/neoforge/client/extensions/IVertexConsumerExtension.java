@@ -29,12 +29,9 @@ public interface IVertexConsumerExtension {
     }
 
     default void applyBakedNormals(Vector3f generated, BakedNormals data, int vertex, Matrix3f normalTransform) {
-        int packed = data.normals(vertex);
-        if ((packed & 0x00FFFFFF) != 0) {
-            byte nx = (byte) (packed & 0xFF);
-            byte ny = (byte) (packed >> 8 & 0xFF);
-            byte nz = (byte) (packed >> 16 & 0xFF);
-            generated.set(nx / 127f, ny / 127f, nz / 127f);
+        int packed = data.normal(vertex);
+        if (!BakedNormals.isUnspecified(packed)) {
+            BakedNormals.unpack(packed, generated);
             generated.mul(normalTransform);
         }
     }

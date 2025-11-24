@@ -65,16 +65,8 @@ public final class QuadTransforms {
     }
 
     private static int transformNormal(Vector3f temp, int packedNormal, Transformation transformation) {
-        float x = ((byte) (packedNormal & 0xFF)) / 127.0f;
-        float y = ((byte) ((packedNormal >> 8) & 0xFF)) / 127.0f;
-        float z = ((byte) ((packedNormal >> 16) & 0xFF)) / 127.0f;
-
-        temp.set(x, y, z);
+        BakedNormals.unpack(packedNormal, temp);
         transformation.transformNormal(temp);
-
-        return (((byte) (temp.x() * 127.0f)) & 0xFF) |
-                ((((byte) (temp.y() * 127.0f)) & 0xFF) << 8) |
-                ((((byte) (temp.z() * 127.0f)) & 0xFF) << 16) |
-                (packedNormal & 0xFF000000); // Restore padding, just in case
+        return BakedNormals.pack(temp);
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.joml.Vector3fc;
 import org.slf4j.Logger;
 
@@ -48,9 +49,9 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             for (int vertex = 0; vertex < 4; ++vertex) {
                 // Handle each vertex separately to apply vertex normals.
 
-                int normal = quad.bakedNormals().normals(vertex);
+                int normal = quad.bakedNormals().normal(vertex);
                 // The ignored byte is padding and may be filled with user data
-                if ((normal & 0x00FFFFFF) == 0) {
+                if (BakedNormals.isUnspecified(normal)) {
                     // No normal! Try to use the quad normal.
                     if (quadNormal == -1) {
                         quadNormal = ClientHooks.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
@@ -59,9 +60,9 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                 }
 
                 storage.brightness[vertex] = level.getShade(
-                        normalComponent(normal, 0),
-                        normalComponent(normal, 1),
-                        normalComponent(normal, 2),
+                        BakedNormals.unpackX(normal),
+                        BakedNormals.unpackY(normal),
+                        BakedNormals.unpackZ(normal),
                         quad.shade());
             }
         } else {
@@ -193,9 +194,9 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         for (int vertex = 0; vertex < 4; ++vertex) {
             // Handle each vertex separately to apply vertex normals.
 
-            int normal = currentQuad.bakedNormals().normals(vertex);
+            int normal = currentQuad.bakedNormals().normal(vertex);
             // The ignored byte is padding and may be filled with user data
-            if ((normal & 0x00FFFFFF) == 0) {
+            if (BakedNormals.isUnspecified(normal)) {
                 // No normal! Try to use the quad normal.
                 if (quadNormal == -1) {
                     quadNormal = ClientHooks.computeQuadNormal(currentQuad.position0(), currentQuad.position1(), currentQuad.position2(), currentQuad.position3());
@@ -209,7 +210,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             int maxLightmap = 0;
 
             for (int axis = 0; axis < 3; ++axis) {
-                float normalComponent = normalComponent(normal, axis);
+                float normalComponent = BakedNormals.unpackComponent(normal, axis);
                 if (normalComponent == 0) {
                     continue;
                 }
@@ -252,16 +253,6 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             brightness[vertex] = Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F);
             lightmap[vertex] = lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT);
         }
-    }
-
-    /**
-     * Unpacks a normal component.
-     */
-    private static float normalComponent(int normal, int axis) {
-        int encodedNormalComponent = (normal >> (axis * 8)) & 0xFF;
-        // Casting to byte will cast to a signed int.
-        // This is really important, otherwise negative values will lead to above 1.0 normal components.
-        return ((byte) encodedNormalComponent) / 127.0f;
     }
 
     /**
