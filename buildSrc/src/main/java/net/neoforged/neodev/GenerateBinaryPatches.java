@@ -7,6 +7,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputFile;
@@ -55,10 +57,22 @@ abstract class GenerateBinaryPatches extends JavaExec {
     abstract RegularFileProperty getModifiedJoinedJar();
 
     /**
+     * Ant-Style path patterns for paths to include in diffing.
+     */
+    @Input
+    abstract ListProperty<String> getInclude();
+
+    /**
+     * Ant-Style path patterns for paths to exclude from diffing.
+     */
+    @Input
+    abstract ListProperty<String> getExclude();
+
+    /**
      * Where the created patch bundle should be written to.
      */
     @OutputFile
-    abstract RegularFileProperty getOutputJar();
+    abstract RegularFileProperty getOutputFile();
 
     @Override
     public void exec() {
@@ -69,8 +83,14 @@ abstract class GenerateBinaryPatches extends JavaExec {
         args("--modified-client", getModifiedClientJar().get().getAsFile().getAbsolutePath());
         args("--modified-server", getModifiedServerJar().get().getAsFile().getAbsolutePath());
         args("--modified-joined", getModifiedJoinedJar().get().getAsFile().getAbsolutePath());
+        for (String pattern : getInclude().get()) {
+            args("--include", pattern);
+        }
+        for (String pattern : getExclude().get()) {
+            args("--exclude", pattern);
+        }
         args("--optimize-constantpool");
-        args("--output", getOutputJar().get().getAsFile().getAbsolutePath());
+        args("--output", getOutputFile().get().getAsFile().getAbsolutePath());
 
         var logFile = new File(getTemporaryDir(), "console.log");
         try (var out = new BufferedOutputStream(new FileOutputStream(logFile))) {

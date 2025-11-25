@@ -28,10 +28,10 @@ public abstract class GenerateBaseJar extends JavaExec {
     @Optional
     public abstract RegularFileProperty getMappings();
 
-    @InputFile
+    @InputFiles
     @PathSensitive(PathSensitivity.NONE)
     @Optional
-    public abstract RegularFileProperty getNeoFormMappings();
+    public abstract ConfigurableFileCollection getNeoFormMappings();
 
     @OutputFile
     public abstract RegularFileProperty getOutput();
@@ -46,8 +46,8 @@ public abstract class GenerateBaseJar extends JavaExec {
             args("--input-mappings", getMappings().get().getAsFile().getAbsolutePath());
         }
         args("--output", getOutput().get().getAsFile().getAbsolutePath());
-        if (getNeoFormMappings().isPresent()) {
-            args("--neoform-data", getNeoFormMappings().get().getAsFile().getAbsolutePath());
+        if (!getNeoFormMappings().isEmpty()) {
+            args("--neoform-data", getNeoFormMappings().getSingleFile().getAbsolutePath());
         }
         super.exec();
     }
