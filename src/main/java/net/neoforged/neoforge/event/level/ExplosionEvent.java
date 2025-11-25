@@ -22,7 +22,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * <br>
  * ExplosionEvent.Start is {@link ICancellableEvent}.<br>
  * ExplosionEvent.Detonate can modify the affected blocks and entities.<br>
- * Children do not use {@link HasResult}.<br>
  * Children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  */
 public abstract class ExplosionEvent extends Event {
@@ -46,7 +45,6 @@ public abstract class ExplosionEvent extends Event {
      * ExplosionEvent.Start is fired before the explosion actually occurs. Canceling this event will stop the explosion.<br>
      * <br>
      * This event is {@link ICancellableEvent}.<br>
-     * This event does not use {@link HasResult}.<br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      */
     public static class Start extends ExplosionEvent implements ICancellableEvent {
@@ -59,7 +57,6 @@ public abstract class ExplosionEvent extends Event {
      * ExplosionEvent.Detonate is fired once the explosion has a list of affected blocks and entities. These lists can be modified to change the outcome.<br>
      * <br>
      * This event is not {@link ICancellableEvent}.<br>
-     * This event does not use {@link HasResult}.<br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      */
     public static class Detonate extends ExplosionEvent {

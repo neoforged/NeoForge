@@ -75,8 +75,6 @@ public abstract class PlayerEvent extends LivingEvent {
      * <li>{@link #success} contains the boolean value for whether the Block will be successfully harvested.</li>
      * <li>{@link #getEntity} contains the player that caused this event to occur.</li>
      * </ul>
-     * This event does not have a result. {@link Event.HasResult}
-     * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
@@ -129,8 +127,6 @@ public abstract class PlayerEvent extends LivingEvent {
      * <li>{@link #pos} contains the coordinates at which this event is occurring. Optional value.</li>
      * <li>{@link #getEntity} contains the player that caused this event to occur.</li>
      * </ul>
-     * This event does not have a result. {@link Event.HasResult}
-     * <p>
      * This event is {@link net.neoforged.bus.api.ICancellableEvent}.
      * If it is canceled, the player is unable to break the block.
      * <p>
@@ -183,8 +179,6 @@ public abstract class PlayerEvent extends LivingEvent {
      * <li>{@link #username} contains the username of the player.</li>
      * <li>{@link #displayname} contains the display name of the player.</li>
      * </ul>
-     * This event does not have a result. {@link Event.HasResult}
-     * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
@@ -220,8 +214,6 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired via the {@link EventHooks#getPlayerTabListDisplayName(Player)}.
      * <p>
      * {@link #getDisplayName()} contains the display name of the player or null if the client should determine the display name itself.
-     * <p>
-     * This event does not have a result. {@link Event.HasResult}
      * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.

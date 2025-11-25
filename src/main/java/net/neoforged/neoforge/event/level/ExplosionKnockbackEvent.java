@@ -18,7 +18,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * ExplosionKnockbackEvent is fired once the explosion has calculated the knockback velocity to add to the entity caught in blast.<br>
  * <br>
  * This event is not {@link ICancellableEvent}.<br>
- * This event does not use {@link HasResult}.<br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  */
 public class ExplosionKnockbackEvent extends ExplosionEvent {

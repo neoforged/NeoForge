@@ -36,8 +36,6 @@ public abstract class EntityEvent extends Event {
      * <p>
      * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
      * <p>
-     * This event does not have a result. {@link HasResult}
-     * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
@@ -55,8 +53,6 @@ public abstract class EntityEvent extends Event {
      * Use {@link EntityJoinLevelEvent} to detect new entities joining the world.
      * <p>
      * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
-     * <p>
-     * This event does not have a result. {@link HasResult}
      * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.

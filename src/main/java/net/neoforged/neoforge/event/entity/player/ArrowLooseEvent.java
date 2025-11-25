@@ -26,8 +26,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * If this event is canceled, the player does not stop using the bow.<br>
  * For crossbows, the charge will always be 1; Set it to -1 in order to prevent firing the arrow. <br>
  * <br>
- * This event does not have a result. {@link Event.HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {

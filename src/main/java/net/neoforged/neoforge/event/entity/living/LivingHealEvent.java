@@ -21,8 +21,6 @@ import net.neoforged.neoforge.event.EventHooks;
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the Entity is not healed.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingHealEvent extends LivingEvent implements ICancellableEvent {

@@ -45,8 +45,6 @@ public abstract class LivingEvent extends EntityEvent {
      * <p>
      * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
      * <p>
-     * This event does not have a result. {@link HasResult}
-     * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
@@ -64,8 +62,6 @@ public abstract class LivingEvent extends EntityEvent {
      * This event is fired via the {@link CommonHooks#getEntityVisibilityMultiplier(LivingEntity, Entity, double)}.
      * <p>
      * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
-     * <p>
-     * This event does not have a result. {@link HasResult}
      * <p>
      * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.

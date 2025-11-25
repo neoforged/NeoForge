@@ -29,8 +29,6 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * If you cancel this event, the target will stay the same to what the entity already is targeting and not be changed.
  * <p>
- * This event does not have a result. {@link Event.HasResult}
- * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {
