@@ -23,7 +23,6 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.TeleportTransition;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
@@ -33,6 +32,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Base class of the events specific to Players.
  * <p>
+ * 
  * @see PlayerEvent.HarvestCheck
  * @see PlayerEvent.BreakSpeed
  * @see PlayerEvent.NameFormat

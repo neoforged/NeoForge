@@ -13,6 +13,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * Base class of events involving player experience.
  * <p>
+ * 
  * @see PlayerXpEvent.PickupXp
  * @see PlayerXpEvent.XpChange
  * @see PlayerXpEvent.LevelChange

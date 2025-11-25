@@ -7,8 +7,6 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -17,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Base class of the events specific to LivingEntities.
  * <p>
+ * 
  * @see LivingEvent.LivingJumpEvent
  * @see LivingEvent.LivingVisibilityEvent
  **/

@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * Base class of the events involving entities.
  * <p>
+ * 
  * @see EntityEvent.EntityConstructing
  * @see EntityEvent.EnteringSection
  * @see EntityEvent.Size
