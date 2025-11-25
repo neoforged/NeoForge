@@ -252,13 +252,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches")));
         });
 
-        var genCommonProductionPatches = tasks.register("generateCommonProductionSourcePatches", GenerateSourcePatches.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
-            task.getOriginalJar().set(splitUnpatchedSources.flatMap(SplitMergedSources::getCommonJar));
-            task.getModifiedSources().set(commonSources.flatMap(AbstractArchiveTask::getArchiveFile));
-            task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches-common")));
-        });
-
         // Update the patch/ folder with the current patches.
         tasks.register("genPatches", Sync.class, task -> {
             task.setGroup(GROUP);
