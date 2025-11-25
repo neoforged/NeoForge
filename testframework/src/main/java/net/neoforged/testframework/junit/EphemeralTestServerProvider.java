@@ -52,9 +52,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.Extension;
@@ -118,10 +116,10 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 final MinecraftServer server = MinecraftServer.spin(
                         thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository));
 
-                FMLLoader.getCurrent().addCloseCallback(() -> {
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     server.stopServer();
                     LogManager.shutdown();
-                });
+                }));
             } catch (Exception ex) {
                 LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", ex);
                 throw new RuntimeException(ex);
@@ -241,7 +239,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 storageSource.deleteLevel();
                 this.storageSource.close();
 
-                FileUtils.deleteDirectory(tempDir.toFile());
+                Files.delete(tempDir);
             } catch (IOException ioexception) {
                 LOGGER.error("Failed to unlock level {}", this.storageSource.getLevelId(), ioexception);
             }
