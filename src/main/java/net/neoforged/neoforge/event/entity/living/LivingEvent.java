@@ -15,11 +15,10 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import org.jspecify.annotations.Nullable;
 
 /**
- * LivingEvent is fired whenever an event involving a {@link LivingEntity} occurs.<br>
- * If a method utilizes this {@link Event} as its parameter, the method will
- * receive every child event of this class.<br>
- * <br>
- * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
+ * Base class of the events specific to LivingEntities.
+ * <p>
+ * @see LivingEvent.LivingJumpEvent
+ * @see LivingEvent.LivingVisibilityEvent
  **/
 public abstract class LivingEvent extends EntityEvent {
     private final LivingEntity livingEntity;
@@ -35,19 +34,21 @@ public abstract class LivingEvent extends EntityEvent {
     }
 
     /**
-     * LivingJumpEvent is fired when an Entity jumps.<br>
-     * This event is fired whenever an Entity jumps in
+     * LivingJumpEvent is fired when a LivingEntity jumps.
+     * <p>
+     * This event is fired whenever a LivingEntity jumps in
      * {@code LivingEntity#jumpFromGround()}, {@code MagmaCube#jumpFromGround()},
      * {@code Slime#jumpFromGround()}, {@code Camel#executeRidersJump()},
-     * and {@code AbstractHorse#executeRidersJump()}.<br>
-     * <br>
-     * This event is fired via the {@link CommonHooks#onLivingJump(LivingEntity)}.<br>
-     * <br>
-     * This event is not {@link ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.
+     * and {@code AbstractHorse#executeRidersJump()}.
+     * <p>
+     * This event is fired via the {@link CommonHooks#onLivingJump(LivingEntity)}.
+     * <p>
+     * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
+     * <p>
+     * This event does not have a result. {@link HasResult}
+     * <p>
+     * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class LivingJumpEvent extends LivingEvent {
         public LivingJumpEvent(LivingEntity e) {
@@ -55,6 +56,20 @@ public abstract class LivingEvent extends EntityEvent {
         }
     }
 
+    /**
+     * LivingVisibilityEvent is fired when an LivingEntity's visibility is queried.
+     * <p>
+     * This event is fired whenever {@code LivingEntity#getVisibilityPercent()} is called.
+     * <p>
+     * This event is fired via the {@link CommonHooks#getEntityVisibilityMultiplier(LivingEntity, Entity, double)}.
+     * <p>
+     * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
+     * <p>
+     * This event does not have a result. {@link HasResult}
+     * <p>
+     * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
+     **/
     public static class LivingVisibilityEvent extends LivingEvent {
         private double visibilityModifier;
         @Nullable
