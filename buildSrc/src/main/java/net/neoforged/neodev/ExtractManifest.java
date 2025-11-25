@@ -11,6 +11,9 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
+/**
+ * Extracts a Jar manifest to a file.
+ */
 public abstract class ExtractManifest extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getJarFile();

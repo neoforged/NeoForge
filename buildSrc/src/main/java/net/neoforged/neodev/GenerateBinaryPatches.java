@@ -4,33 +4,61 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputFile;
 
-public abstract class GenerateBinaryPatches extends JavaExec {
+abstract class GenerateBinaryPatches extends JavaExec {
+    @Inject
+    public GenerateBinaryPatches() {}
+
+    /**
+     * The base against which the patches should be created for the client distribution.
+     */
     @InputFile
     public abstract RegularFileProperty getBaseClientJar();
 
+    /**
+     * The target jar that will be diffed against {@link #getBaseClientJar()} to create the patches for the
+     * client distribution.
+     */
     @InputFile
-    public abstract RegularFileProperty getModifiedClientJar();
+    abstract RegularFileProperty getModifiedClientJar();
 
+    /**
+     * The base against which the patches should be created for the server distribution.
+     */
     @InputFile
-    public abstract RegularFileProperty getBaseServerJar();
+    abstract RegularFileProperty getBaseServerJar();
 
+    /**
+     * The target jar that will be diffed against {@link #getBaseServerJar()} to create the patches for the
+     * server distribution.
+     */
     @InputFile
-    public abstract RegularFileProperty getModifiedServerJar();
+    abstract RegularFileProperty getModifiedServerJar();
 
+    /**
+     * The base against which the patches should be created for the combined client+server distribution.
+     */
     @InputFile
-    public abstract RegularFileProperty getBaseJoinedJar();
+    abstract RegularFileProperty getBaseJoinedJar();
 
+    /**
+     * The target jar that will be diffed against {@link #getBaseServerJar()} to create the patches for the
+     * combined client+server distribution.
+     */
     @InputFile
-    public abstract RegularFileProperty getModifiedJoinedJar();
+    abstract RegularFileProperty getModifiedJoinedJar();
 
+    /**
+     * Where the created patch bundle should be written to.
+     */
     @OutputFile
-    public abstract RegularFileProperty getOutputJar();
+    abstract RegularFileProperty getOutputJar();
 
     @Override
     public void exec() {

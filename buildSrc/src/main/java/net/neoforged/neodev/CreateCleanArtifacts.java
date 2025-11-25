@@ -42,8 +42,5 @@ abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
         getAdditionalResults().put("node.rename.output.output", getCleanJoinedJar().getAsFile());
         getAdditionalResults().put("node.mergeMappings.output.output", getMergedMappings().getAsFile());
         getAdditionalResults().put("node.downloadClientMappings.output.output", getClientMappings().getAsFile());
-
-        // TODO: does anyone care about this? they should be contained in the client mappings
-        //"--write-result", "node.downloadServerMappings.output.output:" + getServerMappings().get().getAsFile().getAbsolutePath()
     }
 }
