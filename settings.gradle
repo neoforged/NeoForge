@@ -23,20 +23,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
-    repositories {
-        maven {
-            name = "Maven for PR #35" // https://github.com/neoforged/InstallerTools/pull/35
-            url = uri("https://prmaven.neoforged.net/InstallerTools/pr35")
-            content {
-                includeModule("net.neoforged.installertools", "binarypatcher")
-                includeModule("net.neoforged.installertools", "cli-utils")
-                includeModule("net.neoforged.installertools", "installertools")
-                includeModule("net.neoforged.installertools", "jarsplitter")
-                includeModule("net.neoforged.installertools", "problems-api")
-                includeModule("net.neoforged.installertools", "zipinject")
-            }
-        }
-    }
 }
 
 if (rootProject.name.toLowerCase(Locale.ROOT) == "neoforge") {
