@@ -21,25 +21,7 @@ dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
-        mavenLocal()
         mavenCentral()
-    }
-
-
-    //TODO: Remove this once InstallerTools is ready
-    repositories {
-        maven {
-            name = "Maven for PR #32" // https://github.com/neoforged/InstallerTools/pull/30
-            url = uri("https://prmaven.neoforged.net/InstallerTools/pr30")
-            content {
-                includeModule("net.neoforged.installertools", "binarypatcher")
-                includeModule("net.neoforged.installertools", "cli-utils")
-                includeModule("net.neoforged.installertools", "installertools")
-                includeModule("net.neoforged.installertools", "jarsplitter")
-                includeModule("net.neoforged.installertools", "problems-api")
-                includeModule("net.neoforged.installertools", "zipinject")
-            }
-        }
     }
 }
 

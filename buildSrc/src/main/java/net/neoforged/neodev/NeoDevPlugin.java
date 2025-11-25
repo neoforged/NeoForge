@@ -531,9 +531,9 @@ public class NeoDevPlugin implements Plugin<Project> {
             Provider<Directory> neoDevBuildDir) {
         var tasks = project.getTasks();
 
-        var clientJars = setupBaseAndTargetJar(project, neoDevBuildDir, BinaryPatchDist.CLIENT, neoDevConfigurations, createCleanArtifacts);
-        var serverJars = setupBaseAndTargetJar(project, neoDevBuildDir, BinaryPatchDist.SERVER, neoDevConfigurations, createCleanArtifacts);
-        var joinedJars = setupBaseAndTargetJar(project, neoDevBuildDir, BinaryPatchDist.JOINED, neoDevConfigurations, createCleanArtifacts);
+        var clientJars = setupBaseAndModifiedJarForBinaryPatches(project, neoDevBuildDir, BinaryPatchDist.CLIENT, neoDevConfigurations, createCleanArtifacts);
+        var serverJars = setupBaseAndModifiedJarForBinaryPatches(project, neoDevBuildDir, BinaryPatchDist.SERVER, neoDevConfigurations, createCleanArtifacts);
+        var joinedJars = setupBaseAndModifiedJarForBinaryPatches(project, neoDevBuildDir, BinaryPatchDist.JOINED, neoDevConfigurations, createCleanArtifacts);
 
         var binpatcherConfig = neoDevConfigurations.getExecutableTool(Tools.BINPATCHER);
         var generatePatchBundles = tasks.register("generatePatchBundle", GenerateBinaryPatches.class, task -> {
@@ -616,7 +616,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
     record BaseAndTargetJar(Provider<RegularFile> baseJar, Provider<RegularFile> modifiedJar) {}
 
-    private static BaseAndTargetJar setupBaseAndTargetJar(
+    private static BaseAndTargetJar setupBaseAndModifiedJarForBinaryPatches(
             Project project,
             Provider<Directory> neoDevBuildDir,
             BinaryPatchDist dist,
