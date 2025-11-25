@@ -22,7 +22,7 @@ public abstract class GenerateBaseJar extends JavaExec {
 
     @InputFile
     @PathSensitive(PathSensitivity.NONE)
-    public abstract RegularFileProperty getNeoForm();
+    public abstract RegularFileProperty getNeoFormMappings();
 
     @OutputFile
     public abstract RegularFileProperty getOutput();
@@ -30,12 +30,12 @@ public abstract class GenerateBaseJar extends JavaExec {
     @Override
     public void exec() {
         args("--task", "PROCESS_MINECRAFT_JAR");
-        getMinecraft().getFiles().forEach(file -> {
+        for (var file : getMinecraft().getFiles()) {
             args("--input", file.getAbsolutePath());
-        });
+        }
         args("--input-mappings", getMappings().get().getAsFile().getAbsolutePath());
         args("--output", getOutput().get().getAsFile().getAbsolutePath());
-        args("--neoform-data", getNeoForm().get().getAsFile().getAbsolutePath());
+        args("--neoform-data", getNeoFormMappings().get().getAsFile().getAbsolutePath());
 
         getLogger().error("Arguments: {}", String.join(" ", getArgs()));
 

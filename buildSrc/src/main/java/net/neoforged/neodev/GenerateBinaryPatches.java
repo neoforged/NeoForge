@@ -12,19 +12,19 @@ import org.gradle.api.tasks.OutputFile;
 
 public abstract class GenerateBinaryPatches extends JavaExec {
     @InputFile
-    public abstract RegularFileProperty getClientJar();
+    public abstract RegularFileProperty getBaseClientJar();
 
     @InputFile
     public abstract RegularFileProperty getModifiedClientJar();
 
     @InputFile
-    public abstract RegularFileProperty getServerJar();
+    public abstract RegularFileProperty getBaseServerJar();
 
     @InputFile
     public abstract RegularFileProperty getModifiedServerJar();
 
     @InputFile
-    public abstract RegularFileProperty getJoinedJar();
+    public abstract RegularFileProperty getBaseJoinedJar();
 
     @InputFile
     public abstract RegularFileProperty getModifiedJoinedJar();
@@ -35,9 +35,9 @@ public abstract class GenerateBinaryPatches extends JavaExec {
     @Override
     public void exec() {
         args("--diff");
-        args("--base-client", getClientJar().get().getAsFile().getAbsolutePath());
-        args("--base-server", getServerJar().get().getAsFile().getAbsolutePath());
-        args("--base-joined", getJoinedJar().get().getAsFile().getAbsolutePath());
+        args("--base-client", getBaseClientJar().get().getAsFile().getAbsolutePath());
+        args("--base-server", getBaseServerJar().get().getAsFile().getAbsolutePath());
+        args("--base-joined", getBaseJoinedJar().get().getAsFile().getAbsolutePath());
         args("--modified-client", getModifiedClientJar().get().getAsFile().getAbsolutePath());
         args("--modified-server", getModifiedServerJar().get().getAsFile().getAbsolutePath());
         args("--modified-joined", getModifiedJoinedJar().get().getAsFile().getAbsolutePath());
