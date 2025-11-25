@@ -75,9 +75,11 @@ public sealed interface BakedNormals {
      * {@return a packed representation of the given normal}
      */
     static int pack(float x, float y, float z) {
-        return (((byte) (x * 127.0f)) & 0xFF) |
-                ((((byte) (y * 127.0f)) & 0xFF) << 8) |
-                ((((byte) (z * 127.0f)) & 0xFF) << 16);
+        int packedx = ((byte) Math.round(x * 127)) & 0xFF;
+        int packedy = ((byte) Math.round(y * 127)) & 0xFF;
+        int packedz = ((byte) Math.round(z * 127)) & 0xFF;
+
+        return packedx | (packedy << 8) | (packedz << 16);
     }
 
     /**
