@@ -1,5 +1,6 @@
 package net.neoforged.neodev;
 
+import javax.inject.Inject;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
@@ -9,8 +10,6 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
-
-import javax.inject.Inject;
 
 /**
  * Create the base jar file that will be diffed against the modified jar to create binary patch files.
