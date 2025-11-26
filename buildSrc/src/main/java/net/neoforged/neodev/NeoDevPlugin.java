@@ -526,8 +526,8 @@ public class NeoDevPlugin implements Plugin<Project> {
         var clientBaseJar = setupBinaryPatchBaseJar(project, neoDevBuildDir, BinaryPatchBaseType.CLIENT, neoDevConfigurations, createCleanArtifacts);
         var serverBaseJar = setupBinaryPatchBaseJar(project, neoDevBuildDir, BinaryPatchBaseType.SERVER, neoDevConfigurations, createCleanArtifacts);
         var joinedBaseJar = setupBinaryPatchBaseJar(project, neoDevBuildDir, BinaryPatchBaseType.JOINED, neoDevConfigurations, createCleanArtifacts);
-        var clientModifiedJar = setupBinaryPatchModifierJar(project, neoDevBuildDir, BinaryPatchBaseType.CLIENT);
-        var serverModifiedJar = setupBinaryPatchModifierJar(project, neoDevBuildDir, BinaryPatchBaseType.SERVER);
+        var clientModifiedJar = setupBinaryPatchModifiedJar(project, neoDevBuildDir, BinaryPatchBaseType.CLIENT);
+        var serverModifiedJar = setupBinaryPatchModifiedJar(project, neoDevBuildDir, BinaryPatchBaseType.SERVER);
 
         var binpatcherConfig = neoDevConfigurations.getExecutableTool(Tools.BINPATCHER);
         var generatePatchBundles = tasks.register("generatePatchBundle", GenerateBinaryPatches.class, task -> {
@@ -648,14 +648,14 @@ public class NeoDevPlugin implements Plugin<Project> {
             // The client mappings are a superset of the server mappings and can be used to remap the server too.
             task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
             task.getOutput().set(binpatchesDir.map(dir -> dir.file(type + "-base.jar")));
-            task.getNeoFormMappings().from(neoDevConfigurations.neoFormMappingsFiles);
+            // task.getNeoFormMappings().from(neoDevConfigurations.neoFormMappingsFiles);
             task.classpath(installerToolsConfig);
         });
 
         return baseJar.flatMap(GenerateBaseJar::getOutput);
     }
 
-    private static Provider<RegularFile> setupBinaryPatchModifierJar(
+    private static Provider<RegularFile> setupBinaryPatchModifiedJar(
             Project project,
             Provider<Directory> neoDevBuildDir,
             BinaryPatchBaseType type) {

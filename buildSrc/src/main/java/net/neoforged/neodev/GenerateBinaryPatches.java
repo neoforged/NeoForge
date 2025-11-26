@@ -21,7 +21,7 @@ abstract class GenerateBinaryPatches extends JavaExec {
      * The base against which the patches should be created for the client distribution.
      */
     @InputFile
-    public abstract RegularFileProperty getBaseClientJar();
+    abstract RegularFileProperty getBaseClientJar();
 
     /**
      * The target jar that will be diffed against {@link #getBaseClientJar()} to create the patches for the

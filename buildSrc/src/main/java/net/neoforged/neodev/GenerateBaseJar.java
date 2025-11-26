@@ -2,7 +2,6 @@ package net.neoforged.neodev;
 
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
@@ -11,14 +10,18 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 
+import javax.inject.Inject;
+
 /**
  * Create the base jar file that will be diffed against the modified jar to create binary patch files.
  */
-@CacheableTask
-public abstract class GenerateBaseJar extends JavaExec {
+abstract class GenerateBaseJar extends JavaExec {
+    @Inject
+    public GenerateBaseJar() {}
+
     @InputFiles
     @PathSensitive(PathSensitivity.NONE)
-    public abstract ConfigurableFileCollection getMinecraft();
+    abstract ConfigurableFileCollection getMinecraft();
 
     /**
      * The official Mojang mappings file.
@@ -26,15 +29,17 @@ public abstract class GenerateBaseJar extends JavaExec {
     @InputFile
     @PathSensitive(PathSensitivity.NONE)
     @Optional
-    public abstract RegularFileProperty getMappings();
+    abstract RegularFileProperty getMappings();
 
+    /**
+     * The NeoForm mappings (either LZMA or ZIP data file), this can be empty to not apply NeoForm mappings.
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.NONE)
-    @Optional
-    public abstract ConfigurableFileCollection getNeoFormMappings();
+    abstract ConfigurableFileCollection getNeoFormMappings();
 
     @OutputFile
-    public abstract RegularFileProperty getOutput();
+    abstract RegularFileProperty getOutput();
 
     @Override
     public void exec() {
