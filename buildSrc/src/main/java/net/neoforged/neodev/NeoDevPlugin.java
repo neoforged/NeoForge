@@ -648,7 +648,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             // The client mappings are a superset of the server mappings and can be used to remap the server too.
             task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getClientMappings));
             task.getOutput().set(binpatchesDir.map(dir -> dir.file(type + "-base.jar")));
-            // task.getNeoFormMappings().from(neoDevConfigurations.neoFormMappingsFiles);
+            task.getNeoFormMappings().from(neoDevConfigurations.neoFormMappingsFiles);
             task.classpath(installerToolsConfig);
         });
 
