@@ -445,7 +445,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.from(binaryPatchOutputs, spec -> {
                 spec.rename(s -> "patches.lzma");
             });
-            task.from(project.fileTree(genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)), spec -> {
+            task.from(genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder), spec -> {
                 spec.into("patches/");
             });
         });
