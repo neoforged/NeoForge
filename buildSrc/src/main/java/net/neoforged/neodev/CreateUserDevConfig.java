@@ -63,7 +63,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 "joined.lzma",
                 new BinpatcherConfig(
                         getBinpatcherGav().get(),
-                        List.of("--clean", "{clean}", "--output", "{output}", "--apply", "{patch}")),
+                        List.of("--patch", "--base", "{clean}", "--base-type", "JOINED", "--output", "{output}", "--patches", "{patch}")),
                 "patches/",
                 "net.neoforged:neoforge:%s:sources".formatted(getNeoForgeVersion().get()),
                 "net.neoforged:neoforge:%s:universal".formatted(getNeoForgeVersion().get()),
