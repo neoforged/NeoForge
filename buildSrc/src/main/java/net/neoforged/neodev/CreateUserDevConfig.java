@@ -60,7 +60,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 2,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
                 "ats/",
-                "joined.lzma",
+                "patches.lzma",
                 new BinpatcherConfig(
                         getBinpatcherGav().get(),
                         List.of("--clean", "{clean}", "--output", "{output}", "--apply", "{patch}")),
