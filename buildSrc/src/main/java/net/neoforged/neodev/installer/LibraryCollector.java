@@ -8,26 +8,49 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import net.neoforged.neodev.utils.HashFunction;
 import net.neoforged.neodev.utils.MavenIdentifier;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.api.provider.ProviderFactory;
 
 /**
  * For each file in a collection, finds the repository that the file came from.
  */
-class LibraryCollector {
+public class LibraryCollector {
+    public static List<Library> expectedPublishedJar(Collection<IdentifiedFile> libraries, ProviderFactory providerFactory) throws IOException {
+        var expectedUrl = providerFactory.gradleProperty("publishing.libraries.url")
+                .map(repo -> repo.endsWith("/") ? repo : "%s/".formatted(repo))
+                .orElse("https://maven.neoforged.net/releases/")
+                .get();
+
+        List<Library> list = new ArrayList<>();
+        for (IdentifiedFile library : libraries) {
+            var file = library.getFile().get().getAsFile();
+
+            var sha1 = sha1Hash(file.toPath());
+            var fileSize = Files.size(file.toPath());
+
+            Library apply = new Library(
+                    library.getIdentifier().get().artifactNotation(),
+                    new LibraryDownload(new LibraryArtifact(
+                            sha1,
+                            fileSize,
+                            expectedUrl + library.getIdentifier().get().repositoryPath(),
+                            library.getIdentifier().get().repositoryPath())));
+            list.add(apply);
+        }
+        return list;
+    }
+
     public static List<Library> resolveLibraries(List<URI> repositoryUrls, Collection<IdentifiedFile> libraries) throws IOException {
         var collector = new LibraryCollector(repositoryUrls);
         for (var library : libraries) {
@@ -144,21 +167,20 @@ class LibraryCollector {
         libraries.add(libraryFuture);
     }
 
-    static String sha1Hash(Path path) throws IOException {
-        MessageDigest digest;
+    public static String sha1Hash(Path path) {
         try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            return HashFunction.SHA1.hash(Files.readAllBytes(path));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read the hash of: " + path, e);
         }
+    }
 
-        try (var in = Files.newInputStream(path);
-                var din = new DigestInputStream(in, digest)) {
-            byte[] buffer = new byte[8192];
-            while (din.read(buffer) != -1) {}
+    public static long fileSize(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to calculate file size for: " + path, e);
         }
-
-        return HexFormat.of().formatHex(digest.digest());
     }
 
     private static URI joinUris(URI repositoryUrl, String path) {

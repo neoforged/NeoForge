@@ -1,3 +1,3 @@
 package net.neoforged.neodev.installer;
 
-record Library(String name, LibraryDownload downloads) {}
+public record Library(String name, LibraryDownload downloads) {}

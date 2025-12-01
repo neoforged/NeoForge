@@ -1,0 +1,95 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.licenser'
+    id 'neoforge.formatting-conventions'
+    id 'com.gradleup.shadow' version '9.0.2'
+}
+
+jar {
+    manifest {
+        attributes(
+                "Automatic-Module-Name": "neoforge.coremods",
+                FMLModType: "LIBRARY",
+        )
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(project.java_version))
+    }
+}
+
+configurations {
+    dependencyScope("binaryPatches")
+    dependencyScope("neoFormMappings")
+
+    resolvable("binaryPatchFiles")
+    resolvable("neoFormMappingFiles")
+
+    binaryPatchFiles.extendsFrom binaryPatches
+    neoFormMappingFiles.extendsFrom neoFormMappings
+}
+
+dependencies {
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+    compileOnly "net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}"
+
+    binaryPatches(project(':neoforge')) {
+        capabilities {
+            requireCapability 'net.neoforged:neoforge-patches'
+        }
+        endorseStrictVersions()
+    }
+
+    neoFormMappings("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-parameter-mappings'
+        }
+    }
+
+    api "net.neoforged.installertools:installertools:${project.installertools_version}:fatjar"
+}
+
+jar {
+    from(configurations.binaryPatchFiles.getSingleFile()) {
+        into("./")
+        rename(s -> "patches.lzma")
+    }
+    from(configurations.neoFormMappingFiles.getSingleFile()) {
+        into("./")
+        rename(s -> "neoform.tsrg.lzma")
+    }
+
+    manifest {
+        attributes.put("version", project.getVersion().toString())
+    }
+}
+
+license {
+    header = rootProject.file('codeformat/HEADER.txt')
+    include '**/*.java'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.shadowJar {
+    minimize()
+    enableAutoRelocation = true
+    relocationPrefix = "shadowed"
+
+    from(project.configurations.binaryPatchFiles.getSingleFile()) {
+        into("./")
+        rename(s -> "patches.lzma")
+    }
+    from(project.configurations.neoFormMappingFiles.getSingleFile()) {
+        into("./")
+        rename(s -> "neoform.tsrg.lzma")
+    }
+
+    manifest {
+        attributes.put("version", project.getVersion().toString())
+    }
+}

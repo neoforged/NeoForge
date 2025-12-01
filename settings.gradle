@@ -21,7 +21,20 @@ dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
+        mavenLocal()
         mavenCentral()
+    }
+
+    repositories {
+        maven {
+            name = "Maven for PR #383" // https://github.com/neoforged/FancyModLoader/pull/383
+            url = uri("https://prmaven.neoforged.net/FancyModLoader/pr383")
+            content {
+                includeModule("net.neoforged.fancymodloader", "earlydisplay")
+                includeModule("net.neoforged.fancymodloader", "junit-fml")
+                includeModule("net.neoforged.fancymodloader", "loader")
+            }
+        }
     }
 }
 
@@ -43,6 +56,8 @@ include ':coremods'
 // Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
 // another external dependency.
 project(":coremods").name = "neoforge-coremods"
+
+include ':autoinstall'
 
 // Expose the repository base URLs to projects to be able to access them
 // See this Gradle issue for tracking a more permanent solution:

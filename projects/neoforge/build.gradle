@@ -506,6 +506,18 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    binaryPatches {
+        canBeDeclared = false
+        canBeResolved = false
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "patches"))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "patching"))
+        }
+        outgoing {
+            capability("net.neoforged:neoforge-patches:${project.version}")
+        }
+        javaComponent.addVariantsFromConfiguration(it) {}
+    }
 }
 
 sourcesJar {
@@ -544,6 +556,11 @@ artifacts {
         builtBy(createChangelog)
         setClassifier("changelog")
         setExtension("txt")
+    }
+    binaryPatches(generatePatchBundle.outputFile) {
+        builtBy(generatePatchBundle)
+        setClassifier("patches")
+        setExtension("lzma")
     }
 }
 

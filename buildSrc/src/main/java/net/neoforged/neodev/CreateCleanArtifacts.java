@@ -33,8 +33,12 @@ abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
     @OutputFile
     abstract RegularFileProperty getClientMappings();
 
+    @OutputFile
+    abstract RegularFileProperty getVersionJson();
+
     @Inject
     public CreateCleanArtifacts() {
+        getAdditionalResults().put("node.downloadJson.output.output", getVersionJson().getAsFile());
         getAdditionalResults().put("node.downloadClient.output.output", getRawClientJar().getAsFile());
         getAdditionalResults().put("node.stripClient.output.output", getCleanClientJar().getAsFile());
         getAdditionalResults().put("node.downloadServer.output.output", getRawServerJar().getAsFile());
