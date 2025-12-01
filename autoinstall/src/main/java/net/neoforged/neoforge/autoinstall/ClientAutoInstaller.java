@@ -38,7 +38,7 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
     }
 
     @Override
-    public @Nullable Result discoverOrInstall(final String neoForgeVersion, final Dist dist) throws Exception {
+    public @Nullable Result discoverOrInstall(final Dist dist) throws Exception {
         //We only support clients!
         if (!dist.isClient()) {
             return null;
@@ -49,12 +49,17 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
             return null;
         }
 
+        var minecraftVersion = getMinecraftVersion();
+        if (minecraftVersion == null) {
+            return null;
+        }
+
         var progress = StartupNotificationManager.addProgressBar("Installation", 3);
         progress.label("Installation - Extracting resources...");
 
         var tempDir = Files.createTempDirectory("nf-auto-installer");
         var minecraftClientJar = getRawMinecraftClient();
-        var clientMappings = getClientMappings();
+        var clientMappings = getClientMappings(minecraftVersion);
         var binaryPatches = getBinaryPatches(tempDir);
         var neoFormMappings = getNeoFormMappings(tempDir);
         var output = tempDir.resolve("client.jar");
@@ -74,7 +79,7 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
         progress.increment();
         progress.label("Installation - Finalizing changes...");
 
-        var patchedMinecraftPath = copyToLibraries(neoForgeVersion, dist, output);
+        var patchedMinecraftPath = copyToLibraries(version, dist, output);
 
         progress.increment();
         progress.complete();
@@ -120,6 +125,15 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
 
     @Nullable
     private static String getNeoForgeVersion() throws IOException {
+        return getManifestAttribute("version");
+    }
+
+    @Nullable
+    private static String getMinecraftVersion() throws IOException {
+        return getManifestAttribute("minecraft");
+    }
+
+    private static @Nullable String getManifestAttribute(final String version) throws IOException {
         String className = ClientAutoInstaller.class.getSimpleName() + ".class";
         String classPath = Objects.requireNonNull(ClientAutoInstaller.class.getResource(className)).toString();
         if (!classPath.startsWith("jar")) {
@@ -129,17 +143,18 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
         try (JarFile jarFile = new JarFile(Paths.get(jarPath).toFile())) {
             Manifest manifest = jarFile.getManifest();
             Attributes attrs = manifest.getMainAttributes();
-            return attrs.getValue("version");
+            return attrs.getValue(version);
         }
     }
 
-    private static Path getClientMappings() {
+    private static Path getClientMappings(final String minecraftVersion) {
+        var fileName = "mappings-%s-client.jar".formatted(minecraftVersion);
+
         String classpath = System.getProperty("java.class.path");
         String[] entries = classpath.split(File.pathSeparator);
         for (String entry : entries) {
             File file = new File(entry);
-            if (file.isFile() && (file.getName().equals("client.txt") ||
-                    (file.getName().endsWith("-client.jar") && file.getName().startsWith("mappings")))) {
+            if (file.isFile() && file.getName().equals(fileName)) {
                 return Path.of(file.getAbsolutePath());
             }
 

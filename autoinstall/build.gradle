@@ -63,6 +63,7 @@ jar {
 
     manifest {
         attributes.put("version", project.getVersion().toString())
+        attributes.put("minecraft", project.property("minecraft_version").toString())
     }
 }
 
