@@ -61,11 +61,6 @@ jar {
         rename(s -> "neoform.tsrg.lzma")
     }
 
-    manifest {
-        attributes.put("version", project.getVersion().toString())
-        attributes.put("minecraft", project.property("minecraft_version").toString())
-    }
-
     dependsOn(project.configurations.binaryPatchFiles.getIncoming().getArtifacts().getArtifactFiles())
 }
 
@@ -90,10 +85,6 @@ tasks.shadowJar {
     from(project.configurations.neoFormMappingFiles.getSingleFile()) {
         into("./")
         rename(s -> "neoform.tsrg.lzma")
-    }
-
-    manifest {
-        attributes.put("version", project.getVersion().toString())
     }
 
     dependsOn(project.configurations.binaryPatchFiles.getIncoming().getArtifacts().getArtifactFiles())

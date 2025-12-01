@@ -11,14 +11,12 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+import java.util.Properties;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.MavenCoordinate;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
@@ -125,25 +123,26 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
 
     @Nullable
     private static String getNeoForgeVersion() throws IOException {
-        return getManifestAttribute("version");
+        return getVersionPropertiesFileEntry("neoforge_version");
     }
 
     @Nullable
     private static String getMinecraftVersion() throws IOException {
-        return getManifestAttribute("minecraft");
+        return getVersionPropertiesFileEntry("minecraft_version");
     }
 
-    private static @Nullable String getManifestAttribute(final String version) throws IOException {
-        String className = ClientAutoInstaller.class.getSimpleName() + ".class";
-        String classPath = Objects.requireNonNull(ClientAutoInstaller.class.getResource(className)).toString();
-        if (!classPath.startsWith("jar")) {
-            return null;
-        }
-        String jarPath = classPath.substring("jar:file:".length(), classPath.indexOf("!"));
-        try (JarFile jarFile = new JarFile(Paths.get(jarPath).toFile())) {
-            Manifest manifest = jarFile.getManifest();
-            Attributes attrs = manifest.getMainAttributes();
-            return attrs.getValue(version);
+    private static @Nullable String getVersionPropertiesFileEntry(final String version) throws IOException {
+        var versionPropertiesResource = ClientAutoInstaller.class.getResource("/net/neoforged/neoforge/common/version.properties");
+        try (var stream = Objects.requireNonNull(versionPropertiesResource).openStream()) {
+            var content = new String(stream.readAllBytes());
+            try (var reader = new StringReader(content)) {
+                var properties = new Properties();
+                properties.load(reader);
+                if (!properties.containsKey(version))
+                    return null;
+
+                return properties.getProperty(version, null);
+            }
         }
     }
 
