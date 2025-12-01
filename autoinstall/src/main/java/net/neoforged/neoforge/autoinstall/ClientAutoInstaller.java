@@ -175,7 +175,7 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
         var targetFile = tempDir.resolve(targetName);
         var patchResource = ClientAutoInstaller.class.getResource(packagedName);
         if (patchResource == null) {
-            throw new IllegalStateException("Could not find patches in the auto installer.");
+            throw new IllegalStateException("Could not find %s in the auto installer.".formatted(packagedName));
         }
 
         try (BufferedInputStream in = new BufferedInputStream(patchResource.openStream());
