@@ -160,7 +160,7 @@ public class CapabilityHooks {
                 Items.RED_SHULKER_BOX,
                 Items.WHITE_SHULKER_BOX,
                 Items.YELLOW_SHULKER_BOX);
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS, 64),
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS),
                 Items.BUNDLE,
                 Items.BLACK_BUNDLE,
                 Items.BLUE_BUNDLE,
