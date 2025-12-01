@@ -65,6 +65,8 @@ jar {
         attributes.put("version", project.getVersion().toString())
         attributes.put("minecraft", project.property("minecraft_version").toString())
     }
+
+    dependsOn(project.configurations.binaryPatchFiles.getIncoming().getArtifacts().getArtifactFiles())
 }
 
 license {
@@ -93,4 +95,6 @@ tasks.shadowJar {
     manifest {
         attributes.put("version", project.getVersion().toString())
     }
+
+    dependsOn(project.configurations.binaryPatchFiles.getIncoming().getArtifacts().getArtifactFiles())
 }
