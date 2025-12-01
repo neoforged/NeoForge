@@ -53,17 +53,18 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @TaskAction
     public void writeUserDevConfig() throws IOException {
         var features = new UserDevFeatures(
-                true //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.
+                true, //Since 21.9 we use a more advanced version of FML which discovers dependencies and their libraries directly from the CP, no need for additional classpath elements.,
+                true //Since 21.10 we use a new binary patch format, which can be used to massively speed up the creation of a CICD, or decompiler less version of our artifacts.
         );
 
         var config = new UserDevConfig(
                 2,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
                 "ats/",
-                "joined.lzma",
+                "patches.lzma",
                 new BinpatcherConfig(
                         getBinpatcherGav().get(),
-                        List.of("--clean", "{clean}", "--output", "{output}", "--apply", "{patch}")),
+                        List.of("--patch", "--base", "{clean}", "--base-type", "JOINED", "--output", "{output}", "--patches", "{patch}")),
                 "patches/",
                 "net.neoforged:neoforge:%s:sources".formatted(getNeoForgeVersion().get()),
                 "net.neoforged:neoforge:%s:universal".formatted(getNeoForgeVersion().get()),
@@ -158,7 +159,8 @@ record UserDevConfig(
         UserDevFeatures features) {}
 
 record UserDevFeatures(
-        boolean noLegacyClasspath) {}
+        boolean noLegacyClasspath,
+        boolean combinedBinaryPatches) {}
 
 record BinpatcherConfig(
         String version,
