@@ -65,7 +65,7 @@ public record ClientAutoInstaller() implements GameDiscoveryOrInstallationServic
         var output = tempDir.resolve("client.jar");
 
         progress.increment();
-        progress.label("Installation - Updating your Minecraft Instance...");
+        progress.label("Installation - Installing NeoForge...");
 
         new ProcessMinecraftJar().process(
                 new String[] {
