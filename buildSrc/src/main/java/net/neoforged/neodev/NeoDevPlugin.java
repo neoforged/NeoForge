@@ -539,7 +539,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getModifiedClientJar().set(clientModifiedJar);
             task.getBaseServerJar().set(serverBaseJar);
             task.getModifiedServerJar().set(serverModifiedJar);
-            task.getBaseJoinedJar().set(joinedBaseJar);
+            task.getBaseJoinedJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
             // Since we're filtering by *.class, the modified jar for client and joined is identical. They differ in manifest only.
             task.getModifiedJoinedJar().set(clientModifiedJar);
             task.getInclude().add("**/*.class");
