@@ -1,6 +1,6 @@
 package net.neoforged.neodev.installer;
 
-record LibraryArtifact(
+public record LibraryArtifact(
         String sha1,
         long size,
         String url,

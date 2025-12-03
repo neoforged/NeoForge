@@ -59,11 +59,14 @@ class NeoDevConfigurations {
      * Note that the client&server dependencies are differentiated by attributes on the resolving configuration.
      */
     final Configuration minecraftDependencies;
+    /**
+     * The auto installers fat jar to use.
+     */
+    final Configuration autoInstaller;
 
     //
     // Resolvable configurations.
     //
-
     /**
      * Resolved {@link #neoFormMappings}.
      * This is used to add the parameter mappings file from NeoForm to the installer libraries.
@@ -98,6 +101,10 @@ class NeoDevConfigurations {
      * Resolvable {@link #minecraftDependencies} for the server-side.
      */
     final Configuration minecraftServerClasspath;
+    /**
+     * Resolvable {@link #autoInstaller} to resolve.
+     */
+    final Configuration autoInstallerClasspath;
 
     //
     // The configurations for resolution only are declared in the build.gradle file.
@@ -133,6 +140,7 @@ class NeoDevConfigurations {
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
         minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");
+        autoInstaller = dependencyScope(configurations, "autoInstaller");
 
         neoFormMappingsFiles = resolvable(configurations, "neoFormMappingsFiles");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
@@ -141,6 +149,7 @@ class NeoDevConfigurations {
         launcherProfileClasspath = resolvable(configurations, "launcherProfileClasspath");
         minecraftClientClasspath = resolvable(configurations, "minecraftClientClasspath");
         minecraftServerClasspath = resolvable(configurations, "minecraftServerClasspath");
+        autoInstallerClasspath = resolvable(configurations, "autoInstallerClasspath");
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
@@ -171,6 +180,13 @@ class NeoDevConfigurations {
         minecraftServerClasspath.extendsFrom(minecraftDependencies);
         minecraftServerClasspath.getAttributes().attribute(
                 Attribute.of("net.neoforged.distribution", String.class), "server");
+
+        autoInstallerClasspath.extendsFrom(autoInstaller);
+        autoInstallerClasspath.getAttributes().attribute(
+                Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.SHADOWED));
+
+        autoInstaller.getDependencies().add(
+                project.getDependencies().create(project.project(":autoinstall")));
 
         toolClasspaths = createToolClasspaths(project);
     }

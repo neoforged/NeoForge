@@ -25,6 +25,7 @@ import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
@@ -86,6 +87,9 @@ public abstract class RunProductionClient extends JavaExec {
      */
     @InputFile
     public abstract RegularFileProperty getOriginalClientJar();
+
+    @Inject
+    public abstract ObjectFactory getObjectFactory();
 
     @Inject
     public RunProductionClient(ExecOperations execOperations) {
@@ -205,6 +209,7 @@ public abstract class RunProductionClient extends JavaExec {
                         id.extension());
 
                 if (!librariesAdded.add(idWithoutVersion)) {
+                    getLogger().warn("Skipped library: {}", idWithoutVersion.repositoryPath());
                     continue; // The library was overridden by a child profile
                 }
 
@@ -230,6 +235,7 @@ public abstract class RunProductionClient extends JavaExec {
         placeholders.put("version_name", versionId);
 
         var classpath = String.join(File.pathSeparator, classpathItems);
+        getLogger().warn("Classpath: {}", classpath);
         placeholders.putIfAbsent("classpath", classpath);
 
         expandPlaceholders(mergedProgramArgs, placeholders);

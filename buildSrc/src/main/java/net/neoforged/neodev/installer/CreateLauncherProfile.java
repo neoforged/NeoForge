@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,9 +21,12 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -43,8 +47,20 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Input
     public abstract Property<String> getRawNeoFormVersion();
 
+    @Inject
+    public abstract ObjectFactory getObjectFactory();
+
+    @Nested
+    public abstract ListProperty<Library> getAdditionalLibraries();
+
+    @InputFile
+    public abstract RegularFileProperty getUniversalJar();
+
     @Nested
     protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
+
+    @Nested
+    protected abstract ListProperty<IdentifiedFile> getProjectLibraryFiles();
 
     /**
      * The libraries that the Minecraft version we target already has as dependencies.
@@ -52,8 +68,12 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Input
     protected abstract ListProperty<MavenIdentifier> getMinecraftLibraryIds();
 
-    public void setLibraries(Configuration libraries) {
-        getLibraryFiles().set(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+    public void addLibraries(Configuration libraries) {
+        getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
+    }
+
+    public void addProjectLibraries(Configuration libraries) {
+        getProjectLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
     }
 
     public void setMinecraftLibraries(Configuration configuration) {
@@ -68,6 +88,9 @@ public abstract class CreateLauncherProfile extends DefaultTask {
 
     @OutputFile
     public abstract RegularFileProperty getLauncherProfile();
+
+    @Inject
+    public abstract ProviderFactory getProviderFactory();
 
     @TaskAction
     public void createLauncherProfile() throws IOException {
@@ -101,7 +124,22 @@ public abstract class CreateLauncherProfile extends DefaultTask {
             }
         });
 
-        var libraries = LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFiles);
+        var libraries = new ArrayList<>(LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFiles));
+        libraries.addAll(LibraryCollector.expectedPublishedJar(getProjectLibraryFiles().get(), getProviderFactory()));
+        libraries.addAll(getAdditionalLibraries().get());
+
+        var universalJar = getUniversalJar().getAsFile().get().toPath();
+        libraries.add(new Library(
+                "net.neoforged:neoforge:%s:universal".formatted(getNeoForgeVersion().get()),
+                new LibraryDownload(new LibraryArtifact(
+                        LibraryCollector.sha1Hash(universalJar),
+                        Files.size(universalJar),
+                        "https://maven.neoforged.net/releases/net/neoforged/neoforge/%s/neoforge-%s-universal.jar".formatted(
+                                getNeoForgeVersion().get(),
+                                getNeoForgeVersion().get()),
+                        "net/neoforged/neoforge/%s/neoforge-%s-universal.jar".formatted(
+                                getNeoForgeVersion().get(),
+                                getNeoForgeVersion().get())))));
 
         var gameArguments = new ArrayList<>(List.of(
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),

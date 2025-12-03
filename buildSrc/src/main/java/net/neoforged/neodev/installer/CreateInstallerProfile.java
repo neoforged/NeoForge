@@ -21,9 +21,11 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
@@ -51,11 +53,21 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getIcon();
 
+    @Inject
+    public abstract ObjectFactory getObjectFactory();
+
     @Nested
     protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
 
     public void addLibraries(Configuration libraries) {
-        getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+        getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
+    }
+
+    @Nested
+    protected abstract ListProperty<IdentifiedFile> getProjectLibraryFiles();
+
+    public void addProjectLibraries(Configuration libraries) {
+        getProjectLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
     }
 
     /**
@@ -65,7 +77,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     protected abstract ListProperty<IdentifiedFile> getMinecraftServerLibraries();
 
     public void addMinecraftServerLibraries(Configuration libraries) {
-        getMinecraftServerLibraries().addAll(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+        getMinecraftServerLibraries().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
     }
 
     /**
@@ -75,7 +87,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     protected abstract ListProperty<IdentifiedFile> getMinecraftClientLibraries();
 
     public void addMinecraftClientLibraries(Configuration libraries) {
-        getMinecraftClientLibraries().addAll(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+        getMinecraftClientLibraries().addAll(IdentifiedFile.listFromConfiguration(getObjectFactory(), libraries, this));
     }
 
     @Input
@@ -90,6 +102,9 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getUniversalJar();
 
+    @InputFile
+    public abstract RegularFileProperty getAutoInstallerJar();
+
     @OutputFile
     public abstract RegularFileProperty getInstallerProfile();
 
@@ -101,6 +116,9 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         }
         processors.add(new ProcessorEntry(sides, mainJar, classpath, args));
     }
+
+    @Inject
+    public abstract ProviderFactory getProviderFactory();
 
     @TaskAction
     public void createInstallerProfile() throws IOException {
@@ -131,9 +149,11 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--from", "data/win_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/win_args.txt".formatted(getNeoForgeVersion().get()),
                         "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get())));
 
+        var librariesToResolve = new ArrayList<>(getLibraryFiles().get());
+
         var neoformMappingsDependency = "net.neoforged:neoform:" + getMcAndNeoFormVersion().get() + ":mappings@tsrg.lzma";
         // Validate it will actually be downloaded
-        if (getLibraryFiles().get().stream().noneMatch(l -> {
+        if (librariesToResolve.stream().noneMatch(l -> {
             var identifier = l.getIdentifier().get();
             return identifier.artifactNotation().equals(neoformMappingsDependency);
         })) {
@@ -142,10 +162,10 @@ public abstract class CreateInstallerProfile extends DefaultTask {
 
         // This task will be auto-replaced by legacyinstaller and is mostly here for other launchers that
         // never implemented the optimization of downloading mojmaps ahead of time.
-        commonProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
+        serverProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
                 List.of("--task", "DOWNLOAD_MOJMAPS", "--version", getMinecraftVersion().get(), "--side", "{SIDE}", "--output", "{MOJMAPS}"));
 
-        commonProcessor.accept(
+        serverProcessor.accept(
                 InstallerProcessor.INSTALLERTOOLS,
                 List.of(
                         "--task",
@@ -165,8 +185,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
 
         getLogger().info("Collecting libraries for Installer Profile");
         // Remove potential duplicates.
-        var libraryFilesToResolve = new LinkedHashMap<MavenIdentifier, IdentifiedFile>(getLibraryFiles().get().size());
-        for (var libraryFile : getLibraryFiles().get()) {
+        var libraryFilesToResolve = new LinkedHashMap<MavenIdentifier, IdentifiedFile>(librariesToResolve.size());
+        for (var libraryFile : librariesToResolve) {
             var existingFile = libraryFilesToResolve.putIfAbsent(libraryFile.getIdentifier().get(), libraryFile);
             if (existingFile != null) {
                 var existing = existingFile.getFile().getAsFile().get();
@@ -186,6 +206,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
 
         var libraries = new ArrayList<>(
                 LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFilesToResolve.values()));
+        libraries.addAll(
+                LibraryCollector.expectedPublishedJar(getProjectLibraryFiles().get(), getProviderFactory()));
 
         var universalJar = getUniversalJar().getAsFile().get().toPath();
         libraries.add(new Library(

@@ -1,4 +1,4 @@
 package net.neoforged.neodev.installer;
 
-record LibraryDownload(
+public record LibraryDownload(
         LibraryArtifact artifact) {}

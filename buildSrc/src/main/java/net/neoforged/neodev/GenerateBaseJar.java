@@ -3,6 +3,7 @@ package net.neoforged.neodev;
 import javax.inject.Inject;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
@@ -14,6 +15,7 @@ import org.gradle.api.tasks.PathSensitivity;
 /**
  * Create the base jar file that will be diffed against the modified jar to create binary patch files.
  */
+@CacheableTask
 abstract class GenerateBaseJar extends JavaExec {
     @Inject
     public GenerateBaseJar() {}
