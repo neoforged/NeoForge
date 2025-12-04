@@ -1,6 +1,14 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -172,11 +_,11 @@
+@@ -102,6 +_,7 @@
+     public static final Material OXIDIZED_COPPER_CHEST_LOCATION = CHEST_MAPPER.defaultNamespaceApply("copper_oxidized");
+     public static final Material OXIDIZED_COPPER_CHEST_LOCATION_LEFT = CHEST_MAPPER.defaultNamespaceApply("copper_oxidized_left");
+     public static final Material OXIDIZED_COPPER_CHEST_LOCATION_RIGHT = CHEST_MAPPER.defaultNamespaceApply("copper_oxidized_right");
++    @Nullable private static IllegalStateException TAINT_CAUSE = null;
+ 
+     public static RenderType bannerSheet() {
+         return BANNER_SHEET_TYPE;
+@@ -172,18 +_,20 @@
      }
  
      private static Material createSignMaterial(WoodType p_173386_) {
@@ -14,6 +22,15 @@
      }
  
      public static Material getSignMaterial(WoodType p_173382_) {
++        if (TAINT_CAUSE != null) throw TAINT_CAUSE;
+         return SIGN_MATERIALS.get(p_173382_);
+     }
+ 
+     public static Material getHangingSignMaterial(WoodType p_250958_) {
++        if (TAINT_CAUSE != null) throw TAINT_CAUSE;
+         return HANGING_SIGN_MATERIALS.get(p_250958_);
+     }
+ 
 @@ -228,6 +_,23 @@
              case SINGLE:
              default:
@@ -33,7 +50,7 @@
 +        if (!net.neoforged.fml.ModLoader.hasErrors() && !net.neoforged.neoforge.internal.CommonModLoader.areRegistriesLoaded()) {
 +            com.mojang.logging.LogUtils.getLogger().error(
 +                      "net.minecraft.client.renderer.Sheets loaded too early, modded registry-based materials may not work correctly",
-+                      new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")
++                      TAINT_CAUSE = new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")
 +            );
          }
      }
