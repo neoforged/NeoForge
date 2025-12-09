@@ -268,15 +268,6 @@
              }
          }
  
-@@ -639,7 +_,7 @@
-     }
- 
-     private void renderDemoOverlay(GuiGraphics p_281825_, DeltaTracker p_348679_) {
--        if (this.minecraft.isDemo()) {
-+        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // Neo: Hide demo timer when F3 debug overlay is open; fixes MC-271166
-             Profiler.get().push("demo");
-             p_281825_.nextStratum();
-             Component component;
 @@ -750,7 +_,15 @@
          return (int)Math.ceil(p_93013_ / 10.0);
      }

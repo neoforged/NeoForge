@@ -1,20 +1,3 @@
-++++ REJECTED HUNK: 4
-@@ -573,6 +597,13 @@
-             gpudevice.getRenderer(),
-             String.format(Locale.ROOT, "%s %s", gpudevice.getBackendName(), gpudevice.getVersion())
-         );
-+        if (this.minecraft.isDemo()) {
-+            if (this.minecraft.level.getGameTime() >= 120500L) {
-+                list.add(0, net.minecraft.network.chat.Component.translatable("demo.demoExpired").getString());
-+            } else {
-+                list.add(0, net.minecraft.network.chat.Component.translatable("demo.remainingTime", net.minecraft.util.StringUtil.formatTickDuration((int)(120500L - this.minecraft.level.getGameTime()), this.minecraft.level.tickRateManager().tickrate())).getString());
-+            }
-+        }
-         if (this.minecraft.showOnlyReducedInfo()) {
-             return list;
-         } else {
-++++ END HUNK
-
 ++++ REJECTED HUNK: 5
 @@ -609,6 +640,7 @@
                  list.add("");
