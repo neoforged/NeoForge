@@ -6,7 +6,7 @@
              list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));
 +
 +            // Neo: Add entity type tags for the targeted entity
-+            entity.getType().getTags().map(p_465458_ -> "#" + p_465458_.location()).forEach(list::add);
++            entity.getType().getTags().map(tag -> "#" + tag.location()).forEach(list::add);
          }
  
          p_434750_.addToGroup(GROUP, list);
