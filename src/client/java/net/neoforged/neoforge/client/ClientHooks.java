@@ -472,6 +472,11 @@ public class ClientHooks {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
     }
 
+    @SuppressWarnings("deprecation")
+    public static Material getItemMaterial(Identifier loc) {
+        return new Material(TextureAtlas.LOCATION_ITEMS, loc);
+    }
+
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
         if (entity != null) {
             Identifier shader = EntitySpectatorShaderManager.get(entity.getType());
