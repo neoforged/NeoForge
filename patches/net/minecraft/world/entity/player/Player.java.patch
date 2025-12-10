@@ -213,6 +213,14 @@
          if (!this.cannotAttack(p_36347_)) {
              float f = this.isAutoSpinAttack() ? this.autoSpinAttackDmg : (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
              ItemStack itemstack = this.getWeaponItem();
+@@ -957,7 +_,6 @@
+             float f1 = this.getAttackStrengthScale(0.5F);
+             float f2 = f1 * (this.getEnchantedDamage(p_36347_, f, damagesource) - f);
+             f *= this.baseDamageScaleFactor();
+-            this.onAttack();
+             if (!this.deflectProjectile(p_36347_)) {
+                 if (f > 0.0F || f2 > 0.0F) {
+                     boolean flag = f1 > 0.9F;
 @@ -971,12 +_,22 @@
  
                      f += itemstack.getItem().getAttackDamageBonus(p_36347_, f, damagesource);
@@ -248,6 +256,15 @@
                          }
  
                          this.attackVisualEffects(p_36347_, flag2, flag3, flag, false, f2);
+@@ -1002,6 +_,8 @@
+ 
+                 this.lungeForwardMaybe();
+             }
++            // Neo: Moved from beginning of attack() so that getAttackStrengthScale() returns an accurate value during all attack events
++            this.onAttack();
+         }
+     }
+ 
 @@ -1044,7 +_,8 @@
              double d0 = this.getKnownMovement().horizontalDistanceSqr();
              double d1 = this.getSpeed() * 2.5;
