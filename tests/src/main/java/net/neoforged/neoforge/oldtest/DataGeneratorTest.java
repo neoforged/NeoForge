@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
@@ -516,6 +517,10 @@ public class DataGeneratorTest {
             add(MobEffects.POISON.value(), "Poison");
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
+            add(MODID + ".test.component.literal", Component.literal("Literal"));
+            add(MODID + ".test.component.styled", Component.literal("Blue").withStyle(ChatFormatting.BLUE));
+            add(MODID + ".test.component.appended", Component.literal("First").append(Component.literal("Second").withStyle(ChatFormatting.GOLD)));
+            add(MODID + ".test.component.nested", Component.translatable(MODID + ".test.component.literal", Component.translationArg(Identifier.withDefaultNamespace("test"))));
         }
     }
 
