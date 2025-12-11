@@ -53,7 +53,7 @@
          JsonObject jsonobject = GSON.fromJson(new InputStreamReader(p_128109_, StandardCharsets.UTF_8), JsonObject.class);
  
          for (Entry<String, JsonElement> entry : jsonobject.entrySet()) {
-+            if (entry.getValue().isJsonArray()) {
++            if (entry.getValue().isJsonArray() || entry.getValue().isJsonObject()) {
 +                var component = net.minecraft.network.chat.ComponentSerialization.CODEC
 +                    .parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue())
 +                    .getOrThrow(msg -> new com.google.gson.JsonParseException("Error parsing translation for " + entry.getKey() + ": " + msg));
