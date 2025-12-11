@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.common.data;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
@@ -14,6 +17,8 @@ import java.util.function.Supplier;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
@@ -27,7 +32,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 
 public abstract class LanguageProvider implements DataProvider {
-    private final Map<String, String> data = new TreeMap<>();
+    private final Map<String, Either<String, Component>> data = new TreeMap<>();
     private final PackOutput output;
     private final String modid;
     private final String locale;
@@ -56,8 +61,15 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Path target) {
-        JsonObject json = new JsonObject();
-        this.data.forEach(json::addProperty);
+        JsonObject json = this.data.entrySet()
+                .stream()
+                .map(it -> Map.entry(it.getKey(), it.getValue().map(
+                        JsonPrimitive::new,
+                        component -> ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, component).getOrThrow())))
+                .collect(
+                        JsonObject::new,
+                        (obj, entry) -> obj.add(entry.getKey(), entry.getValue()),
+                        (a, b) -> b.asMap().forEach(a::add));
 
         return DataProvider.saveStable(cache, json, target);
     }
@@ -111,8 +123,11 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(String key, String value) {
-        if (data.put(key, value) != null)
-            throw new IllegalStateException("Duplicate translation key " + key);
+        add(key, Either.left(value));
+    }
+
+    public void add(String key, Component value) {
+        add(key, Either.right(value));
     }
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
@@ -121,5 +136,11 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
         add(biome.identifier().toLanguageKey("biome"), value);
+    }
+
+    private void add(String key, Either<String, Component> value) {
+        if (data.put(key, value) != null) {
+            throw new IllegalStateException("Duplicate translation key " + key);
+        }
     }
 }
