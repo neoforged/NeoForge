@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.common.data;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.Map;
@@ -32,7 +30,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 
 public abstract class LanguageProvider implements DataProvider {
-    private final Map<String, Either<String, Component>> data = new TreeMap<>();
+    private final Map<String, Component> data = new TreeMap<>();
     private final PackOutput output;
     private final String modid;
     private final String locale;
@@ -63,12 +61,9 @@ public abstract class LanguageProvider implements DataProvider {
     private CompletableFuture<?> save(CachedOutput cache, Path target) {
         JsonObject json = this.data.entrySet()
                 .stream()
-                .map(it -> Map.entry(it.getKey(), it.getValue().map(
-                        JsonPrimitive::new,
-                        component -> ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, component).getOrThrow())))
                 .collect(
                         JsonObject::new,
-                        (obj, entry) -> obj.add(entry.getKey(), entry.getValue()),
+                        (obj, entry) -> obj.add(entry.getKey(), ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow()),
                         (a, b) -> b.asMap().forEach(a::add));
 
         return DataProvider.saveStable(cache, json, target);
@@ -123,11 +118,13 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(String key, String value) {
-        add(key, Either.left(value));
+        add(key, Component.literal(value)); // Literals are serialized as strings directly by the codec
     }
 
     public void add(String key, Component value) {
-        add(key, Either.right(value));
+        if (data.put(key, value) != null) {
+            throw new IllegalStateException("Duplicate translation key " + key);
+        }
     }
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
@@ -136,11 +133,5 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
         add(biome.identifier().toLanguageKey("biome"), value);
-    }
-
-    private void add(String key, Either<String, Component> value) {
-        if (data.put(key, value) != null) {
-            throw new IllegalStateException("Duplicate translation key " + key);
-        }
     }
 }
