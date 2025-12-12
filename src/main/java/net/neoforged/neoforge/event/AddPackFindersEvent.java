@@ -78,10 +78,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
 
             var pack = Pack.readMetaAndCreate(
                     new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),
-                    BuiltInPackSource.fromName(locationInfo -> {
-                        var contents = modInfo.getOwningFile().getFile().getContents();
-                        return new JarContentsPackResources(locationInfo, contents, prefix);
-                    }),
+                    new JarContentsPackResources.JarContentsResourcesSupplier(modInfo.getOwningFile().getFile().getContents(), prefix),
                     packType,
                     new PackSelectionConfig(alwaysActive, packPosition, false));
 
