@@ -6,11 +6,10 @@
 package net.neoforged.neoforge.client.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
@@ -70,7 +69,7 @@ public enum KeyModifier {
      * the window or triggering some other system behavior instead of what you intended.
      */
     CONTROL_OR_COMMAND {
-        private static final InputConstants.Key[] COMMAND_KEYS = new InputConstants.Key[]{
+        private static final InputConstants.Key[] COMMAND_KEYS = new InputConstants.Key[] {
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SUPER),
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SUPER),
         };
@@ -96,11 +95,11 @@ public enum KeyModifier {
 
         @Override
         public Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic) {
-			if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
+            if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
                 return Component.translatable("neoforge.controlsgui.control.mac", defaultLogic.get());
             }
-			return CONTROL.getCombinedName(key, defaultLogic);
-		}
+            return CONTROL.getCombinedName(key, defaultLogic);
+        }
 
         @Override
         public InputConstants.Key[] codes() {
@@ -193,7 +192,7 @@ public enum KeyModifier {
         }
     };
 
-    public static final KeyModifier[] MODIFIER_VALUES = InputQuirks.ON_OSX ? new KeyModifier[]{SHIFT, CONTROL_OR_COMMAND, CONTROL, ALT} : new KeyModifier[]{SHIFT, CONTROL, ALT};
+    public static final KeyModifier[] MODIFIER_VALUES = InputQuirks.ON_OSX ? new KeyModifier[] { SHIFT, CONTROL_OR_COMMAND, CONTROL, ALT } : new KeyModifier[] { SHIFT, CONTROL, ALT };
 
     public static List<KeyModifier> getActiveModifiers() {
         List<KeyModifier> modifiers = new ArrayList<>();
