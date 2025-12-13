@@ -12,7 +12,7 @@
   "fml.menu.mods.info.idstate": "ModID : %1$s État : {1,lower}",
   "fml.menu.mods.info.credits": "Crédits : %1$s",
   "fml.menu.mods.info.authors": "Auteurs : %1$s",
-  "fml.menu.mods.info.displayurl": "Page d'accueil : %1$s",
+  "fml.menu.mods.info.displayurl": "Page d’accueil : %1$s",
   "fml.menu.mods.info.license": "Licence : %1$s",
   "fml.menu.mods.info.securejardisabled": "Fonctionnalités de sécurité des mods désactivées, mettez à jour JDK",
   "fml.menu.mods.info.signature": "Signature : %1$s",
