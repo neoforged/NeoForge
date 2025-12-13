@@ -54,7 +54,7 @@ public enum KeyModifier {
         }
     },
     /**
-     * On Windows and Linux, this matches the Control Key.
+     * On Windows and Linux, this matches the {@link #CONTROL Control} Key.
      * On OSX, this matches the Command Key (⌘).
      * <p>
      * This is the default behavior expected by OSX players for system hotkeys (like ⌘C for copy, ⌘P for paste, etc.),
@@ -64,7 +64,7 @@ public enum KeyModifier {
      * <p>
      * For hotkeys that should use Control even on OSX, use {@link #CONTROL} instead.
      * <p>
-     * Since 1.21.11, Mojang uses Control on OSX for hotkeys that conflict with OSX global system shortcuts.
+     * Since 1.21.11, Mojang uses {@link #CONTROL Control} on OSX for hotkeys that conflict with OSX global system shortcuts.
      * Use caution when setting default hotkeys with this modifier, because it's possible to end up minimizing
      * the window or triggering some other system behavior instead of what you intended.
      */
