@@ -88,7 +88,7 @@ public enum KeyModifier {
             if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
                 Minecraft minecraft = Minecraft.getInstance();
                 Window window = minecraft.getWindow();
-                return InputConstants.isKeyDown(window, 343) || InputConstants.isKeyDown(window, 347);
+                return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SUPER) || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SUPER);
             }
             return CONTROL.isActive(conflictContext);
         }
