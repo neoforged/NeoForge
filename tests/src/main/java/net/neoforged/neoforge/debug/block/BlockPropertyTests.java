@@ -49,7 +49,7 @@ public class BlockPropertyTests {
     @GameTest
     @TestHolder(description = "Adds a toggleable light source to test if level-sensitive light emission works")
     static void levelSensitiveLight(final DynamicTest test, final RegistrationHelper reg) {
-        final var lightBlock = reg.blocks().registerBlockWithBEType("light_block", LightBlock::new, LightBlockEntity::new, BlockBehaviour.Properties.of())
+        final var lightBlock = reg.blocks().registerBlockWithBEType("light_block", LightBlock::new, LightBlockEntity::new)
                 .withLang("Light block").withBlockItem();
 
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)

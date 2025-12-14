@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -56,12 +_,13 @@
+@@ -53,12 +_,13 @@
              BlockStateModel blockstatemodel = this.blockModelShaper.getBlockModel(p_110919_);
              this.singleThreadRandom.setSeed(p_110919_.getSeed(p_110920_));
              this.singleThreadPartList.clear();
@@ -16,7 +16,7 @@
      public void renderBatched(
          BlockState p_234356_,
          BlockPos p_234357_,
-@@ -71,8 +_,20 @@
+@@ -68,8 +_,20 @@
          boolean p_234361_,
          List<BlockModelPart> p_410643_
      ) {
@@ -38,15 +38,15 @@
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block in world");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Block being tesselated");
-@@ -83,6 +_,7 @@
+@@ -80,6 +_,7 @@
  
      public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
          try {
 +            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234368_).renderFluid(p_234368_, p_234365_, p_234364_, p_234366_, p_234367_)) return;
-             this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
+             Objects.requireNonNull(this.liquidBlockRenderer).tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
-@@ -100,7 +_,12 @@
+@@ -97,7 +_,12 @@
          return this.blockModelShaper.getBlockModel(p_110911_);
      }
  
@@ -59,7 +59,7 @@
          RenderShape rendershape = p_110913_.getRenderShape();
          if (rendershape != RenderShape.INVISIBLE) {
              BlockStateModel blockstatemodel = this.getBlockModel(p_110913_);
-@@ -109,7 +_,7 @@
+@@ -106,7 +_,7 @@
              float f1 = (i >> 8 & 0xFF) / 255.0F;
              float f2 = (i & 0xFF) / 255.0F;
              ModelBlockRenderer.renderModel(
@@ -68,13 +68,13 @@
              );
          }
      }
-@@ -117,5 +_,9 @@
+@@ -114,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_110909_) {
-         this.liquidBlockRenderer.setupSprites(this.blockModelShaper, this.materials);
+         this.liquidBlockRenderer = new LiquidBlockRenderer(this.materials);
 +    }
 +
 +    public LiquidBlockRenderer getLiquidBlockRenderer() {
-+        return this.liquidBlockRenderer;
++        return Objects.requireNonNull(this.liquidBlockRenderer);
      }
  }

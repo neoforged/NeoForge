@@ -9,12 +9,12 @@ import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.handler.IPermissionHandler;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the basic unit at the heart of the permission system.
@@ -56,7 +56,7 @@ public final class PermissionNode<T> {
      * Calls {@link PermissionNode#PermissionNode(String, PermissionType, PermissionResolver, PermissionDynamicContextKey[])}
      * with "namespace.path" as the first parameter
      */
-    public PermissionNode(ResourceLocation nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics) {
+    public PermissionNode(Identifier nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics) {
         this(nodeName.getNamespace(), nodeName.getPath(), type, defaultResolver, dynamics);
     }
 

@@ -29,7 +29,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +60,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Mod(NewModelLoaderTest.MODID)
 public class NewModelLoaderTest {
@@ -68,11 +68,11 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, props -> props.mapColor(MapColor.WOOD).strength(10));
 
     // Same at obj_block except all the parts in the obj model have the same name,
     // this is a test for neoforged/NeoForge#1755 that was fixed by neoforged/NeoForge#1759
-    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, props -> props.mapColor(MapColor.WOOD).strength(10));
 
     public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
@@ -110,7 +110,7 @@ public class NewModelLoaderTest {
     }
 
     public void modelRegistry(ModelEvent.RegisterLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
+        event.register(Identifier.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
     }
 
     static class TestBlock extends Block {
@@ -195,7 +195,7 @@ public class NewModelLoaderTest {
 
             blockModels.createHorizontallyRotatedBlock(block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
                     .customLoader(ObjModelBuilder::new, loader -> loader
-                            .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
+                            .modelLocation(Identifier.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
                             .flipV(true))
                     .requiredTextureSlot(qrTexture)
                     .build())

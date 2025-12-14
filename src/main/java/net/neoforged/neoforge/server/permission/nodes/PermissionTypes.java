@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.server.permission.nodes;
 
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Default PermissionTypes, if you need additional ones, please PR it.

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/server/LanServerPinger.java
 +++ b/net/minecraft/client/server/LanServerPinger.java
-@@ -16,7 +_,7 @@
+@@ -17,7 +_,7 @@
  public class LanServerPinger extends Thread {
      private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -9,7 +9,7 @@
      public static final int PING_PORT = 4445;
      private static final long PING_INTERVAL = 1500L;
      private final String motd;
-@@ -40,7 +_,7 @@
+@@ -41,7 +_,7 @@
  
          while (!this.isInterrupted() && this.isRunning) {
              try {

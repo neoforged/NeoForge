@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
@@ -45,7 +45,7 @@ import net.neoforged.testframework.impl.test.MethodBasedEventTest;
 import net.neoforged.testframework.impl.test.MethodBasedGameTestTest;
 import net.neoforged.testframework.impl.test.MethodBasedTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Type;
 
 public final class FrameworkCollectors {
@@ -147,7 +147,7 @@ public final class FrameworkCollectors {
      * either a {@link StructureTemplate}, a {@link Supplier} of {@linkplain StructureTemplate} or a {@link StructureTemplateBuilder},
      * annotated with {@link RegisterStructureTemplate}.
      */
-    public static void templatesWithAnnotation(final ModContainer container, BiConsumer<ResourceLocation, Supplier<StructureTemplate>> acceptor) {
+    public static void templatesWithAnnotation(final ModContainer container, BiConsumer<Identifier, Supplier<StructureTemplate>> acceptor) {
         final Type regStrTemplate = Type.getType(RegisterStructureTemplate.class);
         container.getModInfo().getOwningFile().getFile().getScanResult()
                 .getAnnotations().stream()
@@ -164,7 +164,7 @@ public final class FrameworkCollectors {
                     try {
                         final Object obj = ReflectionUtils.fieldHandle(field).invoke();
                         final var annotation = field.getAnnotation(RegisterStructureTemplate.class);
-                        final ResourceLocation id = ResourceLocation.parse(annotation.value());
+                        final Identifier id = Identifier.parse(annotation.value());
                         if (obj instanceof StructureTemplate template) {
                             acceptor.accept(id, () -> template);
                         } else if (obj instanceof Supplier<?> supplier) {

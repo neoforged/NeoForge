@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -43,6 +_,7 @@
+@@ -41,6 +_,7 @@
              Path path2 = path.resolve(p_78434_.getStringUUID() + ".dat");
              Path path3 = path.resolve(p_78434_.getStringUUID() + ".dat_old");
              Util.safeReplaceFile(path2, path1, path3);
@@ -8,9 +8,9 @@
          } catch (Exception exception) {
              LOGGER.warn("Failed to save player data for {}", p_78434_.getPlainTextName());
          }
-@@ -85,5 +_,9 @@
-             int i = NbtUtils.getDataVersion(p_432736_, -1);
-             return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_432736_, i);
+@@ -83,5 +_,9 @@
+             int i = NbtUtils.getDataVersion(p_458897_);
+             return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_458897_, i);
          });
 +    }
 +

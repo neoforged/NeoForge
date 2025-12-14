@@ -26,9 +26,6 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/client/renderer/DimensionSpecialEffects": [
-    "net/neoforged/neoforge/client/extensions/IDimensionSpecialEffectsExtension"
-  ],
   "net/minecraft/client/renderer/block/model/BlockModelPart": [
     "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
   ],
@@ -46,6 +43,9 @@
   ],
   "net/minecraft/client/resources/model/ModelBaker": [
     "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
+  ],
+  "net/minecraft/client/resources/model/ModelBaker$PartCache": [
+    "net/neoforged/neoforge/client/extensions/ModelBakerPartCacheExtension"
   ],
   "net/minecraft/client/resources/model/ModelState": [
     "net/neoforged/neoforge/client/extensions/ModelStateExtension"
@@ -164,7 +164,7 @@
   "net/minecraft/world/entity/player/Player": [
     "net/neoforged/neoforge/common/extensions/IPlayerExtension"
   ],
-  "net/minecraft/world/entity/vehicle/AbstractBoat": [
+  "net/minecraft/world/entity/vehicle/boat/AbstractBoat": [
     "net/neoforged/neoforge/common/extensions/IAbstractBoatExtension"
   ],
   "net/minecraft/world/inventory/MenuType": [

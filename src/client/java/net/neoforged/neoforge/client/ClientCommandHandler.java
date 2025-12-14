@@ -29,7 +29,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -39,6 +39,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ClientCommandHandler {
+    private static final Identifier ASK_SERVER_ID = Identifier.withDefaultNamespace("ask_server");
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static CommandDispatcher<CommandSourceStack> commands = null;
 
@@ -75,9 +77,9 @@ public class ClientCommandHandler {
 
         // Copies the client side commands into the server side commands to be used for suggestions
         CommandHelper.mergeCommandNode(commands.getRoot(), newServerCommands.getRoot(), new IdentityHashMap<>(), getSource(), (context) -> 0, (suggestions) -> {
-            ResourceLocation id = SuggestionProviders.getName(suggestions);
+            Identifier id = SuggestionProviders.getName(suggestions);
             SuggestionProvider<ClientSuggestionProvider> suggestionProvider;
-            if (SuggestionProviders.getProvider(id) == SuggestionProviders.ASK_SERVER) {
+            if (id.equals(ASK_SERVER_ID)) {
                 suggestionProvider = (context, builder) -> {
                     ClientCommandSourceStack source = getSource();
                     StringReader reader = new StringReader(context.getInput());
@@ -130,7 +132,7 @@ public class ClientCommandHandler {
                 Minecraft.getInstance().gui.getChat().addMessage(message);
             }
         };
-        return new ClientCommandSourceStack(commandSource, player.position(), player.getRotationVector(), player.getPermissionLevel(),
+        return new ClientCommandSourceStack(commandSource, player.position(), player.getRotationVector(), player.permissions(),
                 player.getName().getString(), player.getDisplayName(), player);
     }
 

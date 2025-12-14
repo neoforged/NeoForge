@@ -16,11 +16,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -37,9 +41,7 @@ import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = "client.gui", side = Dist.CLIENT)
 public class GuiTests {
@@ -127,14 +129,14 @@ public class GuiTests {
     @TestHolder(description = "Checks that GUI layers can move hearts, air bubbles, etc")
     static void testGuiLayerLeftRightHeight(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
-            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
-            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
+            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, Identifier.fromNamespaceAndPath(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
+            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, Identifier.fromNamespaceAndPath(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
+            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, Identifier.fromNamespaceAndPath(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
 
-            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
-            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
-            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
-            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
+            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, Identifier.fromNamespaceAndPath(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
+            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, Identifier.fromNamespaceAndPath(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
+            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, Identifier.fromNamespaceAndPath(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
+            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, Identifier.fromNamespaceAndPath(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
         });
 
         test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
@@ -210,10 +212,10 @@ public class GuiTests {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             // Register some placeholder layers
             for (int i = 0; i < 50; i++) {
-                event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "fake_" + i), (guiGraphics, deltaTracker) -> {});
+                event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "fake_" + i), (guiGraphics, deltaTracker) -> {});
             }
             // Register the real layer
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "high_depth_test"), (guiGraphics, deltaTracker) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "high_depth_test"), (guiGraphics, deltaTracker) -> {
                 if (test.framework().tests().isEnabled(test.id())) {
                     guiGraphics.fill(guiGraphics.guiWidth() - 50, 0, guiGraphics.guiWidth(), 50, 0xFFFF0000);
                 }
@@ -230,17 +232,16 @@ public class GuiTests {
 
     @TestHolder(description = "Checks that InventoryScreen.renderEntityInInventory() can render multiple entities of the same type within a single frame")
     static void testInventoryEntityRenderMulti(DynamicTest test) {
-        Lazy<ArmorStand> entityOne = Lazy.of(() -> makeTestArmorStand(140F));
-        Lazy<ArmorStand> entityTwo = Lazy.of(() -> makeTestArmorStand(210F));
-        Vector3f armorStandTranslation = new Vector3f(0.0F, 1.0F, 0.0F);
-        Quaternionf armorStandAngle = new Quaternionf().rotationXYZ(0.43633232F, 0.0F, (float) Math.PI);
+        Lazy<ArmorStand> entityOne = Lazy.of(() -> makeTestArmorStand(Items.DIAMOND_CHESTPLATE));
+        Lazy<ArmorStand> entityTwo = Lazy.of(() -> makeTestArmorStand(Items.LEATHER_CHESTPLATE));
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "inv_entities"), (graphics, deltaTracker) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "inv_entities"), (graphics, deltaTracker) -> {
                 if (!test.framework().tests().isEnabled(test.id())) return;
 
+                var armorStandAngleX = 0.43633232F;
                 int maxX = graphics.guiWidth();
-                InventoryScreen.renderEntityInInventory(graphics, maxX - 100, 20, maxX - 60, 80, 25.0F, armorStandTranslation, armorStandAngle, null, entityOne.get());
-                InventoryScreen.renderEntityInInventory(graphics, maxX - 50, 20, maxX - 10, 80, 25.0F, armorStandTranslation, armorStandAngle, null, entityTwo.get());
+                InventoryScreen.renderEntityInInventoryFollowsAngle(graphics, maxX - 100, 20, maxX - 60, 80, 25, 1, 0, armorStandAngleX, entityOne.get());
+                InventoryScreen.renderEntityInInventoryFollowsAngle(graphics, maxX - 50, 20, maxX - 10, 80, 25, 1, 0, armorStandAngleX, entityTwo.get());
             });
         });
         test.eventListeners().forge().addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
@@ -249,14 +250,14 @@ public class GuiTests {
         });
     }
 
-    private static ArmorStand makeTestArmorStand(float yRot) {
+    private static ArmorStand makeTestArmorStand(Item armor) {
         ArmorStand armorStand = new ArmorStand(Minecraft.getInstance().level, 0.0, 0.0, 0.0);
         armorStand.setNoBasePlate(true);
         armorStand.setShowArms(true);
-        armorStand.yBodyRot = yRot;
         armorStand.setXRot(25.0F);
         armorStand.yHeadRot = armorStand.getYRot();
         armorStand.yHeadRotO = armorStand.getYRot();
+        armorStand.setItemSlot(EquipmentSlot.CHEST, new ItemStack(armor));
         return armorStand;
     }
 }

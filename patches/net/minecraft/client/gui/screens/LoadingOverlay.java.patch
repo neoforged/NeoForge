@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -128,6 +_,7 @@
+@@ -129,6 +_,7 @@
      @Override
      public void tick() {
          if (this.fadeOutStart == -1L && this.reload.isDone() && this.isReadyToFadeOut()) {
@@ -8,11 +8,11 @@
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());
-@@ -135,7 +_,6 @@
+@@ -136,7 +_,6 @@
                  this.onFinish.accept(Optional.of(throwable));
              }
  
 -            this.fadeOutStart = Util.getMillis();
              if (this.minecraft.screen != null) {
                  Window window = this.minecraft.getWindow();
-                 this.minecraft.screen.init(this.minecraft, window.getGuiScaledWidth(), window.getGuiScaledHeight());
+                 this.minecraft.screen.init(window.getGuiScaledWidth(), window.getGuiScaledHeight());

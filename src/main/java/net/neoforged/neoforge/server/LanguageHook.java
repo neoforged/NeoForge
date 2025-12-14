@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
@@ -59,7 +59,7 @@ public class LanguageHook {
         for (String namespace : clientResources.getNamespaces()) {
             try {
                 modTable.putAll(I18nManager.loadTranslations(langName));
-                ResourceLocation langResource = ResourceLocation.fromNamespaceAndPath(namespace, langFile);
+                Identifier langResource = Identifier.fromNamespaceAndPath(namespace, langFile);
                 for (Resource resource : clientResources.getResourceStack(langResource)) {
                     try (InputStream stream = resource.open()) {
                         Language.loadFromJson(stream, (key, value) -> modTable.put(key, value), (key, value) -> modComponentTable.put(key, value));

@@ -12,7 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -44,9 +44,9 @@ public class StructureModifierTest {
     public static final String MODID = "structure_modifiers_test";
     public static final boolean ENABLED = true;
     public static final String TEST = "test";
-    public static final ResourceLocation ADD_SPAWNS_TO_STRUCTURE_RL = ResourceLocation.fromNamespaceAndPath(MODID, TEST);
+    public static final Identifier ADD_SPAWNS_TO_STRUCTURE_RL = Identifier.fromNamespaceAndPath(MODID, TEST);
     public static final String MODIFY_STRONGHOLD = "modify_stronghold";
-    public static final ResourceLocation MODIFY_STRONGHOLD_RL = ResourceLocation.fromNamespaceAndPath(MODID, MODIFY_STRONGHOLD);
+    public static final Identifier MODIFY_STRONGHOLD_RL = Identifier.fromNamespaceAndPath(MODID, MODIFY_STRONGHOLD);
 
     public StructureModifierTest(IEventBus modBus) {
         if (!ENABLED)

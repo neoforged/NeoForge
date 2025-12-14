@@ -14,7 +14,7 @@ import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.flag.FeatureFlagRegistry;
 import net.neoforged.fml.ModLoader;
@@ -53,7 +53,7 @@ public final class FeatureFlagLoader {
                 JsonArray flagArray = GsonHelper.getAsJsonArray(obj, "flags");
                 for (JsonElement elem : flagArray) {
                     String flagName = GsonHelper.convertToString(elem, "flag");
-                    ResourceLocation flagLocation = ResourceLocation.parse(flagName);
+                    Identifier flagLocation = Identifier.parse(flagName);
                     Preconditions.checkArgument(
                             flagLocation.getNamespace().equals(mod.getModId()),
                             "Cannot add new flags to foreign namespaces: %s",

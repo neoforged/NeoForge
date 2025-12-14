@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest.recipebook;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -73,8 +73,8 @@ public class RecipeBookExtensionTest {
         }
     }
 
-    public static ResourceLocation getId(String name) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
+    public static Identifier getId(String name) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, name);
     }
 
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)

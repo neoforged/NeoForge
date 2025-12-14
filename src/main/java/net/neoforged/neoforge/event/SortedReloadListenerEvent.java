@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
@@ -26,8 +26,8 @@ import org.jetbrains.annotations.ApiStatus;
  * This class holds the sorting logic that allows for the creation of dependency ordering.
  */
 public abstract class SortedReloadListenerEvent extends Event {
-    private final Map<ResourceLocation, PreparableReloadListener> registry = new LinkedHashMap<>();
-    private final Map<PreparableReloadListener, ResourceLocation> keys = new IdentityHashMap<>();
+    private final Map<Identifier, PreparableReloadListener> registry = new LinkedHashMap<>();
+    private final Map<PreparableReloadListener, Identifier> keys = new IdentityHashMap<>();
     private final MutableGraph<PreparableReloadListener> graph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
     private final PreparableReloadListener lastVanilla;
 
@@ -35,7 +35,7 @@ public abstract class SortedReloadListenerEvent extends Event {
     protected SortedReloadListenerEvent(List<PreparableReloadListener> vanillaListeners, NameLookup lookup) {
         // Register the names for all vanilla listeners
         for (PreparableReloadListener listener : vanillaListeners) {
-            ResourceLocation key = lookup.apply(listener);
+            Identifier key = lookup.apply(listener);
             this.addListener(key, listener);
         }
 
@@ -59,7 +59,7 @@ public abstract class SortedReloadListenerEvent extends Event {
      * 
      * @throws IllegalArgumentException if another listener with that key was already registered.
      */
-    public void addListener(ResourceLocation key, PreparableReloadListener listener) {
+    public void addListener(Identifier key, PreparableReloadListener listener) {
         if (this.registry.containsKey(key) || this.registry.containsValue(listener)) {
             throw new IllegalArgumentException("Attempted to register two reload listeners for the same key: " + key);
         }
@@ -82,7 +82,7 @@ public abstract class SortedReloadListenerEvent extends Event {
      * @see {@link VanillaClientListeners} for the keys of vanilla client listeners.
      * @see {@link VanillaServerListeners} for the keys of vanilla server listeners.
      */
-    public void addDependency(ResourceLocation first, ResourceLocation second) {
+    public void addDependency(Identifier first, Identifier second) {
         this.graph.putEdge(this.getOrThrow(first), this.getOrThrow(second));
     }
 
@@ -98,7 +98,7 @@ public abstract class SortedReloadListenerEvent extends Event {
      * <p>
      * The registry is linked, meaning the iteration order depends on the registration order.
      */
-    public Map<ResourceLocation, PreparableReloadListener> getRegistry() {
+    public Map<Identifier, PreparableReloadListener> getRegistry() {
         return Collections.unmodifiableMap(this.registry);
     }
 
@@ -117,7 +117,7 @@ public abstract class SortedReloadListenerEvent extends Event {
         return this.lastVanilla;
     }
 
-    private PreparableReloadListener getOrThrow(ResourceLocation key) {
+    private PreparableReloadListener getOrThrow(Identifier key) {
         PreparableReloadListener listener = this.registry.get(key);
         if (listener == null) {
             throw new IllegalArgumentException("Unknown reload listener: " + key);
@@ -125,8 +125,8 @@ public abstract class SortedReloadListenerEvent extends Event {
         return listener;
     }
 
-    private ResourceLocation getOrThrow(PreparableReloadListener listener) {
-        ResourceLocation key = this.keys.get(listener);
+    private Identifier getOrThrow(PreparableReloadListener listener) {
+        Identifier key = this.keys.get(listener);
         if (key == null) {
             throw new IllegalArgumentException("Unknown reload listener: " + listener);
         }
@@ -134,13 +134,13 @@ public abstract class SortedReloadListenerEvent extends Event {
     }
 
     @FunctionalInterface
-    public interface NameLookup extends Function<PreparableReloadListener, ResourceLocation> {
+    public interface NameLookup extends Function<PreparableReloadListener, Identifier> {
         /**
          * Looks up the name for a reload listener.
          * 
          * @throws IllegalArgumentException if there was no name for the listener.
          */
         @Override
-        ResourceLocation apply(PreparableReloadListener t);
+        Identifier apply(PreparableReloadListener t);
     }
 }

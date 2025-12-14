@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.minecraft.Util;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -35,7 +35,7 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
     public static final StateKey<PendingAnimations> STATE_KEY = new StateKey<>();
     private static final FileToIdConverter LISTER = FileToIdConverter.json("neoforge/animations/entity");
 
-    private final Map<ResourceLocation, AnimationHolder> animations = new MapMaker().weakValues().concurrencyLevel(1).makeMap();
+    private final Map<Identifier, AnimationHolder> animations = new MapMaker().weakValues().concurrencyLevel(1).makeMap();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<AnimationHolder> strongHolderReferences = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
      * Gets a loaded {@link AnimationDefinition} with the specified {@code key}.
      */
     @Nullable
-    public AnimationDefinition getAnimation(ResourceLocation key) {
+    public AnimationDefinition getAnimation(Identifier key) {
         final var holder = animations.get(key);
         return holder != null ? holder.getOrNull() : null;
     }
@@ -54,7 +54,7 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
      * Returns an {@link AnimationHolder} for an animation. If the specified animation has not been loaded, the holder
      * will be unbound, but may be bound in the future.
      */
-    public AnimationHolder getAnimationHolder(ResourceLocation key) {
+    public AnimationHolder getAnimationHolder(Identifier key) {
         return animations.computeIfAbsent(key, AnimationHolder::new);
     }
 
@@ -79,13 +79,13 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
                 .thenAcceptAsync(this::apply, applyExecutor);
     }
 
-    private Map<ResourceLocation, AnimationDefinition> prepare(ResourceManager resourceManager) {
-        Map<ResourceLocation, AnimationDefinition> map = new HashMap<>();
+    private Map<Identifier, AnimationDefinition> prepare(ResourceManager resourceManager) {
+        Map<Identifier, AnimationDefinition> map = new HashMap<>();
         SimpleJsonResourceReloadListener.scanDirectory(resourceManager, LISTER, makeConditionalOps(JsonOps.INSTANCE), AnimationParser.CODEC, map);
         return map;
     }
 
-    private void apply(Map<ResourceLocation, AnimationDefinition> animationJsons) {
+    private void apply(Map<Identifier, AnimationDefinition> animationJsons) {
         animations.values().forEach(AnimationHolder::unbind);
         strongHolderReferences.clear();
         int loaded = 0;
@@ -101,14 +101,14 @@ public final class AnimationLoader extends ContextAwareReloadListener implements
     public static final class PendingAnimations {
         public static final PendingAnimations EMPTY = Util.make(new PendingAnimations(), pending -> pending.future.complete(Map.of()));
 
-        private final CompletableFuture<Map<ResourceLocation, AnimationDefinition>> future;
+        private final CompletableFuture<Map<Identifier, AnimationDefinition>> future;
 
         private PendingAnimations() {
             this.future = new CompletableFuture<>();
         }
 
         @Nullable
-        public AnimationDefinition get(ResourceLocation id) {
+        public AnimationDefinition get(Identifier id) {
             return this.future.join().get(id);
         }
     }

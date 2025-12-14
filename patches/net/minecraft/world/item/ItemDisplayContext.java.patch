@@ -25,7 +25,7 @@
 +        this.fallback = () -> null;
 +    }
 +
-+    private ItemDisplayContext(int id, String name, @org.jetbrains.annotations.Nullable String fallbackName) {
++    private ItemDisplayContext(int id, String name, @org.jspecify.annotations.Nullable String fallbackName) {
 +        this.id = (byte)id;
 +        this.name = name;
 +        this.isModded = true;
@@ -33,17 +33,24 @@
      }
  
      @Override
-@@ -42,5 +_,18 @@
+@@ -37,10 +_,23 @@
+     }
+ 
+     public boolean firstPerson() {
+-        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND || (fallback() != null && fallback().firstPerson());
+     }
  
      public boolean leftHand() {
-         return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
+-        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
++        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND || (fallback() != null && fallback().leftHand());
 +    }
 +
 +    public boolean isModded() {
 +        return isModded;
 +    }
 +
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public ItemDisplayContext fallback() {
 +        return fallback.get();
 +    }

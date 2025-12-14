@@ -1,15 +1,15 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
 @@ -29,7 +_,7 @@
- import net.minecraft.tags.TagLoader;
- import net.minecraft.util.RandomSource;
+ import net.minecraft.util.Util;
+ import org.jspecify.annotations.Nullable;
  
 -public class MappedRegistry<T> implements WritableRegistry<T> {
 +public class MappedRegistry<T> extends net.neoforged.neoforge.registries.BaseMappedRegistry<T> implements WritableRegistry<T> {
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), p_304142_ -> p_304142_.defaultReturnValue(-1));
-@@ -85,9 +_,17 @@
+@@ -84,9 +_,17 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> p_256252_, T p_256591_, RegistrationInfo p_326235_) {
@@ -24,10 +24,10 @@
 +        if (i > this.getMaxId())
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", i, this.getMaxId()));
 +
-         if (this.byLocation.containsKey(p_256252_.location())) {
+         if (this.byLocation.containsKey(p_256252_.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
          } else if (this.byValue.containsKey(p_256591_)) {
-@@ -103,16 +_,18 @@
+@@ -102,16 +_,18 @@
                  reference.bindKey(p_256252_);
              } else {
                  reference = this.byKey.computeIfAbsent(p_256252_, p_367800_ -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)p_367800_));
@@ -36,7 +36,7 @@
              }
  
              this.byKey.put(p_256252_, reference);
-             this.byLocation.put(p_256252_.location(), reference);
+             this.byLocation.put(p_256252_.identifier(), reference);
              this.byValue.put(p_256591_, reference);
 -            int i = this.byId.size();
              this.byId.add(reference);
@@ -47,21 +47,21 @@
              return reference;
          }
      }
-@@ -137,7 +_,7 @@
-     @Nullable
+@@ -134,7 +_,7 @@
+ 
      @Override
-     public T getValue(@Nullable ResourceKey<T> p_122714_) {
+     public @Nullable T getValue(@Nullable ResourceKey<T> p_122714_) {
 -        return getValueFromNullable(this.byKey.get(p_122714_));
 +        return getValueFromNullable(this.byKey.get(resolve(p_122714_)));
      }
  
-     @Nullable
-@@ -153,12 +_,12 @@
+     @Override
+@@ -149,12 +_,12 @@
  
      @Override
-     public Optional<Holder.Reference<T>> get(ResourceLocation p_316743_) {
--        return Optional.ofNullable(this.byLocation.get(p_316743_));
-+        return Optional.ofNullable(this.byLocation.get(resolve(p_316743_)));
+     public Optional<Holder.Reference<T>> get(Identifier p_468929_) {
+-        return Optional.ofNullable(this.byLocation.get(p_468929_));
++        return Optional.ofNullable(this.byLocation.get(resolve(p_468929_)));
      }
  
      @Override
@@ -71,7 +71,7 @@
      }
  
      @Override
-@@ -173,12 +_,12 @@
+@@ -169,12 +_,12 @@
      }
  
      Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> p_248831_) {
@@ -87,16 +87,16 @@
              }
          });
      }
-@@ -206,7 +_,7 @@
-     @Nullable
+@@ -201,7 +_,7 @@
+ 
      @Override
-     public T getValue(@Nullable ResourceLocation p_122739_) {
--        Holder.Reference<T> reference = this.byLocation.get(p_122739_);
-+        Holder.Reference<T> reference = this.byLocation.get(p_122739_ != null ? resolve(p_122739_) : null);
+     public @Nullable T getValue(@Nullable Identifier p_467986_) {
+-        Holder.Reference<T> reference = this.byLocation.get(p_467986_);
++        Holder.Reference<T> reference = this.byLocation.get(p_467986_ != null ? resolve(p_467986_) : null);
          return getValueFromNullable(reference);
      }
  
-@@ -268,13 +_,23 @@
+@@ -262,13 +_,23 @@
          return this.byKey.containsKey(p_175392_);
      }
  
@@ -118,10 +118,10 @@
          } else {
              this.frozen = true;
 -            this.byValue.forEach((p_247989_, p_247990_) -> p_247990_.bindValue((T)p_247989_));
-             List<ResourceLocation> list = this.byKey
+             List<Identifier> list = this.byKey
                  .entrySet()
                  .stream()
-@@ -290,11 +_,15 @@
+@@ -284,11 +_,15 @@
                          throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                      }
  
@@ -137,9 +137,9 @@
 +                    //throw new IllegalStateException("Tags already present before freezing");
 +                    return this;
                  } else {
-                     List<ResourceLocation> list1 = this.frozenTags
+                     List<Identifier> list1 = this.frozenTags
                          .entrySet()
-@@ -449,6 +_,55 @@
+@@ -443,6 +_,55 @@
                  }
              };
          }
@@ -180,7 +180,7 @@
 +    }
 +
 +    @Override
-+    public int getId(ResourceLocation name) {
++    public int getId(Identifier name) {
 +        return getId(getValue(name));
 +    }
 +

@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Slot to handle immutable itemstack storages (Ex: {@link ItemAccessItemHandler}).
@@ -60,7 +60,10 @@ public abstract class StackCopySlot extends Slot {
 
     @Override
     public final void setChanged() {
-        if (cachedReturnedStack != null) {
+        // Verify that the stack has actually changed before setting it.
+        // Vanilla menu logic (like AbstractContainerMenu#moveItemStackTo) often already sets the stack through Slot#setByPlayer.
+        // This is done to prevent slot change logic from running multiple times when not necessary.
+        if (cachedReturnedStack != null && !ItemStack.matches(cachedReturnedStack, getStackCopy())) {
             set(cachedReturnedStack);
         }
     }

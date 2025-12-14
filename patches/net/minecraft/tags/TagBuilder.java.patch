@@ -1,7 +1,7 @@
 --- a/net/minecraft/tags/TagBuilder.java
 +++ b/net/minecraft/tags/TagBuilder.java
 @@ -5,6 +_,16 @@
- import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.resources.Identifier;
  
  public class TagBuilder implements net.neoforged.neoforge.common.extensions.ITagBuilderExtension {
 +    // FORGE: Remove entries are used for datagen.
@@ -19,8 +19,8 @@
      public static TagBuilder create() {
 @@ -34,5 +_,21 @@
  
-     public TagBuilder addOptionalTag(ResourceLocation p_215910_) {
-         return this.add(TagEntry.optionalTag(p_215910_));
+     public TagBuilder addOptionalTag(Identifier p_467982_) {
+         return this.add(TagEntry.optionalTag(p_467982_));
 +    }
 +
 +    // FORGE: Set the replace property of this tag.

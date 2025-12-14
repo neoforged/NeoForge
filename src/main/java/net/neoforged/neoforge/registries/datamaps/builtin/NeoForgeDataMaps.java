@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.ai.sensing.VillagerHostilesSensor;
-import net.minecraft.world.entity.animal.Parrot;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.animal.parrot.Parrot;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
@@ -32,9 +32,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
@@ -104,7 +104,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code next_oxidized_stage}, a block that the object should convert into once it changes oxidizing states</li>
+     * <li>{@code next_oxidation_stage}, a block that the object should convert into once it changes oxidizing states</li>
      * </ul>
      *
      * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}
@@ -189,8 +189,8 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
 
-    private static ResourceLocation id(final String name) {
-        return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
+    private static Identifier id(final String name) {
+        return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
     }
 
     @SubscribeEvent

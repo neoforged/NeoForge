@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -24,8 +24,8 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 @Mod(RemoveTagDatagenTest.MODID)
 public class RemoveTagDatagenTest {
     public static final String MODID = "remove_tag_datagen_test";
-    public static final TagKey<Block> TEST_TAG_BLOCK = BlockTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
-    public static final TagKey<Item> TEST_TAG_ITEM = ItemTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
+    public static final TagKey<Block> TEST_TAG_BLOCK = BlockTags.create(Identifier.withDefaultNamespace("test_tag"));
+    public static final TagKey<Item> TEST_TAG_ITEM = ItemTags.create(Identifier.withDefaultNamespace("test_tag"));
 
     public RemoveTagDatagenTest(IEventBus modBus) {
         modBus.addListener(this::onGatherData);

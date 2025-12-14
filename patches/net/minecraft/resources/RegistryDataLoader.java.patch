@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -130,7 +_,7 @@
+@@ -134,7 +_,7 @@
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
@@ -9,10 +9,10 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -152,12 +_,12 @@
-         new RegistryDataLoader.RegistryData<>(Registries.TEST_ENVIRONMENT, TestEnvironmentDefinition.DIRECT_CODEC),
+@@ -158,12 +_,12 @@
          new RegistryDataLoader.RegistryData<>(Registries.TEST_INSTANCE, GameTestInstance.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.DIALOG, Dialog.DIRECT_CODEC)
+         new RegistryDataLoader.RegistryData<>(Registries.DIALOG, Dialog.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.TIMELINE, Timeline.NETWORK_CODEC)
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
@@ -24,7 +24,7 @@
      }
  
      public static RegistryAccess.Frozen load(
-@@ -166,18 +_,35 @@
+@@ -172,18 +_,35 @@
          List<HolderLookup.RegistryLookup<?>> p_250344_,
          List<RegistryDataLoader.RegistryData<?>> p_363651_
      ) {
@@ -58,10 +58,10 @@
 +                net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterGameTestsEvent(envRegistry, testsRegistry));
 +            }
 +        }
-         list.forEach(p_396495_ -> {
-             Registry<?> registry = p_396495_.registry();
+         list.forEach(p_466125_ -> {
+             Registry<?> registry = p_466125_.registry();
  
-@@ -274,11 +_,16 @@
+@@ -282,11 +_,16 @@
          Resource p_326141_,
          RegistrationInfo p_326033_
      ) throws IOException {
@@ -80,16 +80,16 @@
          }
      }
  
-@@ -290,7 +_,7 @@
+@@ -298,7 +_,7 @@
          Map<ResourceKey<?>, Exception> p_321649_
      ) {
          FileToIdConverter filetoidconverter = FileToIdConverter.registry(p_321557_.key());
 -        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_321612_);
 +        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, p_321612_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
  
-         for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
-             ResourceLocation resourcelocation = entry.getKey();
-@@ -379,13 +_,20 @@
+         for (Entry<Identifier, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
+             Identifier identifier = entry.getKey();
+@@ -385,13 +_,20 @@
      public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  

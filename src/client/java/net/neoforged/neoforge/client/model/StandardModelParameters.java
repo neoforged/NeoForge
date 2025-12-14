@@ -11,12 +11,11 @@ import com.mojang.math.Transformation;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.RenderTypeGroup;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Wrapper around all standard top-level model parameters added by vanilla and NeoForge except elements.
@@ -25,22 +24,22 @@ import org.jetbrains.annotations.Nullable;
  * something other than the vanilla elements spec.
  */
 public record StandardModelParameters(
-        @Nullable ResourceLocation parent,
+        @Nullable Identifier parent,
         TextureSlots.Data textures,
         @Nullable ItemTransforms itemTransforms,
         @Nullable Boolean ambientOcclusion,
-        @Nullable UnbakedModel.GuiLight guiLight,
+        UnbakedModel.@Nullable GuiLight guiLight,
         @Nullable Transformation rootTransform,
         RenderTypeGroup renderTypeGroup,
         Map<String, Boolean> partVisibility) {
     public static StandardModelParameters parse(JsonObject jsonObject, JsonDeserializationContext context) {
         String parentName = GsonHelper.getAsString(jsonObject, "parent", "");
-        ResourceLocation parent = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
+        Identifier parent = parentName.isEmpty() ? null : Identifier.parse(parentName);
 
         TextureSlots.Data textures = TextureSlots.Data.EMPTY;
         if (jsonObject.has("textures")) {
             JsonObject jsonobject = GsonHelper.getAsJsonObject(jsonObject, "textures");
-            textures = TextureSlots.parseTextureMap(jsonobject, TextureAtlas.LOCATION_BLOCKS);
+            textures = TextureSlots.parseTextureMap(jsonobject);
         }
 
         ItemTransforms itemTransforms = null;

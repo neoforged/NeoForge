@@ -14,4 +14,4 @@
 +
      public record EntryPredicate(
          Optional<HolderSet<Attribute>> attribute,
-         Optional<ResourceLocation> id,
+         Optional<Identifier> id,

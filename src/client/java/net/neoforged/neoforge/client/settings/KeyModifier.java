@@ -12,20 +12,20 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 public enum KeyModifier {
     CONTROL {
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
-                InputConstants.Type.KEYSYM.getOrCreate(InputQuirks.EDIT_SHORTCUT_KEY_LEFT),
-                InputConstants.Type.KEYSYM.getOrCreate(InputQuirks.EDIT_SHORTCUT_KEY_RIGHT)
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL),
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_CONTROL)
         };
 
         @Override
         public boolean matches(InputConstants.Key key) {
             int keyCode = key.getValue();
-            return keyCode == InputQuirks.EDIT_SHORTCUT_KEY_LEFT || keyCode == InputQuirks.EDIT_SHORTCUT_KEY_RIGHT;
+            return keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL;
         }
 
         @Override

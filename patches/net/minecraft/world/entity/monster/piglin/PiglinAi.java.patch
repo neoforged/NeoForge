@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -377,7 +_,7 @@
+@@ -383,7 +_,7 @@
          ItemStack itemstack = p_34868_.getItemInHand(InteractionHand.OFF_HAND);
          p_34868_.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
          if (p_34868_.isAdult()) {
@@ -9,7 +9,7 @@
              if (p_34869_ && flag) {
                  throwItems(p_34868_, getBarterResponseItems(p_34868_));
              } else if (!flag) {
-@@ -461,7 +_,7 @@
+@@ -467,7 +_,7 @@
              return false;
          } else if (isAdmiringDisabled(p_34858_) && p_34858_.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
              return false;
@@ -18,7 +18,7 @@
              return isNotHoldingLovedItemInOffHand(p_34858_);
          } else {
              boolean flag = p_34858_.canAddToInventory(p_34859_);
-@@ -551,7 +_,7 @@
+@@ -557,7 +_,7 @@
      }
  
      protected static boolean canAdmire(Piglin p_34910_, ItemStack p_34911_) {
@@ -27,7 +27,7 @@
      }
  
      protected static void wasHurtBy(ServerLevel p_376829_, Piglin p_34838_, LivingEntity p_34839_) {
-@@ -640,7 +_,7 @@
+@@ -646,7 +_,7 @@
  
      public static boolean isWearingSafeArmor(LivingEntity p_371788_) {
          for (EquipmentSlot equipmentslot : EquipmentSlotGroup.ARMOR) {
@@ -36,7 +36,7 @@
                  return true;
              }
          }
-@@ -792,7 +_,7 @@
+@@ -798,7 +_,7 @@
      }
  
      private static boolean hasCrossbow(LivingEntity p_34919_) {

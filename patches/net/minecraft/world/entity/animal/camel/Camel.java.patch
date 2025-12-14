@@ -3,7 +3,7 @@
 @@ -302,6 +_,7 @@
          this.dashCooldown = 55;
          this.setDashing(true);
-         this.hasImpulse = true;
+         this.needsSync = true;
 +        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
      }
  

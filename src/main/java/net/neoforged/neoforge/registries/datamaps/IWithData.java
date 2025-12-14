@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.registries.datamaps;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a registry object (usually a {@link net.minecraft.core.Holder}) that has data maps.

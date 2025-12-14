@@ -15,9 +15,9 @@
 +            false
 +    ); // Neo: Pack source for child packs; should not be otherwise used
  
-     @Nullable
-     public static Pack readMetaAndCreate(PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_) {
-@@ -32,6 +_,34 @@
+     public static @Nullable Pack readMetaAndCreate(
+         PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_
+@@ -33,6 +_,34 @@
      }
  
      public Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_) {
@@ -52,7 +52,7 @@
          this.location = p_326123_;
          this.resources = p_249377_;
          this.metadata = p_326375_;
-@@ -58,7 +_,14 @@
+@@ -60,7 +_,14 @@
                  PackCompatibility packcompatibility = PackCompatibility.forVersion(packmetadatasection.supportedFormats(), p_435314_);
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.forPackType(p_433503_));
                  List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_435314_) : List.of();
@@ -68,7 +68,7 @@
              }
  
              return pack$metadata;
-@@ -120,6 +_,38 @@
+@@ -122,6 +_,38 @@
          return this.location.source();
      }
  
@@ -107,7 +107,7 @@
      @Override
      public boolean equals(Object p_10448_) {
          if (this == p_10448_) {
-@@ -134,7 +_,12 @@
+@@ -136,7 +_,12 @@
          return this.location.hashCode();
      }
  

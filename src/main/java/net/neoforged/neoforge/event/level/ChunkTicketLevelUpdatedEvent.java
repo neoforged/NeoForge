@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired whenever a chunk has its ticket level changed via the server's ChunkMap.

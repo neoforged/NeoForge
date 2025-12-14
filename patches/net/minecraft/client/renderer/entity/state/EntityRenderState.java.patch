@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
 @@ -13,7 +_,7 @@
- import net.neoforged.api.distmarker.OnlyIn;
+ import org.jspecify.annotations.Nullable;
  
  @OnlyIn(Dist.CLIENT)
 -public class EntityRenderState {
@@ -9,8 +9,8 @@
      public static final int NO_OUTLINE = 0;
      public EntityType<?> entityType;
      public double x;
-@@ -43,6 +_,7 @@
-     public ServerHitboxesRenderState serverHitboxesRenderState;
+@@ -35,6 +_,7 @@
+     public @Nullable List<EntityRenderState.LeashState> leashStates;
      public float shadowRadius;
      public final List<EntityRenderState.ShadowPiece> shadowPieces = new ArrayList<>();
 +    public float partialTick;

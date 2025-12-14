@@ -1,6 +1,46 @@
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -105,7 +_,7 @@
+@@ -38,13 +_,21 @@
+ 
+ public class DimensionDataStorage implements AutoCloseable {
+     private static final Logger LOGGER = LogUtils.getLogger();
++    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
+     private final Map<SavedDataType<?>, Optional<SavedData>> cache = new HashMap<>();
+     private final DataFixer fixerUpper;
+     private final HolderLookup.Provider registries;
+     private final Path dataFolder;
+     private CompletableFuture<?> pendingWriteFuture = CompletableFuture.completedFuture(null);
+ 
++    // Neo: Use the version that has a level
++    @Deprecated
+     public DimensionDataStorage(Path p_362421_, DataFixer p_78150_, HolderLookup.Provider p_324180_) {
++        this(null, p_362421_, p_78150_, p_324180_);
++    }
++
++    public DimensionDataStorage(net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level, Path p_362421_, DataFixer p_78150_, HolderLookup.Provider p_324180_) {
++        this.level = level;
+         this.fixerUpper = p_78150_;
+         this.dataFolder = p_362421_;
+         this.registries = p_324180_;
+@@ -59,7 +_,7 @@
+         if (t != null) {
+             return t;
+         } else {
+-            T t1 = (T)p_401394_.constructor().get();
++            T t1 = (T)p_401394_.factory().create(this.level);
+             this.set(p_401394_, t1);
+             return t1;
+         }
+@@ -83,7 +_,7 @@
+                     p_401056_.id(), p_401056_.dataFixType(), SharedConstants.getCurrentVersion().dataVersion().version()
+                 );
+                 RegistryOps<Tag> registryops = this.registries.createSerializationContext(NbtOps.INSTANCE);
+-                return p_401056_.codec()
++                return p_401056_.codecFactory().create(this.level)
+                     .parse(registryops, compoundtag.get("data"))
+                     .resultOrPartial(p_400985_ -> LOGGER.error("Failed to parse saved data for '{}': {}", p_401056_, p_400985_))
+                     .orElse(null);
+@@ -100,7 +_,7 @@
          p_164857_.setDirty();
      }
  
@@ -9,7 +49,7 @@
          CompoundTag compoundtag1;
          try (
              InputStream inputstream = Files.newInputStream(this.getDataFile(p_78159_));
-@@ -120,9 +_,19 @@
+@@ -115,9 +_,19 @@
                  }
              }
  
@@ -31,7 +71,16 @@
  
          return compoundtag1;
      }
-@@ -205,7 +_,11 @@
+@@ -189,7 +_,7 @@
+     }
+ 
+     private <T extends SavedData> CompoundTag encodeUnchecked(SavedDataType<T> p_401078_, SavedData p_401244_, RegistryOps<Tag> p_401357_) {
+-        Codec<T> codec = p_401078_.codec();
++        Codec<T> codec = p_401078_.codecFactory().create(this.level);
+         CompoundTag compoundtag = new CompoundTag();
+         compoundtag.put("data", codec.encodeStart(p_401357_, (T)p_401244_).getOrThrow());
+         NbtUtils.addCurrentDataVersion(compoundtag);
+@@ -200,7 +_,11 @@
          Path path = this.getDataFile(p_401021_.id());
  
          try {

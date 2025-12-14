@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-@ParametersAreNonnullByDefault
+@NullMarked
 @ApiStatus.Internal
 package net.neoforged.neoforge.coremods;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;

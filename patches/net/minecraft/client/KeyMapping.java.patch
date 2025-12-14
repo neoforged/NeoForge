@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -20,25 +_,33 @@
+@@ -20,8 +_,8 @@
  
  @OnlyIn(Dist.CLIENT)
  public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
@@ -11,9 +11,10 @@
      private final String name;
      private final InputConstants.Key defaultKey;
      private final KeyMapping.Category category;
-     protected InputConstants.Key key;
+@@ -29,17 +_,25 @@
      boolean isDown;
      private int clickCount;
+     private final int order;
 +    // Neo: Injected Key Mapping controls
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifierDefault = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
@@ -38,7 +39,7 @@
          if (list != null && !list.isEmpty()) {
              for (KeyMapping keymapping : list) {
                  p_446545_.accept(keymapping);
-@@ -99,8 +_,82 @@
+@@ -105,8 +_,83 @@
          this.registerMapping(this.key);
      }
  
@@ -72,6 +73,7 @@
 +        this.key = keyCode;
 +        this.defaultKey = keyCode;
 +        this.category = category;
++        this.order = 0; // TODO 1.21.11: should we add additional constructor overloads to specify this?
 +        this.keyConflictContext = keyConflictContext;
 +        this.keyModifier = keyModifier;
 +        this.keyModifierDefault = keyModifier;
@@ -122,7 +124,7 @@
      }
  
      public KeyMapping.Category getCategory() {
-@@ -149,6 +_,20 @@
+@@ -157,6 +_,20 @@
      }
  
      public boolean same(KeyMapping p_90851_) {
@@ -143,7 +145,7 @@
          return this.key.equals(p_90851_.key);
      }
  
-@@ -167,11 +_,13 @@
+@@ -175,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -158,7 +160,7 @@
      }
  
      public String saveString() {
-@@ -183,7 +_,7 @@
+@@ -191,7 +_,7 @@
      }
  
      private void registerMapping(InputConstants.Key p_446356_) {
@@ -166,15 +168,15 @@
 +        MAP.put(p_446356_, this);
      }
  
-     @Nullable
-@@ -206,6 +_,10 @@
-             return register(ResourceLocation.withDefaultNamespace(p_449101_));
+     public static @Nullable KeyMapping get(String p_389468_) {
+@@ -214,6 +_,10 @@
+             return register(Identifier.withDefaultNamespace(p_449101_));
          }
  
 +        /**
 +         * @deprecated Neo: use {@link net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)} instead
 +         */
 +        @Deprecated
-         public static KeyMapping.Category register(ResourceLocation p_449977_) {
-             KeyMapping.Category keymapping$category = new KeyMapping.Category(p_449977_);
+         public static KeyMapping.Category register(Identifier p_468881_) {
+             KeyMapping.Category keymapping$category = new KeyMapping.Category(p_468881_);
              if (SORT_ORDER.contains(keymapping$category)) {

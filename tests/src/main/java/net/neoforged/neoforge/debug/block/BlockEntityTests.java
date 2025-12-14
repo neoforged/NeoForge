@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
@@ -24,7 +23,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 @ForEachTest(groups = BlockTests.GROUP + ".entity")
@@ -85,7 +84,7 @@ public class BlockEntityTests {
             }
         }
 
-        final var block = reg.blocks().registerBlockWithBEType("test_block", TestBlock::new, TestBlockEntity::new, BlockBehaviour.Properties.of())
+        final var block = reg.blocks().registerBlockWithBEType("test_block", TestBlock::new, TestBlockEntity::new)
                 .withBlockItem().withDefaultWhiteModel().withLang("Test load block").withColor(0x67fafd);
 
         test.onGameTest(helper -> helper.startSequence()

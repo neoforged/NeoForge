@@ -18,7 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -27,7 +27,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
@@ -53,8 +52,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A test case used to define and test fluid type integration into fluids.
@@ -93,7 +92,7 @@ public class FluidTypeTest {
             .addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)));
     private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
     private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.registerBlock("test_fluid_block", props -> new LiquidBlock(TEST_FLUID.get(), props), BlockBehaviour.Properties.of().noCollision().strength(100.0F).noLootTable());
+    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.registerBlock("test_fluid_block", props -> new LiquidBlock(TEST_FLUID.get(), props), props -> props.noCollision().strength(100.0F).noLootTable());
     private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.registerItem("test_fluid_bucket", props -> new BucketItem(TEST_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
 
     public FluidTypeTest(IEventBus modEventBus) {
@@ -152,28 +151,28 @@ public class FluidTypeTest {
 
         private void registerClientExtensions(RegisterClientExtensionsEvent event) {
             event.registerFluidType(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
-                        FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
-                        OVERLAY = ResourceLocation.withDefaultNamespace("block/obsidian"),
-                        VIEW_OVERLAY = ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
+                private static final Identifier STILL = Identifier.withDefaultNamespace("block/water_still"),
+                        FLOW = Identifier.withDefaultNamespace("block/water_flow"),
+                        OVERLAY = Identifier.withDefaultNamespace("block/obsidian"),
+                        VIEW_OVERLAY = Identifier.withDefaultNamespace("textures/block/obsidian.png");
 
                 @Override
-                public ResourceLocation getStillTexture() {
+                public Identifier getStillTexture() {
                     return STILL;
                 }
 
                 @Override
-                public ResourceLocation getFlowingTexture() {
+                public Identifier getFlowingTexture() {
                     return FLOW;
                 }
 
                 @Override
-                public ResourceLocation getOverlayTexture() {
+                public Identifier getOverlayTexture() {
                     return OVERLAY;
                 }
 
                 @Override
-                public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+                public Identifier getRenderOverlayTexture(Minecraft mc) {
                     return VIEW_OVERLAY;
                 }
 

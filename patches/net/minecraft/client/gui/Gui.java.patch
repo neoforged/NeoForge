@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -78,6 +_,8 @@
- import net.neoforged.api.distmarker.Dist;
+@@ -79,6 +_,8 @@
  import net.neoforged.api.distmarker.OnlyIn;
  import org.apache.commons.lang3.tuple.Pair;
+ import org.jspecify.annotations.Nullable;
 +// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by spotless rules.
 +/* space for import change */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* space for wildcard import */;
  
  @OnlyIn(Dist.CLIENT)
  public class Gui {
-@@ -184,6 +_,15 @@
+@@ -173,6 +_,15 @@
      private Pair<Gui.ContextualInfo, ContextualBarRenderer> contextualInfoBar = Pair.of(Gui.ContextualInfo.EMPTY, ContextualBarRenderer.EMPTY);
      private final Map<Gui.ContextualInfo, Supplier<ContextualBarRenderer>> contextualInfoBarRenderers;
      private float scopeScale;
@@ -25,7 +25,7 @@
  
      public Gui(Minecraft p_232355_) {
          this.minecraft = p_232355_;
-@@ -204,6 +_,7 @@
+@@ -193,6 +_,7 @@
              () -> new JumpableVehicleBarRenderer(p_232355_)
          );
          this.resetTitleTimes();
@@ -33,7 +33,7 @@
      }
  
      public void resetTitleTimes() {
-@@ -214,28 +_,47 @@
+@@ -203,28 +_,47 @@
  
      public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
          if (!(this.minecraft.screen instanceof LevelLoadingScreen)) {
@@ -99,7 +99,7 @@
      }
  
      private void renderBossOverlay(GuiGraphics p_416128_, DeltaTracker p_416660_) {
-@@ -279,8 +_,12 @@
+@@ -268,8 +_,12 @@
                  for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
                      ItemStack itemstack = localplayer.getItemBySlot(equipmentslot);
                      Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
@@ -114,7 +114,7 @@
                      }
                  }
              }
-@@ -333,7 +_,11 @@
+@@ -322,7 +_,11 @@
              if (i > 0) {
                  p_316291_.nextStratum();
                  p_316291_.pose().pushMatrix();
@@ -127,7 +127,7 @@
                  int j;
                  if (this.animateOverlayMessageColor) {
                      j = Mth.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
-@@ -394,10 +_,19 @@
+@@ -383,10 +_,19 @@
      private void renderChat(GuiGraphics p_316307_, DeltaTracker p_348631_) {
          if (!this.chat.isChatFocused()) {
              Window window = this.minecraft.getWindow();
@@ -142,12 +142,12 @@
              int i = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
              int j = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
              p_316307_.nextStratum();
-             this.chat.render(p_316307_, this.tickCount, i, j, false);
+             this.chat.render(p_316307_, this.getFont(), this.tickCount, i, j, false, false);
 +            p_316307_.pose().popMatrix();
          }
      }
  
-@@ -484,6 +_,8 @@
+@@ -475,6 +_,8 @@
              int j = 0;
  
              for (MobEffectInstance mobeffectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
@@ -156,7 +156,7 @@
                  Holder<MobEffect> holder = mobeffectinstance.getEffect();
                  if (mobeffectinstance.showIcon()) {
                      int k = p_282812_.guiWidth();
-@@ -515,6 +_,7 @@
+@@ -506,6 +_,7 @@
                          }
                      }
  
@@ -164,7 +164,7 @@
                      p_282812_.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(holder), k + 3, l + 3, 18, 18, ARGB.white(f));
                  }
              }
-@@ -528,32 +_,52 @@
+@@ -519,32 +_,52 @@
              .orElseGet(MissingTextureAtlasSprite::getLocation);
      }
  
@@ -226,7 +226,7 @@
              this.spectatorGui.renderAction(p_316628_);
          }
      }
-@@ -618,18 +_,23 @@
+@@ -609,18 +_,23 @@
      }
  
      private void renderSelectedItemName(GuiGraphics p_283501_) {
@@ -253,11 +253,11 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
-@@ -640,7 +_,13 @@
+@@ -631,7 +_,13 @@
              }
  
              if (l > 0) {
--                p_283501_.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, ARGB.color(l, -1));
+-                p_283501_.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, ARGB.white(l));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
 +                    p_283501_.drawStringWithBackdrop(this.getFont(), highlightTip, j, k, i, ARGB.color(l, -1));
@@ -268,16 +268,7 @@
              }
          }
  
-@@ -648,7 +_,7 @@
-     }
- 
-     private void renderDemoOverlay(GuiGraphics p_281825_, DeltaTracker p_348679_) {
--        if (this.minecraft.isDemo()) {
-+        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // Neo: Hide demo timer when F3 debug overlay is open; fixes MC-271166
-             Profiler.get().push("demo");
-             p_281825_.nextStratum();
-             Component component;
-@@ -761,7 +_,15 @@
+@@ -750,7 +_,15 @@
          return (int)Math.ceil(p_93013_ / 10.0);
      }
  
@@ -293,7 +284,7 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int i = Mth.ceil(player.getHealth());
-@@ -785,31 +_,59 @@
+@@ -774,31 +_,59 @@
              this.random.setSeed(this.tickCount * 312871);
              int l = p_283143_.guiWidth() / 2 - 91;
              int i1 = p_283143_.guiWidth() / 2 + 91;
@@ -362,7 +353,7 @@
              Profiler.get().pop();
          }
      }
-@@ -923,6 +_,8 @@
+@@ -912,6 +_,8 @@
                      p_381066_.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, k1, p_381100_ + l1, 9, 9);
                  }
              }
@@ -371,7 +362,7 @@
          }
      }
  
-@@ -990,7 +_,7 @@
+@@ -979,7 +_,7 @@
              if (i != 0) {
                  int j = (int)Math.ceil(livingentity.getHealth());
                  Profiler.get().popPush("mountHealth");
@@ -380,7 +371,7 @@
                  int l = p_283368_.guiWidth() / 2 + 91;
                  int i1 = k;
  
-@@ -1011,6 +_,7 @@
+@@ -1000,6 +_,7 @@
                      }
  
                      i1 -= 10;
@@ -388,7 +379,7 @@
                  }
              }
          }
-@@ -1042,7 +_,9 @@
+@@ -1031,7 +_,9 @@
          int l = (p_282069_.guiHeight() - j) / 2;
          int i1 = k + i;
          int j1 = l + j;
@@ -399,7 +390,7 @@
          p_282069_.fill(RenderPipelines.GUI, 0, j1, p_282069_.guiWidth(), p_282069_.guiHeight(), -16777216);
          p_282069_.fill(RenderPipelines.GUI, 0, 0, p_282069_.guiWidth(), l, -16777216);
          p_282069_.fill(RenderPipelines.GUI, 0, l, k, j1, -16777216);
-@@ -1177,7 +_,7 @@
+@@ -1164,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !itemstack.is(this.lastToolHighlight.getItem())
@@ -408,7 +399,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1461,12 +_,27 @@
+@@ -1448,12 +_,27 @@
                  gui$hearttype = NORMAL;
              }
  

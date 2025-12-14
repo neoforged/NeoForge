@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class PresetEditorManager {
     private PresetEditorManager() {} // Utility class

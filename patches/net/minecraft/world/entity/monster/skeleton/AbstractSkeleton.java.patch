@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
++++ b/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
+@@ -133,8 +_,8 @@
+         if (this.level() != null && !this.level().isClientSide()) {
+             this.goalSelector.removeGoal(this.meleeGoal);
+             this.goalSelector.removeGoal(this.bowGoal);
+-            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
+-            if (itemstack.is(Items.BOW)) {
++            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
++            if (itemstack.getItem() instanceof net.minecraft.world.item.BowItem) {
+                 int i = this.getHardAttackInterval();
+                 if (this.level().getDifficulty() != Difficulty.HARD) {
+                     i = this.getAttackInterval();
+@@ -158,9 +_,11 @@
+ 
+     @Override
+     public void performRangedAttack(LivingEntity p_479036_, float p_480954_) {
+-        ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
+-        ItemStack itemstack1 = this.getProjectile(itemstack);
+-        AbstractArrow abstractarrow = this.getArrow(itemstack1, p_480954_, itemstack);
++        ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
++        ItemStack itemstack1 = this.getProjectile(weapon);
++        AbstractArrow abstractarrow = this.getArrow(itemstack1, p_480954_, weapon);
++        if (weapon.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem)
++            abstractarrow = weaponItem.customArrow(abstractarrow, itemstack1, weapon);
+         double d0 = p_479036_.getX() - this.getX();
+         double d1 = p_479036_.getY(0.3333333333333333) - abstractarrow.getY();
+         double d2 = p_479036_.getZ() - this.getZ();
+@@ -180,7 +_,7 @@
+ 
+     @Override
+     public boolean canUseNonMeleeWeapon(ItemStack p_480354_) {
+-        return p_480354_.getItem() == Items.BOW;
++        return p_480354_.is(net.neoforged.neoforge.common.Tags.Items.SKELETON_USABLE_BOWS);
+     }
+ 
+     @Override

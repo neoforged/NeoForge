@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.test.AbstractTest;
 import net.neoforged.testframework.summary.md.Alignment;
@@ -50,7 +50,7 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
     }
 
     @Override
-    public Path outputPath(ResourceLocation frameworkId) {
+    public Path outputPath(Identifier frameworkId) {
         return Path.of(System.getenv("GITHUB_STEP_SUMMARY"));
     }
 

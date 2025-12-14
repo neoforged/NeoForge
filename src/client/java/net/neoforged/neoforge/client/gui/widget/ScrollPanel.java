@@ -131,7 +131,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         int max = getMaxScroll();
 
         if (max < 0) {
-            max /= 2;
+            max = 0;
         }
 
         if (this.scrollDistance < 0.0F) {

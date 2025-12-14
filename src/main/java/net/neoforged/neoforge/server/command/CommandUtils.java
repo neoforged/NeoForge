@@ -18,8 +18,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * Utility class for various command-related operations.
@@ -32,11 +32,11 @@ public final class CommandUtils {
     public static CompletableFuture<Suggestions> suggestRegistries(
             final CommandContext<CommandSourceStack> ctx,
             final SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggestResource(ctx.getSource().registryAccess().listRegistryKeys().map(ResourceKey::location), builder);
+        return SharedSuggestionProvider.suggestResource(ctx.getSource().registryAccess().listRegistryKeys().map(ResourceKey::identifier), builder);
     }
 
     public static <T extends Registry<?>> SuggestionProvider<CommandSourceStack> suggestFromRegistry(
-            final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction,
+            final Function<Registry<?>, Iterable<Identifier>> namesFunction,
             final String argumentString,
             final ResourceKey<Registry<T>> registryKey) {
         return (ctx, builder) -> CommandUtils.getResourceKey(ctx, argumentString, registryKey)

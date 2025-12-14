@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.world;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
@@ -30,8 +29,7 @@ public class PotentialSpawnsEventTest {
 
     public static void onlySpawnHostileMobs(LevelEvent.PotentialSpawns event) {
         LevelAccessor level = event.getLevel();
-        BlockPos pos = event.getPos();
-        Difficulty difficulty = level.getCurrentDifficultyAt(pos).getDifficulty();
+        Difficulty difficulty = level.getDifficulty();
         MobCategory category = event.getMobCategory();
 
         if (category == MobCategory.MONSTER && difficulty != Difficulty.HARD) {

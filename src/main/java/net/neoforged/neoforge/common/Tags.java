@@ -7,7 +7,7 @@ package net.neoforged.neoforge.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -282,7 +282,30 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        /**
+         * For logs found naturally in the Overworld, does not include Stripped Logs.
+         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
+         */
+        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /**
+         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
+         */
+        public static final TagKey<Block> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /**
+         * For logs, including Stems, found naturally that have not been stripped.
+         */
+        public static final TagKey<Block> NATURAL_LOGS = tag("natural_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
+         */
+        public static final TagKey<Block> NATURAL_WOODS = tag("natural_woods");
+        /**
+         * For logs, including Stems, found naturally that have been stripped.
+         */
         public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
+         */
         public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
@@ -292,11 +315,11 @@ public class Tags {
         public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
 
         private static TagKey<Block> tag(String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
 
         private static TagKey<Block> neoforgeTag(String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", name));
+            return BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", name));
         }
     }
 
@@ -320,7 +343,7 @@ public class Tags {
         public static final TagKey<EntityType<?>> TELEPORTING_NOT_SUPPORTED = tag("teleporting_not_supported");
 
         private static TagKey<EntityType<?>> tag(String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", name));
+            return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -809,7 +832,30 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
+        /**
+         * For logs found naturally in the Overworld, does not include Stripped Logs.
+         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
+         */
+        public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /**
+         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
+         */
+        public static final TagKey<Item> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /**
+         * For logs, including Stems, found naturally that have not been stripped.
+         */
+        public static final TagKey<Item> NATURAL_LOGS = tag("natural_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
+         */
+        public static final TagKey<Item> NATURAL_WOODS = tag("natural_woods");
+        /**
+         * For logs, including Stems, found naturally that have been stripped.
+         */
         public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
+         */
         public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
@@ -937,20 +983,37 @@ public class Tags {
          */
         public static final TagKey<Item> MINING_TOOL_TOOLS = tag("tools/mining_tool");
         /**
-         * Collects the 4 vanilla armor tags into one parent collection for ease.
+         * A tag containing all conventional armor tags.
+         * Note that this can contain armor that does not necessarily fit on a player. For that, see {@link Tags.Items#ARMORS_HUMANOID}
          */
         public static final TagKey<Item> ARMORS = tag("armors");
+        /**
+         * Armor that can fit on a humanoid mob like the Player. This tag collects the 4 vanilla armor tags into one parent collection for ease.
+         */
+        public static final TagKey<Item> ARMORS_HUMANOID = tag("armors/humanoid");
+        /**
+         * A tag containing armor that can fit on a Horse.
+         */
+        public static final TagKey<Item> ARMORS_HORSE = tag("armors/horse");
+        /**
+         * A tag containing armor that can fit on a Nautilus.
+         */
+        public static final TagKey<Item> ARMORS_NAUTILUS = tag("armors/nautilus");
+        /**
+         * A tag containing armor that can fit on a Wolf.
+         */
+        public static final TagKey<Item> ARMORS_WOLF = tag("armors/wolf");
         /**
          * Collects the many enchantable tags into one parent collection for ease.
          */
         public static final TagKey<Item> ENCHANTABLES = tag("enchantables");
 
         private static TagKey<Item> tag(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
 
         private static TagKey<Item> neoforgeTag(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath("neoforge", name));
         }
     }
 
@@ -1029,7 +1092,7 @@ public class Tags {
         public static final TagKey<Fluid> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
 
         private static TagKey<Fluid> tag(String name) {
-            return FluidTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return FluidTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -1063,7 +1126,7 @@ public class Tags {
         public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENTS = tag("entity_defense_enhancements");
 
         private static TagKey<Enchantment> tag(String name) {
-            return TagKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("c", name));
+            return TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -1398,7 +1461,7 @@ public class Tags {
         public static final TagKey<Biome> IS_OUTER_END_ISLAND = tag("is_outer_end_island");
 
         private static TagKey<Biome> tag(String name) {
-            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("c", name));
+            return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -1416,7 +1479,7 @@ public class Tags {
         public static final TagKey<Structure> HIDDEN_FROM_LOCATOR_SELECTION = tag("hidden_from_locator_selection");
 
         private static TagKey<Structure> tag(String name) {
-            return TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath("c", name));
+            return TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -1463,7 +1526,7 @@ public class Tags {
         public static final TagKey<DamageType> NO_FLINCH = neoforgeTag("no_flinch");
 
         private static TagKey<DamageType> neoforgeTag(String name) {
-            return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", name));
+            return TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("neoforge", name));
         }
     }
 
@@ -1476,8 +1539,8 @@ public class Tags {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("tag.");
 
-        ResourceLocation registryIdentifier = tagKey.registry().location();
-        ResourceLocation tagIdentifier = tagKey.location();
+        Identifier registryIdentifier = tagKey.registry().identifier();
+        Identifier tagIdentifier = tagKey.location();
 
         stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
                 .append(".")

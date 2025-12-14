@@ -11,13 +11,13 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.entity.animal.cow.MushroomCow;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -81,7 +81,7 @@ public class ManyMobEffectsTest {
         if (!ENABLED) return;
         MOB_EFFECTS.register(modBus);
         NeoForge.EVENT_BUS.addListener(ManyMobEffectsTest::mobInteract);
-        modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(ResourceLocation.fromNamespaceAndPath(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()
+        modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(Identifier.fromNamespaceAndPath(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()
                 .icon(() -> new ItemStack(Items.POTION))
                 .displayItems((params, output) -> {
                     var stack = new ItemStack(Items.POTION);

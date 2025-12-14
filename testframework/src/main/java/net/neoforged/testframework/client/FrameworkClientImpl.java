@@ -7,8 +7,6 @@ package net.neoforged.testframework.client;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ToggleKeyMapping;
@@ -21,8 +19,6 @@ import net.neoforged.testframework.conf.ClientConfiguration;
 import net.neoforged.testframework.impl.FrameworkClient;
 import net.neoforged.testframework.impl.MutableTestFramework;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class FrameworkClientImpl implements FrameworkClient {
     private final MutableTestFramework impl;
     private final ClientConfiguration configuration;

@@ -7,10 +7,11 @@ package net.neoforged.testframework.registration;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -25,12 +26,12 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    protected <I extends Item> DeferredItemBuilder<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
+    protected <I extends Item> DeferredItemBuilder<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, Identifier key) {
         return new DeferredItemBuilder<>(ResourceKey.create(registryKey, key), registrationHelper);
     }
 
     @Override
-    public <I extends Item> DeferredItemBuilder<I> register(String name, Function<ResourceLocation, ? extends I> func) {
+    public <I extends Item> DeferredItemBuilder<I> register(String name, Function<Identifier, ? extends I> func) {
         return (DeferredItemBuilder<I>) super.register(name, func);
     }
 
@@ -40,7 +41,12 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Supplier<Item.Properties> properties) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(name, block, properties);
+    }
+
+    @Override
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, UnaryOperator<Item.Properties> properties) {
         return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(name, block, properties);
     }
 
@@ -50,7 +56,12 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(Holder<Block> block, Item.Properties properties) {
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(Holder<Block> block, Supplier<Item.Properties> properties) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(block, properties);
+    }
+
+    @Override
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(Holder<Block> block, UnaryOperator<Item.Properties> properties) {
         return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(block, properties);
     }
 
@@ -60,8 +71,13 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public <I extends Item> DeferredItemBuilder<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
-        return (DeferredItemBuilder<I>) super.registerItem(name, func, props);
+    public <I extends Item> DeferredItemBuilder<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Supplier<Item.Properties> properties) {
+        return (DeferredItemBuilder<I>) super.registerItem(name, func, properties);
+    }
+
+    @Override
+    public <I extends Item> DeferredItemBuilder<I> registerItem(String name, Function<Item.Properties, ? extends I> func, UnaryOperator<Item.Properties> properties) {
+        return (DeferredItemBuilder<I>) super.registerItem(name, func, properties);
     }
 
     @Override
@@ -70,8 +86,13 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public DeferredItemBuilder<Item> registerSimpleItem(String name, Item.Properties props) {
-        return (DeferredItemBuilder<Item>) super.registerSimpleItem(name, props);
+    public DeferredItemBuilder<Item> registerSimpleItem(String name, Supplier<Item.Properties> properties) {
+        return (DeferredItemBuilder<Item>) super.registerSimpleItem(name, properties);
+    }
+
+    @Override
+    public DeferredItemBuilder<Item> registerSimpleItem(String name, UnaryOperator<Item.Properties> properties) {
+        return (DeferredItemBuilder<Item>) super.registerSimpleItem(name, properties);
     }
 
     @Override

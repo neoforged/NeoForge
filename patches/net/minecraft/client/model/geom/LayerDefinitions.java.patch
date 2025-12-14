@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
-@@ -508,6 +_,7 @@
-                 builder.put(ModelLayers.createHangingSignModelName(p_382521_, hangingsignrenderer$attachmenttype), layerdefinition57);
+@@ -526,6 +_,7 @@
+                 builder.put(ModelLayers.createHangingSignModelName(p_382521_, hangingsignrenderer$attachmenttype), layerdefinition58);
              }
          });
 +        net.neoforged.neoforge.client.ClientHooks.loadLayerDefinitions(builder);

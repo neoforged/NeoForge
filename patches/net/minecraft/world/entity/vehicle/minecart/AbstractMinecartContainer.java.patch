@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecartContainer.java
++++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecartContainer.java
+@@ -94,6 +_,8 @@
+ 
+     @Override
+     public InteractionResult interact(Player p_481258_, InteractionHand p_478688_) {
++        InteractionResult ret = super.interact(p_481258_, p_478688_);
++        if (ret.consumesAction()) return ret;
+         return this.interactWithContainerVehicle(p_481258_);
+     }
+ 

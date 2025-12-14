@@ -10,13 +10,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.nodes.PermissionDynamicContext;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 
 public final class DefaultPermissionHandler implements IPermissionHandler {
-    public static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath("neoforge", "default_handler");;
+    public static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath("neoforge", "default_handler");;
     private final Set<PermissionNode<?>> registeredNodes = new HashSet<>();
     private Set<PermissionNode<?>> immutableRegisteredNodes = Collections.unmodifiableSet(this.registeredNodes);
 
@@ -25,7 +25,7 @@ public final class DefaultPermissionHandler implements IPermissionHandler {
     }
 
     @Override
-    public ResourceLocation getIdentifier() {
+    public Identifier getIdentifier() {
         return IDENTIFIER;
     }
 

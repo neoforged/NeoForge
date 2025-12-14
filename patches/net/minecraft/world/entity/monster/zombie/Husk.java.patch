@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/entity/monster/zombie/Husk.java
++++ b/net/minecraft/world/entity/monster/zombie/Husk.java
+@@ -71,6 +_,7 @@
+ 
+     @Override
+     protected void doUnderWaterConversion(ServerLevel p_478247_) {
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIE, (timer) -> this.conversionTime = timer)) return;
+         this.convertToZombieType(p_478247_, EntityType.ZOMBIE);
+         if (!this.isSilent()) {
+             p_478247_.levelEvent(null, 1041, this.blockPosition(), 0);

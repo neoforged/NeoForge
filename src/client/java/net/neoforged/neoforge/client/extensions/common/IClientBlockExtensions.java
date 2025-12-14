@@ -24,8 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.fml.LogicalSide;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link Block}.

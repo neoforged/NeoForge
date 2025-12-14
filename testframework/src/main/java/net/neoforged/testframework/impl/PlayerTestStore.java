@@ -20,7 +20,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class PlayerTestStore extends SavedData {
     public static final Codec<PlayerTestStore> FACTORY = ExtraCodecs.converter(NbtOps.INSTANCE)

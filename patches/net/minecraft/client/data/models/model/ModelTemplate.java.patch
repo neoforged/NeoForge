@@ -1,28 +1,28 @@
 --- a/net/minecraft/client/data/models/model/ModelTemplate.java
 +++ b/net/minecraft/client/data/models/model/ModelTemplate.java
-@@ -52,6 +_,13 @@
-     public ResourceLocation create(ResourceLocation p_388380_, TextureMapping p_387099_, BiConsumer<ResourceLocation, ModelInstance> p_387748_) {
-         Map<TextureSlot, ResourceLocation> map = this.createMap(p_387099_);
-         p_387748_.accept(p_388380_, () -> {
-+            return createBaseTemplate(p_388380_, map);
+@@ -50,6 +_,13 @@
+     public Identifier create(Identifier p_467879_, TextureMapping p_387099_, BiConsumer<Identifier, ModelInstance> p_387748_) {
+         Map<TextureSlot, Identifier> map = this.createMap(p_387099_);
+         p_387748_.accept(p_467879_, () -> {
++            return createBaseTemplate(p_467879_, map);
 +        });
-+        return p_388380_;
++        return p_467879_;
 +    }
 +
 +    // Neo: Reintroduced to allow subclasses to customize the serialization logic, many implementations just delegating
-+    public JsonObject createBaseTemplate(ResourceLocation p_388380_, Map<TextureSlot, ResourceLocation> map) {
++    public JsonObject createBaseTemplate(Identifier p_388380_, Map<TextureSlot, Identifier> map) {
              JsonObject jsonobject = new JsonObject();
-             this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
+             this.model.ifPresent(p_465448_ -> jsonobject.addProperty("parent", p_465448_.toString()));
              if (!map.isEmpty()) {
-@@ -61,11 +_,14 @@
+@@ -59,11 +_,14 @@
              }
  
              return jsonobject;
 -        });
--        return p_388380_;
+-        return p_467879_;
      }
  
-     private Map<TextureSlot, ResourceLocation> createMap(TextureMapping p_387972_) {
+     private Map<TextureSlot, Identifier> createMap(TextureMapping p_387972_) {
          return Streams.concat(this.requiredSlots.stream(), p_387972_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_387972_::get));
 +    }
 +

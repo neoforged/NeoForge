@@ -12,7 +12,7 @@ import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DeathMessageType;
 import net.minecraft.world.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An {@link IDeathMessageProvider} is used by custom {@link DeathMessageType} instances.<br>

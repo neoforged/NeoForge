@@ -13,14 +13,14 @@ import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
  * Mostly copied from {@link CraftingScreen}
  */
 public class RecipeBookTestScreen extends AbstractRecipeBookScreen<RecipeBookTestMenu> implements RecipeUpdateListener {
-    private static final ResourceLocation TEXTURE = RecipeBookExtensionTest.getId("textures/gui/container/recipe_book_test.png");
+    private static final Identifier TEXTURE = RecipeBookExtensionTest.getId("textures/gui/container/recipe_book_test.png");
 
     public RecipeBookTestScreen(RecipeBookTestMenu menu, Inventory inv, Component title) {
         super(menu, new RecipeBookTestComponent(menu), inv, title);

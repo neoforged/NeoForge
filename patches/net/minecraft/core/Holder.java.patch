@@ -1,10 +1,10 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -229,6 +_,14 @@
+@@ -226,6 +_,14 @@
              }
          }
  
-+        @org.jetbrains.annotations.Nullable
++        @org.jspecify.annotations.Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            if (owner instanceof HolderLookup.RegistryLookup<T> lookup) {
 +                return lookup.getData(type, key());
@@ -15,7 +15,7 @@
          void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -241,6 +_,33 @@
+@@ -238,6 +_,32 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
@@ -23,7 +23,7 @@
 +
 +        // Neo: Add key getter that doesn't allocate
 +        @Override
-+        @org.jetbrains.annotations.Nullable
++        @org.jspecify.annotations.Nullable
 +        public ResourceKey<T> getKey() {
 +            return this.key;
 +        }
@@ -43,8 +43,7 @@
 +
 +        // Neo: Helper method to get the registry lookup from a holder
 +        @Override
-+        @org.jetbrains.annotations.Nullable
-+        public HolderLookup.RegistryLookup<T> unwrapLookup() {
++        public HolderLookup.@Nullable RegistryLookup<T> unwrapLookup() {
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
          }
  

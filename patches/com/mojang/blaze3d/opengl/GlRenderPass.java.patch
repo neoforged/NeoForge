@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlRenderPass.java
 +++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
-@@ -20,7 +_,7 @@
+@@ -21,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
  public class GlRenderPass implements RenderPass {
      protected static final int MAX_VERTEX_BUFFERS = 1;
@@ -9,7 +9,7 @@
      private final GlCommandEncoder encoder;
      private final boolean hasDepthTexture;
      private boolean closed;
-@@ -69,6 +_,7 @@
+@@ -68,6 +_,7 @@
  
      @Override
      public void setPipeline(RenderPipeline p_409823_) {
@@ -17,7 +17,7 @@
          if (this.pipeline == null || this.pipeline.info() != p_409823_) {
              this.dirtyUniforms.addAll(this.uniforms.keySet());
              this.dirtyUniforms.addAll(this.samplers.keySet());
-@@ -103,6 +_,11 @@
+@@ -102,6 +_,11 @@
              this.uniforms.put(p_409689_, p_418312_);
              this.dirtyUniforms.add(p_409689_);
          }

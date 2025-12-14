@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -80,6 +_,16 @@
+@@ -78,6 +_,16 @@
          this.key = p_265775_;
          this.fallback = p_265204_;
          this.args = p_265752_;
@@ -17,7 +17,7 @@
      }
  
      @Override
-@@ -91,6 +_,13 @@
+@@ -89,6 +_,13 @@
          Language language = Language.getInstance();
          if (language != this.decomposedWith) {
              this.decomposedWith = language;
@@ -31,7 +31,7 @@
              String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
  
              try {
-@@ -169,6 +_,12 @@
+@@ -167,6 +_,12 @@
      public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
          this.decompose();
  
@@ -44,7 +44,7 @@
          for (FormattedText formattedtext : this.decomposedParts) {
              Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
              if (optional.isPresent()) {
-@@ -177,12 +_,21 @@
+@@ -175,12 +_,21 @@
          }
  
          return Optional.empty();
@@ -66,7 +66,7 @@
          for (FormattedText formattedtext : this.decomposedParts) {
              Optional<T> optional = formattedtext.visit(p_237519_);
              if (optional.isPresent()) {
-@@ -191,6 +_,9 @@
+@@ -189,6 +_,9 @@
          }
  
          return Optional.empty();

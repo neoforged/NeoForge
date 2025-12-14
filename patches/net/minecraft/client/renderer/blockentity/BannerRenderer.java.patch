@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -250,4 +_,11 @@
+@@ -259,4 +_,11 @@
          this.standingFlagModel.setupAnim(0.0F);
-         this.standingFlagModel.root().getExtentsForGui(posestack, p_428247_);
+         this.standingFlagModel.root().getExtentsForGui(posestack, p_470575_);
      }
 +
 +    @Override

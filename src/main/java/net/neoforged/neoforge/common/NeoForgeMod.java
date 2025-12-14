@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
-import net.minecraft.advancements.critereon.EntitySubPredicate;
+import net.minecraft.advancements.criterion.EntitySubPredicate;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -26,14 +26,17 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.attribute.AttributeType;
+import net.minecraft.world.attribute.EnvironmentAttribute;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffects;
@@ -49,13 +52,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -118,6 +121,8 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifi
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
+import net.neoforged.neoforge.common.world.NeoForgeAttributeTypes;
+import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
@@ -138,8 +143,6 @@ import net.neoforged.neoforge.fluids.crafting.SimpleFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.display.FluidSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -163,23 +166,28 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("unused")
-@Mod(NeoForgeVersion.MOD_ID)
+@Mod(NeoForgeMod.MOD_ID)
 public class NeoForgeMod {
+    /**
+     * This is NeoForge's Mod Id, used for the NeoForgeMod and resource locations
+     */
+    public static final String MOD_ID = "neoforge";
+
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
-    private static boolean isPRBuild;
-
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, MOD_ID);
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, MOD_ID);
+    private static final DeferredRegister<AttributeType<?>> ATTRIBUTE_TYPES = DeferredRegister.create(Registries.ATTRIBUTE_TYPE, MOD_ID);
+    private static final DeferredRegister<EnvironmentAttribute<?>> ENVIRONMENT_ATTRIBUTES = DeferredRegister.create(Registries.ENVIRONMENT_ATTRIBUTE, MOD_ID);
 
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -344,13 +352,13 @@ public class NeoForgeMod {
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
 
-    private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, MOD_ID);
 
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidSlotDisplay>> FLUID_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid", () -> new SlotDisplay.Type<>(FluidSlotDisplay.MAP_CODEC, FluidSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidStackSlotDisplay>> FLUID_STACK_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_stack", () -> new SlotDisplay.Type<>(FluidStackSlotDisplay.MAP_CODEC, FluidStackSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidTagSlotDisplay>> FLUID_TAG_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_tag", () -> new SlotDisplay.Type<>(FluidTagSlotDisplay.MAP_CODEC, FluidTagSlotDisplay.STREAM_CODEC));
 
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, MOD_ID);
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DataComponentIngredient>> DATA_COMPONENT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("components", () -> new IngredientType<>(DataComponentIngredient.CODEC));
@@ -359,7 +367,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<BlockTagIngredient>> BLOCK_TAG_INGREDIENT = INGREDIENT_TYPES.register("block_tag", () -> new IngredientType<>(BlockTagIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<CustomDisplayIngredient>> CUSTOM_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("custom_display", () -> new IngredientType<>(CustomDisplayIngredient.CODEC));
 
-    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, MOD_ID);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SimpleFluidIngredient>> SIMPLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("simple", FluidIngredientCodecs::simpleType);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CompoundFluidIngredient>> COMPOUND_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("compound", () -> new FluidIngredientType<>(CompoundFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DataComponentFluidIngredient>> DATA_COMPONENT_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("components", () -> new FluidIngredientType<>(DataComponentFluidIngredient.CODEC));
@@ -367,7 +375,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CustomDisplayFluidIngredient>> CUSTOM_DISPLAY_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("custom_display", () -> new FluidIngredientType<>(CustomDisplayFluidIngredient.CODEC, CustomDisplayFluidIngredient.STREAM_CODEC));
 
-    private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<NeverCondition>> NEVER_CONDITION = CONDITION_CODECS.register("never", () -> NeverCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RegisteredCondition<?>>> REGISTERED_CONDITION = CONDITION_CODECS.register("registered", () -> RegisteredCondition.CODEC);
@@ -378,16 +386,16 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AlwaysCondition>> ALWAYS_CONDITION = CONDITION_CODECS.register("always", () -> AlwaysCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FeatureFlagsEnabledCondition>> FEATURE_FLAGS_ENABLED_CONDITION = CONDITION_CODECS.register("feature_flags_enabled", () -> FeatureFlagsEnabledCondition.CODEC);
 
-    private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<SnowBootsEntityPredicate>> SNOW_BOOTS_PREDICATE = ENTITY_PREDICATE_CODECS.register("snow_boots", () -> SnowBootsEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<TridentEntityPredicate>> IS_TRIDENT_PREDICATE = ENTITY_PREDICATE_CODECS.register("is_trident", () -> TridentEntityPredicate.CODEC);
 
-    private static final DeferredRegister<DataComponentPredicate.Type<?>> DATA_COMPONENT_PREDICATE_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<DataComponentPredicate.Type<?>> DATA_COMPONENT_PREDICATE_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_PREDICATE_TYPE, MOD_ID);
     public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<ItemAbilityPredicate>> ITEM_ABILITY_PREDICATE = DATA_COMPONENT_PREDICATE_TYPES.register("item_ability", () -> ItemAbilityPredicate.TYPE);
     public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<PiglinCurrencyItemPredicate>> PIGLIN_CURRENCY_PREDICATE = DATA_COMPONENT_PREDICATE_TYPES.register("piglin_currency", () -> PiglinCurrencyItemPredicate.TYPE);
 
-    private static final DeferredRegister<TicketType> TICKET_TYPES = DeferredRegister.create(Registries.TICKET_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<TicketType> TICKET_TYPES = DeferredRegister.create(Registries.TICKET_TYPE, MOD_ID);
     public static final Holder<TicketType> GENERATE_FORCED_TICKET = TICKET_TYPES.register("generate_forced", () -> new TicketType(0L, TicketType.FLAG_LOADING));
     //Note: We don't persist the tickets via the TicketType, as we keep handle persisting multiple backing sources of the ticket at once and will reinstate any ones that are still valid
     public static final Holder<TicketType> BLOCK_TICKET = TICKET_TYPES.register("block", () -> new TicketType(0L, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION));
@@ -429,7 +437,7 @@ public class NeoForgeMod {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
             if (reader instanceof ServerLevel level) {
-                return level.getGameRules().getBoolean(GameRules.RULE_WATER_SOURCE_CONVERSION);
+                return level.getGameRules().get(GameRules.WATER_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (true)
             return super.canConvertToSource(state, reader, pos);
@@ -456,7 +464,7 @@ public class NeoForgeMod {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
             if (reader instanceof ServerLevel level) {
-                return level.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
+                return level.getGameRules().get(GameRules.LAVA_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (false)
             return super.canConvertToSource(state, reader, pos);
@@ -464,7 +472,7 @@ public class NeoForgeMod {
 
         @Override
         public double motionScale(Entity entity) {
-            return entity.level().dimensionType().ultraWarm() ? 0.007D : 0.0023333333333333335D;
+            return entity.level().environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, entity.blockPosition()) ? 0.007D : 0.0023333333333333335D;
         }
 
         @Override
@@ -484,11 +492,11 @@ public class NeoForgeMod {
     private static boolean enableMilkFluid = false;
     private static boolean enableMergedAttributeTooltips = false;
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.empty_milk"));
-    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.fill_milk"));
-    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("milk"));
-    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("milk"));
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, Identifier.withDefaultNamespace("item.bucket.empty_milk"));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, Identifier.withDefaultNamespace("item.bucket.fill_milk"));
+    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, Identifier.withDefaultNamespace("milk"));
+    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, Identifier.withDefaultNamespace("milk"));
+    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, Identifier.withDefaultNamespace("flowing_milk"));
 
     /**
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
@@ -497,7 +505,7 @@ public class NeoForgeMod {
      *
      * @see Tags.DamageTypes#IS_POISON
      */
-    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "poison"));
+    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(MOD_ID, "poison"));
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
@@ -514,7 +522,7 @@ public class NeoForgeMod {
     }
 
     /**
-     * Run this method during mod constructor to enable {@link net.minecraft.FileUtil#RESERVED_WINDOWS_FILENAMES_NEOFORGE} regex being used for filepath validation.
+     * Run this method during mod constructor to enable {@link net.minecraft.util.FileUtil#RESERVED_WINDOWS_FILENAMES_NEOFORGE} regex being used for filepath validation.
      * Fixes MC-268617 at cost of vanilla incompat edge cases with files generated with this activated and them migrated to vanilla instance - See PR #767
      */
     public static void enableProperFilenameValidation() {
@@ -531,7 +539,6 @@ public class NeoForgeMod {
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), SharedConstants.getCurrentVersion().name());
-        ForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
 
@@ -543,6 +550,12 @@ public class NeoForgeMod {
 
         CrashReportCallables.registerCrashCallable("FML", FMLVersion::getVersion);
         CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
+
+        // Register environment attributes and types
+        ATTRIBUTE_TYPES.register("identifier", () -> NeoForgeAttributeTypes.IDENTIFIER);
+        ENVIRONMENT_ATTRIBUTES.register("custom_weather_effects", () -> NeoForgeEnvironmentAttributes.CUSTOM_WEATHER_EFFECTS);
+        ENVIRONMENT_ATTRIBUTES.register("custom_clouds", () -> NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS);
+        ENVIRONMENT_ATTRIBUTES.register("custom_skybox", () -> NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX);
 
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
@@ -569,6 +582,8 @@ public class NeoForgeMod {
         FLUID_INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
+        ATTRIBUTE_TYPES.register(modEventBus);
+        ENVIRONMENT_ATTRIBUTES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
@@ -599,8 +614,7 @@ public class NeoForgeMod {
 
         modEventBus.register(SpawnEggItem.class); // Registers dispenser behaviour for eggs
 
-        if (isPRBuild(container.getModInfo().getVersion().toString())) {
-            isPRBuild = true;
+        if (NeoForgeVersion.getBuildType() == NeoForgeBuildType.PULL_REQUEST) {
             ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));
         }
     }
@@ -650,8 +664,8 @@ public class NeoForgeMod {
         if (!event.getRegistryKey().equals(Registries.LOOT_CONDITION_TYPE))
             return;
 
-        event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
-        event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "can_item_perform_ability"), () -> CanItemPerformAbility.LOOT_CONDITION_TYPE);
+        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
+        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "can_item_perform_ability"), () -> CanItemPerformAbility.LOOT_CONDITION_TYPE);
     }
 
     private static void onConfigLoad(final ModConfigEvent.Loading configEvent) {
@@ -662,22 +676,10 @@ public class NeoForgeMod {
         LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
     }
 
-    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
-            PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && player.hasPermissions(Commands.LEVEL_GAMEMASTERS));
+    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(MOD_ID, "use_entity_selectors",
+            PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && Commands.LEVEL_GAMEMASTERS.check(player.permissions()));
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
         event.addNodes(USE_SELECTORS_PERMISSION);
-    }
-
-    private static boolean isPRBuild(String neoVersion) {
-        // The -pr- being inside the actual version and a branch name is important.
-        // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
-        // the regex will match PR builds published to Packages, but that it will not match local PR branches
-        // since those usually have the name `pr|pull/<number>`
-        return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
-    }
-
-    public static boolean isPRBuild() {
-        return isPRBuild;
     }
 }

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface BlockStateModelExtension {
     private BlockStateModel self() {

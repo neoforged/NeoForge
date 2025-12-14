@@ -57,7 +57,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     private CauldronFluidContent getContent(BlockState state) {
         CauldronFluidContent content = CauldronFluidContent.getForBlock(state.getBlock());
         if (content == null) {
-            throw new IllegalStateException("Unexpected error: no cauldron at location " + location.pos + " in " + location.level.dimension().location());
+            throw new IllegalStateException("Unexpected error: no cauldron at location " + location.pos + " in " + location.level.dimension().identifier());
         }
         return content;
     }
@@ -199,10 +199,10 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
 
     @Override
     protected void onRootCommit(BlockState originalState) {
-        // State as it was after this root transaction got committed.
         BlockState state = location.getBlockState();
 
-        if (originalState == state) return;
+        // Skip updating if nothing changed or if the cauldron was removed
+        if (originalState == state || CauldronFluidContent.getForBlock(state.getBlock()) == null) return;
 
         // Revert back to the blockstate before any changes happened so that the next
         // call will not short-circuit due to the blockstate not really changing.

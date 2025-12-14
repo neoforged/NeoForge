@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.ticket;
 import com.google.common.base.Preconditions;
 import java.util.function.Consumer;
 import net.neoforged.neoforge.common.FarmlandWaterManager;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Common class for a simple ticket based system.

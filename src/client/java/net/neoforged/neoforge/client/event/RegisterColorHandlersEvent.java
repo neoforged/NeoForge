@@ -11,7 +11,7 @@ import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.ColorResolver;
 import net.neoforged.bus.api.Event;
@@ -95,14 +95,14 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
      * @see ItemTintSources
      */
     public static class ItemTintSources extends RegisterColorHandlersEvent {
-        private final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends ItemTintSource>> idMapper;
+        private final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends ItemTintSource>> idMapper;
 
         @ApiStatus.Internal
-        public ItemTintSources(ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends ItemTintSource>> idMapper) {
+        public ItemTintSources(ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends ItemTintSource>> idMapper) {
             this.idMapper = idMapper;
         }
 
-        public void register(ResourceLocation location, MapCodec<? extends ItemTintSource> source) {
+        public void register(Identifier location, MapCodec<? extends ItemTintSource> source) {
             this.idMapper.put(location, source);
         }
     }

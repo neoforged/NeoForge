@@ -20,7 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -119,7 +119,7 @@ public class CustomTooltipTest {
     }
 
     private static class ClientEventHandler {
-        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ID, "test");
+        private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(ID, "test");
 
         @SubscribeEvent
         public static void gatherTooltips(RenderTooltipEvent.GatherComponents event) {
@@ -190,10 +190,10 @@ public class CustomTooltipTest {
             int y = 50;
             for (var test : tooltipTests) {
                 addRenderableWidget(new Button.Builder(Component.literal(test.getKey()), button -> {})
-                        .bounds(x, y, 100, 20).build(b -> new Button(b) {
+                        .bounds(x, y, 100, 20).build(b -> new Button.Plain(b) {
                             @Override
-                            public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-                                super.renderWidget(graphics, mouseX, mouseY, partialTick);
+                            public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+                                super.renderContents(graphics, mouseX, mouseY, partialTick);
 
                                 boolean showTooltip = this.isHovered || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
                                 if (showTooltip)

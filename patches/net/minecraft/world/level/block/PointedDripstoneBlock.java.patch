@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -188,7 +_,7 @@
+@@ -189,7 +_,7 @@
  
      @VisibleForTesting
      public static void maybeTransferFluid(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
@@ -9,7 +9,7 @@
              if (isStalactiteStartPos(p_221860_, p_221861_, p_221862_)) {
                  Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(p_221861_, p_221862_, p_221860_);
                  if (!optional.isEmpty()) {
-@@ -197,14 +_,12 @@
+@@ -198,14 +_,12 @@
                      if (fluid == Fluids.WATER) {
                          f = 0.17578125F;
                      } else {
@@ -26,17 +26,7 @@
                          BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
                          if (blockpos != null) {
                              if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -403,7 +_,8 @@
-         double d2 = p_154073_.getY() + STALACTITE_DRIP_START_PIXEL - 0.0625;
-         double d3 = p_154073_.getZ() + 0.5 + vec3.z;
-         Fluid fluid = getDripFluid(p_154072_, p_154075_);
--        ParticleOptions particleoptions = fluid.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+        ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+        if (particleoptions != null)
-         p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
-     }
- 
-@@ -555,7 +_,7 @@
+@@ -544,7 +_,7 @@
      }
  
      private static boolean canFillCauldron(Fluid p_154159_) {
@@ -45,3 +35,14 @@
      }
  
      private static boolean canGrow(BlockState p_154141_, BlockState p_154142_) {
+@@ -555,7 +_,9 @@
+         if (p_457734_.isSame(Fluids.EMPTY)) {
+             return p_457548_.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, p_458141_);
+         } else {
+-            return p_457734_.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++            ParticleOptions options = p_457734_.getFluidType().getDripInfo() != null ? p_457734_.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++            if (options == null) options = p_457548_.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, p_458141_);
++            return options;
+         }
+     }
+ 

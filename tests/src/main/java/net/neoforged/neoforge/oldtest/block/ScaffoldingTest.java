@@ -13,7 +13,7 @@ import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ScaffoldingBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
@@ -42,9 +41,9 @@ public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    static final TagKey<Block> SCAFFOLDING = BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", "scaffolding"));
+    static final TagKey<Block> SCAFFOLDING = BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", "scaffolding"));
 
-    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingTest.ScaffoldingMethodTestBlock::new, Properties.of().mapColor(MapColor.SAND).noCollision().sound(SoundType.SCAFFOLDING).dynamicShape());
+    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingTest.ScaffoldingMethodTestBlock::new, props -> props.mapColor(MapColor.SAND).noCollision().sound(SoundType.SCAFFOLDING).dynamicShape());
     static final DeferredItem<BlockItem> SCAFFOLDING_METHOD_TEST_ITEM = ITEMS.registerSimpleBlockItem(SCAFFOLDING_METHOD_TEST);
 
     public ScaffoldingTest(IEventBus modBus) {

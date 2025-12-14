@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base piston event, use {@link PistonEvent.Post} and {@link PistonEvent.Pre}

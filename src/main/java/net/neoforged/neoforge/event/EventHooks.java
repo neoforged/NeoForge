@@ -28,8 +28,8 @@ import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.ReloadableServerResources;
@@ -37,6 +37,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.server.players.NameAndId;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
@@ -68,7 +69,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Player.BedSleepingProblem;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -82,7 +83,6 @@ import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.CustomSpawner;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.NaturalSpawner;
@@ -93,6 +93,7 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
@@ -178,7 +179,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class EventHooks {
     public static boolean onMultiBlockPlace(@Nullable Entity entity, List<BlockSnapshot> blockSnapshots, Direction direction) {
@@ -444,14 +445,6 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt)).isCanceled();
     }
 
-    /**
-     * @deprecated Use {@link #onItemUseStart(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
-     */
-    @Deprecated(since = "1.21.5", forRemoval = true)
-    public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
-        return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
-    }
-
     public static int onItemUseStart(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
         var event = new LivingEntityUseItemEvent.Start(entity, item, hand, duration);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
@@ -579,7 +572,7 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerFlyableFallEvent(player, distance, multiplier));
     }
 
-    public static boolean onPlayerSpawnSet(Player player, @Nullable ServerPlayer.RespawnConfig respawnConfig) {
+    public static boolean onPlayerSpawnSet(Player player, ServerPlayer.@Nullable RespawnConfig respawnConfig) {
         return NeoForge.EVENT_BUS.post(new PlayerSetSpawnEvent(player, respawnConfig)).isCanceled();
     }
 
@@ -688,11 +681,11 @@ public class EventHooks {
     /**
      * Fires the {@link LootTableLoadEvent} for non-empty loot tables and returns the table if the event was not
      * canceled and the table was not set to {@link LootTable#EMPTY} in the event. Otherwise returns {@code null}
-     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(ResourceLocation, DynamicOps, Object)}
+     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(Identifier, DynamicOps, Object)}
      */
     @Nullable
     @ApiStatus.Internal
-    public static LootTable loadLootTable(HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
+    public static LootTable loadLootTable(HolderLookup.Provider registries, Identifier name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
             return null;
         LootTableLoadEvent event = new LootTableLoadEvent(registries, name, table);
@@ -728,7 +721,7 @@ public class EventHooks {
      * Checks if an entity can perform a griefing action.
      * <p>
      * If an entity is provided, this method fires {@link EntityMobGriefingEvent}.
-     * If an entity is not provided, this method returns the value of {@link GameRules#RULE_MOBGRIEFING}.
+     * If an entity is not provided, this method returns the value of {@link GameRules#MOB_GRIEFING}.
      * 
      * @param level  The level of the action
      * @param entity The entity performing the action, or null if unknown.
@@ -736,7 +729,7 @@ public class EventHooks {
      */
     public static boolean canEntityGrief(ServerLevel level, @Nullable Entity entity) {
         if (entity == null)
-            return level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+            return level.getGameRules().get(GameRules.MOB_GRIEFING);
 
         return NeoForge.EVENT_BUS.post(new EntityMobGriefingEvent(level, entity)).canGrief();
     }
@@ -871,11 +864,11 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean onPermissionChanged(NameAndId nameAndId, int newLevel, PlayerList playerList) {
-        int oldLevel = playerList.getServer().getProfilePermissions(nameAndId);
+    public static boolean onPermissionChanged(NameAndId nameAndId, LevelBasedPermissionSet newPermissions, PlayerList playerList) {
+        var oldPermissions = playerList.getServer().getProfilePermissions(nameAndId);
         ServerPlayer player = playerList.getPlayer(nameAndId.id());
-        if (newLevel != oldLevel && player != null) {
-            return NeoForge.EVENT_BUS.post(new PermissionsChangedEvent(player, newLevel, oldLevel)).isCanceled();
+        if (newPermissions.level() != oldPermissions.level() && player != null) {
+            return NeoForge.EVENT_BUS.post(new PermissionsChangedEvent(player, newPermissions, oldPermissions)).isCanceled();
         }
         return false;
     }

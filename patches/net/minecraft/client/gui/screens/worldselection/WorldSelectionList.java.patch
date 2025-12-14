@@ -1,14 +1,14 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
-@@ -78,6 +_,7 @@
-     static final ResourceLocation WARNING_SPRITE = ResourceLocation.withDefaultNamespace("world_list/warning");
-     static final ResourceLocation JOIN_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace("world_list/join_highlighted");
-     static final ResourceLocation JOIN_SPRITE = ResourceLocation.withDefaultNamespace("world_list/join");
-+    private static final ResourceLocation FORGE_EXPERIMENTAL_WARNING_ICON = ResourceLocation.fromNamespaceAndPath("neoforge","textures/gui/experimental_warning.png");
+@@ -82,6 +_,7 @@
+     static final Identifier WARNING_SPRITE = Identifier.withDefaultNamespace("world_list/warning");
+     static final Identifier JOIN_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("world_list/join_highlighted");
+     static final Identifier JOIN_SPRITE = Identifier.withDefaultNamespace("world_list/join");
++    private static final Identifier FORGE_EXPERIMENTAL_WARNING_ICON = Identifier.fromNamespaceAndPath("neoforge","textures/gui/experimental_warning.png");
      static final Logger LOGGER = LogUtils.getLogger();
      static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -524,6 +_,7 @@
+@@ -519,6 +_,7 @@
              this.infoText.setPosition(i, this.getContentY() + 9 + 9 + 3);
              this.infoText.render(p_439856_, p_439492_, p_440095_, p_439455_);
              p_439856_.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
@@ -16,7 +16,7 @@
              if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && (this.minecraft.options.touchscreen().get() || p_438893_)) {
                  p_439856_.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
                  int j = p_439492_ - this.getContentX();
-@@ -781,6 +_,19 @@
+@@ -787,6 +_,19 @@
          @Override
          public LevelSummary getLevelSummary() {
              return this.summary;

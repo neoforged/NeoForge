@@ -29,7 +29,7 @@ class GenerateCommand {
     private static GenerationBar generationBar;
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(cs -> cs.hasPermission(4)); //permission
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(Commands.hasPermission(Commands.LEVEL_OWNERS)); //permission
 
         builder.then(Commands.literal("start")
                 .then(Commands.argument("pos", BlockPosArgument.blockPos())

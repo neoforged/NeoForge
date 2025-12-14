@@ -21,7 +21,7 @@ import net.neoforged.fml.common.Mod;
 public class DimensionSettingsTest {
     public static final String MODID = "dimension_settings_test";
 /*
-public static final ResourceLocation TEST_OVERWORLD = new ResourceLocation(MODID, "test_overworld");
+public static final Identifier TEST_OVERWORLD = new Identifier(MODID, "test_overworld");
 
 private static final Logger LOGGER = LogManager.getLogger();
 
@@ -58,7 +58,7 @@ StructureFeatureConfiguration config = new StructureFeatureConfiguration(2, 1, 0
 
 BuiltinRegistries.NOISE_GENERATOR_SETTINGS.entrySet().forEach(entry ->
 {
-ResourceLocation dimensionName = entry.getKey().location();
+Identifier dimensionName = entry.getKey().location();
 
 // Example: blacklisting all vanilla dimensions
 if (dimensionName.getNamespace().equals("minecraft")) return;

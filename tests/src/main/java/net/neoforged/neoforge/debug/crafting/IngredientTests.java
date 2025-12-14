@@ -18,7 +18,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -30,8 +30,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +62,7 @@ import net.neoforged.testframework.condition.TestEnabledIngredient;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = "crafting.ingredient")
 public class IngredientTests {
@@ -80,7 +80,7 @@ public class IngredientTests {
                                 .requires(new TestEnabledIngredient(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD).toVanilla(), test.framework(), test.id()).toVanilla())
                                 .requires(Items.WATER_BUCKET)
                                 .unlockedBy("has_item", has(Items.WATER_BUCKET))
-                                .save(output, ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "block_tag")));
+                                .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "block_tag")));
                     }
                 };
             }
@@ -125,7 +125,7 @@ public class IngredientTests {
                                 .define('D', Items.DIAMOND)
                                 .define('E', Items.EMERALD)
                                 .unlockedBy("has_axe", has(Items.IRON_AXE))
-                                .save(output, ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "partial_nbt")));
+                                .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "partial_nbt")));
                     }
                 };
             }
@@ -179,7 +179,7 @@ public class IngredientTests {
                                         test.framework(), test.id()).toVanilla())
                                 .requires(Items.ACACIA_PLANKS)
                                 .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
-                                .save(output, ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "strict_nbt")));
+                                .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "strict_nbt")));
                     }
                 };
             }
@@ -313,7 +313,7 @@ public class IngredientTests {
         private final ItemStack result;
         private final List<Ingredient> ingredients = new ArrayList<>();
         private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
-        @org.jetbrains.annotations.Nullable
+        @org.jspecify.annotations.Nullable
         private String group;
 
         private CompressedShapelessRecipeBuilder(RecipeCategory p_250837_, ItemStack p_363612_) {
@@ -363,12 +363,12 @@ public class IngredientTests {
             ShapelessRecipe shapelessrecipe = new CompressedShapelessRecipe(
                     Objects.requireNonNullElse(this.group, ""), RecipeBuilder.determineBookCategory(this.category), this.result, CompressedShapelessRecipe.compressIngredients(this.ingredients));
             p_301215_.accept(
-                    p_379987_, shapelessrecipe, advancement$builder.build(p_379987_.location().withPrefix("recipes/" + this.category.getFolderName() + "/")));
+                    p_379987_, shapelessrecipe, advancement$builder.build(p_379987_.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/")));
         }
 
         private void ensureValid(ResourceKey<Recipe<?>> p_379745_) {
             if (this.criteria.isEmpty()) {
-                throw new IllegalStateException("No way of obtaining recipe " + p_379745_.location());
+                throw new IllegalStateException("No way of obtaining recipe " + p_379745_.identifier());
             }
         }
     }
@@ -389,7 +389,7 @@ public class IngredientTests {
                                         test.framework(), test.id()).toVanilla(), 2)
                                 .requires(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)
                                 .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
-                                .save(output, ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "sized_ingredient_1")));
+                                .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "sized_ingredient_1")));
                     }
                 };
             }

@@ -25,7 +25,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 // TODO: 1.21.2 remove fallback to vanilla map for waxing and oxidizing
 public class DataMapHooks {

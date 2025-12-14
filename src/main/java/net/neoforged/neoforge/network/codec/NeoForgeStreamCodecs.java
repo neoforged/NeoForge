@@ -80,12 +80,12 @@ public final class NeoForgeStreamCodecs {
         return new StreamCodec<>() {
             @Override
             public ResourceKey<? extends Registry<?>> decode(B buf) {
-                return ResourceKey.createRegistryKey(buf.readResourceLocation());
+                return ResourceKey.createRegistryKey(buf.readIdentifier());
             }
 
             @Override
             public void encode(B buf, ResourceKey<? extends Registry<?>> value) {
-                buf.writeResourceLocation(value.location());
+                buf.writeIdentifier(value.identifier());
             }
         };
     }

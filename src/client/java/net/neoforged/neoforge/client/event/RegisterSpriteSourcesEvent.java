@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -26,14 +26,14 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterSpriteSourcesEvent extends Event implements IModBusEvent {
-    private final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends SpriteSource>> idMapper;
+    private final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends SpriteSource>> idMapper;
 
     @Internal
-    public RegisterSpriteSourcesEvent(ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends SpriteSource>> idMapper) {
+    public RegisterSpriteSourcesEvent(ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends SpriteSource>> idMapper) {
         this.idMapper = idMapper;
     }
 
-    public void register(ResourceLocation id, MapCodec<? extends SpriteSource> codec) {
+    public void register(Identifier id, MapCodec<? extends SpriteSource> codec) {
         this.idMapper.put(id, codec);
     }
 }

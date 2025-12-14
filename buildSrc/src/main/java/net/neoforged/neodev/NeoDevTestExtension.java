@@ -1,17 +1,15 @@
 package net.neoforged.neodev;
 
+import javax.inject.Inject;
 import net.neoforged.moddevgradle.dsl.ModModel;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
-
-import javax.inject.Inject;
 
 public abstract class NeoDevTestExtension {
     public static final String NAME = "neoDevTest";
 
     @Inject
-    public NeoDevTestExtension() {
-    }
+    public NeoDevTestExtension() {}
 
     /**
      * The mod that will be loaded in JUnit tests.

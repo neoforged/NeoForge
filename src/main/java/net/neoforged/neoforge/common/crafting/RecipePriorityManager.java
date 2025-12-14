@@ -14,8 +14,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.io.Reader;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -40,7 +40,7 @@ public class RecipePriorityManager extends SimplePreparableReloadListener<Object
     @Override
     protected Object2IntMap<ResourceKey<Recipe<?>>> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Object2IntMap<ResourceKey<Recipe<?>>> map = new Object2IntOpenHashMap<>();
-        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath("neoforge", "recipe_priorities.json");
+        Identifier resourceLocation = Identifier.fromNamespaceAndPath("neoforge", "recipe_priorities.json");
         //read in all data files from neoforge:recipe_priorities in order to do layering
         for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
             try (Reader reader = resource.openAsReader()) {
@@ -49,7 +49,7 @@ public class RecipePriorityManager extends SimplePreparableReloadListener<Object
                 if (replace) map.clear();
                 JsonObject entriesObject = GsonHelper.getAsJsonObject(jsonobject, "entries");
                 for (var priorityEntry : entriesObject.entrySet()) {
-                    ResourceLocation location = ResourceLocation.parse(priorityEntry.getKey());
+                    Identifier location = Identifier.parse(priorityEntry.getKey());
                     int priority = priorityEntry.getValue().getAsInt();
                     map.put(ResourceKey.create(Registries.RECIPE, location), priority);
                 }

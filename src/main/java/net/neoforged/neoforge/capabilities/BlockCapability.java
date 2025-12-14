@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.EventPriority;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@code BlockCapability} gives flexible access to objects of type {@code T} located in the world.
@@ -99,7 +99,7 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
      * @param typeClass    type of the queried API
      * @param contextClass type of the additional context
      */
-    public static <T, C extends @Nullable Object> BlockCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    public static <T, C extends @Nullable Object> BlockCapability<T, C> create(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         return (BlockCapability<T, C>) registry.create(name, typeClass, contextClass);
     }
 
@@ -107,16 +107,16 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
      * Creates a new block capability with {@code Void} context, or gets it if it already exists.
      * This should be used for capabilities that do not require any additional context.
      *
-     * @see #create(ResourceLocation, Class, Class)
+     * @see #create(Identifier, Class, Class)
      */
-    public static <T> BlockCapability<T, @Nullable Void> createVoid(ResourceLocation name, Class<T> typeClass) {
+    public static <T> BlockCapability<T, @Nullable Void> createVoid(Identifier name, Class<T> typeClass) {
         return create(name, typeClass, void.class);
     }
 
     /**
      * Creates a new block capability with nullable {@code Direction} context, or gets it if it already exists.
      */
-    public static <T> BlockCapability<T, @Nullable Direction> createSided(ResourceLocation name, Class<T> typeClass) {
+    public static <T> BlockCapability<T, @Nullable Direction> createSided(Identifier name, Class<T> typeClass) {
         return create(name, typeClass, Direction.class);
     }
 
@@ -167,7 +167,7 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
     // Requires explicitly-typed constructor due to ECJ inference failure.
     private static final CapabilityRegistry<BlockCapability<?, ?>> registry = new CapabilityRegistry<BlockCapability<?, ?>>(BlockCapability::new);
 
-    private BlockCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    private BlockCapability(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);
     }
 

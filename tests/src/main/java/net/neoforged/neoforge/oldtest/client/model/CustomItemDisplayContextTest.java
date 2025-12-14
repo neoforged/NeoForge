@@ -68,7 +68,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Test mod for the custom transform types feature.
@@ -118,7 +118,7 @@ public class CustomItemDisplayContextTest {
             }
 
             @Override
-            public void extractRenderState(ItemHangerBlockEntity blockEntity, ItemHangerRenderState renderState, float partialTick, Vec3 cameraPos, @Nullable ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+            public void extractRenderState(ItemHangerBlockEntity blockEntity, ItemHangerRenderState renderState, float partialTick, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
                 BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPos, crumblingOverlay);
 
                 renderState.facing = blockEntity.getBlockState().getValue(ItemHangerBlock.FACING);
@@ -139,7 +139,7 @@ public class CustomItemDisplayContextTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
-    public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollision().noOcclusion().noLootTable());
+    public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, props -> props.noCollision().noOcclusion().noLootTable());
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> new BlockEntityType<>(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()));
     public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.registerItem("item_hanger", props -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), props));
 

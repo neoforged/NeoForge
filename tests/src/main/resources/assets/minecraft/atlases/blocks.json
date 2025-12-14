@@ -1,8 +1,8 @@
 {
   "sources": [
     {
-      "type": "custom_sprite_source_test:custom_sprite_source",
-      "id": "custom_sprite_source_test:test_item"
+      "type": "neotests_custom_sprite_contents:custom_sprite_source",
+      "id": "neotests_custom_sprite_contents:test_sprite"
     },
     {
       "type": "neoforge:namespaced_directory",

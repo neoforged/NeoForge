@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Helper class to manage registering capabilities.
@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
  * <p>Look at the source code of {@link BlockCapability}, {@link EntityCapability}, ... for an example.
  */
 public class CapabilityRegistry<C> {
-    private final ConcurrentMap<ResourceLocation, StoredCap<C>> caps = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Identifier, StoredCap<C>> caps = new ConcurrentHashMap<>();
     private final CapabilityConstructor<C> constructor;
 
     public CapabilityRegistry(CapabilityConstructor<C> constructor) {
@@ -35,7 +35,7 @@ public class CapabilityRegistry<C> {
      * @param contextClass class of the additional context
      * @throws IllegalStateException if a capability with the same name but different type or context class was already created
      */
-    public C create(ResourceLocation name, Class<?> typeClass, Class<?> contextClass) {
+    public C create(Identifier name, Class<?> typeClass, Class<?> contextClass) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(typeClass);
         Objects.requireNonNull(contextClass);
@@ -68,7 +68,7 @@ public class CapabilityRegistry<C> {
          *
          * <p>Implementations should use a subclass of {@link BaseCapability} to easily store this metadata.
          */
-        C create(ResourceLocation name, Class<?> typeClass, Class<?> contextClass);
+        C create(Identifier name, Class<?> typeClass, Class<?> contextClass);
     }
 
     private record StoredCap<C>(C cap, Class<?> typeClass, Class<?> contextClass) {}

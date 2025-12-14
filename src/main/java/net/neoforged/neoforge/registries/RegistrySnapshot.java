@@ -18,18 +18,18 @@ import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RegistrySnapshot {
-    private static final Comparator<ResourceLocation> SORTER = ResourceLocation::compareNamespaced;
+    private static final Comparator<Identifier> SORTER = Identifier::compareNamespaced;
     public static final StreamCodec<FriendlyByteBuf, RegistrySnapshot> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public RegistrySnapshot decode(FriendlyByteBuf buf) {
             RegistrySnapshot snapshot = new RegistrySnapshot();
-            buf.readMap(size -> snapshot.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readResourceLocation);
-            buf.readMap(size -> snapshot.aliases, FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readResourceLocation);
+            buf.readMap(size -> snapshot.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readIdentifier);
+            buf.readMap(size -> snapshot.aliases, FriendlyByteBuf::readIdentifier, FriendlyByteBuf::readIdentifier);
             return snapshot;
         }
 
@@ -38,8 +38,8 @@ public class RegistrySnapshot {
             if (snapshot.binary == null) {
                 FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
                 try {
-                    pkt.writeMap(snapshot.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeResourceLocation);
-                    pkt.writeMap(snapshot.aliases, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeResourceLocation);
+                    pkt.writeMap(snapshot.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeIdentifier);
+                    pkt.writeMap(snapshot.aliases, FriendlyByteBuf::writeIdentifier, FriendlyByteBuf::writeIdentifier);
                     snapshot.binary = new byte[pkt.readableBytes()];
                     pkt.readBytes(snapshot.binary);
                 } finally {
@@ -52,10 +52,10 @@ public class RegistrySnapshot {
 
     // Use a sorted map with the ID as the key.
     // We need the entries to be sorted by increasing order for client-side application of the snapshot to work.
-    private final Int2ObjectSortedMap<ResourceLocation> ids = new Int2ObjectRBTreeMap<>();
-    private final Int2ObjectSortedMap<ResourceLocation> idsView = Int2ObjectSortedMaps.unmodifiable(this.ids);
-    private final Map<ResourceLocation, ResourceLocation> aliases = new TreeMap<>(SORTER);
-    private final Map<ResourceLocation, ResourceLocation> aliasesView = Collections.unmodifiableMap(this.aliases);
+    private final Int2ObjectSortedMap<Identifier> ids = new Int2ObjectRBTreeMap<>();
+    private final Int2ObjectSortedMap<Identifier> idsView = Int2ObjectSortedMaps.unmodifiable(this.ids);
+    private final Map<Identifier, Identifier> aliases = new TreeMap<>(SORTER);
+    private final Map<Identifier, Identifier> aliasesView = Collections.unmodifiableMap(this.aliases);
     @Nullable
     private final Registry<?> fullBackup;
     @Nullable
@@ -94,11 +94,11 @@ public class RegistrySnapshot {
         }
     }
 
-    public Int2ObjectSortedMap<ResourceLocation> getIds() {
+    public Int2ObjectSortedMap<Identifier> getIds() {
         return this.idsView;
     }
 
-    public Map<ResourceLocation, ResourceLocation> getAliases() {
+    public Map<Identifier, Identifier> getAliases() {
         return this.aliasesView;
     }
 

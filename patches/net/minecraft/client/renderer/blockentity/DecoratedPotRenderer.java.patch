@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
-@@ -239,4 +_,10 @@
-         this.top.getExtentsForGui(posestack, p_428219_);
-         this.bottom.getExtentsForGui(posestack, p_428219_);
+@@ -240,4 +_,10 @@
+         this.top.getExtentsForGui(posestack, p_470536_);
+         this.bottom.getExtentsForGui(posestack, p_470536_);
      }
 +
 +    @Override

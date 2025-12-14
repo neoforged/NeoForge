@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/texture/MipmapGenerator.java
 +++ b/net/minecraft/client/renderer/texture/MipmapGenerator.java
-@@ -26,12 +_,15 @@
-             anativeimage[0] = p_251300_[0];
-             boolean flag = hasTransparentPixel(anativeimage[0]);
+@@ -112,12 +_,15 @@
+             float f = p_459088_ == MipmapStrategy.STRICT_CUTOUT ? 0.3F : 0.5F;
+             float f1 = flag ? alphaTestCoverage(p_251300_[0], f, 1.0F) : 0.0F;
  
 +            int maxMipmapLevel = net.neoforged.neoforge.client.ClientHooks.getMaxMipmapLevel(anativeimage[0].getWidth(), anativeimage[0].getHeight());
              for (int i = 1; i <= p_252326_; i++) {
@@ -17,9 +17,9 @@
                      int j = nativeimage1.getWidth();
                      int k = nativeimage1.getHeight();
  
-@@ -49,6 +_,7 @@
-                                 )
-                             );
+@@ -136,6 +_,7 @@
+ 
+                             nativeimage1.setPixel(l, i1, j2);
                          }
 +                    }
                      }

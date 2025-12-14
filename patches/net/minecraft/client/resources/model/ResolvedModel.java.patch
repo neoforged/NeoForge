@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ResolvedModel.java
 +++ b/net/minecraft/client/resources/model/ResolvedModel.java
-@@ -86,7 +_,7 @@
+@@ -85,7 +_,7 @@
      }
  
      default QuadCollection bakeTopGeometry(TextureSlots p_405784_, ModelBaker p_405450_, ModelState p_405844_) {
@@ -9,7 +9,7 @@
      }
  
      static TextureAtlasSprite resolveParticleSprite(TextureSlots p_404698_, ModelBaker p_405533_, ModelDebugName p_405824_) {
-@@ -123,8 +_,17 @@
+@@ -122,8 +_,17 @@
          ItemTransform itemtransform6 = findTopTransform(p_404681_, ItemDisplayContext.GROUND);
          ItemTransform itemtransform7 = findTopTransform(p_404681_, ItemDisplayContext.FIXED);
          ItemTransform itemtransform8 = findTopTransform(p_404681_, ItemDisplayContext.ON_SHELF);

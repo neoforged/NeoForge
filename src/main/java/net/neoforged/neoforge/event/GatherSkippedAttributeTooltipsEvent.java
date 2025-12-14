@@ -8,12 +8,12 @@ package net.neoforged.neoforge.event;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event is used to collect the IDs of attribute modifiers that will not be displayed in item tooltips.
@@ -27,7 +27,7 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
     protected final AttributeTooltipContext ctx;
 
     @Nullable
-    private Set<ResourceLocation> skippedIds = null;
+    private Set<Identifier> skippedIds = null;
 
     @Nullable
     private Set<EquipmentSlotGroup> skippedGroups = null;
@@ -57,7 +57,7 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
     /**
      * Marks the id of a specific attribute modifier as skipped, causing it to not be displayed in the tooltip.
      */
-    public void skipId(ResourceLocation id) {
+    public void skipId(Identifier id) {
         this.getSkippedIds().add(id);
     }
 
@@ -71,7 +71,7 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
     /**
      * Checks if a given id is skipped or not. If all modifiers are skipped, this method always returns true.
      */
-    public boolean isSkipped(ResourceLocation id) {
+    public boolean isSkipped(Identifier id) {
         return this.skipAll || (this.skippedIds != null && this.skippedIds.contains(id));
     }
 
@@ -99,7 +99,7 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
     /**
      * Initializes {@link #skippedIds} if necessary, and returns it.
      */
-    protected Set<ResourceLocation> getSkippedIds() {
+    protected Set<Identifier> getSkippedIds() {
         if (this.skippedIds == null) {
             this.skippedIds = new HashSet<>();
         }

@@ -17,14 +17,10 @@ abstract class GeneratePackageInfos extends DefaultTask {
                 pkgName = pkgName.replaceAll('/', '.')
 
                 def pkgInfoText = """
-                    |@FieldsAreNonnullByDefault
-                    |@MethodsReturnNonnullByDefault
-                    |@ParametersAreNonnullByDefault
+                    |@NullMarked
                     |package $pkgName;
                     |
-                    |import javax.annotation.ParametersAreNonnullByDefault;
-                    |import net.minecraft.FieldsAreNonnullByDefault;
-                    |import net.minecraft.MethodsReturnNonnullByDefault;
+                    |import org.jspecify.annotations.NullMarked;
                 """.stripMargin().trim()
 
                 packageInfoFile.text = pkgInfoText
@@ -36,6 +32,9 @@ final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePack
     it.files.from fileTree("src/main/java")
     if (file("src/client/java").exists()) {
         it.files.from fileTree("src/client/java")
+    }
+    if (file("src/junit/java").exists()) {
+        it.files.from fileTree("src/junit/java")
     }
 }
 
@@ -62,13 +61,14 @@ immaculate {
         }
 
         custom 'noNotNull', { String fileContents ->
-            if (fileContents.contains('@NotNull') || fileContents.contains('@Nonnull')) {
-                throw new GradleException('@NotNull and @Nonnull are disallowed.')
+            if (fileContents.contains('@NotNull') || fileContents.contains('@Nonnull') || fileContents.contains('@NonNull')) {
+                throw new GradleException('Non-nullability annotations are disallowed.')
             }
         }
 
-        custom 'jetbrainsNullable', { String fileContents ->
-            fileContents.replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable')
+        custom 'jspecifyNullable', { String fileContents ->
+            fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
+            fileContents.replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
         }
     }
 }

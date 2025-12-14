@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/SpriteLoader.java
 +++ b/net/minecraft/client/renderer/texture/SpriteLoader.java
-@@ -76,7 +_,7 @@
+@@ -72,7 +_,7 @@
              int j1 = Math.min(j, k);
              int k1 = Mth.log2(j1);
              int l1;
@@ -9,12 +9,12 @@
                  LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.location, p_261919_, k1, j1);
                  l1 = k1;
              } else {
-@@ -130,7 +_,7 @@
+@@ -129,7 +_,7 @@
+         ResourceManager p_295469_, Identifier p_469435_, int p_294855_, Executor p_294720_, Set<MetadataSectionType<?>> p_432812_
      ) {
          SpriteResourceLoader spriteresourceloader = SpriteResourceLoader.create(p_432812_);
-         return CompletableFuture.<List<Function<SpriteResourceLoader, SpriteContents>>>supplyAsync(
--                () -> SpriteSourceList.load(p_295469_, p_294925_).list(p_295469_), p_294720_
-+                () -> SpriteSourceList.load(p_295469_, p_294925_).list(p_295469_, p_432812_), p_294720_
-             )
-             .thenCompose(p_293671_ -> runSpriteSuppliers(spriteresourceloader, (List<Function<SpriteResourceLoader, SpriteContents>>)p_293671_, p_294720_))
+-        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(p_295469_, p_469435_).list(p_295469_), p_294720_)
++        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(p_295469_, p_469435_).list(p_295469_, p_432812_), p_294720_)
+             .thenCompose(p_293671_ -> runSpriteSuppliers(spriteresourceloader, (List<SpriteSource.Loader>)p_293671_, p_294720_))
              .thenApply(p_261393_ -> this.stitch((List<SpriteContents>)p_261393_, p_294855_, p_294720_));
+     }

@@ -25,7 +25,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -101,9 +101,9 @@ public class ClientTests {
 
     @TestHolder(description = "Tests that custom key mapping categories and their sorting works correctly", enabledByDefault = true)
     static void keyMappingCategoriesTest(final DynamicTest test) {
-        KeyMapping.Category categoryOne = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_1"));
-        KeyMapping.Category categoryTwo = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_2"));
-        KeyMapping.Category categoryThree = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_category_3"));
+        KeyMapping.Category categoryOne = new KeyMapping.Category(Identifier.fromNamespaceAndPath(test.createModId(), "test_category_1"));
+        KeyMapping.Category categoryTwo = new KeyMapping.Category(Identifier.fromNamespaceAndPath(test.createModId(), "test_category_2"));
+        KeyMapping.Category categoryThree = new KeyMapping.Category(Identifier.fromNamespaceAndPath(test.createModId(), "test_category_3"));
 
         List<KeyMapping.Category> categories = ObfuscationReflectionHelper.getPrivateValue(KeyMapping.Category.class, null, "SORT_ORDER");
         Objects.requireNonNull(categories);
@@ -139,15 +139,15 @@ public class ClientTests {
 
     @TestHolder(description = "Tests that the NamespacedDirectoryLister only collects resources from the specified namespace", enabledByDefault = true)
     static void namespacedDirectoryListerTest(final DynamicTest test) {
-        final ResourceLocation MUST_BE_PRESENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_present", "test/dir_list_test_present");
-        final ResourceLocation MUST_BE_ABSENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_absent", "test/dir_list_test_absent");
+        final Identifier MUST_BE_PRESENT = Identifier.fromNamespaceAndPath("neotests_dir_list_present", "test/dir_list_test_present");
+        final Identifier MUST_BE_ABSENT = Identifier.fromNamespaceAndPath("neotests_dir_list_absent", "test/dir_list_test_absent");
 
         test.framework().modEventBus().addListener((final TextureAtlasStitchedEvent event) -> {
             if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
                 return;
             }
 
-            ResourceLocation missing = MissingTextureAtlasSprite.getLocation();
+            Identifier missing = MissingTextureAtlasSprite.getLocation();
             if (event.getAtlas().getSprite(MUST_BE_PRESENT).contents().name().equals(missing)) {
                 test.fail("dir_list_test_present.png must be present but returned the missing texture");
                 return;
@@ -169,7 +169,7 @@ public class ClientTests {
                 public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
                     guiGraphics.blit(
                             RenderPipelines.GUI_TEXTURED,
-                            ResourceLocation.withDefaultNamespace("textures/block/stone.png"),
+                            Identifier.withDefaultNamespace("textures/block/stone.png"),
                             0,
                             0,
                             0,
@@ -198,7 +198,7 @@ public class ClientTests {
             }
 
             // Create fake equipment client info
-            var textureId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "equipment_texture_present");
+            var textureId = Identifier.fromNamespaceAndPath(test.createModId(), "equipment_texture_present");
             var equipmentLayer = new EquipmentClientInfo.Layer(textureId);
 
             // Check to see if texture is found
@@ -213,7 +213,7 @@ public class ClientTests {
 
     private static final class SineSound extends AbstractSoundInstance {
         SineSound(Vec3 position) {
-            super(ResourceLocation.fromNamespaceAndPath("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+            super(Identifier.fromNamespaceAndPath("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
             x = position.x;
             y = position.y;
             z = position.z;

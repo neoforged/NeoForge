@@ -28,7 +28,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * <p>Holderset that represents all elements of a registry not present in another holderset.

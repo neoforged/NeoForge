@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/NbtAccounter.java
 +++ b/net/minecraft/nbt/NbtAccounter.java
-@@ -54,6 +_,36 @@
+@@ -64,6 +_,36 @@
          }
      }
  

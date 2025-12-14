@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.payload.CommonRegisterPayload;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record CommonRegisterTask() implements ICustomConfigurationTask {
-    public static final Type TYPE = new Type(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "common_register"));
+    public static final Type TYPE = new Type(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "common_register"));
 
     @Override
     public Type type() {

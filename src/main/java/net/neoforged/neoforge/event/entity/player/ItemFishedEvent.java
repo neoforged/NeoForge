@@ -7,7 +7,6 @@ package net.neoforged.neoforge.event.entity.player;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +46,7 @@ public class ItemFishedEvent extends PlayerEvent implements ICancellableEvent {
      * 
      * @param rodDamage The damage the rod will take. Must be nonnegative
      */
-    public void damageRodBy(@Nonnegative int rodDamage) {
+    public void damageRodBy(int rodDamage) {
         Preconditions.checkArgument(rodDamage >= 0);
         this.rodDamage = rodDamage;
     }

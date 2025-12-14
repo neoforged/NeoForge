@@ -1,5 +1,10 @@
 package net.neoforged.neodev.utils.structure;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import net.neoforged.neodev.utils.AsmUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.objectweb.asm.ClassReader;
@@ -8,12 +13,6 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class ClassStructureVisitor extends ClassVisitor {
     private final Map<String, ClassInfo> classes;

@@ -9,11 +9,12 @@ import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.Collection;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Validation wrapper around RenderPass
@@ -46,12 +47,12 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
-    public void bindSampler(String name, @Nullable GpuTextureView textureView) {
+    public void bindTexture(String name, @Nullable GpuTextureView textureView, @Nullable GpuSampler sampler) {
         if (textureView instanceof ValidationGpuTextureView validationTextureView) {
             // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
             textureView = validationTextureView.getRealTextureView();
         }
-        realRenderPass.bindSampler(name, textureView);
+        realRenderPass.bindTexture(name, textureView, sampler);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
-    public <T> void drawMultipleIndexed(Collection<Draw<T>> draws, @Nullable GpuBuffer indexBuffer, @Nullable VertexFormat.IndexType indexType, Collection<String> dynamicUniforms, T userData) {
+    public <T> void drawMultipleIndexed(Collection<Draw<T>> draws, @Nullable GpuBuffer indexBuffer, VertexFormat.@Nullable IndexType indexType, Collection<String> dynamicUniforms, T userData) {
         realRenderPass.drawMultipleIndexed(draws, indexBuffer, indexType, dynamicUniforms, userData);
     }
 

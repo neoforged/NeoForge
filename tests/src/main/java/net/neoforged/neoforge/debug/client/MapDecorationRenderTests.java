@@ -7,14 +7,14 @@ package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
@@ -41,7 +41,7 @@ public class MapDecorationRenderTests {
         var decorationType = test.registrationHelper().registrar(Registries.MAP_DECORATION_TYPE).register(
                 "test",
                 () -> new MapDecorationType(
-                        ResourceLocation.withDefaultNamespace("target_x"),
+                        Identifier.withDefaultNamespace("target_x"),
                         false,
                         -1,
                         false,
@@ -68,11 +68,11 @@ public class MapDecorationRenderTests {
 
     @TestHolder(description = "Tests if custom map decoration render state data works")
     static void customRenderData(DynamicTest test) {
-        var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "custom_color"));
+        var key = new ContextKey<Integer>(Identifier.fromNamespaceAndPath(test.createModId(), "custom_color"));
         var decorationType = test.registrationHelper().registrar(Registries.MAP_DECORATION_TYPE).register(
                 "test",
                 () -> new MapDecorationType(
-                        ResourceLocation.withDefaultNamespace("target_x"),
+                        Identifier.withDefaultNamespace("target_x"),
                         false,
                         -1,
                         false,
@@ -138,7 +138,7 @@ public class MapDecorationRenderTests {
             }
 
             final int finalColor = color;
-            submitNodeCollector.submitCustomGeometry(poseStack, RenderType.text(sprite.atlasLocation()), (pose, consumer) -> {
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.text(sprite.atlasLocation()), (pose, consumer) -> {
                 consumer.addVertex(pose, -1.0F, 1.0F, index * -0.001F).setColor(finalColor).setUv(u0, v0).setLight(packedLight);
                 consumer.addVertex(pose, 1.0F, 1.0F, index * -0.001F).setColor(finalColor).setUv(u1, v0).setLight(packedLight);
                 consumer.addVertex(pose, 1.0F, -1.0F, index * -0.001F).setColor(finalColor).setUv(u1, v1).setLight(packedLight);

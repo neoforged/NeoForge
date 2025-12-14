@@ -17,5 +17,5 @@
 +        this.getKnownEntityTypes()
 +            .map(EntityType::builtInRegistryHolder)
              .forEach(
-                 p_367828_ -> {
-                     EntityType<?> entitytype = p_367828_.value();
+                 p_466027_ -> {
+                     EntityType<?> entitytype = p_466027_.value();

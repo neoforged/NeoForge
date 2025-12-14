@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -187,7 +_,8 @@
+@@ -186,7 +_,8 @@
          ServerLevel p_335887_, BlockPos p_307620_, CrafterBlockEntity p_307387_, ItemStack p_307296_, BlockState p_307501_, RecipeHolder<?> p_335494_
      ) {
          Direction direction = p_307501_.getValue(ORIENTATION).front();
@@ -10,7 +10,7 @@
          ItemStack itemstack = p_307296_.copy();
          if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
              while (!itemstack.isEmpty()) {
-@@ -199,10 +_,14 @@
+@@ -198,10 +_,14 @@
  
                  itemstack.shrink(1);
              }

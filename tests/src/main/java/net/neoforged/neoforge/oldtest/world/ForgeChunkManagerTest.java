@@ -8,14 +8,13 @@ package net.neoforged.neoforge.oldtest.world;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -36,9 +35,9 @@ public class ForgeChunkManagerTest {
     private static final Logger LOGGER = LogManager.getLogger(MODID);
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.registerBlock("chunk_loader", ChunkLoaderBlock::new, Properties.of().mapColor(MapColor.STONE));
+    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.registerBlock("chunk_loader", ChunkLoaderBlock::new, props -> props.mapColor(MapColor.STONE));
     private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerSimpleBlockItem(CHUNK_LOADER_BLOCK);
-    private static final TicketController CONTROLLER = new TicketController(ResourceLocation.fromNamespaceAndPath(MODID, "default"), (world, ticketHelper) -> {
+    private static final TicketController CONTROLLER = new TicketController(Identifier.fromNamespaceAndPath(MODID, "default"), (world, ticketHelper) -> {
         for (Map.Entry<BlockPos, TicketSet> entry : ticketHelper.getBlockTickets().entrySet()) {
             BlockPos key = entry.getKey();
             int ticketCount = entry.getValue().normal().size();

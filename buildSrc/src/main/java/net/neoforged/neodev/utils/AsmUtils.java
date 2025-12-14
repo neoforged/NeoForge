@@ -1,11 +1,10 @@
 package net.neoforged.neodev.utils;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 
 public final class AsmUtils {
     private AsmUtils() {}

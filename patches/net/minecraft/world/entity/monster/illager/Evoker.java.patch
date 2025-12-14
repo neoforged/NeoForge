@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/illager/Evoker.java
++++ b/net/minecraft/world/entity/monster/illager/Evoker.java
+@@ -284,7 +_,7 @@
+                 return false;
+             } else {
+                 ServerLevel serverlevel = getServerLevel(Evoker.this.level());
+-                if (!serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
++                if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, Evoker.this)) {
+                     return false;
+                 } else {
+                     List<Sheep> list = serverlevel.getNearbyEntities(

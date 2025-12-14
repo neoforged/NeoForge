@@ -1,6 +1,6 @@
 --- a/net/minecraft/ReportType.java
 +++ b/net/minecraft/ReportType.java
-@@ -131,6 +_,7 @@
+@@ -132,6 +_,7 @@
          p_350666_.append("---- ");
          p_350666_.append(this.header());
          p_350666_.append(" ----\n");

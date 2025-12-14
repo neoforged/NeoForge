@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/special/SpecialModelRenderer.java
 +++ b/net/minecraft/client/renderer/special/SpecialModelRenderer.java
-@@ -40,9 +_,24 @@
+@@ -39,9 +_,24 @@
  
          PlayerSkinRenderCache playerSkinRenderCache();
  

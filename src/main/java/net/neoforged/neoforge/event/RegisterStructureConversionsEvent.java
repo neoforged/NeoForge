@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event;
 import com.google.common.base.Preconditions;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * Fired for registering structure conversions for pre-1.18.2 worlds. This is used by {@link StructuresBecomeConfiguredFix}
  * for converting old structure IDs in pre-1.18.2 worlds to their new equivalents, which can be differentiated per biome.
  *
- * <p>By default, structures whose old ID has a namespace which is not equal to {@value ResourceLocation#DEFAULT_NAMESPACE}
+ * <p>By default, structures whose old ID has a namespace which is not equal to {@value Identifier#DEFAULT_NAMESPACE}
  * will be assumed to belong to a modded structure and will be used as the new ID. Mods may choose to register structure
  * conversions for their structures, if they wish to override this default behavior.</p>
  *

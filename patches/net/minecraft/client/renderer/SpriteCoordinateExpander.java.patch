@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/SpriteCoordinateExpander.java
 +++ b/net/minecraft/client/renderer/SpriteCoordinateExpander.java
-@@ -17,32 +_,38 @@
+@@ -17,12 +_,14 @@
  
      @Override
      public VertexConsumer addVertex(float p_350653_, float p_350607_, float p_350347_) {
@@ -15,6 +15,9 @@
 +        this.delegate.setColor(p_350639_, p_350295_, p_350400_, p_350645_);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
+ 
+     @Override
+@@ -32,22 +_,26 @@
  
      @Override
      public VertexConsumer setUv(float p_350609_, float p_350452_) {

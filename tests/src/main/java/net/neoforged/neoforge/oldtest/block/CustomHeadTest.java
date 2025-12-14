@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.oldtest.block;
 
 import java.util.Locale;
-import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.object.skull.SkullModel;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.special.SkullSpecialRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.WallSkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -53,8 +52,8 @@ public class CustomHeadTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    private static final DeferredBlock<Block> BLAZE_HEAD = BLOCKS.registerBlock("blaze_head", props -> new CustomSkullBlock(SkullType.BLAZE, props), BlockBehaviour.Properties.of().strength(1.0F));
-    private static final DeferredBlock<Block> BLAZE_HEAD_WALL = BLOCKS.registerBlock("blaze_wall_head", props -> new CustomWallSkullBlock(SkullType.BLAZE, props.strength(1.0F).overrideLootTable(BLAZE_HEAD.get().getLootTable())), BlockBehaviour.Properties.of());
+    private static final DeferredBlock<Block> BLAZE_HEAD = BLOCKS.registerBlock("blaze_head", props -> new CustomSkullBlock(SkullType.BLAZE, props), props -> props.strength(1.0F));
+    private static final DeferredBlock<Block> BLAZE_HEAD_WALL = BLOCKS.registerBlock("blaze_wall_head", props -> new CustomWallSkullBlock(SkullType.BLAZE, props.strength(1.0F).overrideLootTable(BLAZE_HEAD.get().getLootTable())));
     private static final DeferredItem<Item> BLAZE_HEAD_ITEM = ITEMS.registerItem("blaze_head", props -> new StandingAndWallBlockItem(BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get(), Direction.DOWN, props.rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)));
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomSkullBlockEntity>> CUSTOM_SKULL = BLOCK_ENTITIES.register("custom_skull", () -> new BlockEntityType<>(CustomSkullBlockEntity::new, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get()));
 
@@ -132,7 +131,7 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, Identifier.withDefaultNamespace("textures/entity/blaze.png"));
         }
 
         @SubscribeEvent

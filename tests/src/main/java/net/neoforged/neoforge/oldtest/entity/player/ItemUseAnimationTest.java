@@ -58,7 +58,7 @@ public class ItemUseAnimationTest {
     @SuppressWarnings("unused") // Referenced by enumextender.json
     public static final class EnumParams {
         public static final EnumProxy<HumanoidModel.ArmPose> ARM_POSE_ENUM_PARAMS = new EnumProxy<>(
-                HumanoidModel.ArmPose.class, false, (IArmPoseTransformer) (model, entity, arm) -> {
+                HumanoidModel.ArmPose.class, false, false, (IArmPoseTransformer) (model, entity, arm) -> {
                     if (arm == HumanoidArm.RIGHT) {
                         model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
                     } else {

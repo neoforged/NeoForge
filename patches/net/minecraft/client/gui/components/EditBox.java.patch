@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -611,6 +_,10 @@
+@@ -619,6 +_,10 @@
          this.hint = (Component)(flag ? p_259584_.copy().withStyle(DEFAULT_HINT_STYLE) : p_259584_);
      }
  

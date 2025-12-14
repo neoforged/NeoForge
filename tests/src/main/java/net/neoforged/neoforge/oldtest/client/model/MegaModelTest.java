@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -42,8 +41,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.QuadTransformers;
+import net.neoforged.neoforge.client.model.quad.QuadTransforms;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
@@ -51,9 +49,9 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Test mod that demos most Forge-provided model loaders in a single block + item, as well as in-JSON render states
@@ -79,7 +77,7 @@ public class MegaModelTest {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     private static final String REG_NAME = "test_block";
-    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock(REG_NAME, TestBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock(REG_NAME, TestBlock::new, props -> props.mapColor(MapColor.STONE));
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.register(REG_NAME, () -> new BlockEntityType<>(
             TestBlock.Entity::new, Set.of(TEST_BLOCK.get())));
@@ -152,7 +150,7 @@ public class MegaModelTest {
     }
 
     private static class TransformingModelWrapper extends DelegateBlockStateModel {
-        private static final Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
+        private static final @Nullable Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
 
         public TransformingModelWrapper(BlockStateModel originalModel) {
             super(originalModel);
@@ -166,12 +164,11 @@ public class MegaModelTest {
                 return;
             }
 
-            IQuadTransformer transformer = QuadTransformers.applying(data.transform());
             for (BlockModelPart part : delegate.collectParts(level, pos, state, random)) {
                 QuadCollection.Builder builder = new QuadCollection.Builder();
                 for (Direction side : DIRECTIONS) {
                     for (BakedQuad quad : part.getQuads(side)) {
-                        quad = transformer.process(quad);
+                        quad = QuadTransforms.applyTransformation(quad, data.transform());
                         if (side == null) {
                             builder.addUnculledFace(quad);
                         } else {

@@ -3,13 +3,13 @@
 @@ -44,7 +_,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final FileToIdConverter PARTICLE_LISTER = FileToIdConverter.json("particles");
-     private final Map<ResourceLocation, ParticleResources.MutableSpriteSet> spriteSets = Maps.newHashMap();
+     private final Map<Identifier, ParticleResources.MutableSpriteSet> spriteSets = Maps.newHashMap();
 -    private final Int2ObjectMap<ParticleProvider<?>> providers = new Int2ObjectOpenHashMap<>();
-+    private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
-     @Nullable
-     private Runnable onReload;
++    private final Map<Identifier, ParticleProvider<?>> providers = new java.util.HashMap<>();
+     private @Nullable Runnable onReload;
  
-@@ -174,14 +_,18 @@
+     public ParticleResources() {
+@@ -173,14 +_,18 @@
          this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
      }
  
@@ -30,12 +30,12 @@
      }
  
      @Override
-@@ -274,7 +_,7 @@
+@@ -273,7 +_,7 @@
          }
      }
  
 -    public Int2ObjectMap<ParticleProvider<?>> getProviders() {
-+    public Map<ResourceLocation, ParticleProvider<?>> getProviders() {
++    public Map<Identifier, ParticleProvider<?>> getProviders() {
          return this.providers;
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/MenuScreens.java
 +++ b/net/minecraft/client/gui/screens/MenuScreens.java
-@@ -41,12 +_,17 @@
+@@ -41,18 +_,27 @@
      private static final Map<MenuType<?>, MenuScreens.ScreenConstructor<?, ?>> SCREENS = Maps.newHashMap();
  
      public static <T extends AbstractContainerMenu> void create(MenuType<T> p_96202_, Minecraft p_96203_, int p_96204_, Component p_96205_) {
@@ -18,8 +18,7 @@
 +        return java.util.Optional.empty();
      }
  
-     @Nullable
-@@ -54,6 +_,10 @@
+     private static <T extends AbstractContainerMenu> MenuScreens.@Nullable ScreenConstructor<T, ?> getConstructor(MenuType<T> p_96200_) {
          return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(p_96200_);
      }
  
@@ -30,7 +29,7 @@
      private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
          MenuType<? extends M> p_96207_, MenuScreens.ScreenConstructor<M, U> p_96208_
      ) {
-@@ -61,6 +_,12 @@
+@@ -60,6 +_,12 @@
          if (screenconstructor != null) {
              throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(p_96207_));
          }

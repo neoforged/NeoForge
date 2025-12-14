@@ -12,8 +12,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
@@ -26,7 +26,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +75,7 @@ public class DamageTypeTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom damage types function as expected")
     static void dmgTypeTests(final DynamicTest test, final RegistrationHelper reg) {
-        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "test"));
+        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "test"));
 
         DamageEffects effects = EFFECTS_ENUM_PARAMS.getValue();
         DamageScaling scaling = SCALING_ENUM_PARAMS.getValue();

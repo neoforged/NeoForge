@@ -40,7 +40,7 @@
 +    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)} instead */
 +    @Deprecated
      private static boolean prime(Level p_394104_, BlockPos p_393490_, @Nullable LivingEntity p_411047_) {
-         if (p_394104_ instanceof ServerLevel serverlevel && serverlevel.getGameRules().getBoolean(GameRules.RULE_TNT_EXPLODES)) {
+         if (p_394104_ instanceof ServerLevel serverlevel && serverlevel.getGameRules().get(GameRules.TNT_EXPLODES)) {
              PrimedTnt primedtnt = new PrimedTnt(p_394104_, p_393490_.getX() + 0.5, p_393490_.getY(), p_393490_.getZ() + 0.5, p_411047_);
 @@ -102,7 +_,7 @@
          if (!p_316149_.is(Items.FLINT_AND_STEEL) && !p_316149_.is(Items.FIRE_CHARGE)) {
@@ -67,7 +67,7 @@
 +    }
 +
 +    @Override
-+    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, @Nullable net.minecraft.core.Direction face, @Nullable LivingEntity igniter) {
++    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, net.minecraft.core.@Nullable Direction face, @Nullable LivingEntity igniter) {
 +        return prime(world, pos, igniter);
      }
  }

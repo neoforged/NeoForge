@@ -36,6 +36,7 @@ import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -63,7 +64,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ExtendedGameTestHelper extends GameTestHelper {
     public ExtendedGameTestHelper(GameTestInfo info) {
@@ -138,10 +139,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                 }
             }
         };
-        EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
-        // TODO - check if needs to be ported
-        // embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
-        // embeddedchannel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND));
+        // This constructor internally calls callbacks that associate it with the connection
+        new EmbeddedChannel(connection);
         NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
@@ -150,11 +149,11 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         serverplayer.setYRot(180);
         serverplayer.connection.chunkSender.sendNextChunks(serverplayer);
         serverplayer.connection.chunkSender.onChunkBatchReceivedByClient(64f);
-        serverplayer.setClientLoaded(true);
+        serverplayer.connection.markClientLoaded();
         return serverplayer;
     }
 
-    public ServerPlayer makeOpMockPlayer(int commandLevel) {
+    public ServerPlayer makeOpMockPlayer(PermissionSet permissions) {
         return new FakePlayer(this.getLevel(), new GameProfile(UUID.randomUUID(), "test-mock-player")) {
             @Override
             public boolean isSpectator() {
@@ -172,8 +171,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             }
 
             @Override
-            public int getPermissionLevel() {
-                return commandLevel;
+            public PermissionSet permissions() {
+                return permissions;
             }
         };
     }

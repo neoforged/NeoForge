@@ -11,15 +11,15 @@
              @Override
 @@ -90,23 +_,24 @@
              if (!itemstack.isEmpty() && itemstack.isEnchantable()) {
-                 this.access.execute((p_344366_, p_344367_) -> {
-                     IdMap<Holder<Enchantment>> idmap = p_344366_.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).asHolderIdMap();
+                 this.access.execute((p_460548_, p_460549_) -> {
+                     IdMap<Holder<Enchantment>> idmap = p_460548_.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).asHolderIdMap();
 -                    int j = 0;
 +                    float j = 0;
  
                      for (BlockPos blockpos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
-                         if (EnchantingTableBlock.isValidBookShelf(p_344366_, p_344367_, blockpos)) {
+                         if (EnchantingTableBlock.isValidBookShelf(p_460548_, p_460549_, blockpos)) {
 -                            j++;
-+                            j += p_344366_.getBlockState(p_344367_.offset(blockpos)).getEnchantPowerBonus(p_344366_, p_344367_.offset(blockpos));
++                            j += p_460548_.getBlockState(p_460549_.offset(blockpos)).getEnchantPowerBonus(p_460548_, p_460549_.offset(blockpos));
                          }
                      }
  
@@ -33,12 +33,12 @@
                          if (this.costs[k] < k + 1) {
                              this.costs[k] = 0;
                          }
-+                        this.costs[k] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(p_344366_, p_344367_, k, (int)j, itemstack, costs[k]);
++                        this.costs[k] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(p_460548_, p_460549_, k, (int)j, itemstack, costs[k]);
                      }
  
                      for (int l = 0; l < 3; l++) {
 @@ -152,14 +_,10 @@
-                             List<EnchantmentInstance> list = this.getEnchantmentList(p_347276_.registryAccess(), itemstack, p_39466_, this.costs[p_39466_]);
+                             List<EnchantmentInstance> list = this.getEnchantmentList(p_466630_.registryAccess(), itemstack, p_39466_, this.costs[p_39466_]);
                              if (!list.isEmpty()) {
                                  p_39465_.onEnchantmentPerformed(itemstack, i);
 -                                if (itemstack.is(Items.BOOK)) {

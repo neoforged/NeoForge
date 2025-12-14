@@ -5,14 +5,15 @@
 
 package net.neoforged.neoforge.transfer.item;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -171,7 +172,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         int inserted = insert(resource, amount, transactionContext);
         if (inserted < amount) {
             // If we couldn't insert all of it, drop the remainder.
-            drop(resource, amount - inserted, true, false, transactionContext);
+            drop(resource, amount - inserted, false, false, transactionContext);
         }
     }
 
@@ -195,7 +196,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     private class DroppedItems extends SnapshotJournal<Integer> {
-        final List<DropInfo> entries = new ArrayList<>();
+        final Deque<DropInfo> entries = new ArrayDeque<>();
 
         void addDrop(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {
             updateSnapshots(transaction);
@@ -220,13 +221,16 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         @Override
         protected void onRootCommit(Integer originalState) {
             // actually drop the stacks
-            for (DropInfo dropInfo : entries) {
+            // process elements of the queue one by one to avoid a CME if dropping the entity triggers more additions to the queue
+            while (!entries.isEmpty()) {
+                DropInfo dropInfo = entries.removeFirst();
                 int remainder = dropInfo.amount;
 
                 int maxStackSize = dropInfo.resource.getMaxStackSize();
                 while (remainder > 0) {
                     int dropped = Math.min(maxStackSize, remainder);
-                    inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
+                    // This takes care of firing ItemTossEvent + dropping the entity if the event is not canceled
+                    CommonHooks.onPlayerTossEvent(inventory.player, dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
                     remainder -= dropped;
                 }
             }

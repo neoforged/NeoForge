@@ -17,15 +17,15 @@
      }
  
 @@ -106,6 +_,8 @@
-         this.caches.forEach((p_253378_, p_253379_) -> {
-             if (this.cachesToWrite.contains(p_253378_)) {
-                 Path path = this.getProviderCachePath(p_253378_);
+         this.caches.forEach((p_458821_, p_458822_) -> {
+             if (this.cachesToWrite.contains(p_458821_)) {
+                 Path path = this.getProviderCachePath(p_458821_);
 +                // Forge: Only rewrite the cache file if it changed or is missing
-+                if (!p_253379_.equals(this.originalCaches.get(p_253378_)) || !Files.exists(path))
-                 p_253379_.save(this.rootDir, path, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()) + "\t" + p_253378_);
++                if (!p_458822_.equals(this.originalCaches.get(p_458821_)) || !Files.exists(path))
+                 p_458822_.save(this.rootDir, path, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + p_458821_);
              }
  
-@@ -222,10 +_,11 @@
+@@ -221,10 +_,11 @@
                  bufferedwriter.write(p_236145_);
                  bufferedwriter.newLine();
  

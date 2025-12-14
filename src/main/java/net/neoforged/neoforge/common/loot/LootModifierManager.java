@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -36,7 +36,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Logger LOGGER = LogManager.getLogger();
 
-    private Map<ResourceLocation, IGlobalLootModifier> registeredLootModifiers = ImmutableMap.of();
+    private Map<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableMap.of();
     private static final String folder = "loot_modifiers";
 
     public LootModifierManager() {
@@ -44,10 +44,10 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
     }
 
     @Override
-    protected Map<ResourceLocation, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        Map<ResourceLocation, JsonElement> map = super.prepare(resourceManager, profilerFiller);
-        List<ResourceLocation> finalLocations = new ArrayList<>();
-        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath("neoforge", "loot_modifiers/global_loot_modifiers.json");
+    protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        Map<Identifier, JsonElement> map = super.prepare(resourceManager, profilerFiller);
+        List<Identifier> finalLocations = new ArrayList<>();
+        Identifier resourceLocation = Identifier.fromNamespaceAndPath("neoforge", "loot_modifiers/global_loot_modifiers.json");
         //read in all data files from neoforge:loot_modifiers/global_loot_modifiers in order to do layering
         for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
             try (Reader reader = resource.openAsReader()) {
@@ -57,7 +57,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
                     finalLocations.clear();
                 JsonArray entries = GsonHelper.getAsJsonArray(jsonobject, "entries");
                 for (int i = 0; i < entries.size(); i++) {
-                    ResourceLocation loc = ResourceLocation.parse(GsonHelper.convertToString(entries.get(i), "entries[" + i + "]"));
+                    Identifier loc = Identifier.parse(GsonHelper.convertToString(entries.get(i), "entries[" + i + "]"));
                     finalLocations.remove(loc); //remove and re-add if needed, to update the ordering.
                     finalLocations.add(loc);
                 }
@@ -65,20 +65,20 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
                 LOGGER.error("Couldn't read global loot modifier list {} in data pack {}", resourceLocation, resource.sourcePackId(), ioexception);
             }
         }
-        Map<ResourceLocation, JsonElement> finalMap = new HashMap<>();
+        Map<Identifier, JsonElement> finalMap = new HashMap<>();
         //use layered config to fetch modifier data files (modifiers missing from config are disabled)
-        for (ResourceLocation location : finalLocations) {
+        for (Identifier location : finalLocations) {
             finalMap.put(location, map.get(location));
         }
         return finalMap;
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
+    protected void apply(Map<Identifier, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
         DynamicOps<JsonElement> ops = this.makeConditionalOps();
-        Builder<ResourceLocation, IGlobalLootModifier> builder = ImmutableMap.builder();
-        for (Map.Entry<ResourceLocation, JsonElement> entry : resourceList.entrySet()) {
-            ResourceLocation location = entry.getKey();
+        Builder<Identifier, IGlobalLootModifier> builder = ImmutableMap.builder();
+        for (Map.Entry<Identifier, JsonElement> entry : resourceList.entrySet()) {
+            Identifier location = entry.getKey();
             JsonElement json = entry.getValue();
             IGlobalLootModifier.CONDITIONAL_CODEC.parse(ops, json)
                     // log error if parse fails

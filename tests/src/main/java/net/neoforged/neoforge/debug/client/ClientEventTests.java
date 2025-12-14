@@ -11,7 +11,6 @@ import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -19,11 +18,13 @@ import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -71,7 +72,7 @@ public class ClientEventTests {
     @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired and whether the registered render buffer is represented within a fixed render buffer map" }, enabledByDefault = true)
     static void registerRenderBuffersEvent(final DynamicTest test) {
         test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
-            event.registerRenderBuffer(RenderType.lightning());
+            event.registerRenderBuffer(RenderTypes.lightning());
         });
         test.framework().modEventBus().addListener((final AddClientReloadListenersEvent event) -> {
             try {
@@ -82,7 +83,7 @@ public class ClientEventTests {
 
                 var fixedBuffers = (Map<RenderType, BufferBuilder>) field.get(bufferSource);
 
-                if (fixedBuffers != null && fixedBuffers.containsKey(RenderType.lightning())) {
+                if (fixedBuffers != null && fixedBuffers.containsKey(RenderTypes.lightning())) {
                     test.pass();
                 } else {
                     test.fail("The render buffer for the specified render type was not registered");
@@ -149,8 +150,8 @@ public class ClientEventTests {
 
     @TestHolder(description = { "Test render state modifier system and registration event" })
     static void updateRenderState(final DynamicTest test) {
-        var rotationKey = new ContextKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "rotation"));
-        var numRenderAttachmentKey = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "times_to_render"));
+        var rotationKey = new ContextKey<Float>(Identifier.fromNamespaceAndPath(test.createModId(), "rotation"));
+        var numRenderAttachmentKey = new ContextKey<Integer>(Identifier.fromNamespaceAndPath(test.createModId(), "times_to_render"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
             event.registerEntityModifier(PigRenderer.class, (entity, renderState) -> {

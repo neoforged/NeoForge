@@ -1,11 +1,12 @@
 --- a/net/minecraft/data/registries/VanillaRegistries.java
 +++ b/net/minecraft/data/registries/VanillaRegistries.java
-@@ -90,6 +_,8 @@
-         .add(Registries.FROG_VARIANT, FrogVariants::bootstrap)
-         .add(Registries.CAT_VARIANT, CatVariants::bootstrap)
-         .add(Registries.DIALOG, Dialogs::bootstrap);
+@@ -95,6 +_,9 @@
+         .add(Registries.DIALOG, Dialogs::bootstrap)
+         .add(Registries.TIMELINE, Timelines::bootstrap);
+ 
 +    // Neo: Keep a set of all actual vanilla registries to allow filtering out registries that are added by mods for Vanilla clients.
 +    public static final List<? extends net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<?>>> DATAPACK_REGISTRY_KEYS = BUILDER.getEntryKeys();
- 
++
      private static void validateThatAllBiomeFeaturesHaveBiomeFilter(HolderLookup.Provider p_256242_) {
          validateThatAllBiomeFeaturesHaveBiomeFilter(p_256242_.lookupOrThrow(Registries.PLACED_FEATURE), p_256242_.lookupOrThrow(Registries.BIOME));
+     }

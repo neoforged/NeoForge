@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -128,4 +_,14 @@
-         @Override
-         void close();
+@@ -119,4 +_,14 @@
+     public void close() {
+         this.contents.close();
      }
 +
 +    // Neo: Exposed a pixel RGBA getter

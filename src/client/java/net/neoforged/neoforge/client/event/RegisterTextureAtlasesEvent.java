@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -30,10 +30,10 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
 public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
-    private final SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlases;
+    private final SequencedMap<Identifier, AtlasManager.AtlasConfig> atlases;
 
     @ApiStatus.Internal
-    public RegisterTextureAtlasesEvent(SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlases) {
+    public RegisterTextureAtlasesEvent(SequencedMap<Identifier, AtlasManager.AtlasConfig> atlases) {
         this.atlases = atlases;
     }
 
@@ -59,7 +59,7 @@ public class RegisterTextureAtlasesEvent extends Event implements IModBusEvent {
      * @param atlasId         The ID of the texture atlas, see {@link AtlasIds} for vanilla IDs
      * @param metaSectionType The metadata section type to add
      */
-    public void addAdditionalMetadata(ResourceLocation atlasId, MetadataSectionType<?> metaSectionType) {
+    public void addAdditionalMetadata(Identifier atlasId, MetadataSectionType<?> metaSectionType) {
         if (metaSectionType == AnimationMetadataSection.TYPE) {
             throw new IllegalArgumentException("Animation metadata is always loaded, it may not be added as additional metadata");
         }

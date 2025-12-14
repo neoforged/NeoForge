@@ -25,8 +25,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -68,7 +68,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
-                    ResourceLocation key = snapshot.attribute().unwrapKey().map(ResourceKey::location).orElse(null);
+                    Identifier key = snapshot.attribute().unwrapKey().map(ResourceKey::identifier).orElse(null);
                     return key != null && key.getNamespace().equals("minecraft");
                 })
                 .forEach(snapshot -> newPacket.getValues().add(snapshot));
@@ -84,7 +84,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         var root = packet.getRoot(commandBuildContext, CommandTreeCleaner.COMMAND_NODE_BUILDER);
         var newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
             ArgumentTypeInfo<?, ?> info = ArgumentTypeInfos.byClass(argType);
-            ResourceLocation id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(info);
+            Identifier id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(info);
             return id != null && (id.getNamespace().equals("minecraft") || id.getNamespace().equals("brigadier"));
         });
         return new ClientboundCommandsPacket(newRoot, CommandTreeCleaner.COMMAND_NODE_INSPECTOR);
@@ -96,14 +96,14 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      */
     private static ClientboundUpdateTagsPacket filterCustomTagTypes(ClientboundUpdateTagsPacket packet) {
         Map<ResourceKey<? extends Registry<?>>, TagNetworkSerialization.NetworkPayload> tags = packet.getTags()
-                .entrySet().stream().filter(e -> isVanillaRegistry(e.getKey().location()))
+                .entrySet().stream().filter(e -> isVanillaRegistry(e.getKey().identifier()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new ClientboundUpdateTagsPacket(tags);
     }
 
-    private static boolean isVanillaRegistry(ResourceLocation location) {
+    private static boolean isVanillaRegistry(Identifier location) {
         // Checks if the registry name is contained within the static view of both BuiltInRegistries and VanillaRegistries
         return RegistryManager.getVanillaRegistryKeys().contains(location)
-                || VanillaRegistries.DATAPACK_REGISTRY_KEYS.stream().anyMatch(k -> k.location().equals(location));
+                || VanillaRegistries.DATAPACK_REGISTRY_KEYS.stream().anyMatch(k -> k.identifier().equals(location));
     }
 }

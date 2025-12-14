@@ -1,10 +1,10 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelector.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelector.java
-@@ -105,7 +_,7 @@
+@@ -102,7 +_,7 @@
      }
  
      private void checkPermissions(CommandSourceStack p_121169_) throws CommandSyntaxException {
--        if (this.usesSelector && !p_121169_.allowsSelectors()) {
+-        if (this.usesSelector && !p_121169_.permissions().hasPermission(Permissions.COMMANDS_ENTITY_SELECTORS)) {
 +        if (this.usesSelector && !net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(p_121169_)) {
              throw EntityArgument.ERROR_SELECTORS_NOT_ALLOWED.create();
          }

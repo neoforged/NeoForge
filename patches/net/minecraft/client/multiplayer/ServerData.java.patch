@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ServerData.java
 +++ b/net/minecraft/client/multiplayer/ServerData.java
-@@ -38,6 +_,7 @@
+@@ -36,6 +_,7 @@
      private ServerData.Type type;
      private int acceptedCodeOfConduct;
      private ServerData.State state = ServerData.State.INITIAL;

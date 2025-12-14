@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -208,7 +_,7 @@
+@@ -214,7 +_,7 @@
+     private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
-     @Nullable
-     private EndDragonFight dragonFight;
+     private @Nullable EndDragonFight dragonFight;
 -    final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 +    final Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -231,7 +_,6 @@
+@@ -237,7 +_,6 @@
          super(p_215002_, p_215003_, p_214999_.registryAccess(), p_215004_.type(), false, p_215006_, p_215007_, p_214999_.getMaxChainedNeighborUpdates());
          this.tickTime = p_215009_;
          this.server = p_214999_;
@@ -17,10 +17,10 @@
          this.serverLevelData = p_215002_;
          ChunkGenerator chunkgenerator = p_215004_.generator();
          boolean flag = p_214999_.forceSynchronousWrites();
-@@ -294,6 +_,11 @@
-         this.gameEventDispatcher = new GameEventDispatcher(this);
-         this.randomSequences = Objects.requireNonNullElseGet(p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.TYPE));
+@@ -304,6 +_,11 @@
          this.waypointManager = new ServerWaypointManager();
+         this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
+         this.updateSkyBrightness();
 +
 +        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
 +        // Neo: Move the initialization of customSpawners to the end of costructor
@@ -29,16 +29,16 @@
      }
  
      @Deprecated
-@@ -339,7 +_,7 @@
+@@ -354,7 +_,7 @@
          if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
-             if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
+             if (this.getGameRules().get(GameRules.ADVANCE_TIME)) {
                  long j = this.levelData.getDayTime() + 24000L;
 -                this.setDayTime(j - j % 24000L);
 +                this.setDayTime(net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
              }
  
              this.wakeUpAllPlayers();
-@@ -377,7 +_,7 @@
+@@ -392,7 +_,7 @@
  
          this.handlingTick = false;
          profilerfiller.pop();
@@ -47,7 +47,7 @@
          if (flag1) {
              this.resetEmptyTime();
          }
-@@ -414,7 +_,9 @@
+@@ -429,7 +_,9 @@
                                      }
  
                                      profilerfiller.push("tick");
@@ -58,16 +58,16 @@
                                      profilerfiller.pop();
                                  }
                              }
-@@ -454,7 +_,7 @@
+@@ -470,7 +_,7 @@
              this.serverLevelData.getScheduledEvents().tick(this.server, i);
              Profiler.get().pop();
-             if (this.serverLevelData.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
+             if (this.getGameRules().get(GameRules.ADVANCE_TIME)) {
 -                this.setDayTime(this.levelData.getDayTime() + 1L);
 +                this.setDayTime(this.levelData.getDayTime() + advanceDaytime());
              }
          }
      }
-@@ -560,6 +_,7 @@
+@@ -580,6 +_,7 @@
          BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
          BlockPos blockpos1 = blockpos.below();
          Biome biome = this.getBiome(blockpos).value();
@@ -75,7 +75,7 @@
          if (biome.shouldFreeze(this, blockpos1)) {
              this.setBlockAndUpdate(blockpos1, Blocks.ICE.defaultBlockState());
          }
-@@ -736,15 +_,19 @@
+@@ -776,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -99,7 +99,7 @@
          }
      }
  
-@@ -781,7 +_,11 @@
+@@ -821,7 +_,11 @@
          p_8648_.tickCount++;
          profilerfiller.push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8648_.getType()).toString());
          profilerfiller.incrementCounter("tickNonPassenger");
@@ -112,7 +112,7 @@
          profilerfiller.pop();
  
          for (Entity entity : p_8648_.getPassengers()) {
-@@ -846,6 +_,7 @@
+@@ -886,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -120,7 +120,7 @@
          }
      }
  
-@@ -940,6 +_,7 @@
+@@ -979,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer p_8854_) {
@@ -128,7 +128,7 @@
          Entity entity = this.getEntity(p_8854_.getUUID());
          if (entity != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());
-@@ -947,7 +_,8 @@
+@@ -986,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
          }
  
@@ -138,7 +138,7 @@
      }
  
      private boolean addEntity(Entity p_8873_) {
-@@ -955,7 +_,12 @@
+@@ -994,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getKey(p_8873_.getType()));
              return false;
          } else {
@@ -152,7 +152,7 @@
          }
      }
  
-@@ -1004,6 +_,12 @@
+@@ -1043,6 +_,12 @@
          float p_263390_,
          long p_263403_
      ) {
@@ -165,7 +165,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1021,6 +_,12 @@
+@@ -1060,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity p_263544_, Entity p_394316_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
      ) {
@@ -178,7 +178,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1079,6 +_,7 @@
+@@ -1118,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> p_316597_, Vec3 p_215042_, GameEvent.Context p_215043_) {
@@ -186,7 +186,7 @@
          this.gameEventDispatcher.post(p_316597_, p_215042_, p_215043_);
      }
  
-@@ -1117,6 +_,7 @@
+@@ -1156,6 +_,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
@@ -194,7 +194,7 @@
          this.updateNeighborsAt(p_215045_, p_215046_, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1127,6 +_,10 @@
+@@ -1166,6 +_,10 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos p_215052_, Block p_215053_, Direction p_215054_, @Nullable Orientation p_365231_) {
@@ -205,16 +205,16 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_, p_365231_);
      }
  
-@@ -1173,7 +_,7 @@
+@@ -1212,7 +_,7 @@
          Explosion.BlockInteraction explosion$blockinteraction = switch (p_255827_) {
              case NONE -> Explosion.BlockInteraction.KEEP;
-             case BLOCK -> this.getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY);
--            case MOB -> this.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+             case BLOCK -> this.getDestroyType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
+-            case MOB -> this.getGameRules().get(GameRules.MOB_GRIEFING)
 +            case MOB -> net.neoforged.neoforge.event.EventHooks.canEntityGrief(this, p_256039_)
-                 ? this.getDestroyType(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY)
+                 ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
-             case TNT -> this.getDestroyType(GameRules.RULE_TNT_EXPLOSION_DROP_DECAY);
-@@ -1181,6 +_,7 @@
+             case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+@@ -1220,6 +_,7 @@
          };
          Vec3 vec3 = new Vec3(p_256067_, p_256370_, p_256153_);
          ServerExplosion serverexplosion = new ServerExplosion(this, p_256039_, p_255778_, p_256002_, vec3, p_256045_, p_255686_, explosion$blockinteraction);
@@ -222,7 +222,7 @@
          int i = serverexplosion.explode();
          ParticleOptions particleoptions = serverexplosion.isSmall() ? p_312436_ : p_312391_;
  
-@@ -1363,7 +_,7 @@
+@@ -1397,7 +_,7 @@
      }
  
      @Override
@@ -231,7 +231,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1857,8 +_,8 @@
+@@ -1913,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -242,7 +242,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1878,25 +_,107 @@
+@@ -1934,25 +_,107 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

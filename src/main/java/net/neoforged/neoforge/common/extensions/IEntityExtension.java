@@ -30,7 +30,7 @@ import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface IEntityExtension {
     private Entity self() {

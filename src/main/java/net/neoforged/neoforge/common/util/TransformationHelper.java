@@ -19,12 +19,13 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 
 public final class TransformationHelper {
     public static Quaternionf quatFromXYZ(Vector3f xyz, boolean degrees) {
@@ -44,7 +45,7 @@ public final class TransformationHelper {
         return new Quaternionf(values[0], values[1], values[2], values[3]);
     }
 
-    public static Vector3f lerp(Vector3f from, Vector3f to, float progress) {
+    public static Vector3f lerp(Vector3fc from, Vector3fc to, float progress) {
         Vector3f res = new Vector3f(from);
         res.lerp(to, progress);
         return res;

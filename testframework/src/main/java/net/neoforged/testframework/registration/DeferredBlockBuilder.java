@@ -8,6 +8,8 @@ package net.neoforged.testframework.registration;
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -20,8 +22,8 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -32,7 +34,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private final RegistrationHelper helper;
@@ -43,14 +45,28 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     public DeferredBlockBuilder<T> withBlockItem() {
-        return withBlockItem(new Item.Properties(), c -> {});
+        return withBlockItem(UnaryOperator.identity(), c -> {});
     }
 
     public DeferredBlockBuilder<T> withBlockItem(Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        return withBlockItem(new Item.Properties(), consumer);
+        return withBlockItem(UnaryOperator.identity(), consumer);
     }
 
+    /**
+     * @deprecated Use {@link #withBlockItem(Supplier, Consumer)} or {@link #withBlockItem(UnaryOperator, Consumer)} instead
+     */
+    @Deprecated(since = "1.21.10", forRemoval = true)
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
+        return this.withBlockItem(() -> properties, consumer);
+    }
+
+    public DeferredBlockBuilder<T> withBlockItem(Supplier<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
+        consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
+        hasItem = true;
+        return this;
+    }
+
+    public DeferredBlockBuilder<T> withBlockItem(UnaryOperator<Item.Properties> properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
         consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
         hasItem = true;
         return this;
@@ -90,13 +106,13 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
                     template = ModelTemplates.CUBE_ALL;
                 }
 
-                var modelPath = template.create(value(), TextureMapping.cube(ResourceLocation.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
+                var modelPath = template.create(value(), TextureMapping.cube(Identifier.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
                 blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(value(), BlockModelGenerators.plainVariant(modelPath)));
             }
 
             @Override
             protected Stream<? extends Holder<Item>> getKnownItems() {
-                return hasItem ? Stream.of(helper.items().createHolder(Registries.ITEM, key.location())) : Stream.empty();
+                return hasItem ? Stream.of(helper.items().createHolder(Registries.ITEM, key.identifier())) : Stream.empty();
             }
 
             @Override
@@ -106,7 +122,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
 
             @Override
             public String getName() {
-                return key.location().toDebugFileName() + "-default-white-model-generator";
+                return key.identifier().toDebugFileName() + "-default-white-model-generator";
             }
         }));
         return this;
@@ -127,7 +143,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         helper.eventListeners().accept((final RegisterColorHandlersEvent.Block event) -> event.register((p_92567_, p_92568_, p_92569_, p_92570_) -> color, value()));
         helper.eventListeners().accept((final RegisterColorHandlersEvent.ItemTintSources event) -> {
             if (hasItem) {
-                event.register(key.location(), source.type());
+                event.register(key.identifier(), source.type());
             }
         });
     }

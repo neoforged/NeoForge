@@ -1,15 +1,14 @@
 package net.neoforged.neodev.e2e;
 
-import org.gradle.api.GradleException;
-import org.gradle.process.ExecOperations;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import javax.inject.Inject;
+import org.gradle.api.GradleException;
+import org.gradle.process.ExecOperations;
 
 /**
  * Runs a production server using {@link RunProductionServer} and passes the environment variable
@@ -44,8 +43,7 @@ public abstract class TestProductionServer extends RunProductionServer {
         } finally {
             try {
                 Files.deleteIfExists(eulaFile);
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
 
         if (!selfTestReport.exists()) {

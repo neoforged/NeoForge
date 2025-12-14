@@ -14,7 +14,7 @@ import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for handling various {@link EnergyHandler} interactions

@@ -9,11 +9,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired for each registry when it is ready to have modded objects registered.
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>This event is fired on the mod-specific event bus, on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
- * @see #register(ResourceKey, ResourceLocation, Supplier)
+ * @see #register(ResourceKey, Identifier, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
 public class RegisterEvent extends Event implements IModBusEvent {
@@ -43,7 +43,7 @@ public class RegisterEvent extends Event implements IModBusEvent {
      * @see #register(ResourceKey, Consumer) a register variant making registration of multiple objects less redundant
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier) {
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Identifier name, Supplier<T> valueSupplier) {
         if (this.registryKey.equals(registryKey)) {
             Registry.register((Registry) this.registry, name, valueSupplier.get());
         }
@@ -54,7 +54,7 @@ public class RegisterEvent extends Event implements IModBusEvent {
      *
      * @param registryKey the key of the registry to register objects to
      * @param <T>         the type of the registry
-     * @see #register(ResourceKey, ResourceLocation, Supplier) a register variant targeted towards registering one or two objects
+     * @see #register(ResourceKey, Identifier, Supplier) a register variant targeted towards registering one or two objects
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer) {
@@ -97,7 +97,7 @@ public class RegisterEvent extends Event implements IModBusEvent {
          * @param value the object value
          */
         default void register(ResourceKey<T> key, T value) {
-            register(key.location(), value);
+            register(key.identifier(), value);
         }
 
         /**
@@ -106,6 +106,6 @@ public class RegisterEvent extends Event implements IModBusEvent {
          * @param name  the name of the object to register as its key
          * @param value the object value
          */
-        void register(ResourceLocation name, T value);
+        void register(Identifier name, T value);
     }
 }

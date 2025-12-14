@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/BoneMealItem.java
 +++ b/net/minecraft/world/item/BoneMealItem.java
-@@ -37,7 +_,7 @@
-         Level level = p_40637_.getLevel();
+@@ -38,7 +_,7 @@
          BlockPos blockpos = p_40637_.getClickedPos();
          BlockPos blockpos1 = blockpos.relative(p_40637_.getClickedFace());
--        if (growCrop(p_40637_.getItemInHand(), level, blockpos)) {
-+        if (applyBonemeal(p_40637_.getItemInHand(), level, blockpos, p_40637_.getPlayer())) {
+         ItemStack itemstack = p_40637_.getItemInHand();
+-        if (growCrop(itemstack, level, blockpos)) {
++        if (applyBonemeal(itemstack, level, blockpos, p_40637_.getPlayer())) {
              if (!level.isClientSide()) {
-                 p_40637_.getPlayer().gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+                 itemstack.causeUseVibration(p_40637_.getPlayer(), GameEvent.ITEM_INTERACT_FINISH);
                  level.levelEvent(1505, blockpos, 15);
-@@ -60,8 +_,17 @@
+@@ -61,8 +_,17 @@
          }
      }
  
@@ -20,7 +20,7 @@
 +        return false;
 +    }
 +
-+    public static boolean applyBonemeal(ItemStack p_40628_, Level p_40629_, BlockPos p_40630_, @Nullable net.minecraft.world.entity.player.Player player) {
++    public static boolean applyBonemeal(ItemStack p_40628_, Level p_40629_, BlockPos p_40630_, net.minecraft.world.entity.player.@Nullable Player player) {
          BlockState blockstate = p_40629_.getBlockState(p_40630_);
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBonemealEvent(player, p_40629_, p_40630_, blockstate, p_40628_);
 +        if (event.isCanceled()) return event.isSuccessful();

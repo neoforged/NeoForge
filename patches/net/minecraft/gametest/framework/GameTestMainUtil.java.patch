@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestMainUtil.java
 +++ b/net/minecraft/gametest/framework/GameTestMainUtil.java
-@@ -69,6 +_,7 @@
+@@ -67,6 +_,7 @@
  
              Bootstrap.bootStrap();
              Util.startTimerHackThread();

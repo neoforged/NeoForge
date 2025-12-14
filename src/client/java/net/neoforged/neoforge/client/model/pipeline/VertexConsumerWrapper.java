@@ -27,6 +27,12 @@ public abstract class VertexConsumerWrapper implements VertexConsumer {
     }
 
     @Override
+    public VertexConsumer setColor(int packedColor) {
+        parent.setColor(packedColor);
+        return this;
+    }
+
+    @Override
     public VertexConsumer setColor(int r, int g, int b, int a) {
         parent.setColor(r, g, b, a);
         return this;
@@ -53,6 +59,12 @@ public abstract class VertexConsumerWrapper implements VertexConsumer {
     @Override
     public VertexConsumer setNormal(float x, float y, float z) {
         parent.setNormal(x, y, z);
+        return this;
+    }
+
+    @Override
+    public VertexConsumer setLineWidth(float lineWidth) {
+        parent.setLineWidth(lineWidth);
         return this;
     }
 

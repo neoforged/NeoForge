@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 @@ -47,7 +_,19 @@
- import org.apache.commons.lang3.mutable.MutableObject;
+ import org.jspecify.annotations.Nullable;
  
  public class EnchantmentHelper {
 +    /**
@@ -44,7 +44,7 @@
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
-@@ -438,6 +_,12 @@
+@@ -449,6 +_,12 @@
      public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
          ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -57,7 +57,7 @@
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              Holder<Enchantment> holder = entry.getKey();
              if (holder.is(p_345928_)) {
-@@ -594,7 +_,9 @@
+@@ -604,7 +_,9 @@
      public static List<EnchantmentInstance> getAvailableEnchantmentResults(int p_44818_, ItemStack p_44819_, Stream<Holder<Enchantment>> p_345348_) {
          List<EnchantmentInstance> list = Lists.newArrayList();
          boolean flag = p_44819_.is(Items.BOOK);

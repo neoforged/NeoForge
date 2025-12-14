@@ -7,7 +7,7 @@ package net.neoforged.neoforge.attachment;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manages how data attachments are written (on the server) and read (on the client) from packets.

@@ -13,7 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.ReflectionUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
