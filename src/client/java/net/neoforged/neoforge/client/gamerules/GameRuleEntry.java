@@ -42,12 +42,12 @@ public abstract class GameRuleEntry extends EditGameRulesScreen.RuleEntry {
         return children;
     }
 
-    protected void renderLabel(GuiGraphics graphics, int x, int y) {
+    protected void renderLabel(GuiGraphics graphics, int y, int x) {
         if (label.size() == 1) {
-            graphics.drawString(font, label.getFirst(), y, x + 5, -1);
+            graphics.drawString(font, label.getFirst(), x, y + 5, -1);
         } else if (label.size() >= 2) {
-            graphics.drawString(font, label.getFirst(), y, x, -1);
-            graphics.drawString(font, label.get(1), y, x + 10, -1);
+            graphics.drawString(font, label.getFirst(), x, y, -1);
+            graphics.drawString(font, label.get(1), x, y + 10, -1);
         }
     }
 }
