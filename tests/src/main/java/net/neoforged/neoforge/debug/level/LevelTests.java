@@ -18,8 +18,8 @@ import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRules;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.testframework.DynamicTest;
@@ -77,8 +77,7 @@ public class LevelTests {
             }
         });
 
-        // TODO: Introduce a 'RegisterGameRuleCategory' event?
-        test.eventListeners().mod().addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> GameRuleCategory.register(category.id())));
+        test.eventListeners().mod().addListener((RegisterGameRuleCategoryEvent event) -> event.register(category));
 
         reg.clientProvider(LanguageProvider.class, provider -> {
             // GameRuleCategory#getDescriptionId - this is not the translation key as one would expect, its the registry name
