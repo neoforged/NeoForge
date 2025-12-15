@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/gamerules/GameRules.java
 +++ b/net/minecraft/world/level/gamerules/GameRules.java
-@@ -122,6 +_,9 @@
+@@ -122,6 +_,8 @@
              if (p_461092_ != null) {
                  p_461092_.onGameRuleChanged(p_460634_, p_461218_);
              }
-+
 +            // Neo: Allow mods to react to game rule state changes
 +            net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(p_461092_, p_460634_, p_461218_);
          }
