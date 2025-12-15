@@ -22,12 +22,14 @@ import org.jspecify.annotations.Nullable;
 public final class GameRuleChangedEvent extends Event {
     @Nullable
     private final MinecraftServer server;
+    private final GameRules gameRules;
     private final GameRule<?> gameRule;
     private final Object newValue;
 
     @ApiStatus.Internal
-    public <T> GameRuleChangedEvent(@Nullable MinecraftServer server, GameRule<T> gameRule, T newValue) {
+    public <T> GameRuleChangedEvent(@Nullable MinecraftServer server, GameRules gameRules, GameRule<T> gameRule, T newValue) {
         this.server = server;
+        this.gameRules = gameRules;
         this.gameRule = gameRule;
         this.newValue = newValue;
     }
@@ -37,9 +39,8 @@ public final class GameRuleChangedEvent extends Event {
         return server;
     }
 
-    @Nullable
     public GameRules getGameRules() {
-        return server == null ? null : server.getWorldData().getGameRules();
+        return gameRules;
     }
 
     public GameRule<?> getGameRule() {

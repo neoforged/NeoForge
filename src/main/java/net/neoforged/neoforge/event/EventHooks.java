@@ -1132,7 +1132,7 @@ public class EventHooks {
         return event.getCustomSpawners();
     }
 
-    public static <T> void onGameRuleChanged(@Nullable MinecraftServer server, GameRule<T> gameRule, T newValue) {
-        NeoForge.EVENT_BUS.post(new GameRuleChangedEvent(server, gameRule, newValue));
+    public static <T> void onGameRuleChanged(@Nullable MinecraftServer server, GameRules gameRules, GameRule<T> gameRule, T newValue) {
+        NeoForge.EVENT_BUS.post(new GameRuleChangedEvent(server, gameRules, gameRule, newValue));
     }
 }

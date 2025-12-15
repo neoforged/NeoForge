@@ -5,7 +5,7 @@
                  p_461092_.onGameRuleChanged(p_460634_, p_461218_);
              }
 +            // Neo: Allow mods to react to game rule state changes
-+            net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(p_461092_, p_460634_, p_461218_);
++            net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(p_461092_, this, p_460634_, p_461218_);
          }
      }
  
