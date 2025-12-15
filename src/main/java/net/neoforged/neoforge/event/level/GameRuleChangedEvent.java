@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.level;
 
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -35,6 +36,12 @@ public final class GameRuleChangedEvent extends Event {
         this.newValue = newValue;
     }
 
+    /**
+     * {@return The active server instance holding the game rules.}
+     *
+     * @apiNote Note that not all game rule state changes pass along a server instance, For example the {@linkplain net.neoforged.neoforge.server.command.TimeSpeedCommand#setSpeed(CommandSourceStack, float) TimeSpeedCommand}
+     *          updates {@link GameRules#ADVANCE_TIME} while passing a {@code null} server instance.
+     */
     @Nullable
     public MinecraftServer getServer() {
         return server;
