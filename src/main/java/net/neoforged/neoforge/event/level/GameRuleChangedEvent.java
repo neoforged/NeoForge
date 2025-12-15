@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -17,7 +18,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Event which is fired when ever a {@link GameRule} is updated.
  * <p>
- * This event is fired on {@link NeoForge#EVENT_BUS main forge event bus}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS main NeoForge event bus}, only on both the logical {@linkplain LogicalSide#CLIENT client} and {@linkplain LogicalSide#SERVER}.
  */
 public final class GameRuleChangedEvent extends Event {
     @Nullable
