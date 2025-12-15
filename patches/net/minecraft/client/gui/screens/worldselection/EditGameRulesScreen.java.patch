@@ -7,7 +7,7 @@
 +                    @Override
 +                    public <T> void visit(GameRule<T> p_461081_) {
 +                        // Neo: Append custom entries for none bool/int game rules
-+                        addEntry(p_461081_, (label, tooltip, str, gameRule) -> net.neoforged.neoforge.client.ClientHooks.createGameRuleTypeEntry(EditGameRulesScreen.this, label, tooltip, str, gameRule));
++                        addEntry(p_461081_, (label, tooltip, str, gameRule) -> net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager.createEntry(EditGameRulesScreen.this, label, tooltip, str, gameRule));
 +                    }
 +
                      private <T> void addEntry(GameRule<T> p_461117_, EditGameRulesScreen.EntryFactory<T> p_101226_) {

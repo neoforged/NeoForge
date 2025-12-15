@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.gui.widget.gamerule;
+package net.neoforged.neoforge.client.gamerules;
 
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.gamerules.GameRule;
-import net.neoforged.neoforge.client.event.RegisterGameRuleEntryFactoryEvent;
 
 /**
  * Copy of {@link EditGameRulesScreen.IntegerRuleEntry} updated to be used in a static context for any {@link GameRule}

@@ -4,6 +4,6 @@
  */
 
 @NullMarked
-package net.neoforged.neoforge.client.gui.widget.gamerule;
+package net.neoforged.neoforge.client.gamerules;
 
 import org.jspecify.annotations.NullMarked;

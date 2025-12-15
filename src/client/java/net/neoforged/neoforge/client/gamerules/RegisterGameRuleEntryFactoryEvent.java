@@ -3,21 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.event;
+package net.neoforged.neoforge.client.gamerules;
 
-import java.util.List;
 import java.util.Map;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.gui.widget.gamerule.GenericGameRuleEntry;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -32,14 +27,14 @@ import org.jetbrains.annotations.ApiStatus;
  * When no factory exists for a given type the {@link GenericGameRuleEntry generic entry} will be used instead.
  */
 public final class RegisterGameRuleEntryFactoryEvent extends Event implements IModBusEvent {
-    private final Map<GameRuleType, Factory<?>> factories;
+    private final Map<GameRuleType, GameRuleEntryFactory<?>> factories;
 
     @ApiStatus.Internal
-    public RegisterGameRuleEntryFactoryEvent(Map<GameRuleType, Factory<?>> factories) {
+    RegisterGameRuleEntryFactoryEvent(Map<GameRuleType, GameRuleEntryFactory<?>> factories) {
         this.factories = factories;
     }
 
-    public <T> void register(GameRuleType gameRuleType, Factory<T> factory) {
+    public <T> void register(GameRuleType gameRuleType, GameRuleEntryFactory<T> factory) {
         if (gameRuleType == GameRuleType.INT || gameRuleType == GameRuleType.BOOL) {
             throw new IllegalStateException("Registering custom entry factory for vanilla GameRuleTypes is disallowed");
         }
@@ -47,10 +42,5 @@ public final class RegisterGameRuleEntryFactoryEvent extends Event implements IM
         if (factories.putIfAbsent(gameRuleType, factory) != null) {
             throw new IllegalStateException("Duplicate GameRuleTypeEntryFactory registration!");
         }
-    }
-
-    @FunctionalInterface
-    public interface Factory<T> {
-        EditGameRulesScreen.RuleEntry create(EditGameRulesScreen screen, Component description, List<FormattedCharSequence> tooltip, String str, GameRule<T> gameRule);
     }
 }

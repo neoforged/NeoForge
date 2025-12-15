@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.gui.widget.gamerule;
+package net.neoforged.neoforge.client.gamerules;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -42,12 +42,12 @@ public abstract class GameRuleEntry extends EditGameRulesScreen.RuleEntry {
         return children;
     }
 
-    protected void renderLabel(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void renderLabel(GuiGraphics graphics, int x, int y) {
         if (label.size() == 1) {
-            graphics.drawString(font, label.getFirst(), mouseY, mouseX + 5, -1);
+            graphics.drawString(font, label.getFirst(), y, x + 5, -1);
         } else if (label.size() >= 2) {
-            graphics.drawString(font, label.getFirst(), mouseY, mouseX, -1);
-            graphics.drawString(font, label.get(1), mouseY, mouseX + 10, -1);
+            graphics.drawString(font, label.getFirst(), y, x, -1);
+            graphics.drawString(font, label.get(1), y, x + 10, -1);
         }
     }
 }

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.opengl.GlDevice;
@@ -71,7 +70,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -129,7 +127,6 @@ import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.sounds.Music;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
@@ -146,8 +143,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gamerules.GameRule;
-import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
@@ -181,7 +176,6 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterGameRuleEntryFactoryEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
@@ -202,10 +196,10 @@ import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.gui.widget.gamerule.GenericGameRuleEntry;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
@@ -884,8 +878,7 @@ public class ClientHooks {
         DimensionTransitionScreenManager.init();
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
-
-        ModLoader.postEvent(new RegisterGameRuleEntryFactoryEvent(GAME_RULE_TYPE_FACTORIES));
+        GameRuleEntryFactoryManager.register();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup
@@ -1126,18 +1119,5 @@ public class ClientHooks {
             // default, accept all whose namespace or path match
             return SharedSuggestionProvider.matchesSubStr(searchText, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(searchText, id.getPath());
         }
-    }
-
-    private static final Map<GameRuleType, RegisterGameRuleEntryFactoryEvent.Factory<?>> GAME_RULE_TYPE_FACTORIES = Maps.newEnumMap(GameRuleType.class);
-
-    @ApiStatus.Internal
-    public static <T> EditGameRulesScreen.RuleEntry createGameRuleTypeEntry(EditGameRulesScreen screen, Component label, List<FormattedCharSequence> tooltip, String str, GameRule<T> gameRule) {
-        var factory = GAME_RULE_TYPE_FACTORIES.get(gameRule.gameRuleType());
-
-        if (factory != null) {
-            return ((RegisterGameRuleEntryFactoryEvent.Factory<T>) factory).create(screen, label, tooltip, str, gameRule);
-        }
-
-        return new GenericGameRuleEntry<>(screen, label, tooltip, str, gameRule);
     }
 }
