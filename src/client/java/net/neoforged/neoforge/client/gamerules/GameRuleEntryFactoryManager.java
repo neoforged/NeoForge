@@ -6,11 +6,9 @@
 package net.neoforged.neoforge.client.gamerules;
 
 import com.google.common.collect.Maps;
-import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.neoforged.fml.ModLoader;
@@ -19,19 +17,23 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class GameRuleEntryFactoryManager {
     private static final Map<GameRuleType, GameRuleEntryFactory<?>> FACTORIES = Maps.newEnumMap(GameRuleType.class);
+    private static final GameRuleEntryFactory<?> GENERIC_FACTORY = GenericGameRuleEntry::new;
 
     public static void register() {
         ModLoader.postEvent(new RegisterGameRuleEntryFactoryEvent(FACTORIES));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> EditGameRulesScreen.RuleEntry createEntry(EditGameRulesScreen screen, Component label, List<FormattedCharSequence> tooltip, String str, GameRule<T> gameRule) {
-        var factory = FACTORIES.get(gameRule.gameRuleType());
+    public static <T> void appendGameRuleEntry(EditGameRulesScreen screen, GameRule<T> gameRule, BiConsumer<GameRule<T>, EditGameRulesScreen.EntryFactory<T>> addEntry) {
+        var ruleType = gameRule.gameRuleType();
 
-        if (factory != null) {
-            return ((GameRuleEntryFactory<T>) factory).create(screen, label, tooltip, str, gameRule);
+        if (ruleType == GameRuleType.BOOL || ruleType == GameRuleType.INT) {
+            // vanilla rule types are appened using the `visitInteger`/`visitBoolean` overloads
+            return;
         }
 
-        return new GenericGameRuleEntry<>(screen, label, tooltip, str, gameRule);
+        var factory = FACTORIES.get(gameRule.gameRuleType());
+        var vanillaFactory = ((GameRuleEntryFactory<T>) (factory == null ? GENERIC_FACTORY : factory)).toVanilla(screen);
+        addEntry.accept(gameRule, vanillaFactory);
     }
 }

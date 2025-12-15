@@ -14,4 +14,8 @@ import net.minecraft.world.level.gamerules.GameRule;
 @FunctionalInterface
 public interface GameRuleEntryFactory<T> {
     EditGameRulesScreen.RuleEntry create(EditGameRulesScreen screen, Component description, List<FormattedCharSequence> tooltip, String str, GameRule<T> gameRule);
+
+    default EditGameRulesScreen.EntryFactory<T> toVanilla(EditGameRulesScreen screen) {
+        return (label, tooltip, str, gameRule) -> create(screen, label, tooltip, str, gameRule);
+    }
 }
