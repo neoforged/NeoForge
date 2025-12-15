@@ -17,7 +17,6 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
-import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -64,8 +63,11 @@ public class LevelTests {
         final GameRuleCategory category = new GameRuleCategory(Identifier.fromNamespaceAndPath(reg.modId(), "game_rules"));
         final DeferredHolder<GameRule<?>, GameRule<Boolean>> booleanGameRule = reg.register(Registries.GAME_RULE, "custom_boolean_game_rule", (r, n) -> GameRules.registerBoolean(n.toString(), category, true));
         final DeferredHolder<GameRule<?>, GameRule<Integer>> integerGameRule = reg.register(Registries.GAME_RULE, "custom_integer_game_rule", (r, n) -> GameRules.registerInteger(n.toString(), category, 1337, 1337));
-        final DeferredHolder<GameRule<?>, GameRule<Double>> doubleGameRule = reg.register(Registries.GAME_RULE, "custom_double_game_rule", (r, n) -> GameRules.register(n.toString(), category, GameRuleType.valueOf("NEOTESTS_DOUBLE"), DoubleArgumentType.doubleArg(), Codec.DOUBLE, 0D, FeatureFlagSet.of(), GameRuleTypeVisitor::visit, value -> Command.SINGLE_SUCCESS));
-        final DeferredHolder<GameRule<?>, GameRule<String>> stringGameRule = reg.register(Registries.GAME_RULE, "custom_string_game_rule", (r, n) -> GameRules.register(n.toString(), category, GameRuleType.valueOf("NEOTESTS_STRING"), StringArgumentType.string(), Codec.STRING, "", FeatureFlagSet.of(), GameRuleTypeVisitor::visit, value -> Command.SINGLE_SUCCESS));
+        // '(visitor, gameRule) -> {}' is intentional here
+        // `GameRules#visitGameRuleTypes` calls the default `GameRuleTypeVisitor#visit(GameRule<T>)` before invoking the game rule specific visitor
+        // DO NOT call `GameRuleTypeVisitor#visit` from your custom visitor, this will double up 'visits' to your game rule
+        final DeferredHolder<GameRule<?>, GameRule<Double>> doubleGameRule = reg.register(Registries.GAME_RULE, "custom_double_game_rule", (r, n) -> GameRules.register(n.toString(), category, GameRuleType.valueOf("NEOTESTS_DOUBLE"), DoubleArgumentType.doubleArg(), Codec.DOUBLE, 0D, FeatureFlagSet.of(), (visitor, gameRule) -> {}, value -> Command.SINGLE_SUCCESS));
+        final DeferredHolder<GameRule<?>, GameRule<String>> stringGameRule = reg.register(Registries.GAME_RULE, "custom_string_game_rule", (r, n) -> GameRules.register(n.toString(), category, GameRuleType.valueOf("NEOTESTS_STRING"), StringArgumentType.string(), Codec.STRING, "", FeatureFlagSet.of(), (visitor, gameRule) -> {}, value -> Command.SINGLE_SUCCESS));
 
         test.eventListeners().forge().addListener((EntityTickEvent.Pre event) -> {
             if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().name().equals("test-mock-player")) {
