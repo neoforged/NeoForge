@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the mod-specific event bus, only on the {@link LogicalSide#CLIENT logical client}.
  * <p>
  * While you are not required to register a custom factory for your {@link GameRuleType}, it is recommended to do so
- * of your game rule requires more than a simple {@link EditBox}. For example a togglable types similar to {@link GameRuleType#BOOL Boolean}
+ * if your game rule requires more than a simple {@link EditBox}. For example a togglable type similar to {@link GameRuleType#BOOL Boolean}
  * would register a new factory which makes use of a {@link CycleButton} insead of a {@link EditBox}.
  * <p>
  * When no factory exists for a given type the {@link GenericGameRuleEntry generic entry} will be used instead.
