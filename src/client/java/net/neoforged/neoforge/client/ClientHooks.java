@@ -815,12 +815,6 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, materials, bufferSource)).isCanceled();
     }
 
-    public static int getMaxMipmapLevel(int width, int height) {
-        return Math.min(
-                Mth.log2(Math.max(1, width)),
-                Mth.log2(Math.max(1, height)));
-    }
-
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
             BlockPos sectionOrigin, Level level) {
         final var event = new AddSectionGeometryEvent(sectionOrigin, level);
