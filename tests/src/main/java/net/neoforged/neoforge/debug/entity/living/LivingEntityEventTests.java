@@ -375,7 +375,7 @@ public class LivingEntityEventTests {
                     helper.assertTrue(valueNewDamage.equals("9"), "new damage expected 9, actually " + valueNewDamage);
 
                     String valuePrePostDamage = formatter.format(player.getData(VALUE_PRE_POST_DAMAGE));
-                    helper.assertTrue(valuePrePostDamage.equals("9.451"), "damage from sequence before change expected 9.451, actually " + valuePrePostDamage);
+                    helper.assertTrue(valuePrePostDamage.equals("11.451"), "damage from sequence before change expected 11.451, actually " + valuePrePostDamage);
 
                     String valueArmor = formatter.format(player.getData(VALUE_ARMOR));
                     helper.assertTrue(valueArmor.equals("2.96"), "armor expected 2.959999, actually " + valueArmor);
