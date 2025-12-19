@@ -80,17 +80,21 @@
      ) {
          int i = p_454754_ + 32;
          int j = p_455546_ + 7;
-@@ -112,7 +_,12 @@
+@@ -111,8 +_,15 @@
+             flag = true;
          }
  
-         if (flag && p_455390_ >= p_454754_ && p_455390_ <= p_454754_ + p_455809_ && p_455363_ >= p_455546_ && p_455363_ <= p_455546_ + p_455668_) {
+-        if (flag && p_455390_ >= p_454754_ && p_455390_ <= p_454754_ + p_455809_ && p_455363_ >= p_455546_ && p_455363_ <= p_455546_ + p_455668_) {
 -            p_456196_.setTooltipForNextFrame(this.screen.getFont(), List.of(p_455663_, p_467145_), Optional.empty(), p_455390_, p_455363_);
-+            // Neo: Allow mods to adjust the tooltip shown when hovering a mob effect.
-+            var list = List.of(p_455663_, p_467145_);
++        if (p_455390_ >= p_454754_ && p_455390_ <= p_454754_ + p_455809_ && p_455363_ >= p_455546_ && p_455363_ <= p_455546_ + p_455668_) {
++            // Neo: Allow mods to create or adjust the tooltip shown when hovering over a mob effect.
++            var list = flag ? List.of(p_455663_, p_467145_) : List.<Component>of();
 +            if (effectInstance != null) {
-+                list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, effectInstance, List.of(p_455663_, p_467145_));
++                list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, effectInstance, list);
 +            }
-+            p_456196_.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), p_455390_, p_455363_);
++            if (!list.isEmpty()) {
++                p_456196_.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), p_455390_, p_455363_);
++            }
          }
      }
  
