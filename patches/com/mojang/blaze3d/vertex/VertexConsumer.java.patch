@@ -4,7 +4,7 @@
              long k = p_85989_.packedUV(j);
              float f = p_331397_[j];
              int l = ARGB.colorFromFloat(p_331416_, f * p_85990_, f * p_85991_, f * p_85992_);
-+            l = ARGB.multiply(l, ARGB.toABGR(p_85989_.bakedColors().color(j))); // Neo: apply baked color from the quad
++            l = ARGB.multiply(l, p_85989_.bakedColors().color(j)); // Neo: apply baked color from the quad
              int i1 = LightTexture.lightCoordsWithEmission(p_331378_[j], i);
              Vector3f vector3f1 = matrix4f.transformPosition(vector3fc1, new Vector3f());
              float f1 = UVPair.unpackU(k);

@@ -291,14 +291,23 @@
      public void dumpServerProperties(Path p_177911_) throws IOException {
      }
  
-@@ -2003,6 +_,10 @@
- 
-     public WorldData getWorldData() {
+@@ -2005,6 +_,10 @@
          return this.worldData;
-+    }
-+
-+    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
      }
  
++    public MinecraftServer.ReloadableResources getServerResources() {
++         return resources;
++    }
++
      public RegistryAccess.Frozen registryAccess() {
+         return this.registries.compositeAccess();
+     }
+@@ -2135,6 +_,8 @@
+         } else if (p_460808_ == GameRules.SPAWN_MONSTERS) {
+             this.updateMobSpawningFlags();
+         }
++        // Neo: Allow mods to react to game rule state changes
++        net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(this, p_460808_, p_460829_);
+     }
+ 
+     public boolean acceptsTransfers() {

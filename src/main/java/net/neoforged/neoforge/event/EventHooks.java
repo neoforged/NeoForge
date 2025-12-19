@@ -93,6 +93,7 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -168,6 +169,7 @@ import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
+import net.neoforged.neoforge.event.level.GameRuleChangedEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.ModifyCustomSpawnersEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
@@ -1128,5 +1130,9 @@ public class EventHooks {
         ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
         NeoForge.EVENT_BUS.post(event);
         return event.getCustomSpawners();
+    }
+
+    public static <T> void onGameRuleChanged(MinecraftServer server, GameRule<T> gameRule, T newValue) {
+        NeoForge.EVENT_BUS.post(new GameRuleChangedEvent(server, gameRule, newValue));
     }
 }
