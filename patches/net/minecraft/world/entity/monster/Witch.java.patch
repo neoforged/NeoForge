@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/entity/monster/Witch.java
++++ b/net/minecraft/world/entity/monster/Witch.java
+@@ -207,10 +_,11 @@
+     protected float getDamageAfterMagicAbsorb(DamageSource p_34149_, float p_34150_) {
+         p_34150_ = super.getDamageAfterMagicAbsorb(p_34149_, p_34150_);
+         if (p_34149_.getEntity() == this) {
+-            p_34150_ = 0.0F;
++            return 0.0F;
+         }
+ 
+         if (p_34149_.is(DamageTypeTags.WITCH_RESISTANT_TO)) {
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS, p_34150_ * 0.85F);
+             p_34150_ *= 0.15F;
+         }
+ 
