@@ -26,7 +26,7 @@ public interface RegisteredResource<T> extends Resource, TypedInstance<T> {
      * 
      * @deprecated Use {@link #typeHolder()}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     default Holder<T> getHolder() {
         return typeHolder();
     }
