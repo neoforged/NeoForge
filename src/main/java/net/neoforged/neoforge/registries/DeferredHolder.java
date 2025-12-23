@@ -245,17 +245,13 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
         return this.holder != null && this.holder.is(holder);
     }
 
-    /**
-     * {@return true if the passed holder set contains this holder}
-     */
+    @Override
     public boolean is(HolderSet<R> holders) {
         bind(false);
         return this.holder != null && holders.contains(this.holder);
     }
 
-    /**
-     * {@return true if this holder contains the passed value}
-     */
+    @Override
     public boolean is(@Nullable R value) {
         bind(false);
         return this.holder != null && holder.value() == value;
