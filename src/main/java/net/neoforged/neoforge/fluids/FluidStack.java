@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.TypedInstance;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -44,7 +44,7 @@ import org.slf4j.Logger;
  *
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
-public final class FluidStack implements MutableDataComponentHolder {
+public final class FluidStack implements MutableDataComponentHolder, TypedInstance<Fluid> {
     public static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
         return holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> {
             return "Fluid must not be minecraft:empty";
@@ -57,7 +57,7 @@ public final class FluidStack implements MutableDataComponentHolder {
             "FluidStack",
             c -> RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
-                            FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::getFluidHolder),
+                            FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::typeHolder),
                             ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(FluidStack::getAmount), // note: no .orElse(1) compared to ItemStack
                             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
@@ -77,7 +77,7 @@ public final class FluidStack implements MutableDataComponentHolder {
         return Codec.lazyInitialized(
                 () -> RecordCodecBuilder.create(
                         instance -> instance.group(
-                                FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::getFluidHolder),
+                                FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::typeHolder),
                                 DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
                                         .forGetter(stack -> stack.components.asPatch()))
                                 .apply(instance, (holder, patch) -> new FluidStack(holder, amount, patch))));
@@ -112,7 +112,7 @@ public final class FluidStack implements MutableDataComponentHolder {
                 buf.writeVarInt(0);
             } else {
                 buf.writeVarInt(stack.getAmount());
-                FLUID_STREAM_CODEC.encode(buf, stack.getFluidHolder());
+                FLUID_STREAM_CODEC.encode(buf, stack.typeHolder());
                 DataComponentPatch.STREAM_CODEC.encode(buf, stack.components.asPatch());
             }
         }
@@ -227,32 +227,29 @@ public final class FluidStack implements MutableDataComponentHolder {
         return this.isEmpty() ? Fluids.EMPTY : this.fluid;
     }
 
+    /**
+     * @deprecated Use {@link #typeHolder()}
+     */
+    @Deprecated
     public Holder<Fluid> getFluidHolder() {
+        return typeHolder();
+    }
+
+    @Override
+    public Holder<Fluid> typeHolder() {
         return this.getFluid().builtInRegistryHolder();
     }
 
-    public boolean is(TagKey<Fluid> tag) {
-        return this.getFluid().builtInRegistryHolder().is(tag);
-    }
-
-    public boolean is(Fluid fluid) {
-        return this.getFluid() == fluid;
-    }
-
     public boolean is(Predicate<Holder<Fluid>> holderPredicate) {
-        return holderPredicate.test(this.getFluidHolder());
+        return holderPredicate.test(this.typeHolder());
     }
 
-    public boolean is(Holder<Fluid> holder) {
-        return is(holder.value());
-    }
-
-    public boolean is(HolderSet<Fluid> holderSet) {
-        return holderSet.contains(this.getFluidHolder());
-    }
-
+    /**
+     * @deprecated Use {@link #tags()}
+     */
+    @Deprecated
     public Stream<TagKey<Fluid>> getTags() {
-        return this.getFluid().builtInRegistryHolder().tags();
+        return tags();
     }
 
     /**

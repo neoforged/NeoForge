@@ -55,7 +55,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
      * Stream codec for a fluid resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::getHolder,
+            ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::typeHolder,
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
 
@@ -148,8 +148,8 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
      * @return the fluid holder of this resource
      */
     @Override
-    public Holder<Fluid> getHolder() {
-        return innerStack.getFluidHolder();
+    public Holder<Fluid> typeHolder() {
+        return innerStack.typeHolder();
     }
 
     /**

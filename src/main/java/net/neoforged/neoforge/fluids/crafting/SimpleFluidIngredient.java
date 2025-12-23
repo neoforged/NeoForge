@@ -54,7 +54,7 @@ public class SimpleFluidIngredient extends FluidIngredient {
 
     @Override
     public boolean test(FluidStack fluidStack) {
-        return values.contains(fluidStack.getFluidHolder());
+        return values.contains(fluidStack.typeHolder());
     }
 
     @Override

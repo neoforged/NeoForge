@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.resource;
 import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.TypedInstance;
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param <T> The type of the backing registry entry.
  */
-public interface RegisteredResource<T> extends Resource {
+public interface RegisteredResource<T> extends Resource, TypedInstance<T> {
     /**
      * {@return the backing instance of the resource}
      */
@@ -24,16 +25,21 @@ public interface RegisteredResource<T> extends Resource {
 
     /**
      * {@return The registered holder of the backing resource}
+     * 
+     * @deprecated Use {@link #typeHolder()}
      */
-    Holder<T> getHolder();
+    @Deprecated
+    default Holder<T> getHolder() {
+        return typeHolder();
+    }
 
     /**
      * @param tag Tag to check
-     * @return {@code true} if the holder from {@link #getHolder()} is in the specified tag
+     * @return {@code true} if the holder from {@link #typeHolder()} is in the specified tag
      */
     @ApiStatus.NonExtendable
     default boolean is(TagKey<T> tag) {
-        return getHolder().is(tag);
+        return TypedInstance.super.is(tag);
     }
 
     /**
@@ -42,16 +48,16 @@ public interface RegisteredResource<T> extends Resource {
      */
     @ApiStatus.NonExtendable
     default boolean is(T instance) {
-        return instance == value();
+        return TypedInstance.super.is(instance);
     }
 
     /**
      * @param predicate The predicate to perform the test.
-     * @return {@code true} if the predicate's test returns {@code true} for the holder from {@link #getHolder()}.
+     * @return {@code true} if the predicate's test returns {@code true} for the holder from {@link #typeHolder()}.
      */
     @ApiStatus.NonExtendable
     default boolean is(Predicate<Holder<T>> predicate) {
-        return predicate.test(getHolder());
+        return predicate.test(typeHolder());
     }
 
     /**
@@ -60,15 +66,15 @@ public interface RegisteredResource<T> extends Resource {
      */
     @ApiStatus.NonExtendable
     default boolean is(Holder<T> holder) {
-        return is(holder.value());
+        return TypedInstance.super.is(holder);
     }
 
     /**
      * @param holders Set of holders to check
-     * @return {@code true} if the holder set contains the holder provided from {@link #getHolder()}
+     * @return {@code true} if the holder set contains the holder provided from {@link #typeHolder()}
      */
     @ApiStatus.NonExtendable
     default boolean is(HolderSet<T> holders) {
-        return holders.contains(getHolder());
+        return TypedInstance.super.is(holders);
     }
 }

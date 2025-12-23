@@ -55,7 +55,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
      * Stream codec for an item resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
+            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::typeHolder,
             DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
             ItemResource::of);
 
@@ -146,7 +146,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
     }
 
     @Override
-    public Holder<Item> getHolder() {
+    public Holder<Item> typeHolder() {
         return innerStack.typeHolder();
     }
 
