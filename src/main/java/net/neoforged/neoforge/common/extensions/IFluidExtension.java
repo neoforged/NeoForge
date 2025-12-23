@@ -6,10 +6,14 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,8 +21,11 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 
 public interface IFluidExtension {
     private Fluid self() {
@@ -153,5 +160,25 @@ public interface IFluidExtension {
      */
     default boolean canExtinguish(FluidState state, BlockGetter getter, BlockPos pos) {
         return getFluidType().canExtinguish(state, getter, pos);
+    }
+
+    /**
+     * Adds additional tooltip lines to the given {@link FluidStack}.
+     *
+     * <p>This method is invoked when building the fluid's tooltip and allows
+     * fluids to append custom informational lines (e.g. temperature, effects,
+     * mod-specific data).</p>
+     *
+     * <p>Implementations should append to {@code tooltip} and must not
+     * assume it is empty.</p>
+     *
+     * @param fluidStack the fluid stack being rendered
+     * @param tooltip the list of tooltip components to append to
+     * @param context the tooltip context
+     * @param player the player viewing the tooltip, or {@code null}
+     * @param flag controls tooltip verbosity and advanced information
+     */
+    default void appendTooltip(FluidStack fluidStack, List<Component> tooltip, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
+
     }
 }
