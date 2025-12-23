@@ -13,14 +13,14 @@ import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.renderer.item.BlockModelWrapper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
 
 public class VanillaItemModelProvider extends ItemModelGenerators {
-    public VanillaItemModelProvider(ItemModelOutput output, BiConsumer<ResourceLocation, ModelInstance> modelOutput) {
+    public VanillaItemModelProvider(ItemModelOutput output, BiConsumer<Identifier, ModelInstance> modelOutput) {
         super(output, modelOutput);
     }
 
@@ -58,7 +58,7 @@ public class VanillaItemModelProvider extends ItemModelGenerators {
     }
 
     public void generateDynamicTrimmableItem(Item item, String name, int color) {
-        ResourceLocation model = ModelLocationUtils.getModelLocation(item);
+        Identifier model = ModelLocationUtils.getModelLocation(item);
 
         BlockModelWrapper.Unbaked armorModel;
         if (color != -1) {
@@ -67,6 +67,6 @@ public class VanillaItemModelProvider extends ItemModelGenerators {
             armorModel = new BlockModelWrapper.Unbaked(model, List.of());
         }
 
-        this.itemModelOutput.accept(item, new TrimmedArmorModel.Unbaked(armorModel, ResourceLocation.parse(name + "_trim").withPrefix("trims/items/")));
+        this.itemModelOutput.accept(item, new TrimmedArmorModel.Unbaked(armorModel, Identifier.parse(name + "_trim").withPrefix("trims/items/")));
     }
 }
