@@ -230,7 +230,7 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
     /**
      * @deprecated Use {@link #typeHolder()}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Holder<Fluid> getFluidHolder() {
         return typeHolder();
     }
@@ -247,7 +247,7 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
     /**
      * @deprecated Use {@link #tags()}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Stream<TagKey<Fluid>> getTags() {
         return tags();
     }
