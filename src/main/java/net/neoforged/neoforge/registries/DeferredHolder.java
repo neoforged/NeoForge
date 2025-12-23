@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -243,18 +242,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public boolean is(Holder<R> holder) {
         bind(false);
         return this.holder != null && this.holder.is(holder);
-    }
-
-    @Override
-    public boolean is(HolderSet<R> holders) {
-        bind(false);
-        return this.holder != null && holders.contains(this.holder);
-    }
-
-    @Override
-    public boolean is(@Nullable R value) {
-        bind(false);
-        return this.holder != null && holder.value() == value;
     }
 
     /**

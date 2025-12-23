@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.datamaps.IWithData;
@@ -42,20 +41,5 @@ public interface IHolderExtension<T> extends IWithData<T> {
     @Nullable
     default ResourceKey<T> getKey() {
         return ((Holder<T>) this).unwrapKey().orElse(null);
-    }
-
-    /**
-     * {@return true if the passed holder set contains this holder}
-     */
-    default boolean is(HolderSet<T> holders) {
-        return holders.contains((Holder<T>) this);
-    }
-
-    /**
-     * {@return true if this holder contains the passed value}
-     */
-    default boolean is(@Nullable T value) {
-        var holder = (Holder<T>) this;
-        return holder.isBound() && holder.value() == value;
     }
 }
