@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
+import net.minecraft.core.TypedInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -242,6 +243,14 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public boolean is(Holder<R> holder) {
         bind(false);
         return this.holder != null && this.holder.is(holder);
+    }
+
+    /**
+     * {@return true if the passed typed is the same as this holder}
+     */
+    public boolean is(TypedInstance<R> typed) {
+        bind(false);
+        return this.holder != null && typed.is(this.holder);
     }
 
     /**
