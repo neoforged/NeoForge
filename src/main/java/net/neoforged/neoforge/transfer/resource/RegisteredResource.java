@@ -22,16 +22,6 @@ public interface RegisteredResource<T> extends Resource, TypedInstance<T> {
     T value();
 
     /**
-     * {@return The registered holder of the backing resource}
-     * 
-     * @deprecated Use {@link #typeHolder()}
-     */
-    @Deprecated(forRemoval = true)
-    default Holder<T> getHolder() {
-        return typeHolder();
-    }
-
-    /**
      * @param predicate The predicate to perform the test.
      * @return {@code true} if the predicate's test returns {@code true} for the holder from {@link #typeHolder()}.
      */

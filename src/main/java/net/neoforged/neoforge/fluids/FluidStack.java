@@ -15,7 +15,6 @@ import io.netty.handler.codec.EncoderException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.TypedInstance;
 import net.minecraft.core.component.DataComponentMap;
@@ -28,7 +27,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -227,14 +225,6 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
         return this.isEmpty() ? Fluids.EMPTY : this.fluid;
     }
 
-    /**
-     * @deprecated Use {@link #typeHolder()}
-     */
-    @Deprecated(forRemoval = true)
-    public Holder<Fluid> getFluidHolder() {
-        return typeHolder();
-    }
-
     @Override
     public Holder<Fluid> typeHolder() {
         return this.getFluid().builtInRegistryHolder();
@@ -242,14 +232,6 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
 
     public boolean is(Predicate<Holder<Fluid>> holderPredicate) {
         return holderPredicate.test(this.typeHolder());
-    }
-
-    /**
-     * @deprecated Use {@link #tags()}
-     */
-    @Deprecated(forRemoval = true)
-    public Stream<TagKey<Fluid>> getTags() {
-        return tags();
     }
 
     /**
