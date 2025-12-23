@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jspecify.annotations.Nullable;
-
-import java.util.List;
 
 public class FluidTooltipEvent extends PlayerEvent {
     private final TooltipFlag flags;

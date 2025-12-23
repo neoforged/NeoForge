@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -24,8 +25,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jspecify.annotations.Nullable;
-
-import java.util.List;
 
 public interface IFluidExtension {
     private Fluid self() {
@@ -173,12 +172,11 @@ public interface IFluidExtension {
      * assume it is empty.</p>
      *
      * @param fluidStack the fluid stack being rendered
-     * @param tooltip the list of tooltip components to append to
-     * @param context the tooltip context
-     * @param player the player viewing the tooltip, or {@code null}
-     * @param flag controls tooltip verbosity and advanced information
+     * @param tooltip    the list of tooltip components to append to
+     * @param context    the tooltip context
+     * @param player     the player viewing the tooltip, or {@code null}
+     * @param flag       controls tooltip verbosity and advanced information
      */
     default void appendTooltip(FluidStack fluidStack, List<Component> tooltip, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
-
     }
 }

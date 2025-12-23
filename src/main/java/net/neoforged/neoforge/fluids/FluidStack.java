@@ -365,10 +365,10 @@ public final class FluidStack implements MutableDataComponentHolder {
      *
      * <p>The tooltip consists of:
      * <ul>
-     *   <li>The styled hover name</li>
-     *   <li>Additional lines provided by the fluid itself</li>
-     *   <li>Lines added by {@link EventHooks#onFluidTooltip}</li>
-     *   <li>The registry name when advanced tooltips are enabled</li>
+     * <li>The styled hover name</li>
+     * <li>Additional lines provided by the fluid itself</li>
+     * <li>Lines added by {@link EventHooks#onFluidTooltip}</li>
+     * <li>The registry name when advanced tooltips are enabled</li>
      * </ul>
      * </p>
      *
@@ -376,8 +376,8 @@ public final class FluidStack implements MutableDataComponentHolder {
      * being rendered in creative mode, an empty list is returned.</p>
      *
      * @param context the tooltip context
-     * @param player the player viewing the tooltip, or {@code null}
-     * @param flag controls tooltip verbosity and advanced information
+     * @param player  the player viewing the tooltip, or {@code null}
+     * @param flag    controls tooltip verbosity and advanced information
      * @return a list of tooltip components, possibly empty
      */
     public List<Component> getTooltipLines(Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
@@ -408,8 +408,8 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public Component getStyledHoverName() {
         MutableComponent mutablecomponent = Component.empty()
-            .append(this.getHoverName())
-            .withStyle(getRarity().getStyleModifier());
+                .append(this.getHoverName())
+                .withStyle(getRarity().getStyleModifier());
         if (this.has(DataComponents.CUSTOM_NAME)) {
             mutablecomponent.withStyle(ChatFormatting.ITALIC);
         }
