@@ -53,11 +53,12 @@ public class ClientModLoader extends CommonModLoader {
         loading = true;
         LanguageHook.loadBuiltinLanguages();
 
+        Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
         try {
-            Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
             begin(periodicTick, false);
         } catch (ModLoadingException e) {
-            error = e;
+            CrashReportExtender.dumpModLoadingCrashReport(LOGGER, e.getIssues(), new File("."));
+            throw e; // Rethrow so the early error screen can take over
         }
     }
 
