@@ -41,3 +41,17 @@
                  ),
                  new GameConfig.QuickPlayData(quickPlayLogPath, quickPlayVariant)
              );
+@@ -197,8 +_,11 @@
+             CrashReportCategory initialization = report.addCategory("Initialization");
+             NativeModuleLister.addCrashSection(initialization);
+             Minecraft.fillReport(null, null, launchedVersion, null, report);
+-            Minecraft.crash(null, gameDir, report);
+-            return;
++            // Neo: Instead of crash(...), we show the error immediately using our earlydisplay GUI
++            int exitCode = Minecraft.saveReport(gameDir, report);
++            net.neoforged.fml.startup.FatalErrorReporting.reportFatalError(var75);
++            System.exit(exitCode);
++            return; // Neo: Rethrow to let early error screen handle it
+         }
+ 
+         Thread shutdownThread = new Thread("Client Shutdown Thread") {
