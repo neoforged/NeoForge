@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.server;
 
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.jsonrpc.ManagementServer;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
@@ -18,10 +18,10 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * Fired before the {@link ManagementServer} is instantiated in {@link DedicatedServer#initServer()}.
  */
 public class RegisterRpcSchemaEvent extends Event {
-    private final Map<String, SchemaComponent> components;
+    private final Map<String, SchemaComponent<?>> components;
 
     @Internal
-    public RegisterRpcSchemaEvent(Map<String, SchemaComponent> components) {
+    public RegisterRpcSchemaEvent(Map<String, SchemaComponent<?>> components) {
         this.components = components;
     }
 
@@ -30,8 +30,8 @@ public class RegisterRpcSchemaEvent extends Event {
      * 
      * @param component The component to register.
      */
-    public void register(SchemaComponent component) {
-        ResourceLocation key = ResourceLocation.parse(component.name());
+    public void register(SchemaComponent<?> component) {
+        Identifier key = Identifier.parse(component.name());
         if (components.containsKey(key.toString()) || components.containsValue(component)) {
             throw new IllegalArgumentException("Duplicate SchemaComponent: " + key);
         }

@@ -1,20 +1,20 @@
 --- a/net/minecraft/server/jsonrpc/api/Schema.java
 +++ b/net/minecraft/server/jsonrpc/api/Schema.java
-@@ -32,7 +_,7 @@
-                 .apply(p_451636_, Schema::new)
+@@ -55,7 +_,7 @@
+             )
          )
-     );
--    private static final List<SchemaComponent> SCHEMA_REGISTRY = new ArrayList<>();
-+    private static final List<SchemaComponent> SCHEMA_REGISTRY = net.neoforged.neoforge.server.ServerLifecycleHooks.getSchemaRegistry();
-     public static final Schema BOOL_SCHEMA = ofType("boolean");
-     public static final Schema INT_SCHEMA = ofType("integer");
-     public static final Schema NUMBER_SCHEMA = ofType("number");
-@@ -96,7 +_,7 @@
+         .validate(p_457382_ -> p_457382_ == null ? DataResult.error(() -> "Should not deserialize schema") : DataResult.success(p_457382_));
+-    private static final List<SchemaComponent<?>> SCHEMA_REGISTRY = new ArrayList<>();
++    private static final List<SchemaComponent<?>> SCHEMA_REGISTRY = net.neoforged.neoforge.server.ServerLifecycleHooks.getSchemaRegistry();
+     public static final Schema<Boolean> BOOL_SCHEMA = ofType("boolean", Codec.BOOL);
+     public static final Schema<Integer> INT_SCHEMA = ofType("integer", Codec.INT);
+     public static final Schema<Either<Boolean, Integer>> BOOL_OR_INT_SCHEMA = ofTypes(List.of("boolean", "integer"), Codec.either(Codec.BOOL, Codec.INT));
+@@ -162,7 +_,7 @@
      }
  
-     public static List<SchemaComponent> getSchemaRegistry() {
+     public static List<SchemaComponent<?>> getSchemaRegistry() {
 -        return SCHEMA_REGISTRY;
 +        return java.util.Collections.unmodifiableList(SCHEMA_REGISTRY);
      }
  
-     public static Schema ofRef(URI p_451180_) {
+     public static <T> Schema<T> ofRef(URI p_451180_, Codec<T> p_458284_) {
