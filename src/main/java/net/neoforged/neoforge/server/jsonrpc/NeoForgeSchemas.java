@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.server.jsonrpc;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -16,12 +16,12 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 public final class NeoForgeSchemas {
     private NeoForgeSchemas() {}
 
-    static final SchemaComponent REGISTRY_SCHEMA = new SchemaComponent(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry"), Schema.record()
+    static final SchemaComponent<RegistryInfo> REGISTRY_SCHEMA = new SchemaComponent<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry"), Schema.record(RegistryInfo.CODEC)
             .withField("registryName", Schema.STRING_SCHEMA));
-    static final SchemaComponent REGISTRY_SCHEMA_WITH_ENTRIES = new SchemaComponent(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry_with_entries"), Schema.record()
+    static final SchemaComponent<RegistryInfo> REGISTRY_SCHEMA_WITH_ENTRIES = new SchemaComponent<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry_with_entries"), Schema.record(RegistryInfo.CODEC)
             .withField("registryName", Schema.STRING_SCHEMA)
             .withField("entries", Schema.STRING_SCHEMA.asArray()));
-    static final SchemaComponent MOD_SCHEMA = new SchemaComponent(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "mod"), Schema.record()
+    static final SchemaComponent<ModRecord> MOD_SCHEMA = new SchemaComponent<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "mod"), Schema.record(ModRecord.CODEC)
             .withField("modId", Schema.STRING_SCHEMA)
             .withField("version", Schema.STRING_SCHEMA)
             .withField("displayName", Schema.STRING_SCHEMA)

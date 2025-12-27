@@ -147,19 +147,19 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    private static final ArrayList<SchemaComponent> SCHEMA_REGISTRY = new ArrayList<>();
+    private static final ArrayList<SchemaComponent<?>> SCHEMA_REGISTRY = new ArrayList<>();
 
     @Internal
-    public static List<SchemaComponent> getSchemaRegistry() {
+    public static List<SchemaComponent<?>> getSchemaRegistry() {
         return SCHEMA_REGISTRY;
     }
 
     @Internal
     public static void fireSchemaRegistryEvent() {
-        final Map<String, SchemaComponent> schemaRegistry = new HashMap<>();
+        final Map<String, SchemaComponent<?>> schemaRegistry = new HashMap<>();
 
         // fill with vanilla values
-        for (SchemaComponent schemaComponent : SCHEMA_REGISTRY) {
+        for (SchemaComponent<?> schemaComponent : SCHEMA_REGISTRY) {
             schemaRegistry.put(schemaComponent.name(), schemaComponent);
         }
 
@@ -171,8 +171,8 @@ public class ServerLifecycleHooks {
         SCHEMA_REGISTRY.ensureCapacity(schemaRegistry.size());
         SCHEMA_REGISTRY.addAll(schemaRegistry.values());
         SCHEMA_REGISTRY.sort((o1, o2) -> {
-            ResourceLocation rl1 = ResourceLocation.tryParse(o1.name());
-            ResourceLocation rl2 = ResourceLocation.tryParse(o2.name());
+            Identifier rl1 = Identifier.tryParse(o1.name());
+            Identifier rl2 = Identifier.tryParse(o2.name());
             if (rl1 == null && rl2 == null) {
                 return o1.name().compareTo(o2.name());
             } else if (rl1 == null) {

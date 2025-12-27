@@ -4,8 +4,8 @@
      private final MinecraftServerSettingsService minecraftServerSettingsService;
      private final MinecraftServerStateService minecraftServerStateService;
      private final MinecraftExecutorService executorService;
-+    private final @org.jetbrains.annotations.Nullable DedicatedServer server;
-+    private final @org.jetbrains.annotations.Nullable JsonRpcLogger logger;
++    private final @org.jspecify.annotations.Nullable DedicatedServer server;
++    private final @org.jspecify.annotations.Nullable JsonRpcLogger logger;
 +
 +    /** @deprecated Neo: Use the constructor with the server and logger instead **/
 +    @Deprecated
@@ -31,8 +31,8 @@
          MinecraftServerStateService p_443354_,
 -        MinecraftExecutorService p_449378_
 +        MinecraftExecutorService p_449378_,
-+        @org.jetbrains.annotations.Nullable DedicatedServer server,
-+        @org.jetbrains.annotations.Nullable JsonRpcLogger logger
++        @org.jspecify.annotations.Nullable DedicatedServer server,
++        @org.jspecify.annotations.Nullable JsonRpcLogger logger
      ) {
          this.notificationManager = p_449655_;
          this.allowListService = p_443286_;

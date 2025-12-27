@@ -1,13 +1,13 @@
 --- a/net/minecraft/server/jsonrpc/api/SchemaComponent.java
 +++ b/net/minecraft/server/jsonrpc/api/SchemaComponent.java
-@@ -3,6 +_,10 @@
- import java.net.URI;
+@@ -4,6 +_,10 @@
+ import java.util.List;
  
- public record SchemaComponent(String name, URI ref, Schema schema) {
-+    public SchemaComponent(net.minecraft.resources.ResourceLocation name, Schema schema) {
+ public record SchemaComponent<T>(String name, URI ref, Schema<T> schema) {
++    public SchemaComponent(net.minecraft.resources.Identifier name, Schema<T> schema) {
 +        this(name.toString(), ReferenceUtil.createLocalReference(name.toString()), schema);
 +    }
 +
-     public Schema asRef() {
-         return Schema.ofRef(this.ref);
+     public Schema<T> asRef() {
+         return Schema.ofRef(this.ref, this.schema.codec());
      }
