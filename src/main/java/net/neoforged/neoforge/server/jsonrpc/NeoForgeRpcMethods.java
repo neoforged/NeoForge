@@ -34,12 +34,12 @@ public final class NeoForgeRpcMethods {
                 .build());
         helper.register(rl("registries"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistries)
-                .response("registries", NeoForgeSchemas.REGISTRY_SCHEMA.asArray())
+                .response("registries", NeoForgeSchemas.REGISTRY_SCHEMA_WITHOUT_ENTRIES.asArray())
                 .description("List all registries on the server")
                 .build());
         helper.register(rl("registry"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistryContents)
-                .response("registry", NeoForgeSchemas.REGISTRY_SCHEMA_WITH_ENTRIES.asRef())
+                .response("registry", NeoForgeSchemas.REGISTRY_SCHEMA.asRef())
                 .param("registryId", Schema.ofType("string", Identifier.CODEC))
                 .description("Get the information for the given registry")
                 .build());
@@ -62,13 +62,13 @@ public final class NeoForgeRpcMethods {
         return api.getServer()
                 .registryAccess()
                 .listRegistries()
-                .map(reg -> RegistryInfo.from(reg, false))
+                .map(RegistryInfo::withoutEntries)
                 .toList();
     }
 
     private static RegistryInfo listRegistryContents(MinecraftApi api, Identifier registryId, ClientInfo clientInfo) {
-        return RegistryInfo.from(api.getServer()
+        return RegistryInfo.withEntries(api.getServer()
                 .registryAccess()
-                .lookupOrThrow(ResourceKey.createRegistryKey(registryId)), true);
+                .lookupOrThrow(ResourceKey.createRegistryKey(registryId)));
     }
 }
