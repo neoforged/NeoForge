@@ -64,8 +64,13 @@ public final class FluidUtil {
      *
      * <p>The contents from the first non-empty index are returned.
      * As such the returned contents might not be extractable, and the stack might contain additional contents.
+     *
+     * <p>{@link FluidStack#EMPTY} is returned if the given stack is {@linkplain ItemStack#EMPTY empty}.
      */
     public static FluidStack getFirstStackContained(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return FluidStack.EMPTY;
+        }
         var handler = ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM);
         if (handler == null) {
             return FluidStack.EMPTY;
