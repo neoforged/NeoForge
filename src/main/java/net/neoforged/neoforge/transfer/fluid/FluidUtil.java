@@ -147,6 +147,27 @@ public final class FluidUtil {
         // Prioritize block position, use player position as a fallback
         Vec3 position = blockPos != null ? Vec3.atCenterOf(blockPos) : new Vec3(player.getX(), player.getY() + 0.5, player.getZ());
 
+        playSoundAndGameEvent(stack, level, position, player, pickup);
+    }
+
+    /**
+     * Triggers the appropriate sound effect and game event for an interaction with a fluid handler.
+     *
+     * @param resource The resource that was moved during the interaction.
+     * @param level    The level the interaction occurred in.
+     * @param position Where the interaction occurred at. The sound and game event will trigger here.
+     * @param player   The player that caused the interaction (optional). The game event will be attributed to them.
+     * @param pickup   True if the fluid was extracted from the handler, false if it was inserted.
+     */
+    public static void triggerSoundAndGameEvent(FluidResource resource, Level level, Vec3 position, @Nullable Player player, boolean pickup) {
+        SoundEvent soundEvent = resource.getFluidType().getSound(resource.toStack(1), pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
+        if (soundEvent != null) {
+            level.playSound(null, position.x, position.y, position.z, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        level.gameEvent(player, pickup ? GameEvent.FLUID_PICKUP : GameEvent.FLUID_PLACE, position);
+    }
+
+    private static void playSoundAndGameEvent(FluidStack stack, Level level, Vec3 position, @Nullable Player player, boolean pickup) {
         SoundEvent soundEvent = stack.getFluidType().getSound(stack, pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
         if (soundEvent != null) {
             level.playSound(null, position.x, position.y, position.z, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
