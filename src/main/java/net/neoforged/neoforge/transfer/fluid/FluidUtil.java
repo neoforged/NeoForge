@@ -10,7 +10,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,6 +34,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -120,26 +120,24 @@ public final class FluidUtil {
             return false;
         }
 
-        return !moveWithSound(handler, handHandler, player.level(), pos, player, true).isEmpty()
-                || !moveWithSound(handHandler, handler, player.level(), pos, player, false).isEmpty();
+        return moveWithSound(handler, handHandler, player.level(), pos, player, true) != null
+                || moveWithSound(handHandler, handler, player.level(), pos, player, false) != null;
     }
 
-    private static FluidStack moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Level level, @Nullable BlockPos pos, @Nullable Player player, boolean pickup) {
+    @Nullable
+    private static ResourceStack<FluidResource> moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Level level, @Nullable BlockPos pos, @Nullable Player player, boolean pickup) {
         if (player == null && pos == null) {
             throw new IllegalArgumentException("Either player or pos must be provided.");
         }
 
         var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, null);
-        if (moved == null) {
-            return FluidStack.EMPTY;
+        if (moved != null) {
+            playSoundAndGameEvent(moved.resource(), level, pos, player, pickup);
         }
-
-        var stack = moved.resource().toStack(moved.amount());
-        playSoundAndGameEvent(stack, level, pos, player, pickup);
-        return stack;
+        return moved;
     }
 
-    private static void playSoundAndGameEvent(FluidStack stack, Level level, @Nullable BlockPos blockPos, @Nullable Player player, boolean pickup) {
+    private static void playSoundAndGameEvent(FluidResource resource, Level level, @Nullable BlockPos blockPos, @Nullable Player player, boolean pickup) {
         if (player == null && blockPos == null) {
             throw new IllegalArgumentException("Either player or blockPos must be provided.");
         }
@@ -147,7 +145,7 @@ public final class FluidUtil {
         // Prioritize block position, use player position as a fallback
         Vec3 position = blockPos != null ? Vec3.atCenterOf(blockPos) : new Vec3(player.getX(), player.getY() + 0.5, player.getZ());
 
-        playSoundAndGameEvent(stack, level, position, player, pickup);
+        triggerSoundAndGameEvent(resource, level, position, player, pickup);
     }
 
     /**
@@ -160,15 +158,8 @@ public final class FluidUtil {
      * @param pickup   True if the fluid was extracted from the handler, false if it was inserted.
      */
     public static void triggerSoundAndGameEvent(FluidResource resource, Level level, Vec3 position, @Nullable Player player, boolean pickup) {
-        SoundEvent soundEvent = resource.getFluidType().getSound(resource.toStack(1), pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
-        if (soundEvent != null) {
-            level.playSound(null, position.x, position.y, position.z, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }
-        level.gameEvent(player, pickup ? GameEvent.FLUID_PICKUP : GameEvent.FLUID_PLACE, position);
-    }
-
-    private static void playSoundAndGameEvent(FluidStack stack, Level level, Vec3 position, @Nullable Player player, boolean pickup) {
-        SoundEvent soundEvent = stack.getFluidType().getSound(stack, pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
+        var stack = resource.toStack(FluidType.BUCKET_VOLUME);
+        var soundEvent = resource.getFluidType().getSound(stack, pickup ? SoundActions.BUCKET_FILL : SoundActions.BUCKET_EMPTY);
         if (soundEvent != null) {
             level.playSound(null, position.x, position.y, position.z, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
@@ -230,7 +221,7 @@ public final class FluidUtil {
                     return FluidStack.EMPTY;
                 }
                 tx.commit();
-                playSoundAndGameEvent(extracted, level, pos, player, true);
+                playSoundAndGameEvent(resource, level, pos, player, true);
                 return extracted;
             }
         } else {
@@ -238,7 +229,8 @@ public final class FluidUtil {
             if (fluidHandler == null) {
                 return FluidStack.EMPTY;
             }
-            return moveWithSound(fluidHandler, destination, level, pos, player, true);
+            var moved = moveWithSound(fluidHandler, destination, level, pos, player, true);
+            return moved != null ? moved.resource().toStack(moved.amount()) : FluidStack.EMPTY;
         }
     }
 
@@ -336,7 +328,7 @@ public final class FluidUtil {
                 var state = fluidType.getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
                 level.setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
             }
-            playSoundAndGameEvent(stack, level, pos, player, false);
+            playSoundAndGameEvent(resource, level, pos, player, false);
             return true;
         }
     }
