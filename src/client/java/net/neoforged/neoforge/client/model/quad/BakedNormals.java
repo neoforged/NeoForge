@@ -136,7 +136,7 @@ public sealed interface BakedNormals {
      * @param destination The vector to unpack the packed normal into, if {@code null}, a new vector will be allocated.
      * @return The vector that the normal was unpacked into.
      */
-    static Vector3fc unpack(int packedNormal, @Nullable Vector3f destination) {
+    static Vector3f unpack(int packedNormal, @Nullable Vector3f destination) {
         if (destination == null) {
             destination = new Vector3f();
         }
