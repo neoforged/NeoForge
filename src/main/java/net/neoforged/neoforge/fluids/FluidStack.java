@@ -392,6 +392,10 @@ public final class FluidStack implements MutableDataComponentHolder {
             EventHooks.onFluidTooltip(this, player, list, flag, context);
             if (flag.isAdvanced()) {
                 list.add(Component.literal(BuiltInRegistries.FLUID.getKey(fluid).toString()).withStyle(ChatFormatting.DARK_GRAY));
+                int componentCount = this.components.size();
+                if (componentCount > 0) {
+                    list.add(Component.translatable("item.components", componentCount).withStyle(ChatFormatting.DARK_GRAY));
+                }
             }
             return list;
         }
