@@ -7,6 +7,8 @@ package net.neoforged.neoforge.unittest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import java.util.Arrays;
@@ -34,6 +36,8 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.model.quad.MutableQuad;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
@@ -172,17 +176,55 @@ public class MutableQuadTests {
         for (int i = 0; i < 4; i++) {
             assertEquals(mutableQuad.copyPosition(i), refQuad.position(i), "position[" + i + "]");
             assertEquals(mutableQuad.copyNormal(i), BakedNormals.unpack(refQuad.bakedNormals().normal(i), new Vector3f()), "normal[" + i + "]");
-            assertEquals(mutableQuad.getU(i), UVPair.unpackU(refQuad.packedUV(i)), "uv[" + i + "].u");
-            assertEquals(mutableQuad.getV(i), UVPair.unpackV(refQuad.packedUV(i)), "uv[" + i + "].v");
-            assertEquals(mutableQuad.getColor(i), refQuad.bakedColors().color(i), "color[" + i + "]");
+            assertEquals(mutableQuad.u(i), UVPair.unpackU(refQuad.packedUV(i)), "uv[" + i + "].u");
+            assertEquals(mutableQuad.v(i), UVPair.unpackV(refQuad.packedUV(i)), "uv[" + i + "].v");
+            assertEquals(mutableQuad.color(i), refQuad.bakedColors().color(i), "color[" + i + "]");
         }
 
-        assertEquals(mutableQuad.getTintIndex(), refQuad.tintIndex());
-        assertEquals(mutableQuad.getDirection(), refQuad.direction());
-        assertEquals(mutableQuad.getSprite(), refQuad.sprite());
+        assertEquals(mutableQuad.tintIndex(), refQuad.tintIndex());
+        assertEquals(mutableQuad.direction(), refQuad.direction());
+        assertEquals(mutableQuad.sprite(), refQuad.sprite());
         assertEquals(mutableQuad.isShade(), refQuad.shade());
-        assertEquals(mutableQuad.getLightEmission(), refQuad.lightEmission());
+        assertEquals(mutableQuad.lightEmission(), refQuad.lightEmission());
         assertEquals(mutableQuad.isHasAmbientOcclusion(), refQuad.hasAmbientOcclusion());
+    }
+
+    /**
+     * Moves from a sprite to a sprite with different position in the atlas and checks
+     * that the UV gets translated correctly.
+     */
+    @Test
+    void testSetSpriteAndMoveUv() {
+        var refQuad = buildReferenceQuads().get(Direction.NORTH);
+        var oldSprite = new MockSprite(192, 192);
+        var mutableQuad = new MutableQuad().setFrom(refQuad);
+        mutableQuad.setSprite(oldSprite);
+
+        // Move to some position within the old sprite
+        float[] localUv = {
+                0.25f, 0.25f,
+                0.75f, 0.25f,
+                0.75f, 0.75f,
+                0.25f, 0.75f
+        };
+        for (int i = 0; i < 4; i++) {
+            float localU = localUv[i * 2];
+            float localV = localUv[i * 2 + 1];
+            mutableQuad.setUvFromSprite(i, localU, localV);
+            assertEquals(oldSprite.getU(localU), mutableQuad.u(i), "u[" + i + "] == oldSprite.getU(" + localU + ")");
+            assertEquals(oldSprite.getV(localV), mutableQuad.v(i), "v[" + i + "] == oldSprite.getV(" + localV + ")");
+        }
+
+        // Now change the sprite and also move the UV
+        var newSprite = new MockSprite(32, 32);
+        mutableQuad.setSpriteAndMoveUv(newSprite);
+
+        for (int i = 0; i < 4; i++) {
+            float localU = localUv[i * 2];
+            float localV = localUv[i * 2 + 1];
+            assertEquals(newSprite.getU(localU), mutableQuad.u(i), "u[" + i + "] == newSprite.getU(" + localU + ")");
+            assertEquals(newSprite.getV(localV), mutableQuad.v(i), "v[" + i + "] == newSprite.getV(" + localV + ")");
+        }
     }
 
     @Test
@@ -190,6 +232,50 @@ public class MutableQuadTests {
         var refQuad = buildReferenceQuads().get(Direction.NORTH);
         var mutableQuad = new MutableQuad().setFrom(refQuad);
         assertThat(mutableQuad.toBakedQuad()).usingRecursiveComparison().isEqualTo(refQuad);
+    }
+
+    @Test
+    void testToBakedQuadPositionReuseWithoutChanges() {
+        var refQuad = buildReferenceQuads().get(Direction.NORTH);
+        var mutatedQuad = new MutableQuad().setFrom(refQuad).toBakedQuad();
+
+        // Without changes, the positions should be the same objects
+        assertSame(refQuad.position0(), mutatedQuad.position0());
+        assertSame(refQuad.position1(), mutatedQuad.position1());
+        assertSame(refQuad.position2(), mutatedQuad.position2());
+        assertSame(refQuad.position3(), mutatedQuad.position3());
+    }
+
+    @Test
+    void testToBakedQuadPositionReuseWithPartialChanges() {
+        // Mutate one of the positions, check that all others are reused, but the changed one isn't
+        var refQuad = buildReferenceQuads().get(Direction.NORTH);
+        for (int i = 0; i < 4; i++) {
+            var mutatedQuad = new MutableQuad().setFrom(refQuad).setPos(i, 1, 2, 3).toBakedQuad();
+
+            // Without changes, the positions should be the same objects
+            for (int j = 0; j < 4; j++) {
+                if (i == j) {
+                    assertNotSame(refQuad.position(j), mutatedQuad.position(j));
+                } else {
+                    assertSame(refQuad.position(j), mutatedQuad.position(j));
+                }
+            }
+        }
+    }
+
+    @Test
+    void testToBakedQuadPositionReuseOnTransforms() {
+        // Rotating a full quad by 90° around center should still lead to full reuse of the vectors
+        var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSprite(new MockSprite()).toBakedQuad();
+        var quat = new Quaternionf().fromAxisAngleDeg(refQuad.direction().getUnitVec3f(), 90);
+        var rotation = new Matrix4f().rotateAroundAffine(quat, 0.5f, 0.5f, 0.5f, new Matrix4f());
+        var mutatedQuad = new MutableQuad().setFrom(refQuad).transform(rotation).toBakedQuad();
+
+        assertSame(refQuad.position1(), mutatedQuad.position0());
+        assertSame(refQuad.position2(), mutatedQuad.position1());
+        assertSame(refQuad.position3(), mutatedQuad.position2());
+        assertSame(refQuad.position0(), mutatedQuad.position3());
     }
 
     private static void assertQuadsEquals(BakedQuad expected, MutableQuad actual) {
@@ -266,6 +352,10 @@ public class MutableQuadTests {
         private static final Identifier ID = Identifier.parse("x:y");
 
         public MockSprite() {
+            this(128, 128);
+        }
+
+        public MockSprite(int x, int y) {
             super(ID, new SpriteContents(ID, new FrameSize(16, 16), new NativeImage(16, 16, false)), 256, 256, 128, 128, 0);
         }
 
