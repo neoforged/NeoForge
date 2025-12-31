@@ -9,6 +9,7 @@ import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.FaceInfo;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
@@ -742,6 +743,18 @@ public class MutableQuad {
             }
         }
 
+        return this;
+    }
+
+    /**
+     * Recalculates the order of vertices to conform to the order expected by the Vanilla AO algorithm.
+     *
+     * <p>It uses the current {@linkplain #direction() direction}.
+     *
+     * @see FaceBakery#recalculateWinding
+     */
+    public MutableQuad recalculateWinding() {
+        FaceBakery.recalculateWinding(positions, uvs, direction);
         return this;
     }
 

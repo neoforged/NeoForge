@@ -265,17 +265,17 @@ public class MutableQuadTests {
     }
 
     @Test
-    void testToBakedQuadPositionReuseOnTransforms() {
-        // Rotating a full quad by 90° around center should still lead to full reuse of the vectors
+    void testTransform() {
+        // Apply a really simple transform to a quad on the south face
         var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSprite(new MockSprite()).toBakedQuad();
-        var quat = new Quaternionf().fromAxisAngleDeg(refQuad.direction().getUnitVec3f(), 90);
-        var rotation = new Matrix4f().rotateAroundAffine(quat, 0.5f, 0.5f, 0.5f, new Matrix4f());
-        var mutatedQuad = new MutableQuad().setFrom(refQuad).transform(rotation).toBakedQuad();
+        var quat = new Quaternionf().fromAxisAngleDeg(Direction.EAST.getUnitVec3f(), 180);
+        var rotation = new Matrix4f().rotateAround(quat, 0.5f, 0.5f, 0.5f, new Matrix4f());
 
-        assertSame(refQuad.position1(), mutatedQuad.position0());
-        assertSame(refQuad.position2(), mutatedQuad.position1());
-        assertSame(refQuad.position3(), mutatedQuad.position2());
-        assertSame(refQuad.position0(), mutatedQuad.position3());
+        // It should be equivalent to a cube face on the opposite side, incl. normal vectors
+        var expectedQuad = new MutableQuad().setCubeFace(Direction.NORTH, 0, 0, 0, 1, 1, 1).setSprite(new MockSprite()).toBakedQuad();
+
+        var transformedQuad = new MutableQuad().setFrom(refQuad).transform(rotation).setDirection(Direction.NORTH).recalculateWinding();
+        assertQuadsEquals(expectedQuad, transformedQuad);
     }
 
     private static void assertQuadsEquals(BakedQuad expected, MutableQuad actual) {
