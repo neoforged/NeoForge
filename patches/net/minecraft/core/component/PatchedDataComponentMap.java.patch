@@ -19,7 +19,7 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -231,7 +_,23 @@
+@@ -231,7 +_,24 @@
  
      @Override
      public int hashCode() {
@@ -29,7 +29,7 @@
 +
 +    // Neo: Change implementation of hashCode to reduce collisions.
 +    // For a map, hashCode is specified as the sum of the hash codes of its entries.
-+    // We do that, but change the entry hash code to 31^<key hash> * <value hash>,
++    // We do that, but change the entry hash code to 8192^<key hash> * <value hash>,
 +    // where <key hash> is the lower bits of the identity hash code of the key.
 +    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch) {
 +        int h = 0, n = patch.size();
@@ -37,7 +37,8 @@
 +        while (n-- != 0) {
 +            var entry = iterator.next();
 +            int exponent = System.identityHashCode(entry.getKey()) & 0xff;
-+            int entryHash = com.google.common.math.IntMath.pow(31, exponent) * entry.getValue().hashCode();
++            // Use 8191 instead of the usual 31, as 31 can produce many collisions with typical integer component ranges (0-255) if the exponent difference is only 1
++            int entryHash = com.google.common.math.IntMath.pow(8191, exponent) * entry.getValue().hashCode();
 +            h += entryHash;
 +        }
 +        return h;
