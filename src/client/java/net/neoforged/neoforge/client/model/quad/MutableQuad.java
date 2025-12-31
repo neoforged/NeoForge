@@ -563,6 +563,19 @@ public class MutableQuad {
     }
 
     /**
+     * Sets the color of all verteices to a packed ARGB color.
+     *
+     * @see ARGB
+     */
+    public MutableQuad setColor(int packedColor) {
+        colors[0] = packedColor;
+        colors[1] = packedColor;
+        colors[2] = packedColor;
+        colors[3] = packedColor;
+        return this;
+    }
+
+    /**
      * Sets the color of a vertex to a packed ARGB color.
      *
      * @see ARGB
