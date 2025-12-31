@@ -6,11 +6,6 @@
 package net.neoforged.neoforge.unittest;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +14,14 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ComponentHashingTest {
     private static final Logger LOG = LoggerFactory.getLogger(ComponentHashingTest.class);
@@ -46,7 +49,8 @@ public class ComponentHashingTest {
         LOG.info("HashCode Dump (Unique HashCodes: {}):", hashCodeToStacks.size());
         LOG.info("========================================================");
         for (var entry : hashCodeToStacks.entrySet()) {
-            LOG.info("{} -> {}", entry.getKey(), entry.getValue());
+            var stackList = entry.getValue().stream().map(is -> String.format(Locale.ROOT, "[%d, %d]", is.get(DataComponents.DAMAGE), is.get(DataComponents.REPAIR_COST))).collect(Collectors.joining(", "));
+            LOG.info("{} -> {}", entry.getKey(), stackList);
         }
         LOG.info("========================================================");
         LOG.info("Breakdown for biggest bucket");
@@ -54,7 +58,7 @@ public class ComponentHashingTest {
         var biggestBucket = hashCodeToStacks.values().stream().max(Comparator.comparingInt(List::size)).get();
         for (var stack : biggestBucket) {
             LOG.info("HashCode Breakdown for {} ({})", stack.getItem(), stack.getComponentsPatch());
-            LOG.info("  Overall -> {}", stack.hashCode());
+            LOG.info("  Overall -> {}", ItemStack.hashItemAndComponents(stack));
             LOG.info("  Item -> {}", stack.getItem().hashCode());
             LOG.info("  DataComponentMap -> {}", stack.getComponents().hashCode());
             if (stack.getComponents() instanceof PatchedDataComponentMap patchedMap) {
