@@ -75,7 +75,7 @@ public class MutableQuad {
      *
      * <p>See <a href="#components">components</a> for the mapping of index to component.
      */
-    public float posComponent(int vertexIndex, int componentIndex) {
+    public float positionComponent(int vertexIndex, int componentIndex) {
         return positions[vertexIndex].get(componentIndex);
     }
 
@@ -122,7 +122,7 @@ public class MutableQuad {
     /**
      * Sets a component of a vertex's position.
      */
-    public MutableQuad setPosComponent(int vertexIndex, int componentIndex, float value) {
+    public MutableQuad setPositionComponent(int vertexIndex, int componentIndex, float value) {
         positions[vertexIndex].setComponent(componentIndex, value);
         return this;
     }
@@ -130,7 +130,7 @@ public class MutableQuad {
     /**
      * Sets a vertex's position.
      */
-    public MutableQuad setPos(int vertexIndex, float x, float y, float z) {
+    public MutableQuad setPosition(int vertexIndex, float x, float y, float z) {
         positions[vertexIndex].set(x, y, z);
         return this;
     }
@@ -138,93 +138,122 @@ public class MutableQuad {
     /**
      * Sets a vertex's position.
      */
-    public MutableQuad setPos(int vertexIndex, Vector3fc position) {
+    public MutableQuad setPosition(int vertexIndex, Vector3fc position) {
         positions[vertexIndex].set(position);
         return this;
     }
 
     /**
-     * {@return the x-component of a vertex's normal or NaN if the normal is undefined}
+     * Sets the positions of this quad to form a rectangle on the given block side using a coordinate-system matching
+     * the default orientation of sprites in Vanilla block-models.
+     * <p>
+     * Inspired by the Fabric Renderer API method {@code square}.
+     * <p>
+     * The left, bottom, right and top parameters correspond to the default sprite orientation in Vanilla block models.
+     * For {@link Direction#UP} the "up" direction is facing {@link Direction#NORTH}, while for {@link Direction#DOWN},
+     * it faces {@link Direction#SOUTH}.
+     * <p>All coordinates use a normalized [0,1] range.
+     * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
      */
-    public float normalX(int vertexIndex) {
-        return normalComponent(vertexIndex, 0);
-    }
+    public MutableQuad setCubeFaceFromSpriteCoords(Direction side,
+            float left,
+            float bottom,
+            float right,
+            float top,
+            float depth) {
+        this.direction = side;
 
-    /**
-     * {@return the y-component of a vertex's normal or NaN if the normal is undefined}
-     */
-    public float normalY(int vertexIndex) {
-        return normalComponent(vertexIndex, 1);
-    }
-
-    /**
-     * {@return the z-component of a vertex's normal or NaN if the normal is undefined}
-     */
-    public float normalZ(int vertexIndex) {
-        return normalComponent(vertexIndex, 2);
-    }
-
-    /**
-     * {@return a component of a vertex's normal or NaN if the normal is undefined}
-     *
-     * <p>See <a href="#components">components</a> for the mapping of index to component.
-     */
-    public float normalComponent(int vertexIndex, int componentIndex) {
-        var packedNormal = normals[vertexIndex];
-        if (BakedNormals.isUnspecified(packedNormal)) {
-            return Float.NaN;
-        } else {
-            return BakedNormals.unpackComponent(packedNormal, componentIndex);
+        switch (side) {
+            case NORTH -> {
+                // -Z (looking south at north face)
+                // left is +X, bottom is -Y
+                positions[0].set(1 - left, top, depth);
+                positions[1].set(1 - left, bottom, depth);
+                positions[2].set(1 - right, bottom, depth);
+                positions[3].set(1 - right, top, depth);
+            }
+            case SOUTH -> {
+                // +Z (looking north at south face)
+                // left is +X, bottom is -Y
+                positions[0].set(left, top, 1 - depth);
+                positions[1].set(left, bottom, 1 - depth);
+                positions[2].set(right, bottom, 1 - depth);
+                positions[3].set(right, top, 1 - depth);
+            }
+            case EAST -> {
+                // -X (looking west at east face)
+                // left is +Z, bottom is -Y
+                positions[0].set(depth, top, 1 - left);
+                positions[1].set(depth, bottom, 1 - left);
+                positions[2].set(depth, bottom, 1 - right);
+                positions[3].set(depth, top, 1 - right);
+            }
+            case WEST -> {
+                // +X (looking east at west face)
+                // left is -Z, bottom is -Y
+                positions[0].set(depth, top, left);
+                positions[1].set(depth, bottom, left);
+                positions[2].set(depth, bottom, right);
+                positions[3].set(depth, top, right);
+            }
+            case UP -> {
+                // -Y (looking down at up face)
+                // left is -X, bottom is +Z
+                positions[0].set(left, 1 - depth, 1 - top);
+                positions[1].set(left, 1 - depth, 1 - bottom);
+                positions[2].set(right, 1 - depth, 1 - bottom);
+                positions[3].set(right, 1 - depth, 1 - top);
+            }
+            case DOWN -> {
+                // +Y (looking up at down face)
+                // left is -X, bottom is -Z
+                positions[0].set(left, depth, top);
+                positions[1].set(left, depth, bottom);
+                positions[2].set(right, depth, bottom);
+                positions[3].set(right, depth, top);
+            }
+            default -> {
+                throw new IllegalStateException();
+            }
         }
-    }
-
-    /**
-     * {@return a vertex normal in packed form}
-     *
-     * @see BakedNormals#unpack(int, Vector3f)
-     * @see BakedNormals#pack(float, float, float)
-     */
-    public int packedNormal(int vertexIndex) {
-        return normals[vertexIndex];
-    }
-
-    /**
-     * Same as {@link #copyNormal(int, Vector3f)}, but constructs a new destination vector automatically.
-     */
-    public Vector3f copyNormal(int vertexIndex) {
-        return copyNormal(vertexIndex, new Vector3f());
-    }
-
-    /**
-     * Copies the normal vector of a vertex into a given vector and returns it.
-     */
-    public Vector3f copyNormal(int vertexIndex, Vector3f dest) {
-        return BakedNormals.unpack(normals[vertexIndex], dest);
-    }
-
-    /**
-     * Sets the normal vector of a vertex.
-     */
-    public MutableQuad setNormal(int vertexIndex, float x, float y, float z) {
-        normals[vertexIndex] = BakedNormals.pack(x, y, z);
         return this;
     }
 
     /**
-     * Sets the normal vector of a vertex.
+     * Same as {@link #setCubeFace(Direction, float, float, float, float, float, float)}, but takes the from and to
+     * positions from vectors.
      */
-    public MutableQuad setNormal(int vertexIndex, Vector3fc normal) {
-        normals[vertexIndex] = BakedNormals.pack(normal);
-        return this;
+    public MutableQuad setCubeFace(Direction side, Vector3fc from, Vector3fc to) {
+        return setCubeFace(side, from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
     }
 
     /**
-     * Sets the normal vector of a vertex from its packed representation.
-     *
-     * @see BakedNormals
+     * Sets the positions of this quad to the face of a cube as it would be defined in a Vanilla block model.
+     * <p>
+     * Inspired by the Fabric Renderer API method {@code square}.
+     * <p>
+     * The left, bottom, right and top parameters correspond to the default sprite orientation in Vanilla block models.
+     * For {@link Direction#UP} the "up" direction is facing {@link Direction#NORTH}, while for {@link Direction#DOWN},
+     * it faces {@link Direction#SOUTH}.
+     * <p>All coordinates use a normalized [0,1] range.
+     * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
      */
-    public MutableQuad setPackedNormal(int vertexIndex, int packedNormal) {
-        normals[vertexIndex] = packedNormal;
+    public MutableQuad setCubeFace(Direction side,
+            float fromX,
+            float fromY,
+            float fromZ,
+            float toX,
+            float toY,
+            float toZ) {
+        this.direction = side;
+
+        for (int i = 0; i < 4; i++) {
+            var vertexInfo = FaceInfo.fromFacing(side).getVertexInfo(i);
+            positions[i].set(
+                    vertexInfo.xFace().select(fromX, fromY, fromZ, toX, toY, toZ),
+                    vertexInfo.yFace().select(fromX, fromY, fromZ, toX, toY, toZ),
+                    vertexInfo.zFace().select(fromX, fromY, fromZ, toX, toY, toZ));
+        }
         return this;
     }
 
@@ -322,250 +351,6 @@ public class MutableQuad {
     }
 
     /**
-     * Sets the texture coordinates of the current quad to use the entire {@linkplain #sprite() current sprite}.
-     * <p>
-     * The first vertex will use the top-left of the sprite, while the third vertex uses the lower right.
-     */
-    public MutableQuad setUvFromFullSprite() {
-        setUvFromSprite(0, 0, 0);
-        setUvFromSprite(1, 0, 1);
-        setUvFromSprite(2, 1, 1);
-        setUvFromSprite(3, 1, 0);
-        return this;
-    }
-
-    public int tintIndex() {
-        return tintIndex;
-    }
-
-    public MutableQuad setTintIndex(int tintIndex) {
-        this.tintIndex = tintIndex;
-        return this;
-    }
-
-    public Direction direction() {
-        return direction;
-    }
-
-    public MutableQuad setDirection(Direction direction) {
-        this.direction = direction;
-        return this;
-    }
-
-    @Nullable
-    public TextureAtlasSprite sprite() {
-        return sprite;
-    }
-
-    /**
-     * Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
-     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite)} for this.
-     */
-    public MutableQuad setSprite(TextureAtlasSprite sprite) {
-        this.sprite = sprite;
-        return this;
-    }
-
-    /**
-     * Note that changing the sprite does not automatically translate the current UV coordinates to where this new
-     * sprite is within the atlas.
-     *
-     * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
-     */
-    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite) {
-        transformUvsFromAtlasToSprite();
-        this.sprite = sprite;
-        transformUvsFromSpriteToAtlas();
-        return this;
-    }
-
-    /**
-     * {@return the color of a given vertex in ARGB form}
-     *
-     * @see ARGB
-     */
-    public int color(int vertexIndex) {
-        return colors[vertexIndex];
-    }
-
-    /**
-     * Sets the color of a vertex to a packed ARGB color.
-     *
-     * @see ARGB
-     */
-    public MutableQuad setColor(int vertexIndex, int packedColor) {
-        colors[vertexIndex] = packedColor;
-        return this;
-    }
-
-    /**
-     * Sets the color of a vertex from integer components (0-255).
-     *
-     * @see ARGB
-     */
-    public MutableQuad setColor(int vertexIndex, int r, int g, int b, int a) {
-        return setColor(vertexIndex, ARGB.color(a, r, g, b));
-    }
-
-    public boolean isShade() {
-        return shade;
-    }
-
-    public MutableQuad setShade(boolean shade) {
-        this.shade = shade;
-        return this;
-    }
-
-    public int lightEmission() {
-        return lightEmission;
-    }
-
-    public MutableQuad setLightEmission(int lightEmission) {
-        this.lightEmission = lightEmission;
-        return this;
-    }
-
-    public boolean isHasAmbientOcclusion() {
-        return hasAmbientOcclusion;
-    }
-
-    public MutableQuad setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-        this.hasAmbientOcclusion = hasAmbientOcclusion;
-        return this;
-    }
-
-    public MutableQuad setFrom(BakedQuad quad) {
-        lastSourceQuad = quad;
-        for (int i = 0; i < 4; i++) {
-            positions[i].set(quad.position(i));
-            normals[i] = quad.bakedNormals().normal(i);
-            colors[i] = quad.bakedColors().color(i);
-            uvs[i] = quad.packedUV(i);
-        }
-        tintIndex = quad.tintIndex();
-        direction = quad.direction();
-        sprite = quad.sprite();
-        shade = quad.shade();
-        lightEmission = quad.lightEmission();
-        hasAmbientOcclusion = quad.hasAmbientOcclusion();
-        return this;
-    }
-
-    /**
-     * Sets the positions of this quad to form a rectangle on the given block side using a coordinate-system matching
-     * the default orientation of sprites in Vanilla block-models.
-     * <p>
-     * Inspired by the Fabric Rendering API method {@code square}.
-     * <p>
-     * The left, bottom, right and top parameters correspond to the default sprite orientation in Vanilla block models.
-     * For {@link Direction#UP} the "up" direction is facing {@link Direction#NORTH}, while for {@link Direction#DOWN},
-     * it faces {@link Direction#SOUTH}.
-     * <p>All coordinates use a normalized [0,1] range.
-     * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
-     */
-    public MutableQuad setCubeFaceFromSpriteCoords(Direction side,
-            float left,
-            float bottom,
-            float right,
-            float top,
-            float depth) {
-        this.direction = side;
-
-        switch (side) {
-            case NORTH -> {
-                // -Z (looking south at north face)
-                // left is +X, bottom is -Y
-                positions[0].set(1 - left, top, depth);
-                positions[1].set(1 - left, bottom, depth);
-                positions[2].set(1 - right, bottom, depth);
-                positions[3].set(1 - right, top, depth);
-            }
-            case SOUTH -> {
-                // +Z (looking north at south face)
-                // left is +X, bottom is -Y
-                positions[0].set(left, top, 1 - depth);
-                positions[1].set(left, bottom, 1 - depth);
-                positions[2].set(right, bottom, 1 - depth);
-                positions[3].set(right, top, 1 - depth);
-            }
-            case EAST -> {
-                // -X (looking west at east face)
-                // left is +Z, bottom is -Y
-                positions[0].set(depth, top, 1 - left);
-                positions[1].set(depth, bottom, 1 - left);
-                positions[2].set(depth, bottom, 1 - right);
-                positions[3].set(depth, top, 1 - right);
-            }
-            case WEST -> {
-                // +X (looking east at west face)
-                // left is -Z, bottom is -Y
-                positions[0].set(depth, top, left);
-                positions[1].set(depth, bottom, left);
-                positions[2].set(depth, bottom, right);
-                positions[3].set(depth, top, right);
-            }
-            case UP -> {
-                // -Y (looking down at up face)
-                // left is -X, bottom is +Z
-                positions[0].set(left, 1 - depth, 1 - top);
-                positions[1].set(left, 1 - depth, 1 - bottom);
-                positions[2].set(right, 1 - depth, 1 - bottom);
-                positions[3].set(right, 1 - depth, 1 - top);
-            }
-            case DOWN -> {
-                // +Y (looking up at down face)
-                // left is -X, bottom is -Z
-                positions[0].set(left, depth, top);
-                positions[1].set(left, depth, bottom);
-                positions[2].set(right, depth, bottom);
-                positions[3].set(right, depth, top);
-            }
-            default -> {
-                throw new IllegalStateException();
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Same as {@link #setCubeFace(Direction, float, float, float, float, float, float)}, but takes the from and to
-     * positions from vectors.
-     */
-    public MutableQuad setCubeFace(Direction side, Vector3fc from, Vector3fc to) {
-        return setCubeFace(side, from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
-    }
-
-    /**
-     * Sets the positions of this quad to the face of a cube as it would be defined in a Vanilla block model.
-     * <p>
-     * Inspired by the Fabric Rendering API method {@code square}.
-     * <p>
-     * The left, bottom, right and top parameters correspond to the default sprite orientation in Vanilla block models.
-     * For {@link Direction#UP} the "up" direction is facing {@link Direction#NORTH}, while for {@link Direction#DOWN},
-     * it faces {@link Direction#SOUTH}.
-     * <p>All coordinates use a normalized [0,1] range.
-     * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
-     */
-    public MutableQuad setCubeFace(Direction side,
-            float fromX,
-            float fromY,
-            float fromZ,
-            float toX,
-            float toY,
-            float toZ) {
-        this.direction = side;
-
-        for (int i = 0; i < 4; i++) {
-            var vertexInfo = FaceInfo.fromFacing(side).getVertexInfo(i);
-            positions[i].set(
-                    vertexInfo.xFace().select(fromX, fromY, fromZ, toX, toY, toZ),
-                    vertexInfo.yFace().select(fromX, fromY, fromZ, toX, toY, toZ),
-                    vertexInfo.zFace().select(fromX, fromY, fromZ, toX, toY, toZ));
-        }
-        return this;
-    }
-
-    /**
      * This method simply projects each vertex onto the cube face the quad is sourcing its block lighting from,
      * and derives the vertex UV that way.
      */
@@ -617,6 +402,208 @@ public class MutableQuad {
         }
 
         transformUvsFromSpriteToAtlas();
+        return this;
+    }
+
+    public int tintIndex() {
+        return tintIndex;
+    }
+
+    public MutableQuad setTintIndex(int tintIndex) {
+        this.tintIndex = tintIndex;
+        return this;
+    }
+
+    public Direction direction() {
+        return direction;
+    }
+
+    public MutableQuad setDirection(Direction direction) {
+        this.direction = direction;
+        return this;
+    }
+
+    @Nullable
+    public TextureAtlasSprite sprite() {
+        return sprite;
+    }
+
+    /**
+     * Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite)} for this.
+     */
+    public MutableQuad setSprite(TextureAtlasSprite sprite) {
+        this.sprite = sprite;
+        return this;
+    }
+
+    /**
+     * Note that changing the sprite does not automatically translate the current UV coordinates to where this new
+     * sprite is within the atlas.
+     *
+     * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
+     */
+    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite) {
+        transformUvsFromAtlasToSprite();
+        this.sprite = sprite;
+        transformUvsFromSpriteToAtlas();
+        return this;
+    }
+
+    public boolean isShade() {
+        return shade;
+    }
+
+    public MutableQuad setShade(boolean shade) {
+        this.shade = shade;
+        return this;
+    }
+
+    public int lightEmission() {
+        return lightEmission;
+    }
+
+    public MutableQuad setLightEmission(int lightEmission) {
+        this.lightEmission = lightEmission;
+        return this;
+    }
+
+    /**
+     * {@return the x-component of a vertex's normal or NaN if the normal is undefined}
+     */
+    public float normalX(int vertexIndex) {
+        return normalComponent(vertexIndex, 0);
+    }
+
+    /**
+     * {@return the y-component of a vertex's normal or NaN if the normal is undefined}
+     */
+    public float normalY(int vertexIndex) {
+        return normalComponent(vertexIndex, 1);
+    }
+
+    /**
+     * {@return the z-component of a vertex's normal or NaN if the normal is undefined}
+     */
+    public float normalZ(int vertexIndex) {
+        return normalComponent(vertexIndex, 2);
+    }
+
+    /**
+     * {@return a component of a vertex's normal or NaN if the normal is undefined}
+     *
+     * <p>See <a href="#components">components</a> for the mapping of index to component.
+     */
+    public float normalComponent(int vertexIndex, int componentIndex) {
+        var packedNormal = normals[vertexIndex];
+        if (BakedNormals.isUnspecified(packedNormal)) {
+            return Float.NaN;
+        } else {
+            return BakedNormals.unpackComponent(packedNormal, componentIndex);
+        }
+    }
+
+    /**
+     * {@return a vertex normal in packed form}
+     *
+     * @see BakedNormals#unpack(int, Vector3f)
+     * @see BakedNormals#pack(float, float, float)
+     */
+    public int packedNormal(int vertexIndex) {
+        return normals[vertexIndex];
+    }
+
+    /**
+     * Same as {@link #copyNormal(int, Vector3f)}, but constructs a new destination vector automatically.
+     */
+    public Vector3f copyNormal(int vertexIndex) {
+        return copyNormal(vertexIndex, new Vector3f());
+    }
+
+    /**
+     * Copies the normal vector of a vertex into a given vector and returns it.
+     */
+    public Vector3f copyNormal(int vertexIndex, Vector3f dest) {
+        return BakedNormals.unpack(normals[vertexIndex], dest);
+    }
+
+    /**
+     * Sets the normal vector of a vertex.
+     */
+    public MutableQuad setNormal(int vertexIndex, float x, float y, float z) {
+        normals[vertexIndex] = BakedNormals.pack(x, y, z);
+        return this;
+    }
+
+    /**
+     * Sets the normal vector of a vertex.
+     */
+    public MutableQuad setNormal(int vertexIndex, Vector3fc normal) {
+        normals[vertexIndex] = BakedNormals.pack(normal);
+        return this;
+    }
+
+    /**
+     * Sets the normal vector of a vertex from its packed representation.
+     *
+     * @see BakedNormals
+     */
+    public MutableQuad setPackedNormal(int vertexIndex, int packedNormal) {
+        normals[vertexIndex] = packedNormal;
+        return this;
+    }
+
+    /**
+     * {@return the color of a given vertex in ARGB form}
+     *
+     * @see ARGB
+     */
+    public int color(int vertexIndex) {
+        return colors[vertexIndex];
+    }
+
+    /**
+     * Sets the color of a vertex to a packed ARGB color.
+     *
+     * @see ARGB
+     */
+    public MutableQuad setColor(int vertexIndex, int packedColor) {
+        colors[vertexIndex] = packedColor;
+        return this;
+    }
+
+    /**
+     * Sets the color of a vertex from integer components (0-255).
+     *
+     * @see ARGB
+     */
+    public MutableQuad setColor(int vertexIndex, int r, int g, int b, int a) {
+        return setColor(vertexIndex, ARGB.color(a, r, g, b));
+    }
+
+    public boolean isHasAmbientOcclusion() {
+        return hasAmbientOcclusion;
+    }
+
+    public MutableQuad setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
+        this.hasAmbientOcclusion = hasAmbientOcclusion;
+        return this;
+    }
+
+    public MutableQuad setFrom(BakedQuad quad) {
+        lastSourceQuad = quad;
+        for (int i = 0; i < 4; i++) {
+            positions[i].set(quad.position(i));
+            normals[i] = quad.bakedNormals().normal(i);
+            colors[i] = quad.bakedColors().color(i);
+            uvs[i] = quad.packedUV(i);
+        }
+        tintIndex = quad.tintIndex();
+        direction = quad.direction();
+        sprite = quad.sprite();
+        shade = quad.shade();
+        lightEmission = quad.lightEmission();
+        hasAmbientOcclusion = quad.hasAmbientOcclusion();
         return this;
     }
 

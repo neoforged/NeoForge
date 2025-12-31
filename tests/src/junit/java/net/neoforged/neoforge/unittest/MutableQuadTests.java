@@ -251,7 +251,7 @@ public class MutableQuadTests {
         // Mutate one of the positions, check that all others are reused, but the changed one isn't
         var refQuad = buildReferenceQuads().get(Direction.NORTH);
         for (int i = 0; i < 4; i++) {
-            var mutatedQuad = new MutableQuad().setFrom(refQuad).setPos(i, 1, 2, 3).toBakedQuad();
+            var mutatedQuad = new MutableQuad().setFrom(refQuad).setPosition(i, 1, 2, 3).toBakedQuad();
 
             // Without changes, the positions should be the same objects
             for (int j = 0; j < 4; j++) {
