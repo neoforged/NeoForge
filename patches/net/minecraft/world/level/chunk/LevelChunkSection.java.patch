@@ -5,7 +5,7 @@
          FluidState previousFluid = previous.getFluidState();
          FluidState fluid = state.getFluidState();
 -        if (!previous.isAir()) {
-+        if (!previousFluid.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
++        if (!previous.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
              this.nonEmptyBlockCount--;
              if (previous.isRandomlyTicking()) {
                  this.tickingBlockCount--;
