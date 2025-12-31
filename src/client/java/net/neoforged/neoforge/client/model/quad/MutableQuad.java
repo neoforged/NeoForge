@@ -5,19 +5,18 @@
 
 package net.neoforged.neoforge.client.model.quad;
 
+import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.FaceInfo;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
-import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
+import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
-
-import java.util.Arrays;
 
 /**
  * A mutable representation of a {@link BakedQuad}.
@@ -25,7 +24,7 @@ import java.util.Arrays;
  * <p>This class can be used for constructing quads from scratch, or for loading and modifying existing quads.
  */
 public class MutableQuad {
-    private final Vector3f[] positions = new Vector3f[]{
+    private final Vector3f[] positions = new Vector3f[] {
             new Vector3f(),
             new Vector3f(),
             new Vector3f(),
@@ -37,90 +36,125 @@ public class MutableQuad {
 
     private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    private TextureAtlasSprite sprite = UnitTextureAtlasSprite.INSTANCE;
+    @Nullable
+    private TextureAtlasSprite sprite;
     private boolean shade;
     private int lightEmission;
     private boolean hasAmbientOcclusion;
 
-    public void setNormal(int vertexIndex, float x, float y, float z) {
+    public MutableQuad setNormal(int vertexIndex, float x, float y, float z) {
         normals[vertexIndex] = BakedNormals.pack(x, y, z);
+        return this;
     }
 
-    public void setNormal(int vertexIndex, Vector3fc normal) {
+    public MutableQuad setNormal(int vertexIndex, Vector3fc normal) {
         normals[vertexIndex] = BakedNormals.pack(normal);
+        return this;
     }
 
     /**
      * @see BakedNormals
      */
-    public void setPackedNormal(int vertexIndex, int packedNormal) {
+    public MutableQuad setPackedNormal(int vertexIndex, int packedNormal) {
         normals[vertexIndex] = packedNormal;
+        return this;
     }
 
     /**
      * @see ARGB
      */
-    public void setColor(int vertexIndex, int packedColor) {
+    public MutableQuad setColor(int vertexIndex, int packedColor) {
         colors[vertexIndex] = packedColor;
+        return this;
     }
 
-    public void setColor(int vertexIndex, int r, int g, int b, int a) {
-        setColor(vertexIndex, ARGB.color(a, r, g, b));
+    public MutableQuad setColor(int vertexIndex, int r, int g, int b, int a) {
+        return setColor(vertexIndex, ARGB.color(a, r, g, b));
     }
 
-    public void setUv(int vertexIndex, float u, float v) {
+    public MutableQuad setUv(int vertexIndex, float u, float v) {
         uvs[vertexIndex] = UVPair.pack(u, v);
+        return this;
     }
 
-    public void setUv(int vertexIndex, Vector2fc uv) {
-        setUv(vertexIndex, uv.x(), uv.y());
+    public MutableQuad setUv(int vertexIndex, Vector2fc uv) {
+        return setUv(vertexIndex, uv.x(), uv.y());
     }
 
     /**
      * @see UVPair
      */
-    public void setPackedUv(int vertexIndex, int packedUv) {
+    public MutableQuad setPackedUv(int vertexIndex, long packedUv) {
         uvs[vertexIndex] = packedUv;
+        return this;
     }
 
     public int getTintIndex() {
         return tintIndex;
     }
 
-    public void setTintIndex(int tintIndex) {
+    public MutableQuad setTintIndex(int tintIndex) {
         this.tintIndex = tintIndex;
+        return this;
     }
 
     public Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
+    public MutableQuad setDirection(Direction direction) {
         this.direction = direction;
+        return this;
     }
 
+    @Nullable
     public TextureAtlasSprite getSprite() {
         return sprite;
     }
 
-    public void setSprite(TextureAtlasSprite sprite) {
+    public MutableQuad setSprite(TextureAtlasSprite sprite) {
         this.sprite = sprite;
+        return this;
+    }
+
+    public float getU(int vertexIndex) {
+        return UVPair.unpackU(uvs[vertexIndex]);
+    }
+
+    public float getV(int vertexIndex) {
+        return UVPair.unpackV(uvs[vertexIndex]);
+    }
+
+    public long getPackedUv(int vertexIndex) {
+        return uvs[vertexIndex];
+    }
+
+    public Vector2f copyUv(int vertexIndex) {
+        return copyUv(vertexIndex, new Vector2f());
+    }
+
+    public Vector2f copyUv(int vertexIndex, Vector2f dest) {
+        var packedUv = uvs[vertexIndex];
+        dest.x = UVPair.unpackU(packedUv);
+        dest.y = UVPair.unpackV(packedUv);
+        return dest;
     }
 
     /**
      * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #getSprite() sprite} and the
      * given UV coordinates within that sprite.
      */
-    public void setUvFromSprite(int vertexIndex, float u, float v) {
-        setUv(vertexIndex, sprite.getU(u), sprite.getV(v));
+    public MutableQuad setUvFromSprite(int vertexIndex, float u, float v) {
+        var sprite = getRequiredSprite();
+        return setUv(vertexIndex, sprite.getU(u), sprite.getV(v));
     }
 
     /**
      * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #getSprite() sprite} and the
      * given UV coordinates within that sprite.
      */
-    public void setUvFromSprite(int vertexIndex, Vector2fc uv) {
-        setUvFromSprite(vertexIndex, uv.x(), uv.y());
+    public MutableQuad setUvFromSprite(int vertexIndex, Vector2fc uv) {
+        return setUvFromSprite(vertexIndex, uv.x(), uv.y());
     }
 
     /**
@@ -128,35 +162,43 @@ public class MutableQuad {
      * <p>
      * The first vertex will use the top-left of the sprite, while the third vertex uses the lower right.
      */
-    public void setUvFromFullSprite() {
+    public MutableQuad setUvFromFullSprite() {
         setUvFromSprite(0, 0, 0);
         setUvFromSprite(1, 0, 1);
         setUvFromSprite(2, 1, 1);
         setUvFromSprite(3, 1, 0);
+        return this;
+    }
+
+    public int getColor(int vertexIndex) {
+        return colors[vertexIndex];
     }
 
     public boolean isShade() {
         return shade;
     }
 
-    public void setShade(boolean shade) {
+    public MutableQuad setShade(boolean shade) {
         this.shade = shade;
+        return this;
     }
 
     public int getLightEmission() {
         return lightEmission;
     }
 
-    public void setLightEmission(int lightEmission) {
+    public MutableQuad setLightEmission(int lightEmission) {
         this.lightEmission = lightEmission;
+        return this;
     }
 
     public boolean isHasAmbientOcclusion() {
         return hasAmbientOcclusion;
     }
 
-    public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
+    public MutableQuad setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
         this.hasAmbientOcclusion = hasAmbientOcclusion;
+        return this;
     }
 
     /**
@@ -211,43 +253,49 @@ public class MutableQuad {
     /**
      * Sets the x-component of a vertex's position.
      */
-    public void setPosX(int vertexIndex, float x) {
+    public MutableQuad setPosX(int vertexIndex, float x) {
         positions[vertexIndex].x = x;
+        return this;
     }
 
     /**
      * Sets the y-component of a vertex's position.
      */
-    public void setPosY(int vertexIndex, float y) {
+    public MutableQuad setPosY(int vertexIndex, float y) {
         positions[vertexIndex].y = y;
+        return this;
     }
 
     /**
      * Sets the x-component of a vertex's position.
      */
-    public void setPosZ(int vertexIndex, float z) {
+    public MutableQuad setPosZ(int vertexIndex, float z) {
         positions[vertexIndex].z = z;
+        return this;
     }
 
     /**
      * Sets a component of a vertex's position.
      */
-    public void setPosComponent(int vertexIndex, int componentIndex, float value) {
+    public MutableQuad setPosComponent(int vertexIndex, int componentIndex, float value) {
         positions[vertexIndex].setComponent(componentIndex, value);
+        return this;
     }
 
     /**
      * Sets a vertex's position.
      */
-    public void setPos(int vertexIndex, float x, float y, float z) {
+    public MutableQuad setPos(int vertexIndex, float x, float y, float z) {
         positions[vertexIndex].set(x, y, z);
+        return this;
     }
 
     /**
      * Sets a vertex's position.
      */
-    public void setPos(int vertexIndex, Vector3fc position) {
+    public MutableQuad setPos(int vertexIndex, Vector3fc position) {
         positions[vertexIndex].set(position);
+        return this;
     }
 
     /**
@@ -301,11 +349,12 @@ public class MutableQuad {
         return copyNormal(vertexIndex, new Vector3f());
     }
 
-    public void setFrom(BakedQuad quad) {
+    public MutableQuad setFrom(BakedQuad quad) {
         for (int i = 0; i < 4; i++) {
             positions[i] = new Vector3f(quad.position(i));
             normals[i] = quad.bakedNormals().normal(i);
             colors[i] = quad.bakedColors().color(i);
+            uvs[i] = quad.packedUV(i);
         }
         tintIndex = quad.tintIndex();
         direction = quad.direction();
@@ -313,6 +362,7 @@ public class MutableQuad {
         shade = quad.shade();
         lightEmission = quad.lightEmission();
         hasAmbientOcclusion = quad.hasAmbientOcclusion();
+        return this;
     }
 
     /**
@@ -327,12 +377,13 @@ public class MutableQuad {
      * <p>All coordinates use a normalized [0,1] range.
      * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
      */
-    public void setCubeFaceFromSpriteCoords(Direction side,
-                                            float left,
-                                            float bottom,
-                                            float right,
-                                            float top,
-                                            float depth) {
+    public MutableQuad setCubeFaceFromSpriteCoords(Direction side,
+            float left,
+            float bottom,
+            float right,
+            float top,
+            float depth) {
+        this.direction = side;
 
         switch (side) {
             case NORTH -> {
@@ -387,14 +438,15 @@ public class MutableQuad {
                 throw new IllegalStateException();
             }
         }
+        return this;
     }
 
     /**
      * Same as {@link #setCubeFace(Direction, float, float, float, float, float, float)}, but takes the from and to
      * positions from vectors.
      */
-    public void setCubeFace(Direction side, Vector3fc from, Vector3fc to) {
-        setCubeFace(side, from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
+    public MutableQuad setCubeFace(Direction side, Vector3fc from, Vector3fc to) {
+        return setCubeFace(side, from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
     }
 
     /**
@@ -408,29 +460,99 @@ public class MutableQuad {
      * <p>All coordinates use a normalized [0,1] range.
      * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
      */
-    public void setCubeFace(Direction side,
-                            float fromX,
-                            float fromY,
-                            float fromZ,
-                            float toX,
-                            float toY,
-                            float toZ) {
+    public MutableQuad setCubeFace(Direction side,
+            float fromX,
+            float fromY,
+            float fromZ,
+            float toX,
+            float toY,
+            float toZ) {
+        this.direction = side;
+
         for (int i = 0; i < 4; i++) {
             var vertexInfo = FaceInfo.fromFacing(side).getVertexInfo(i);
             positions[i].set(
                     vertexInfo.xFace().select(fromX, fromY, fromZ, toX, toY, toZ),
                     vertexInfo.yFace().select(fromX, fromY, fromZ, toX, toY, toZ),
-                    vertexInfo.zFace().select(fromX, fromY, fromZ, toX, toY, toZ)
-            );
+                    vertexInfo.zFace().select(fromX, fromY, fromZ, toX, toY, toZ));
+        }
+        return this;
+    }
+
+    /**
+     * This method simply projects each vertex onto the cube face the quad is sourcing its block lighting from,
+     * and derives the vertex UV that way.
+     */
+    public MutableQuad bakeUvsFromPosition() {
+        return bakeUvsFromPosition(UVTransform.IDENTITY);
+    }
+
+    /**
+     * Same as {@link #bakeUvsFromPosition()}, but applies a transform to the generated UVs before baking.
+     */
+    public MutableQuad bakeUvsFromPosition(UVTransform transform) {
+        switch (direction) {
+            case DOWN -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(positions[i].x, 1 - positions[i].z);
+                }
+            }
+            case UP -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(positions[i].x, positions[i].z);
+                }
+            }
+            case NORTH -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(1 - positions[i].x, 1 - positions[i].y);
+                }
+            }
+            case SOUTH -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(positions[i].x, 1 - positions[i].y);
+                }
+            }
+            case WEST -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(positions[i].z, 1 - positions[i].y);
+                }
+            }
+            case EAST -> {
+                for (int i = 0; i < 4; i++) {
+                    uvs[i] = UVPair.pack(1 - positions[i].z, 1 - positions[i].y);
+                }
+            }
+        }
+
+        if (!transform.isIdentity()) {
+            for (int i = 0; i < 4; i++) {
+                uvs[i] = transform.transformPacked(uvs[i]);
+            }
+        }
+
+        transformUvsFromSpriteToAtlas();
+        return this;
+    }
+
+    /**
+     * Assumes that the UV coordinates are in sprite-space and transforms
+     * them to atlas-space.
+     */
+    private void transformUvsFromSpriteToAtlas() {
+        getRequiredSprite();
+        for (int i = 0; i < 4; i++) {
+            long packedUv = getPackedUv(i);
+            setUvFromSprite(i, UVPair.unpackU(packedUv), UVPair.unpackV(packedUv));
         }
     }
 
     public BakedQuad toBakedQuad() {
+        var sprite = getRequiredSprite();
         return new BakedQuad(
-                positions[0],
-                positions[1],
-                positions[2],
-                positions[3],
+                new Vector3f(positions[0]),
+                new Vector3f(positions[1]),
+                new Vector3f(positions[2]),
+                new Vector3f(positions[3]),
                 uvs[0],
                 uvs[1],
                 uvs[2],
@@ -445,7 +567,7 @@ public class MutableQuad {
                 hasAmbientOcclusion);
     }
 
-    public void reset() {
+    public MutableQuad reset() {
         for (int i = 0; i < 4; i++) {
             positions[i].set(0, 0, 0);
         }
@@ -453,7 +575,15 @@ public class MutableQuad {
         Arrays.fill(normals, 0);
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
-        sprite = UnitTextureAtlasSprite.INSTANCE;
+        sprite = null;
         lightEmission = 0;
+        return this;
+    }
+
+    private TextureAtlasSprite getRequiredSprite() {
+        if (sprite == null) {
+            throw new IllegalStateException("A sprite has to be set on this quad before UVs are manipulated");
+        }
+        return sprite;
     }
 }

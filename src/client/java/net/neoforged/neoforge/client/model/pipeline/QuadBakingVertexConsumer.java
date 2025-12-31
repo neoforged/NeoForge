@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.pipeline;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
+import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,12 +16,7 @@ import net.minecraft.util.ARGB;
 import net.neoforged.neoforge.client.model.quad.BakedColors;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
-import org.joml.Vector2fc;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.jspecify.annotations.Nullable;
-
-import java.util.Arrays;
 
 /**
  * Vertex consumer that outputs {@linkplain BakedQuad baked quads}.
@@ -68,7 +64,6 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         return this;
     }
 
-
     @Override
     public VertexConsumer setColor(int packedColor) {
         colors[vertexIndex] = packedColor;
@@ -80,13 +75,11 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         return setColor(ARGB.color(a, r, g, b));
     }
 
-
     @Override
     public VertexConsumer setUv(float u, float v) {
         uvs[vertexIndex] = UVPair.pack(u, v);
         return this;
     }
-
 
     @Override
     public VertexConsumer setUv1(int u, int v) {
@@ -108,36 +101,29 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         return this;
     }
 
-
     public void setTintIndex(int tintIndex) {
         this.tintIndex = tintIndex;
     }
-
 
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
-
     public void setSprite(TextureAtlasSprite sprite) {
         this.sprite = sprite;
     }
-
 
     public void setShade(boolean shade) {
         this.shade = shade;
     }
 
-
     public void setLightEmission(int lightEmission) {
         this.lightEmission = lightEmission;
     }
 
-
     public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
         this.hasAmbientOcclusion = hasAmbientOcclusion;
     }
-
 
     public BakedQuad bakeQuad() {
         if (!building || ++vertexIndex != 4) {
