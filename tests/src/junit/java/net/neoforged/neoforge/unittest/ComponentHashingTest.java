@@ -6,6 +6,14 @@
 package net.neoforged.neoforge.unittest;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.ItemStack;
@@ -14,14 +22,6 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ComponentHashingTest {
     private static final Logger LOG = LoggerFactory.getLogger(ComponentHashingTest.class);
@@ -65,13 +65,15 @@ public class ComponentHashingTest {
                 var prototypeHash = ObfuscationReflectionHelper.getPrivateValue(PatchedDataComponentMap.class, patchedMap, "prototype").hashCode();
                 var patch = (Reference2ObjectMap<?, ?>) ObfuscationReflectionHelper.getPrivateValue(PatchedDataComponentMap.class, patchedMap, "patch");
 
-                LOG.info("  prototype -> {}", prototypeHash);
-                LOG.info("  patch -> {}", patch.hashCode());
-                for (var patchEntry : patch.entrySet()) {
-                    LOG.info("    [{}] -> {} (value: {})", patchEntry.getKey(), patchEntry.getValue().hashCode(), patchEntry.getValue());
+                LOG.info("    prototype -> {}", prototypeHash);
+                int n = patch.size();
+                var iterator = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.fastIterator(patch);
+                while (n-- != 0) {
+                    var entry = iterator.next();
+                    LOG.info("      [{} -> {}] -> [ihc=0x{}, value:{}]", entry.getKey(), entry.getValue(), HexFormat.of().toHexDigits(System.identityHashCode(entry.getKey())), entry.getValue().hashCode());
                 }
             } else {
-                LOG.info("  unpatched map -> {}", stack.getComponents().hashCode());
+                LOG.info("    unpatched map -> {}", stack.getComponents().hashCode());
             }
         }
         LOG.info("========================================================");
