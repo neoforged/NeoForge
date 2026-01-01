@@ -406,3 +406,19 @@
              boolean includeData = this.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockHitResult:
+@@ -2393,7 +_,14 @@
+         systemReport.setDetail("Backend API", RenderSystem::getApiDescription);
+         systemReport.setDetail("Window size", () -> minecraft != null ? minecraft.window.getWidth() + "x" + minecraft.window.getHeight() : "<not initialized>");
+         systemReport.setDetail("GFLW Platform", Window::getPlatform);
+-        systemReport.setDetail("Render Extensions", () -> String.join(", ", RenderSystem.getDevice().getEnabledExtensions()));
++        systemReport.setDetail("Render Extensions", () -> {
++            GpuDevice device = RenderSystem.tryGetDevice();
++            if (device == null) {
++                return "<no renderer available>";
++            } else {
++                return String.join(", ", device.getEnabledExtensions());
++            }
++        });
+         systemReport.setDetail("GL debug messages", () -> {
+             GpuDevice device = RenderSystem.tryGetDevice();
+             if (device == null) {
