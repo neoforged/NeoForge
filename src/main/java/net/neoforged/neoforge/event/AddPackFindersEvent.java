@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
@@ -68,7 +68,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      * @param alwaysActive    Whether the pack is forced active always. If false, players have to manually activate the pack themselves
      * @param packPosition    Where the pack goes for determining pack applying order
      */
-    public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, PackSource packSource, boolean alwaysActive, Pack.Position packPosition) {
+    public void addPackFinders(Identifier packLocation, PackType packType, Component packNameDisplay, PackSource packSource, boolean alwaysActive, Pack.Position packPosition) {
         if (getPackType() == packType) {
             IModInfo modInfo = ModList.get().getModContainerById(packLocation.getNamespace()).orElseThrow(() -> new IllegalArgumentException("Mod not found: " + packLocation.getNamespace())).getModInfo();
 

@@ -9,12 +9,12 @@ import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record MinecraftUnregisterPayload(Set<ResourceLocation> forgottenChannels) implements CustomPacketPayload {
-    public static final ResourceLocation ID = ResourceLocation.withDefaultNamespace("unregister");
+public record MinecraftUnregisterPayload(Set<Identifier> forgottenChannels) implements CustomPacketPayload {
+    public static final Identifier ID = Identifier.withDefaultNamespace("unregister");
     public static final Type<MinecraftUnregisterPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, MinecraftUnregisterPayload> STREAM_CODEC = DinnerboneProtocolUtils.CHANNELS_CODEC.map(MinecraftUnregisterPayload::new, MinecraftUnregisterPayload::forgottenChannels);
 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -73,10 +_,13 @@
+@@ -72,10 +_,13 @@
          OptionSpec<Void> optionspec1 = optionparser.accepts("server", "Include server generators");
          OptionSpec<Void> optionspec2 = optionparser.accepts("dev", "Include development tools");
          OptionSpec<Void> optionspec3 = optionparser.accepts("reports", "Include data reports");
@@ -15,7 +15,7 @@
          OptionSet optionset = optionparser.parse(p_129669_);
          if (!optionset.has(optionspec) && optionset.hasOptions()) {
              Path path = Paths.get(optionspec5.value(optionset));
-@@ -85,9 +_,16 @@
+@@ -84,10 +_,17 @@
              boolean flag2 = flag || optionset.has(optionspec2);
              boolean flag3 = flag || optionset.has(optionspec3);
              Collection<Path> collection = optionset.valuesOf(optionspec6).stream().map(p_129659_ -> Paths.get(p_129659_)).toList();
@@ -28,6 +28,7 @@
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addServerProviders(datagenerator, collection, flag1, flag2, flag3);
 -            datagenerator.run();
+             Util.shutdownExecutors();
 +            }
 +            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, collection, existingPacks, flag2, flag3, validate, isFlat, () -> {},
 +                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, datagenerator, packConsumer -> {});

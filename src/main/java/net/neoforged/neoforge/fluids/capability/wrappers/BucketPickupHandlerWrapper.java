@@ -83,7 +83,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                         if (!FluidStack.isSameFluidSameComponents(resource, extracted)) {
                             //Be loud if something went wrong
                             LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
-                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
+                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().identifier(), BuiltInRegistries.FLUID.getKey(bucket.content));
                             return FluidStack.EMPTY;
                         }
                         return extracted;

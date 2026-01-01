@@ -18,6 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -35,7 +37,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = "chat.command")
 public class CommandTests {
@@ -56,7 +58,7 @@ public class CommandTests {
         });
 
         test.onGameTest(helper -> {
-            final ServerPlayer player = helper.makeOpMockPlayer(Commands.LEVEL_GAMEMASTERS);
+            final ServerPlayer player = helper.makeOpMockPlayer(LevelBasedPermissionSet.GAMEMASTER);
             helper.startSequence()
                     .thenExecute(() -> helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/attribute"))
                     .thenExecuteAfter(5, () -> helper.assertLivingEntityHasMobEffect(player, MobEffects.BLINDNESS, 2))
@@ -98,7 +100,7 @@ public class CommandTests {
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenSequence((seq, player) -> seq
-                        .thenMap(p -> ErrorCatchingStack.createCommandSourceStack(player.get(), Commands.LEVEL_ADMINS))
+                        .thenMap(p -> ErrorCatchingStack.createCommandSourceStack(player.get(), LevelBasedPermissionSet.ADMIN))
                         .thenExecute(stack -> helper.getLevel().getServer().getCommands().performPrefixedCommand(stack, "/enumargumenttest ABC"))
                         .thenIdle(5) // Keep in mind that if a command errors, we have both the "error" failure and the failure with the position of the error
                         .thenExecute(stack -> helper.assertTrue(stack.errors.size() == 2, "Invalid command was successfully executed"))
@@ -114,7 +116,7 @@ public class CommandTests {
     }
 
     public final static class ErrorCatchingStack extends CommandSourceStack {
-        public static ErrorCatchingStack createCommandSourceStack(Player player, int perm) {
+        public static ErrorCatchingStack createCommandSourceStack(Player player, PermissionSet perm) {
             return new ErrorCatchingStack(
                     CommandSource.NULL,
                     player.position(),
@@ -127,7 +129,7 @@ public class CommandTests {
                     player);
         }
 
-        public ErrorCatchingStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, int p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
+        public ErrorCatchingStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, PermissionSet p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
             super(p_81302_, p_81303_, p_81304_, p_81305_, p_81306_, p_81307_, p_81308_, p_81309_, p_81310_);
         }
 

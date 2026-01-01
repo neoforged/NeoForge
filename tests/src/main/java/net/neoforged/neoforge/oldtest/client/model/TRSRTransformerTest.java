@@ -9,7 +9,6 @@ import com.mojang.math.Transformation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
@@ -18,6 +17,7 @@ import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -29,8 +29,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.QuadTransformers;
+import net.neoforged.neoforge.client.model.quad.QuadTransforms;
 import net.neoforged.neoforge.common.util.TransformationHelper;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -38,6 +37,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 @Mod(TRSRTransformerTest.MODID)
 public class TRSRTransformerTest {
@@ -73,12 +73,12 @@ public class TRSRTransformerTest {
     }
 
     private static class MyBakedModel extends DelegateBlockStateModel {
-        private static final Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
-        private static final IQuadTransformer TRANSFORMER = QuadTransformers.applying(Util.make(() -> {
+        private static final @Nullable Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
+        private static final Transformation TRANSFORMATION = Util.make(() -> {
             Quaternionf rot = TransformationHelper.quatFromXYZ(new Vector3f(0, 45, 0), true);
             Vector3f translation = new Vector3f(0, 0.33f, 0);
             return new Transformation(translation, rot, null, null).blockCenterToCorner();
-        }));
+        });
 
         public MyBakedModel(BlockStateModel base) {
             super(base);
@@ -90,7 +90,7 @@ public class TRSRTransformerTest {
                 QuadCollection.Builder builder = new QuadCollection.Builder();
                 for (Direction side : DIRECTIONS) {
                     for (BakedQuad quad : part.getQuads(side)) {
-                        quad = TRANSFORMER.process(quad);
+                        quad = QuadTransforms.applyTransformation(quad, TRANSFORMATION);
                         if (side == null) {
                             builder.addUnculledFace(quad);
                         } else {

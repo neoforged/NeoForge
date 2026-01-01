@@ -25,7 +25,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 
 @ApiStatus.Internal
 public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) implements ConfigurationTask {
-    public static final Type TYPE = new Type(ResourceLocation.fromNamespaceAndPath("neoforge", "check_extensible_enum"));
+    public static final Type TYPE = new Type(Identifier.fromNamespaceAndPath("neoforge", "check_extensible_enum"));
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final org.objectweb.asm.Type NETWORKED_ENUM = org.objectweb.asm.Type.getType(NetworkedEnum.class);
     private static final List<? extends Class<? extends Enum<?>>> NETWORKED_EXTENSIBLE_ENUM_CLASSES = collectNetworkedEnumClasses();

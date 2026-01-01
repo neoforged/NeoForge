@@ -9,7 +9,7 @@
 //import net.minecraft.core.BlockPos;
 //import net.minecraft.core.registries.BuiltInRegistries;
 //import net.neoforged.testframework.gametest.GameTest;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import net.minecraft.world.item.BlockItem;
 //import net.minecraft.world.item.CreativeModeTabs;
 //import net.minecraft.world.item.Items;
@@ -35,7 +35,7 @@
 //import net.neoforged.neoforge.registries.DeferredHolder;
 //import net.neoforged.neoforge.registries.DeferredItem;
 //import net.neoforged.neoforge.registries.DeferredRegister;
-//import org.jetbrains.annotations.Nullable;
+//import org.jspecify.annotations.Nullable;
 //
 //@Mod(GameTestTest.MODID)
 //public class GameTestTest {
@@ -121,7 +121,7 @@
 //    public static List<TestFunction> generateTests() {
 //        // An example test function, run in the default batch, with the test name "teststone", and the structure name "gametesttest.teststone" under the "gametest_test" namespace.
 //        // No rotation, 100 ticks until the test times out if it does not fail or succeed, 0 ticks for setup time, and the actual code to run.
-//        TestFunction testStone = new TestFunction("defaultBatch", "teststone", ResourceLocation.fromNamespaceAndPath(MODID, "gametesttest.teststone").toString(), Rotation.NONE,
+//        TestFunction testStone = new TestFunction("defaultBatch", "teststone", Identifier.fromNamespaceAndPath(MODID, "gametesttest.teststone").toString(), Rotation.NONE,
 //                100, 0, true,
 //                helper -> {
 //                    BlockPos stonePos = new BlockPos(1, 1, 1);

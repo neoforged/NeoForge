@@ -1,10 +1,10 @@
 --- a/net/minecraft/server/level/TicketType.java
 +++ b/net/minecraft/server/level/TicketType.java
-@@ -3,7 +_,11 @@
+@@ -7,7 +_,11 @@
  import net.minecraft.core.Registry;
  import net.minecraft.core.registries.BuiltInRegistries;
  
--public record TicketType(long timeout, int flags) {
+-public record TicketType(long timeout, @TicketType.Flags int flags) {
 +public record TicketType(long timeout, int flags, boolean forceNaturalSpawning) {
 +    public TicketType(long timeout, int flags) {
 +        this(timeout, flags, false);

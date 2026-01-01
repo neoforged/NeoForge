@@ -22,8 +22,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Biomes;
@@ -46,7 +46,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 @Mod(CustomPresetEditorTest.MODID)
 public class CustomPresetEditorTest {
     public static final String MODID = "custom_preset_editor_test";
-    public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.fromNamespaceAndPath(MODID, MODID));
+    public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, Identifier.fromNamespaceAndPath(MODID, MODID));
 
     @EventBusSubscriber(modid = MODID)
     public static class CommonModEvents {

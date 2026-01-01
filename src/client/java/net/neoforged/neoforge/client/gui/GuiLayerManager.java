@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -31,19 +31,19 @@ public class GuiLayerManager {
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
 
-    public record NamedLayer(ResourceLocation name, GuiLayer layer) {}
+    public record NamedLayer(Identifier name, GuiLayer layer) {}
 
-    public GuiLayerManager add(ResourceLocation name, GuiLayer layer) {
+    public GuiLayerManager add(Identifier name, GuiLayer layer) {
         this.layers.add(new NamedLayer(name, layer));
         return this;
     }
 
-    public GuiLayerManager add(ResourceLocation name, Consumer<GuiGraphics> layer, BooleanSupplier shouldRender) {
+    public GuiLayerManager add(Identifier name, Consumer<GuiGraphics> layer, BooleanSupplier shouldRender) {
         add(name, (guiGraphics, deltaTracker) -> layer.accept(guiGraphics), shouldRender);
         return this;
     }
 
-    public GuiLayerManager add(ResourceLocation name, GuiLayer layer, BooleanSupplier shouldRender) {
+    public GuiLayerManager add(Identifier name, GuiLayer layer, BooleanSupplier shouldRender) {
         this.layers.add(new NamedLayer(name, (guiGraphics, deltaTracker) -> {
             if (shouldRender.getAsBoolean()) {
                 layer.render(guiGraphics, deltaTracker);

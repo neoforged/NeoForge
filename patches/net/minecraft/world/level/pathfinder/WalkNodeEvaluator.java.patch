@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
-@@ -471,6 +_,12 @@
+@@ -470,6 +_,12 @@
                  for (int k = -1; k <= 1; k++) {
                      if (i != 0 || k != 0) {
                          PathType pathtype = p_331893_.getPathTypeFromState(p_332169_ + i, p_330433_ + j, p_331506_ + k);
@@ -13,7 +13,7 @@
                          if (pathtype == PathType.DAMAGE_OTHER) {
                              return PathType.DANGER_OTHER;
                          }
-@@ -496,6 +_,8 @@
+@@ -495,6 +_,8 @@
  
      protected static PathType getPathTypeFromState(BlockGetter p_77644_, BlockPos p_77645_) {
          BlockState blockstate = p_77644_.getBlockState(p_77645_);
@@ -22,7 +22,7 @@
          Block block = blockstate.getBlock();
          if (blockstate.isAir()) {
              return PathType.OPEN;
-@@ -511,6 +_,8 @@
+@@ -510,6 +_,8 @@
              return PathType.COCOA;
          } else if (!blockstate.is(Blocks.WITHER_ROSE) && !blockstate.is(Blocks.POINTED_DRIPSTONE)) {
              FluidState fluidstate = blockstate.getFluidState();
@@ -31,7 +31,7 @@
              if (fluidstate.is(FluidTags.LAVA)) {
                  return PathType.LAVA;
              } else if (isBurningBlock(blockstate)) {
-@@ -531,6 +_,8 @@
+@@ -530,6 +_,8 @@
                  if (!blockstate.isPathfindable(PathComputationType.LAND)) {
                      return PathType.BLOCKED;
                  } else {

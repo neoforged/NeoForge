@@ -22,8 +22,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -38,7 +38,7 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final InterceptingRecipeOutput output;
@@ -53,7 +53,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     private void exclude(String name) {
-        output.excludes.add(ResourceKey.create(Registries.RECIPE, ResourceLocation.parse(name)));
+        output.excludes.add(ResourceKey.create(Registries.RECIPE, Identifier.parse(name)));
     }
 
     private void replace(ItemLike item, TagKey<Item> tag) {

@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +62,7 @@ public class CustomArmorModelTest {
     }
 
     private static final class ClientEvents {
-        private static final ResourceLocation ARMOR_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman.png");
+        private static final Identifier ARMOR_TEXTURE = Identifier.withDefaultNamespace("textures/entity/enderman/enderman.png");
         private static final Lazy<HumanoidModel<HumanoidRenderState>> ENDERMAN = Lazy.of(() -> new HumanoidModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.ENDERMAN)));
 
         private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
@@ -73,7 +73,7 @@ public class CustomArmorModelTest {
                 }
 
                 @Override
-                public ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
+                public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier _default) {
                     return ARMOR_TEXTURE;
                 }
             }, ENDERMAN_BOOTS.get(), ENDERMAN_CHESTPLATE.get());

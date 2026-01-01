@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -19,7 +19,7 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Allows users to register custom {@link GuiLayer layers} for GUI rendering.
@@ -44,7 +44,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelowAll(ResourceLocation id, GuiLayer layer) {
+    public void registerBelowAll(Identifier id, GuiLayer layer) {
         register(Ordering.BEFORE, null, id, layer);
     }
 
@@ -56,7 +56,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelow(ResourceLocation other, ResourceLocation id, GuiLayer layer) {
+    public void registerBelow(Identifier other, Identifier id, GuiLayer layer) {
         register(Ordering.BEFORE, other, id, layer);
     }
 
@@ -68,7 +68,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAbove(ResourceLocation other, ResourceLocation id, GuiLayer layer) {
+    public void registerAbove(Identifier other, Identifier id, GuiLayer layer) {
         register(Ordering.AFTER, other, id, layer);
     }
 
@@ -78,7 +78,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAboveAll(ResourceLocation id, GuiLayer layer) {
+    public void registerAboveAll(Identifier id, GuiLayer layer) {
         register(Ordering.AFTER, null, id, layer);
     }
 
@@ -88,10 +88,10 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id          the id of the layer to replace
      * @param replacement the layer to replace it with
      * @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
-     * @see #wrapLayer(ResourceLocation, UnaryOperator) use {@code wrapLayer} if you'd like to
+     * @see #wrapLayer(Identifier, UnaryOperator) use {@code wrapLayer} if you'd like to
      *      wrap the layer to apply pose stack transformations
      */
-    public void replaceLayer(ResourceLocation id, GuiLayer replacement) {
+    public void replaceLayer(Identifier id, GuiLayer replacement) {
         wrapLayer(id, old -> replacement);
     }
 
@@ -104,7 +104,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param wrapper an unary operator which takes in the old layer and returns the new layer that wraps the old one
      * @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
      */
-    public void wrapLayer(ResourceLocation id, UnaryOperator<GuiLayer> wrapper) {
+    public void wrapLayer(Identifier id, UnaryOperator<GuiLayer> wrapper) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(wrapper);
 
@@ -121,7 +121,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
         throw new IllegalArgumentException("Attempted to wrap layer with id '" + id + "', which does not exist!");
     }
 
-    private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, GuiLayer layer) {
+    private void register(Ordering ordering, @Nullable Identifier other, Identifier key, GuiLayer layer) {
         Objects.requireNonNull(key);
         for (var namedLayer : layers) {
             Preconditions.checkArgument(!namedLayer.name().equals(key), "Layer already registered: " + key);

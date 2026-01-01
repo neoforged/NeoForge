@@ -3,7 +3,7 @@
 @@ -32,26 +_,49 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
-     protected final Map<ResourceLocation, TagBuilder> builders = Maps.newLinkedHashMap();
+     protected final Map<Identifier, TagBuilder> builders = Maps.newLinkedHashMap();
 +    protected final String modId;
  
 +    /**
@@ -40,21 +40,21 @@
 +    }
 +
 +    // Forge: Allow customizing the path for a given tag or returning null
-+    @org.jetbrains.annotations.Nullable
-+    protected Path getPath(ResourceLocation id) {
++    @org.jspecify.annotations.Nullable
++    protected Path getPath(Identifier id) {
 +        return this.pathProvider.json(id);
      }
  
      @Override
      public String getName() {
--        return "Tags for " + this.registryKey.location();
-+        return "Tags for " + this.registryKey.location() + " mod id " + this.modId;
+-        return "Tags for " + this.registryKey.identifier();
++        return "Tags for " + this.registryKey.identifier() + " mod id " + this.modId;
      }
  
      protected abstract void addTags(HolderLookup.Provider p_256380_);
 @@ -84,7 +_,10 @@
-                                     ResourceLocation resourcelocation = p_323138_.getKey();
-                                     TagBuilder tagbuilder = p_323138_.getValue();
+                                     Identifier identifier = p_466086_.getKey();
+                                     TagBuilder tagbuilder = p_466086_.getValue();
                                      List<TagEntry> list = tagbuilder.build();
 -                                    List<TagEntry> list1 = list.stream().filter(p_274771_ -> !p_274771_.verifyIfPresent(predicate, predicate1)).toList();
 +                                    List<TagEntry> list1 = java.util.stream.Stream.concat(list.stream(), tagbuilder.getRemoveEntries())
@@ -68,9 +68,9 @@
                                              )
                                          );
                                      } else {
--                                        Path path = this.pathProvider.json(resourcelocation);
+-                                        Path path = this.pathProvider.json(identifier);
 -                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, false), path);
-+                                        Path path = this.getPath(resourcelocation);
++                                        Path path = this.getPath(identifier);
 +                                        if (path == null) return CompletableFuture.completedFuture(null); // Neo: Allow running this data provider without writing it. Recipe provider needs valid tags.
 +                                        var removed = tagbuilder.getRemoveEntries().toList();
 +                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, tagbuilder.isReplace(), removed), path);

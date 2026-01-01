@@ -15,13 +15,13 @@ import net.minecraft.util.context.ContextKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.client.extensions.IDimensionSpecialEffectsExtension;
+import net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when the {@link LevelRenderer} extracts level render state, after all vanilla states have been extracted.
- * Use this event to extract custom render state for use in {@link RenderLevelStageEvent} or {@link IDimensionSpecialEffectsExtension}.
+ * Use this event to extract custom render state for use in {@link RenderLevelStageEvent} or {@linkplain CustomEnvironmentEffectsRendererManager custom environmental effects}.
  * Custom data can be stored on and retrieved from the provided {@link LevelRenderState} via {@link LevelRenderState#setRenderData(ContextKey, Object)}
  * and {@link LevelRenderState#getRenderData(ContextKey)} respectively.
  * <p>

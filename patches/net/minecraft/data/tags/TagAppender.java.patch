@@ -19,7 +19,7 @@
 +
 +            @Override
 +            public TagAppender<ResourceKey<T>, T> remove(final ResourceKey<T> resourceKey) {
-+                p_422107_.removeElement(resourceKey.location());
++                p_422107_.removeElement(resourceKey.identifier());
 +                return this;
 +            }
 +

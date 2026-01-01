@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.data.SpriteSourceProvider;
 
 public class NeoForgeSpriteSourceProvider extends SpriteSourceProvider {
@@ -20,6 +20,6 @@ public class NeoForgeSpriteSourceProvider extends SpriteSourceProvider {
 
     @Override
     protected void gather() {
-        atlas(AtlasIds.BLOCKS).addSource(new SingleFile(ResourceLocation.fromNamespaceAndPath("neoforge", "white")));
+        atlas(AtlasIds.BLOCKS).addSource(new SingleFile(Identifier.fromNamespaceAndPath("neoforge", "white")));
     }
 }

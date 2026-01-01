@@ -1,39 +1,39 @@
 --- a/net/minecraft/world/level/LevelSettings.java
 +++ b/net/minecraft/world/level/LevelSettings.java
-@@ -11,10 +_,14 @@
+@@ -15,10 +_,14 @@
      private final boolean allowCommands;
      private final GameRules gameRules;
      private final WorldDataConfiguration dataConfiguration;
 +    private final com.mojang.serialization.Lifecycle lifecycle;
  
      public LevelSettings(
-         String p_250485_, GameType p_250207_, boolean p_251631_, Difficulty p_252122_, boolean p_248961_, GameRules p_248536_, WorldDataConfiguration p_249797_
+         String p_250485_, GameType p_250207_, boolean p_251631_, Difficulty p_252122_, boolean p_248961_, GameRules p_460896_, WorldDataConfiguration p_249797_
      ) {
-+        this(p_250485_, p_250207_, p_251631_, p_252122_, p_248961_, p_248536_, p_249797_, com.mojang.serialization.Lifecycle.stable());
++        this(p_250485_, p_250207_, p_251631_, p_252122_, p_248961_, p_460896_, p_249797_, com.mojang.serialization.Lifecycle.stable());
 +    }
-+    public LevelSettings(String p_250485_, GameType p_250207_, boolean p_251631_, Difficulty p_252122_, boolean p_248961_, GameRules p_248536_, WorldDataConfiguration p_249797_, com.mojang.serialization.Lifecycle lifecycle) {
++    public LevelSettings(String p_250485_, GameType p_250207_, boolean p_251631_, Difficulty p_252122_, boolean p_248961_, GameRules p_460896_, WorldDataConfiguration p_249797_, com.mojang.serialization.Lifecycle lifecycle) {
          this.levelName = p_250485_;
          this.gameType = p_250207_;
          this.hardcore = p_251631_;
-@@ -22,6 +_,7 @@
+@@ -26,6 +_,7 @@
          this.allowCommands = p_248961_;
-         this.gameRules = p_248536_;
+         this.gameRules = p_460896_;
          this.dataConfiguration = p_249797_;
 +        this.lifecycle = lifecycle;
      }
  
      public static LevelSettings parse(Dynamic<?> p_46925_, WorldDataConfiguration p_251697_) {
-@@ -33,7 +_,8 @@
+@@ -37,7 +_,8 @@
              p_46925_.get("Difficulty").asNumber().map(p_46928_ -> Difficulty.byId(p_46928_.byteValue())).result().orElse(Difficulty.NORMAL),
              p_46925_.get("allowCommands").asBoolean(gametype == GameType.CREATIVE),
-             new GameRules(p_251697_.enabledFeatures(), p_46925_.get("GameRules")),
+             GameRules.codec(p_251697_.enabledFeatures()).parse(p_46925_.get("game_rules").orElseEmptyMap()).resultOrPartial(LOGGER::warn).orElseThrow(),
 -            p_251697_
 +            p_251697_,
 +            net.neoforged.neoforge.common.CommonHooks.parseLifecycle(p_46925_.get("forgeLifecycle").asString("stable"))
          );
      }
  
-@@ -66,15 +_,15 @@
+@@ -70,15 +_,15 @@
      }
  
      public LevelSettings withGameType(GameType p_46923_) {
@@ -52,7 +52,7 @@
      }
  
      public LevelSettings copy() {
-@@ -85,7 +_,16 @@
+@@ -89,7 +_,16 @@
              this.difficulty,
              this.allowCommands,
              this.gameRules.copy(this.dataConfiguration.enabledFeatures()),

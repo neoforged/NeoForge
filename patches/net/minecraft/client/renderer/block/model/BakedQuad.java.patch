@@ -1,21 +1,31 @@
 --- a/net/minecraft/client/renderer/block/model/BakedQuad.java
 +++ b/net/minecraft/client/renderer/block/model/BakedQuad.java
-@@ -5,8 +_,17 @@
- import net.neoforged.api.distmarker.Dist;
+@@ -6,6 +_,11 @@
  import net.neoforged.api.distmarker.OnlyIn;
+ import org.joml.Vector3fc;
  
 +/**
 + * @param hasAmbientOcclusion {@code false} to force-disable AO for this quad
 + *                            or {@code true} to use the behavior dictated by
-+ *                            {@link net.neoforged.neoforge.client.extensions.IBakedModelExtension#useAmbientOcclusion(net.minecraft.world.level.block.state.BlockState, net.neoforged.neoforge.model.data.ModelData, net.minecraft.client.renderer.RenderType)}
++ *                            {@link net.neoforged.neoforge.client.extensions.BlockModelPartExtension#ambientOcclusion}.
 + */
  @OnlyIn(Dist.CLIENT)
--public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
-+public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission, boolean hasAmbientOcclusion) {
-+    public BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
-+        this(vertices, tintIndex, direction, sprite, shade, lightEmission, true);
+ public record BakedQuad(
+     Vector3fc position0,
+@@ -20,8 +_,15 @@
+     Direction direction,
+     TextureAtlasSprite sprite,
+     boolean shade,
+-    int lightEmission
++    int lightEmission,
++    net.neoforged.neoforge.client.model.quad.BakedNormals bakedNormals,
++    net.neoforged.neoforge.client.model.quad.BakedColors bakedColors,
++    boolean hasAmbientOcclusion
+ ) {
++    public BakedQuad(Vector3fc position0, Vector3fc position1, Vector3fc position2, Vector3fc position3, long packedUV0, long packedUV1, long packedUV2, long packedUV3, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
++        this(position0, position1, position2, position3, packedUV0, packedUV1, packedUV2, packedUV3, tintIndex, direction, sprite, shade, lightEmission, net.neoforged.neoforge.client.model.quad.BakedNormals.UNSPECIFIED, net.neoforged.neoforge.client.model.quad.BakedColors.DEFAULT, true);
 +    }
 +
+     public static final int VERTEX_COUNT = 4;
+ 
      public boolean isTinted() {
-         return this.tintIndex != -1;
-     }

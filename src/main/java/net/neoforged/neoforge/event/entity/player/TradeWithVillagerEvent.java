@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.neoforged.neoforge.common.NeoForge;

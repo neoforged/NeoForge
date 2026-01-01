@@ -1,53 +1,96 @@
 --- a/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
 +++ b/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
-@@ -47,12 +_,16 @@
+@@ -47,7 +_,15 @@
+         int j = this.screen.width - i;
          Collection<MobEffectInstance> collection = this.minecraft.player.getActiveEffects();
          if (!collection.isEmpty() && j >= 32) {
-             boolean flag = j >= 120;
+-            int k = j >= 120 ? j - 7 : 32;
++            boolean flag = j >= 120;
 +            var event = net.neoforged.neoforge.client.ClientHooks.onScreenPotionSize(screen, j, !flag, i);
 +            if (event.isCanceled()) return;
 +            flag = !event.isCompact();
 +            i = event.getHorizontalOffset();
-             int k = 33;
++
++            collection = collection.stream().filter(net.neoforged.neoforge.client.ClientHooks::shouldRenderEffect).sorted().collect(java.util.stream.Collectors.toList());
++
++            int k = flag ? j - 7 : 32;
+             int l = 33;
              if (collection.size() > 5) {
-                 k = 132 / (collection.size() - 1);
-             }
+                 l = 132 / (collection.size() - 1);
+@@ -65,11 +_,14 @@
+         Font font = this.screen.getFont();
  
--            Iterable<MobEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
-+            Iterable<MobEffectInstance> iterable = collection.stream().filter(net.neoforged.neoforge.client.ClientHooks::shouldRenderEffect).sorted().collect(java.util.stream.Collectors.toList());
-             this.renderBackgrounds(p_376884_, i, k, iterable, flag);
-             this.renderIcons(p_376884_, i, k, iterable, flag);
-             if (flag) {
-@@ -77,6 +_,8 @@
-                 this.getEffectName(this.hoveredEffect),
-                 MobEffectUtil.formatDuration(this.hoveredEffect, 1.0F, this.minecraft.level.tickRateManager().tickrate())
-             );
+         for (MobEffectInstance mobeffectinstance : iterable) {
++            var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
+             boolean flag = mobeffectinstance.isAmbient();
+             Component component = this.getEffectName(mobeffectinstance);
+             Component component1 = MobEffectUtil.formatDuration(mobeffectinstance, 1.0F, this.minecraft.level.tickRateManager().tickrate());
+             int j = this.renderBackground(p_376884_, font, component, component1, p_376869_, i, flag, p_455280_);
+-            this.renderText(p_376884_, component, component1, font, p_376869_, i, j, p_376740_, p_455972_, p_455320_);
++            if (!renderer.renderInventoryText(mobeffectinstance, screen, p_376884_, p_376869_, i, 0))
++            this.renderText(p_376884_, component, component1, font, p_376869_, i, j, p_376740_, p_455972_, p_455320_, mobeffectinstance);
++            if (!renderer.renderInventoryIcon(mobeffectinstance, screen, p_376884_, p_376869_ + 7, i, 0))
+             p_376884_.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.getMobEffectSprite(mobeffectinstance.getEffect()), p_376869_ + 7, i + 7, 18, 18);
+             i += p_376740_;
+         }
+@@ -85,17 +_,35 @@
+         return k;
+     }
+ 
+-    private void renderText(
+-        GuiGraphics p_456196_,
+-        Component p_455663_,
+-        Component p_467145_,
+-        Font p_454693_,
+-        int p_454754_,
+-        int p_455546_,
+-        int p_455809_,
+-        int p_455668_,
+-        int p_455390_,
+-        int p_455363_
++    // Neo: Call the method that takes the effect instance for which the text is being rendered
++    @Deprecated
++    private void renderText(
++        GuiGraphics p_456196_,
++        Component p_455663_,
++        Component p_467145_,
++        Font p_454693_,
++        int p_454754_,
++        int p_455546_,
++        int p_455809_,
++        int p_455668_,
++        int p_455390_,
++        int p_455363_
++    ) {
++        renderText(p_456196_, p_455663_, p_467145_, p_454693_, p_454754_, p_455546_, p_455809_, p_455668_, p_455390_, p_455363_, null);
++    }
++
++    private void renderText(
++        GuiGraphics p_456196_,
++        Component p_455663_,
++        Component p_467145_,
++        Font p_454693_,
++        int p_454754_,
++        int p_455546_,
++        int p_455809_,
++        int p_455668_,
++        int p_455390_,
++        int p_455363_
++        , @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
+     ) {
+         int i = p_454754_ + 32;
+         int j = p_455546_ + 7;
+@@ -112,7 +_,12 @@
+         }
+ 
+         if (flag && p_455390_ >= p_454754_ && p_455390_ <= p_454754_ + p_455809_ && p_455363_ >= p_455546_ && p_455363_ <= p_455546_ + p_455668_) {
+-            p_456196_.setTooltipForNextFrame(this.screen.getFont(), List.of(p_455663_, p_467145_), Optional.empty(), p_455390_, p_455363_);
 +            // Neo: Allow mods to adjust the tooltip shown when hovering a mob effect.
-+            list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, this.hoveredEffect, list);
-             p_418320_.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), p_418474_, p_418496_);
++            var list = List.of(p_455663_, p_467145_);
++            if (effectInstance != null) {
++                list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, effectInstance, List.of(p_455663_, p_467145_));
++            }
++            p_456196_.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), p_455390_, p_455363_);
          }
      }
-@@ -99,6 +_,11 @@
-         int i = this.screen.topPos;
  
-         for (MobEffectInstance mobeffectinstance : p_376215_) {
-+            var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
-+            if (renderer.renderInventoryIcon(mobeffectinstance, screen, p_376734_, p_376350_ + (p_376312_ ? 6 : 7), i, 0)) {
-+                i += p_376678_;
-+                continue;
-+            }
-             Holder<MobEffect> holder = mobeffectinstance.getEffect();
-             ResourceLocation resourcelocation = Gui.getMobEffectSprite(holder);
-             p_376734_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation, p_376350_ + (p_376312_ ? 6 : 7), i + 7, 18, 18);
-@@ -110,6 +_,11 @@
-         int i = this.screen.topPos;
- 
-         for (MobEffectInstance mobeffectinstance : p_376910_) {
-+            var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
-+            if (renderer.renderInventoryText(mobeffectinstance, screen, p_376227_, p_376372_, i, 0)) {
-+                i += p_376395_;
-+                continue;
-+            }
-             Component component = this.getEffectName(mobeffectinstance);
-             p_376227_.drawString(this.screen.getFont(), component, p_376372_ + 10 + 18, i + 6, -1);
-             Component component1 = MobEffectUtil.formatDuration(mobeffectinstance, 1.0F, this.minecraft.level.tickRateManager().tickrate());

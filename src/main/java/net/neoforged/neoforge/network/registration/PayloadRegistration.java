@@ -12,7 +12,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -34,7 +34,7 @@ public record PayloadRegistration<T extends CustomPacketPayload>(
         Optional<PacketFlow> flow,
         String version,
         boolean optional) {
-    public ResourceLocation id() {
+    public Identifier id() {
         return this.type().id();
     }
 

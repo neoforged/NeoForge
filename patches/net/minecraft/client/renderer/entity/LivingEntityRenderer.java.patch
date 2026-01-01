@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
-@@ -73,6 +_,7 @@
+@@ -72,6 +_,7 @@
      }
  
      public void submit(S p_433493_, PoseStack p_434615_, SubmitNodeCollector p_433768_, CameraRenderState p_450931_) {
@@ -8,7 +8,7 @@
          p_434615_.pushPose();
          if (p_433493_.hasPose(Pose.SLEEPING)) {
              Direction direction = p_433493_.bedOrientation;
-@@ -108,6 +_,7 @@
+@@ -107,6 +_,7 @@
  
          p_434615_.popPose();
          super.submit(p_433493_, p_434615_, p_433768_, p_450931_);
@@ -16,7 +16,7 @@
      }
  
      protected boolean shouldRenderLayers(S p_364697_) {
-@@ -205,7 +_,7 @@
+@@ -203,7 +_,7 @@
      protected boolean shouldShowName(T p_363517_, double p_365448_) {
          if (p_363517_.isDiscrete()) {
              float f = 32.0F;
@@ -25,12 +25,12 @@
                  return false;
              }
          }
-@@ -285,7 +_,7 @@
+@@ -283,7 +_,7 @@
  
          p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
          p_360515_.isBaby = p_362733_.isBaby();
 -        p_360515_.isInWater = p_362733_.isInWater();
 +        p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluidType((fluidType, height) -> p_362733_.canSwimInFluidType(fluidType));
          p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
+         p_360515_.ticksSinceKineticHitFeedback = p_362733_.getTicksSinceLastKineticHitFeedback(p_361157_);
          p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;
-         ItemStack itemstack = p_362733_.getItemBySlot(EquipmentSlot.HEAD);

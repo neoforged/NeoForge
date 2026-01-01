@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -133,9 +133,9 @@ public class NeoForgeEventHandler {
         });
     }
 
-    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<ResourceLocation> attachments) {
+    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<Identifier> attachments) {
         if (attachments.isEmpty()) return;
-        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> att = new HashMap<>();
+        final Map<Identifier, Map<ResourceKey<T>, ?>> att = new HashMap<>();
         attachments.forEach(key -> {
             final var attach = RegistryManager.getDataMap(registry.key(), key);
             if (attach == null || attach.networkCodec() == null) return;

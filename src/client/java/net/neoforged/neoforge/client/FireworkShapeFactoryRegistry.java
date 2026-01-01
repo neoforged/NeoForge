@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.particle.FireworkParticles;
 import net.minecraft.world.item.component.FireworkExplosion;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Keeps track of custom firework shape types, because Particle is client side only this can't be on the Shape itself.

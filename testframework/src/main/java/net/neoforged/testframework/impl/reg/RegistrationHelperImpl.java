@@ -26,6 +26,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -42,7 +43,9 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.neoforge.resource.JarContentsPackResources;
@@ -152,6 +155,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public <M extends DataMapType<?, ?>> M registerDataMap(M map) {
         eventListeners().accept((final RegisterDataMapTypesEvent event) -> event.register((DataMapType) map));
         return map;
+    }
+
+    @Override
+    public <R, T extends R> DeferredHolder<R, T> register(ResourceKey<? extends Registry<R>> registry, String name, BiFunction<Registry<R>, Identifier, T> registrar) {
+        var key = Identifier.fromNamespaceAndPath(modId, name);
+        var dh = DeferredHolder.<R, T>create(registry, key);
+        eventListeners().accept((final RegisterEvent event) -> {
+            if (event.getRegistryKey() == registry) {
+                registrar.apply((Registry<R>) event.getRegistry(), key);
+            }
+        });
+        return dh;
     }
 
     @Override

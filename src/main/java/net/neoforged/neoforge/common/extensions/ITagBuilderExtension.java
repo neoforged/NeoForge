@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagEntry;
 
@@ -20,7 +20,7 @@ public interface ITagBuilderExtension {
      * @param elementID The ID of the element to add to the remove list
      * @return The builder for chaining purposes
      */
-    default TagBuilder removeElement(final ResourceLocation elementID) {
+    default TagBuilder removeElement(final Identifier elementID) {
         return this.self().remove(TagEntry.element(elementID));
     }
 
@@ -30,7 +30,7 @@ public interface ITagBuilderExtension {
      * @param tagID The ID of the tag to add to the remove list
      * @return The builder for chaining purposes
      */
-    default TagBuilder removeTag(final ResourceLocation tagID) {
+    default TagBuilder removeTag(final Identifier tagID) {
         return this.self().remove(TagEntry.tag(tagID));
     }
 }

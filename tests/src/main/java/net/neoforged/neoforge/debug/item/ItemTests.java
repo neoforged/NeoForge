@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -25,13 +24,14 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
@@ -108,7 +108,7 @@ public class ItemTests {
                 .thenIdle(5)
                 .thenExecute(() -> helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.WATER, new net.minecraft.core.BlockPos(1, 2, 1)))
                 .thenExecute(() -> helper.assertEntityPresent(net.minecraft.world.entity.EntityType.COW, 1, 3, 1))
-                .thenExecute(() -> helper.killAllEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class))
+                .thenExecute(() -> helper.killAllEntitiesOfClass(net.minecraft.world.entity.animal.cow.Cow.class))
                 .thenSucceed());
     }
 

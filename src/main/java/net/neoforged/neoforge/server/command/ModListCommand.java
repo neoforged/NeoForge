@@ -15,7 +15,7 @@ import net.neoforged.fml.ModList;
 class ModListCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("mods")
-                .requires(cs -> cs.hasPermission(0)) //permission
+                .requires(Commands.hasPermission(Commands.LEVEL_ALL)) //permission
                 .executes(ctx -> {
                     ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.mods.list",
                             ModList.get().applyForEachModFile(modFile ->

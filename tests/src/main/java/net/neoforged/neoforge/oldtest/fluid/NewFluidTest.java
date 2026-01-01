@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest.fluid;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
@@ -48,16 +48,16 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.transfer.fluid.DispenseFluidContainer;
 import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Mod(NewFluidTest.MODID)
 public class NewFluidTest {
     public static final boolean ENABLE = false; // TODO fix
     public static final String MODID = "new_fluid_test";
 
-    public static final ResourceLocation FLUID_STILL = ResourceLocation.fromNamespaceAndPath("minecraft", "block/brown_mushroom_block");
-    public static final ResourceLocation FLUID_FLOWING = ResourceLocation.fromNamespaceAndPath("minecraft", "block/mushroom_stem");
-    public static final ResourceLocation FLUID_OVERLAY = ResourceLocation.fromNamespaceAndPath("minecraft", "block/obsidian");
+    public static final Identifier FLUID_STILL = Identifier.fromNamespaceAndPath("minecraft", "block/brown_mushroom_block");
+    public static final Identifier FLUID_FLOWING = Identifier.fromNamespaceAndPath("minecraft", "block/mushroom_stem");
+    public static final Identifier FLUID_OVERLAY = Identifier.fromNamespaceAndPath("minecraft", "block/obsidian");
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
@@ -167,17 +167,17 @@ public class NewFluidTest {
         private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
             event.registerFluidType(new IClientFluidTypeExtensions() {
                 @Override
-                public ResourceLocation getStillTexture() {
+                public Identifier getStillTexture() {
                     return FLUID_STILL;
                 }
 
                 @Override
-                public ResourceLocation getFlowingTexture() {
+                public Identifier getFlowingTexture() {
                     return FLUID_FLOWING;
                 }
 
                 @Override
-                public ResourceLocation getOverlayTexture() {
+                public Identifier getOverlayTexture() {
                     return FLUID_OVERLAY;
                 }
 

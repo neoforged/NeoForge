@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.extensions;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extension for {@link ResolvedModel}.

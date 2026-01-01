@@ -7,14 +7,14 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ObjModelBuilder extends CustomLoaderBuilder {
     @Nullable
-    private ResourceLocation modelLocation;
+    private Identifier modelLocation;
     @Nullable
     private Boolean automaticCulling;
     @Nullable
@@ -24,13 +24,13 @@ public class ObjModelBuilder extends CustomLoaderBuilder {
     @Nullable
     private Boolean emissiveAmbient;
     @Nullable
-    private ResourceLocation mtlOverride;
+    private Identifier mtlOverride;
 
     public ObjModelBuilder() {
-        super(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "obj"), false);
+        super(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "obj"), false);
     }
 
-    public ObjModelBuilder modelLocation(ResourceLocation modelLocation) {
+    public ObjModelBuilder modelLocation(Identifier modelLocation) {
         Preconditions.checkNotNull(modelLocation, "modelLocation must not be null");
         this.modelLocation = modelLocation;
         return this;
@@ -56,7 +56,7 @@ public class ObjModelBuilder extends CustomLoaderBuilder {
         return this;
     }
 
-    public ObjModelBuilder overrideMaterialLibrary(ResourceLocation mtlOverride) {
+    public ObjModelBuilder overrideMaterialLibrary(Identifier mtlOverride) {
         Preconditions.checkNotNull(mtlOverride, "mtlOverride must not be null");
         this.mtlOverride = mtlOverride;
         return this;

@@ -6,12 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.inject.Inject;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 
 abstract class GenerateBinaryPatches extends JavaExec {
@@ -19,61 +18,78 @@ abstract class GenerateBinaryPatches extends JavaExec {
     public GenerateBinaryPatches() {}
 
     /**
-     * The jar file containing classes in the base state.
+     * The base against which the patches should be created for the client distribution.
      */
     @InputFile
-    abstract RegularFileProperty getCleanJar();
+    abstract RegularFileProperty getBaseClientJar();
 
     /**
-     * The jar file containing classes in the desired target state.
+     * The target jar that will be diffed against {@link #getBaseClientJar()} to create the patches for the
+     * client distribution.
      */
     @InputFile
-    abstract RegularFileProperty getPatchedJar();
-
-    @InputFile
-    abstract RegularFileProperty getMappings();
+    abstract RegularFileProperty getModifiedClientJar();
 
     /**
-     * The files in this optional directory are used to filter which binary patches should be created.
-     * <p>A binary patch is only created for a file from {@link #getPatchedJar()}, if a source patch (A corresponding file
-     * with {@code .java.patch} extension) is present in this directory, or if a class with the same path is present in
-     * {@link #getIncludeClassesJar()} (if set).
-     * <p>For inner classes, only the outermost class is checked against the filters.
-     * <p>If neither this nor {@link #getIncludeClassesJar()} are set, no filtering is applied.
-     */
-    @InputDirectory
-    @Optional
-    abstract DirectoryProperty getSourcePatchesFolder();
-
-    /**
-     * The list of files included in this optional Jar file is used to filter for which files binary patches should be created.
-     * <p>A binary patch is only created for a file from {@link #getPatchedJar()}, if a file with the same path is
-     * either present in this jar, or if a corresponding source patch is present in {@link #getSourcePatchesFolder()} (if set).
-     * <p>For inner classes, only the outermost class is checked against the filters.
-     * <p>If neither this nor {@link #getSourcePatchesFolder()} are set, no filtering is applied.
+     * The base against which the patches should be created for the server distribution.
      */
     @InputFile
-    @Optional
-    abstract RegularFileProperty getIncludeClassesJar();
+    abstract RegularFileProperty getBaseServerJar();
 
     /**
-     * The location where the LZMA compressed binary patches are written to.
+     * The target jar that will be diffed against {@link #getBaseServerJar()} to create the patches for the
+     * server distribution.
+     */
+    @InputFile
+    abstract RegularFileProperty getModifiedServerJar();
+
+    /**
+     * The base against which the patches should be created for the combined client+server distribution.
+     */
+    @InputFile
+    abstract RegularFileProperty getBaseJoinedJar();
+
+    /**
+     * The target jar that will be diffed against {@link #getBaseServerJar()} to create the patches for the
+     * combined client+server distribution.
+     */
+    @InputFile
+    abstract RegularFileProperty getModifiedJoinedJar();
+
+    /**
+     * Ant-Style path patterns for paths to include in diffing.
+     */
+    @Input
+    abstract ListProperty<String> getInclude();
+
+    /**
+     * Ant-Style path patterns for paths to exclude from diffing.
+     */
+    @Input
+    abstract ListProperty<String> getExclude();
+
+    /**
+     * Where the created patch bundle should be written to.
      */
     @OutputFile
     abstract RegularFileProperty getOutputFile();
 
     @Override
     public void exec() {
-        args("--clean", getCleanJar().get().getAsFile().getAbsolutePath());
-        args("--dirty", getPatchedJar().get().getAsFile().getAbsolutePath());
-        args("--srg", getMappings().get().getAsFile().getAbsolutePath());
-        args("--minimize");
-        if (getSourcePatchesFolder().isPresent()) {
-            args("--patches", getSourcePatchesFolder().get().getAsFile().getAbsolutePath());
+        args("--diff");
+        args("--base-client", getBaseClientJar().get().getAsFile().getAbsolutePath());
+        args("--base-server", getBaseServerJar().get().getAsFile().getAbsolutePath());
+        args("--base-joined", getBaseJoinedJar().get().getAsFile().getAbsolutePath());
+        args("--modified-client", getModifiedClientJar().get().getAsFile().getAbsolutePath());
+        args("--modified-server", getModifiedServerJar().get().getAsFile().getAbsolutePath());
+        args("--modified-joined", getModifiedJoinedJar().get().getAsFile().getAbsolutePath());
+        for (String pattern : getInclude().get()) {
+            args("--include", pattern);
         }
-        if (getIncludeClassesJar().isPresent()) {
-            args("--include-classes", getIncludeClassesJar().get().getAsFile().getAbsolutePath());
+        for (String pattern : getExclude().get()) {
+            args("--exclude", pattern);
         }
+        args("--optimize-constantpool");
         args("--output", getOutputFile().get().getAsFile().getAbsolutePath());
 
         var logFile = new File(getTemporaryDir(), "console.log");

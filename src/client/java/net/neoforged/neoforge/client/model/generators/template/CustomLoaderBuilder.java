@@ -13,13 +13,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 public abstract class CustomLoaderBuilder {
-    private static final ResourceLocation DUMMY = ResourceLocation.fromNamespaceAndPath("dummy", "dummy");
+    private static final Identifier DUMMY = Identifier.fromNamespaceAndPath("dummy", "dummy");
 
-    protected final ResourceLocation loaderId;
+    protected final Identifier loaderId;
     protected final Map<String, Boolean> visibility = new LinkedHashMap<>();
     protected final boolean allowInlineElements;
     private boolean optional = false;
@@ -29,7 +29,7 @@ public abstract class CustomLoaderBuilder {
      * @param allowInlineElements Whether the loader supports inline vanilla elements and as such can fall back to vanilla loading
      *                            with some degradation if the loader does not exist and is marked as optional in the model
      */
-    protected CustomLoaderBuilder(ResourceLocation loaderId, boolean allowInlineElements) {
+    protected CustomLoaderBuilder(Identifier loaderId, boolean allowInlineElements) {
         this.loaderId = loaderId;
         this.allowInlineElements = allowInlineElements;
     }

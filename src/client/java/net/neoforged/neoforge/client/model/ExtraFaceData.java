@@ -14,19 +14,18 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Holds extra data that may be injected into a face.<p>
  * Used by {@link ItemLayerModel}, {@link BlockElement} and {@link BlockElementFace}
  * 
  * @param color            Color in ARGB format
- * @param blockLight       Block Light for this face from 0-15 (inclusive)
- * @param skyLight         Sky Light for this face from 0-15 (inclusive)
+ * @param lightEmission    Light emission for the face or element from 0-15 (inclusive)
  * @param ambientOcclusion If this face has AO
  */
-public record ExtraFaceData(int color, int blockLight, int skyLight, boolean ambientOcclusion) {
-    public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, 0, true);
+public record ExtraFaceData(int color, int lightEmission, boolean ambientOcclusion) {
+    public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, true);
 
     public static final Codec<Integer> COLOR = Codec.either(Codec.INT, Codec.STRING).xmap(
             either -> either.map(Function.identity(), str -> (int) Long.parseLong(str, 16)),
@@ -36,8 +35,7 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
             builder -> builder
                     .group(
                             COLOR.optionalFieldOf("color", 0xFFFFFFFF).forGetter(ExtraFaceData::color),
-                            Codec.intRange(0, 15).optionalFieldOf("block_light", 0).forGetter(ExtraFaceData::blockLight),
-                            Codec.intRange(0, 15).optionalFieldOf("sky_light", 0).forGetter(ExtraFaceData::skyLight),
+                            Codec.intRange(0, 15).optionalFieldOf("light_emission", 0).forGetter(ExtraFaceData::lightEmission),
                             Codec.BOOL.optionalFieldOf("ambient_occlusion", true).forGetter(ExtraFaceData::ambientOcclusion))
                     .apply(builder, ExtraFaceData::new));
 

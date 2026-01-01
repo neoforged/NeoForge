@@ -8,7 +8,7 @@
      public static enum LayerType implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          HUMANOID("humanoid"),
          HUMANOID_LEGGINGS("humanoid_leggings"),
-@@ -134,7 +_,7 @@
+@@ -137,7 +_,7 @@
          private final String id;
  
          private LayerType(String p_387059_) {
@@ -17,7 +17,7 @@
          }
  
          @Override
-@@ -144,6 +_,10 @@
+@@ -147,6 +_,10 @@
  
          public String trimAssetPrefix() {
              return "trims/entity/" + this.id;

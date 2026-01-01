@@ -10,7 +10,6 @@ import io.netty.channel.ChannelFutureListener;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Consumer;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -78,9 +77,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.Relative;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A basic fake server player implementation that can be used to simulate player actions.
@@ -130,7 +129,6 @@ public class FakePlayer extends ServerPlayer {
         return true;
     }
 
-    @ParametersAreNonnullByDefault
     private static class FakePlayerNetHandler extends ServerGamePacketListenerImpl {
         private static final net.minecraft.network.Connection DUMMY_CONNECTION = new FakeConnection();
 

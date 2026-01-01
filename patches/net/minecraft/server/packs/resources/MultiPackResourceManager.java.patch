@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 +++ b/net/minecraft/server/packs/resources/MultiPackResourceManager.java
-@@ -62,6 +_,7 @@
+@@ -59,6 +_,7 @@
          try {
              return p_215468_.getMetadataSection(ResourceFilterSection.TYPE);
          } catch (IOException ioexception) {

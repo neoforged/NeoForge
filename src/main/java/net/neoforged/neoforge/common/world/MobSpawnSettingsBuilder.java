@@ -11,7 +11,7 @@ import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     private final Set<MobCategory> typesView = Collections.unmodifiableSet(this.spawners.keySet());
@@ -35,8 +35,7 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
         return this.costView;
     }
 
-    @Nullable
-    public MobSpawnSettings.MobSpawnCost getCost(EntityType<?> type) {
+    public MobSpawnSettings.@Nullable MobSpawnCost getCost(EntityType<?> type) {
         return this.mobSpawnCosts.get(type);
     }
 

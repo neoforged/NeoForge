@@ -5,7 +5,7 @@
  import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
  
 -public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator) {
-+public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, Codec<java.util.Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, net.minecraft.resources.ResourceLocation> idSetter) {
++public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jspecify.annotations.Nullable T defaultValue, Codec<java.util.Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
          Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, createSimpleValidator()
      );
@@ -23,7 +23,7 @@
 +        this(registryKey, codec, validator, null, (it, id) -> {});
 +    }
 +
-+    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, net.minecraft.resources.ResourceLocation> idSetter) {
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jspecify.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
 +        this(registryKey, codec, validator, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
 +    }
  

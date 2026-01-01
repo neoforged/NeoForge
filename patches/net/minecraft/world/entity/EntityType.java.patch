@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -1201,6 +_,11 @@
+@@ -1227,6 +_,11 @@
      private final FeatureFlagSet requiredFeatures;
      private final boolean allowedInPeaceful;
  
@@ -12,7 +12,7 @@
      private static <T extends Entity> EntityType<T> register(ResourceKey<EntityType<?>> p_368669_, EntityType.Builder<T> p_368714_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_368669_, p_368714_.build(p_368669_));
      }
-@@ -1238,6 +_,30 @@
+@@ -1264,6 +_,30 @@
          FeatureFlagSet p_273518_,
          boolean p_434970_
      ) {
@@ -43,7 +43,7 @@
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -1253,6 +_,10 @@
+@@ -1279,6 +_,10 @@
          this.lootTable = p_368696_;
          this.requiredFeatures = p_273518_;
          this.allowedInPeaceful = p_434970_;
@@ -53,8 +53,8 @@
 +        this.onlyOpCanSetNbt = onlyOpCanSetNbt;
      }
  
-     @Nullable
-@@ -1337,6 +_,13 @@
+     public @Nullable T spawn(
+@@ -1359,6 +_,13 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
                  mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_360546_, null);
@@ -68,7 +68,7 @@
              }
  
              if (p_262629_ != null) {
-@@ -1557,14 +_,23 @@
+@@ -1574,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -92,7 +92,7 @@
          return this != PLAYER
              && this != LLAMA_SPIT
              && this != WITHER
-@@ -1621,9 +_,12 @@
+@@ -1637,9 +_,12 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -105,9 +105,9 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1643,6 +_,10 @@
+@@ -1659,6 +_,10 @@
          );
-         private final DependantName<EntityType<?>, String> descriptionId = p_367918_ -> Util.makeDescriptionId("entity", p_367918_.location());
+         private final DependantName<EntityType<?>, String> descriptionId = p_466534_ -> Util.makeDescriptionId("entity", p_466534_.identifier());
          private boolean allowedInPeaceful = true;
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
@@ -116,7 +116,7 @@
  
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
-@@ -1761,6 +_,26 @@
+@@ -1777,6 +_,26 @@
              return this;
          }
  
@@ -142,8 +142,8 @@
 +
          public EntityType<T> build(ResourceKey<EntityType<?>> p_368626_) {
              if (this.serialize) {
-                 Util.fetchChoiceType(References.ENTITY_TREE, p_368626_.location().toString());
-@@ -1781,7 +_,11 @@
+                 Util.fetchChoiceType(References.ENTITY_TREE, p_368626_.identifier().toString());
+@@ -1797,7 +_,11 @@
                  this.descriptionId.get(p_368626_),
                  this.lootTable.get(p_368626_),
                  this.requiredFeatures,

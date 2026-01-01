@@ -1,10 +1,9 @@
 --- a/net/minecraft/network/protocol/BundlerInfo.java
 +++ b/net/minecraft/network/protocol/BundlerInfo.java
-@@ -26,6 +_,26 @@
-                 }
+@@ -27,6 +_,26 @@
              }
  
-+            @Override
+             @Override
 +            public void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
 +                if (bundlePacket.type() == p_320816_) {
 +                    P p = (P)bundlePacket;
@@ -24,10 +23,11 @@
 +                }
 +            }
 +
-             @Nullable
-             @Override
-             public BundlerInfo.Bundler startPacketBundling(Packet<?> p_265749_) {
-@@ -49,7 +_,24 @@
++            @Override
+             public BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> p_265749_) {
+                 return p_265749_ == p_265373_ ? new BundlerInfo.Bundler() {
+                     private final List<Packet<? super T>> bundlePackets = new ArrayList<>();
+@@ -47,7 +_,24 @@
          };
      }
  
@@ -50,5 +50,5 @@
 +        unbundlePacket(bundlePacket, packetSender);
 +    }
  
-     @Nullable
-     BundlerInfo.Bundler startPacketBundling(Packet<?> p_265162_);
+     BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> p_265162_);
+ 

@@ -23,9 +23,9 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
@@ -57,7 +57,7 @@ public class DataPackRegistriesTest {
     private static final boolean ENABLED = false;
     public static final String MODID = "data_pack_registries_test";
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final ResourceLocation TEST_RL = ResourceLocation.fromNamespaceAndPath(MODID, "test");
+    private static final Identifier TEST_RL = Identifier.fromNamespaceAndPath(MODID, "test");
 
     //TODO: Fix datapack generation for it.
     private final DeferredHolder<Unsyncable, Unsyncable> datagenTestObject = null;
@@ -69,8 +69,8 @@ public class DataPackRegistriesTest {
         final IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
-            event.dataPackRegistry(ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
+            event.dataPackRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
+            event.dataPackRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
         });
 
         modBus.addListener(this::onGatherData);
@@ -89,8 +89,8 @@ public class DataPackRegistriesTest {
         final Path outputFolder = generator.getPackOutput().getOutputFolder();
         final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getLookupProvider();
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final ResourceLocation registryId = Unsyncable.REGISTRY_KEY.location();
-        final ResourceLocation id = this.datagenTestObject.getId();
+        final Identifier registryId = Unsyncable.REGISTRY_KEY.identifier();
+        final Identifier id = this.datagenTestObject.getId();
         final Unsyncable element = new Unsyncable("Datagen Success");
         final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
         final Path path = outputFolder.resolve(pathString);
@@ -168,7 +168,7 @@ public class DataPackRegistriesTest {
     }
 
     public static class Unsyncable {
-        public static final ResourceKey<Registry<Unsyncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "unsyncable"));
+        public static final ResourceKey<Registry<Unsyncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "unsyncable"));
         public static final Codec<Unsyncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Unsyncable::new, Unsyncable::value);
 
         private final String value;
@@ -183,7 +183,7 @@ public class DataPackRegistriesTest {
     }
 
     public static class Syncable {
-        public static final ResourceKey<Registry<Syncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "syncable"));
+        public static final ResourceKey<Registry<Syncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "syncable"));
         public static final Codec<Syncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Syncable::new, Syncable::value);
 
         private final String value;

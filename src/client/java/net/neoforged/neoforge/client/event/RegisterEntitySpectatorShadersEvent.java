@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -23,17 +23,17 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterEntitySpectatorShadersEvent extends Event implements IModBusEvent {
-    private final Map<EntityType<?>, ResourceLocation> shaders;
+    private final Map<EntityType<?>, Identifier> shaders;
 
     @ApiStatus.Internal
-    public RegisterEntitySpectatorShadersEvent(Map<EntityType<?>, ResourceLocation> shaders) {
+    public RegisterEntitySpectatorShadersEvent(Map<EntityType<?>, Identifier> shaders) {
         this.shaders = shaders;
     }
 
     /**
      * Registers a spectator shader for a given entity type.
      */
-    public void register(EntityType<?> entityType, ResourceLocation shader) {
+    public void register(EntityType<?> entityType, Identifier shader) {
         shaders.put(entityType, shader);
     }
 }

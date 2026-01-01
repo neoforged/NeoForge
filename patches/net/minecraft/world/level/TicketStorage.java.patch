@@ -10,7 +10,7 @@
      );
      public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>("chunks", TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
      private final Long2ObjectOpenHashMap<List<Ticket>> tickets;
-@@ -51,6 +_,7 @@
+@@ -49,6 +_,7 @@
          this.tickets = p_393873_;
          this.deactivatedTickets = p_394615_;
          this.updateForcedChunks();
@@ -18,7 +18,7 @@
      }
  
      public TicketStorage() {
-@@ -174,6 +_,7 @@
+@@ -172,6 +_,7 @@
          if (p_394469_.getType().equals(TicketType.FORCED)) {
              this.chunksWithForcedTickets.add(p_394247_);
          }
@@ -26,7 +26,7 @@
  
          this.setDirty();
          return true;
-@@ -261,6 +_,7 @@
+@@ -258,6 +_,7 @@
                  if (p_394054_.getType().equals(TicketType.FORCED)) {
                      this.updateForcedChunks();
                  }
@@ -34,7 +34,7 @@
  
                  this.setDirty();
                  return true;
-@@ -303,11 +_,14 @@
+@@ -300,11 +_,14 @@
  
      public void deactivateTicketsOnClosing() {
          this.removeTicketIf((p_394604_, p_435717_) -> p_394604_.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
@@ -49,7 +49,7 @@
  
          while (objectiterator.hasNext()) {
              Entry<List<Ticket>> entry = objectiterator.next();
-@@ -336,6 +_,7 @@
+@@ -333,6 +_,7 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
                          flag = true;
                      }
@@ -57,7 +57,7 @@
                  }
              }
  
-@@ -358,6 +_,7 @@
+@@ -355,6 +_,7 @@
          if (flag) {
              this.updateForcedChunks();
          }
@@ -65,7 +65,7 @@
      }
  
      public void replaceTicketLevelOfType(int p_393875_, TicketType p_394261_) {
-@@ -411,5 +_,26 @@
+@@ -408,5 +_,26 @@
  
      public interface TicketPredicate {
          boolean test(Ticket p_434782_, long p_434387_);

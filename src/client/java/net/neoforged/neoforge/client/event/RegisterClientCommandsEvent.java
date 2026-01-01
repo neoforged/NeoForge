@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>Some command arguments behave differently for the client commands dispatcher:</p>
  * <ul>
- * <li>{@link ResourceLocationArgument#getAdvancement(com.mojang.brigadier.context.CommandContext, String)} only returns
+ * <li>{@link IdentifierArgument#getAdvancement(com.mojang.brigadier.context.CommandContext, String)} only returns
  * advancements that are shown on the advancements screen.
  * <li>{@link ObjectiveArgument#getObjective(com.mojang.brigadier.context.CommandContext, String)} only returns
  * objectives that are displayed to the player.

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -30,7 +30,7 @@ public class AddPackFinderEventTest {
     @SubscribeEvent
     public void addPackFinders(AddPackFindersEvent event) {
         event.addPackFinders(
-                ResourceLocation.fromNamespaceAndPath(MODID, "test_disabled_data_pack"),
+                Identifier.fromNamespaceAndPath(MODID, "test_disabled_data_pack"),
                 PackType.SERVER_DATA,
                 Component.literal("Disabled-By-Default DataPack Name"),
                 PackSource.FEATURE,
@@ -38,7 +38,7 @@ public class AddPackFinderEventTest {
                 Pack.Position.TOP);
 
         event.addPackFinders(
-                ResourceLocation.fromNamespaceAndPath(MODID, "test_enabled_data_pack"),
+                Identifier.fromNamespaceAndPath(MODID, "test_enabled_data_pack"),
                 PackType.SERVER_DATA,
                 Component.literal("Enabled-By-Default DataPack Name"),
                 PackSource.BUILT_IN,
@@ -46,7 +46,7 @@ public class AddPackFinderEventTest {
                 Pack.Position.TOP);
 
         event.addPackFinders(
-                ResourceLocation.fromNamespaceAndPath(MODID, "test_disabled_resource_pack"),
+                Identifier.fromNamespaceAndPath(MODID, "test_disabled_resource_pack"),
                 PackType.CLIENT_RESOURCES,
                 Component.literal("Disabled-By-Default ResourcePack Name"),
                 PackSource.BUILT_IN,
@@ -54,7 +54,7 @@ public class AddPackFinderEventTest {
                 Pack.Position.TOP);
 
         event.addPackFinders(
-                ResourceLocation.fromNamespaceAndPath(MODID, "test_always_enabled_resource_pack"),
+                Identifier.fromNamespaceAndPath(MODID, "test_always_enabled_resource_pack"),
                 PackType.CLIENT_RESOURCES,
                 Component.literal("Forced-Enabled-Always ResourcePack Name"),
                 PackSource.BUILT_IN,

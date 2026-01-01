@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Negotiates the network components between the server and client.
@@ -66,7 +66,7 @@ public class NetworkComponentNegotiator {
 
         server.removeAll(disabledOptionalOnServer);
 
-        Table<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> matches = HashBasedTable.create();
+        Table<Identifier, NegotiableNetworkComponent, NegotiableNetworkComponent> matches = HashBasedTable.create();
         server.forEach(s -> finalClient.forEach(c -> {
             if (s.id().equals(c.id())) {
                 matches.put(s.id(), s, c);
@@ -77,7 +77,7 @@ public class NetworkComponentNegotiator {
         server.removeIf(c -> matches.containsRow(c.id()));
 
         if (!client.isEmpty()) {
-            final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
+            final Map<Identifier, Component> failureReasons = new HashMap<>();
             client.forEach(c -> {
                 Component channelFailureReason = Component.translatable("neoforge.network.negotiation.failure.missing.client.server");
                 String modDisplayName = ModList.get().getModContainerById(c.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");
@@ -87,7 +87,7 @@ public class NetworkComponentNegotiator {
         }
 
         if (!server.isEmpty()) {
-            final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
+            final Map<Identifier, Component> failureReasons = new HashMap<>();
             server.forEach(c -> {
                 Component channelFailureReason = Component.translatable("neoforge.network.negotiation.failure.missing.server.client");
                 String modDisplayName = ModList.get().getModContainerById(c.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");
@@ -97,8 +97,8 @@ public class NetworkComponentNegotiator {
         }
 
         final List<NegotiatedNetworkComponent> result = new ArrayList<>();
-        final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
-        for (Table.Cell<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> match : matches.cellSet()) {
+        final Map<Identifier, Component> failureReasons = new HashMap<>();
+        for (Table.Cell<Identifier, NegotiableNetworkComponent, NegotiableNetworkComponent> match : matches.cellSet()) {
             final NegotiableNetworkComponent serverComponent = match.getColumnKey();
             final NegotiableNetworkComponent clientComponent = match.getValue();
             final String modDisplayName = ModList.get().getModContainerById(serverComponent.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");

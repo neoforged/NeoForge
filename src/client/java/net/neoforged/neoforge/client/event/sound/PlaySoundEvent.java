@@ -10,7 +10,7 @@ import net.minecraft.client.sounds.SoundEngine;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired when a sound is about to be played by the sound engine. This fires before the sound is played and before any
@@ -36,7 +36,7 @@ public class PlaySoundEvent extends SoundEvent {
     public PlaySoundEvent(SoundEngine manager, SoundInstance sound) {
         super(manager);
         this.originalSound = sound;
-        this.name = sound.getLocation().getPath();
+        this.name = sound.getIdentifier().getPath();
         this.setSound(sound);
     }
 

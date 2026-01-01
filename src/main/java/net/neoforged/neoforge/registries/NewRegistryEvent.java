@@ -11,7 +11,7 @@ import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 
@@ -67,7 +67,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void registerToRootRegistry(Registry<?> registry) {
-        ResourceLocation registryName = registry.key().location();
+        Identifier registryName = registry.key().identifier();
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
             throw new IllegalStateException("Attempted duplicate registration of registry " + registryName);
 

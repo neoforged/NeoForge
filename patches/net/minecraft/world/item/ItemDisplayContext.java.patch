@@ -25,7 +25,7 @@
 +        this.fallback = () -> null;
 +    }
 +
-+    private ItemDisplayContext(int id, String name, @org.jetbrains.annotations.Nullable String fallbackName) {
++    private ItemDisplayContext(int id, String name, @org.jspecify.annotations.Nullable String fallbackName) {
 +        this.id = (byte)id;
 +        this.name = name;
 +        this.isModded = true;
@@ -50,7 +50,7 @@
 +        return isModded;
 +    }
 +
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public ItemDisplayContext fallback() {
 +        return fallback.get();
 +    }

@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.blaze3d.opengl;
 
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 
 /**

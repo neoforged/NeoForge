@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
++++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
+@@ -556,7 +_,7 @@
+         @Override
+         public boolean canUse() {
+             if (this.nextStartTick <= 0) {
+-                if (!getServerLevel(this.rabbit).getGameRules().get(GameRules.MOB_GRIEFING)) {
++                if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.rabbit.level()), this.rabbit)) {
+                     return false;
+                 }
+ 
+@@ -605,7 +_,7 @@
+         @Override
+         protected boolean isValidTarget(LevelReader p_479418_, BlockPos p_479817_) {
+             BlockState blockstate = p_479418_.getBlockState(p_479817_);
+-            if (blockstate.is(Blocks.FARMLAND) && this.wantsToRaid && !this.canRaid) {
++            if (blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock && this.wantsToRaid && !this.canRaid) {
+                 blockstate = p_479418_.getBlockState(p_479817_.above());
+                 if (blockstate.getBlock() instanceof CarrotBlock && ((CarrotBlock)blockstate.getBlock()).isMaxAge(blockstate)) {
+                     this.canRaid = true;

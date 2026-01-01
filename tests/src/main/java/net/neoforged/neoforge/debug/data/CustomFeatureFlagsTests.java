@@ -12,8 +12,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -39,7 +39,7 @@ public class CustomFeatureFlagsTests {
     static void testFeatureFlagPacks(final DynamicTest test) {
         test.framework().modEventBus().addListener((AddPackFindersEvent event) -> {
             event.addPackFinders(
-                    ResourceLocation.fromNamespaceAndPath("neotests", "feature_flag_test_packs/flag_test_pack"),
+                    Identifier.fromNamespaceAndPath("neotests", "feature_flag_test_packs/flag_test_pack"),
                     PackType.SERVER_DATA,
                     Component.literal("Custom FeatureFlag test pack"),
                     PackSource.FEATURE,
@@ -49,7 +49,7 @@ public class CustomFeatureFlagsTests {
             // Add 6 additional packs to visually overflow the vanilla experiments screen
             for (int i = 0; i < 6; i++) {
                 event.addPackFinders(
-                        ResourceLocation.fromNamespaceAndPath("neotests", "feature_flag_test_packs/flag_test_pack_" + i),
+                        Identifier.fromNamespaceAndPath("neotests", "feature_flag_test_packs/flag_test_pack_" + i),
                         PackType.SERVER_DATA,
                         Component.literal("Custom FeatureFlag test pack " + i),
                         PackSource.FEATURE,
@@ -64,17 +64,17 @@ public class CustomFeatureFlagsTests {
     @TestHolder(description = "Verifies that registered objects using a custom feature flag are not accessible without the feature flag being enabled", enabledByDefault = true)
     static void testFeatureGating(final DynamicTest test) {
         test.framework().modEventBus().addListener((AddPackFindersEvent event) -> event.addPackFinders(
-                ResourceLocation.fromNamespaceAndPath("neotests", "feature_flag_test_packs/gating_test_pack"),
+                Identifier.fromNamespaceAndPath("neotests", "feature_flag_test_packs/gating_test_pack"),
                 PackType.SERVER_DATA,
                 Component.literal("Custom FeatureFlag gating test pack"),
                 PackSource.FEATURE,
                 true,
                 Pack.Position.TOP));
 
-        FeatureFlag baseRangeEnabledTestFlag = FeatureFlags.REGISTRY.getFlag(ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_9"));
-        FeatureFlag baseRangeDisabledTestFlag = FeatureFlags.REGISTRY.getFlag(ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_10"));
-        FeatureFlag extRangeEnabledTestFlag = FeatureFlags.REGISTRY.getFlag(ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_99"));
-        FeatureFlag extRangeDisabledTestFlag = FeatureFlags.REGISTRY.getFlag(ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_100"));
+        FeatureFlag baseRangeEnabledTestFlag = FeatureFlags.REGISTRY.getFlag(Identifier.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_9"));
+        FeatureFlag baseRangeDisabledTestFlag = FeatureFlags.REGISTRY.getFlag(Identifier.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_10"));
+        FeatureFlag extRangeEnabledTestFlag = FeatureFlags.REGISTRY.getFlag(Identifier.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_99"));
+        FeatureFlag extRangeDisabledTestFlag = FeatureFlags.REGISTRY.getFlag(Identifier.fromNamespaceAndPath("custom_feature_flags_pack_test", "many_flags_100"));
 
         DeferredItem<Item> baseRangeEnabledTestItem = test.registrationHelper().items()
                 .registerSimpleItem("base_range_enabled_test", props -> props.requiredFeatures(baseRangeEnabledTestFlag));
@@ -107,11 +107,11 @@ public class CustomFeatureFlagsTests {
     static void testFlagCondition(DynamicTest test, RegistrationHelper reg) {
         // custom flag are provided by our other flag tests
         // and enabled via our `custom featureflag test pack`
-        var flagName = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "test_flag");
+        var flagName = Identifier.fromNamespaceAndPath("custom_feature_flags_pack_test", "test_flag");
         var flag = FeatureFlags.REGISTRY.getFlag(flagName);
 
         var modId = reg.modId();
-        var enabledRecipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
+        var enabledRecipeName = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
 
         reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
@@ -142,11 +142,11 @@ public class CustomFeatureFlagsTests {
 
             if (isFlagEnabled) {
                 if (!hasEnabledRecipe) {
-                    test.fail("Missing recipe '" + enabledRecipeName.location() + "', This should be enabled due to our flag '" + flagName + "' being enabled");
+                    test.fail("Missing recipe '" + enabledRecipeName.identifier() + "', This should be enabled due to our flag '" + flagName + "' being enabled");
                 }
             } else {
                 if (hasEnabledRecipe) {
-                    test.fail("Found recipe '" + enabledRecipeName.location() + "', This should be disabled due to our flag '" + flagName + "' being enabled");
+                    test.fail("Found recipe '" + enabledRecipeName.identifier() + "', This should be disabled due to our flag '" + flagName + "' being enabled");
                 }
             }
 

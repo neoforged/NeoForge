@@ -23,7 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.testframework.Test;
@@ -31,7 +31,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public final class TestsOverlay implements GuiLayer {
     public static final int MAX_DISPLAYED = 5;
-    public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "background");
+    public static final Identifier BG_TEXTURE = Identifier.fromNamespaceAndPath("testframework", "background");
 
     private final MutableTestFramework impl;
     private final BooleanSupplier enabled;
@@ -170,10 +170,10 @@ public final class TestsOverlay implements GuiLayer {
         renderingQueue.forEach(Runnable::run);
     }
 
-    static final Map<Test.Result, ResourceLocation> ICON_BY_RESULT = new EnumMap<>(Map.of(
-            Test.Result.FAILED, ResourceLocation.fromNamespaceAndPath("testframework", "test_failed"),
-            Test.Result.PASSED, ResourceLocation.fromNamespaceAndPath("testframework", "test_passed"),
-            Test.Result.NOT_PROCESSED, ResourceLocation.fromNamespaceAndPath("testframework", "test_not_processed")));
+    static final Map<Test.Result, Identifier> ICON_BY_RESULT = new EnumMap<>(Map.of(
+            Test.Result.FAILED, Identifier.fromNamespaceAndPath("testframework", "test_failed"),
+            Test.Result.PASSED, Identifier.fromNamespaceAndPath("testframework", "test_passed"),
+            Test.Result.NOT_PROCESSED, Identifier.fromNamespaceAndPath("testframework", "test_not_processed")));
 
     // TODO - maybe "group" together tests in the same group?
     private XY renderTest(Font font, Test test, GuiGraphics graphics, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {

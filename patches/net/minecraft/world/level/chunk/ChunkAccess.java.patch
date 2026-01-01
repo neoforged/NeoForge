@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -328,10 +_,14 @@
+@@ -318,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -16,7 +16,7 @@
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
          for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
-@@ -343,8 +_,9 @@
+@@ -333,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -486,6 +_,84 @@
+@@ -476,6 +_,83 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -108,8 +108,7 @@
 +    }
 +
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
-+    @Nullable
-+    public net.minecraft.world.level.Level getLevel() { return null; }
++    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
  
      public static ProblemReporter.PathElement problemPath(ChunkPos p_421990_) {
          return new ChunkAccess.ChunkPathElement(p_421990_);

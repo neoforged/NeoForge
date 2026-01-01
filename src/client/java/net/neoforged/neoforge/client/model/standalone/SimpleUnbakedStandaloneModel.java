@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.model.standalone;
 
 import java.util.function.BiFunction;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
 import net.minecraft.client.renderer.block.model.SingleVariant;
@@ -15,7 +16,7 @@ import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.client.resources.model.ResolvedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * An {@link UnbakedStandaloneModel} implementation that loads a single model.
@@ -32,7 +33,7 @@ import net.minecraft.resources.ResourceLocation;
  * @see StandaloneModelKey
  */
 public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneModel<T> {
-    private final ResourceLocation modelId;
+    private final Identifier modelId;
     private final BiFunction<ResolvedModel, ModelBaker, T> bake;
 
     /**
@@ -41,7 +42,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      * @param modelId The id of the model to load.
      * @param bake    The function to bake the model, converting a {@link ResolvedModel} into the required type.
      */
-    public SimpleUnbakedStandaloneModel(ResourceLocation modelId, BiFunction<ResolvedModel, ModelBaker, T> bake) {
+    public SimpleUnbakedStandaloneModel(Identifier modelId, BiFunction<ResolvedModel, ModelBaker, T> bake) {
         this.modelId = modelId;
         this.bake = bake;
     }
@@ -57,17 +58,17 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
     }
 
     /**
-     * {@return an unbaked standalone model for a {@link SimpleModelWrapper}, baked without additional transformations}
+     * {@return an unbaked standalone model for a {@link BlockModelPart}, baked without additional transformations}
      */
-    public static SimpleUnbakedStandaloneModel<SimpleModelWrapper> simpleModelWrapper(ResourceLocation modelId) {
+    public static SimpleUnbakedStandaloneModel<BlockModelPart> simpleModelWrapper(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, BlockModelRotation.X0_Y0));
+                modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY));
     }
 
     /**
-     * {@return an unbaked standalone model for a {@link SimpleModelWrapper}, baked with the provided {@link ModelState} transformations}
+     * {@return an unbaked standalone model for a {@link BlockModelPart}, baked with the provided {@link ModelState} transformations}
      */
-    public static SimpleUnbakedStandaloneModel<SimpleModelWrapper> simpleModelWrapper(ResourceLocation modelId, ModelState modelState) {
+    public static SimpleUnbakedStandaloneModel<BlockModelPart> simpleModelWrapper(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
                 modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, modelState));
     }
@@ -75,15 +76,15 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
     /**
      * {@return an unbaked standalone model for a {@link BlockStateModel}, baked without additional transformations}
      */
-    public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(ResourceLocation modelId) {
+    public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, BlockModelRotation.X0_Y0)));
+                modelId, (model, baker) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY)));
     }
 
     /**
      * {@return an unbaked standalone model for a {@link BlockStateModel}, baked with the provided {@link ModelState} transformations}
      */
-    public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(ResourceLocation modelId, ModelState modelState) {
+    public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
                 modelId, (model, baker) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, modelState)));
     }
@@ -91,15 +92,15 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
     /**
      * {@return an unbaked standalone model for a {@link QuadCollection}, baked without additional transformations}
      */
-    public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(ResourceLocation modelId) {
+    public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, BlockModelRotation.X0_Y0));
+                modelId, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, BlockModelRotation.IDENTITY));
     }
 
     /**
      * {@return an unbaked standalone model for a {@link QuadCollection}, baked with the provided {@link ModelState} transformations}
      */
-    public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(ResourceLocation modelId, ModelState modelState) {
+    public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
                 modelId, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, modelState));
     }

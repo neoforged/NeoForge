@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.recipebook.PlaceRecipeHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.Slot;
@@ -24,10 +24,10 @@ import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
 
 public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestMenu> {
     private static final WidgetSprites FILTER_BUTTON_SPRITES = new WidgetSprites(
-            ResourceLocation.withDefaultNamespace("recipe_book/filter_enabled"),
-            ResourceLocation.withDefaultNamespace("recipe_book/filter_disabled"),
-            ResourceLocation.withDefaultNamespace("recipe_book/filter_enabled_highlighted"),
-            ResourceLocation.withDefaultNamespace("recipe_book/filter_disabled_highlighted"));
+            Identifier.withDefaultNamespace("recipe_book/filter_enabled"),
+            Identifier.withDefaultNamespace("recipe_book/filter_disabled"),
+            Identifier.withDefaultNamespace("recipe_book/filter_enabled_highlighted"),
+            Identifier.withDefaultNamespace("recipe_book/filter_disabled_highlighted"));
     private static final List<RecipeBookComponent.TabInfo> TABS = List.of(
             new RecipeBookComponent.TabInfo(new ItemStack(Items.COMPASS), Optional.empty(), RecipeBookExtensionTest.SEARCH_CATEGORY),
             new RecipeBookComponent.TabInfo(Items.DIAMOND, RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT1.get()));
@@ -37,8 +37,8 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
     }
 
     @Override
-    protected void initFilterButtonTextures() {
-        this.filterButton.initTextureValues(FILTER_BUTTON_SPRITES);
+    protected WidgetSprites getFilterButtonTextures() {
+        return FILTER_BUTTON_SPRITES;
     }
 
     @Override

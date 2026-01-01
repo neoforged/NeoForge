@@ -60,7 +60,7 @@
 +                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putNameSearchTree(key, CompletableFuture.supplyAsync(
                      () -> new FullTextSearchTree<>(
                          p_345006_ -> getTooltipLines(Stream.of(p_345006_), item$tooltipcontext, tooltipflag),
-                         p_345861_ -> p_345861_.getItemHolder().unwrapKey().map(ResourceKey::location).stream(),
+                         p_345861_ -> p_345861_.getItemHolder().unwrapKey().map(ResourceKey::identifier).stream(),
                          p_346357_
                      ),
                      Util.backgroundExecutor()

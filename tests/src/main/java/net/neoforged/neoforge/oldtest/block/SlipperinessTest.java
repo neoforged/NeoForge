@@ -7,10 +7,10 @@ package net.neoforged.neoforge.oldtest.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelReader;
@@ -28,7 +28,7 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MOD_ID, BLOCK_ID));
+    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(Identifier.fromNamespaceAndPath(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

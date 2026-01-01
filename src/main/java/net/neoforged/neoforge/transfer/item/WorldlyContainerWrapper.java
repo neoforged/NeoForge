@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An implementation of {@code ResourceHandler<ItemResource>} for vanilla's {@link WorldlyContainer} .

@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
@@ -25,13 +25,13 @@ public record NamespacedDirectoryLister(String namespace, String sourcePath, Str
             Codec.STRING.fieldOf("namespace").forGetter(lister -> lister.namespace),
             Codec.STRING.fieldOf("source").forGetter(lister -> lister.sourcePath),
             Codec.STRING.fieldOf("prefix").forGetter(lister -> lister.idPrefix)).apply(inst, NamespacedDirectoryLister::new));
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "namespaced_directory");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "namespaced_directory");
 
     @Override
     public void run(ResourceManager resourceManager, Output output) {
         FileToIdConverter converter = new FileToIdConverter("textures/" + this.sourcePath, ".png");
         converter.listMatchingResourcesFromNamespace(resourceManager, this.namespace).forEach((path, resource) -> {
-            ResourceLocation id = converter.fileToId(path).withPrefix(this.idPrefix);
+            Identifier id = converter.fileToId(path).withPrefix(this.idPrefix);
             output.add(id, resource);
         });
     }

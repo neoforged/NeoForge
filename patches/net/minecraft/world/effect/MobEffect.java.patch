@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -67,6 +_,16 @@
+@@ -66,6 +_,16 @@
          this.particleFactory = p_333515_ -> p_333716_;
      }
  
@@ -17,7 +17,7 @@
      public int getBlendInDurationTicks() {
          return this.blendInDurationTicks;
      }
-@@ -143,6 +_,18 @@
+@@ -142,6 +_,18 @@
          return this;
      }
  
@@ -28,7 +28,7 @@
 +     * @param operation Operation of the modifier
 +     * @param curve A function mapping effect instance amplifier to modifier amount
 +     */
-+    public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++    public MobEffect addAttributeModifier(Holder<Attribute> attribute, Identifier id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
 +        this.attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, curve.apply(0), operation, curve));
 +        return this;
 +    }
@@ -36,14 +36,14 @@
      public MobEffect setBlendDuration(int p_316265_) {
          return this.setBlendDuration(p_316265_, p_316265_, p_316265_);
      }
-@@ -200,8 +_,16 @@
+@@ -199,8 +_,16 @@
          return this.requiredFeatures;
      }
  
--    public record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
-+    public record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
+-    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
++    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.@Nullable Int2DoubleFunction curve) {
 +
-+        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++        public AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
 +            this(id, amount, operation, null);
 +        }
 +

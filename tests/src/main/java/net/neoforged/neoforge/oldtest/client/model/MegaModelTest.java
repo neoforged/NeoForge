@@ -41,8 +41,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.QuadTransformers;
+import net.neoforged.neoforge.client.model.quad.QuadTransforms;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
@@ -50,9 +49,9 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Test mod that demos most Forge-provided model loaders in a single block + item, as well as in-JSON render states
@@ -151,7 +150,7 @@ public class MegaModelTest {
     }
 
     private static class TransformingModelWrapper extends DelegateBlockStateModel {
-        private static final Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
+        private static final @Nullable Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
 
         public TransformingModelWrapper(BlockStateModel originalModel) {
             super(originalModel);
@@ -165,12 +164,11 @@ public class MegaModelTest {
                 return;
             }
 
-            IQuadTransformer transformer = QuadTransformers.applying(data.transform());
             for (BlockModelPart part : delegate.collectParts(level, pos, state, random)) {
                 QuadCollection.Builder builder = new QuadCollection.Builder();
                 for (Direction side : DIRECTIONS) {
                     for (BakedQuad quad : part.getQuads(side)) {
-                        quad = transformer.process(quad);
+                        quad = QuadTransforms.applyTransformation(quad, data.transform());
                         if (side == null) {
                             builder.addUnculledFace(quad);
                         } else {

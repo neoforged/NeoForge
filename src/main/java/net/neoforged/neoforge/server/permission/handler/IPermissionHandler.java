@@ -7,7 +7,7 @@ package net.neoforged.neoforge.server.permission.handler;
 
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
@@ -27,7 +27,7 @@ public interface IPermissionHandler {
     /**
      * {@return an identifier for the PermissionHandler}
      */
-    ResourceLocation getIdentifier();
+    Identifier getIdentifier();
 
     /**
      * {@return an unmodifiable view of the collection of registered permission nodes}

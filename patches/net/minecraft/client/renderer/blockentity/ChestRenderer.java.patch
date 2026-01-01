@@ -15,7 +15,7 @@
          f = 1.0F - f * f * f;
 -        Material material = Sheets.chooseMaterial(p_446740_.material, p_446740_.type);
 +        Material material = p_446740_.customMaterial != null ? p_446740_.customMaterial : Sheets.chooseMaterial(p_446740_.material, p_446740_.type);
-         RenderType rendertype = material.renderType(RenderType::entityCutout);
+         RenderType rendertype = material.renderType(RenderTypes::entityCutout);
          TextureAtlasSprite textureatlassprite = this.materials.get(material);
          if (p_446740_.type != ChestType.SINGLE) {
 @@ -153,5 +_,20 @@

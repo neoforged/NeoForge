@@ -1,0 +1,34 @@
+--- a/net/minecraft/server/network/EventLoopGroupHolder.java
++++ b/net/minecraft/server/network/EventLoopGroupHolder.java
+@@ -52,6 +_,7 @@
+     private final Class<? extends Channel> channelCls;
+     private final Class<? extends ServerChannel> serverChannelCls;
+     private volatile @Nullable EventLoopGroup group;
++    private volatile @Nullable EventLoopGroup serverGroup;
+ 
+     public static EventLoopGroupHolder remote(boolean p_459148_) {
+         if (p_459148_) {
+@@ -85,6 +_,23 @@
+ 
+     private EventLoopGroup createEventLoopGroup() {
+         return new MultiThreadIoEventLoopGroup(this.createThreadFactory(), this.ioHandlerFactory());
++    }
++
++    // Neo: Use a separate event group for the server-side which allows us to identify server threads
++    public EventLoopGroup serverEventLoopGroup() {
++        var eventloopgroup = this.serverGroup;
++        if (eventloopgroup == null) {
++            synchronized (this) {
++                eventloopgroup = this.serverGroup;
++                if (eventloopgroup == null) {
++                    var threadFactory = new ThreadFactoryBuilder().setNameFormat("Netty " + this.type + " IO #%d").setThreadFactory(net.neoforged.fml.util.thread.SidedThreadGroups.SERVER).setDaemon(true).build();
++                    eventloopgroup = new MultiThreadIoEventLoopGroup(threadFactory, this.ioHandlerFactory());
++                    this.serverGroup = eventloopgroup;
++                }
++            }
++        }
++
++        return eventloopgroup;
+     }
+ 
+     public EventLoopGroup eventLoopGroup() {

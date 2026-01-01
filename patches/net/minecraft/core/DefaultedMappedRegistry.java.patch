@@ -1,15 +1,15 @@
 --- a/net/minecraft/core/DefaultedMappedRegistry.java
 +++ b/net/minecraft/core/DefaultedMappedRegistry.java
-@@ -40,6 +_,12 @@
-         return resourcelocation == null ? this.defaultKey : resourcelocation;
+@@ -38,6 +_,12 @@
+         return identifier == null ? this.defaultKey : identifier;
      }
  
 +    @Nullable
 +    @Override
-+    public ResourceLocation getKeyOrNull(T element) {
++    public Identifier getKeyOrNull(T element) {
 +        return super.getKey(element);
 +    }
 +
-     @Nonnull
      @Override
-     public T getValue(@Nullable ResourceLocation p_368576_) {
+     public T getValue(@Nullable Identifier p_468616_) {
+         T t = super.getValue(p_468616_);

@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/entity/monster/zombie/Zombie.java
++++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
+@@ -232,6 +_,7 @@
+     }
+ 
+     protected void doUnderWaterConversion(ServerLevel p_481555_) {
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) return;
+         this.convertToZombieType(p_481555_, EntityType.DROWNED);
+         if (!this.isSilent()) {
+             p_481555_.levelEvent(null, 1040, this.blockPosition(), 0);
+@@ -242,7 +_,10 @@
+         this.convertTo(
+             p_482190_,
+             ConversionParams.single(this, true, true),
+-            p_480962_ -> p_480962_.handleAttributes(p_481352_.getCurrentDifficultyAt(p_480962_.blockPosition()).getSpecialMultiplier())
++            p_381517_ -> {
++                p_381517_.handleAttributes(p_481352_.getCurrentDifficultyAt(p_381517_.blockPosition()).getSpecialMultiplier());
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_381517_);
++            }
+         );
+     }
+ 
+@@ -262,6 +_,7 @@
+                 p_480487_.setGossips(p_479207_.getGossips().copy());
+                 p_480487_.setTradeOffers(p_479207_.getOffers().copy());
+                 p_480487_.setVillagerXp(p_479207_.getVillagerXp());
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(p_479207_, p_480487_);
+                 if (!this.isSilent()) {
+                     p_480405_.levelEvent(null, 1026, this.blockPosition(), 0);
+                 }
+@@ -417,7 +_,7 @@
+     @Override
+     public boolean killedEntity(ServerLevel p_479575_, LivingEntity p_478394_, DamageSource p_481123_) {
+         boolean flag = super.killedEntity(p_479575_, p_478394_, p_481123_);
+-        if ((p_479575_.getDifficulty() == Difficulty.NORMAL || p_479575_.getDifficulty() == Difficulty.HARD) && p_478394_ instanceof Villager villager) {
++        if ((p_479575_.getDifficulty() == Difficulty.NORMAL || p_479575_.getDifficulty() == Difficulty.HARD) && p_478394_ instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(p_478394_, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
+             if (p_479575_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+                 return flag;
+             }

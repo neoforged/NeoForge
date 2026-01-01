@@ -18,7 +18,7 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.BrandPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
@@ -67,7 +67,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
 
         ModLoader.postEvent(new RegisterClientPayloadHandlersEvent());
 
-        List<ResourceLocation> missingHandlers = PAYLOAD_REGISTRATIONS.values()
+        List<Identifier> missingHandlers = PAYLOAD_REGISTRATIONS.values()
                 .stream()
                 .map(Map::values)
                 .flatMap(Collection::stream)
@@ -106,7 +106,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         boolean found = false;
         for (var entry : PAYLOAD_REGISTRATIONS.entrySet()) {
             ConnectionProtocol protocol = entry.getKey();
-            Map<ResourceLocation, PayloadRegistration<?>> registrations = entry.getValue();
+            Map<Identifier, PayloadRegistration<?>> registrations = entry.getValue();
 
             PayloadRegistration<T> registration = (PayloadRegistration<T>) registrations.get(type.id());
             if (registration == null) {
@@ -144,7 +144,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
             return;
         }
 
-        ResourceLocation payloadId = packet.payload().type().id();
+        Identifier payloadId = packet.payload().type().id();
         ClientPayloadContext context = new ClientPayloadContext(listener, payloadId);
 
         if (CLIENTBOUND_HANDLERS.containsKey(listener.protocol())) {
@@ -202,7 +202,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         // Only inject filters once the payload setup is stored, as the filters might check for available channels.
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
-        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        final ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         nowListeningOn.addAll(setup.getChannels(ConnectionProtocol.CONFIGURATION).keySet());
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
@@ -254,7 +254,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
 
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
-        ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.CONFIGURATION).entrySet().stream()
                 .filter(registration -> registration.getValue().matchesFlow(listener.flow()))

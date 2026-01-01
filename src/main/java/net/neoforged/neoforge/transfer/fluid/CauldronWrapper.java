@@ -57,7 +57,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     private CauldronFluidContent getContent(BlockState state) {
         CauldronFluidContent content = CauldronFluidContent.getForBlock(state.getBlock());
         if (content == null) {
-            throw new IllegalStateException("Unexpected error: no cauldron at location " + location.pos + " in " + location.level.dimension().location());
+            throw new IllegalStateException("Unexpected error: no cauldron at location " + location.pos + " in " + location.level.dimension().identifier());
         }
         return content;
     }

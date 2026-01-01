@@ -10,14 +10,14 @@ import java.util.Optional;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -31,7 +31,7 @@ public class ModDatapackTest {
     @SuppressWarnings("removal")
     @TestHolder(description = "Tests that mod datapacks are loaded properly on initial load and reload", enabledByDefault = true)
     static void modDatapack(final DynamicTest test) {
-        final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
+        final Identifier testAdvancement = Identifier.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
         test.registrationHelper().addClientProvider(event -> {
             List<AdvancementSubProvider> generators = List.of((registries, saver) -> Advancement.Builder.recipeAdvancement()
@@ -40,7 +40,7 @@ public class ModDatapackTest {
                             new InventoryChangeTrigger.TriggerInstance(
                                     Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
                                             ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
-                    .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
+                    .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
                     .save(saver, testAdvancement));
             return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
         });

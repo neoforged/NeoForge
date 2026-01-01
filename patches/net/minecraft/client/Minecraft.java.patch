@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -441,7 +_,6 @@
+@@ -433,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
          LOGGER.info("Setting user: {}", this.user.getName());
@@ -8,7 +8,7 @@
          this.demo = p_91084_.game.demo;
          this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
          this.allowsChat = !p_91084_.game.disableChat;
-@@ -493,20 +_,24 @@
+@@ -485,21 +_,25 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
@@ -24,10 +24,11 @@
              this.options.glDebugVerbosity,
 -            SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS,
 +            SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS || enableGlDebug,
-             (p_408948_, p_408949_) -> this.getShaderManager().getShader(p_408948_, p_408949_),
+             (p_465335_, p_465336_) -> this.getShaderManager().getShader(p_465335_, p_465336_),
 -            p_91084_.game.renderDebugLabels
 +            p_91084_.game.renderDebugLabels || enableGlDebug
          );
+         this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
          LOGGER.info("Using optional rendering extensions: {}", String.join(", ", RenderSystem.getDevice().getEnabledExtensions()));
 -        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
 +        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
@@ -38,7 +39,7 @@
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode, p_344151_ -> {
-@@ -545,6 +_,7 @@
+@@ -538,6 +_,7 @@
          RenderSystem.setupDefaultState();
          this.window.setErrorSection("Post startup");
          this.blockColors = BlockColors.createDefault();
@@ -46,7 +47,7 @@
          this.modelManager = new ModelManager(this.blockColors, this.atlasManager, this.playerSkinRenderCache);
          this.resourceManager.registerReloadListener(this.modelManager);
          EquipmentAssetManager equipmentassetmanager = new EquipmentAssetManager();
-@@ -605,6 +_,7 @@
+@@ -595,6 +_,7 @@
          this.resourceManager.registerReloadListener(this.particleResources);
          this.particleEngine = new ParticleEngine(this.level, this.particleResources);
          this.particleResources.onReload(this.particleEngine::clearParticles);
@@ -54,7 +55,7 @@
          this.waypointStyles = new WaypointStyleManager();
          this.resourceManager.registerReloadListener(this.waypointStyles);
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.renderBuffers, this.blockRenderer);
-@@ -621,6 +_,9 @@
+@@ -611,6 +_,9 @@
          this.gpuWarnlistManager = new GpuWarnlistManager();
          this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
          this.resourceManager.registerReloadListener(this.regionalCompliancies);
@@ -64,7 +65,7 @@
          this.gui = new Gui(this);
          RealmsClient realmsclient = RealmsClient.getOrCreate(this);
          this.realmsDataFetcher = new RealmsDataFetcher(realmsclient);
-@@ -654,6 +_,7 @@
+@@ -644,6 +_,7 @@
              }
          }
  
@@ -72,27 +73,27 @@
          this.window.updateVsync(this.options.enableVsync().get());
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
-@@ -680,9 +_,9 @@
+@@ -670,9 +_,9 @@
          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
          Minecraft.GameLoadCookie minecraft$gameloadcookie = new Minecraft.GameLoadCookie(realmsclient, p_91084_.quickPlay);
          this.setOverlay(
 -            new LoadingOverlay(
 +            net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(
-                 this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
+                 this, reloadinstance, p_465340_ -> Util.ifElse(p_465340_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
 -                    if (SharedConstants.IS_RUNNING_IN_IDE) {
 +                    if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
                          this.selfTest();
                      }
  
-@@ -719,6 +_,7 @@
+@@ -709,6 +_,7 @@
      }
  
-     private void onResourceLoadFinished(@Nullable Minecraft.GameLoadCookie p_299896_) {
+     private void onResourceLoadFinished(Minecraft.@Nullable GameLoadCookie p_299896_) {
 +        net.neoforged.neoforge.client.ClientHooks.fireResourceLoadFinishedEvent(!this.gameLoadFinished);
          if (!this.gameLoadFinished) {
              this.gameLoadFinished = true;
              this.onGameLoadFinished(p_299896_);
-@@ -755,6 +_,8 @@
+@@ -745,6 +_,8 @@
              runnable = () -> this.setScreen(screen);
          }
  
@@ -101,7 +102,7 @@
          return runnable;
      }
  
-@@ -807,7 +_,7 @@
+@@ -797,7 +_,7 @@
      private String createTitle() {
          StringBuilder stringbuilder = new StringBuilder("Minecraft");
          if (checkModStatus().shouldReportAsModified()) {
@@ -110,16 +111,16 @@
          }
  
          stringbuilder.append(" ");
-@@ -843,7 +_,7 @@
+@@ -833,7 +_,7 @@
      }
  
-     private void rollbackResourcePacks(Throwable p_91240_, @Nullable Minecraft.GameLoadCookie p_299846_) {
+     private void rollbackResourcePacks(Throwable p_91240_, Minecraft.@Nullable GameLoadCookie p_299846_) {
 -        if (this.resourcePackRepository.getSelectedIds().size() > 1) {
 +        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { //Forge: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
              this.clearResourcePacksOnError(p_91240_, null, p_299846_);
          } else {
              Util.throwAsRuntime(p_91240_);
-@@ -899,6 +_,8 @@
+@@ -889,6 +_,8 @@
          DiscontinuousFrame discontinuousframe = TracyClient.createDiscontinuousFrame("Client Tick");
  
          try {
@@ -128,7 +129,7 @@
              boolean flag = false;
  
              while (this.running) {
-@@ -1002,7 +_,7 @@
+@@ -992,7 +_,7 @@
              p_307414_.soundManager.emergencyShutdown();
          }
  
@@ -137,7 +138,7 @@
      }
  
      public boolean isEnforceUnicode() {
-@@ -1129,9 +_,7 @@
+@@ -1119,9 +_,7 @@
              LOGGER.error("setScreen called from non-game thread");
          }
  
@@ -148,7 +149,7 @@
              this.setLastInputType(InputType.NONE);
          }
  
-@@ -1153,6 +_,19 @@
+@@ -1143,6 +_,19 @@
              }
          }
  
@@ -168,7 +169,7 @@
          this.screen = p_91153_;
          if (this.screen != null) {
              this.screen.added();
-@@ -1181,6 +_,7 @@
+@@ -1171,6 +_,7 @@
  
      public void destroy() {
          try {
@@ -176,7 +177,7 @@
              LOGGER.info("Stopping!");
  
              try {
-@@ -1202,6 +_,7 @@
+@@ -1192,6 +_,7 @@
              }
  
              this.close();
@@ -184,17 +185,17 @@
          } finally {
              Util.timeSource = System::nanoTime;
              if (this.delayedCrash == null) {
-@@ -1299,7 +_,9 @@
-         RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(rendertarget.getColorTexture(), 0, rendertarget.getDepthTexture(), 1.0);
-         profilerfiller.push("gameRenderer");
-         if (!this.noRender) {
-+            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePre(this.deltaTracker);
-             this.gameRenderer.render(this.deltaTracker, p_91384_);
-+            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(this.deltaTracker);
-         }
+@@ -1308,7 +_,9 @@
+             RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(rendertarget.getColorTexture(), 0, rendertarget.getDepthTexture(), 1.0);
+             profilerfiller.push("gameRenderer");
+             if (!this.noRender) {
++                net.neoforged.neoforge.client.ClientHooks.fireRenderFramePre(this.deltaTracker);
+                 this.gameRenderer.render(this.deltaTracker, p_91384_);
++                net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(this.deltaTracker);
+             }
  
-         profilerfiller.popPush("blit");
-@@ -1331,9 +_,13 @@
+             profilerfiller.popPush("blit");
+@@ -1342,9 +_,13 @@
          this.window.setErrorSection("Post render");
          this.frames++;
          boolean flag1 = this.pause;
@@ -209,11 +210,11 @@
          if (!flag1 && this.pause) {
              this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
          }
-@@ -1409,10 +_,13 @@
+@@ -1420,10 +_,13 @@
          this.window.setGuiScale(i);
          if (this.screen != null) {
-             this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
-+            net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
+             this.screen.resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++            net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
          }
  
          RenderTarget rendertarget = this.getMainRenderTarget();
@@ -223,7 +224,7 @@
          this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
          this.mouseHandler.setIgnoreFirstMove();
      }
-@@ -1552,6 +_,7 @@
+@@ -1563,6 +_,7 @@
      }
  
      public void stop() {
@@ -231,12 +232,12 @@
          this.running = false;
      }
  
-@@ -1581,8 +_,16 @@
-                 BlockPos blockpos = blockhitresult.getBlockPos();
-                 if (!this.level.getBlockState(blockpos).isAir()) {
-                     Direction direction = blockhitresult.getDirection();
--                    if (this.gameMode.continueDestroyBlock(blockpos, direction)) {
--                        this.level.addBreakingBlockEffect(blockpos, direction);
+@@ -1594,8 +_,16 @@
+                     BlockPos blockpos = blockhitresult.getBlockPos();
+                     if (!this.level.getBlockState(blockpos).isAir()) {
+                         Direction direction = blockhitresult.getDirection();
+-                        if (this.gameMode.continueDestroyBlock(blockpos, direction)) {
+-                            this.level.addBreakingBlockEffect(blockpos, direction);
 +                    var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
 +                    if (inputEvent.isCanceled()) {
 +                        if (inputEvent.shouldSwingHand()) {
@@ -247,30 +248,39 @@
 +                    }
 +                    if (this.gameMode.continueDestroyBlock(blockpos, direction) && inputEvent.shouldSwingHand()) {
 +                        this.level.addBreakingBlockEffect(blockpos, direction, blockhitresult);
-                         this.player.swing(InteractionHand.MAIN_HAND);
+                             this.player.swing(InteractionHand.MAIN_HAND);
+                         }
                      }
-                 }
-@@ -1610,6 +_,8 @@
+@@ -1626,9 +_,16 @@
                  return false;
              } else {
                  boolean flag = false;
 +                var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
-+                if (!inputEvent.isCanceled())
-                 switch (this.hitResult.getType()) {
-                     case ENTITY:
-                         this.gameMode.attack(this.player, ((EntityHitResult)this.hitResult).getEntity());
-@@ -1630,8 +_,10 @@
-                         }
+                 PiercingWeapon piercingweapon = itemstack.get(DataComponents.PIERCING_WEAPON);
++                if (inputEvent.isCanceled()) {
++                    if (inputEvent.shouldSwingHand())
++                        this.player.swing(InteractionHand.MAIN_HAND);
++                    return flag;
++                }
+                 if (piercingweapon != null && !this.gameMode.isSpectator()) {
+                     this.gameMode.piercingAttack(piercingweapon);
++                    if (inputEvent.shouldSwingHand())
+                     this.player.swing(InteractionHand.MAIN_HAND);
+                     return true;
+                 } else {
+@@ -1655,9 +_,10 @@
+                             }
  
-                         this.player.resetAttackStrengthTicker();
-+                        net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
-                 }
+                             this.player.resetAttackStrengthTicker();
++                            net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
+                     }
  
-+                if (inputEvent.shouldSwingHand())
-                 this.player.swing(InteractionHand.MAIN_HAND);
-                 return flag;
-             }
-@@ -1647,6 +_,11 @@
+-                    if (!this.player.isSpectator()) {
++                    if (!this.player.isSpectator() && inputEvent.shouldSwingHand()) {
+                         this.player.swing(InteractionHand.MAIN_HAND);
+                     }
+ 
+@@ -1676,6 +_,11 @@
                  }
  
                  for (InteractionHand interactionhand : InteractionHand.values()) {
@@ -282,16 +292,16 @@
                      ItemStack itemstack = this.player.getItemInHand(interactionhand);
                      if (!itemstack.isItemEnabled(this.level.enabledFeatures())) {
                          return;
-@@ -1667,7 +_,7 @@
-                                 }
- 
-                                 if (interactionresult instanceof InteractionResult.Success interactionresult$success2) {
--                                    if (interactionresult$success2.swingSource() == InteractionResult.SwingSource.CLIENT) {
-+                                    if (interactionresult$success2.swingSource() == InteractionResult.SwingSource.CLIENT && inputEvent.shouldSwingHand()) {
-                                         this.player.swing(interactionhand);
+@@ -1697,7 +_,7 @@
                                      }
  
-@@ -1679,7 +_,7 @@
+                                     if (interactionresult instanceof InteractionResult.Success interactionresult$success2) {
+-                                        if (interactionresult$success2.swingSource() == InteractionResult.SwingSource.CLIENT) {
++                                        if (interactionresult$success2.swingSource() == InteractionResult.SwingSource.CLIENT && inputEvent.shouldSwingHand()) {
+                                             this.player.swing(interactionhand);
+                                         }
+ 
+@@ -1710,7 +_,7 @@
                                  int i = itemstack.getCount();
                                  InteractionResult interactionresult1 = this.gameMode.useItemOn(this.player, interactionhand, blockhitresult);
                                  if (interactionresult1 instanceof InteractionResult.Success interactionresult$success) {
@@ -300,7 +310,7 @@
                                          this.player.swing(interactionhand);
                                          if (!itemstack.isEmpty() && (itemstack.getCount() != i || this.player.hasInfiniteMaterials())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(interactionhand);
-@@ -1695,6 +_,9 @@
+@@ -1726,6 +_,9 @@
                          }
                      }
  
@@ -310,7 +320,7 @@
                      if (!itemstack.isEmpty()
                          && this.gameMode.useItem(this.player, interactionhand) instanceof InteractionResult.Success interactionresult$success1) {
                          if (interactionresult$success1.swingSource() == InteractionResult.SwingSource.CLIENT) {
-@@ -1715,6 +_,10 @@
+@@ -1746,6 +_,10 @@
  
      public void tick() {
          this.clientTickCount++;
@@ -321,7 +331,7 @@
          if (this.level != null && !this.pause) {
              this.level.tickRateManager().tick();
          }
-@@ -1809,6 +_,7 @@
+@@ -1836,6 +_,7 @@
  
                  this.tutorial.tick();
  
@@ -329,7 +339,7 @@
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable throwable1) {
-@@ -1822,6 +_,7 @@
+@@ -1849,6 +_,7 @@
  
                      throw new ReportedException(crashreport1);
                  }
@@ -337,7 +347,7 @@
              }
  
              profilerfiller.popPush("animateTick");
-@@ -1846,6 +_,10 @@
+@@ -1873,6 +_,10 @@
          profilerfiller.popPush("keyboard");
          this.keyboardHandler.tick();
          profilerfiller.pop();
@@ -348,7 +358,7 @@
      }
  
      private boolean isLevelRunningNormally() {
-@@ -2062,6 +_,7 @@
+@@ -2089,6 +_,7 @@
      }
  
      public void setLevel(ClientLevel p_91157_) {
@@ -356,7 +366,7 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
      }
-@@ -2115,13 +_,16 @@
+@@ -2150,13 +_,16 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -373,7 +383,7 @@
              }
  
              if (integratedserver != null) {
-@@ -2144,6 +_,7 @@
+@@ -2179,6 +_,7 @@
          } finally {
              this.clientLevelTeardownInProgress = false;
          }
@@ -381,7 +391,7 @@
      }
  
      public void clearDownloadedResourcePacks() {
-@@ -2275,6 +_,7 @@
+@@ -2311,6 +_,7 @@
  
      private void pickBlock() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {

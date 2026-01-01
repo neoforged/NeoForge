@@ -27,7 +27,7 @@ public class ClientConfigCommand {
 
     public static class ShowFile {
         static ArgumentBuilder<CommandSourceStack, ?> register() {
-            return Commands.literal("showfileclient").requires(cs -> cs.hasPermission(0)).then(Commands.argument("mod", ModIdArgument.modIdArgument()).executes(ShowFile::showFile));
+            return Commands.literal("showfileclient").requires(Commands.hasPermission(Commands.LEVEL_ALL)).then(Commands.argument("mod", ModIdArgument.modIdArgument()).executes(ShowFile::showFile));
         }
 
         private static int showFile(final CommandContext<CommandSourceStack> context) {

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.oldtest.misc;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -67,7 +67,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     }
 
     public record ModMismatchPayload() implements CustomPacketPayload {
-        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "mod_mismatch"));
+        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(MOD_ID, "mod_mismatch"));
         private static final StreamCodec<FriendlyByteBuf, ModMismatchPayload> STREAM_CODEC = StreamCodec.unit(new ModMismatchTest.ModMismatchPayload());
 
         @Override

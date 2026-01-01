@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
-@@ -189,7 +_,8 @@
+@@ -188,7 +_,8 @@
  
      static <E extends Entity & Leashable> float angularFriction(E p_418015_) {
          if (p_418015_.onGround()) {

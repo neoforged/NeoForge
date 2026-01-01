@@ -9,7 +9,7 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvableModel;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
 import org.jetbrains.annotations.ApiStatus;
@@ -35,8 +35,8 @@ public interface UnbakedModelExtension extends ResolvableModel {
 
     /**
      * Can be overridden to request the resolution of additional models.
-     * Use {@link Resolver#markDependency(ResourceLocation)} to mark dependencies,
-     * then retrieve them later from {@link ModelBaker#getModel(ResourceLocation)}.
+     * Use {@link Resolver#markDependency(Identifier)} to mark dependencies,
+     * then retrieve them later from {@link ModelBaker#getModel(Identifier)}.
      */
     @Override
     default void resolveDependencies(Resolver resolver) {}

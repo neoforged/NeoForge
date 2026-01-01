@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client.entity.animation.json;
 import com.mojang.logging.LogUtils;
 import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -21,12 +21,12 @@ public final class AnimationHolder {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final ResourceLocation key;
+    private final Identifier key;
     @Nullable
     private AnimationDefinition value;
     private boolean absentWarned;
 
-    AnimationHolder(ResourceLocation key) {
+    AnimationHolder(Identifier key) {
         this.key = key;
     }
 
@@ -42,7 +42,7 @@ public final class AnimationHolder {
     /**
      * Gets the key associated with this animation.
      */
-    public ResourceLocation key() {
+    public Identifier key() {
         return key;
     }
 

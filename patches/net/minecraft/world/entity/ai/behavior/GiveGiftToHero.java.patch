@@ -10,11 +10,11 @@
          .put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT)
          .put(VillagerProfession.BUTCHER, BuiltInLootTables.BUTCHER_GIFT)
 @@ -111,6 +_,8 @@
-         if (p_372869_.isBaby()) {
+         if (p_477939_.isBaby()) {
              return BuiltInLootTables.BABY_VILLAGER_GIFT;
          } else {
-+            var gift = p_372869_.getVillagerData().profession().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
++            var gift = p_477939_.getVillagerData().profession().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
 +            if (gift != null) return gift.lootTable();
-             Optional<ResourceKey<VillagerProfession>> optional = p_372869_.getVillagerData().profession().unwrapKey();
+             Optional<ResourceKey<VillagerProfession>> optional = p_477939_.getVillagerData().profession().unwrapKey();
              return optional.isEmpty() ? BuiltInLootTables.UNEMPLOYED_GIFT : GIFTS.getOrDefault(optional.get(), BuiltInLootTables.UNEMPLOYED_GIFT);
          }

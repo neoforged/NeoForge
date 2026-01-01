@@ -13,7 +13,7 @@ import net.neoforged.neoforge.common.ItemAbility;
 
 public record ItemAbilityPredicate(ItemAbility action) implements DataComponentPredicate {
     public static final Codec<ItemAbilityPredicate> CODEC = ItemAbility.CODEC.xmap(ItemAbilityPredicate::new, ItemAbilityPredicate::action);
-    public static final Type<ItemAbilityPredicate> TYPE = new Type<>(ItemAbilityPredicate.CODEC);
+    public static final Type<ItemAbilityPredicate> TYPE = new ConcreteType<>(ItemAbilityPredicate.CODEC);
 
     @Override
     public boolean matches(DataComponentGetter dataComponentGetter) {

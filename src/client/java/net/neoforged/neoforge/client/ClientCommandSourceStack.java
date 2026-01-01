@@ -23,25 +23,26 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Scoreboard;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * overrides for {@link CommandSourceStack} so that the methods will run successfully client side
  */
 public class ClientCommandSourceStack extends CommandSourceStack {
-    public ClientCommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, int permission, String plainTextName, Component displayName,
+    public ClientCommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, PermissionSet permissions, String plainTextName, Component displayName,
             Entity executing) {
-        super(source, position, rotation, null, permission, plainTextName, displayName, null, executing);
+        super(source, position, rotation, null, permissions, plainTextName, displayName, null, executing);
     }
 
     /**
@@ -129,7 +130,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     @Nullable
-    public AdvancementHolder getAdvancement(ResourceLocation id) {
+    public AdvancementHolder getAdvancement(Identifier id) {
         return connection().getAdvancements().get(id);
     }
 

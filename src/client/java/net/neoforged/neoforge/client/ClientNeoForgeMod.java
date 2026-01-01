@@ -14,7 +14,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
@@ -83,8 +83,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
-    private static ResourceLocation neoForgeId(String path) {
-        return ResourceLocation.fromNamespaceAndPath("neoforge", path);
+    private static Identifier neoForgeId(String path) {
+        return Identifier.fromNamespaceAndPath("neoforge", path);
     }
 
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
@@ -190,7 +190,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+        event.register(Identifier.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnlitUnsortedTranslucent);
     }
 
     @SubscribeEvent
@@ -201,28 +201,28 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation UNDERWATER_LOCATION = ResourceLocation.withDefaultNamespace("textures/misc/underwater.png");
-            private static final ResourceLocation WATER_STILL = ResourceLocation.withDefaultNamespace("block/water_still");
-            private static final ResourceLocation WATER_FLOW = ResourceLocation.withDefaultNamespace("block/water_flow");
-            private static final ResourceLocation WATER_OVERLAY = ResourceLocation.withDefaultNamespace("block/water_overlay");
+            private static final Identifier UNDERWATER_LOCATION = Identifier.withDefaultNamespace("textures/misc/underwater.png");
+            private static final Identifier WATER_STILL = Identifier.withDefaultNamespace("block/water_still");
+            private static final Identifier WATER_FLOW = Identifier.withDefaultNamespace("block/water_flow");
+            private static final Identifier WATER_OVERLAY = Identifier.withDefaultNamespace("block/water_overlay");
 
             @Override
-            public ResourceLocation getStillTexture() {
+            public Identifier getStillTexture() {
                 return WATER_STILL;
             }
 
             @Override
-            public ResourceLocation getFlowingTexture() {
+            public Identifier getFlowingTexture() {
                 return WATER_FLOW;
             }
 
             @Override
-            public ResourceLocation getOverlayTexture() {
+            public Identifier getOverlayTexture() {
                 return WATER_OVERLAY;
             }
 
             @Override
-            public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+            public Identifier getRenderOverlayTexture(Minecraft mc) {
                 return UNDERWATER_LOCATION;
             }
 
@@ -238,31 +238,31 @@ public class ClientNeoForgeMod {
         }, NeoForgeMod.WATER_TYPE.value());
 
         event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation LAVA_STILL = ResourceLocation.withDefaultNamespace("block/lava_still");
-            private static final ResourceLocation LAVA_FLOW = ResourceLocation.withDefaultNamespace("block/lava_flow");
+            private static final Identifier LAVA_STILL = Identifier.withDefaultNamespace("block/lava_still");
+            private static final Identifier LAVA_FLOW = Identifier.withDefaultNamespace("block/lava_flow");
 
             @Override
-            public ResourceLocation getStillTexture() {
+            public Identifier getStillTexture() {
                 return LAVA_STILL;
             }
 
             @Override
-            public ResourceLocation getFlowingTexture() {
+            public Identifier getFlowingTexture() {
                 return LAVA_FLOW;
             }
         }, NeoForgeMod.LAVA_TYPE.value());
 
         NeoForgeMod.MILK_TYPE.asOptional().ifPresent(milkType -> event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_still");
-            private static final ResourceLocation MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_flowing");
+            private static final Identifier MILK_STILL = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_still");
+            private static final Identifier MILK_FLOW = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_flowing");
 
             @Override
-            public ResourceLocation getStillTexture() {
+            public Identifier getStillTexture() {
                 return MILK_STILL;
             }
 
             @Override
-            public ResourceLocation getFlowingTexture() {
+            public Identifier getFlowingTexture() {
                 return MILK_FLOW;
             }
         }, milkType));

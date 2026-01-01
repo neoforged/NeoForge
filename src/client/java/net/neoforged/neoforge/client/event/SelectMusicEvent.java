@@ -6,14 +6,13 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.sounds.MusicInfo;
 import net.minecraft.sounds.Music;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired when the {@link net.minecraft.client.sounds.MusicManager} checks what situational music should be used. This fires before the music begins playing.<br>
@@ -34,11 +33,11 @@ import org.jetbrains.annotations.Nullable;
  *
  */
 public class SelectMusicEvent extends Event implements ICancellableEvent {
-    private @Nullable MusicInfo music;
-    private final MusicInfo originalMusic;
+    private @Nullable Music music;
+    private final Music originalMusic;
     private final @Nullable SoundInstance playingMusic;
 
-    public SelectMusicEvent(MusicInfo music, @Nullable SoundInstance playingMusic) {
+    public SelectMusicEvent(Music music, @Nullable SoundInstance playingMusic) {
         this.music = music;
         this.originalMusic = music;
         this.playingMusic = playingMusic;
@@ -47,7 +46,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
     /**
      * {@return the original situational music that was selected}
      */
-    public MusicInfo getOriginalMusic() {
+    public Music getOriginalMusic() {
         return originalMusic;
     }
 
@@ -63,7 +62,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
      * {@return the Music to be played, or {@code null} if any playing music should be cancelled}
      */
     @Nullable
-    public MusicInfo getMusic() {
+    public Music getMusic() {
         return music;
     }
 
@@ -72,7 +71,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
      * If this <i>was</i> {@code null} but on the next tick isn't, the music given will be immediately played.<br>
      * <br>
      */
-    public void setMusic(@Nullable MusicInfo newMusic) {
+    public void setMusic(@Nullable Music newMusic) {
         this.music = newMusic;
     }
 
@@ -80,7 +79,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
      * Sets the music and then cancels the event so that other listeners will not be invoked.<br>
      * Note that listeners using {@link SubscribeEvent#receiveCanceled()} will still be able to override this, but by default they will not
      */
-    public void overrideMusic(@Nullable MusicInfo newMusic) {
+    public void overrideMusic(@Nullable Music newMusic) {
         this.music = newMusic;
         this.setCanceled(true);
     }

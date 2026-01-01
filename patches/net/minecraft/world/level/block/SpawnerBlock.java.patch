@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SpawnerBlock.java
 +++ b/net/minecraft/world/level/block/SpawnerBlock.java
-@@ -41,9 +_,14 @@
+@@ -40,9 +_,14 @@
      @Override
      protected void spawnAfterBreak(BlockState p_222477_, ServerLevel p_222478_, BlockPos p_222479_, ItemStack p_222480_, boolean p_222481_) {
          super.spawnAfterBreak(p_222477_, p_222478_, p_222479_, p_222480_, p_222481_);
@@ -14,8 +14,8 @@
 +    // Original vanilla logic passes 15 + p_222478_.random.nextInt(15) + p_222478_.random.nextInt(15) to popExperience, bypassing enchantments
 +    @Override
 +    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos,
-+                          @org.jetbrains.annotations.Nullable net.minecraft.world.level.block.entity.BlockEntity blockEntity,
-+                          @org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity breaker, ItemStack tool) {
++                          net.minecraft.world.level.block.entity.@Nullable BlockEntity blockEntity,
++                          net.minecraft.world.entity.@Nullable Entity breaker, ItemStack tool) {
 +        return 15 + level.getRandom().nextInt(15) + level.getRandom().nextInt(15);
      }
  }

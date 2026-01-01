@@ -9,12 +9,12 @@ import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record MinecraftRegisterPayload(Set<ResourceLocation> newChannels) implements CustomPacketPayload {
-    public static final ResourceLocation ID = ResourceLocation.withDefaultNamespace("register");
+public record MinecraftRegisterPayload(Set<Identifier> newChannels) implements CustomPacketPayload {
+    public static final Identifier ID = Identifier.withDefaultNamespace("register");
     public static final Type<MinecraftRegisterPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, MinecraftRegisterPayload> STREAM_CODEC = DinnerboneProtocolUtils.CHANNELS_CODEC.map(MinecraftRegisterPayload::new, MinecraftRegisterPayload::newChannels);
 

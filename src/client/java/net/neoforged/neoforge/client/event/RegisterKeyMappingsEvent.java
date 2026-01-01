@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class RegisterKeyMappingsEvent extends Event implements IModBusEvent {
     private final Options options;
-    private final Map<ResourceLocation, KeyMapping.Category> moddedCategories = new HashMap<>();
+    private final Map<Identifier, KeyMapping.Category> moddedCategories = new HashMap<>();
 
     @ApiStatus.Internal
     public RegisterKeyMappingsEvent(Options options) {

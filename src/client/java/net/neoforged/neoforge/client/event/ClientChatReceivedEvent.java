@@ -6,16 +6,16 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.UUID;
-import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.util.Util;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired when a chat message is received on the client.
@@ -31,12 +31,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ClientChatReceivedEvent extends Event implements ICancellableEvent {
     private Component message;
-    @Nullable
-    private final ChatType.Bound boundChatType;
+    private final ChatType.@Nullable Bound boundChatType;
     private final UUID sender;
 
     @ApiStatus.Internal
-    public ClientChatReceivedEvent(@Nullable ChatType.Bound boundChatType, Component message, UUID sender) {
+    public ClientChatReceivedEvent(ChatType.@Nullable Bound boundChatType, Component message, UUID sender) {
         this.boundChatType = boundChatType;
         this.message = message;
         this.sender = sender;
@@ -64,8 +63,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent 
      * <p>
      * This may be {@code null} when the message doesn't have a specific source (i.e. for system messages).
      */
-    @Nullable
-    public ChatType.Bound getBoundChatType() {
+    public ChatType.@Nullable Bound getBoundChatType() {
         return this.boundChatType;
     }
 

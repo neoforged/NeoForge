@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -255,7 +_,7 @@
+@@ -252,7 +_,7 @@
  
      @Override
      public boolean shouldRenderFace(Direction p_59959_) {

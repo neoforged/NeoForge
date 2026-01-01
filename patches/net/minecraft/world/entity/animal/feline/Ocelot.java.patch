@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/feline/Ocelot.java
++++ b/net/minecraft/world/entity/animal/feline/Ocelot.java
+@@ -161,7 +_,7 @@
+         if ((this.temptGoal == null || this.temptGoal.isRunning()) && !this.isTrusting() && this.isFood(itemstack) && p_482028_.distanceToSqr(this) < 9.0) {
+             this.usePlayerItem(p_482028_, p_480406_, itemstack);
+             if (!this.level().isClientSide()) {
+-                if (this.random.nextInt(3) == 0) {
++                if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_482028_)) {
+                     this.setTrusting(true);
+                     this.spawnTrustingParticles(true);
+                     this.level().broadcastEntityEvent(this, (byte)41);

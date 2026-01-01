@@ -4,11 +4,11 @@
          }, p_249796_ -> List.copyOf(this.toNames(p_249796_)));
      }
  
-+    public FeatureFlag getFlag(ResourceLocation name) {
++    public FeatureFlag getFlag(Identifier name) {
 +        return com.google.common.base.Preconditions.checkNotNull(this.names.get(name), "Flag %s was not registered", name);
 +    }
 +
-+    public Map<ResourceLocation, FeatureFlag> getAllFlags() {
++    public Map<Identifier, FeatureFlag> getAllFlags() {
 +        return this.names;
 +    }
 +
@@ -19,26 +19,31 @@
      public static class Builder {
          private final FeatureFlagUniverse universe;
          private int id;
-@@ -88,11 +_,20 @@
-             return this.create(ResourceLocation.withDefaultNamespace(p_251782_));
+@@ -88,14 +_,23 @@
+             return this.create(Identifier.withDefaultNamespace(p_251782_));
          }
  
 +        /**
-+         * @deprecated Neo: use {@link #create(ResourceLocation, boolean)} instead
++         * @deprecated Neo: use {@link #create(Identifier, boolean)} instead
 +         */
 +        @Deprecated
-         public FeatureFlag create(ResourceLocation p_250098_) {
+         public FeatureFlag create(Identifier p_468293_) {
 -            if (this.id >= 64) {
-+            return create(p_250098_, false);
++            return create(p_468293_, false);
 +        }
 +
-+        public FeatureFlag create(ResourceLocation p_250098_, boolean modded) {
++        public FeatureFlag create(Identifier p_250098_, boolean modded) {
 +            if (this.id >= 64 && false) {
                  throw new IllegalStateException("Too many feature flags");
              } else {
 -                FeatureFlag featureflag = new FeatureFlag(this.universe, this.id++);
+-                FeatureFlag featureflag1 = this.flags.put(p_468293_, featureflag);
 +                FeatureFlag featureflag = new FeatureFlag(this.universe, this.id % FeatureFlagSet.MAX_CONTAINER_SIZE, this.id / FeatureFlagSet.MAX_CONTAINER_SIZE, modded);
 +                this.id++;
-                 FeatureFlag featureflag1 = this.flags.put(p_250098_, featureflag);
++                FeatureFlag featureflag1 = this.flags.put(p_250098_, featureflag);
                  if (featureflag1 != null) {
-                     throw new IllegalStateException("Duplicate feature flag " + p_250098_);
+-                    throw new IllegalStateException("Duplicate feature flag " + p_468293_);
++                    throw new IllegalStateException("Duplicate feature flag " + p_250098_);
+                 } else {
+                     return featureflag;
+                 }

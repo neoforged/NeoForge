@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A journal that modifies itself during transactions,

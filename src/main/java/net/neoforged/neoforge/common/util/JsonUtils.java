@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class JsonUtils {
     // http://stackoverflow.com/questions/7706772/deserializing-immutablelist-using-gson/21677349#21677349

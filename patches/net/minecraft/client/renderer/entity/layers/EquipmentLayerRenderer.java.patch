@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
 +++ b/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
-@@ -66,18 +_,22 @@
+@@ -67,18 +_,22 @@
          int p_435821_,
          int p_436591_
      ) {
@@ -18,14 +18,14 @@
 -                int k = getColorForLayer(equipmentclientinfo$layer, i);
 +                int k = extensions.getArmorLayerTintColor(p_371670_, equipmentclientinfo$layer, idx, i);
                  if (k != 0) {
-                     ResourceLocation resourcelocation = equipmentclientinfo$layer.usePlayerTexture() && p_371639_ != null
-                         ? p_371639_
+                     Identifier identifier = equipmentclientinfo$layer.usePlayerTexture() && p_469270_ != null
+                         ? p_469270_
                          : this.layerTextureLookup.apply(new EquipmentLayerRenderer.LayerTextureKey(p_387484_, equipmentclientinfo$layer));
-+                    resourcelocation = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_371670_, p_387484_, equipmentclientinfo$layer, resourcelocation);
++                    identifier = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_371670_, p_387484_, equipmentclientinfo$layer, identifier);
                      p_435795_.order(j++)
                          .submitModel(
                              p_371731_,
-@@ -100,6 +_,7 @@
+@@ -101,6 +_,7 @@
  
                      flag = false;
                  }

@@ -1,14 +1,14 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
-@@ -45,6 +_,7 @@
-     private float eyeHeight;
+@@ -48,6 +_,7 @@
      private float eyeHeightOld;
      private float partialTickTime;
+     private final EnvironmentAttributeProbe attributeProbe = new EnvironmentAttributeProbe();
 +    private float roll;
  
-     public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_) {
+     public void setup(Level p_454891_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_) {
          this.initialized = true;
-@@ -63,7 +_,10 @@
+@@ -66,7 +_,10 @@
              this.setRotation(p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_));
              this.setPosition(newminecartbehavior.getCartLerpPosition(p_90580_).add(vec3));
          } else {
@@ -20,7 +20,7 @@
              this.setPosition(
                  Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()),
                  Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight),
-@@ -73,7 +_,7 @@
+@@ -76,7 +_,7 @@
  
          if (p_90578_) {
              if (p_90579_) {
@@ -29,7 +29,7 @@
              }
  
              float f1 = 4.0F;
-@@ -90,7 +_,7 @@
+@@ -93,7 +_,7 @@
                  f = (float)livingentity.getAttributeValue(Attributes.CAMERA_DISTANCE);
              }
  
@@ -38,7 +38,7 @@
          } else if (p_90577_ instanceof LivingEntity && ((LivingEntity)p_90577_).isSleeping()) {
              Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
              this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -131,10 +_,17 @@
+@@ -135,10 +_,17 @@
          this.setPosition(new Vec3(this.position.x + vector3f.x, this.position.y + vector3f.y, this.position.z + vector3f.z));
      }
  
@@ -57,10 +57,10 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -259,6 +_,17 @@
-     @Override
-     public Vec3 position() {
-         return this.getPosition();
+@@ -264,6 +_,17 @@
+ 
+     public float getPartialTickTime() {
+         return this.partialTickTime;
 +    }
 +
 +    public float getRoll() {

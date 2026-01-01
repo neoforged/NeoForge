@@ -87,16 +87,16 @@
          } else {
              boolean flag = p_155554_.isGridAligned()
                  && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
-@@ -356,6 +_,8 @@
+@@ -354,6 +_,8 @@
          return p_155590_.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
      }
  
 +    /** @deprecated Use IItemHandler capability instead. To preserve Container-specific interactions, use {@link #getContainerOrHandlerAt} and handle both cases. */
 +    @Deprecated
-     @Nullable
-     public static Container getContainerAt(Level p_59391_, BlockPos p_59392_) {
+     public static @Nullable Container getContainerAt(Level p_59391_, BlockPos p_59392_) {
          return getContainerAt(p_59391_, p_59392_, p_59391_.getBlockState(p_59392_), p_59392_.getX() + 0.5, p_59392_.getY() + 0.5, p_59392_.getZ() + 0.5);
-@@ -397,6 +_,28 @@
+     }
+@@ -393,6 +_,28 @@
          return !list.isEmpty() ? (Container)list.get(p_326325_.random.nextInt(list.size())) : null;
      }
  
@@ -125,7 +125,7 @@
      private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {
          return p_59345_.getCount() <= p_59345_.getMaxStackSize() && ItemStack.isSameItemSameComponents(p_59345_, p_59346_);
      }
-@@ -454,5 +_,9 @@
+@@ -450,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
          return new HopperMenu(p_59312_, p_59313_, this);

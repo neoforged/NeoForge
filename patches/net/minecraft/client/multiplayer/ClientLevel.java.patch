@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -136,7 +_,7 @@
-     private final EndFlashState endFlashState;
+@@ -135,7 +_,7 @@
+     private final @Nullable EndFlashState endFlashState;
      private final Minecraft minecraft = Minecraft.getInstance();
      final List<AbstractClientPlayer> players = Lists.newArrayList();
 -    final List<EnderDragonPart> dragonParts = Lists.newArrayList();
 +    final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = Lists.newArrayList();
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
-     private static final int CLOUD_COLOR = -1;
      private int skyFlashTime;
-@@ -156,6 +_,7 @@
+     private final Object2ObjectArrayMap<ColorResolver, BlockTintCache> tintCaches = Util.make(
+@@ -154,6 +_,7 @@
              p_406186_.put(
                  BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER))
              );
@@ -17,7 +17,7 @@
          }
      );
      private final ClientChunkCache chunkSource;
-@@ -168,6 +_,7 @@
+@@ -167,6 +_,7 @@
      private final int seaLevel;
      private boolean tickDayTime;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
@@ -25,9 +25,9 @@
  
      public void handleBlockChangedAck(int p_233652_) {
          if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -213,10 +_,15 @@
+@@ -212,10 +_,15 @@
      @Override
-     public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
+     public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, @Block.UpdateFlags int p_233645_, int p_233646_) {
          if (this.blockStatePredictionHandler.isPredicting()) {
 +            // Neo: Record and store a snapshot in the prediction so that BE data can be restored if the break is denied.
 +            // Fixes MC-36093 and permits correct server-side only cancellation of block changes.
@@ -41,15 +41,15 @@
              }
  
              return flag;
-@@ -251,6 +_,7 @@
-         this.serverSimulationDistance = p_363776_;
-         this.updateSkyBrightness();
-         this.prepareWeather();
+@@ -252,6 +_,7 @@
+         if (this.canHaveWeather()) {
+             this.prepareWeather();
+         }
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
      }
  
-     public void queueLightUpdate(Runnable p_194172_) {
-@@ -320,7 +_,7 @@
+     private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder p_468725_) {
+@@ -329,7 +_,7 @@
      private void tickTime() {
          this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
          if (this.tickDayTime) {
@@ -58,7 +58,7 @@
          }
      }
  
-@@ -355,7 +_,11 @@
+@@ -364,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
          Profiler.get().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
@@ -71,7 +71,7 @@
          Profiler.get().pop();
  
          for (Entity entity : p_104640_.getPassengers()) {
-@@ -406,8 +_,10 @@
+@@ -415,8 +_,10 @@
      }
  
      public void addEntity(Entity p_104741_) {
@@ -82,7 +82,7 @@
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {
-@@ -583,6 +_,13 @@
+@@ -585,6 +_,13 @@
          float p_263349_,
          long p_263408_
      ) {
@@ -96,7 +96,7 @@
          if (p_393665_ == this.minecraft.player) {
              this.playSound(p_263372_, p_263404_, p_263365_, p_263335_.value(), p_263417_, p_263416_, p_263349_, false, p_263408_);
          }
-@@ -592,6 +_,12 @@
+@@ -594,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity p_263536_, Entity p_394209_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
@@ -109,7 +109,7 @@
          if (p_263536_ == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_394209_, p_263509_));
          }
-@@ -852,7 +_,7 @@
+@@ -858,7 +_,7 @@
          return this.players;
      }
  
@@ -118,7 +118,7 @@
          return this.dragonParts;
      }
  
-@@ -1045,7 +_,7 @@
+@@ -966,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos p_171667_, BlockState p_171668_) {
@@ -127,7 +127,7 @@
              VoxelShape voxelshape = p_171668_.getShape(this, p_171667_);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
-@@ -1079,7 +_,7 @@
+@@ -1000,7 +_,7 @@
                                              d6 - 0.5,
                                              p_171668_,
                                              p_171667_
@@ -136,7 +136,7 @@
                                      );
                              }
                          }
-@@ -1089,9 +_,16 @@
+@@ -1010,9 +_,16 @@
          }
      }
  
@@ -147,14 +147,14 @@
 +        this.addBreakingBlockEffect(p_446936_, p_446144_, null);
 +    }
 +
-+    public void addBreakingBlockEffect(BlockPos p_446936_, Direction p_446144_, @Nullable net.minecraft.world.phys.HitResult hitResult) {
++    public void addBreakingBlockEffect(BlockPos p_446936_, Direction p_446144_, net.minecraft.world.phys.@Nullable HitResult hitResult) {
          BlockState blockstate = this.getBlockState(p_446936_);
 -        if (blockstate.getRenderShape() != RenderShape.INVISIBLE && blockstate.shouldSpawnTerrainParticles()) {
 +        if (blockstate.getRenderShape() != RenderShape.INVISIBLE && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockstate).addHitEffects(blockstate, this, hitResult, this.minecraft.particleEngine)) {
              int i = p_446936_.getX();
              int j = p_446936_.getY();
              int k = p_446936_.getZ();
-@@ -1124,7 +_,7 @@
+@@ -1045,7 +_,7 @@
                  d0 = i + aabb.maxX + 0.1F;
              }
  
@@ -163,7 +163,7 @@
          }
      }
  
-@@ -1269,6 +_,7 @@
+@@ -1190,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -171,7 +171,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1310,6 +_,9 @@
+@@ -1231,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -181,7 +181,7 @@
              }
          }
  
-@@ -1323,10 +_,59 @@
+@@ -1244,10 +_,62 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -210,7 +210,10 @@
 +
 +    @Override
 +    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
-+        boolean constantAmbientLight = this.effects().constantAmbientLight();
++        // TODO 1.21.11: Make this extensible / use our dimension special effects replacement.
++        var cardinalLightType = this.dimensionType().cardinalLightType();
++        boolean constantAmbientLight = cardinalLightType == DimensionType.CardinalLightType.NETHER;
++
 +        if (!shade)
 +            return constantAmbientLight ? 0.9F : 1.0F;
 +        float yFactor = constantAmbientLight ? 0.9F : normalY < 0 ? 0.5F : 1.0F;

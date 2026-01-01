@@ -4,7 +4,7 @@
                      file2 = new File(file1, p_92297_);
                  }
  
-+                net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ClientHooks.onScreenshot(p_406180_, file2);
++                net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ClientHooks.onScreenshot(p_465362_, file2);
 +                if (event.isCanceled()) {
 +                    p_92301_.accept(event.getCancelMessage());
 +                    return;
@@ -15,12 +15,12 @@
                      .execute(
                          () -> {
 @@ -50,11 +_,15 @@
-                                 NativeImage $$4x = p_406180_;
+                                 NativeImage $$4x = p_465362_;
  
                                  try {
--                                    p_406180_.writeToFile(file2);
+-                                    p_465362_.writeToFile(file2);
 -                                    Component component = Component.literal(file2.getName())
-+                                    p_406180_.writeToFile(target);
++                                    $$4x.writeToFile(target);
 +                                    if (event.getResultMessage() != null) {
 +                                        p_92301_.accept(event.getResultMessage());
 +                                    } else {
@@ -31,5 +31,5 @@
                                      p_92301_.accept(Component.translatable("screenshot.success", component));
 +                                    }
                                  } catch (Throwable throwable1) {
-                                     if (p_406180_ != null) {
+                                     if (p_465362_ != null) {
                                          try {

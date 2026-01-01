@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
-@@ -87,7 +_,8 @@
+@@ -86,7 +_,8 @@
              return null;
          } else {
              BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
@@ -10,7 +10,7 @@
                  if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
                      return this.defaultBlockState().setValue(AGE, 0);
                  } else if (blockstate.is(Blocks.BAMBOO)) {
-@@ -120,10 +_,11 @@
+@@ -119,10 +_,11 @@
      @Override
      protected void randomTick(BlockState p_261931_, ServerLevel p_261751_, BlockPos p_261616_, RandomSource p_261766_) {
          if (p_261931_.getValue(STAGE) == 0) {
@@ -24,7 +24,7 @@
                  }
              }
          }
-@@ -131,6 +_,8 @@
+@@ -130,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {

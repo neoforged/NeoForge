@@ -8,11 +8,11 @@ package net.neoforged.neoforge.capabilities;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An {@code ItemCapability} gives flexible access to objects of type {@code T} from item stacks.
@@ -53,7 +53,7 @@ public final class ItemCapability<T, C extends @Nullable Object> extends BaseCap
      * @param typeClass    type of the queried API
      * @param contextClass type of the additional context
      */
-    public static <T, C extends @Nullable Object> ItemCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    public static <T, C extends @Nullable Object> ItemCapability<T, C> create(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         return (ItemCapability<T, C>) registry.create(name, typeClass, contextClass);
     }
 
@@ -61,9 +61,9 @@ public final class ItemCapability<T, C extends @Nullable Object> extends BaseCap
      * Creates a new item capability with {@code Void} context, or gets it if it already exists.
      * This should be used for capabilities that do not require any additional context.
      *
-     * @see #create(ResourceLocation, Class, Class)
+     * @see #create(Identifier, Class, Class)
      */
-    public static <T> ItemCapability<T, @Nullable Void> createVoid(ResourceLocation name, Class<T> typeClass) {
+    public static <T> ItemCapability<T, @Nullable Void> createVoid(Identifier name, Class<T> typeClass) {
         return create(name, typeClass, void.class);
     }
 
@@ -79,7 +79,7 @@ public final class ItemCapability<T, C extends @Nullable Object> extends BaseCap
     // Requires explicitly-typed constructor due to ECJ inference failure.
     private static final CapabilityRegistry<ItemCapability<?, ?>> registry = new CapabilityRegistry<ItemCapability<?, ?>>(ItemCapability::new);
 
-    private ItemCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    private ItemCapability(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);
     }
 

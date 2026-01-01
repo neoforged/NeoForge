@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
-@@ -236,7 +_,7 @@
-     @Nullable
-     public PresetEditor getPresetEditor() {
+@@ -232,7 +_,7 @@
+ 
+     public @Nullable PresetEditor getPresetEditor() {
          Holder<WorldPreset> holder = this.getWorldType().preset();
 -        return holder != null ? PresetEditor.EDITORS.get(holder.unwrapKey()) : null;
 +        return holder != null ? holder.unwrapKey().map(net.neoforged.neoforge.client.PresetEditorManager::get).orElse(null) : null; // FORGE: redirect lookup to expanded map

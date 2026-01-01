@@ -16,21 +16,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class DynamicStructureTemplates {
     // StructureTemplateManager#sources
     private static final String SOURCES_FIELD = "sources";
 
-    private final Map<ResourceLocation, Supplier<StructureTemplate>> templates = new ConcurrentHashMap<>();
+    private final Map<Identifier, Supplier<StructureTemplate>> templates = new ConcurrentHashMap<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setup(StructureTemplateManager manager) throws Throwable {
@@ -40,8 +36,8 @@ public class DynamicStructureTemplates {
                 .filter(it -> it.getSimpleName().equals("Source")).findFirst().orElseThrow();
         final MethodHandle ctor = ReflectionUtils.constructor(sourceClazz, MethodType.methodType(void.class, Function.class, Supplier.class));
 
-        final Function<ResourceLocation, Optional<StructureTemplate>> loader = this::load;
-        final Supplier<Stream<ResourceLocation>> lister = this::list;
+        final Function<Identifier, Optional<StructureTemplate>> loader = this::load;
+        final Supplier<Stream<Identifier>> lister = this::list;
         sources.add(ctor.invokeWithArguments(loader, lister));
 
         ObfuscationReflectionHelper.setPrivateValue(StructureTemplateManager.class, manager, sources, SOURCES_FIELD);
@@ -49,25 +45,25 @@ public class DynamicStructureTemplates {
         LogUtils.getLogger().debug("Injected dynamic template source in manager {}", manager);
     }
 
-    private Optional<StructureTemplate> load(ResourceLocation location) {
+    private Optional<StructureTemplate> load(Identifier location) {
         final Supplier<StructureTemplate> sup = templates.get(location);
         if (sup == null) return Optional.empty();
         return Optional.of(sup.get());
     }
 
-    private Stream<ResourceLocation> list() {
+    private Stream<Identifier> list() {
         return templates.keySet().stream();
     }
 
-    public boolean contains(ResourceLocation id) {
+    public boolean contains(Identifier id) {
         return templates.containsKey(id);
     }
 
-    public void register(ResourceLocation id, Supplier<StructureTemplate> template) {
+    public void register(Identifier id, Supplier<StructureTemplate> template) {
         templates.put(id, template);
     }
 
-    public void register(ResourceLocation id, StructureTemplate template) {
+    public void register(Identifier id, StructureTemplate template) {
         register(id, () -> template);
     }
 }

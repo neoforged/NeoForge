@@ -4,7 +4,7 @@
          if (this.eatAnimationTick == this.adjustedTickDelay(4)) {
              BlockPos blockpos = this.mob.blockPosition();
              if (IS_EDIBLE.test(this.level.getBlockState(blockpos))) {
--                if (getServerLevel(this.level).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+-                if (getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING)) {
 +                if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.level), this.mob)) {
                      this.level.destroyBlock(blockpos, false);
                  }
@@ -13,7 +13,7 @@
              } else {
                  BlockPos blockpos1 = blockpos.below();
                  if (this.level.getBlockState(blockpos1).is(Blocks.GRASS_BLOCK)) {
--                    if (getServerLevel(this.level).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+-                    if (getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING)) {
 +                    if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.level), this.mob)) {
                          this.level.levelEvent(2001, blockpos1, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
                          this.level.setBlock(blockpos1, Blocks.DIRT.defaultBlockState(), 2);

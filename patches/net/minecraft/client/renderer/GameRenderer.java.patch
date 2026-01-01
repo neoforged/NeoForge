@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -165,14 +_,14 @@
+@@ -170,14 +_,14 @@
              multibuffersource$buffersource,
              this.submitNodeStorage,
              this.featureRenderDispatcher,
@@ -23,7 +23,7 @@
          );
          this.screenEffectRenderer = new ScreenEffectRenderer(p_234219_, atlasmanager, multibuffersource$buffersource);
      }
-@@ -238,6 +_,7 @@
+@@ -247,6 +_,7 @@
                  break;
              case null:
              default:
@@ -31,7 +31,7 @@
                  this.clearPostEffect();
          }
      }
-@@ -410,7 +_,7 @@
+@@ -383,7 +_,7 @@
                  f *= Mth.lerp(f2, 1.0F, 0.85714287F);
              }
  
@@ -40,7 +40,7 @@
          }
      }
  
-@@ -426,6 +_,10 @@
+@@ -399,6 +_,10 @@
                  return;
              }
  
@@ -51,7 +51,7 @@
              f2 /= livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -564,7 +_,8 @@
+@@ -539,7 +_,8 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
@@ -61,13 +61,13 @@
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -758,6 +_,9 @@
+@@ -791,6 +_,9 @@
                  vector4f,
-                 !flag2
+                 !flag1
              );
 +        profilerfiller.popPush("neoforge_render_after_level");
 +        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, matrix4f1, levelRenderer.getRenderableSections()));
          profilerfiller.popPush("hand");
-         boolean flag1 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
+         boolean flag2 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
          RenderSystem.setProjectionMatrix(

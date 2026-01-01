@@ -1,9 +1,21 @@
 {
   "values": [
-    "#minecraft:head_armor",
-    "#minecraft:chest_armor",
-    "#minecraft:leg_armor",
-    "#minecraft:foot_armor",
+    {
+      "id": "#c:armors/humanoid",
+      "required": false
+    },
+    {
+      "id": "#c:armors/horse",
+      "required": false
+    },
+    {
+      "id": "#c:armors/nautilus",
+      "required": false
+    },
+    {
+      "id": "#c:armors/wolf",
+      "required": false
+    },
     {
       "id": "#forge:armors",
       "required": false

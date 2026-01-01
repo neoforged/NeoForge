@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
 @@ -26,6 +_,8 @@
- import net.minecraft.world.level.gameevent.GameEvent;
+ import org.jspecify.annotations.Nullable;
  
  public class AxeItem extends Item {
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
@@ -46,7 +46,7 @@
          }
      }
  
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
 +        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);

@@ -44,13 +44,13 @@ public class TestScreen extends AbstractTestScreen {
             this.groupableList.setScrollAmount(0);
         };
         this.showAsGroup = addRenderableWidget(CycleButton.booleanBuilder(Component.literal("Show groups"),
-                Component.literal("Show all tests"))
-                .displayOnlyValue().withInitialValue(isGroup)
+                Component.literal("Show all tests"), isGroup)
+                .displayOnlyValue()
                 .create(20, this.height - 26, 100, 20, Component.empty(), (pCycleButton, pValue) -> {
                     reloader.run();
                     isGroup = pValue;
                 }));
-        this.filterMode = addRenderableWidget(CycleButton.<FilterMode>builder(mode -> mode.name)
+        this.filterMode = addRenderableWidget(CycleButton.<FilterMode>builder(mode -> mode.name, FilterMode.ALL)
                 .withValues(FilterMode.values()).create((this.width - 160) / 2, this.height - 26, 150, 20, Component.literal("Filter"), (pCycleButton, pValue) -> reloader.run()));
 
         final List<Test> tests = groups.stream().flatMap(it -> it.resolveAll().stream()).distinct().toList();
@@ -79,16 +79,14 @@ public class TestScreen extends AbstractTestScreen {
 
         addRenderableWidget(Button.builder(Component.literal("Disable"), pButton -> groupableList.getSelected().enable(false)).bounds(searchTextField.getX() - 43, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderContents(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canDisable();
-                super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }
         }));
         addRenderableWidget(Button.builder(Component.literal("Enable"), pButton -> groupableList.getSelected().enable(true)).bounds(searchTextField.getX() + searchTextField.getWidth() + 3, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderContents(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canEnable();
-                super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }
         }));
     }

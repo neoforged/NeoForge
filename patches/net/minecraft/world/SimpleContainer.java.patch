@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/SimpleContainer.java
 +++ b/net/minecraft/world/SimpleContainer.java
-@@ -127,8 +_,14 @@
+@@ -126,8 +_,14 @@
  
      @Override
      public void setItem(int p_19162_, ItemStack p_19163_) {

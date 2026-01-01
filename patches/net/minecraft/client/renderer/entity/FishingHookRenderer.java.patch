@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/FishingHookRenderer.java
 +++ b/net/minecraft/client/renderer/entity/FishingHookRenderer.java
-@@ -63,7 +_,7 @@
+@@ -65,7 +_,7 @@
      }
  
      public static HumanoidArm getHoldingArm(Player p_386900_) {

@@ -12,7 +12,7 @@ import java.util.function.Function;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -46,11 +46,11 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final ModelBakery.BakingResult bakingResult;
-        private final Function<ResourceLocation, TextureAtlasSprite> textureGetter;
+        private final Function<Identifier, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<ResourceLocation, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<Identifier, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
             this.bakingResult = bakingResult;
             this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
@@ -68,7 +68,7 @@ public abstract class ModelEvent extends Event {
          *
          * @return a function to lookup sprites from an atlas by name
          */
-        public Function<ResourceLocation, TextureAtlasSprite> getTextureGetter() {
+        public Function<Identifier, TextureAtlasSprite> getTextureGetter() {
             return textureGetter;
         }
 
@@ -161,10 +161,10 @@ public abstract class ModelEvent extends Event {
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterLoaders extends ModelEvent implements IModBusEvent {
-        private final Map<ResourceLocation, UnbakedModelLoader<?>> loaders;
+        private final Map<Identifier, UnbakedModelLoader<?>> loaders;
 
         @ApiStatus.Internal
-        public RegisterLoaders(Map<ResourceLocation, UnbakedModelLoader<?>> loaders) {
+        public RegisterLoaders(Map<Identifier, UnbakedModelLoader<?>> loaders) {
             this.loaders = loaders;
         }
 
@@ -174,7 +174,7 @@ public abstract class ModelEvent extends Event {
          * @param key    the ID of the loader
          * @param loader the loader to register
          */
-        public void register(ResourceLocation key, UnbakedModelLoader<?> loader) {
+        public void register(Identifier key, UnbakedModelLoader<?> loader) {
             Preconditions.checkArgument(!loaders.containsKey(key), "Unbaked model loader already registered: " + key);
             loaders.put(key, loader);
         }

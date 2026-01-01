@@ -1,11 +1,17 @@
 --- a/net/minecraft/client/gui/components/AbstractButton.java
 +++ b/net/minecraft/client/gui/components/AbstractButton.java
-@@ -41,7 +_,7 @@
-             this.getHeight(),
-             ARGB.white(this.alpha)
-         );
--        int i = ARGB.color(this.alpha, this.active ? -1 : -6250336);
-+        int i = ARGB.color(this.alpha, getFGColor());
-         this.renderString(p_281670_, minecraft.font, i);
-         if (this.isHovered()) {
-             p_281670_.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+@@ -40,7 +_,13 @@
+     protected abstract void renderContents(GuiGraphics p_458060_, int p_457746_, int p_458121_, float p_457981_);
+ 
+     protected void renderDefaultLabel(ActiveTextCollector p_457933_) {
+-        this.renderScrollingStringOverContents(p_457933_, this.getMessage(), 2);
++        // Neo: Apply forced foreground color if set
++        var message = this.getMessage();
++        if (getFGColor() != UNSET_FG_COLOR) {
++            message = message.copy().withStyle(style -> style.withColor(getFGColor()));
++        }
++
++        this.renderScrollingStringOverContents(p_457933_, message, 2);
+     }
+ 
+     protected final void renderDefaultSprite(GuiGraphics p_457624_) {

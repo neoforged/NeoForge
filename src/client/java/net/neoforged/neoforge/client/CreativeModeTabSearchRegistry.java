@@ -14,7 +14,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class CreativeModeTabSearchRegistry {
     private static final Map<CreativeModeTab, SessionSearchTrees.Key> NAME_SEARCH_KEYS = new IdentityHashMap<>();
@@ -51,8 +51,7 @@ public class CreativeModeTabSearchRegistry {
         return tagSearchKeys;
     }
 
-    @Nullable
-    public static SessionSearchTrees.Key getNameSearchKey(CreativeModeTab tab) {
+    public static SessionSearchTrees.@Nullable Key getNameSearchKey(CreativeModeTab tab) {
         if (tab == CreativeModeTabs.searchTab())
             return SessionSearchTrees.CREATIVE_NAMES;
 
@@ -62,8 +61,7 @@ public class CreativeModeTabSearchRegistry {
         return NAME_SEARCH_KEYS.computeIfAbsent(tab, k -> new SessionSearchTrees.Key());
     }
 
-    @Nullable
-    public static SessionSearchTrees.Key getTagSearchKey(CreativeModeTab tab) {
+    public static SessionSearchTrees.@Nullable Key getTagSearchKey(CreativeModeTab tab) {
         if (tab == CreativeModeTabs.searchTab())
             return SessionSearchTrees.CREATIVE_TAGS;
 

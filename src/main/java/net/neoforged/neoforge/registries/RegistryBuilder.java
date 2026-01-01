@@ -12,19 +12,19 @@ import java.util.function.Consumer;
 import net.minecraft.core.DefaultedMappedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RegistryBuilder<T> {
     private final ResourceKey<? extends Registry<T>> registryKey;
     private final List<RegistryCallback<T>> callbacks = new ArrayList<>();
     @Nullable
-    private ResourceLocation defaultKey;
+    private Identifier defaultKey;
     private boolean intrusiveHolders = false;
     private int maxId = -1;
     private boolean sync = false;
@@ -34,13 +34,13 @@ public class RegistryBuilder<T> {
         this.registryKey = registryKey;
     }
 
-    public RegistryBuilder<T> defaultKey(ResourceLocation key) {
+    public RegistryBuilder<T> defaultKey(Identifier key) {
         this.defaultKey = key;
         return this;
     }
 
     public RegistryBuilder<T> defaultKey(ResourceKey<T> key) {
-        this.defaultKey = key.location();
+        this.defaultKey = key.identifier();
         return this;
     }
 
@@ -122,7 +122,7 @@ public class RegistryBuilder<T> {
         registry.setSync(this.sync);
 
         if (this.registrationCheck) {
-            RegistryManager.trackModdedRegistry(registry.key().location());
+            RegistryManager.trackModdedRegistry(registry.key().identifier());
         }
 
         return registry;

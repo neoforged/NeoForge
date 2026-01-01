@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.client.blaze3d.validation;
 
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -29,27 +27,6 @@ public class ValidationGpuTexture extends GpuTexture {
     @ApiStatus.Internal
     public GpuTexture getRealTexture() {
         return realTexture;
-    }
-
-    @Override
-    public void setAddressMode(AddressMode addressModeU, AddressMode addressModeV) {
-        super.setAddressMode(addressModeU, addressModeV);
-        // updating the AddressMode must be forwarded, though no validation is currently done
-        realTexture.setAddressMode(addressModeU, addressModeV);
-    }
-
-    @Override
-    public void setTextureFilter(FilterMode minFilter, FilterMode magFilter, boolean useMipmaps) {
-        super.setTextureFilter(minFilter, magFilter, useMipmaps);
-        // updating the TextureFilter must be forwarded, though no validation is done
-        realTexture.setTextureFilter(minFilter, magFilter, useMipmaps);
-    }
-
-    @Override
-    public void setUseMipmaps(boolean useMipmaps) {
-        super.setUseMipmaps(useMipmaps);
-        // updating useMipmaps must be forwarded, though no validation is done
-        realTexture.setUseMipmaps(useMipmaps);
     }
 
     @Override

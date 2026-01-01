@@ -1,14 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -295,6 +_,7 @@
-         ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
-             ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
-             : ServerboundPlayerActionPacket.Action.DROP_ITEM;
-+        if (isUsingItem() && getUsedItemHand() == InteractionHand.MAIN_HAND && (p_108701_ || getUseItem().getCount() == 1)) stopUsingItem(); // Forge: fix MC-231097 on the clientside
-         ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
-         this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
-         return !itemstack.isEmpty();
-@@ -479,7 +_,14 @@
+@@ -526,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -24,7 +16,7 @@
      }
  
      @Override
-@@ -719,6 +_,7 @@
+@@ -768,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -32,16 +24,16 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean flag3 = false;
          if (this.autoJumpTime > 0) {
-@@ -763,7 +_,7 @@
+@@ -812,7 +_,7 @@
          }
  
          boolean flag4 = false;
 -        if (abilities.mayfly) {
 +        if (this.mayFly()) {
-             if (this.minecraft.gameMode.isAlwaysFlying()) {
+             if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -860,7 +_,7 @@
+@@ -909,7 +_,7 @@
      }
  
      private boolean shouldStopSwimSprinting() {
@@ -50,7 +42,7 @@
      }
  
      public Portal.Transition getActivePortalLocalTransition() {
-@@ -905,6 +_,10 @@
+@@ -954,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();
@@ -61,12 +53,3 @@
          this.handsBusy = false;
          if (this.getControlledVehicle() instanceof AbstractBoat abstractboat) {
              abstractboat.setInput(
-@@ -1091,7 +_,7 @@
-     }
- 
-     private boolean hasEnoughFoodToSprint() {
--        return this.isPassenger() || this.getFoodData().getFoodLevel() > 6.0F || this.getAbilities().mayfly;
-+        return this.isPassenger() || this.getFoodData().getFoodLevel() > 6.0F || this.mayFly();
-     }
- 
-     public float getWaterVision() {

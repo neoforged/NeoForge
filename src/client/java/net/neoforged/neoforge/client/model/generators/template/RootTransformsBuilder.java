@@ -10,21 +10,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.math.Transformation;
 import net.neoforged.neoforge.common.util.TransformationHelper;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 public class RootTransformsBuilder {
     private static final Vector3f ONE = new Vector3f(1, 1, 1);
 
-    private Vector3f translation = new Vector3f();
-    private Quaternionf leftRotation = new Quaternionf();
-    private Quaternionf rightRotation = new Quaternionf();
-    private Vector3f scale = ONE;
+    private Vector3fc translation = new Vector3f();
+    private Quaternionfc leftRotation = new Quaternionf();
+    private Quaternionfc rightRotation = new Quaternionf();
+    private Vector3fc scale = ONE;
+    private TransformationHelper.@Nullable TransformOrigin origin;
     @Nullable
-    private TransformationHelper.TransformOrigin origin;
-    @Nullable
-    private Vector3f originVec;
+    private Vector3fc originVec;
 
     /**
      * Sets the translation of the root transform.
@@ -254,7 +255,7 @@ public class RootTransformsBuilder {
         return transform;
     }
 
-    private static JsonArray writeVec3(Vector3f vector) {
+    private static JsonArray writeVec3(Vector3fc vector) {
         JsonArray array = new JsonArray();
         array.add(vector.x());
         array.add(vector.y());
@@ -262,7 +263,7 @@ public class RootTransformsBuilder {
         return array;
     }
 
-    private static JsonArray writeQuaternion(Quaternionf quaternion) {
+    private static JsonArray writeQuaternion(Quaternionfc quaternion) {
         JsonArray array = new JsonArray();
         array.add(quaternion.x());
         array.add(quaternion.y());
@@ -272,10 +273,10 @@ public class RootTransformsBuilder {
     }
 
     void copyFrom(RootTransformsBuilder other) {
-        this.translation.set(other.translation);
-        this.leftRotation.set(other.leftRotation);
-        this.rightRotation.set(other.rightRotation);
-        this.scale.set(other.scale);
+        this.translation = other.translation;
+        this.leftRotation = other.leftRotation;
+        this.rightRotation = other.rightRotation;
+        this.scale = other.scale;
         this.origin = other.origin;
         this.originVec = other.originVec != null ? new Vector3f(other.originVec) : null;
     }

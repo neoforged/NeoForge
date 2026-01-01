@@ -8,8 +8,8 @@ package net.neoforged.neoforge.oldtest.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
@@ -36,8 +36,8 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MODID, CUSTOM_SOIL_BLOCK));
-    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MODID, CUSTOM_PLANT_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(Identifier.fromNamespaceAndPath(MODID, CUSTOM_SOIL_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(Identifier.fromNamespaceAndPath(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

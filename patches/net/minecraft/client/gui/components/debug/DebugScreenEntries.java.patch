@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -93,6 +_,7 @@
+@@ -101,6 +_,7 @@
              SIMPLE_PERFORMANCE_IMPACTORS,
-             DebugScreenEntryStatus.IN_F3
+             DebugScreenEntryStatus.IN_OVERLAY
          );
 -        PROFILES = Map.of(DebugScreenProfile.DEFAULT, map, DebugScreenProfile.PERFORMANCE, map1);
 +        // Neo: Allow registering custom entries
-+        PROFILES = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_LOCATION, map, map1)).validateProfiles();
++        PROFILES = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_ID, map, map1)).validateProfiles();
      }
  }

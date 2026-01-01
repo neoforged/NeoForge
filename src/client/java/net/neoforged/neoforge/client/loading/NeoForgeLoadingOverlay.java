@@ -7,19 +7,21 @@ package net.neoforged.neoforge.client.loading;
 
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.AddressMode;
+import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
@@ -35,7 +37,7 @@ import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class NeoForgeLoadingOverlay extends LoadingOverlay {
-    public static final ResourceLocation LOADING_OVERLAY_TEXTURE_ID = ResourceLocation.parse("neoforge:loading_overlay");
+    public static final Identifier LOADING_OVERLAY_TEXTURE_ID = Identifier.parse("neoforge:loading_overlay");
     private final Minecraft minecraft;
     private final ReloadInstance reload;
     private final DisplayWindow displayWindow;
@@ -95,7 +97,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     static class ExternalTexture extends AbstractTexture {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;
-            this.setFilter(false, false);
+            this.sampler = RenderSystem.getSamplerCache()
+                    .getSampler(AddressMode.REPEAT, AddressMode.REPEAT, FilterMode.LINEAR, FilterMode.LINEAR, false);
             var gpuDevice = RenderSystem.getDevice();
             // ValidationGpuDevice.createTextureView is expecting a ValidationGpuTexture instance, but the previous reach around created a GlTexture instance instead so validation must be reached around again
             if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {

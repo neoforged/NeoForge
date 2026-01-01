@@ -16,12 +16,12 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
 import net.minecraft.client.gui.components.debug.DebugScreenProfile;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Event fired when debug entries are registered.
@@ -29,17 +29,17 @@ import org.jetbrains.annotations.Nullable;
  * This event is fired during the {@link DebugScreenEntries} initialization to allow registration of custom entries.
  * <p>
  * Existing entries cannot be modified or amended directly. However new lines can be appended to existing groups,
- * such as the {@link DebugEntrySystemSpecs#GROUP "System Specs"}, by using {@link DebugScreenDisplayer#addToGroup(ResourceLocation, java.lang.String)}.
+ * such as the {@link DebugEntrySystemSpecs#GROUP "System Specs"}, by using {@link DebugScreenDisplayer#addToGroup(Identifier, java.lang.String)}.
  * <p>
  * This event is fired on the mod event bus.
  */
 public final class RegisterDebugEntriesEvent extends Event implements IModBusEvent {
-    private final Map<ResourceLocation, DebugScreenEntry> entries;
-    private final Map<ResourceLocation, DebugScreenEntryStatus> defaultProfile;
-    private final Map<ResourceLocation, DebugScreenEntryStatus> performanceProfile;
+    private final Map<Identifier, DebugScreenEntry> entries;
+    private final Map<Identifier, DebugScreenEntryStatus> defaultProfile;
+    private final Map<Identifier, DebugScreenEntryStatus> performanceProfile;
 
     @ApiStatus.Internal
-    public RegisterDebugEntriesEvent(Map<ResourceLocation, DebugScreenEntry> entries, Map<ResourceLocation, DebugScreenEntryStatus> defaultProfile, Map<ResourceLocation, DebugScreenEntryStatus> performanceProfile) {
+    public RegisterDebugEntriesEvent(Map<Identifier, DebugScreenEntry> entries, Map<Identifier, DebugScreenEntryStatus> defaultProfile, Map<Identifier, DebugScreenEntryStatus> performanceProfile) {
         this.entries = entries;
         // These are immutable in vanilla, we make them mutable to allow custom entry inclusion
         this.defaultProfile = new HashMap<>(defaultProfile);
@@ -52,7 +52,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
      * @param id    Registration ID for this entry.
      * @param entry Screen entry to be registered.
      */
-    public void register(ResourceLocation id, DebugScreenEntry entry) {
+    public void register(Identifier id, DebugScreenEntry entry) {
         if (entries.putIfAbsent(id, entry) != null)
             throw new IllegalStateException("Duplicate DebugScreenEntry registration: " + id);
     }
@@ -60,7 +60,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     /**
      * {@return true if the given entry id has been registered}
      */
-    public boolean isRegistered(ResourceLocation id) {
+    public boolean isRegistered(Identifier id) {
         return entries.containsKey(id);
     }
 
@@ -71,7 +71,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
      * @param profile       Debug profile this entry will be included with.
      * @param profileStatus Status this entry will be set to when the profile is enabled.
      */
-    public void includeInProfile(ResourceLocation id, DebugScreenProfile profile, DebugScreenEntryStatus profileStatus) {
+    public void includeInProfile(Identifier id, DebugScreenProfile profile, DebugScreenEntryStatus profileStatus) {
         if (getProfileMap(profile).putIfAbsent(id, profileStatus) != null)
             throw new IllegalStateException("Duplicate DebugScreenEntry " + profile.getSerializedName() + "-profile inclusion: " + id);
     }
@@ -79,11 +79,11 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     /**
      * {@return true if the entry is included into the given profile}
      */
-    public boolean isIncludedInProfile(ResourceLocation id, DebugScreenProfile profile) {
+    public boolean isIncludedInProfile(Identifier id, DebugScreenProfile profile) {
         return getProfileMap(profile).containsKey(id);
     }
 
-    private Map<ResourceLocation, DebugScreenEntryStatus> getProfileMap(DebugScreenProfile profile) {
+    private Map<Identifier, DebugScreenEntryStatus> getProfileMap(DebugScreenProfile profile) {
         return switch (profile) {
             case DEFAULT -> defaultProfile;
             case PERFORMANCE -> performanceProfile;
@@ -91,7 +91,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     }
 
     @ApiStatus.Internal
-    public Map<DebugScreenProfile, Map<ResourceLocation, DebugScreenEntryStatus>> validateProfiles() {
+    public Map<DebugScreenProfile, Map<Identifier, DebugScreenEntryStatus>> validateProfiles() {
         // we delegate validation to its own method to allow people to call 'includeInProfile' before 'register'
         var defaultError = validateProfile(DebugScreenProfile.DEFAULT);
         var performanceError = validateProfile(DebugScreenProfile.PERFORMANCE);
@@ -124,7 +124,7 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
             var logger = LogUtils.getLogger();
 
             logger.error("Found {} unregistered debug entries in profile: {}", invalidIds.size(), profile.getSerializedName());
-            logger.error("Unregistered debug entries: {}", invalidIds.stream().map(ResourceLocation::toString).collect(Collectors.joining(",", "[", "]")));
+            logger.error("Unregistered debug entries: {}", invalidIds.stream().map(Identifier::toString).collect(Collectors.joining(",", "[", "]")));
 
             // throw in dev to ensure people are correctly registering their entries when including them in profiles
             if (!FMLEnvironment.isProduction())

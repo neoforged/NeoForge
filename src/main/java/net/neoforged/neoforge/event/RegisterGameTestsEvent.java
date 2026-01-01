@@ -14,8 +14,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
@@ -36,21 +36,21 @@ public class RegisterGameTestsEvent extends Event implements IModBusEvent {
         this.testsRegistry = testsRegistry;
     }
 
-    public Holder<TestEnvironmentDefinition> registerEnvironment(ResourceLocation name, TestEnvironmentDefinition... definitions) {
+    public Holder<TestEnvironmentDefinition> registerEnvironment(Identifier name, TestEnvironmentDefinition... definitions) {
         return registerEnvironment(name, new TestEnvironmentDefinition.AllOf(definitions));
     }
 
-    public Holder<TestEnvironmentDefinition> registerEnvironment(ResourceLocation name, TestEnvironmentDefinition definition) {
+    public Holder<TestEnvironmentDefinition> registerEnvironment(Identifier name, TestEnvironmentDefinition definition) {
         return environmentsRegistry.register(
                 ResourceKey.create(Registries.TEST_ENVIRONMENT, name),
                 definition, RegistrationInfo.BUILT_IN);
     }
 
-    public void registerTest(ResourceLocation name, Function<TestData<Holder<TestEnvironmentDefinition>>, GameTestInstance> factory, TestData<Holder<TestEnvironmentDefinition>> testData) {
+    public void registerTest(Identifier name, Function<TestData<Holder<TestEnvironmentDefinition>>, GameTestInstance> factory, TestData<Holder<TestEnvironmentDefinition>> testData) {
         registerTest(name, factory.apply(testData));
     }
 
-    public void registerTest(ResourceLocation name, GameTestInstance test) {
+    public void registerTest(Identifier name, GameTestInstance test) {
         testsRegistry.register(
                 ResourceKey.create(Registries.TEST_INSTANCE, name),
                 test, RegistrationInfo.BUILT_IN);

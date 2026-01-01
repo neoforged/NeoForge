@@ -13,7 +13,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagAppender;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
@@ -314,8 +314,34 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                         Tags.Items.TOOLS_IGNITER, Tags.Items.TOOLS_SHEAR, Tags.Items.TOOLS_SHIELD, Tags.Items.TOOLS_SPEAR,
                         Tags.Items.TOOLS_MACE, Tags.Items.TOOLS_WRENCH,
                         Tags.Items.MINING_TOOL_TOOLS, Tags.Items.MELEE_WEAPON_TOOLS, Tags.Items.RANGED_WEAPON_TOOLS);
-        tag(Tags.Items.ARMORS).addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
-        tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.SWORD_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);
+        tag(Tags.Items.ARMORS)
+                .addOptionalTag(Tags.Items.ARMORS_HUMANOID)
+                .addOptionalTag(Tags.Items.ARMORS_HORSE)
+                .addOptionalTag(Tags.Items.ARMORS_NAUTILUS)
+                .addOptionalTag(Tags.Items.ARMORS_WOLF);
+
+        tag(Tags.Items.ARMORS_HORSE)
+                .add(Items.LEATHER_HORSE_ARMOR)
+                .add(Items.COPPER_HORSE_ARMOR)
+                .add(Items.IRON_HORSE_ARMOR)
+                .add(Items.GOLDEN_HORSE_ARMOR)
+                .add(Items.DIAMOND_HORSE_ARMOR)
+                .add(Items.NETHERITE_HORSE_ARMOR);
+
+        tag(Tags.Items.ARMORS_NAUTILUS)
+                .add(Items.COPPER_NAUTILUS_ARMOR)
+                .add(Items.IRON_NAUTILUS_ARMOR)
+                .add(Items.GOLDEN_NAUTILUS_ARMOR)
+                .add(Items.DIAMOND_NAUTILUS_ARMOR)
+                .add(Items.NETHERITE_NAUTILUS_ARMOR);
+
+        tag(Tags.Items.ARMORS_WOLF)
+                .add(Items.WOLF_ARMOR);
+
+        tag(Tags.Items.ARMORS_HUMANOID)
+                .addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
+
+        tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.MELEE_WEAPON_ENCHANTABLE, ItemTags.SHARP_WEAPON_ENCHANTABLE, ItemTags.SWEEPING_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
@@ -429,24 +455,24 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(forge("tools/fishing_rods"));
         tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(forge("tools/shears"));
         tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(forge("tools/tridents"));
-        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/shields")));
-        tag(Tags.Items.TOOLS_BOW).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/bows")));
-        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/brushes")));
-        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/crossbows")));
-        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/fishing_rods")));
-        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/shears")));
-        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/tridents")));
-        tag(Tags.Items.FOODS_FRUIT).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/fruits")));
-        tag(Tags.Items.FOODS_VEGETABLE).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/vegetables")));
-        tag(Tags.Items.FOODS_BERRY).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/berries")));
-        tag(Tags.Items.FOODS_BREAD).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/breads")));
-        tag(Tags.Items.FOODS_COOKIE).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/cookies")));
-        tag(Tags.Items.FOODS_RAW_MEAT).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/raw_meats")));
-        tag(Tags.Items.FOODS_COOKED_MEAT).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/cooked_meats")));
-        tag(Tags.Items.FOODS_RAW_FISH).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/raw_fishes")));
-        tag(Tags.Items.FOODS_COOKED_FISH).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/cooked_fishes")));
-        tag(Tags.Items.FOODS_SOUP).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/soups")));
-        tag(Tags.Items.FOODS_CANDY).addOptionalTag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "foods/candies")));
+        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/shields")));
+        tag(Tags.Items.TOOLS_BOW).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/bows")));
+        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/brushes")));
+        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/crossbows")));
+        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/fishing_rods")));
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/shears")));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "tools/tridents")));
+        tag(Tags.Items.FOODS_FRUIT).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/fruits")));
+        tag(Tags.Items.FOODS_VEGETABLE).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/vegetables")));
+        tag(Tags.Items.FOODS_BERRY).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/berries")));
+        tag(Tags.Items.FOODS_BREAD).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/breads")));
+        tag(Tags.Items.FOODS_COOKIE).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/cookies")));
+        tag(Tags.Items.FOODS_RAW_MEAT).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/raw_meats")));
+        tag(Tags.Items.FOODS_COOKED_MEAT).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/cooked_meats")));
+        tag(Tags.Items.FOODS_RAW_FISH).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/raw_fishes")));
+        tag(Tags.Items.FOODS_COOKED_FISH).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/cooked_fishes")));
+        tag(Tags.Items.FOODS_SOUP).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/soups")));
+        tag(Tags.Items.FOODS_CANDY).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/candies")));
     }
 
     private TagAppender<Item, Item> tagWithOptionalLegacy(TagKey<Item> tag) {
@@ -466,7 +492,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
     private void addColored(TagKey<Item> group, String pattern) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         for (DyeColor color : DyeColor.values()) {
-            ResourceLocation key = ResourceLocation.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
+            Identifier key = Identifier.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             Item item = BuiltInRegistries.ITEM.getValue(key);
             if (item == null || item == Items.AIR)
@@ -504,7 +530,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
     }
 
     private static TagKey<Item> forge(String name) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", name));
+        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("forge", name));
     }
 
     @Override

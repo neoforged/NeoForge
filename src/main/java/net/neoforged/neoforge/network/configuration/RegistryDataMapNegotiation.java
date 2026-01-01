@@ -15,8 +15,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record RegistryDataMapNegotiation(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("neoforge", "registry_data_map_negotiation");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath("neoforge", "registry_data_map_negotiation");
     public static final Type TYPE = new Type(ID);
 
     @Override
@@ -39,7 +39,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
                     .stream()
                     .flatMap(map -> map.values().stream())
                     .filter(DataMapType::mandatorySync)
-                    .map(type -> type.id() + " (" + type.registryKey().location() + ")")
+                    .map(type -> type.id() + " (" + type.registryKey().identifier() + ")")
                     .toList();
             if (!mandatory.isEmpty()) {
                 // Use plain components as vanilla connections will be missing our translation keys

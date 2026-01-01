@@ -7,14 +7,14 @@ package net.neoforged.neoforge.registries;
 
 import java.util.Map;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An extension for {@link Registry}, adding some additional functionality to vanilla registries, such as
@@ -72,7 +72,7 @@ public interface IRegistryExtension<T> {
      * @param from the source registry name to alias from
      * @param to   the target registry name to alias to
      */
-    void addAlias(ResourceLocation from, ResourceLocation to);
+    void addAlias(Identifier from, Identifier to);
 
     /**
      * Resolves a registry name of a potential object in this registry.
@@ -84,7 +84,7 @@ public interface IRegistryExtension<T> {
      * @param name the input registry name of a potential object in this registry
      * @return the resolved registry name
      */
-    ResourceLocation resolve(ResourceLocation name);
+    Identifier resolve(Identifier name);
 
     /**
      * Resolves a registry key of a potential object in this registry.
@@ -114,7 +114,7 @@ public interface IRegistryExtension<T> {
      * @param name the resource name to lookup
      * @return the integer id linked to the given name
      */
-    int getId(ResourceLocation name);
+    int getId(Identifier name);
 
     /**
      * {@return {@code true} if this registry contains the {@code value}}
@@ -137,7 +137,7 @@ public interface IRegistryExtension<T> {
      *          {@link net.minecraft.core.DefaultedRegistry defaulted registries}
      */
     @Nullable
-    default ResourceLocation getKeyOrNull(T element) {
+    default Identifier getKeyOrNull(T element) {
         //Note: We override the cases when getKey would return the default rather than just going via getResourceKey to find it
         return self().getKey(element);
     }

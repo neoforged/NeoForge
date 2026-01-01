@@ -6,22 +6,25 @@
      private static int sortKeySeed;
 +    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
  
-+    /** @deprecated Neo: use {@link #RenderPipeline(ResourceLocation, ResourceLocation, ResourceLocation, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, int, Optional)} instead */
++    /** @deprecated Neo: use {@link #RenderPipeline(Identifier, Identifier, Identifier, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, int, Optional)} instead */
 +    @Deprecated
      protected RenderPipeline(
-         ResourceLocation p_405403_,
-         ResourceLocation p_405389_,
-@@ -64,6 +_,31 @@
+         Identifier p_467434_,
+         Identifier p_467154_,
+@@ -64,9 +_,34 @@
          float p_409999_,
          int p_415862_
      ) {
-+        this(p_405403_, p_405389_, p_404945_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, p_415862_, Optional.empty());
+-        this.location = p_467434_;
+-        this.vertexShader = p_467154_;
+-        this.fragmentShader = p_467193_;
++        this(p_467434_, p_467154_, p_467193_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, p_415862_, Optional.empty());
 +    }
 +
 +    protected RenderPipeline(
-+            ResourceLocation p_405403_,
-+            ResourceLocation p_405389_,
-+            ResourceLocation p_404945_,
++            Identifier p_405403_,
++            Identifier p_405389_,
++            Identifier p_404945_,
 +            ShaderDefines p_405426_,
 +            List<String> p_405334_,
 +            List<RenderPipeline.UniformDescription> p_404693_,
@@ -40,9 +43,12 @@
 +            int p_415862_,
 +            Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
 +            ) {
-         this.location = p_405403_;
-         this.vertexShader = p_405389_;
-         this.fragmentShader = p_404945_;
++        this.location = p_405403_;
++        this.vertexShader = p_405389_;
++        this.fragmentShader = p_404945_;
+         this.shaderDefines = p_405426_;
+         this.samplers = p_405334_;
+         this.uniforms = p_404693_;
 @@ -83,6 +_,7 @@
          this.depthBiasScaleFactor = p_410755_;
          this.depthBiasConstant = p_409999_;
@@ -170,8 +176,8 @@
 +        /** @deprecated Neo: use {@link #Snippet(Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional)} instead */
 +        @Deprecated
 +        public Snippet(
-+                Optional<ResourceLocation> vertexShader,
-+                Optional<ResourceLocation> fragmentShader,
++                Optional<Identifier> vertexShader,
++                Optional<Identifier> fragmentShader,
 +                Optional<ShaderDefines> shaderDefines,
 +                Optional<List<String>> samplers,
 +                Optional<List<RenderPipeline.UniformDescription>> uniforms,

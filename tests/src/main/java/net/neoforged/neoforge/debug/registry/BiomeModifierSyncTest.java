@@ -14,8 +14,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
@@ -36,7 +36,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = BiomeModifierSyncTest.GROUP)
 public class BiomeModifierSyncTest {
@@ -72,7 +72,7 @@ public class BiomeModifierSyncTest {
     @TestHolder(description = "Tests if biome modifications are properly synced", side = Dist.CLIENT)
     @WithListener(Listener.class)
     static void biomeModifierSync(final DynamicTest test) {
-        ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
+        ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
         HELPER.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
@@ -98,7 +98,7 @@ public class BiomeModifierSyncTest {
                     framework.changeStatus(test, Test.Status.failed("Taiga biome not found"), changer);
                     return;
                 }
-                if (taiga.getSpecialEffects().getWaterColor() == MODIFIED_WATER_COLOR) {
+                if (taiga.getSpecialEffects().waterColor() == MODIFIED_WATER_COLOR) {
                     framework.changeStatus(test, Test.Status.passed(), changer);
                 } else {
                     framework.changeStatus(test, Test.Status.failed("Taiga biome water color not modified"), changer);

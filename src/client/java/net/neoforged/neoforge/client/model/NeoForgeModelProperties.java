@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.util.context.ContextMap;
 import net.neoforged.neoforge.client.NamedRenderTypeManager;
 import net.neoforged.neoforge.client.RenderTypeGroup;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Properties that NeoForge adds for {@link BlockModel}s and {@link UnbakedModel}s.
@@ -60,7 +60,7 @@ public final class NeoForgeModelProperties {
     public static RenderTypeGroup deserializeRenderType(JsonObject jsonObject) {
         if (jsonObject.has("render_type")) {
             String renderTypeHintName = GsonHelper.getAsString(jsonObject, "render_type");
-            return NamedRenderTypeManager.get(ResourceLocation.parse(renderTypeHintName));
+            return NamedRenderTypeManager.get(Identifier.parse(renderTypeHintName));
         }
         return RenderTypeGroup.EMPTY;
     }

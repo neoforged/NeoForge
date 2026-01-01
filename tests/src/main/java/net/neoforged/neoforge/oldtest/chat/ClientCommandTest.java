@@ -11,8 +11,8 @@ import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
@@ -34,12 +34,12 @@ public class ClientCommandTest {
                 Commands.literal("clientcommandtest")
                         // Used for checking suggestion providers that aren't registered
                         .then(Commands.literal("rawsuggest")
-                                .then(Commands.argument("block", ResourceLocationArgument.id())
+                                .then(Commands.argument("block", IdentifierArgument.id())
                                         .suggests((c, b) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), b))
                                         .executes(this::testCommand)))
                         // Used for checking suggestion providers that are registered
                         .then(Commands.literal("registeredsuggest").then(
-                                Commands.argument("block", ResourceLocationArgument.id())
+                                Commands.argument("block", IdentifierArgument.id())
                                         .suggests(SuggestionProviders.cast(SuggestionProviders.AVAILABLE_SOUNDS))
                                         .executes(this::testCommand)))
                         // Used for checking if attempting to get the server on the client side errors
@@ -69,17 +69,17 @@ public class ClientCommandTest {
                         // where advancements and recipes are not synced
 //                        // Used for checking if getting a known advancement works on the client side
 //                        .then(Commands.literal("get_advancement")
-//                                .then(Commands.argument("advancement", ResourceLocationArgument.id())
+//                                .then(Commands.argument("advancement", IdentifierArgument.id())
 //                                        .executes((context) -> {
-//                                            final Component msg = ResourceLocationArgument.getAdvancement(context, "advancement").value().display().get().getTitle();
+//                                            final Component msg = IdentifierArgument.getAdvancement(context, "advancement").value().display().get().getTitle();
 //                                            context.getSource().sendSuccess(() -> msg, false);
 //                                            return 1;
 //                                        })))
 //                        // Used for checking if getting a known recipe works on the client side
 //                        .then(Commands.literal("get_recipe")
-//                                .then(Commands.argument("recipe", ResourceLocationArgument.id())
+//                                .then(Commands.argument("recipe", IdentifierArgument.id())
 //                                        .executes((context) -> {
-//                                            final Component msg = ResourceLocationArgument.getRecipe(context, "recipe").value().getResultItem(context.getSource().registryAccess()).getDisplayName();
+//                                            final Component msg = IdentifierArgument.getRecipe(context, "recipe").value().getResultItem(context.getSource().registryAccess()).getDisplayName();
 //                                            context.getSource()
 //                                                    .sendSuccess(() -> msg, false);
 //                                            return 1;
@@ -123,7 +123,7 @@ public class ClientCommandTest {
     }
 
     private int testCommand(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(() -> Component.literal("Input: " + ResourceLocationArgument.getId(context, "block")), false);
+        context.getSource().sendSuccess(() -> Component.literal("Input: " + IdentifierArgument.getId(context, "block")), false);
         context.getSource().sendSuccess(() -> Component.literal("Teams: " + context.getSource().getAllTeams()), false);
         context.getSource().sendSuccess(() -> Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
 //        context.getSource().sendSuccess(() -> Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);

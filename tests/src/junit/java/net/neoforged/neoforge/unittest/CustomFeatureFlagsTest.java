@@ -7,7 +7,7 @@ package net.neoforged.neoforge.unittest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
@@ -24,7 +24,7 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(1)
     void testFlagLoaded() {
-        ResourceLocation name = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "test_flag");
+        Identifier name = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "test_flag");
         FeatureFlag flag = FeatureFlags.REGISTRY.getFlag(name);
         assertThat(flag).isNotNull();
     }
@@ -32,7 +32,7 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(2)
     void testFlagSetContains() {
-        ResourceLocation name = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier name = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
 
         FeatureFlag flag = FeatureFlags.REGISTRY.getFlag(name);
         assertThat(flag).isNotNull();
@@ -51,10 +51,10 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(4)
     void testFlagSetEquals() {
-        ResourceLocation nameOne = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
-        ResourceLocation nameTwo = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
+        Identifier nameOne = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier nameTwo = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
         // Same mask as nameOne, but at a different offset
-        ResourceLocation nameThree = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_32");
+        Identifier nameThree = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_32");
 
         FeatureFlag flagOne = FeatureFlags.REGISTRY.getFlag(nameOne);
         FeatureFlag flagTwo = FeatureFlags.REGISTRY.getFlag(nameTwo);
@@ -93,9 +93,9 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(6)
     void testFlagSetIsSubsetOf() {
-        ResourceLocation nameOne = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
-        ResourceLocation nameTwo = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
-        ResourceLocation nameThree = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_98");
+        Identifier nameOne = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier nameTwo = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
+        Identifier nameThree = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_98");
 
         FeatureFlag flagOne = FeatureFlags.REGISTRY.getFlag(nameOne);
         FeatureFlag flagTwo = FeatureFlags.REGISTRY.getFlag(nameTwo);
@@ -122,8 +122,8 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(8)
     void testFlagSetIntersects() {
-        ResourceLocation nameOne = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
-        ResourceLocation nameTwo = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
+        Identifier nameOne = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier nameTwo = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
 
         FeatureFlag flagOne = FeatureFlags.REGISTRY.getFlag(nameOne);
         FeatureFlag flagTwo = FeatureFlags.REGISTRY.getFlag(nameTwo);
@@ -152,8 +152,8 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(10)
     void testFlagSetJoin() {
-        ResourceLocation nameOne = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
-        ResourceLocation nameTwo = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
+        Identifier nameOne = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier nameTwo = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
 
         FeatureFlag flagOne = FeatureFlags.REGISTRY.getFlag(nameOne);
         FeatureFlag flagTwo = FeatureFlags.REGISTRY.getFlag(nameTwo);
@@ -180,8 +180,8 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(12)
     void testFlagSetSubtract() {
-        ResourceLocation nameOne = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
-        ResourceLocation nameTwo = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
+        Identifier nameOne = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_96");
+        Identifier nameTwo = Identifier.fromNamespaceAndPath("custom_feature_flags_test", "many_flags_97");
 
         FeatureFlag flagOne = FeatureFlags.REGISTRY.getFlag(nameOne);
         FeatureFlag flagTwo = FeatureFlags.REGISTRY.getFlag(nameTwo);

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.attachment;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An object that can hold data attachments.
