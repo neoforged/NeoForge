@@ -80,6 +80,18 @@ public class MutableQuadTests {
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
 
+    @EnumSource(Direction.class)
+    @ParameterizedTest
+    public void testSetSquareAgainstVanillaBlockModelForFullBlock(Direction side) {
+        var referenceQuads = buildReferenceQuads(new Vector3f(0, 0, 0), new Vector3f(16, 16, 16));
+
+        var mutableQuad = new MutableQuad();
+        mutableQuad.setCubeFaceFromSpriteCoords(side, 0, 0, 1, 1, 0);
+        mutableQuad.setSprite(new MockSprite());
+        mutableQuad.bakeUvsFromPosition();
+        assertQuadsEquals(referenceQuads.get(side), mutableQuad);
+    }
+
     /**
      * These vertices were created using Fabrics QuadEmitter with baked UV using BAKE_UVLOCK,
      * and a sprite that matches the positions of MockSprite.
@@ -169,6 +181,23 @@ public class MutableQuadTests {
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
 
+    @ParameterizedTest
+    @EnumSource(Direction.class)
+    public void testSetCubeFaceFullBlock(Direction side) {
+        var min = new Vector3f(0, 0, 0);
+        var max = new Vector3f(16, 16, 16);
+        var referenceQuads = buildReferenceQuads(min, max);
+
+        var from = new Vector3f(min).mul(WORLD_SCALE);
+        var to = new Vector3f(max).mul(WORLD_SCALE);
+
+        var mutableQuad = new MutableQuad();
+        mutableQuad.setSprite(new MockSprite());
+        mutableQuad.setCubeFace(side, from.x, from.y, from.z, to.x, to.y, to.z);
+        mutableQuad.bakeUvsFromPosition();
+        assertQuadsEquals(referenceQuads.get(side), mutableQuad);
+    }
+
     @Test
     void testSetFromBakedQuad() {
         var refQuad = buildReferenceQuads().get(Direction.NORTH);
@@ -184,9 +213,9 @@ public class MutableQuadTests {
         assertEquals(mutableQuad.tintIndex(), refQuad.tintIndex());
         assertEquals(mutableQuad.direction(), refQuad.direction());
         assertEquals(mutableQuad.sprite(), refQuad.sprite());
-        assertEquals(mutableQuad.isShade(), refQuad.shade());
+        assertEquals(mutableQuad.shade(), refQuad.shade());
         assertEquals(mutableQuad.lightEmission(), refQuad.lightEmission());
-        assertEquals(mutableQuad.isHasAmbientOcclusion(), refQuad.hasAmbientOcclusion());
+        assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.hasAmbientOcclusion());
     }
 
     /**
@@ -310,11 +339,15 @@ public class MutableQuadTests {
         return String.format(Locale.ROOT, "%.03f, %.03f", v.x(), v.y());
     }
 
+    private static Map<Direction, BakedQuad> buildReferenceQuads() {
+        return buildReferenceQuads(REFERENCE_BLOCK_MIN, REFERENCE_BLOCK_MAX);
+    }
+
     /**
      * This test relies on baking a cube in the same way a Vanilla JSON blockmodel cube would be baked,
      * and then using the resulting quads as the reference quads in terms of winding and UV.
      */
-    private static Map<Direction, BakedQuad> buildReferenceQuads() {
+    private static Map<Direction, BakedQuad> buildReferenceQuads(Vector3fc from, Vector3fc to) {
         var blockModelJson = """
                 {
                 "textures": {
@@ -322,8 +355,8 @@ public class MutableQuadTests {
                 },
                 "elements": [
                     {
-                        "from": [1, 2, 3],
-                        "to": [8, 13, 16],
+                        "from": [$x0, $y0, $z0],
+                        "to": [$x1, $y1, $z1],
                         "faces": {
                             "north": {"texture": "#t", "cullface": "north"},
                             "east": {"texture": "#t", "cullface": "east"},
@@ -336,6 +369,12 @@ public class MutableQuadTests {
                 ]
                 }
                 """;
+        blockModelJson = blockModelJson.replace("$x0", String.valueOf(from.x()));
+        blockModelJson = blockModelJson.replace("$y0", String.valueOf(from.y()));
+        blockModelJson = blockModelJson.replace("$z0", String.valueOf(from.z()));
+        blockModelJson = blockModelJson.replace("$x1", String.valueOf(to.x()));
+        blockModelJson = blockModelJson.replace("$y1", String.valueOf(to.y()));
+        blockModelJson = blockModelJson.replace("$z1", String.valueOf(to.z()));
         var blockModel = BlockModel.GSON.fromJson(blockModelJson, BlockModel.class);
 
         var baked = blockModel.geometry().bake(TextureSlots.EMPTY, new MockModelBaker(), BlockModelRotation.IDENTITY, () -> "");

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
+import org.jetbrains.annotations.Contract;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
@@ -40,7 +41,7 @@ public class MutableQuad {
     private Direction direction = Direction.DOWN;
     @Nullable
     private TextureAtlasSprite sprite;
-    private boolean shade;
+    private boolean shade = true;
     private int lightEmission;
     private boolean hasAmbientOcclusion;
     /**
@@ -49,9 +50,14 @@ public class MutableQuad {
     @Nullable
     private BakedQuad lastSourceQuad;
 
+    public MutableQuad() {
+        reset();
+    }
+
     /**
      * {@return the x-component of a vertex's position}
      */
+    @Contract(pure = true)
     public float x(int vertexIndex) {
         return positions[vertexIndex].x;
     }
@@ -59,6 +65,7 @@ public class MutableQuad {
     /**
      * {@return the y-component of a vertex's position}
      */
+    @Contract(pure = true)
     public float y(int vertexIndex) {
         return positions[vertexIndex].y;
     }
@@ -66,6 +73,7 @@ public class MutableQuad {
     /**
      * {@return the z-component of a vertex's position}
      */
+    @Contract(pure = true)
     public float z(int vertexIndex) {
         return positions[vertexIndex].z;
     }
@@ -75,6 +83,7 @@ public class MutableQuad {
      *
      * <p>See <a href="#components">components</a> for the mapping of index to component.
      */
+    @Contract(pure = true)
     public float positionComponent(int vertexIndex, int componentIndex) {
         return positions[vertexIndex].get(componentIndex);
     }
@@ -82,6 +91,7 @@ public class MutableQuad {
     /**
      * Copies a vertex's position into a new vector and returns it.
      */
+    @Contract(pure = true)
     public Vector3f copyPosition(int vertexIndex) {
         return new Vector3f(positions[vertexIndex]);
     }
@@ -183,10 +193,10 @@ public class MutableQuad {
             case EAST -> {
                 // -X (looking west at east face)
                 // left is +Z, bottom is -Y
-                positions[0].set(depth, top, 1 - left);
-                positions[1].set(depth, bottom, 1 - left);
-                positions[2].set(depth, bottom, 1 - right);
-                positions[3].set(depth, top, 1 - right);
+                positions[0].set(1 - depth, top, 1 - left);
+                positions[1].set(1 - depth, bottom, 1 - left);
+                positions[2].set(1 - depth, bottom, 1 - right);
+                positions[3].set(1 - depth, top, 1 - right);
             }
             case WEST -> {
                 // +X (looking east at west face)
@@ -260,6 +270,7 @@ public class MutableQuad {
     /**
      * {@return the horizontal texture coordinate in atlas-space for a vertex}
      */
+    @Contract(pure = true)
     public float u(int vertexIndex) {
         return UVPair.unpackU(uvs[vertexIndex]);
     }
@@ -267,6 +278,7 @@ public class MutableQuad {
     /**
      * {@return the vertical texture coordinate in atlas-space for a vertex}
      */
+    @Contract(pure = true)
     public float v(int vertexIndex) {
         return UVPair.unpackV(uvs[vertexIndex]);
     }
@@ -277,6 +289,7 @@ public class MutableQuad {
      * @see UVPair#unpackU(long)
      * @see UVPair#unpackV(long)
      */
+    @Contract(pure = true)
     public long packedUv(int vertexIndex) {
         return uvs[vertexIndex];
     }
@@ -284,6 +297,7 @@ public class MutableQuad {
     /**
      * Same as {@link #copyUv(int, Vector2f)}, but constructs a destination vector automatically.
      */
+    @Contract(pure = true)
     public Vector2f copyUv(int vertexIndex) {
         return copyUv(vertexIndex, new Vector2f());
     }
@@ -405,6 +419,7 @@ public class MutableQuad {
         return this;
     }
 
+    @Contract(pure = true)
     public int tintIndex() {
         return tintIndex;
     }
@@ -414,6 +429,7 @@ public class MutableQuad {
         return this;
     }
 
+    @Contract(pure = true)
     public Direction direction() {
         return direction;
     }
@@ -423,6 +439,7 @@ public class MutableQuad {
         return this;
     }
 
+    @Contract(pure = true)
     @Nullable
     public TextureAtlasSprite sprite() {
         return sprite;
@@ -450,7 +467,8 @@ public class MutableQuad {
         return this;
     }
 
-    public boolean isShade() {
+    @Contract(pure = true)
+    public boolean shade() {
         return shade;
     }
 
@@ -459,6 +477,7 @@ public class MutableQuad {
         return this;
     }
 
+    @Contract(pure = true)
     public int lightEmission() {
         return lightEmission;
     }
@@ -471,6 +490,7 @@ public class MutableQuad {
     /**
      * {@return the x-component of a vertex's normal or NaN if the normal is undefined}
      */
+    @Contract(pure = true)
     public float normalX(int vertexIndex) {
         return normalComponent(vertexIndex, 0);
     }
@@ -478,6 +498,7 @@ public class MutableQuad {
     /**
      * {@return the y-component of a vertex's normal or NaN if the normal is undefined}
      */
+    @Contract(pure = true)
     public float normalY(int vertexIndex) {
         return normalComponent(vertexIndex, 1);
     }
@@ -485,6 +506,7 @@ public class MutableQuad {
     /**
      * {@return the z-component of a vertex's normal or NaN if the normal is undefined}
      */
+    @Contract(pure = true)
     public float normalZ(int vertexIndex) {
         return normalComponent(vertexIndex, 2);
     }
@@ -494,6 +516,7 @@ public class MutableQuad {
      *
      * <p>See <a href="#components">components</a> for the mapping of index to component.
      */
+    @Contract(pure = true)
     public float normalComponent(int vertexIndex, int componentIndex) {
         var packedNormal = normals[vertexIndex];
         if (BakedNormals.isUnspecified(packedNormal)) {
@@ -509,6 +532,7 @@ public class MutableQuad {
      * @see BakedNormals#unpack(int, Vector3f)
      * @see BakedNormals#pack(float, float, float)
      */
+    @Contract(pure = true)
     public int packedNormal(int vertexIndex) {
         return normals[vertexIndex];
     }
@@ -516,6 +540,7 @@ public class MutableQuad {
     /**
      * Same as {@link #copyNormal(int, Vector3f)}, but constructs a new destination vector automatically.
      */
+    @Contract(pure = true)
     public Vector3f copyNormal(int vertexIndex) {
         return copyNormal(vertexIndex, new Vector3f());
     }
@@ -558,6 +583,7 @@ public class MutableQuad {
      *
      * @see ARGB
      */
+    @Contract(pure = true)
     public int color(int vertexIndex) {
         return colors[vertexIndex];
     }
@@ -594,7 +620,8 @@ public class MutableQuad {
         return setColor(vertexIndex, ARGB.color(a, r, g, b));
     }
 
-    public boolean isHasAmbientOcclusion() {
+    @Contract(pure = true)
+    public boolean hasAmbientOcclusion() {
         return hasAmbientOcclusion;
     }
 
@@ -651,6 +678,7 @@ public class MutableQuad {
         }
     }
 
+    @Contract(pure = true)
     public BakedQuad toBakedQuad() {
         // Try to reuse objects from the last baked quad that we copied from to reduce allocations if
         // the quad was only partially transformed.
@@ -767,8 +795,12 @@ public class MutableQuad {
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
         sprite = null;
+        tintIndex = -1;
+        shade = true;
         lightEmission = 0;
+        hasAmbientOcclusion = false;
         lastSourceQuad = null;
+
         return this;
     }
 
