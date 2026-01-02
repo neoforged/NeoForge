@@ -8,8 +8,6 @@ package net.neoforged.testframework.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -17,8 +15,6 @@ import net.neoforged.testframework.Test;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class EventListenerGroupImpl implements Test.EventListenerGroup {
     private final EventListenerCollectorImpl mod = new EventListenerCollectorImpl(),
             game = new EventListenerCollectorImpl();

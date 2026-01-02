@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A journal that can be added to a transaction with {@link #updateSnapshots(TransactionContext)},

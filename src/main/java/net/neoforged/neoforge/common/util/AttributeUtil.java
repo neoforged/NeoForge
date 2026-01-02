@@ -25,7 +25,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -52,24 +52,24 @@ public class AttributeUtil {
     /**
      * ID of the base modifier for Attack Damage
      */
-    public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = Item.BASE_ATTACK_DAMAGE_ID;
+    public static final Identifier BASE_ATTACK_DAMAGE_ID = Item.BASE_ATTACK_DAMAGE_ID;
 
     /**
      * ID of the base modifier for Attack Speed
      */
-    public static final ResourceLocation BASE_ATTACK_SPEED_ID = Item.BASE_ATTACK_SPEED_ID;
+    public static final Identifier BASE_ATTACK_SPEED_ID = Item.BASE_ATTACK_SPEED_ID;
 
     /**
      * ID of the base modifier for Attack Range
      */
-    public static final ResourceLocation BASE_ENTITY_REACH_ID = ResourceLocation.withDefaultNamespace("base_entity_reach");
+    public static final Identifier BASE_ENTITY_REACH_ID = Identifier.withDefaultNamespace("base_entity_reach");
 
     /**
      * ID used for attribute modifiers used to hold merged values when {@link NeoForgeMod#enableMergedAttributeTooltips()} is active.
      * <p>
      * Should not be used by any real attribute modifiers for gameplay purposes.
      */
-    public static final ResourceLocation FAKE_MERGED_ID = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "fake_merged_modifier");
+    public static final Identifier FAKE_MERGED_ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "fake_merged_modifier");
 
     /**
      * Comparator for {@link AttributeModifier}. First compares by operation, then amount, then the ID.

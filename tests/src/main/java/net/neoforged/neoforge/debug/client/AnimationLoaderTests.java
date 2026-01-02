@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -38,8 +38,8 @@ public class AnimationLoaderTests {
     @TestHolder(description = "Tests that data-driven animations are loaded at the correct time", enabledByDefault = true)
     static void animLoaderTest(final DynamicTest test) {
         var entity = test.registrationHelper().entityTypes().registerEntityType("test", TestEntity::new, MobCategory.AMBIENT);
-        ResourceLocation itemModelId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_item_model");
-        ResourceLocation itemModelFile = ResourceLocation.fromNamespaceAndPath(test.createModId(), "test_item");
+        Identifier itemModelId = Identifier.fromNamespaceAndPath(test.createModId(), "test_item_model");
+        Identifier itemModelFile = Identifier.fromNamespaceAndPath(test.createModId(), "test_item");
         test.framework().modEventBus().addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> {
             event.registerLayerDefinition(TestEntityModel.LAYER_LOC, TestEntityModel::createLayer);
         });
@@ -72,8 +72,8 @@ public class AnimationLoaderTests {
     }
 
     private static final class TestEntityModel extends EntityModel<EntityRenderState> {
-        private static final ModelLayerLocation LAYER_LOC = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("neotests_anim_loader_test", "test"), "main");
-        private static final ResourceLocation ANIM_LOC = ResourceLocation.fromNamespaceAndPath("neotests_anim_loader_test", "empty_animation");
+        private static final ModelLayerLocation LAYER_LOC = new ModelLayerLocation(Identifier.fromNamespaceAndPath("neotests_anim_loader_test", "test"), "main");
+        private static final Identifier ANIM_LOC = Identifier.fromNamespaceAndPath("neotests_anim_loader_test", "empty_animation");
 
         private TestEntityModel(ModelPart modelPart, DynamicTest test) {
             super(modelPart);

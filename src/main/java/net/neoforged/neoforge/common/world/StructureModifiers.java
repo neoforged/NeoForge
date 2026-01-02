@@ -11,8 +11,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
@@ -126,7 +126,7 @@ public final class StructureModifiers {
                     if (overrides == null || overrides.getSpawns().isEmpty())
                         continue;
                     overrides.removeSpawns(spawnerData -> {
-                        ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type());
+                        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type());
                         return this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.getOrThrow(ResourceKey.create(Registries.ENTITY_TYPE, key)));
                     });
                 }

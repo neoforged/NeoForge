@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/RenderBuffers.java
 +++ b/net/minecraft/client/renderer/RenderBuffers.java
-@@ -36,6 +_,7 @@
-             put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_366352_, RenderType.entityGlint());
-             put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_366352_, RenderType.waterMask());
+@@ -38,6 +_,7 @@
+             put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_465615_, RenderTypes.entityGlint());
+             put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_465615_, RenderTypes.waterMask());
          });
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent(sequencedmap));
          this.bufferSource = MultiBufferSource.immediateWithBuffers(sequencedmap, new ByteBufferBuilder(786432));

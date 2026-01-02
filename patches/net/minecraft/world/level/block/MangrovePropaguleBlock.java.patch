@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 +++ b/net/minecraft/world/level/block/MangrovePropaguleBlock.java
-@@ -73,7 +_,12 @@
+@@ -72,7 +_,12 @@
  
      @Override
      protected boolean canSurvive(BlockState p_221473_, LevelReader p_221474_, BlockPos p_221475_) {

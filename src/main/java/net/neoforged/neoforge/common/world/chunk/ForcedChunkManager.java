@@ -24,11 +24,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.Ticket;
@@ -40,14 +39,13 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
 public class ForcedChunkManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static boolean initialised = false;
-    private static Map<ResourceLocation, TicketController> controllers = Map.of();
+    private static Map<Identifier, TicketController> controllers = Map.of();
 
     @ApiStatus.Internal
     public static synchronized void init() {
@@ -56,7 +54,7 @@ public class ForcedChunkManager {
         }
         initialised = true;
 
-        final Map<ResourceLocation, TicketController> controllers = new HashMap<>();
+        final Map<Identifier, TicketController> controllers = new HashMap<>();
         ModLoader.postEvent(new RegisterTicketControllersEvent(controller -> {
             if (controllers.containsKey(controller.id())) {
                 throw new IllegalArgumentException("Attempted to register two controllers with the same ID " + controller.id());
@@ -82,7 +80,7 @@ public class ForcedChunkManager {
      *
      * @implNote Based on {@link ServerLevel#setChunkForced(int, int, boolean)}
      */
-    static <T extends Comparable<? super T>> boolean forceChunk(ServerLevel level, ResourceLocation id, T owner, int chunkX, int chunkZ, boolean add,
+    static <T extends Comparable<? super T>> boolean forceChunk(ServerLevel level, Identifier id, T owner, int chunkX, int chunkZ, boolean add,
             boolean forceNaturalSpawning, Function<TicketStorage, TicketTracker<T>> ticketGetter) {
         if (!controllers.containsKey(id)) {
             throw new IllegalArgumentException("Controller with ID " + id + " is not registered!");
@@ -121,8 +119,8 @@ public class ForcedChunkManager {
 
         if (!controllers.isEmpty()) {
             //If we have any callbacks, gather all owned tickets by controller for both blocks and entities
-            final Map<ResourceLocation, Map<BlockPos, TicketSet>> blockTickets = gatherTicketsById(blockForcedChunks, false, true);
-            final Map<ResourceLocation, Map<UUID, TicketSet>> entityTickets = gatherTicketsById(entityForcedChunks, false, true);
+            final Map<Identifier, Map<BlockPos, TicketSet>> blockTickets = gatherTicketsById(blockForcedChunks, false, true);
+            final Map<Identifier, Map<UUID, TicketSet>> entityTickets = gatherTicketsById(entityForcedChunks, false, true);
             //Fire the callbacks allowing them to remove any tickets they don't want anymore
             controllers.forEach((value) -> {
                 boolean hasBlockTicket = blockTickets.containsKey(value.getKey());
@@ -142,9 +140,9 @@ public class ForcedChunkManager {
     /**
      * Gathers tickets into an ID filtered map for use in providing all tickets a controller has registered to its {@link LoadingValidationCallback}.
      */
-    private static <T extends Comparable<? super T>> Map<ResourceLocation, Map<T, TicketSet>> gatherTicketsById(TicketTracker<T> tickets, boolean includeLoaded,
+    private static <T extends Comparable<? super T>> Map<Identifier, Map<T, TicketSet>> gatherTicketsById(TicketTracker<T> tickets, boolean includeLoaded,
             boolean includeDeactivated) {
-        Map<ResourceLocation, Map<T, TicketSet>> modSortedOwnedChunks = new HashMap<>();
+        Map<Identifier, Map<T, TicketSet>> modSortedOwnedChunks = new HashMap<>();
         if (includeLoaded) {
             gatherTicketsById(tickets.sourcesLoading, TicketSet::normal, modSortedOwnedChunks);
             gatherTicketsById(tickets.sourcesLoadingNaturalSpawning, TicketSet::naturalSpawning, modSortedOwnedChunks);
@@ -160,7 +158,7 @@ public class ForcedChunkManager {
      * Gathers tickets into an ID filtered map for use in providing all tickets a controller has registered to its {@link LoadingValidationCallback}.
      */
     private static <T extends Comparable<? super T>> void gatherTicketsById(Long2ObjectMap<Set<TicketOwner<T>>> tickets, Function<TicketSet, LongSet> typeGetter,
-            Map<ResourceLocation, Map<T, TicketSet>> modSortedOwnedChunks) {
+            Map<Identifier, Map<T, TicketSet>> modSortedOwnedChunks) {
         for (Long2ObjectMap.Entry<Set<TicketOwner<T>>> entry : Long2ObjectMaps.fastIterable(tickets)) {
             long chunk = entry.getLongKey();
             Set<TicketOwner<T>> owners = entry.getValue();
@@ -172,11 +170,11 @@ public class ForcedChunkManager {
         }
     }
 
-    public record OwnedChunks(ResourceLocation controller, Map<BlockPos, TicketSet> blockChunks, Map<UUID, TicketSet> entityChunks) {
+    public record OwnedChunks(Identifier controller, Map<BlockPos, TicketSet> blockChunks, Map<UUID, TicketSet> entityChunks) {
         private static final Codec<Map<BlockPos, TicketSet>> BLOCK_CHUNK_CODEC = NeoForgeExtraCodecs.unboundedMapAsList("position", BlockPos.CODEC, "tickets", TicketSet.CODEC);
         private static final Codec<Map<UUID, TicketSet>> ENTITY_CHUNK_CODEC = NeoForgeExtraCodecs.unboundedMapAsList("uuid", UUIDUtil.CODEC, "tickets", TicketSet.CODEC);
         public static final Codec<OwnedChunks> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("controller").forGetter(OwnedChunks::controller),
+                Identifier.CODEC.fieldOf("controller").forGetter(OwnedChunks::controller),
                 BLOCK_CHUNK_CODEC.optionalFieldOf("block_chunks", Map.of()).forGetter(OwnedChunks::blockChunks),
                 ENTITY_CHUNK_CODEC.optionalFieldOf("entity_chunks", Map.of()).forGetter(OwnedChunks::entityChunks)).apply(instance, OwnedChunks::new));
     }
@@ -188,15 +186,15 @@ public class ForcedChunkManager {
     public static App<Mu<TicketStorage>, List<OwnedChunks>> defineExtraStorageParams() {
         return OwnedChunks.CODEC.listOf().optionalFieldOf("neo_ticket_data", List.of()).forGetter(storage -> {
             //Like vanilla's TicketStorage we want to collect both activated and deactivated tickets so that we can save them
-            Map<ResourceLocation, Map<BlockPos, TicketSet>> blockTickets = gatherTicketsById(storage.getBlockForcedChunks(), true, true);
-            Map<ResourceLocation, Map<UUID, TicketSet>> entityTickets = gatherTicketsById(storage.getEntityForcedChunks(), true, true);
-            Map<ResourceLocation, OwnedChunks> ownedChunks = new HashMap<>();
-            for (Map.Entry<ResourceLocation, Map<BlockPos, TicketSet>> entry : blockTickets.entrySet()) {
-                ResourceLocation controllerId = entry.getKey();
+            Map<Identifier, Map<BlockPos, TicketSet>> blockTickets = gatherTicketsById(storage.getBlockForcedChunks(), true, true);
+            Map<Identifier, Map<UUID, TicketSet>> entityTickets = gatherTicketsById(storage.getEntityForcedChunks(), true, true);
+            Map<Identifier, OwnedChunks> ownedChunks = new HashMap<>();
+            for (Map.Entry<Identifier, Map<BlockPos, TicketSet>> entry : blockTickets.entrySet()) {
+                Identifier controllerId = entry.getKey();
                 ownedChunks.put(controllerId, new OwnedChunks(controllerId, entry.getValue(), new HashMap<>()));
             }
-            for (Map.Entry<ResourceLocation, Map<UUID, TicketSet>> entry : entityTickets.entrySet()) {
-                ResourceLocation controllerId = entry.getKey();
+            for (Map.Entry<Identifier, Map<UUID, TicketSet>> entry : entityTickets.entrySet()) {
+                Identifier controllerId = entry.getKey();
                 OwnedChunks owned = ownedChunks.get(controllerId);
                 if (owned == null) {
                     ownedChunks.put(controllerId, new OwnedChunks(controllerId, new HashMap<>(), entry.getValue()));
@@ -218,7 +216,7 @@ public class ForcedChunkManager {
         TicketTracker<BlockPos> blockForcedChunks = ticketStorage.getBlockForcedChunks();
         TicketTracker<UUID> entityForcedChunks = ticketStorage.getEntityForcedChunks();
         for (OwnedChunks ownedChunk : ownedChunks) {
-            ResourceLocation controllerId = ownedChunk.controller();
+            Identifier controllerId = ownedChunk.controller();
             if (controllers.containsKey(controllerId)) {
                 for (Map.Entry<BlockPos, TicketSet> entry : ownedChunk.blockChunks().entrySet()) {
                     blockForcedChunks.inheritDeactivated(new TicketOwner<>(controllerId, entry.getKey()), entry.getValue());
@@ -237,10 +235,10 @@ public class ForcedChunkManager {
      * Helper class to keep track of a ticket owner by controller ID and owner object
      */
     static class TicketOwner<T extends Comparable<? super T>> implements Comparable<TicketOwner<T>> {
-        private final ResourceLocation id;
+        private final Identifier id;
         private final T owner;
 
-        TicketOwner(ResourceLocation id, T owner) {
+        TicketOwner(Identifier id, T owner) {
             this.id = id;
             this.owner = owner;
         }

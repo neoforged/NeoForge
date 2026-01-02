@@ -10,7 +10,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implements functionality similar to Vanillas {@link net.minecraft.client.renderer.block.model.VariantMutator},

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
-@@ -35,7 +_,7 @@
+@@ -34,7 +_,7 @@
      FluidState getFluidState(BlockPos p_45569_);
  
      default int getLightEmission(BlockPos p_45572_) {

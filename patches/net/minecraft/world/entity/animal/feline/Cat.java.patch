@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/animal/feline/Cat.java
++++ b/net/minecraft/world/entity/animal/feline/Cat.java
+@@ -385,9 +_,9 @@
+                     }
+                 } else if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
+                     if (!this.level().isClientSide()) {
+-                        this.usePlayerItem(p_480908_, p_479321_, itemstack);
+                         FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
+                         this.heal(foodproperties != null ? foodproperties.nutrition() : 1.0F);
++                        this.usePlayerItem(p_480908_, p_479321_, itemstack);
+                         this.playEatingSound();
+                     }
+ 
+@@ -449,7 +_,7 @@
+     }
+ 
+     private void tryToTame(Player p_482042_) {
+-        if (this.random.nextInt(3) == 0) {
++        if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_482042_)) {
+             this.tame(p_482042_);
+             this.setOrderedToSit(true);
+             this.level().broadcastEntityEvent(this, (byte)7);

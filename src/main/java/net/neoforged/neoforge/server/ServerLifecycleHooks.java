@@ -21,7 +21,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
@@ -51,7 +51,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ServerLifecycleHooks {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -192,7 +192,7 @@ public class ServerLifecycleHooks {
                                     BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type()),
                                     spawnerData.value().type().getCategory(),
                                     mobCategory,
-                                    biomeHolder.getKey().location());
+                                    biomeHolder.getKey().identifier());
                         }
                     }
                 }
@@ -210,7 +210,7 @@ public class ServerLifecycleHooks {
 
         if (!entitiesWithoutPlacements.isEmpty() && !FMLEnvironment.isProduction()) {
             LOGGER.error("The following entities have not registered to the RegisterSpawnPlacementsEvent, but a spawn entry was found. This will mean that the entity doesn't have restrictions on its spawn location, please register a spawn placement for the entity, you can register with NO_RESTRICTIONS if you don't want any restrictions."
-                    + entitiesWithoutPlacements.stream().map(EntityType::getKey).map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
+                    + entitiesWithoutPlacements.stream().map(EntityType::getKey).map(Identifier::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
     }
 }

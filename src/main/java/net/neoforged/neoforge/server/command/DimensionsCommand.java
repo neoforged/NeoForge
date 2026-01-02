@@ -15,19 +15,19 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.dimension.DimensionType;
 
 class DimensionsCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("dimensions")
-                .requires(cs -> cs.hasPermission(0)) //permission
+                .requires(Commands.hasPermission(Commands.LEVEL_ALL)) //permission
                 .executes(ctx -> {
                     ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.dimensions.list"), true);
                     final Registry<DimensionType> reg = ctx.getSource().registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE);
 
-                    Map<ResourceLocation, List<Component>> types = new HashMap<>();
+                    Map<Identifier, List<Component>> types = new HashMap<>();
                     for (ServerLevel dim : ctx.getSource().getServer().getAllLevels()) {
                         types.computeIfAbsent(reg.getKey(dim.dimensionType()), k -> new ArrayList<>()).add(dim.getDescription());
                     }

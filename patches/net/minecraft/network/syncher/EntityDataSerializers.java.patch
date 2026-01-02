@@ -1,8 +1,8 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -129,17 +_,28 @@
-     public static final EntityDataSerializer<Quaternionf> QUATERNION = EntityDataSerializer.forValueType(ByteBufCodecs.QUATERNIONF);
+@@ -135,16 +_,27 @@
      public static final EntityDataSerializer<ResolvableProfile> RESOLVABLE_PROFILE = EntityDataSerializer.forValueType(ResolvableProfile.STREAM_CODEC);
+     public static final EntityDataSerializer<HumanoidArm> HUMANOID_ARM = EntityDataSerializer.forValueType(HumanoidArm.STREAM_CODEC);
  
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
@@ -20,8 +20,7 @@
 +            throw new RuntimeException("Vanilla EntityDataSerializer ID limit exceeded");
      }
  
-     @Nullable
-     public static EntityDataSerializer<?> getSerializer(int p_135049_) {
+     public static @Nullable EntityDataSerializer<?> getSerializer(int p_135049_) {
 -        return SERIALIZERS.byId(p_135049_);
 +        return net.neoforged.neoforge.common.CommonHooks.getSerializer(p_135049_, SERIALIZERS);
      }

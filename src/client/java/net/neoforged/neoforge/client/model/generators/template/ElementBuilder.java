@@ -18,8 +18,8 @@ import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 public final class ElementBuilder {
     private Vector3f from = new Vector3f();
@@ -30,8 +30,6 @@ public final class ElementBuilder {
     private boolean shade = true;
     private int lightEmission = 0;
     private int color = 0xFFFFFFFF;
-    private int blockLight = 0;
-    private int skyLight = 0;
     private boolean hasAmbientOcclusion = true;
 
     /**
@@ -177,23 +175,7 @@ public final class ElementBuilder {
     }
 
     /**
-     * Set the block and sky light of the element (0-15).
-     * Traditional "emissivity" values were set both of these to the same value.
-     *
-     * @param blockLight the block light
-     * @param skyLight   the sky light
-     * @return this builder
-     */
-    public ElementBuilder emissivity(int blockLight, int skyLight) {
-        this.blockLight = blockLight;
-        this.skyLight = skyLight;
-        return this;
-    }
-
-    /**
      * Set the light emission of the element (0-15)
-     * <p>
-     * If block and sky light values should be different, use {@link #emissivity(int, int)} instead
      *
      * @param lightEmission the light value
      * @return this builder
@@ -244,7 +226,7 @@ public final class ElementBuilder {
         Map<Direction, BlockElementFace> faces = this.faces.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
             throw new IllegalArgumentException();
         }, LinkedHashMap::new));
-        return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+        return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, 0, this.hasAmbientOcclusion));
     }
 
     ElementBuilder copy() {
@@ -256,8 +238,6 @@ public final class ElementBuilder {
         builder.shade = this.shade;
         builder.lightEmission = this.lightEmission;
         builder.color = this.color;
-        builder.blockLight = this.blockLight;
-        builder.skyLight = this.skyLight;
         builder.hasAmbientOcclusion = this.hasAmbientOcclusion;
         return builder;
     }

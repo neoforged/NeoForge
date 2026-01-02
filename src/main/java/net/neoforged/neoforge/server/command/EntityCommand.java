@@ -23,8 +23,8 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -44,9 +44,9 @@ class EntityCommand {
 
         static ArgumentBuilder<CommandSourceStack, ?> register() {
             return Commands.literal("list")
-                    .requires(cs -> cs.hasPermission(2)) //permission
+                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)) //permission
                     .then(Commands.argument("filter", StringArgumentType.string())
-                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(ResourceLocation::toString).map(StringArgumentType::escapeIfRequired), builder))
+                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(Identifier::toString).map(StringArgumentType::escapeIfRequired), builder))
                             .then(Commands.argument("dim", DimensionArgument.dimension())
                                     .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), DimensionArgument.getDimension(ctx, "dim").dimension())))
                             .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), ctx.getSource().getLevel().dimension())))
@@ -56,7 +56,7 @@ class EntityCommand {
         private static int execute(CommandSourceStack sender, String filter, ResourceKey<Level> dim) throws CommandSyntaxException {
             final String cleanFilter = filter.replace("?", ".?").replace("*", ".*?");
 
-            Set<ResourceLocation> names = BuiltInRegistries.ENTITY_TYPE.keySet().stream().filter(n -> n.toString().matches(cleanFilter)).collect(Collectors.toSet());
+            Set<Identifier> names = BuiltInRegistries.ENTITY_TYPE.keySet().stream().filter(n -> n.toString().matches(cleanFilter)).collect(Collectors.toSet());
 
             if (names.isEmpty())
                 throw INVALID_FILTER.create();
@@ -65,7 +65,7 @@ class EntityCommand {
             if (level == null)
                 throw INVALID_DIMENSION.create(dim);
 
-            Map<ResourceLocation, MutablePair<Integer, Map<ChunkPos, Integer>>> list = Maps.newHashMap();
+            Map<Identifier, MutablePair<Integer, Map<ChunkPos, Integer>>> list = Maps.newHashMap();
             level.getEntities().getAll().forEach(e -> {
                 MutablePair<Integer, Map<ChunkPos, Integer>> info = list.computeIfAbsent(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()), k -> MutablePair.of(0, Maps.newHashMap()));
                 ChunkPos chunk = new ChunkPos(e.blockPosition());
@@ -74,7 +74,7 @@ class EntityCommand {
             });
 
             if (names.size() == 1) {
-                ResourceLocation name = names.iterator().next();
+                Identifier name = names.iterator().next();
                 Pair<Integer, Map<ChunkPos, Integer>> info = list.get(name);
                 if (info == null)
                     throw NO_ENTITIES.create();
@@ -97,10 +97,10 @@ class EntityCommand {
                 return toSort.size();
             } else {
 
-                List<Pair<ResourceLocation, Integer>> info = new ArrayList<>();
+                List<Pair<Identifier, Integer>> info = new ArrayList<>();
                 list.forEach((key, value) -> {
                     if (names.contains(key)) {
-                        Pair<ResourceLocation, Integer> of = Pair.of(key, value.left);
+                        Pair<Identifier, Integer> of = Pair.of(key, value.left);
                         info.add(of);
                     }
                 });

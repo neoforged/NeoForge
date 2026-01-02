@@ -7,14 +7,15 @@ package net.neoforged.neoforge.common;
 
 import java.util.Optional;
 import net.minecraft.core.component.DataComponentExactPredicate;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
+import net.minecraft.world.entity.npc.villager.VillagerTrades.ItemListing;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A default, exposed implementation of ITrade. All of the other implementations of ITrade (in VillagerTrades) are not public.
@@ -51,7 +52,7 @@ public class BasicItemListing implements ItemListing {
 
     @Nullable
     @Override
-    public MerchantOffer getOffer(Entity p_219693_, RandomSource p_219694_) {
+    public MerchantOffer getOffer(ServerLevel level, Entity p_219693_, RandomSource p_219694_) {
         ItemCost cost = new ItemCost(price.getItemHolder(), price.getCount(), DataComponentExactPredicate.EMPTY, price); // TODO: Porting 1.20.5 do something proper for the components here
         Optional<ItemCost> optionalSecondCost = price2.isEmpty() ? Optional.empty() : Optional.of(new ItemCost(price2.getItemHolder(), price2.getCount(), DataComponentExactPredicate.EMPTY, price2));
         return new MerchantOffer(cost, optionalSecondCost, forSale, maxTrades, xp, priceMult);

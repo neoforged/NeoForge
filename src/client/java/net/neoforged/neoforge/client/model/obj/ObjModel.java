@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.obj;
 
 import net.minecraft.client.resources.model.UnbakedGeometry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.AbstractUnbakedModel;
 import net.neoforged.neoforge.client.model.StandardModelParameters;
 
@@ -14,7 +14,7 @@ import net.neoforged.neoforge.client.model.StandardModelParameters;
  * A model loaded from an OBJ file.
  * <p>
  * Supports positions, texture coordinates, normals and colors. The {@link ObjMaterialLibrary material library}
- * has support for numerous features, including support for {@link ResourceLocation} textures (non-standard).
+ * has support for numerous features, including support for {@link Identifier} textures (non-standard).
  */
 public class ObjModel extends AbstractUnbakedModel {
     private final ObjGeometry geometry;

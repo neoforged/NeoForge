@@ -31,7 +31,7 @@ class DataComponentCommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("data_components")
-                .requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("list")
                         .executes(DataComponentCommand::listComponents));
     }

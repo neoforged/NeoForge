@@ -19,13 +19,13 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ExtendedModelTemplateBuilder {
-    Optional<ResourceLocation> parent = Optional.empty();
+    Optional<Identifier> parent = Optional.empty();
     Optional<String> suffix = Optional.empty();
     final Set<TextureSlot> requiredSlots = new HashSet<>();
     final Map<ItemDisplayContext, TransformVecBuilder> transforms = new LinkedHashMap<>();
@@ -34,11 +34,10 @@ public class ExtendedModelTemplateBuilder {
     CustomLoaderBuilder customLoader = null;
     final RootTransformsBuilder rootTransforms = new RootTransformsBuilder();
     @Nullable
-    ResourceLocation renderType = null;
+    Identifier renderType = null;
     @Nullable
     Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
-    @Nullable
-    UnbakedModel.GuiLight guiLight = null;
+    UnbakedModel.@Nullable GuiLight guiLight = null;
 
     public static ExtendedModelTemplateBuilder of(ModelTemplate template) {
         ExtendedModelTemplateBuilder builder = new ExtendedModelTemplateBuilder();
@@ -64,7 +63,7 @@ public class ExtendedModelTemplateBuilder {
     /**
      * Parent model which this template will inherit its properties from.
      */
-    public ExtendedModelTemplateBuilder parent(ResourceLocation parent) {
+    public ExtendedModelTemplateBuilder parent(Identifier parent) {
         this.parent = Optional.of(parent);
         return this;
     }
@@ -95,7 +94,7 @@ public class ExtendedModelTemplateBuilder {
      */
     public ExtendedModelTemplateBuilder renderType(String renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
-        return renderType(ResourceLocation.parse(renderType));
+        return renderType(Identifier.parse(renderType));
     }
 
     /**
@@ -106,7 +105,7 @@ public class ExtendedModelTemplateBuilder {
      * @return this builder
      * @throws NullPointerException if {@code renderType} is {@code null}
      */
-    public ExtendedModelTemplateBuilder renderType(ResourceLocation renderType) {
+    public ExtendedModelTemplateBuilder renderType(Identifier renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
         this.renderType = renderType;
         return this;

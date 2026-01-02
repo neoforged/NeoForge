@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -172,7 +172,7 @@ public class ConfigUITest {
 
             // a list of strings that are treated as resource locations for items
             BUILDER.comment("A list of items to log on common setup.").defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "minecraft:",
-                    obj -> obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.tryParse(itemName)));
+                    obj -> obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(Identifier.tryParse(itemName)));
 
             BUILDER.comment("A list of int for no reason.").defineListAllowEmpty("intlist", List.of(1, 2, 3), () -> 0,
                     v -> v != null && (Integer) v >= -1 && (Integer) v < 100);

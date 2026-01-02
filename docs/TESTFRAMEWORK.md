@@ -10,7 +10,7 @@ Tests can also be run without manual player interaction (like on a CI for exampl
 ## Creating a `TestFramework`
 A `TestFramework` can be created during mod construction using `FrameworkConfiguration$Builder`:
 ```java
-  final TestFrameworkInternal framework = FrameworkConfiguration.builder(new ResourceLocation("examplemod:tests")) // The ID of the framework. Used by logging, primarily
+  final TestFrameworkInternal framework = FrameworkConfiguration.builder(new Identifier("examplemod:tests")) // The ID of the framework. Used by logging, primarily
     .clientConfiguration(() -> ClientConfiguration.builder() // Client-side compatibility configuration. This is COMPLETLY optional, but it is recommended for ease of use.
       .toggleOverlayKey(GLFW.GLFW_KEY_J) // The key used to toggle the tests overlay
       .openManagerKey(GLFW.GLFW_KEY_N) // The key used to open the Test Manager screen

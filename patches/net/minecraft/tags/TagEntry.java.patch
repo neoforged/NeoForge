@@ -13,14 +13,17 @@
 +        return new TagEntry(this.id, this.tag, required);
 +    }
 +
-     public static TagEntry element(ResourceLocation p_215926_) {
-         return new TagEntry(p_215926_, false, true);
+     public static TagEntry element(Identifier p_468706_) {
+         return new TagEntry(p_468706_, false, true);
      }
-@@ -111,11 +_,21 @@
-         return stringbuilder.toString();
-     }
+@@ -109,6 +_,19 @@
+         }
  
-+    public ResourceLocation getId() {
+         return stringbuilder.toString();
++    }
++
++    // Neo: Used in datagen
++    public Identifier getId() {
 +        return id;
 +    }
 +
@@ -30,13 +33,6 @@
 +
 +    public boolean isTag() {
 +        return tag;
-+    }
-+
-     public interface Lookup<T> {
-         @Nullable
-         T element(ResourceLocation p_215956_, boolean p_379371_);
--
--        @Nullable
-         Collection<T> tag(ResourceLocation p_215957_);
      }
- }
+ 
+     public interface Lookup<T> {

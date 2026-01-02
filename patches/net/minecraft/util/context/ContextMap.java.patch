@@ -1,7 +1,7 @@
 --- a/net/minecraft/util/context/ContextMap.java
 +++ b/net/minecraft/util/context/ContextMap.java
 @@ -9,6 +_,9 @@
- import org.jetbrains.annotations.Contract;
+ import org.jspecify.annotations.Nullable;
  
  public class ContextMap {
 +    // Neo: Add EMPTY map for convenience.
@@ -10,7 +10,7 @@
      private final Map<ContextKey<?>, Object> params;
  
      ContextMap(Map<ContextKey<?>, Object> p_381157_) {
-@@ -73,7 +_,7 @@
+@@ -70,7 +_,7 @@
  
          public ContextMap create(ContextKeySet p_381168_) {
              Set<ContextKey<?>> set = Sets.difference(this.params.keySet(), p_381168_.allowed());

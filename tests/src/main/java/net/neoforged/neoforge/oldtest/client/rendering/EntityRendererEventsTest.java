@@ -22,8 +22,8 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,7 +46,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @EventBusSubscriber
 @Mod("entity_renderer_events_test")
 public class EntityRendererEventsTest {
-    private static final ResourceLocation MY_ENTITY = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "test_entity");
+    private static final Identifier MY_ENTITY = Identifier.fromNamespaceAndPath("entity_renderer_events_test", "test_entity");
 
     public static final DeferredHolder<EntityType<?>, EntityType<MyEntity>> MY_ENTITY_TYPE = DeferredHolder.create(Registries.ENTITY_TYPE, MY_ENTITY);
 
@@ -108,7 +108,7 @@ public class EntityRendererEventsTest {
         }
 
         private static class MyEntityRenderer extends LivingEntityRenderer<MyEntity, LivingEntityRenderState, MyEntityModel> {
-            private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "textures/entity/test_entity.png");
+            private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("entity_renderer_events_test", "textures/entity/test_entity.png");
 
             public MyEntityRenderer(EntityRendererProvider.Context context) {
                 super(context, new MyEntityModel(context.bakeLayer(MAIN_LAYER)), 1.0f);
@@ -116,7 +116,7 @@ public class EntityRendererEventsTest {
             }
 
             @Override
-            public ResourceLocation getTextureLocation(LivingEntityRenderState p_114482_) {
+            public Identifier getTextureLocation(LivingEntityRenderState p_114482_) {
                 return TEXTURE;
             }
 

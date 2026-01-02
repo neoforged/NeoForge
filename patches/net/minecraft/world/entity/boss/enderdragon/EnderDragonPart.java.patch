@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/entity/boss/enderdragon/EnderDragonPart.java
++++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragonPart.java
+@@ -14,13 +_,13 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
+-public class EnderDragonPart extends Entity {
++public class EnderDragonPart extends net.neoforged.neoforge.entity.PartEntity<EnderDragon> {
+     public final EnderDragon parentMob;
+     public final String name;
+     private final EntityDimensions size;
+ 
+     public EnderDragonPart(EnderDragon p_480121_, String p_481346_, float p_479041_, float p_479934_) {
+-        super(p_480121_.getType(), p_480121_.level());
++        super(p_480121_);
+         this.size = EntityDimensions.scalable(p_479041_, p_479934_);
+         this.refreshDimensions();
+         this.parentMob = p_480121_;

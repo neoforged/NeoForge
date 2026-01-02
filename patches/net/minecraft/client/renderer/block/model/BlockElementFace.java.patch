@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElementFace.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElementFace.java
 @@ -15,7 +_,7 @@
- import net.neoforged.api.distmarker.OnlyIn;
+ import org.jspecify.annotations.Nullable;
  
  @OnlyIn(Dist.CLIENT)
--public record BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, @Nullable BlockElementFace.UVs uvs, Quadrant rotation) {
-+public record BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, @Nullable BlockElementFace.UVs uvs, Quadrant rotation, @Nullable net.neoforged.neoforge.client.model.ExtraFaceData faceData, org.apache.commons.lang3.mutable.MutableObject<BlockElement> parent) {
+-public record BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, BlockElementFace.@Nullable UVs uvs, Quadrant rotation) {
++public record BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, BlockElementFace.@Nullable UVs uvs, Quadrant rotation, net.neoforged.neoforge.client.model.@Nullable ExtraFaceData faceData, org.apache.commons.lang3.mutable.MutableObject<BlockElement> parent) {
      public static final int NO_TINT = -1;
  
      public static float getU(BlockElementFace.UVs p_405199_, Quadrant p_404689_, int p_404785_) {
@@ -13,7 +13,7 @@
          return p_405500_.getVertexV(p_404709_.rotateVertexIndex(p_405113_)) / 16.0F;
      }
  
-+    public BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, @Nullable BlockElementFace.UVs uvs, Quadrant rotation) {
++    public BlockElementFace(@Nullable Direction cullForDirection, int tintIndex, String texture, BlockElementFace.@Nullable UVs uvs, Quadrant rotation) {
 +        this(cullForDirection, tintIndex, texture, uvs, rotation, null, new org.apache.commons.lang3.mutable.MutableObject<>());
 +    }
 +

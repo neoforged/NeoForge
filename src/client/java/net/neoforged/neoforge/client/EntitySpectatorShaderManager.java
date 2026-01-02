@@ -8,12 +8,12 @@ package net.neoforged.neoforge.client;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterEntitySpectatorShadersEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manager for entity spectator mode shaders.
@@ -21,19 +21,19 @@ import org.jetbrains.annotations.Nullable;
  * Provides a lookup.
  */
 public final class EntitySpectatorShaderManager {
-    private static Map<EntityType<?>, ResourceLocation> SHADERS;
+    private static Map<EntityType<?>, Identifier> SHADERS;
 
     /**
      * Finds the path to the spectator mode shader used for the specified entity type, or null if none is registered.
      */
     @Nullable
-    public static ResourceLocation get(EntityType<?> entityType) {
+    public static Identifier get(EntityType<?> entityType) {
         return SHADERS.get(entityType);
     }
 
     @ApiStatus.Internal
     public static void init() {
-        var shaders = new HashMap<EntityType<?>, ResourceLocation>();
+        var shaders = new HashMap<EntityType<?>, Identifier>();
         var event = new RegisterEntitySpectatorShadersEvent(shaders);
         ModLoader.postEventWrapContainerInModOrder(event);
         SHADERS = ImmutableMap.copyOf(shaders);

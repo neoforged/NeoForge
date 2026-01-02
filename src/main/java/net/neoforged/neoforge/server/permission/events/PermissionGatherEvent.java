@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.server.permission.handler.DefaultPermissionHandler;
 import net.neoforged.neoforge.server.permission.handler.IPermissionHandler;
@@ -35,17 +35,17 @@ public abstract class PermissionGatherEvent extends Event {
      * If you cache it, make sure that your PermissionHandler is actually used after this event.</p>
      */
     public static class Handler extends PermissionGatherEvent {
-        private Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = new HashMap<>();
+        private Map<Identifier, IPermissionHandlerFactory> availableHandlers = new HashMap<>();
 
         public Handler() {
             availableHandlers.put(DefaultPermissionHandler.IDENTIFIER, DefaultPermissionHandler::new);
         }
 
-        public Map<ResourceLocation, IPermissionHandlerFactory> getAvailablePermissionHandlerFactories() {
+        public Map<Identifier, IPermissionHandlerFactory> getAvailablePermissionHandlerFactories() {
             return Collections.unmodifiableMap(availableHandlers);
         }
 
-        public void addPermissionHandler(ResourceLocation identifier, IPermissionHandlerFactory handlerFactory) {
+        public void addPermissionHandler(Identifier identifier, IPermissionHandlerFactory handlerFactory) {
             Preconditions.checkNotNull(identifier, "Permission handler identifier cannot be null!");
             Preconditions.checkNotNull(handlerFactory, "Permission handler cannot be null!");
             if (this.availableHandlers.containsKey(identifier))

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -76,6 +_,16 @@
+@@ -75,6 +_,16 @@
  
      @Override
      protected void onTake(Player p_150474_, ItemStack p_150475_) {
@@ -17,7 +17,7 @@
          if (!p_150474_.hasInfiniteMaterials()) {
              p_150474_.giveExperienceLevels(-this.cost.get());
          }
-@@ -115,10 +_,30 @@
+@@ -114,10 +_,30 @@
                  p_150479_.levelEvent(1030, p_150480_, 0);
              }
          });
@@ -49,7 +49,7 @@
          ItemStack itemstack = this.inputSlots.getItem(0);
          this.onlyRenaming = false;
          this.cost.set(1);
-@@ -183,8 +_,10 @@
+@@ -182,8 +_,10 @@
                          int j2 = entry.getIntValue();
                          j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                          Enchantment enchantment = holder.value();
@@ -62,7 +62,7 @@
                              flag1 = true;
                          }
  
-@@ -309,4 +_,11 @@
+@@ -307,4 +_,11 @@
      public int getCost() {
          return this.cost.get();
      }

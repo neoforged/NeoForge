@@ -8,11 +8,11 @@ package net.neoforged.testframework.summary;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 public interface FileSummaryDumper extends SummaryDumper {
-    Path outputPath(ResourceLocation frameworkId);
+    Path outputPath(Identifier frameworkId);
 
     void write(TestSummary summary, Logger logger, PrintWriter writer) throws Exception;
 

@@ -37,8 +37,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.CompressionDecoder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -58,7 +58,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -78,7 +78,7 @@ public class LoginPacketSplitTest {
     public static final String MOD_ID = "login_packet_split_test";
     public static final boolean ENABLED = false;
     private static final Gson GSON = new Gson();
-    public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MOD_ID, "big_data"));
+    public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MOD_ID, "big_data"));
 
     public LoginPacketSplitTest(IEventBus bus) {
         bus.addListener((final DataPackRegistryEvent.NewRegistry event) -> event.dataPackRegistry(BIG_DATA, BigData.CODEC, BigData.CODEC));
@@ -118,8 +118,8 @@ public class LoginPacketSplitTest {
             final JsonObject json = new JsonObject();
             json.addProperty("text", bigData.text);
             json.addProperty("number", bigData.number);
-            pack.putData(ResourceLocation.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
-            Registry.register(dummyRegistry, ResourceLocation.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i), bigData);
+            pack.putData(Identifier.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
+            Registry.register(dummyRegistry, Identifier.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i), bigData);
         }
         stopwatch.stop();
         LOG.warn("Setting up big data registry took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " miliseconds.");
@@ -148,7 +148,7 @@ public class LoginPacketSplitTest {
     }
 
     public static final class InMemoryResourcePack implements PackResources {
-        private final Map<ResourceLocation, Supplier<byte[]>> data = new ConcurrentHashMap<>();
+        private final Map<Identifier, Supplier<byte[]>> data = new ConcurrentHashMap<>();
         private final Map<String, Supplier<byte[]>> root = new ConcurrentHashMap<>();
 
         private final PackLocationInfo info;
@@ -175,7 +175,7 @@ public class LoginPacketSplitTest {
 
         @Nullable
         @Override
-        public IoSupplier<InputStream> getResource(PackType type, ResourceLocation loc) {
+        public IoSupplier<InputStream> getResource(PackType type, Identifier loc) {
             if (type != PackType.SERVER_DATA) return null;
             return openResource(data, loc);
         }
@@ -208,7 +208,7 @@ public class LoginPacketSplitTest {
         @Override
         public Set<String> getNamespaces(PackType type) {
             return type == PackType.CLIENT_RESOURCES ? Set.of()
-                    : data.keySet().stream().map(ResourceLocation::getNamespace)
+                    : data.keySet().stream().map(Identifier::getNamespace)
                             .collect(Collectors.toUnmodifiableSet());
         }
 
@@ -242,12 +242,12 @@ public class LoginPacketSplitTest {
             root.put(path, data);
         }
 
-        public void putData(ResourceLocation path, JsonObject json) {
+        public void putData(Identifier path, JsonObject json) {
             final byte[] bytes = fromJson(json);
             putData(path, () -> bytes);
         }
 
-        public void putData(ResourceLocation path, Supplier<byte[]> data) {
+        public void putData(Identifier path, Supplier<byte[]> data) {
             this.data.put(path, data);
         }
 

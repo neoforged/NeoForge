@@ -13,14 +13,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record KnownRegistryDataMapsPayload(Map<ResourceKey<? extends Registry<?>>, List<KnownDataMap>> dataMaps) implements CustomPacketPayload {
-    public static final Type<KnownRegistryDataMapsPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("neoforge", "known_registry_data_maps"));
+    public static final Type<KnownRegistryDataMapsPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath("neoforge", "known_registry_data_maps"));
     public static final StreamCodec<FriendlyByteBuf, KnownRegistryDataMapsPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(
                     Maps::newHashMapWithExpectedSize,
@@ -34,9 +34,9 @@ public record KnownRegistryDataMapsPayload(Map<ResourceKey<? extends Registry<?>
         return TYPE;
     }
 
-    public record KnownDataMap(ResourceLocation id, boolean mandatory) {
+    public record KnownDataMap(Identifier id, boolean mandatory) {
         public static final StreamCodec<FriendlyByteBuf, KnownDataMap> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC,
+                Identifier.STREAM_CODEC,
                 KnownDataMap::id,
                 ByteBufCodecs.BOOL,
                 KnownDataMap::mandatory,

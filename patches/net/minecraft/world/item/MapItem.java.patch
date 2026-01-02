@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/item/MapItem.java
 +++ b/net/minecraft/world/item/MapItem.java
-@@ -54,6 +_,16 @@
+@@ -52,6 +_,16 @@
+     }
  
-     @Nullable
-     public static MapItemSavedData getSavedData(ItemStack p_42854_, Level p_42855_) {
+     public static @Nullable MapItemSavedData getSavedData(ItemStack p_42854_, Level p_42855_) {
 +        // Neo: Add instance method so that mods can override
 +        Item map = p_42854_.getItem();
 +        if(map instanceof MapItem) {

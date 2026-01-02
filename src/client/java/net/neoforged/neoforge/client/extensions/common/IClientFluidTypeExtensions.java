@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -25,8 +25,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link FluidType}.
@@ -75,7 +75,7 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a source fluid
      */
     // TODO: Make abstract in 1.22, implement missing on default
-    default ResourceLocation getStillTexture() {
+    default Identifier getStillTexture() {
         return MissingTextureAtlasSprite.getLocation();
     }
 
@@ -92,7 +92,7 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a flowing fluid
      */
     // TODO: Make abstract in 1.22, implement missing on default
-    default ResourceLocation getFlowingTexture() {
+    default Identifier getFlowingTexture() {
         return MissingTextureAtlasSprite.getLocation();
     }
 
@@ -110,7 +110,7 @@ public interface IClientFluidTypeExtensions {
      *         a non-opaque block
      */
     @Nullable
-    default ResourceLocation getOverlayTexture() {
+    default Identifier getOverlayTexture() {
         return null;
     }
 
@@ -123,7 +123,7 @@ public interface IClientFluidTypeExtensions {
     //  *
     //  * @return a stream of textures applied to a fluid
     //  */
-    // default Stream<ResourceLocation> getTextures()
+    // default Stream<Identifier> getTextures()
     // {
     //     return Stream.of(this.getStillTexture(), this.getFlowingTexture(), this.getOverlayTexture())
     //                  .filter(Objects::nonNull);
@@ -142,7 +142,7 @@ public interface IClientFluidTypeExtensions {
      *         within the fluid
      */
     @Nullable
-    default ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+    default Identifier getRenderOverlayTexture(Minecraft mc) {
         return null;
     }
 
@@ -154,7 +154,7 @@ public interface IClientFluidTypeExtensions {
      * @param poseStack the transformations representing the current rendering position
      */
     default void renderOverlay(Minecraft mc, PoseStack poseStack, MultiBufferSource buffers) {
-        ResourceLocation texture = this.getRenderOverlayTexture(mc);
+        Identifier texture = this.getRenderOverlayTexture(mc);
         if (texture != null)
             ScreenEffectRenderer.renderFluid(mc, poseStack, buffers, texture);
     }
@@ -206,7 +206,7 @@ public interface IClientFluidTypeExtensions {
      * @param pos    the position of the fluid
      * @return the reference of the texture to apply to a source fluid
      */
-    default ResourceLocation getStillTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
+    default Identifier getStillTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getStillTexture();
     }
 
@@ -225,7 +225,7 @@ public interface IClientFluidTypeExtensions {
      * @param pos    the position of the fluid
      * @return the reference of the texture to apply to a flowing fluid
      */
-    default ResourceLocation getFlowingTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
+    default Identifier getFlowingTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getFlowingTexture();
     }
 
@@ -245,7 +245,7 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a fluid directly touching
      *         a non-opaque block
      */
-    default ResourceLocation getOverlayTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
+    default Identifier getOverlayTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getOverlayTexture();
     }
 
@@ -292,7 +292,7 @@ public interface IClientFluidTypeExtensions {
      * @param stack the stack the fluid is in
      * @return the reference of the texture to apply to a source fluid
      */
-    default ResourceLocation getStillTexture(FluidStack stack) {
+    default Identifier getStillTexture(FluidStack stack) {
         return this.getStillTexture();
     }
 
@@ -309,7 +309,7 @@ public interface IClientFluidTypeExtensions {
      * @param stack the stack the fluid is in
      * @return the reference of the texture to apply to a flowing fluid
      */
-    default ResourceLocation getFlowingTexture(FluidStack stack) {
+    default Identifier getFlowingTexture(FluidStack stack) {
         return this.getFlowingTexture();
     }
 
@@ -327,7 +327,7 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a fluid directly touching
      *         a non-opaque block
      */
-    default ResourceLocation getOverlayTexture(FluidStack stack) {
+    default Identifier getOverlayTexture(FluidStack stack) {
         return this.getOverlayTexture();
     }
 

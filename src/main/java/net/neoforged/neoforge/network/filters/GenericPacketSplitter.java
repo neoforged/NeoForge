@@ -193,7 +193,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         temporaryBuf.writeByte(0);
 
         //Then write the payload id, as does the custom payload packet, regardless of flow.
-        temporaryBuf.writeResourceLocation(SplitPacketPayload.TYPE.id());
+        temporaryBuf.writeIdentifier(SplitPacketPayload.TYPE.id());
 
         //Then write the byte prefix to indicate the state of the packet.
         temporaryBuf.writeByte(STATE_FIRST);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LightTexture.java
 +++ b/net/minecraft/client/renderer/LightTexture.java
-@@ -205,4 +_,20 @@
+@@ -187,4 +_,20 @@
              return pack(j, i);
          }
      }

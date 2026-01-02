@@ -16,7 +16,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -30,7 +30,7 @@ import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link Item}.
@@ -70,8 +70,7 @@ public interface IClientItemExtensions {
      * @param itemStack    The stack being held
      * @return A custom ArmPose that can be used to define movement of the arm
      */
-    @Nullable
-    default HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
+    default HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
         return null;
     }
 
@@ -230,7 +229,7 @@ public interface IClientItemExtensions {
      * @return Path of texture to bind, or null to use default
      */
     @Nullable
-    default ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
+    default Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier _default) {
         return null;
     }
 
@@ -240,7 +239,7 @@ public interface IClientItemExtensions {
      * @param stack The scoping item stack
      * @return The texture to use for scoping
      */
-    default ResourceLocation getScopeOverlayTexture(ItemStack stack) {
+    default Identifier getScopeOverlayTexture(ItemStack stack) {
         return Gui.SPYGLASS_SCOPE_LOCATION;
     }
 

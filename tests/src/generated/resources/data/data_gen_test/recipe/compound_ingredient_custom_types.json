@@ -44,6 +44,7 @@
             "minecraft:repairable": {
               "items": "#minecraft:stone_tool_materials"
             },
+            "minecraft:swing_animation": {},
             "minecraft:tool": {
               "rules": [
                 {
@@ -58,6 +59,7 @@
               ]
             },
             "minecraft:tooltip_display": {},
+            "minecraft:use_effects": {},
             "minecraft:weapon": {
               "item_damage_per_attack": 2
             }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/SmallFireball.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/SmallFireball.java
+@@ -51,7 +_,7 @@
+         super.onHitBlock(p_479052_);
+         if (this.level() instanceof ServerLevel serverlevel) {
+             Entity entity = this.getOwner();
+-            if (!(entity instanceof Mob) || serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
++            if (!(entity instanceof Mob) || net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, entity)) {
+                 BlockPos blockpos = p_479052_.getBlockPos().relative(p_479052_.getDirection());
+                 if (this.level().isEmptyBlock(blockpos)) {
+                     this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));

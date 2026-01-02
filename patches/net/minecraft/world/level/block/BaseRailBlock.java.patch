@@ -41,7 +41,7 @@
      }
  
 +    /**
-+     * @deprecated Forge: Use {@link BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.AbstractMinecart)} for enhanced ability
++     * @deprecated Forge: Use {@link BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.minecart.AbstractMinecart)} for enhanced ability
 +     * If you do change this property be aware that other functions in this/subclasses may break as they can make assumptions about this property
 +     */
 +    @Deprecated
@@ -60,7 +60,7 @@
 +    }
 +
 +    @Override
-+    public RailShape getRailDirection(BlockState state, BlockGetter world, BlockPos pos, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.vehicle.AbstractMinecart cart) {
++    public RailShape getRailDirection(BlockState state, BlockGetter world, BlockPos pos, net.minecraft.world.entity.vehicle.minecart.@Nullable AbstractMinecart cart) {
 +         return state.getValue(getShapeProperty());
      }
  }

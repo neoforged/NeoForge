@@ -16,7 +16,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.common.NeoForgeVersion;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class BrandingControl {
     public static final String BRANDING_NAME = "NeoForge";

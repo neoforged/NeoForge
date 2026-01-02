@@ -8,7 +8,7 @@ package net.neoforged.neoforge.internal;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class NeoForgeVersionCheck {
     public static VersionChecker.Status getStatus() {

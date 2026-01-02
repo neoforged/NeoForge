@@ -1,23 +1,22 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -97,6 +_,8 @@
-     @Nullable
-     private ManagementServer jsonRpcServer;
+@@ -93,6 +_,7 @@
+     private final Map<String, String> codeOfConductTexts;
+     private @Nullable ManagementServer jsonRpcServer;
      private long lastHeartbeat;
-+    @Nullable
-+    private net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger dediLanPinger;
++    private net.neoforged.neoforge.server.dedicated.@Nullable DedicatedLanServerPinger dediLanPinger;
  
      public DedicatedServer(
          Thread p_214789_,
-@@ -194,6 +_,7 @@
+@@ -191,6 +_,7 @@
          Thread thread1 = new Thread("Server console handler") {
              @Override
              public void run() {
 +                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
                  BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
-                 String s3;
-@@ -267,11 +_,13 @@
+                 String s4;
+@@ -264,11 +_,13 @@
              this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
              long j = Util.getNanos();
              this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
@@ -25,13 +24,13 @@
              LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
              this.loadLevel();
              long k = Util.getNanos() - j;
-             String s2 = String.format(Locale.ROOT, "%.3fs", k / 1.0E9);
-             LOGGER.info("Done ({})! For help, type \"help\"", s2);
+             String s3 = String.format(Locale.ROOT, "%.3fs", k / 1.0E9);
+             LOGGER.info("Done ({})! For help, type \"help\"", s3);
 +            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spamming during long load.
              if (dedicatedserverproperties.announcePlayerAchievements != null) {
-                 this.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(dedicatedserverproperties.announcePlayerAchievements, this);
+                 this.worldData.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, dedicatedserverproperties.announcePlayerAchievements, this);
              }
-@@ -300,6 +_,12 @@
+@@ -297,6 +_,12 @@
              }
  
              this.notificationManager().serverStarted();
@@ -44,7 +43,7 @@
              return true;
          }
      }
-@@ -434,6 +_,11 @@
+@@ -431,6 +_,11 @@
              this.queryThreadGs4.stop();
          }
  
@@ -56,7 +55,7 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -728,7 +_,12 @@
+@@ -720,7 +_,12 @@
      @Override
      public void stopServer() {
          this.notificationManager().serverShuttingDown();

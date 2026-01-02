@@ -3,18 +3,18 @@
 @@ -61,7 +_,8 @@
      private CompletableFuture<?> run(CachedOutput p_324447_, HolderLookup.Provider p_323978_) {
          WritableRegistry<LootTable> writableregistry = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
-         Map<RandomSupport.Seed128bit, ResourceLocation> map = new Object2ObjectOpenHashMap<>();
--        this.subProviders.forEach(p_344197_ -> p_344197_.provider().apply(p_323978_).generate((p_380827_, p_380828_) -> {
+         Map<RandomSupport.Seed128bit, Identifier> map = new Object2ObjectOpenHashMap<>();
+-        this.subProviders.forEach(p_344197_ -> p_344197_.provider().apply(p_323978_).generate((p_466036_, p_466037_) -> {
 +        Map<LootTable, List<net.neoforged.neoforge.common.conditions.ICondition>> conditionsPerTable = new java.util.IdentityHashMap<>();
-+        getTables().forEach(p_344197_ -> p_344197_.provider().apply(p_323978_).generate((p_380827_, p_380828_) -> {
-             ResourceLocation resourcelocation = sequenceIdForLootTable(p_380827_);
-             ResourceLocation resourcelocation1 = map.put(RandomSequence.seedForKey(resourcelocation), resourcelocation);
-             if (resourcelocation1 != null) {
++        getTables().forEach(p_344197_ -> p_344197_.provider().apply(p_323978_).generate((p_466036_, p_466037_) -> {
+             Identifier identifier = sequenceIdForLootTable(p_466036_);
+             Identifier identifier1 = map.put(RandomSequence.seedForKey(identifier), identifier);
+             if (identifier1 != null) {
 @@ -71,24 +_,18 @@
-             p_380828_.setRandomSequence(resourcelocation);
-             LootTable loottable = p_380828_.setParamSet(p_344197_.paramSet).build();
-             writableregistry.register(p_380827_, loottable, RegistrationInfo.BUILT_IN);
-+            var conditions = p_380828_.buildConditions();
+             p_466037_.setRandomSequence(identifier);
+             LootTable loottable = p_466037_.setParamSet(p_344197_.paramSet).build();
+             writableregistry.register(p_466036_, loottable, RegistrationInfo.BUILT_IN);
++            var conditions = p_466037_.buildConditions();
 +            if (!conditions.isEmpty()) {
 +                conditionsPerTable.put(loottable, conditions);
 +            }
@@ -41,9 +41,9 @@
              problemreporter$collector.forEach((p_421299_, p_421300_) -> LOGGER.warn("Found validation problem in {}: {}", p_421299_, p_421300_.description()));
              throw new IllegalStateException("Failed to validate loot tables, see logs");
 @@ -97,9 +_,29 @@
-                 ResourceKey<LootTable> resourcekey1 = p_335193_.getKey();
-                 LootTable loottable = p_335193_.getValue();
-                 Path path = this.pathProvider.json(resourcekey1.location());
+                 ResourceKey<LootTable> resourcekey1 = p_466040_.getKey();
+                 LootTable loottable = p_466040_.getValue();
+                 Path path = this.pathProvider.json(resourcekey1.identifier());
 -                return DataProvider.saveStable(p_324447_, p_323978_, LootTable.DIRECT_CODEC, loottable, path);
 +                var conditional = new net.neoforged.neoforge.common.conditions.WithConditions<>(conditionsPerTable.getOrDefault(loottable, List.of()), loottable);
 +                return DataProvider.saveStable(p_324447_, p_323978_, LootTable.CONDITIONAL_DIRECT_CODEC, java.util.Optional.of(conditional), path);
@@ -70,4 +70,4 @@
 +                );
      }
  
-     private static ResourceLocation sequenceIdForLootTable(ResourceKey<LootTable> p_336172_) {
+     private static Identifier sequenceIdForLootTable(ResourceKey<LootTable> p_336172_) {

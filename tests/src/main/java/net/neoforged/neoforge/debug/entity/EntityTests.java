@@ -14,7 +14,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -164,7 +164,7 @@ public class EntityTests {
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {
-        private static final CustomPacketPayload.Type<CustomSyncPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath("test", "custom_sync_payload"));
+        private static final CustomPacketPayload.Type<CustomSyncPayload> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("test", "custom_sync_payload"));
         private static final StreamCodec<FriendlyByteBuf, CustomSyncPayload> STREAM_CODEC = StreamCodec.unit(new EntityTests.CustomSyncPayload());
 
         @Override

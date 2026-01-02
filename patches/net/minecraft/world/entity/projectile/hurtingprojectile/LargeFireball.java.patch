@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/LargeFireball.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/LargeFireball.java
+@@ -31,7 +_,8 @@
+     protected void onHit(HitResult p_479612_) {
+         super.onHit(p_479612_);
+         if (this.level() instanceof ServerLevel serverlevel) {
+-            boolean flag = serverlevel.getGameRules().get(GameRules.MOB_GRIEFING);
++            // TODO 1.19.3: The creation of Level.ExplosionInteraction means this code path will fire EntityMobGriefingEvent twice. Should we try and fix it? -SS
++            boolean flag = net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, this.getOwner());
+             this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.explosionPower, flag, Level.ExplosionInteraction.MOB);
+             this.discard();
+         }

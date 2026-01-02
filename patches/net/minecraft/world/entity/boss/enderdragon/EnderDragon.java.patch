@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -103,6 +_,14 @@
+@@ -100,6 +_,14 @@
          this.setHealth(this.getMaxHealth());
          this.noPhysics = true;
          this.phaseManager = new EnderDragonPhaseManager(this);
@@ -15,12 +15,11 @@
      }
  
      public void setDragonFight(EndDragonFight p_287736_) {
-@@ -151,8 +_,20 @@
+@@ -148,8 +_,19 @@
          p_326491_.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());
      }
  
-+    @org.jetbrains.annotations.Nullable
-+    private net.minecraft.world.entity.EntityReference<Player> unlimitedLastHurtByPlayer = null;
++    private net.minecraft.world.entity.@Nullable EntityReference<Player> unlimitedLastHurtByPlayer = null;
 +
      @Override
      public void aiStep() {
@@ -36,36 +35,36 @@
          this.processFlappingMovement();
          if (this.level().isClientSide()) {
              this.setHealth(this.getHealth());
-@@ -441,7 +_,7 @@
+@@ -438,7 +_,7 @@
                      BlockPos blockpos = new BlockPos(k1, l1, i2);
                      BlockState blockstate = p_376795_.getBlockState(blockpos);
                      if (!blockstate.isAir() && !blockstate.is(BlockTags.DRAGON_TRANSPARENT)) {
--                        if (p_376795_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
+-                        if (p_376795_.getGameRules().get(GameRules.MOB_GRIEFING) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
 +                        if (net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(p_376795_, blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
                              flag1 = p_376795_.removeBlock(blockpos, false) || flag1;
                          } else {
                              flag = true;
-@@ -533,7 +_,8 @@
+@@ -530,7 +_,8 @@
  
          if (this.level() instanceof ServerLevel serverlevel) {
-             if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && serverlevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+             if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && serverlevel.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(serverlevel, this.position(), Mth.floor(i * 0.08F));
 +                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, serverlevel, Player.class), Mth.floor((float)i * 0.08F));
 +                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -551,7 +_,8 @@
+@@ -548,7 +_,8 @@
  
          if (this.dragonDeathTime == 200 && this.level() instanceof ServerLevel serverlevel1) {
-             if (serverlevel1.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+             if (serverlevel1.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(serverlevel1, this.position(), Mth.floor(i * 0.2F));
 +                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, serverlevel1, Player.class), Mth.floor((float)i * 0.2F));
 +                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
              }
  
              if (this.dragonFight != null) {
-@@ -857,8 +_,19 @@
+@@ -852,8 +_,19 @@
      }
  
      @Override

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -197,4 +_,45 @@
+@@ -196,4 +_,44 @@
  
          return false;
      }
@@ -29,8 +29,7 @@
 +    /**
 +     * {@return the dispense behavior to register by default}
 +     */
-+    @Nullable
-+    protected net.minecraft.core.dispenser.DispenseItemBehavior createDispenseBehavior() {
++    protected net.minecraft.core.dispenser.@Nullable DispenseItemBehavior createDispenseBehavior() {
 +        return DEFAULT_DISPENSE_BEHAVIOR;
 +    }
 +

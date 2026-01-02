@@ -7,7 +7,7 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.Locale;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -386,6 +386,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");
         add(Tags.Items.TOOLS, "Tools");
         add(Tags.Items.ARMORS, "Armors");
+        add(Tags.Items.ARMORS_HUMANOID, "Humanoid Armors");
+        add(Tags.Items.ARMORS_HORSE, "Horse Armors");
+        add(Tags.Items.ARMORS_NAUTILUS, "Nautilus Armors");
+        add(Tags.Items.ARMORS_WOLF, "Wolf Armors");
         add(Tags.Items.ENCHANTABLES, "Enchantables");
 
         // Fluids
@@ -529,7 +533,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         for (DyeColor color : DyeColor.values()) {
             TagKey<T> coloredTag = TagKey.create(
                     baseTagKey.registry(),
-                    ResourceLocation.fromNamespaceAndPath(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
+                    Identifier.fromNamespaceAndPath(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
 
             add(coloredTag, pattern.replace("{color}", StringUtils.capitalize(color.getName())));
         }

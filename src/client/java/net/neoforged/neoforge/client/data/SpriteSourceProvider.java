@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
@@ -36,7 +36,7 @@ public abstract class SpriteSourceProvider extends JsonCodecProvider<List<Option
             .fieldOf("sources")
             .codec();
 
-    private final Map<ResourceLocation, SourceList> atlases = new HashMap<>();
+    private final Map<Identifier, SourceList> atlases = new HashMap<>();
 
     public SpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
         super(output, PackOutput.Target.RESOURCE_PACK, "atlases", CODEC, lookupProvider, modId);
@@ -49,7 +49,7 @@ public abstract class SpriteSourceProvider extends JsonCodecProvider<List<Option
      *           and the vanilla atlases
      * @return an existing {@code SourceList} for the given atlas or a new one if not present yet
      */
-    protected final SourceList atlas(ResourceLocation id) {
+    protected final SourceList atlas(Identifier id) {
         return atlases.computeIfAbsent(id, i -> {
             SourceList newAtlas = new SourceList();
             unconditional(i, newAtlas.sources);

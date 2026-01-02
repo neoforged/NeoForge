@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
-@@ -120,9 +_,17 @@
+@@ -118,9 +_,17 @@
  
      @Override
      public void setItem(int p_332705_, ItemStack p_332643_) {

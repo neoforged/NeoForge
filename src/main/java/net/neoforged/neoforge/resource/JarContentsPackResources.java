@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import net.minecraft.FileUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.CompositePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -21,9 +20,10 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.util.FileUtil;
 import net.neoforged.fml.jarcontents.JarContents;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -43,7 +43,7 @@ public class JarContentsPackResources extends AbstractPackResources {
         this.prefix = prefix;
     }
 
-    private static String getPathFromLocation(PackType packType, ResourceLocation location) {
+    private static String getPathFromLocation(PackType packType, Identifier location) {
         return String.format(Locale.ROOT, "%s/%s/%s", packType.getDirectory(), location.getNamespace(), location.getPath());
     }
 
@@ -54,7 +54,7 @@ public class JarContentsPackResources extends AbstractPackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getResource(PackType packType, ResourceLocation location) {
+    public IoSupplier<InputStream> getResource(PackType packType, Identifier location) {
         return this.getResource(getPathFromLocation(packType, location));
     }
 
@@ -86,7 +86,7 @@ public class JarContentsPackResources extends AbstractPackResources {
             }
             var namespace = relativePath.substring(i, j);
 
-            if (ResourceLocation.isValidNamespace(namespace)) {
+            if (Identifier.isValidNamespace(namespace)) {
                 namespaces.add(namespace);
             } else {
                 LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", namespace, contents);
@@ -108,7 +108,7 @@ public class JarContentsPackResources extends AbstractPackResources {
 
         contents.visitContent(s1, (relativePath, resource) -> {
             String s3 = relativePath.substring(s.length());
-            ResourceLocation resourcelocation = ResourceLocation.tryBuild(namespace, s3);
+            Identifier resourcelocation = Identifier.tryBuild(namespace, s3);
             if (resourcelocation != null) {
                 output.accept(resourcelocation, resource.retain()::open);
             } else {

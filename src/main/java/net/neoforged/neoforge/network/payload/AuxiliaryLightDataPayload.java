@@ -12,7 +12,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record AuxiliaryLightDataPayload(ChunkPos pos, Map<BlockPos, Byte> entries) implements CustomPacketPayload {
-    public static final Type<AuxiliaryLightDataPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "auxiliary_light_data"));
+    public static final Type<AuxiliaryLightDataPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "auxiliary_light_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AuxiliaryLightDataPayload> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.CHUNK_POS,
             AuxiliaryLightDataPayload::pos,

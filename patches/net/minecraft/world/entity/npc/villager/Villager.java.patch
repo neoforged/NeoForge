@@ -1,0 +1,36 @@
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -324,7 +_,7 @@
+     @Override
+     public InteractionResult mobInteract(Player p_480051_, InteractionHand p_478071_) {
+         ItemStack itemstack = p_480051_.getItemInHand(p_478071_);
+-        if (itemstack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping()) {
++        if (itemstack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping() || p_480051_.isSecondaryUseActive()) {
+             return super.mobInteract(p_480051_, p_478071_);
+         } else if (this.isBaby()) {
+             this.setUnhappy();
+@@ -771,10 +_,11 @@
+ 
+     @Override
+     public void thunderHit(ServerLevel p_480886_, LightningBolt p_478420_) {
+-        if (p_480886_.getDifficulty() != Difficulty.PEACEFUL) {
++        if (p_480886_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
+             LOGGER.info("Villager {} was struck by lightning {}.", this, p_478420_);
+             Witch witch = this.convertTo(EntityType.WITCH, ConversionParams.single(this, false, false), p_481535_ -> {
+                 p_481535_.finalizeSpawn(p_480886_, p_480886_.getCurrentDifficultyAt(p_481535_.blockPosition()), EntitySpawnReason.CONVERSION, null);
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_481535_);
+                 p_481535_.setPersistenceRequired();
+                 this.releaseAllPois();
+             });
+@@ -794,7 +_,10 @@
+     @Override
+     public boolean wantsToPickUp(ServerLevel p_479148_, ItemStack p_478154_) {
+         Item item = p_478154_.getItem();
+-        return (p_478154_.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().profession().value().requestedItems().contains(item))
++        // Neo: Allow Farmer Villagers to pick up SpecialPlantable items.
++        boolean isFarmerDesiredSeed = (p_478154_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this))
++                && this.getVillagerData().profession().value().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
++        return (p_478154_.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().profession().value().requestedItems().contains(item) || isFarmerDesiredSeed)
+             && this.getInventory().canAddItem(p_478154_);
+     }
+ 

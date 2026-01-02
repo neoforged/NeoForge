@@ -16,7 +16,7 @@
          @Override
          public RenderType renderType(Font.DisplayMode p_440152_) {
              return this.glyph.renderTypes.select(p_440152_);
-@@ -270,6 +_,15 @@
+@@ -275,6 +_,15 @@
              this.glyph.renderChar(this, p_439203_, p_440403_, p_439729_, p_439133_);
          }
  

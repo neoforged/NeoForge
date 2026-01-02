@@ -144,6 +144,7 @@ public abstract class RunProductionClient extends JavaExec {
 
             spec.environment(getEnvironment());
             applyVersionManifest(installDir, versionId, placeholders, librariesDir, spec);
+            spec.args("--offlineDeveloperMode"); // Suppress complaints about the invalid access token
         });
     }
 

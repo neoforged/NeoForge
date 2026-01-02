@@ -9,13 +9,13 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.UUID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 @Mod(ChunkWatchEventTest.MODID)
@@ -59,7 +59,7 @@ public class ChunkWatchEventTest {
     }
 
     @Nullable
-    private static ResourceLocation getDimensionName(Level w) {
-        return w.dimension().location();
+    private static Identifier getDimensionName(Level w) {
+        return w.dimension().identifier();
     }
 }

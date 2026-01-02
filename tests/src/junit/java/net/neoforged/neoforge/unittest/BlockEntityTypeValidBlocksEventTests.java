@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.unittest;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
@@ -30,7 +30,7 @@ public class BlockEntityTypeValidBlocksEventTests {
 
     @Test
     void testAddingNewSignToBlockEntityValueBlocksField() {
-        Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.getValue(ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
+        Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
                 "Adding modded Sign to Signs Block Entity Type's valid blocks should had succeeded.");
 
         Assertions.assertTrue(wasArgumentExceptionThrownForInvalidBlockClass,

@@ -1,16 +1,16 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -53,6 +_,9 @@
-     @Nullable
-     protected ChatComponent.State chatState;
+@@ -51,6 +_,9 @@
+     private @Nullable KnownPacksManager knownPacks;
+     protected ChatComponent.@Nullable State chatState;
      private boolean seenCodeOfConduct;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.OTHER;
 +    private boolean initializedConnection = false;
-+    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
++    private java.util.Map<net.minecraft.resources.Identifier, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -92,6 +_,11 @@
+@@ -90,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
@@ -22,7 +22,7 @@
      }
  
      @Override
-@@ -155,7 +_,7 @@
+@@ -153,7 +_,7 @@
          );
          this.connection
              .setupInboundProtocol(
@@ -31,7 +31,7 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -173,14 +_,22 @@
+@@ -171,14 +_,22 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -56,7 +56,7 @@
                      @Override
                      public boolean hasInfiniteMaterials() {
                          return true;
-@@ -198,6 +_,53 @@
+@@ -196,6 +_,53 @@
      public void onDisconnect(DisconnectionDetails p_351005_) {
          super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();

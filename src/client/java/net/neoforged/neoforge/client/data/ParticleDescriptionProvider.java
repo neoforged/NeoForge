@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-import net.minecraft.Util;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -41,10 +41,10 @@ import org.jetbrains.annotations.VisibleForTesting;
  * @Override
  * protected void addDescriptions() {
  *     // Single sprite
- *     this.sprite(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
+ *     this.sprite(ParticleTypes.DRIPPING_LAVA, Identifier.withDefaultNamespace("drip_hang"));
  *
  *     // Multiple sprites
- *     this.spriteSet(ParticleTypes.CLOUD, ResourceLocation.withDefaultNamespace("generic"), 8, true);
+ *     this.spriteSet(ParticleTypes.CLOUD, Identifier.withDefaultNamespace("generic"), 8, true);
  * }
  * }</pre>
  *
@@ -65,7 +65,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 public abstract class ParticleDescriptionProvider implements DataProvider {
     private final PackOutput.PathProvider particlesPath;
     @VisibleForTesting
-    protected final Map<ResourceLocation, List<String>> descriptions;
+    protected final Map<Identifier, List<String>> descriptions;
 
     /**
      * Creates an instance of the data provider.
@@ -108,7 +108,7 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse) {
+    protected void spriteSet(ParticleType<?> type, Identifier baseName, int numOfTextures, boolean reverse) {
         Preconditions.checkArgument(numOfTextures > 0, "The number of textures to generate must be positive");
         this.spriteSet(type, () -> new Iterator<>() {
             private int counter = 0;
@@ -119,7 +119,7 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
             }
 
             @Override
-            public ResourceLocation next() {
+            public Identifier next() {
                 var texture = baseName.withSuffix("_" + (reverse ? numOfTextures - this.counter - 1 : this.counter));
                 this.counter++;
                 return texture;
@@ -145,7 +145,7 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation texture, ResourceLocation... textures) {
+    protected void spriteSet(ParticleType<?> type, Identifier texture, Identifier... textures) {
         this.spriteSet(type, Stream.concat(Stream.of(texture), Arrays.stream(textures))::iterator);
     }
 
@@ -165,7 +165,7 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  does not have an associated PNG file, or
      *                                  the particle type has already been provided
      */
-    protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures) {
+    protected void spriteSet(ParticleType<?> type, Iterable<Identifier> textures) {
         // Make sure particle type is registered
         var particle = Preconditions.checkNotNull(BuiltInRegistries.PARTICLE_TYPE.getKey(type), "The particle type is not registered");
 

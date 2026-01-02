@@ -9,7 +9,7 @@
  
      MobSpawnSettings(
          float p_196689_, Map<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> p_196690_, Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> p_196691_
-@@ -53,15 +_,25 @@
+@@ -53,14 +_,24 @@
          this.creatureGenerationProbability = p_196689_;
          this.spawners = ImmutableMap.copyOf(p_196690_);
          this.mobSpawnCosts = ImmutableMap.copyOf(p_196691_);
@@ -25,8 +25,7 @@
 +         return this.typesView;
 +    }
 +
-     @Nullable
-     public MobSpawnSettings.MobSpawnCost getMobSpawnCost(EntityType<?> p_48346_) {
+     public MobSpawnSettings.@Nullable MobSpawnCost getMobSpawnCost(EntityType<?> p_48346_) {
          return this.mobSpawnCosts.get(p_48346_);
 +    }
 +

@@ -11,7 +11,7 @@
 +         * @param key  the object to get the value for
 +         * @param <A>  the data type
 +         */
-+        @org.jetbrains.annotations.Nullable
++        @org.jspecify.annotations.Nullable
 +        default <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type, ResourceKey<T> key) {
 +            return null;
 +        }
@@ -26,7 +26,7 @@
 +            }
 +
 +            @Override
-+            @org.jetbrains.annotations.Nullable
++            @org.jspecify.annotations.Nullable
 +            default <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> attachment, ResourceKey<T> key) {
 +                return parent().getData(attachment, key);
              }

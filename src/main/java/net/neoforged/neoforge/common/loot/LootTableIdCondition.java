@@ -7,7 +7,7 @@ package net.neoforged.neoforge.common.loot;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -16,14 +16,14 @@ public class LootTableIdCondition implements LootItemCondition {
     public static final MapCodec<LootTableIdCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            ResourceLocation.CODEC.fieldOf("loot_table_id").forGetter(idCondition -> idCondition.targetLootTableId))
+                            Identifier.CODEC.fieldOf("loot_table_id").forGetter(idCondition -> idCondition.targetLootTableId))
                     .apply(builder, LootTableIdCondition::new));
     public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(CODEC);
-    public static final ResourceLocation UNKNOWN_LOOT_TABLE = ResourceLocation.fromNamespaceAndPath("neoforge", "unknown_loot_table");
+    public static final Identifier UNKNOWN_LOOT_TABLE = Identifier.fromNamespaceAndPath("neoforge", "unknown_loot_table");
 
-    private final ResourceLocation targetLootTableId;
+    private final Identifier targetLootTableId;
 
-    private LootTableIdCondition(final ResourceLocation targetLootTableId) {
+    private LootTableIdCondition(final Identifier targetLootTableId) {
         this.targetLootTableId = targetLootTableId;
     }
 
@@ -37,14 +37,14 @@ public class LootTableIdCondition implements LootItemCondition {
         return lootContext.getQueriedLootTableId().equals(this.targetLootTableId);
     }
 
-    public static Builder builder(final ResourceLocation targetLootTableId) {
+    public static Builder builder(final Identifier targetLootTableId) {
         return new Builder(targetLootTableId);
     }
 
     public static class Builder implements LootItemCondition.Builder {
-        private final ResourceLocation targetLootTableId;
+        private final Identifier targetLootTableId;
 
-        public Builder(ResourceLocation targetLootTableId) {
+        public Builder(Identifier targetLootTableId) {
             if (targetLootTableId == null) throw new IllegalArgumentException("Target loot table must not be null");
             this.targetLootTableId = targetLootTableId;
         }

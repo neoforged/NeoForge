@@ -19,8 +19,8 @@ import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -36,7 +36,7 @@ import net.neoforged.neoforge.client.stencil.StencilFunction;
 import net.neoforged.neoforge.client.stencil.StencilOperation;
 import net.neoforged.neoforge.client.stencil.StencilPerFaceTest;
 import net.neoforged.neoforge.client.stencil.StencilTest;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Basic test that uses the stencil buffer.
@@ -60,8 +60,8 @@ public class StencilEnableTest {
 
     private static final State ENABLED = State.ENABLE_REGISTRATION;
 
-    private static final ResourceKey<PipelineModifier> STENCIL_FILL_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stencil_fill"));
-    private static final ResourceKey<PipelineModifier> STENCIL_APPLY_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stencil_apply"));
+    private static final ResourceKey<PipelineModifier> STENCIL_FILL_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, Identifier.fromNamespaceAndPath(MOD_ID, "stencil_fill"));
+    private static final ResourceKey<PipelineModifier> STENCIL_APPLY_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, Identifier.fromNamespaceAndPath(MOD_ID, "stencil_apply"));
 
     public StencilEnableTest(IEventBus modEventBus) {
         if (ENABLED == State.DISABLE) {
@@ -107,7 +107,7 @@ public class StencilEnableTest {
                 return;
             }
             event.registerAboveAll(
-                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "block_outline"),
+                    Identifier.fromNamespaceAndPath(MOD_ID, "block_outline"),
                     (guiGraphics, delta) -> {
                         ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
 

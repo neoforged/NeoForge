@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.bus.api.Event;
@@ -21,13 +19,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Groupable;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The base interface for tests in the TestFramework.
  */
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public interface Test extends Groupable {
     /**
      * {@return the ID of this test}
@@ -109,8 +106,7 @@ public interface Test extends Groupable {
     /**
      * A group of collectors by bus.
      */
-    @ParametersAreNonnullByDefault
-    @MethodsReturnNonnullByDefault
+    @NullMarked
     interface EventListenerGroup {
         /**
          * {@return the listener collector for the {@link ModContainer#getEventBus() mod event bus}}
@@ -125,8 +121,7 @@ public interface Test extends Groupable {
         /**
          * A collector of event listeners which automatically unregisters listeners when a test is disabled.
          */
-        @ParametersAreNonnullByDefault
-        @MethodsReturnNonnullByDefault
+        @NullMarked
         interface EventListenerCollector {
             /**
              * Register an instance object or a {@linkplain Class}, and add listeners for all {@link SubscribeEvent} annotated methods

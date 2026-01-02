@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentGetter.java
 +++ b/net/minecraft/core/component/DataComponentGetter.java
-@@ -16,4 +_,22 @@
+@@ -14,4 +_,22 @@
          T t = this.get(p_397753_);
          return t != null ? new TypedDataComponent<>(p_397753_, t) : null;
      }

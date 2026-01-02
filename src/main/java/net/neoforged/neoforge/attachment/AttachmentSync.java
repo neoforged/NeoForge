@@ -15,8 +15,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -35,7 +35,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeMod.MOD_ID)
@@ -51,13 +51,13 @@ public final class AttachmentSync {
      */
     public static final Registry<AttachmentType<?>> SYNCED_ATTACHMENT_TYPES = new RegistryBuilder<>(
             ResourceKey.<AttachmentType<?>>createRegistryKey(
-                    ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "synced_attachment_types")))
+                    Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "synced_attachment_types")))
                             .sync(true)
                             .callback((AddCallback<AttachmentType<?>>) (registry, id, key, value) -> {
                                 // Sanity check to ensure that no entries are added to this registry by accident
-                                if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsKey(key.location())
+                                if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsKey(key.identifier())
                                         || !NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(value)
-                                        || NeoForgeRegistries.ATTACHMENT_TYPES.getValue(key.location()) != value) {
+                                        || NeoForgeRegistries.ATTACHMENT_TYPES.getValue(key.identifier()) != value) {
                                     throw new IllegalStateException("Cannot add entries to the SYNCED_ATTACHMENT_TYPES registry directly.");
                                 }
                             })
@@ -65,7 +65,7 @@ public final class AttachmentSync {
 
     public static final AddCallback<AttachmentType<?>> ATTACHMENT_TYPE_ADD_CALLBACK = (registry, id, key, value) -> {
         if (value.syncHandler != null) {
-            Registry.register(SYNCED_ATTACHMENT_TYPES, key.location(), value);
+            Registry.register(SYNCED_ATTACHMENT_TYPES, key.identifier(), value);
         }
     };
 

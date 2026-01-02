@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElement.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElement.java
-@@ -22,12 +_,20 @@
+@@ -21,12 +_,20 @@
  
  @OnlyIn(Dist.CLIENT)
  public record BlockElement(
@@ -22,7 +22,7 @@
      public BlockElement(Vector3fc p_405527_, Vector3fc p_405454_, Map<Direction, BlockElementFace> p_362722_) {
          this(p_405527_, p_405454_, p_362722_, null, true, 0);
      }
-@@ -59,7 +_,8 @@
+@@ -71,7 +_,8 @@
                      }
                  }
  

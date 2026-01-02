@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
-@@ -122,7 +_,6 @@
+@@ -121,7 +_,6 @@
  
      @Override
      public void setTarget(@Nullable LivingEntity p_32537_) {
@@ -8,7 +8,7 @@
          AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
          if (p_32537_ == null) {
              this.targetChangeTime = 0;
-@@ -136,6 +_,7 @@
+@@ -135,6 +_,7 @@
                  attributeinstance.addTransientModifier(SPEED_MODIFIER_ATTACKING);
              }
          }
@@ -16,20 +16,16 @@
      }
  
      @Override
-@@ -209,9 +_,10 @@
+@@ -207,7 +_,7 @@
      }
  
      boolean isBeingStaredBy(Player p_380267_) {
--        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(p_380267_)
-+        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(p_380267_, this)
-             ? false
--            : this.isLookingAtMe(p_380267_, 0.025, true, false, new double[]{this.getEyeY()});
-+            : this.isLookingAtMe(p_380267_, 0.025, true, false, new double[]{this.getEyeY()}) &&
-+                !net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, p_380267_);
+-        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(p_380267_) ? false : this.isLookingAtMe(p_380267_, 0.025, true, false, this.getEyeY());
++        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(p_380267_, this) ? false : this.isLookingAtMe(p_380267_, 0.025, true, false, this.getEyeY()) && !net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, p_380267_);
      }
  
      @Override
-@@ -289,8 +_,10 @@
+@@ -285,8 +_,10 @@
          boolean flag = blockstate.blocksMotion();
          boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
          if (flag && !flag1) {
@@ -41,16 +37,16 @@
              if (flag2) {
                  this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                  if (!this.isSilent()) {
-@@ -449,7 +_,7 @@
+@@ -443,7 +_,7 @@
              if (this.enderman.getCarriedBlock() == null) {
                  return false;
              } else {
--                return !getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+-                return !getServerLevel(this.enderman).getGameRules().get(GameRules.MOB_GRIEFING)
 +                return !net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.enderman.level()), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
              }
-@@ -469,7 +_,7 @@
+@@ -463,7 +_,7 @@
              BlockState blockstate2 = this.enderman.getCarriedBlock();
              if (blockstate2 != null) {
                  blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
@@ -59,7 +55,7 @@
                      level.setBlock(blockpos, blockstate2, 3);
                      level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
                      this.enderman.setCarriedBlock(null);
-@@ -481,6 +_,7 @@
+@@ -475,6 +_,7 @@
              return p_32562_.isAir()
                  && !p_32563_.isAir()
                  && !p_32563_.is(Blocks.BEDROCK)
@@ -67,11 +63,11 @@
                  && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
                  && p_32561_.canSurvive(p_32559_, p_32560_)
                  && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
-@@ -592,7 +_,7 @@
+@@ -585,7 +_,7 @@
              if (this.enderman.getCarriedBlock() != null) {
                  return false;
              } else {
--                return !getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+-                return !getServerLevel(this.enderman).getGameRules().get(GameRules.MOB_GRIEFING)
 +                return !net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.enderman.level()), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;

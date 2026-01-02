@@ -88,7 +88,7 @@ public class NeoForgeExtraCodecs {
      * The returned codec can only decode, and will throw on any attempt to encode.
      */
     public static <A> Codec<A> decodeOnly(Decoder<A> decoder) {
-        return Codec.of(Codec.unit(() -> {
+        return Codec.of(MapCodec.unitCodec(() -> {
             throw new UnsupportedOperationException("Cannot encode with decode-only codec! Decoder:" + decoder);
         }), decoder, "DecodeOnly[" + decoder + "]");
     }

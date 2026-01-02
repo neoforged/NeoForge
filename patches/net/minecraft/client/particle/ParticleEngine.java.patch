@@ -18,7 +18,7 @@
      }
  
      public void createTrackingEmitter(Entity p_107330_, ParticleOptions p_107331_) {
-@@ -67,7 +_,7 @@
+@@ -65,7 +_,7 @@
      ) {
          ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.resourceManager
              .getProviders()
@@ -27,7 +27,7 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_, this.random);
-@@ -117,6 +_,8 @@
+@@ -115,6 +_,8 @@
              return new ItemPickupParticleGroup(this);
          } else if (p_446516_ == ParticleRenderType.ELDER_GUARDIANS) {
              return new ElderGuardianParticleGroup(this);
@@ -36,7 +36,7 @@
          } else {
              return (ParticleGroup<?>)(p_446516_ == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, p_446516_));
          }
-@@ -127,7 +_,7 @@
+@@ -125,7 +_,7 @@
      }
  
      public void extract(ParticlesRenderState p_451468_, Frustum p_446230_, Camera p_446261_, float p_446702_) {

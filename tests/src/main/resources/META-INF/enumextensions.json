@@ -57,7 +57,7 @@
         {
             "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
             "name": "NEOTESTS_SWING",
-            "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+            "constructor": "(ZZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
             "parameters": {
                 "class": "net/neoforged/neoforge/oldtest/entity/player/ItemUseAnimationTest$EnumParams",
                 "field": "ARM_POSE_ENUM_PARAMS"

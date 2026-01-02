@@ -19,13 +19,13 @@
 +        }
          RecipeManager recipemanager = p_380134_.getSource().getServer().getRecipeManager();
          ResourceKey<Recipe<?>> resourcekey = getRegistryKey(p_380134_, p_379840_, Registries.RECIPE, ERROR_INVALID_RECIPE);
-         return recipemanager.byKey(resourcekey).orElseThrow(() -> ERROR_INVALID_RECIPE.create(resourcekey.location()));
+         return recipemanager.byKey(resourcekey).orElseThrow(() -> ERROR_INVALID_RECIPE.create(resourcekey.identifier()));
 @@ -98,7 +_,7 @@
  
      public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> p_379729_, String p_379326_) throws CommandSyntaxException {
          ResourceKey<Advancement> resourcekey = getRegistryKey(p_379729_, p_379326_, Registries.ADVANCEMENT, ERROR_INVALID_ADVANCEMENT);
--        AdvancementHolder advancementholder = p_379729_.getSource().getServer().getAdvancements().get(resourcekey.location());
-+        AdvancementHolder advancementholder = p_379729_.getSource().getAdvancement(resourcekey.location());
+-        AdvancementHolder advancementholder = p_379729_.getSource().getServer().getAdvancements().get(resourcekey.identifier());
++        AdvancementHolder advancementholder = p_379729_.getSource().getAdvancement(resourcekey.identifier());
          if (advancementholder == null) {
-             throw ERROR_INVALID_ADVANCEMENT.create(resourcekey.location());
+             throw ERROR_INVALID_ADVANCEMENT.create(resourcekey.identifier());
          } else {

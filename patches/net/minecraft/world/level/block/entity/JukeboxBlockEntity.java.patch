@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -108,9 +_,34 @@
+@@ -109,9 +_,34 @@
          return itemstack;
      }
  

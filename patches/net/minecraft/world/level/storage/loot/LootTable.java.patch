@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
 @@ -41,12 +_,14 @@
-             p_380905_ -> p_380905_.group(
+             p_466781_ -> p_466781_.group(
                      LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_380906_ -> p_380906_.paramSet),
-                     ResourceLocation.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
+                     Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
 -                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 -                    LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
 +                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 +                    net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
                  )
-                 .apply(p_380905_, LootTable::new)
+                 .apply(p_466781_, LootTable::new)
          )
      );
 +    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<LootTable>>> CONDITIONAL_DIRECT_CODEC =
@@ -18,7 +18,7 @@
      public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
      private final ContextKeySet paramSet;
 @@ -58,7 +_,7 @@
-     LootTable(ContextKeySet p_380952_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
+     LootTable(ContextKeySet p_380952_, Optional<Identifier> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
          this.paramSet = p_380952_;
          this.randomSequence = p_299055_;
 -        this.pools = p_298390_;
@@ -93,25 +93,25 @@
 +    }
 +
 +    // Neo: Linking the LootTable to its ID for easier retrieval
-+    private ResourceLocation lootTableId;
++    private Identifier lootTableId;
 +
-+    public void setLootTableId(final ResourceLocation id) {
++    public void setLootTableId(final Identifier id) {
 +        if (this.lootTableId != null) throw new IllegalStateException("Attempted to rename loot table from '" + this.lootTableId + "' to '" + id + "': this is not supported");
 +        this.lootTableId = java.util.Objects.requireNonNull(id);
 +    }
 +
-+    public ResourceLocation getLootTableId() {
++    public Identifier getLootTableId() {
 +        return this.lootTableId;
 +    }
 +
 +    // Neo: Retrieve LootPools by name
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public LootPool getPool(String name) {
 +        return pools.stream().filter(e -> name.equals(e.getName())).findFirst().orElse(null);
 +    }
 +
 +    // Neo: Remove LootPools by name
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public LootPool removePool(String name) {
 +        checkFrozen();
 +        for (LootPool pool : this.pools) {
@@ -135,7 +135,7 @@
          private final ImmutableList.Builder<LootPool> pools = ImmutableList.builder();
          private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
          private ContextKeySet paramSet = LootTable.DEFAULT_PARAM_SET;
-         private Optional<ResourceLocation> randomSequence = Optional.empty();
+         private Optional<Identifier> randomSequence = Optional.empty();
 +        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new java.util.ArrayList<>();
  
          public LootTable.Builder withPool(LootPool.Builder p_79162_) {

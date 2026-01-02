@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.ai.sensing.VillagerHostilesSensor;
-import net.minecraft.world.entity.animal.Parrot;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.animal.parrot.Parrot;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
@@ -189,8 +189,8 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
 
-    private static ResourceLocation id(final String name) {
-        return ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
+    private static Identifier id(final String name) {
+        return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
     }
 
     @SubscribeEvent

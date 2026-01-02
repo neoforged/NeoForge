@@ -18,9 +18,10 @@ import java.util.function.Predicate;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.commands.PermissionCheck;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.PermissionCheck;
+import net.minecraft.server.permissions.PermissionProviderCheck;
+import org.jspecify.annotations.Nullable;
 
 // TODO 1.21.6: Investigate whether the NodeBuilder/NodeInspector are actually correctly implemented and whether the filtering can be done directly in the NodeBuilder
 class CommandTreeCleaner {
@@ -40,7 +41,7 @@ class CommandTreeCleaner {
         }
 
         @Override
-        public ArgumentBuilder<SharedSuggestionProvider, ?> createArgument(String name, ArgumentType<?> type, @Nullable ResourceLocation suggests) {
+        public ArgumentBuilder<SharedSuggestionProvider, ?> createArgument(String name, ArgumentType<?> type, @Nullable Identifier suggests) {
             RequiredArgumentBuilder<SharedSuggestionProvider, ?> builder = RequiredArgumentBuilder.argument(name, type);
             if (suggests != null) {
                 builder.suggests(SuggestionProviders.getProvider(suggests));
@@ -66,7 +67,7 @@ class CommandTreeCleaner {
     public static final ClientboundCommandsPacket.NodeInspector<SharedSuggestionProvider> COMMAND_NODE_INSPECTOR = new ClientboundCommandsPacket.NodeInspector<>() {
         @Nullable
         @Override
-        public ResourceLocation suggestionId(ArgumentCommandNode<SharedSuggestionProvider, ?> node) {
+        public Identifier suggestionId(ArgumentCommandNode<SharedSuggestionProvider, ?> node) {
             var suggestions = node.getCustomSuggestions();
             return suggestions != null ? SuggestionProviders.getName(suggestions) : null;
         }
@@ -78,7 +79,7 @@ class CommandTreeCleaner {
 
         @Override
         public boolean isRestricted(CommandNode<SharedSuggestionProvider> node) {
-            return node.getRequirement() instanceof PermissionCheck<?> permissioncheck && permissioncheck.requiredLevel() > 0;
+            return node.getRequirement() instanceof PermissionProviderCheck<?>(PermissionCheck test) && test instanceof PermissionCheck.Require;
         }
     };
 

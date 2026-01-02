@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -73,6 +_,7 @@
+@@ -70,6 +_,7 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
      private final TimerQueue<MinecraftServer> scheduledEvents;
@@ -8,7 +8,7 @@
  
      private PrimaryLevelData(
          @Nullable CompoundTag p_277888_,
-@@ -165,7 +_,7 @@
+@@ -162,7 +_,7 @@
          Dynamic<T> p_78531_, LevelSettings p_78535_, PrimaryLevelData.SpecialWorldProperty p_250651_, WorldOptions p_251864_, Lifecycle p_78538_
      ) {
          long i = p_78531_.get("Time").asLong(0L);
@@ -17,7 +17,7 @@
              p_78531_.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
              p_78531_.get("WasModded").asBoolean(false),
              p_78531_.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
-@@ -187,7 +_,8 @@
+@@ -184,7 +_,8 @@
                  .asStream()
                  .flatMap(p_338118_ -> p_338118_.asString().result().stream())
                  .collect(Collectors.toCollection(Sets::newLinkedHashSet)),
@@ -27,7 +27,7 @@
              new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, p_78531_.get("ScheduledEvents").asStream()),
              (CompoundTag)p_78531_.get("CustomBossEvents").orElseEmptyMap().getValue(),
              p_78531_.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
-@@ -195,7 +_,11 @@
+@@ -192,7 +_,11 @@
              p_251864_,
              p_250651_,
              p_78538_
@@ -40,7 +40,7 @@
      }
  
      @Override
-@@ -260,6 +_,12 @@
+@@ -257,6 +_,12 @@
          p_78547_.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
          p_78547_.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
          p_78547_.storeNullable("WanderingTraderId", UUIDUtil.CODEC, this.wanderingTraderId);
@@ -53,7 +53,7 @@
      }
  
      private static ListTag stringCollectionToTag(Set<String> p_277880_) {
-@@ -553,10 +_,58 @@
+@@ -547,10 +_,58 @@
          return this.settings.copy();
      }
  
@@ -99,15 +99,15 @@
 +    }
 +
 +    private static java.util.stream.Stream<String> updateRemovedFeatureFlags(java.util.stream.Stream<String> removedFeatures, java.util.stream.Stream<String> enabledFeatures) {
-+        var unknownFeatureFlags = new HashSet<net.minecraft.resources.ResourceLocation>();
-+        // parses the incoming Stream<String> and spits out unknown flag names (ResourceLocation)
++        var unknownFeatureFlags = new HashSet<net.minecraft.resources.Identifier>();
++        // parses the incoming Stream<String> and spits out unknown flag names (Identifier)
 +        // we do not care about the returned FeatureFlagSet, only the flags which do not exist
-+        net.minecraft.world.flag.FeatureFlags.REGISTRY.fromNames(enabledFeatures.map(net.minecraft.resources.ResourceLocation::parse).collect(Collectors.toSet()), unknownFeatureFlags::add);
++        net.minecraft.world.flag.FeatureFlags.REGISTRY.fromNames(enabledFeatures.map(net.minecraft.resources.Identifier::parse).collect(Collectors.toSet()), unknownFeatureFlags::add);
 +        // concat the received removed flags with our new additions
 +        return java.util.stream.Stream.concat(removedFeatures, unknownFeatureFlags.stream()
 +                // we only want modded flags, mojang has datafixers for vanilla flags
-+                .filter(java.util.function.Predicate.not(name -> name.getNamespace().equals(net.minecraft.resources.ResourceLocation.DEFAULT_NAMESPACE)))
-+                .map(net.minecraft.resources.ResourceLocation::toString))
++                .filter(java.util.function.Predicate.not(name -> name.getNamespace().equals(net.minecraft.resources.Identifier.DEFAULT_NAMESPACE)))
++                .map(net.minecraft.resources.Identifier::toString))
 +                // no duplicates should exist in this stream
 +                .distinct();
      }

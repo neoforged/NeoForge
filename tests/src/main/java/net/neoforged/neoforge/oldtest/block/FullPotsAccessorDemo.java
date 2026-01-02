@@ -23,7 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -202,7 +202,7 @@ public class FullPotsAccessorDemo {
         @Override
         public void loadAdditional(ValueInput input) {
             super.loadAdditional(input);
-            input.getString("plant").ifPresent(id -> plant = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(id)));
+            input.getString("plant").ifPresent(id -> plant = BuiltInRegistries.BLOCK.getValue(Identifier.parse(id)));
         }
 
         @Override
@@ -217,7 +217,7 @@ public class FullPotsAccessorDemo {
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerBlockStateModelType(final RegisterBlockStateModels event) {
-            event.registerModel(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), DioritePotUnbakedBlockStateModel.CODEC);
+            event.registerModel(Identifier.fromNamespaceAndPath(MOD_ID, "diorite_pot"), DioritePotUnbakedBlockStateModel.CODEC);
         }
 
         private static class DioritePotUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
@@ -247,8 +247,8 @@ public class FullPotsAccessorDemo {
         }
 
         private static class DioritePotModel extends DelegateBlockStateModel {
-            private static final ResourceLocation POT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/flower_pot");
-            private static final ResourceLocation DIRT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/dirt");
+            private static final Identifier POT_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "block/flower_pot");
+            private static final Identifier DIRT_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "block/dirt");
             private static final Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
 
             public DioritePotModel(BlockStateModel wrappedModel) {
@@ -273,7 +273,7 @@ public class FullPotsAccessorDemo {
                     QuadCollection.Builder builder = new QuadCollection.Builder();
                     for (Direction side : DIRECTIONS) {
                         for (BakedQuad quad : part.getQuads(side)) {
-                            ResourceLocation texture = quad.sprite().contents().name();
+                            Identifier texture = quad.sprite().contents().name();
                             if (!texture.equals(POT_TEXTURE) && !texture.equals(DIRT_TEXTURE)) {
                                 if (side == null) {
                                     builder.addUnculledFace(quad);

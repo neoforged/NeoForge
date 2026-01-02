@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extension class for render state objects. Implemented by {@link BaseRenderState} for

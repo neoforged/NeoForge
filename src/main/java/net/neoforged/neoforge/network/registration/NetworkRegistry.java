@@ -39,7 +39,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeVersion;
@@ -64,8 +64,8 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -92,7 +92,7 @@ public class NetworkRegistry {
      * Map of NeoForge payloads that may be sent before channel negotiation.
      * TODO: Separate by protocol + flow.
      */
-    protected static final Map<ResourceLocation, StreamCodec<FriendlyByteBuf, ? extends CustomPacketPayload>> BUILTIN_PAYLOADS = ImmutableMap.of(
+    protected static final Map<Identifier, StreamCodec<FriendlyByteBuf, ? extends CustomPacketPayload>> BUILTIN_PAYLOADS = ImmutableMap.of(
             MinecraftRegisterPayload.ID, MinecraftRegisterPayload.STREAM_CODEC,
             MinecraftUnregisterPayload.ID, MinecraftUnregisterPayload.STREAM_CODEC,
             ModdedNetworkQueryPayload.ID, ModdedNetworkQueryPayload.STREAM_CODEC,
@@ -105,13 +105,13 @@ public class NetworkRegistry {
      * Registry of all custom payload handlers. The initial state of this map should reflect the protocols which support custom payloads.
      * TODO: Change key type to a combination of protocol + flow.
      */
-    protected static final Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = ImmutableMap.of(
+    protected static final Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = ImmutableMap.of(
             ConnectionProtocol.CONFIGURATION, new HashMap<>(),
             ConnectionProtocol.PLAY, new HashMap<>());
-    protected static final Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> SERVERBOUND_HANDLERS = ImmutableMap.of(
+    protected static final Map<ConnectionProtocol, Map<Identifier, IPayloadHandler<?>>> SERVERBOUND_HANDLERS = ImmutableMap.of(
             ConnectionProtocol.CONFIGURATION, new HashMap<>(),
             ConnectionProtocol.PLAY, new HashMap<>());
-    protected static final Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> CLIENTBOUND_HANDLERS = ImmutableMap.of(
+    protected static final Map<ConnectionProtocol, Map<Identifier, IPayloadHandler<?>>> CLIENTBOUND_HANDLERS = ImmutableMap.of(
             ConnectionProtocol.CONFIGURATION, new HashMap<>(),
             ConnectionProtocol.PLAY, new HashMap<>());
 
@@ -179,7 +179,7 @@ public class NetworkRegistry {
         }
 
         for (ConnectionProtocol protocol : protocols) {
-            Map<ResourceLocation, PayloadRegistration<?>> byProtocol = PAYLOAD_REGISTRATIONS.get(protocol);
+            Map<Identifier, PayloadRegistration<?>> byProtocol = PAYLOAD_REGISTRATIONS.get(protocol);
 
             if (byProtocol == null) {
                 throw new UnsupportedOperationException("Cannot register payload " + type.id() + " for unsupported protocol: " + protocol.name());
@@ -201,12 +201,12 @@ public class NetworkRegistry {
     }
 
     protected static <T extends CustomPacketPayload> void registerHandler(
-            Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> handlers,
+            Map<ConnectionProtocol, Map<Identifier, IPayloadHandler<?>>> handlers,
             ConnectionProtocol protocol,
             PacketFlow flow,
             CustomPacketPayload.Type<T> type,
             IPayloadHandler<T> handler) {
-        Map<ResourceLocation, IPayloadHandler<?>> byProtocol = handlers.get(protocol);
+        Map<Identifier, IPayloadHandler<?>> byProtocol = handlers.get(protocol);
         if (byProtocol == null) {
             throw new UnsupportedOperationException("Cannot register handler for payload " + type.id() + " for unsupported protocol: " + protocol.name());
         }
@@ -232,12 +232,12 @@ public class NetworkRegistry {
      * @param flow     The flow of the connection.
      * @return A codec for the payload, or null if the payload should be discarded on receipt.
      * 
-     * @see {@link #hasChannel(Connection, ConnectionProtocol, ResourceLocation)} to check if a packet can be sent/received.
+     * @see {@link #hasChannel(Connection, ConnectionProtocol, Identifier)} to check if a packet can be sent/received.
      * @apiNote This method must not throw exceptions, as it is called within another codec on the network thread.
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getCodec(ResourceLocation id, ConnectionProtocol protocol, PacketFlow flow) {
+    public static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getCodec(Identifier id, ConnectionProtocol protocol, PacketFlow flow) {
         // Custom modded packets which can be sent before a payload setup is negotiated.
         if (BUILTIN_PAYLOADS.containsKey(id)) {
             return BUILTIN_PAYLOADS.get(id);
@@ -368,7 +368,7 @@ public class NetworkRegistry {
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
         listener.send(new ModdedNetworkPayload(setup));
-        ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         nowListeningOn.addAll(setup.getChannels(ConnectionProtocol.CONFIGURATION).keySet());
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
@@ -404,7 +404,7 @@ public class NetworkRegistry {
 
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
-        ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.CONFIGURATION).entrySet().stream()
                 .filter(registration -> registration.getValue().matchesFlow(listener.flow()))
@@ -424,7 +424,7 @@ public class NetworkRegistry {
      */
     public static void checkPacket(Packet<?> packet, ServerCommonPacketListener listener) {
         if (packet instanceof ClientboundCustomPayloadPacket customPayloadPacket) {
-            ResourceLocation id = customPayloadPacket.payload().type().id();
+            Identifier id = customPayloadPacket.payload().type().id();
             if (BUILTIN_PAYLOADS.containsKey(id) || "minecraft".equals(id.getNamespace())) {
                 return;
             }
@@ -446,7 +446,7 @@ public class NetworkRegistry {
      */
     public static void checkPacket(Packet<?> packet, ClientCommonPacketListener listener) {
         if (packet instanceof ServerboundCustomPayloadPacket customPayloadPacket) {
-            ResourceLocation id = customPayloadPacket.payload().type().id();
+            Identifier id = customPayloadPacket.payload().type().id();
             if (BUILTIN_PAYLOADS.containsKey(id) || "minecraft".equals(id.getNamespace())) {
                 return;
             }
@@ -468,7 +468,7 @@ public class NetworkRegistry {
      * @param flow The flow of the packet.
      * @return True if the packet is ad-hoc readable, false otherwise.
      */
-    protected static boolean hasAdhocChannel(ConnectionProtocol protocol, ResourceLocation id, PacketFlow flow) {
+    protected static boolean hasAdhocChannel(ConnectionProtocol protocol, Identifier id, PacketFlow flow) {
         PayloadRegistration<?> reg = PAYLOAD_REGISTRATIONS.getOrDefault(protocol, Collections.emptyMap()).get(id);
         return reg != null && reg.optional() && reg.matchesFlow(flow);
     }
@@ -480,7 +480,7 @@ public class NetworkRegistry {
      * @param payloadId The payload id to check.
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
-    public static boolean hasChannel(ICommonPacketListener listener, ResourceLocation payloadId) {
+    public static boolean hasChannel(ICommonPacketListener listener, Identifier payloadId) {
         return hasChannel(listener.getConnection(), listener.protocol(), payloadId);
     }
 
@@ -492,7 +492,7 @@ public class NetworkRegistry {
      * @param payloadId  The payload id to check.
      * @return True if the connection has a connection setup that can transmit the given payload id, false otherwise.
      */
-    public static boolean hasChannel(Connection connection, @Nullable ConnectionProtocol protocol, ResourceLocation payloadId) {
+    public static boolean hasChannel(Connection connection, @Nullable ConnectionProtocol protocol, Identifier payloadId) {
         NetworkPayloadSetup payloadSetup = ChannelAttributes.getPayloadSetup(connection);
         if (payloadSetup != null) {
             // If a protocol is specified, only check against channels for that protocol
@@ -535,7 +535,7 @@ public class NetworkRegistry {
                 return;
             }
 
-            ResourceLocation id = customPayloadPacket.payload().type().id();
+            Identifier id = customPayloadPacket.payload().type().id();
             if (BUILTIN_PAYLOADS.containsKey(id) || "minecraft".equals(id.getNamespace())) {
                 toSend.add(packet);
                 return;
@@ -583,7 +583,7 @@ public class NetworkRegistry {
      * @param connection        The connection to add the channels to.
      * @param resourceLocations The resource locations to add.
      */
-    public static void onMinecraftRegister(Connection connection, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftRegister(Connection connection, Set<Identifier> resourceLocations) {
         ChannelAttributes.getOrCreateAdHocChannels(connection).addAll(resourceLocations);
     }
 
@@ -595,20 +595,20 @@ public class NetworkRegistry {
      * @param connection        The connection to remove the channels from.
      * @param resourceLocations The resource locations to remove.
      */
-    public static void onMinecraftUnregister(Connection connection, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftUnregister(Connection connection, Set<Identifier> resourceLocations) {
         ChannelAttributes.getOrCreateAdHocChannels(connection).removeAll(resourceLocations);
     }
 
     /**
      * {@return the initial channels for the configuration phase.}
      */
-    public static Set<ResourceLocation> getInitialListeningChannels(PacketFlow flow) {
+    public static Set<Identifier> getInitialListeningChannels(PacketFlow flow) {
         // TODO: Separate builtins by flow and return them appropriately here.
         return BUILTIN_PAYLOADS.keySet();
     }
 
-    public static Set<ResourceLocation> getInitialServerUnregisterChannels() {
-        final ImmutableSet.Builder<ResourceLocation> nowForgottenChannels = ImmutableSet.builder();
+    public static Set<Identifier> getInitialServerUnregisterChannels() {
+        final ImmutableSet.Builder<Identifier> nowForgottenChannels = ImmutableSet.builder();
         nowForgottenChannels.add(MinecraftRegisterPayload.ID);
         nowForgottenChannels.add(MinecraftUnregisterPayload.ID);
         PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.PLAY).entrySet().stream()
@@ -653,7 +653,7 @@ public class NetworkRegistry {
      * @param payload  The incoming register payload.
      */
     public static void onCommonRegister(ICommonPacketListener listener, CommonRegisterPayload payload) {
-        Set<ResourceLocation> channels = ChannelAttributes.getOrCreateCommonChannels(listener.getConnection(), payload.protocol());
+        Set<Identifier> channels = ChannelAttributes.getOrCreateCommonChannels(listener.getConnection(), payload.protocol());
         channels.clear();
         channels.addAll(payload.channels());
 
@@ -666,7 +666,7 @@ public class NetworkRegistry {
         }
     }
 
-    public static Set<ResourceLocation> getCommonPlayChannels(PacketFlow flow) {
+    public static Set<Identifier> getCommonPlayChannels(PacketFlow flow) {
         return PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.PLAY)
                 .entrySet().stream()
                 .filter(registration -> registration.getValue().matchesFlow(flow))
@@ -689,12 +689,12 @@ public class NetworkRegistry {
             return;
         }
 
-        final ImmutableSet.Builder<ResourceLocation> notListeningAnymoreOn = ImmutableSet.builder();
+        final ImmutableSet.Builder<Identifier> notListeningAnymoreOn = ImmutableSet.builder();
         notListeningAnymoreOn.addAll(getInitialListeningChannels(listener.flow()));
         notListeningAnymoreOn.addAll(setup.getChannels(ConnectionProtocol.CONFIGURATION).keySet());
         listener.send(new MinecraftUnregisterPayload(notListeningAnymoreOn.build()));
 
-        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        final ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.add(MinecraftRegisterPayload.ID);
         nowListeningOn.add(MinecraftUnregisterPayload.ID);
         if (listener.getConnectionType().isNeoForge()) {
@@ -713,7 +713,7 @@ public class NetworkRegistry {
     /**
      * Helper to guard futures generated by {@link IPayloadContext} against exceptions.
      */
-    public static <T> CompletableFuture<T> guard(CompletableFuture<T> future, ResourceLocation payloadId) {
+    public static <T> CompletableFuture<T> guard(CompletableFuture<T> future, Identifier payloadId) {
         return future.exceptionally(
                 ex -> {
                     NetworkRegistry.LOGGER.error("Failed to process a synchronized task of the payload: %s".formatted(payloadId), ex);

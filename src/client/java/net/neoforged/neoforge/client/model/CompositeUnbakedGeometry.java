@@ -16,13 +16,13 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 
 public class CompositeUnbakedGeometry implements ExtendedUnbakedGeometry {
-    final ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children;
+    final ImmutableMap<String, Either<Identifier, UnbakedModel>> children;
 
-    public CompositeUnbakedGeometry(ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children) {
+    public CompositeUnbakedGeometry(ImmutableMap<String, Either<Identifier, UnbakedModel>> children) {
         this.children = children;
     }
 

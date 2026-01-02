@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/WeatherEffectRenderer.java
 +++ b/net/minecraft/client/renderer/WeatherEffectRenderer.java
-@@ -89,7 +_,19 @@
+@@ -91,7 +_,19 @@
          }
      }
  
@@ -12,20 +12,22 @@
 +        this.render(p_382792_, p_360652_, p_451561_, null);
 +    }
 +
-+    public void render(MultiBufferSource p_382792_, Vec3 p_360652_, WeatherRenderState p_451561_, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.state.LevelRenderState levelRenderState) {
-+        if (levelRenderState != null && levelRenderState.dimensionSpecialEffects.renderSnowAndRain(levelRenderState, p_451561_, p_382792_, p_360652_)) {
++    public void render(MultiBufferSource p_382792_, Vec3 p_360652_, WeatherRenderState p_451561_, net.minecraft.client.renderer.state.@org.jspecify.annotations.Nullable LevelRenderState levelRenderState) {
++        if (levelRenderState != null && levelRenderState.customWeatherEffectRenderer != null && levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(levelRenderState, p_451561_, p_382792_, p_360652_)) {
 +            return;
 +        }
 +
          if (!p_451561_.rainColumns.isEmpty()) {
-             RenderType rendertype = RenderType.weather(RAIN_LOCATION, Minecraft.useShaderTransparency());
+             RenderType rendertype = RenderTypes.weather(RAIN_LOCATION, Minecraft.useShaderTransparency());
              this.renderInstances(p_382792_.getBuffer(rendertype), p_451561_.rainColumns, p_360652_, 1.0F, p_451561_.radius, p_451561_.intensity);
-@@ -156,6 +_,8 @@
+@@ -160,6 +_,10 @@
      }
  
-     public void tickRainParticles(ClientLevel p_361823_, Camera p_364990_, int p_361788_, ParticleStatus p_363302_) {
-+        if (p_361823_.effects().tickRain(p_361823_, p_361788_, p_364990_))
+     public void tickRainParticles(ClientLevel p_361823_, Camera p_364990_, int p_361788_, ParticleStatus p_363302_, int p_455026_) {
++        var customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(p_361823_, p_364990_.position());
++        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(p_361823_, p_361788_, p_364990_))
 +            return;
-         float f = p_361823_.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
++
+         float f = p_361823_.getRainLevel(1.0F);
          if (!(f <= 0.0F)) {
              RandomSource randomsource = RandomSource.create(p_361788_ * 312987231L);

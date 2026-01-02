@@ -6,15 +6,15 @@
 package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IModelProviderExtension {
-    default ResourceLocation modLocation(String modelPath) {
-        return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath);
+    default Identifier modLocation(String modelPath) {
+        return Identifier.fromNamespaceAndPath(self().modId, modelPath);
     }
 
-    default ResourceLocation mcLocation(String modelPath) {
-        return ResourceLocation.withDefaultNamespace(modelPath);
+    default Identifier mcLocation(String modelPath) {
+        return Identifier.withDefaultNamespace(modelPath);
     }
 
     private ModelProvider self() {

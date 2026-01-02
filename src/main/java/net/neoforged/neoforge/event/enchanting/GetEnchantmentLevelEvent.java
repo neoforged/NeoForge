@@ -14,7 +14,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.extensions.IItemStackExtension;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired whenever the enchantment level of a particular item is requested for gameplay purposes.<br>

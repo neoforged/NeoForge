@@ -13,8 +13,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
@@ -88,7 +88,7 @@ public class RecipePrioritiesTest {
                     .pattern("XXX")
                     .group("bed")
                     .unlockedBy(getHasName(Blocks.CHERRY_PLANKS), has(Blocks.CHERRY_PLANKS))
-                    .save(output, ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("neotests_recipe_priorities", "higher_priority_test")));
+                    .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("neotests_recipe_priorities", "higher_priority_test")));
         }
 
         private static class Runner extends RecipeProvider.Runner {

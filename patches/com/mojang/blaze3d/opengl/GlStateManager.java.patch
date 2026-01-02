@@ -7,7 +7,7 @@
 +    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
-     private static final GlStateManager.TextureState[] TEXTURES = IntStream.range(0, 12)
+     private static final int TEXTURE_COUNT = 12;
 @@ -605,5 +_,120 @@
      @OnlyIn(Dist.CLIENT)
      static class TextureState {

@@ -16,7 +16,7 @@ import java.util.Map;
 import net.minecraft.client.renderer.item.CompositeModel;
 import net.minecraft.client.resources.model.UnbakedGeometry;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 
 /**
@@ -41,9 +41,9 @@ public class CompositeUnbakedModel extends AbstractUnbakedModel {
 
     @Override
     public void resolveDependencies(Resolver resolver) {
-        for (Either<ResourceLocation, UnbakedModel> child : geometry.children.values()) {
+        for (Either<Identifier, UnbakedModel> child : geometry.children.values()) {
             child.ifLeft(resolver::markDependency).ifRight(model -> {
-                ResourceLocation parent = model.parent();
+                Identifier parent = model.parent();
                 if (parent != null) {
                     resolver.markDependency(parent);
                 }
@@ -59,7 +59,7 @@ public class CompositeUnbakedModel extends AbstractUnbakedModel {
 
         @Override
         public CompositeUnbakedModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> childrenBuilder = ImmutableMap.builder();
+            ImmutableMap.Builder<String, Either<Identifier, UnbakedModel>> childrenBuilder = ImmutableMap.builder();
             readChildren(jsonObject, "children", childrenBuilder, jsonDeserializationContext);
 
             var children = childrenBuilder.build();
@@ -74,14 +74,14 @@ public class CompositeUnbakedModel extends AbstractUnbakedModel {
         private static void readChildren(
                 JsonObject jsonObject,
                 String name,
-                ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> children,
+                ImmutableMap.Builder<String, Either<Identifier, UnbakedModel>> children,
                 JsonDeserializationContext context) {
             if (!jsonObject.has(name))
                 return;
             var childrenJsonObject = jsonObject.getAsJsonObject(name);
             for (Map.Entry<String, JsonElement> entry : childrenJsonObject.entrySet()) {
-                Either<ResourceLocation, UnbakedModel> child = switch (entry.getValue()) {
-                    case JsonPrimitive reference -> Either.left(ResourceLocation.parse(reference.getAsString()));
+                Either<Identifier, UnbakedModel> child = switch (entry.getValue()) {
+                    case JsonPrimitive reference -> Either.left(Identifier.parse(reference.getAsString()));
                     case JsonObject inline -> Either.right(context.deserialize(inline, UnbakedModel.class));
                     default -> throw new IllegalArgumentException("");
                 };

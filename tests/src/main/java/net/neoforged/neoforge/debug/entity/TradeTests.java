@@ -11,11 +11,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.npc.VillagerData;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -44,20 +45,20 @@ public class TradeTests {
                     // Set villager to level 6 trades
                     villager.setVillagerData(new VillagerData(helper.getHolder(VillagerType.PLAINS), helper.getHolder(VillagerProfession.WEAPONSMITH), 0));
                     try {
-                        MethodHandle methodHandle = ReflectionUtils.handle(villager.getClass().getDeclaredMethod("increaseMerchantCareer"));
-                        methodHandle.invoke(villager);
-                        methodHandle.invoke(villager);
-                        methodHandle.invoke(villager);
-                        methodHandle.invoke(villager);
-                        methodHandle.invoke(villager);
-                        methodHandle.invoke(villager);
+                        MethodHandle methodHandle = ReflectionUtils.handle(villager.getClass().getDeclaredMethod("increaseMerchantCareer", ServerLevel.class));
+                        methodHandle.invoke(villager, helper.getLevel());
+                        methodHandle.invoke(villager, helper.getLevel());
+                        methodHandle.invoke(villager, helper.getLevel());
+                        methodHandle.invoke(villager, helper.getLevel());
+                        methodHandle.invoke(villager, helper.getLevel());
+                        methodHandle.invoke(villager, helper.getLevel());
                     } catch (Throwable e) {
                         helper.fail("Cannot find Villager#increaseMerchantCareer method.");
                     }
-                })
-                .thenExecute(villager -> helper.assertTrue(villager.getOffers().size() == 9, "Weaponsmith did not get a new tier of trade"))
-                .thenExecute(villager -> helper.assertTrue(villager.getOffers().get(8).getResult().is(Items.NETHERITE_SWORD), "Netherite Sword was not in trade."))
-                .thenExecute(villager -> {
+
+                    helper.assertTrue(villager.getOffers().size() == 9, "Weaponsmith did not get a new tier of trade");
+                    helper.assertTrue(villager.getOffers().get(8).getResult().is(Items.NETHERITE_SWORD), "Netherite Sword was not in trade.");
+
                     MerchantOffers originalMerchantOffers = villager.getOffers();
                     MerchantOffers newMerchantOffers;
                     try {

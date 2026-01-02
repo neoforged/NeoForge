@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.registries;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -44,7 +44,7 @@ public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> imp
      * @param <T> The type of the target {@link Block}.
      * @param key The name of the target {@link Block}.
      */
-    public static <T extends Block> DeferredBlock<T> createBlock(ResourceLocation key) {
+    public static <T extends Block> DeferredBlock<T> createBlock(Identifier key) {
         return createBlock(ResourceKey.create(Registries.BLOCK, key));
     }
 

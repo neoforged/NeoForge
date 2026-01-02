@@ -10,7 +10,7 @@ import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
 import net.minecraft.client.gui.components.debug.DebugScreenProfile;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
@@ -24,7 +24,7 @@ public interface DebugEntryTests {
     @TestHolder(description = "Registers a new custom DebugScreenEntry", enabledByDefault = true)
     static void testCustomEntry(DynamicTest test) {
         var modId = test.createModId();
-        var id = ResourceLocation.fromNamespaceAndPath(modId, "debug_screen_entry");
+        var id = Identifier.fromNamespaceAndPath(modId, "debug_screen_entry");
 
         var modBus = test.eventListeners().mod();
 
@@ -48,13 +48,13 @@ public interface DebugEntryTests {
             // notice the order of these entries (paths)
             // 'b' is registered before 'a'
             // but due to sorting in game 'a' should come first
-            event.register(ResourceLocation.fromNamespaceAndPath(modId, "dummy_entry_b"), new CustomCategoryNoop());
-            event.register(ResourceLocation.fromNamespaceAndPath(modId, "dummy_entry_a"), new CustomCategoryNoop());
-            event.register(ResourceLocation.fromNamespaceAndPath("dummy0", "dummy_entry_b"), new CustomCategoryNoop());
-            event.register(ResourceLocation.fromNamespaceAndPath("dummy0", "dummy_entry_a"), new CustomCategoryNoop());
+            event.register(Identifier.fromNamespaceAndPath(modId, "dummy_entry_b"), new CustomCategoryNoop());
+            event.register(Identifier.fromNamespaceAndPath(modId, "dummy_entry_a"), new CustomCategoryNoop());
+            event.register(Identifier.fromNamespaceAndPath("dummy0", "dummy_entry_b"), new CustomCategoryNoop());
+            event.register(Identifier.fromNamespaceAndPath("dummy0", "dummy_entry_a"), new CustomCategoryNoop());
 
-            event.register(ResourceLocation.fromNamespaceAndPath("dummy1", "dummy_entry_b"), new DebugEntryNoop());
-            event.register(ResourceLocation.fromNamespaceAndPath("dummy1", "dummy_entry_a"), new DebugEntryNoop());
+            event.register(Identifier.fromNamespaceAndPath("dummy1", "dummy_entry_b"), new DebugEntryNoop());
+            event.register(Identifier.fromNamespaceAndPath("dummy1", "dummy_entry_a"), new DebugEntryNoop());
 
             test.pass();
         });

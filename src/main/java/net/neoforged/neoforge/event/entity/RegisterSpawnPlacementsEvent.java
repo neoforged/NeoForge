@@ -19,7 +19,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event allows each {@link EntityType} to have a {@link SpawnPlacements.SpawnPredicate} registered or modified.
@@ -67,7 +67,7 @@ public class RegisterSpawnPlacementsEvent extends Event implements IModBusEvent 
      * Use {@code null} for the placement or heightmap to leave them as is (which should be done in almost every case)
      */
     @SuppressWarnings("unchecked")
-    public <T extends Entity> void register(EntityType<T> entityType, @Nullable SpawnPlacementType placementType, @Nullable Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate, Operation operation) {
+    public <T extends Entity> void register(EntityType<T> entityType, @Nullable SpawnPlacementType placementType, Heightmap.@Nullable Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate, Operation operation) {
         if (!map.containsKey(entityType)) {
             if (placementType == null) {
                 throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull placement type! Entity Type: " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
@@ -103,8 +103,7 @@ public class RegisterSpawnPlacementsEvent extends Event implements IModBusEvent 
         private final SpawnPlacements.SpawnPredicate<T> originalPredicate;
         private final List<SpawnPlacements.SpawnPredicate<T>> orPredicates;
         private final List<SpawnPlacements.SpawnPredicate<T>> andPredicates;
-        @Nullable
-        private SpawnPlacements.SpawnPredicate<T> replacementPredicate;
+        private SpawnPlacements.@Nullable SpawnPredicate<T> replacementPredicate;
         private SpawnPlacementType spawnType;
         private Heightmap.Types heightmapType;
 
@@ -125,7 +124,7 @@ public class RegisterSpawnPlacementsEvent extends Event implements IModBusEvent 
             return heightmapType;
         }
 
-        private void merge(Operation operation, SpawnPlacements.SpawnPredicate<T> predicate, @Nullable SpawnPlacementType spawnType, @Nullable Heightmap.Types heightmapType) {
+        private void merge(Operation operation, SpawnPlacements.SpawnPredicate<T> predicate, @Nullable SpawnPlacementType spawnType, Heightmap.@Nullable Types heightmapType) {
             if (operation == Operation.AND) {
                 andPredicates.add(predicate);
             } else if (operation == Operation.OR) {

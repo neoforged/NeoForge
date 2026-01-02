@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -60,8 +_,8 @@
+@@ -58,8 +_,8 @@
                  break;
              }
  
--            SpriteContents spritecontents = p_405238_.get(material, p_404999_).contents();
+-            SpriteContents spritecontents = p_405519_.sprites().get(material, p_405600_).contents();
 -            list.addAll(processFrames(i, s, spritecontents));
-+            net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = p_405238_.get(material, p_404999_);
-+            list.addAll(net.neoforged.neoforge.client.ClientHooks.fixItemModelSeams(processFrames(i, s, sprite.contents()), sprite));
++            net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = p_405519_.sprites().get(material, p_405600_);
++            list.addAll(processFrames(i, s, sprite.contents()));
          }
  
-         return SimpleUnbakedGeometry.bake(list, p_386773_, p_405238_, p_386536_, p_404999_);
+         return SimpleUnbakedGeometry.bake(list, p_387202_, p_405519_, p_387172_, p_405600_);

@@ -41,7 +41,7 @@ public class RegisterPresetEditorsEvent extends Event implements IModBusEvent {
     public void register(ResourceKey<WorldPreset> key, PresetEditor editor) {
         PresetEditor old = this.editors.put(key, editor);
         if (old != null) {
-            LOGGER.debug("PresetEditor {} overridden by mod {}", key.location(), ModLoadingContext.get().getActiveNamespace());
+            LOGGER.debug("PresetEditor {} overridden by mod {}", key.identifier(), ModLoadingContext.get().getActiveNamespace());
         }
     }
 }

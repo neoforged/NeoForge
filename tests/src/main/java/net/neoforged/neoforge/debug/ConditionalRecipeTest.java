@@ -10,8 +10,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -25,7 +25,7 @@ public interface ConditionalRecipeTest {
     @TestHolder(description = "Validates that recipes support conditionals by generating a new recipe disabled by the FALSE condition", enabledByDefault = true)
     static void testConditionalRecipe(DynamicTest test, RegistrationHelper reg) {
         // name pointing to recipe which should never be enabled
-        var recipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "always_disabled_recipe"));
+        var recipeName = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "always_disabled_recipe"));
 
         reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
@@ -55,7 +55,7 @@ public interface ConditionalRecipeTest {
             if (recipe == null)
                 test.pass();
             else
-                test.fail("Found recipe: '" + recipeName.location() + "', This should always be disabled due to 'FALSE' condition!");
+                test.fail("Found recipe: '" + recipeName.identifier() + "', This should always be disabled due to 'FALSE' condition!");
         });
     }
 }

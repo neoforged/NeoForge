@@ -8,21 +8,22 @@ package net.neoforged.neoforge.fluids;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Util;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -45,7 +46,7 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A definition of common attributes, properties, and methods that is applied
@@ -821,7 +822,7 @@ public class FluidType {
      * @see BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult)
      */
     public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack) {
-        if (level.dimensionType().ultraWarm()) {
+        if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos)) {
             return this == NeoForgeMod.WATER_TYPE.value() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
         }
         return false;
@@ -849,7 +850,7 @@ public class FluidType {
     @Override
     public String toString() {
         @Nullable
-        ResourceLocation name = NeoForgeRegistries.FLUID_TYPES.getKey(this);
+        Identifier name = NeoForgeRegistries.FLUID_TYPES.getKey(this);
         return name != null ? name.toString() : "Unregistered FluidType";
     }
 

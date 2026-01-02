@@ -14,7 +14,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
@@ -25,6 +24,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
@@ -124,7 +124,7 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
                     if (!registryKey.equals(registryKeyIn)) {
                         throw new IllegalStateException("Can not encode " + holderSet
                                 + ", expected registry: "
-                                + registryKey.registry() + "/" + registryKey.location());
+                                + registryKey.registry() + "/" + registryKey.identifier());
                     }
                 }
             };

@@ -9,7 +9,7 @@
              this.socket.setSoTimeout(5000);
              this.socket.joinGroup(this.pingGroup);
          }
-@@ -88,7 +_,11 @@
+@@ -87,7 +_,11 @@
              String s = LanServerPinger.parseMotd(p_120097_);
              String s1 = LanServerPinger.parseAddress(p_120097_);
              if (s1 != null) {

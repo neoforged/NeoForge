@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/vehicle/minecart/MinecartFurnace.java
++++ b/net/minecraft/world/entity/vehicle/minecart/MinecartFurnace.java
+@@ -107,6 +_,8 @@
+ 
+     @Override
+     public InteractionResult interact(Player p_478294_, InteractionHand p_479681_) {
++        InteractionResult ret = super.interact(p_478294_, p_479681_);
++        if (ret.consumesAction()) return ret;
+         ItemStack itemstack = p_478294_.getItemInHand(p_479681_);
+         if (this.addFuel(p_478294_.position(), itemstack)) {
+             itemstack.consume(1, p_478294_);

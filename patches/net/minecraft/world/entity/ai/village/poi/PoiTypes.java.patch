@@ -15,5 +15,5 @@
      private static void registerBlockStates(Holder<PoiType> p_250815_, Set<BlockState> p_250679_) {
 +        // Neo: we do this automatically for modded PoiTypes in NeoForgeRegistryCallbacks
          p_250679_.forEach(
-             p_218081_ -> {
-                 Holder<PoiType> holder = TYPE_BY_STATE.put(p_218081_, p_250815_);
+             p_466600_ -> {
+                 Holder<PoiType> holder = TYPE_BY_STATE.put(p_466600_, p_250815_);

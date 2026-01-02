@@ -42,9 +42,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -76,9 +75,9 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.SyncedDataHolder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
@@ -87,6 +86,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
@@ -231,16 +231,16 @@ import org.apache.logging.log4j.MarkerManager;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
 /**
  * Class for various common (i.e. client and server-side) hooks.
  */
 public class CommonHooks {
-    public static final Comparator<ResourceLocation> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
-            .<ResourceLocation, Boolean>comparing(location -> !location.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE))
-            .thenComparing(ResourceLocation::compareNamespaced);
+    public static final Comparator<Identifier> CMP_BY_NAMESPACE_VANILLA_FIRST = Comparator
+            .<Identifier, Boolean>comparing(location -> !location.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
+            .thenComparing(Identifier::compareNamespaced);
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
@@ -1019,7 +1019,7 @@ public class CommonHooks {
     @Nullable
     public static String getDefaultCreatorModId(HolderLookup.Provider registries, ItemStack itemStack) {
         Item item = itemStack.getItem();
-        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
+        Identifier registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
             if (itemStack.has(DataComponents.STORED_ENCHANTMENTS)) {
@@ -1028,7 +1028,7 @@ public class CommonHooks {
                     Holder<Enchantment> enchantmentHolder = enchantments.iterator().next();
                     Optional<ResourceKey<Enchantment>> key = enchantmentHolder.unwrapKey();
                     if (key.isPresent()) {
-                        return key.get().location().getNamespace();
+                        return key.get().identifier().getNamespace();
                     }
                 }
             } else if (item instanceof PotionItem || item instanceof TippedArrowItem) {
@@ -1036,12 +1036,12 @@ public class CommonHooks {
                 Optional<Holder<Potion>> potionType = potionContents.potion();
                 Optional<ResourceKey<Potion>> key = potionType.flatMap(Holder::unwrapKey);
                 if (key.isPresent()) {
-                    return key.get().location().getNamespace();
+                    return key.get().identifier().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
                 Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
                 if (key.isPresent()) {
-                    return key.get().location().getNamespace();
+                    return key.get().identifier().getNamespace();
                 }
             }
         }
@@ -1100,7 +1100,7 @@ public class CommonHooks {
      * @param context The loot context that generated that loot
      * @return The modified list
      *
-     * @deprecated Use {@link #modifyLoot(ResourceLocation, ObjectArrayList, LootContext)} instead.
+     * @deprecated Use {@link #modifyLoot(Identifier, ObjectArrayList, LootContext)} instead.
      *
      * @implNote This method will use the {@linkplain LootTableIdCondition#UNKNOWN_LOOT_TABLE unknown loot table marker} when redirecting.
      */
@@ -1123,7 +1123,7 @@ public class CommonHooks {
      *
      * @apiNote The given context will be modified by this method to also store the ID of the loot table being queried.
      */
-    public static ObjectArrayList<ItemStack> modifyLoot(ResourceLocation lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+    public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
         LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
         for (IGlobalLootModifier mod : man.getAllLootMods()) {
@@ -1333,8 +1333,8 @@ public class CommonHooks {
             return fallback;
         }
         try {
-            return BuiltInRegistries.MOB_EFFECT.getValue(ResourceLocation.parse(registryName));
-        } catch (ResourceLocationException e) {
+            return BuiltInRegistries.MOB_EFFECT.getValue(Identifier.parse(registryName));
+        } catch (IdentifierException e) {
             return fallback;
         }
     }
@@ -1353,8 +1353,7 @@ public class CommonHooks {
     /**
      * @hidden For internal use only.
      */
-    @Nullable
-    public static StructuresBecomeConfiguredFix.Conversion getStructureConversion(String originalBiome) {
+    public static StructuresBecomeConfiguredFix.@Nullable Conversion getStructureConversion(String originalBiome) {
         return FORGE_CONVERSION_MAP.get().get(originalBiome);
     }
 
@@ -1363,8 +1362,8 @@ public class CommonHooks {
      */
     public static boolean checkStructureNamespace(String biome) {
         @Nullable
-        ResourceLocation biomeLocation = ResourceLocation.tryParse(biome);
-        return biomeLocation != null && !biomeLocation.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE);
+        Identifier biomeLocation = Identifier.tryParse(biome);
+        return biomeLocation != null && !biomeLocation.getNamespace().equals(Identifier.DEFAULT_NAMESPACE);
     }
 
     /**
@@ -1384,7 +1383,7 @@ public class CommonHooks {
      * @param registryKey key of the registry
      * @return path of the registry key. Prefixed with the namespace if it is not "minecraft"
      */
-    public static String prefixNamespace(ResourceLocation registryKey) {
+    public static String prefixNamespace(Identifier registryKey) {
         return registryKey.getNamespace().equals("minecraft") ? registryKey.getPath() : registryKey.getNamespace() + "/" + registryKey.getPath();
     }
 
@@ -1392,6 +1391,7 @@ public class CommonHooks {
         if (EntitySelectorParser.allowSelectors(provider)) {
             return true;
         } else if (provider instanceof CommandSourceStack source && source.source instanceof ServerPlayer player) {
+            // TODO 1.21.11: Minecraft now has a permission system too and has permissions for this
             return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);
         }
         return false;

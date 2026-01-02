@@ -18,6 +18,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +87,7 @@ public class AttachmentTests {
             event.getDispatcher()
                     .register(literal(test.id())
                             .then(literal("print_and_increment")
-                                    .requires(source -> source.hasPermission(Commands.LEVEL_OWNERS))
+                                    .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
                                     .executes(ctx -> {
                                         var chunk = ctx.getSource().getLevel().getChunkAt(BlockPos.containing(ctx.getSource().getPosition()));
                                         var attachment = chunk.getData(attachmentType);
@@ -97,7 +98,7 @@ public class AttachmentTests {
         });
 
         test.onGameTest(helper -> {
-            var player = helper.makeOpMockPlayer(Commands.LEVEL_OWNERS);
+            var player = helper.makeOpMockPlayer(LevelBasedPermissionSet.OWNER);
             var pos = helper.absolutePos(BlockPos.ZERO);
             player.setPos(pos.getCenter());
 

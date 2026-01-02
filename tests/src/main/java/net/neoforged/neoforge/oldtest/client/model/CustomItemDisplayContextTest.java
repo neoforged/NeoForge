@@ -68,7 +68,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Test mod for the custom transform types feature.
@@ -118,7 +118,7 @@ public class CustomItemDisplayContextTest {
             }
 
             @Override
-            public void extractRenderState(ItemHangerBlockEntity blockEntity, ItemHangerRenderState renderState, float partialTick, Vec3 cameraPos, @Nullable ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+            public void extractRenderState(ItemHangerBlockEntity blockEntity, ItemHangerRenderState renderState, float partialTick, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
                 BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPos, crumblingOverlay);
 
                 renderState.facing = blockEntity.getBlockState().getValue(ItemHangerBlock.FACING);

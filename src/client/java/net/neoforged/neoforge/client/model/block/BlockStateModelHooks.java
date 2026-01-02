@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.BlockModelDefinition;
 import net.minecraft.client.renderer.block.model.SingleVariant;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.random.Weighted;
 import net.neoforged.fml.ModLoader;
@@ -23,8 +23,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class BlockStateModelHooks {
-    static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODEL_IDS = new ExtraCodecs.LateBoundIdMapper<>();
-    static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomBlockModelDefinition>> BLOCK_MODEL_DEFINITION_IDS = new ExtraCodecs.LateBoundIdMapper<>();
+    static final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODEL_IDS = new ExtraCodecs.LateBoundIdMapper<>();
+    static final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends CustomBlockModelDefinition>> BLOCK_MODEL_DEFINITION_IDS = new ExtraCodecs.LateBoundIdMapper<>();
 
     public static void init() {
         ModLoader.postEvent(new RegisterBlockStateModels(BLOCK_STATE_MODEL_IDS, BLOCK_MODEL_DEFINITION_IDS));
@@ -32,7 +32,7 @@ public class BlockStateModelHooks {
 
     public static MapCodec<Either<CustomUnbakedBlockStateModel, SingleVariant.Unbaked>> makeSingleModelCodec() {
         return NeoForgeExtraCodecs.dispatchMapOrElse(
-                BLOCK_STATE_MODEL_IDS.codec(ResourceLocation.CODEC),
+                BLOCK_STATE_MODEL_IDS.codec(Identifier.CODEC),
                 CustomUnbakedBlockStateModel::codec,
                 c -> c,
                 SingleVariant.Unbaked.MAP_CODEC);
@@ -50,7 +50,7 @@ public class BlockStateModelHooks {
     public static Codec<BlockModelDefinition> makeDefinitionCodec() {
         return NeoForgeExtraCodecs.dispatchMapOrElse(
                 "neoforge:definition_type",
-                BLOCK_MODEL_DEFINITION_IDS.codec(ResourceLocation.CODEC),
+                BLOCK_MODEL_DEFINITION_IDS.codec(Identifier.CODEC),
                 CustomBlockModelDefinition::codec,
                 Function.identity(),
                 BlockModelDefinition.VANILLA_CODEC).xmap(

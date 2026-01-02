@@ -43,7 +43,7 @@ public interface ICondition {
     }
 
     static <V> boolean conditionsMatched(DynamicOps<V> ops, V element) {
-        final Codec<Unit> codec = Codec.unit(Unit.INSTANCE);
+        final Codec<Unit> codec = MapCodec.unitCodec(Unit.INSTANCE);
         return getConditionally(codec, ops, element).isPresent();
     }
 

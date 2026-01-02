@@ -4,7 +4,7 @@
      ConfigurationTask.Type type();
  
      public record Type(String id) {
-+        public Type(net.minecraft.resources.ResourceLocation location) {
++        public Type(net.minecraft.resources.Identifier location) {
 +            this(location.toString());
 +        }
 +

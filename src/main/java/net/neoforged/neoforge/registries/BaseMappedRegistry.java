@@ -11,22 +11,22 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
 public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<AddCallback<T>> addCallbacks = new ArrayList<>();
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
-    final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
+    final Map<Identifier, Identifier> aliases = new HashMap<>();
     final Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
 
     private int maxId = Integer.MAX_VALUE - 1;
@@ -61,11 +61,11 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public void addAlias(ResourceLocation from, ResourceLocation to) {
+    public void addAlias(Identifier from, Identifier to) {
         if (from.equals(to))
             return;
         if (this.aliases.containsKey(from)) {
-            ResourceLocation old = this.aliases.get(from);
+            Identifier old = this.aliases.get(from);
             if (!old.equals(to))
                 throw new IllegalStateException("Duplicate alias with key \"" + from + "\" attempting to map to \"" + to + "\", found existing mapping \"" + old + "\"");
         }
@@ -75,11 +75,11 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public ResourceLocation resolve(ResourceLocation name) {
+    public Identifier resolve(Identifier name) {
         if (this.containsKey(name))
             return name;
 
-        ResourceLocation alias = this.aliases.get(name);
+        Identifier alias = this.aliases.get(name);
         if (alias == null)
             return name;
 
@@ -88,9 +88,9 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public ResourceKey<T> resolve(ResourceKey<T> key) {
-        ResourceLocation resolvedName = resolve(key.location());
+        Identifier resolvedName = resolve(key.identifier());
         // Try to reuse the key if possible
-        return resolvedName == key.location() ? key : ResourceKey.create(this.key(), resolvedName);
+        return resolvedName == key.identifier() ? key : ResourceKey.create(this.key(), resolvedName);
     }
 
     @Override
@@ -100,7 +100,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public int getId(ResourceLocation name) {
+    public int getId(Identifier name) {
         T value = this.getValue(name);
         return value == null ? -1 : this.getId(value);
     }

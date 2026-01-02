@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manager for handling opening new {@link Transaction Transactions} or querying status of a transaction chain in a given thread.

@@ -15,7 +15,7 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.util.thread.ParallelMapTransform;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 public final class StandaloneModelLoader {

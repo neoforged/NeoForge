@@ -23,8 +23,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
@@ -76,7 +76,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if data map mergers function properly")
     static void dataMapMerger(final DynamicTest test, final RegistrationHelper reg) {
         final AdvancedDataMapType<Item, List<SomeObject>, Default<List<SomeObject>, Item>> someData = AdvancedDataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_list"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "some_list"),
                 Registries.ITEM, SomeObject.CODEC.listOf())
                 .merger(DataMapValueMerger.listMerger())
                 .build();
@@ -155,7 +155,7 @@ public class DataMapTests {
         }
 
         final AdvancedDataMapType<Item, Map<String, SomeObject>, CustomRemover> someData = AdvancedDataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_map"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "some_map"),
                 Registries.ITEM, ExtraCodecs.strictUnboundedMap(Codec.STRING, SomeObject.CODEC))
                 .merger(DataMapValueMerger.mapMerger())
                 .remover(Codec.STRING.listOf().xmap(CustomRemover::new, CustomRemover::keys))
@@ -222,7 +222,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if registry data maps work")
     static void dataMapTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<Item, SomeObject> someData = DataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_data"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "some_data"),
                 Registries.ITEM, SomeObject.CODEC)
                 .synced(SomeObject.CODEC, true)
                 .build();
@@ -278,7 +278,7 @@ public class DataMapTests {
         }
 
         final DataMapType<DamageType, ExperienceGrant> xpGrant = reg.registerDataMap(DataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "xp_grant"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "xp_grant"),
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
@@ -310,7 +310,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if data maps can be successfully attached to reloadable registries")
     static void reloadableRegDataMaps(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<LootTable, MobEffectInstance> effectGrant = reg.registerDataMap(DataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "effect_grant"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "effect_grant"),
                 Registries.LOOT_TABLE, MobEffectInstance.CODEC)
                 .build());
 
@@ -363,7 +363,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if the data map update event works", groups = EventTests.GROUP)
     static void dataMapUpdateEventTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<Item, Integer> dataMap = reg.registerDataMap(DataMapType.builder(
-                ResourceLocation.fromNamespaceAndPath(reg.modId(), "weight"),
+                Identifier.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
         reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {

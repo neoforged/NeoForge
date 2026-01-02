@@ -206,23 +206,6 @@ neoDev {
 }
 
 generateAccessTransformers {
-    // Make all state shards public
-    classGroup(
-            'render state shard classes', PUBLIC,
-            innerClassesOf('net/minecraft/client/renderer/RenderStateShard')
-    )
-    // Make all state shard fields public
-    fieldGroup(
-            'render state shards', PUBLIC,
-            named('net/minecraft/client/renderer/RenderStateShard'),
-            fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
-    )
-    // Make all composite state builder methods public
-    methodGroup(
-            'composite state builder methods', PUBLIC,
-            named('net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder'),
-            not(named('<init>'))
-    )
     // Make all render pipeline snippet fields public
     fieldGroup(
             'render pipeline snippets', PUBLIC,
@@ -253,7 +236,7 @@ generateAccessTransformers {
     // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
     methodGroup(
             'skeleton step sound', PROTECTED,
-            classesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            classesWithSuperclass('net/minecraft/world/entity/monster/skeleton/AbstractSkeleton'),
             named('getStepSound')
     )
 
@@ -280,11 +263,11 @@ generateAccessTransformers {
     // Make all villager item listings classes and constructors public for use in custom trades
     classGroup(
             'villager item listings', PUBLIC,
-            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing')
+            classesWithSuperclass('net/minecraft/world/entity/npc/villager/VillagerTrades$ItemListing')
     )
     methodGroup(
             'villager item listing constructors', PUBLIC,
-            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
+            classesWithSuperclass('net/minecraft/world/entity/npc/villager/VillagerTrades$ItemListing'),
             named('<init>')
     )
 
@@ -292,7 +275,7 @@ generateAccessTransformers {
     fieldGroup(
             'DebugScreenEntry groups', PUBLIC,
             classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
-            fieldsOfType(named('net/minecraft/resources/ResourceLocation'))
+            fieldsOfType(named('net/minecraft/resources/Identifier'))
     )
 }
 
@@ -593,3 +576,8 @@ publishing {
         maven gradleutils.getPublishingMaven()
     }
 }
+
+
+tasks.withType(JavaCompile.class).configureEach(task -> {
+    Collections.addAll(task.getOptions().getCompilerArgs(), "-Xmaxerrs", "9999");
+});

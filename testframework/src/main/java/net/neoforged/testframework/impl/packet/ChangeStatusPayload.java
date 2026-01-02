@@ -8,7 +8,7 @@ package net.neoforged.testframework.impl.packet;
 import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.testframework.Test;
@@ -16,7 +16,7 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
 
 public record ChangeStatusPayload(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ChangeStatusPayload> ID = new Type<>(ResourceLocation.fromNamespaceAndPath("neoforge", "tf_change_status"));
+    public static final CustomPacketPayload.Type<ChangeStatusPayload> ID = new Type<>(Identifier.fromNamespaceAndPath("neoforge", "tf_change_status"));
 
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);

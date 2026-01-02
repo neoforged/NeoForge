@@ -3,13 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-@FieldsAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@NullMarked
 @ApiStatus.Internal
 package net.neoforged.neoforge.mixins;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.FieldsAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;

@@ -9,10 +9,10 @@
              if (this.minecraft.getOverlay() == null) {
                  if (this.minecraft.screen == null) {
                      if (!this.mouseGrabbed && flag) {
-@@ -103,10 +_,14 @@
-                         try {
-                             long i = Util.getMillis();
-                             boolean flag1 = i - this.lastClickTime < 250L && this.lastClickButton == mousebuttonevent.button();
+@@ -106,10 +_,14 @@
+                                 && i - this.lastClick.time() < 250L
+                                 && this.lastClick.screen() == screen
+                                 && this.lastClickButton == mousebuttonevent.button();
 -                            if (screen.mouseClicked(mousebuttonevent, flag1)) {
 +                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, mousebuttonevent, flag1);
 +                            if (!screenHandled) {
@@ -20,13 +20,13 @@
 +                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, mousebuttonevent, flag1, screenHandled);
 +                            }
 +                            if (screenHandled) {
-                                 this.lastClickTime = i;
+                                 this.lastClick = new MouseHandler.LastClick(i, screen);
                                  this.lastClickButton = mousebuttoninfo.button();
 -                                return;
                              }
                          } catch (Throwable throwable1) {
                              CrashReport crashreport = CrashReport.forThrowable(throwable1, "mouseClicked event handler");
-@@ -118,8 +_,10 @@
+@@ -121,8 +_,10 @@
                          }
                      } else {
                          try {
@@ -39,7 +39,7 @@
                              }
                          } catch (Throwable throwable) {
                              CrashReport crashreport1 = CrashReport.forThrowable(throwable, "mouseReleased event handler");
-@@ -133,6 +_,10 @@
+@@ -136,6 +_,10 @@
                  }
              }
  
@@ -50,7 +50,7 @@
              if (this.minecraft.screen == null && this.minecraft.getOverlay() == null) {
                  if (mousebuttoninfo.button() == 0) {
                      this.isLeftPressed = flag;
-@@ -148,6 +_,8 @@
+@@ -151,6 +_,8 @@
                      KeyMapping.click(inputconstants$key);
                  }
              }
@@ -59,7 +59,7 @@
          }
      }
  
-@@ -204,7 +_,11 @@
+@@ -207,7 +_,11 @@
                  if (this.minecraft.screen != null) {
                      double d3 = this.getScaledXPos(this.minecraft.getWindow());
                      double d4 = this.getScaledYPos(this.minecraft.getWindow());
@@ -72,7 +72,7 @@
                      this.minecraft.screen.afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      Vector2i vector2i = this.scrollWheelHandler.onMouseScroll(d1, d2);
-@@ -213,6 +_,7 @@
+@@ -216,6 +_,7 @@
                      }
  
                      int i = vector2i.y == 0 ? -vector2i.x : vector2i.y;
@@ -80,7 +80,7 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-i);
-@@ -321,7 +_,12 @@
+@@ -324,7 +_,12 @@
                      double d5 = getScaledYPos(window, this.accumulatedDY);
  
                      try {
@@ -94,7 +94,7 @@
                      } catch (Throwable throwable) {
                          CrashReport crashreport1 = CrashReport.forThrowable(throwable, "mouseDragged event handler");
                          screen.fillCrashDetails(crashreport1);
-@@ -360,12 +_,13 @@
+@@ -363,12 +_,13 @@
      }
  
      private void turnPlayer(double p_316356_) {
@@ -110,7 +110,7 @@
              double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, p_316356_ * d4);
              double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, p_316356_ * d4);
              d0 = d5;
-@@ -406,6 +_,14 @@
+@@ -409,6 +_,14 @@
  
      public double ypos() {
          return this.ypos;

@@ -5,19 +5,19 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
 +    @Deprecated
-     private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_436495_ -> {
+     private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_470488_ -> {
          ChunkSectionLayer chunksectionlayer = ChunkSectionLayer.TRIPWIRE;
-         p_436495_.put(Blocks.TRIPWIRE, chunksectionlayer);
-@@ -363,6 +_,8 @@
+         p_470488_.put(Blocks.TRIPWIRE, chunksectionlayer);
+@@ -362,6 +_,8 @@
      });
-     private static boolean renderCutout;
+     private static boolean cutoutLeaves;
  
 +    /** @deprecated Neo: Use {@link net.minecraft.client.renderer.block.model.BlockModelPart#getRenderType(BlockState)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
      public static ChunkSectionLayer getChunkRenderType(BlockState p_109283_) {
          Block block = p_109283_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -373,6 +_,8 @@
+@@ -372,6 +_,8 @@
          }
      }
  
@@ -26,7 +26,7 @@
      public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
          Block block = p_109294_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -393,11 +_,15 @@
+@@ -391,6 +_,8 @@
          }
      }
  
@@ -34,18 +34,11 @@
 +    @Deprecated // Note: this method does NOT support model-based render types
      public static RenderType getRenderType(BlockState p_366653_) {
          ChunkSectionLayer chunksectionlayer = getChunkRenderType(p_366653_);
-         return chunksectionlayer == ChunkSectionLayer.TRANSLUCENT ? Sheets.translucentItemSheet() : Sheets.cutoutBlockSheet();
-     }
+         return chunksectionlayer == ChunkSectionLayer.TRANSLUCENT ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockSheet();
+@@ -403,5 +_,30 @@
  
-+    /** @deprecated Neo: See {@link net.minecraft.client.renderer.item.BlockModelWrapper#renderType}. */
-+    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getRenderType(ItemStack p_366701_) {
-         if (p_366701_.getItem() instanceof BlockItem blockitem) {
-             Block block = blockitem.getBlock();
-@@ -414,5 +_,30 @@
- 
-     public static void setFancy(boolean p_109292_) {
-         renderCutout = p_109292_;
+     public static void setCutoutLeaves(boolean p_455116_) {
+         cutoutLeaves = p_455116_;
 +    }
 +
 +    // Neo: RenderType for block setters injected

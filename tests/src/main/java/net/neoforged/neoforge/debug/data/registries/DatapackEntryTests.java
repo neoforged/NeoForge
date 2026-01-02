@@ -8,8 +8,8 @@ package net.neoforged.neoforge.debug.data.registries;
 import java.util.Set;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
@@ -29,9 +29,9 @@ public class DatapackEntryTests {
     @EmptyTemplate
     @TestHolder(description = "Tests that datapack entry conditions are generated correctly")
     static void conditionalDatapackEntries(final DynamicTest test, final RegistrationHelper reg) {
-        ResourceKey<DamageType> CONDITIONAL_FALSE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "conditional_false"));
-        ResourceKey<DamageType> CONDITIONAL_TRUE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "conditional_true"));
-        ResourceKey<DamageType> REGULAR_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "unconditional"));
+        ResourceKey<DamageType> CONDITIONAL_FALSE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "conditional_false"));
+        ResourceKey<DamageType> CONDITIONAL_TRUE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "conditional_true"));
+        ResourceKey<DamageType> REGULAR_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "unconditional"));
 
         var builder = new RegistrySetBuilder()
                 .add(Registries.DAMAGE_TYPE, bootstrap -> {

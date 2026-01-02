@@ -26,10 +26,10 @@
 +            long lastUpdateTime,
 +            long inhabitedTime,
 +            ChunkStatus chunkStatus,
-+            @Nullable BlendingData.Packed blendingData,
++            BlendingData.@Nullable Packed blendingData,
 +            @Nullable BelowZeroRetrogen belowZeroRetrogen,
 +            UpgradeData upgradeData,
-+            @Nullable long[] carvingMask,
++            long @Nullable [] carvingMask,
 +            Map<Heightmap.Types, long[]> heightmaps,
 +            ChunkAccess.PackedTicks packedTicks,
 +            ShortList[] postProcessingSections,
@@ -42,10 +42,10 @@
 +        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, carvingMask, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
 +
-     @Nullable
      public static SerializableChunkData parse(LevelHeightAccessor p_361938_, PalettedContainerFactory p_447248_, CompoundTag p_362040_) {
          if (p_362040_.getString("Status").isEmpty()) {
-@@ -185,6 +_,9 @@
+             return null;
+@@ -186,6 +_,9 @@
                  }
              }
  
@@ -55,7 +55,7 @@
              return new SerializableChunkData(
                  p_447248_,
                  chunkpos,
-@@ -203,7 +_,9 @@
+@@ -204,7 +_,9 @@
                  list2,
                  list3,
                  list4,
@@ -66,7 +66,7 @@
              );
          }
      }
-@@ -263,6 +_,9 @@
+@@ -264,6 +_,9 @@
                  postLoadChunk(p_360452_, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
@@ -76,8 +76,8 @@
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> protochunkticks1 = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -308,6 +_,10 @@
-             chunkaccess.addPackedPostProcess(this.postProcessingSections[j], j);
+@@ -312,6 +_,10 @@
+             }
          }
  
 +        if (this.attachmentData != null) {
@@ -87,7 +87,7 @@
          if (chunktype == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunkaccess, false);
          } else {
-@@ -391,6 +_,18 @@
+@@ -395,6 +_,18 @@
              CompoundTag compoundtag1 = packStructureData(
                  StructurePieceSerializationContext.fromLevel(p_365319_), chunkpos, p_362284_.getAllStarts(), p_362284_.getAllReferences()
              );
@@ -106,7 +106,7 @@
              return new SerializableChunkData(
                  p_365319_.palettedContainerFactory(),
                  chunkpos,
-@@ -409,7 +_,9 @@
+@@ -413,7 +_,9 @@
                  list,
                  list2,
                  list1,
@@ -117,7 +117,7 @@
              );
          }
      }
-@@ -477,6 +_,14 @@
+@@ -481,6 +_,14 @@
          this.heightmaps.forEach((p_362472_, p_363515_) -> compoundtag2.put(p_362472_.getSerializationKey(), new LongArrayTag(p_363515_)));
          compoundtag.put("Heightmaps", compoundtag2);
          compoundtag.put("structures", this.structureData);

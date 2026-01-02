@@ -116,10 +116,10 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
-        add(dimension.location().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
+        add(dimension.identifier().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
     }
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
-        add(biome.location().toLanguageKey("biome"), value);
+        add(biome.identifier().toLanguageKey("biome"), value);
     }
 }

@@ -14,15 +14,16 @@ import java.util.Map;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 public final class ExtendedModelTemplate extends ModelTemplate {
     final Map<ItemDisplayContext, TransformVecBuilder> transforms;
@@ -31,11 +32,10 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     final CustomLoaderBuilder customLoader;
     final RootTransformsBuilder rootTransforms;
     @Nullable
-    final ResourceLocation renderType;
+    final Identifier renderType;
     @Nullable
     final Boolean ambientOcclusion;
-    @Nullable
-    final UnbakedModel.GuiLight guiLight;
+    final UnbakedModel.@Nullable GuiLight guiLight;
 
     ExtendedModelTemplate(ExtendedModelTemplateBuilder builder) {
         super(builder.parent, builder.suffix, builder.requiredSlots.toArray(TextureSlot[]::new));
@@ -49,7 +49,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     }
 
     @Override
-    public JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap) {
+    public JsonObject createBaseTemplate(Identifier modelPath, Map<TextureSlot, Identifier> textureMap) {
         var root = super.createBaseTemplate(modelPath, textureMap);
 
         if (this.ambientOcclusion != null) {
@@ -98,8 +98,18 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                 if (part.rotation() != null) {
                     JsonObject rotation = new JsonObject();
                     rotation.add("origin", serializeVector3f(part.rotation().origin()));
-                    rotation.addProperty("axis", part.rotation().axis().getSerializedName());
-                    rotation.addProperty("angle", part.rotation().angle());
+                    switch (part.rotation().value()) {
+                        case BlockElementRotation.SingleAxisRotation(Direction.Axis axis, float angle) -> {
+                            rotation.addProperty("axis", axis.getSerializedName());
+                            rotation.addProperty("angle", angle);
+                        }
+                        case BlockElementRotation.EulerXYZRotation(float x, float y, float z) -> {
+                            rotation.addProperty("x", x);
+                            rotation.addProperty("y", y);
+                            rotation.addProperty("z", z);
+                        }
+                        default -> throw new IllegalArgumentException("Unrecognized BlockElementRotation.RotationValue: " + part.rotation().value());
+                    }
                     if (part.rotation().rescale()) {
                         rotation.addProperty("rescale", true);
                     }
@@ -172,7 +182,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         if (tex.charAt(0) == '#') {
             return tex;
         }
-        return ResourceLocation.parse(tex).toString();
+        return Identifier.parse(tex).toString();
     }
 
     private static JsonArray serializeVector3f(Vector3fc vec) {

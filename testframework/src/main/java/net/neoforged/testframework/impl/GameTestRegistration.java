@@ -25,7 +25,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
@@ -112,14 +112,14 @@ public final class GameTestRegistration {
         for (final TestFrameworkImpl framework : TestFrameworkImpl.FRAMEWORKS) {
             if (!framework.configuration().isEnabled(Feature.GAMETEST)) continue;
 
-            record TestEntry(Test test, ResourceLocation batchName, GameTestData gameTestData) {}
+            record TestEntry(Test test, Identifier batchName, GameTestData gameTestData) {}
             var byBatch = framework.tests().all()
                     .stream().map(t -> {
                         var data = t.asGameTest();
                         if (data == null) return null;
-                        ResourceLocation batch;
+                        Identifier batch;
                         if (data.batchName() != null) {
-                            batch = data.batchName().contains(":") ? ResourceLocation.parse(data.batchName().toLowerCase(Locale.ROOT)) : framework.id().withSuffix(data.batchName().toLowerCase(Locale.ROOT));
+                            batch = data.batchName().contains(":") ? Identifier.parse(data.batchName().toLowerCase(Locale.ROOT)) : framework.id().withSuffix(data.batchName().toLowerCase(Locale.ROOT));
                         } else {
                             final String batchName = !t.groups().isEmpty() ? t.groups().get(0) : "ungrouped";
                             batch = framework.id().withSuffix("/" + batchName.toLowerCase(Locale.ROOT));
@@ -141,7 +141,7 @@ public final class GameTestRegistration {
                             framework.id().withSuffix("/" + test.id().toLowerCase(Locale.ROOT)),
                             new Instance(new TestData<>(
                                     batch,
-                                    ResourceLocation.parse(game.structureName()),
+                                    Identifier.parse(game.structureName()),
                                     game.maxTicks(), game.setupTicks(),
                                     game.required(), game.rotation(),
                                     game.manualOnly(), game.maxAttempts(),

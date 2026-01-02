@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extension class for RenderState objects (ie {@link EntityRenderState}).

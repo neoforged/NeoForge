@@ -19,8 +19,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -63,8 +63,8 @@ import org.slf4j.LoggerFactory;
 @EventBusSubscriber(modid = NeoForgeMod.MOD_ID, value = Dist.CLIENT)
 final class ClientPayloadHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientPayloadHandler.class);
-    private static final Set<ResourceLocation> toSynchronize = Sets.newConcurrentHashSet();
-    private static final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
+    private static final Set<Identifier> toSynchronize = Sets.newConcurrentHashSet();
+    private static final Map<Identifier, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
 
     private ClientPayloadHandler() {}
 

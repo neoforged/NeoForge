@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/sounds/SoundInstance.java
 +++ b/net/minecraft/client/resources/sounds/SoundInstance.java
-@@ -56,4 +_,9 @@
+@@ -54,4 +_,9 @@
          NONE,
          LINEAR;
      }

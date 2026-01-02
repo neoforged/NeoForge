@@ -10,7 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.jetbrains.annotations.ApiStatus;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.ApiStatus;
  * @param optional Whether the component is optional
  */
 @ApiStatus.Internal
-public record ModdedNetworkQueryComponent(ResourceLocation id, String version, Optional<PacketFlow> flow, boolean optional) {
+public record ModdedNetworkQueryComponent(Identifier id, String version, Optional<PacketFlow> flow, boolean optional) {
     public static final StreamCodec<FriendlyByteBuf, ModdedNetworkQueryComponent> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, ModdedNetworkQueryComponent::id,
+            Identifier.STREAM_CODEC, ModdedNetworkQueryComponent::id,
             ByteBufCodecs.STRING_UTF8, ModdedNetworkQueryComponent::version,
             ByteBufCodecs.optional(NeoForgeStreamCodecs.enumCodec(PacketFlow.class)), ModdedNetworkQueryComponent::flow,
             ByteBufCodecs.BOOL, ModdedNetworkQueryComponent::optional,

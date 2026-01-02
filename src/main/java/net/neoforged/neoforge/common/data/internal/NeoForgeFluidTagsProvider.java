@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraft.data.tags.TagAppender;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -51,7 +51,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
 
     private TagAppender<Fluid, Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
         TagAppender<Fluid, Fluid> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath())));
+        tagAppender.addOptionalTag(TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("forge", tag.location().getPath())));
         return tagAppender;
     }
 }

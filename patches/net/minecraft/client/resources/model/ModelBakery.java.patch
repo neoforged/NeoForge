@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -57,7 +_,13 @@
-     private final Map<ResourceLocation, ClientItem> clientInfos;
-     final Map<ResourceLocation, ResolvedModel> resolvedModels;
+@@ -64,7 +_,13 @@
+     private final Map<Identifier, ClientItem> clientInfos;
+     final Map<Identifier, ResolvedModel> resolvedModels;
      final ResolvedModel missingModel;
 +    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
 +    private final net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations;
@@ -14,8 +14,8 @@
      public ModelBakery(
          EntityModelSet p_388903_,
          MaterialSet p_434703_,
-@@ -67,6 +_,20 @@
-         Map<ResourceLocation, ResolvedModel> p_388404_,
+@@ -74,6 +_,20 @@
+         Map<Identifier, ResolvedModel> p_388404_,
          ResolvedModel p_404940_
      ) {
 +        this(p_388903_, p_434703_, p_440085_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
@@ -26,8 +26,8 @@
 +        MaterialSet p_434703_,
 +        PlayerSkinRenderCache p_440085_,
 +        Map<BlockState, BlockStateModel.UnbakedRoot> p_251087_,
-+        Map<ResourceLocation, ClientItem> p_250416_,
-+        Map<ResourceLocation, ResolvedModel> p_388404_,
++        Map<Identifier, ClientItem> p_250416_,
++        Map<Identifier, ResolvedModel> p_388404_,
 +        ResolvedModel p_404940_,
 +        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels,
 +        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
@@ -35,7 +35,7 @@
          this.entityModelSet = p_388903_;
          this.materials = p_434703_;
          this.playerSkinRenderCache = p_440085_;
-@@ -74,6 +_,8 @@
+@@ -81,6 +_,8 @@
          this.clientInfos = p_250416_;
          this.resolvedModels = p_388404_;
          this.missingModel = p_404940_;
@@ -44,7 +44,7 @@
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(SpriteGetter p_404922_, Executor p_405407_) {
-@@ -102,6 +_,7 @@
+@@ -110,6 +_,7 @@
                                  this.playerSkinRenderCache,
                                  modelbakery$missingmodels.item,
                                  p_438822_.registrySwapper()
@@ -52,32 +52,32 @@
                              )
                          );
                  } catch (Exception exception) {
-@@ -111,6 +_,8 @@
+@@ -119,6 +_,8 @@
              },
              p_405407_
          );
 +        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels> standaloneModelsFuture =
 +                net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.bake(this.standaloneModels, modelbakery$modelbakerimpl, p_405407_);
-         Map<ResourceLocation, ClientItem.Properties> map = new HashMap<>(this.clientInfos.size());
-         this.clientInfos.forEach((p_404116_, p_404117_) -> {
+         Map<Identifier, ClientItem.Properties> map = new HashMap<>(this.clientInfos.size());
+         this.clientInfos.forEach((p_467624_, p_404117_) -> {
              ClientItem.Properties clientitem$properties = p_404117_.properties();
-@@ -118,10 +_,11 @@
-                 map.put(p_404116_, clientitem$properties);
+@@ -126,10 +_,11 @@
+                 map.put(p_467624_, clientitem$properties);
              }
          });
 +        completablefuture = completablefuture.thenCombine(standaloneModelsFuture, (stateModels, standaloneModels) -> stateModels);
          return completablefuture.thenCombine(
              completablefuture1,
              (p_404127_, p_404128_) -> new ModelBakery.BakingResult(
--                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<ResourceLocation, ItemModel>)p_404128_, map
-+                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<ResourceLocation, ItemModel>)p_404128_, map, standaloneModelsFuture.join()
+-                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<Identifier, ItemModel>)p_404128_, map
++                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<Identifier, ItemModel>)p_404128_, map, standaloneModelsFuture.join()
              )
          );
      }
-@@ -132,7 +_,20 @@
+@@ -140,7 +_,20 @@
          Map<BlockState, BlockStateModel> blockStateModels,
-         Map<ResourceLocation, ItemModel> itemStackModels,
-         Map<ResourceLocation, ClientItem.Properties> itemProperties
+         Map<Identifier, ItemModel> itemStackModels,
+         Map<Identifier, ClientItem.Properties> itemProperties
 +        , net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels standaloneModels
      ) {
 +        /**
@@ -87,11 +87,34 @@
 +        public BakingResult(
 +                ModelBakery.MissingModels missingModels,
 +                Map<BlockState, BlockStateModel> blockStateModels,
-+                Map<ResourceLocation, ItemModel> itemStackModels,
-+                Map<ResourceLocation, ClientItem.Properties> itemProperties
++                Map<Identifier, ItemModel> itemStackModels,
++                Map<Identifier, ClientItem.Properties> itemProperties
 +        ) {
 +            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
 +        }
      }
  
      @OnlyIn(Dist.CLIENT)
+@@ -234,10 +_,22 @@
+     @OnlyIn(Dist.CLIENT)
+     static class PartCacheImpl implements ModelBaker.PartCache {
+         private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedNormals> normals = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedColors> colors = Interners.newStrongInterner();
+ 
+         @Override
+         public Vector3fc vector(Vector3fc p_470814_) {
+             return this.vectors.intern(p_470814_);
++        }
++
++        @Override
++        public net.neoforged.neoforge.client.model.quad.BakedNormals normals(net.neoforged.neoforge.client.model.quad.BakedNormals normals) {
++            return this.normals.intern(normals);
++        }
++
++        @Override
++        public net.neoforged.neoforge.client.model.quad.BakedColors colors(net.neoforged.neoforge.client.model.quad.BakedColors colors) {
++            return this.colors.intern(colors);
+         }
+     }
+ }

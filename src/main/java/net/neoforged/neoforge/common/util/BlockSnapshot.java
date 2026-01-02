@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -238,7 +238,7 @@ public class BlockSnapshot {
     public String toString() {
         if (toString == null) {
             this.toString = "BlockSnapshot[" +
-                    "Level:" + this.dim.location() + ',' +
+                    "Level:" + this.dim.identifier() + ',' +
                     "Pos: " + this.pos + ',' +
                     "State: " + this.state + ',' +
                     "Flags: " + this.flags + ',' +

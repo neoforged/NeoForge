@@ -10,13 +10,13 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -144,7 +144,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     protected final void deserializeAttachments(ValueInput input) {
         for (var key : input.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
-            ResourceLocation keyLocation = ResourceLocation.tryParse(key);
+            Identifier keyLocation = Identifier.tryParse(key);
             if (keyLocation == null) {
                 LOGGER.error("Encountered invalid data attachment key {}. Skipping.", key);
                 continue;

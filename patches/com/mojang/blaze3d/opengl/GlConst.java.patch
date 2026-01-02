@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -251,6 +_,8 @@
+@@ -253,6 +_,8 @@
              case RED8 -> 33321;
              case RED8I -> 33329;
              case DEPTH32 -> 33191;
@@ -9,7 +9,7 @@
          };
      }
  
-@@ -260,6 +_,10 @@
+@@ -262,6 +_,10 @@
              case RED8 -> 6403;
              case RED8I -> 6403;
              case DEPTH32 -> 6402;
@@ -20,7 +20,7 @@
          };
      }
  
-@@ -269,6 +_,8 @@
+@@ -271,6 +_,8 @@
              case RED8 -> 5121;
              case RED8I -> 5121;
              case DEPTH32 -> 5126;
@@ -29,7 +29,7 @@
          };
      }
  
-@@ -309,5 +_,31 @@
+@@ -311,5 +_,31 @@
          } else {
              return 35044;
          }

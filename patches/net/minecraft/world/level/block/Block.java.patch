@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -74,7 +_,7 @@
+@@ -78,7 +_,7 @@
      public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
@@ -9,7 +9,7 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -232,7 +_,7 @@
+@@ -241,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -18,7 +18,7 @@
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);
-@@ -288,12 +_,22 @@
+@@ -297,12 +_,22 @@
          }
      }
  
@@ -41,7 +41,7 @@
          } else if (voxelshape == Shapes.empty()) {
              return true;
          } else {
-@@ -366,24 +_,30 @@
+@@ -375,24 +_,30 @@
  
      public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
          if (p_49952_ instanceof ServerLevel) {
@@ -76,12 +76,12 @@
          }
      }
  
-@@ -411,19 +_,26 @@
+@@ -420,19 +_,26 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
--        if (p_152441_ instanceof ServerLevel serverlevel && !p_152443_.isEmpty() && serverlevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-+        if (p_152441_ instanceof ServerLevel serverLevel && !p_152443_.isEmpty() && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_152441_.restoringBlockSnapshots) {
+-        if (p_152441_ instanceof ServerLevel serverlevel && !p_152443_.isEmpty() && serverlevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
++        if (p_152441_ instanceof ServerLevel serverLevel && !p_152443_.isEmpty() && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS) && !p_152441_.restoringBlockSnapshots) {
              ItemEntity itementity = p_152442_.get();
              itementity.setDefaultPickUpDelay();
 -            p_152441_.addFreshEntity(itementity);
@@ -96,8 +96,8 @@
      }
  
      public void popExperience(ServerLevel p_49806_, BlockPos p_49807_, int p_49808_) {
--        if (p_49806_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-+        if (p_49806_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_49806_.restoringBlockSnapshots) {
+-        if (p_49806_.getGameRules().get(GameRules.BLOCK_DROPS)) {
++        if (p_49806_.getGameRules().get(GameRules.BLOCK_DROPS) && !p_49806_.restoringBlockSnapshots) {
              ExperienceOrb.award(p_49806_, Vec3.atCenterOf(p_49807_), p_49808_);
          }
      }
@@ -106,7 +106,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -493,6 +_,7 @@
+@@ -501,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -114,7 +114,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -576,6 +_,35 @@
+@@ -584,6 +_,35 @@
          return p_394311_.setValue(p_394352_, (T)p_394525_);
      }
  

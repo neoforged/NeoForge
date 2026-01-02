@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -567,7 +_,7 @@
+@@ -562,7 +_,7 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_421864_) {
@@ -9,7 +9,7 @@
              }
  
              public R decode(RegistryFriendlyByteBuf p_412249_) {
-@@ -597,7 +_,7 @@
+@@ -592,7 +_,7 @@
              private static final int DIRECT_HOLDER_ID = 0;
  
              private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf p_428365_) {
@@ -18,7 +18,7 @@
              }
  
              public Holder<T> decode(RegistryFriendlyByteBuf p_421902_) {
-@@ -619,13 +_,38 @@
+@@ -614,13 +_,38 @@
          };
      }
  
@@ -56,8 +56,8 @@
 +                }
                  if (i == -1) {
                      Registry<T> registry = p_428283_.registryAccess().lookupOrThrow(p_332137_);
-                     return registry.get(TagKey.create(p_332137_, ResourceLocation.STREAM_CODEC.decode(p_428283_))).orElseThrow();
-@@ -641,6 +_,15 @@
+                     return registry.get(TagKey.create(p_332137_, Identifier.STREAM_CODEC.decode(p_428283_))).orElseThrow();
+@@ -636,6 +_,15 @@
              }
  
              public void encode(RegistryFriendlyByteBuf p_428187_, HolderSet<T> p_428305_) {

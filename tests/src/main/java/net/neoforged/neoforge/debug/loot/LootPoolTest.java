@@ -11,8 +11,8 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
@@ -42,10 +42,10 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot")
 public class LootPoolTest {
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_1 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_1"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_2 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_2"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_3 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_3"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_4 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_4"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_1 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_1"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_2 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_2"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_3 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_3"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_4 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_4"));
 
     @GameTest
     @EmptyTemplate
@@ -104,7 +104,7 @@ public class LootPoolTest {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> {
-                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.location()));
+                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.identifier()));
                     LootParams.Builder lootParamsBuilder = new LootParams.Builder(helper.getLevel())
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
@@ -145,7 +145,7 @@ public class LootPoolTest {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> {
-                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.location()));
+                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.identifier()));
                     LootParams.Builder lootParamsBuilder = new LootParams.Builder(helper.getLevel())
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
@@ -186,7 +186,7 @@ public class LootPoolTest {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> {
-                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.location()));
+                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.identifier()));
                     LootParams.Builder lootParamsBuilder = new LootParams.Builder(helper.getLevel())
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
@@ -200,10 +200,10 @@ public class LootPoolTest {
 
     @TestHolder(description = "Tests that loot tables correctly generate with loading conditions", enabledByDefault = true)
     static void conditionalLootTable(final DynamicTest test, final RegistrationHelper reg) {
-        ResourceKey<LootTable> tableOne = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(test.createModId(), "table_1"));
-        ResourceKey<LootTable> tableTwo = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(test.createModId(), "table_2"));
-        ResourceLocation tableOneLoc = tableOne.location().withPrefix("loot_table/").withSuffix(".json");
-        ResourceLocation tableTwoLoc = tableTwo.location().withPrefix("loot_table/").withSuffix(".json");
+        ResourceKey<LootTable> tableOne = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(test.createModId(), "table_1"));
+        ResourceKey<LootTable> tableTwo = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(test.createModId(), "table_2"));
+        Identifier tableOneLoc = tableOne.identifier().withPrefix("loot_table/").withSuffix(".json");
+        Identifier tableTwoLoc = tableTwo.identifier().withPrefix("loot_table/").withSuffix(".json");
 
         reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),

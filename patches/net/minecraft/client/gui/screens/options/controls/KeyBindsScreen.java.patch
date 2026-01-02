@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
-@@ -25,6 +_,11 @@
+@@ -24,6 +_,11 @@
      public long lastKeySelection;
      private KeyBindsList keyBindsList;
      private Button resetButton;
@@ -12,7 +12,7 @@
  
      public KeyBindsScreen(Screen p_344996_, Options p_344771_) {
          super(p_344996_, p_344771_, TITLE);
-@@ -43,7 +_,7 @@
+@@ -42,7 +_,7 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
              for (KeyMapping keymapping : this.options.keyMappings) {
@@ -21,7 +21,7 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -74,18 +_,67 @@
+@@ -73,18 +_,67 @@
      @Override
      public boolean keyPressed(KeyEvent p_446842_) {
          if (this.selectedKey != null) {

@@ -14,9 +14,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
+import org.joml.Vector3fc;
 import org.slf4j.Logger;
 
 /**
@@ -48,20 +48,20 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             for (int vertex = 0; vertex < 4; ++vertex) {
                 // Handle each vertex separately to apply vertex normals.
 
-                int normal = quad.vertices()[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+                int normal = quad.bakedNormals().normal(vertex);
                 // The ignored byte is padding and may be filled with user data
-                if ((normal & 0x00FFFFFF) == 0) {
+                if (BakedNormals.isUnspecified(normal)) {
                     // No normal! Try to use the quad normal.
                     if (quadNormal == -1) {
-                        quadNormal = ClientHooks.computeQuadNormal(quad.vertices());
+                        quadNormal = BakedNormals.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
                     }
                     normal = quadNormal;
                 }
 
                 storage.brightness[vertex] = level.getShade(
-                        normalComponent(normal, 0),
-                        normalComponent(normal, 1),
-                        normalComponent(normal, 2),
+                        BakedNormals.unpackX(normal),
+                        BakedNormals.unpackY(normal),
+                        BakedNormals.unpackZ(normal),
                         quad.shade());
             }
         } else {
@@ -146,10 +146,10 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
         // This will work regardless of the vertex order or position
         AoFace aoFace = AoFace.fromDirection(direction);
-        int[] vertices = this.currentQuad.vertices();
         float[] weights = this.weights;
         for (int vertex = 0; vertex < 4; ++vertex) {
-            aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
+            Vector3fc vertPos = this.currentQuad.position(vertex);
+            aoFace.computeCornerWeights(weights, vertPos.x(), vertPos.y(), vertPos.z());
             brightness[vertex] = interpolateBrightness(fullFace, weights);
             lightmap[vertex] = interpolateLightmap(fullFace, weights);
         }
@@ -188,18 +188,17 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
     private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, boolean shade) {
-        int[] vertices = currentQuad.vertices();
         int quadNormal = -1;
 
         for (int vertex = 0; vertex < 4; ++vertex) {
             // Handle each vertex separately to apply vertex normals.
 
-            int normal = vertices[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+            int normal = currentQuad.bakedNormals().normal(vertex);
             // The ignored byte is padding and may be filled with user data
-            if ((normal & 0x00FFFFFF) == 0) {
+            if (BakedNormals.isUnspecified(normal)) {
                 // No normal! Try to use the quad normal.
                 if (quadNormal == -1) {
-                    quadNormal = ClientHooks.computeQuadNormal(vertices);
+                    quadNormal = BakedNormals.computeQuadNormal(currentQuad.position0(), currentQuad.position1(), currentQuad.position2(), currentQuad.position3());
                 }
                 normal = quadNormal;
             }
@@ -210,7 +209,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             int maxLightmap = 0;
 
             for (int axis = 0; axis < 3; ++axis) {
-                float normalComponent = normalComponent(normal, axis);
+                float normalComponent = BakedNormals.unpackComponent(normal, axis);
                 if (normalComponent == 0) {
                     continue;
                 }
@@ -225,17 +224,15 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
                 // Compute full face
                 AoFace aoFace = AoFace.fromDirection(direction);
-                float depth = aoFace.computeDepth(
-                        vertexPos(vertices, vertex, 0),
-                        vertexPos(vertices, vertex, 1),
-                        vertexPos(vertices, vertex, 2));
+                Vector3fc vertPos = this.currentQuad.position(vertex);
+                float depth = aoFace.computeDepth(vertPos.x(), vertPos.y(), vertPos.z());
                 // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
                 boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
                 AoCalculatedFace fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, sampleOutside);
 
                 // Perform bilinear interpolation to map full AO face to this vertex.
                 float[] weights = this.weights;
-                aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
+                aoFace.computeCornerWeights(weights, vertPos.x(), vertPos.y(), vertPos.z());
                 float brightness = interpolateBrightness(fullFace, weights);
                 int lightmap = interpolateLightmap(fullFace, weights);
 
@@ -255,27 +252,6 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             brightness[vertex] = Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F);
             lightmap[vertex] = lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT);
         }
-    }
-
-    /**
-     * Extracts the position of a vertex from quad data.
-     *
-     * @param vertices quad data
-     * @param vertex   vertex index, from 0 to 3 included
-     * @param axis     axis index, for 0 to 2 included
-     */
-    private static float vertexPos(int[] vertices, int vertex, int axis) {
-        return Float.intBitsToFloat(vertices[vertex * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + axis]);
-    }
-
-    /**
-     * Unpacks a normal component.
-     */
-    private static float normalComponent(int normal, int axis) {
-        int encodedNormalComponent = (normal >> (axis * 8)) & 0xFF;
-        // Casting to byte will cast to a signed int.
-        // This is really important, otherwise negative values will lead to above 1.0 normal components.
-        return ((byte) encodedNormalComponent) / 127.0f;
     }
 
     /**

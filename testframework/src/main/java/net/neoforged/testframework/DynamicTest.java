@@ -7,24 +7,20 @@ package net.neoforged.testframework;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A special type of {@linkplain Test test} which may only be linked to one {@linkplain TestFramework framework} at a time. <br>
  * This type of test can have enabled/disabled listeners added dynamically, and is as such, used primarily by method-based tests.
  */
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public interface DynamicTest extends Test {
     /**
      * {@return the framework this test is linked to}
@@ -108,7 +104,7 @@ public interface DynamicTest extends Test {
      * @param builder the builder of the template
      */
     default void registerGameTestTemplate(StructureTemplateBuilder builder) {
-        framework().dynamicStructures().register(ResourceLocation.parse(asGameTest().structureName()), builder.build());
+        framework().dynamicStructures().register(Identifier.parse(asGameTest().structureName()), builder.build());
     }
 
     /**
@@ -117,7 +113,7 @@ public interface DynamicTest extends Test {
      * @param builder a supplier of the builder of the template
      */
     default void registerGameTestTemplate(Supplier<StructureTemplateBuilder> builder) {
-        framework().dynamicStructures().register(ResourceLocation.parse(asGameTest().structureName()), () -> builder.get().build());
+        framework().dynamicStructures().register(Identifier.parse(asGameTest().structureName()), () -> builder.get().build());
     }
 
     /**

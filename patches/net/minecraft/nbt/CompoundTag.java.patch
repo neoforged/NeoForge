@@ -40,10 +40,10 @@
      @Override
      public void write(DataOutput p_128341_) throws IOException {
          for (String s : this.tags.keySet()) {
-@@ -228,6 +_,7 @@
+@@ -227,6 +_,7 @@
+     }
  
-     @Nullable
-     public Tag put(String p_128366_, Tag p_128367_) {
+     public @Nullable Tag put(String p_128366_, Tag p_128367_) {
 +        if (p_128367_ == null) throw new IllegalArgumentException("Invalid null NBT value with key " + p_128366_);
          return this.tags.put(p_128366_, p_128367_);
      }

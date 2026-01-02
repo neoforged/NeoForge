@@ -8,16 +8,13 @@ package net.neoforged.neoforge.client.model.generators.template;
 import com.google.common.base.Preconditions;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 public final class RotationBuilder {
     @Nullable
     private Vector3f origin;
-    @Nullable
-    private Direction.Axis axis;
-    private float angle;
+    private BlockElementRotation.@Nullable RotationValue value;
     private boolean rescale;
 
     /**
@@ -29,25 +26,29 @@ public final class RotationBuilder {
     }
 
     /**
-     * @param axis the axis of rotation
+     * Specify a rotation around a single axis.
+     *
+     * @param axis  the axis of rotation
+     * @param angle the rotation angle around the specified axis
      * @return this builder
      * @throws NullPointerException if {@code axis} is {@code null}
      */
-    public RotationBuilder axis(Direction.Axis axis) {
+    public RotationBuilder singleAxis(Direction.Axis axis, float angle) {
         Preconditions.checkNotNull(axis, "Axis must not be null");
-        this.axis = axis;
+        this.value = new BlockElementRotation.SingleAxisRotation(axis, angle);
         return this;
     }
 
     /**
-     * @param angle the rotation angle
+     * Specify a rotation around multiple axis.
+     *
+     * @param angleX the rotation angle around the X axis
+     * @param angleY the rotation angle around the Y axis
+     * @param angleZ the rotation angle around the Z axis
      * @return this builder
-     * @throws IllegalArgumentException if {@code angle} is invalid (not one of 0, +/-22.5, +/-45)
      */
-    public RotationBuilder angle(float angle) {
-        // Same logic from BlockPart.Deserializer#parseAngle
-        Preconditions.checkArgument(angle == 0.0F || Mth.abs(angle) == 22.5F || Mth.abs(angle) == 45.0F, "Invalid rotation %f found, only -45/-22.5/0/22.5/45 allowed", angle);
-        this.angle = angle;
+    public RotationBuilder eulerXYZ(float angleX, float angleY, float angleZ) {
+        this.value = new BlockElementRotation.EulerXYZRotation(angleX, angleY, angleZ);
         return this;
     }
 
@@ -61,15 +62,14 @@ public final class RotationBuilder {
 
     BlockElementRotation build() {
         Preconditions.checkNotNull(origin, "No origin specified");
-        Preconditions.checkNotNull(axis, "No axis specified");
-        return new BlockElementRotation(origin, axis, angle, rescale);
+        Preconditions.checkNotNull(value, "No value specified");
+        return new BlockElementRotation(origin, value, rescale);
     }
 
     RotationBuilder copy() {
         RotationBuilder builder = new RotationBuilder();
         builder.origin = this.origin != null ? new Vector3f(this.origin) : null;
-        builder.axis = this.axis;
-        builder.angle = this.angle;
+        builder.value = this.value;
         builder.rescale = this.rescale;
         return builder;
     }
