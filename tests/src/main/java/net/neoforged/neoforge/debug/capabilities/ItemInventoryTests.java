@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.capabilities;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
@@ -14,8 +15,8 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.item.BundleItemHandler;
 import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
@@ -24,6 +25,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
+import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "capabilities.iteminventory")
@@ -31,15 +33,24 @@ public class ItemInventoryTests {
     public static final int SLOTS = 128;
     public static final int STICK_SLOT = 64;
 
+    private static final RegistrationHelper HELPER = RegistrationHelper.create("item_inventory_tests");
+
+    private static final DeferredItems ITEMS = HELPER.items();
+    private static final DeferredItem<Item> BACKPACK;
+
+    static {
+        NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
+        defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
+        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, new Item.Properties().component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
+    }
+
     @OnInit
     static void init(final TestFramework framework) {
+        ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
             e.registerItem(Capabilities.Item.ITEM, (stack, itemAccess) -> {
                 return new ItemAccessItemHandler(itemAccess, DataComponents.CONTAINER, SLOTS);
-            }, Items.SHULKER_BOX);
-            e.registerItem(Capabilities.Item.ITEM, (stack, itemAccess) -> {
-                return new BundleItemHandler(itemAccess, DataComponents.BUNDLE_CONTENTS);
-            }, Items.BUNDLE);
+            }, BACKPACK);
         });
     }
 
@@ -48,10 +59,7 @@ public class ItemInventoryTests {
     @TestHolder(description = "Tests that ComponentItemHandler can read and write from a data component")
     public static void testItemContainer(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
-            NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-            defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
-            ItemStack container = Items.SHULKER_BOX.getDefaultInstance();
-            container.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents));
+            ItemStack container = BACKPACK.toStack();
 
             ItemAccess itemAccess = ItemAccess.forStack(container);
             // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
@@ -119,7 +127,7 @@ public class ItemInventoryTests {
             ItemStack remainder = items.insertItem(2, moreApples, false);
             helper.assertTrue(remainder.isEmpty(), "Should be able to insert 32 more apples.");
 
-            helper.assertValueEqual(items.getSlots(), 3, "After merging, slot count should remain 3.");
+            helper.assertValueEqual(items.getSlots(), 2, "After merging to full, slot count should be 2.");
 
             int appleCount = 0;
             for (int i = 0; i < 2; i++) {

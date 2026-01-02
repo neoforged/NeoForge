@@ -19,7 +19,7 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Base implementation of an item {@link ResourceHandler} backed by an {@link ItemAccess}.
+ * Item {@link ResourceHandler} backed by an {@link ItemAccess} for use with bundle-like items.
  * The stacks are stored in a {@link BundleContents} data component.
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link BundleContents} for your item.
@@ -40,7 +40,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
     public int size() {
         BundleContents contents = itemAccess.getResource().get(component);
         if (contents == null) return 0;
-        return contents.size() + 1;
+        return contents.size() + (contents.weight().intValue() < 1 ? 1 : 0);
     }
 
     protected ItemStack getStack(int index) {
@@ -61,7 +61,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
     @Override
     public long getAmountAsLong(int index) {
         if (itemAccess.getResource().is(validItem)) {
-            return getStack(index).getCount();
+            return (long) itemAccess.getAmount() * getStack(index).getCount();
         } else {
             return 0;
         }
@@ -69,19 +69,22 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
 
     @Override
     public long getCapacityAsLong(int index, ItemResource resource) {
-        return resource.isEmpty() ? Item.ABSOLUTE_MAX_STACK_SIZE : Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
+        if (isValid(index, resource)) {
+            return (long) itemAccess.getAmount() * (resource.isEmpty() ? Item.ABSOLUTE_MAX_STACK_SIZE : Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE));
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        // Any resource is valid, but we have to check that the item of the item access has not changed.
-        return itemAccess.getResource().is(validItem);
+        return itemAccess.getResource().is(validItem) && BundleContents.canItemBeInBundle(resource.toStack());
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-        if (index < 0) return 0;
+        TransferPreconditions.checkNonNegative(index);
 
         ItemResource accessResource = itemAccess.getResource();
         BundleContents contents = accessResource.get(component);
@@ -107,7 +110,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-        if (index < 0) return 0;
+        TransferPreconditions.checkNonNegative(index);
 
         ItemResource accessResource = itemAccess.getResource();
         BundleContents contents = accessResource.get(component);
