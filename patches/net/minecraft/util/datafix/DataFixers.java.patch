@@ -1,9 +1,9 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1362,10 +_,35 @@
-         Schema schema202 = p_14514_.addSchema(3800, SAME_NAMESPACED);
+@@ -1374,10 +_,35 @@
+         Schema schema203 = p_14514_.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
-         p_14514_.addFixer(ItemRenameFix.create(schema202, "Rename scute item to turtle_scute", unaryoperator2));
+         p_14514_.addFixer(ItemRenameFix.create(schema203, "Rename scute item to turtle_scute", unaryoperator2));
 +
 +        // Neo: Remove step height attribute, which cannot be sanely updated
 +        // Happens in 23w51a
@@ -16,9 +16,9 @@
 +                )
 +        ));
 +
-         Schema schema203 = p_14514_.addSchema(3803, SAME_NAMESPACED);
+         Schema schema204 = p_14514_.addSchema(3803, SAME_NAMESPACED);
          p_14514_.addFixer(
-             new RenameEnchantmentsFix(schema203, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
+             new RenameEnchantmentsFix(schema204, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
          );
 +
 +        // Neo: rename neo attributes to new MC attributes
@@ -33,11 +33,11 @@
 +                ))
 +        ));
 +
-         Schema schema204 = p_14514_.addSchema(3807, V3807::new);
-         p_14514_.addFixer(new AddNewChoices(schema204, "Added Vault", References.BLOCK_ENTITY));
-         Schema schema205 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1388,6 +_,18 @@
-                 schema212, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
+         Schema schema205 = p_14514_.addSchema(3807, V3807::new);
+         p_14514_.addFixer(new AddNewChoices(schema205, "Added Vault", References.BLOCK_ENTITY));
+         Schema schema206 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
+@@ -1400,6 +_,18 @@
+                 schema213, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
              )
          );
 +
@@ -52,6 +52,6 @@
 +                )
 +        ));
 +
-         Schema schema213 = p_14514_.addSchema(3816, V3816::new);
-         p_14514_.addFixer(new AddNewChoices(schema213, "Added Bogged", References.ENTITY));
-         Schema schema214 = p_14514_.addSchema(3818, V3818::new);
+         Schema schema214 = p_14514_.addSchema(3816, V3816::new);
+         p_14514_.addFixer(new AddNewChoices(schema214, "Added Bogged", References.ENTITY));
+         Schema schema215 = p_14514_.addSchema(3818, V3818::new);

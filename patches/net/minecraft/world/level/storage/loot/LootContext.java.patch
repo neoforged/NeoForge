@@ -1,32 +1,31 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -109,15 +_,40 @@
+@@ -109,14 +_,39 @@
          }
      }
  
 +    // Neo: Keep track of the original loot table ID through modifications
-+    @org.jetbrains.annotations.Nullable
-+    private ResourceLocation queriedLootTableId;
++    @org.jspecify.annotations.Nullable
++    private Identifier queriedLootTableId;
 +
-+    private LootContext(LootParams p_287722_, RandomSource p_287702_, HolderGetter.Provider p_287619_, ResourceLocation queriedLootTableId) {
++    private LootContext(LootParams p_287722_, RandomSource p_287702_, HolderGetter.Provider p_287619_, Identifier queriedLootTableId) {
 +        this(p_287722_, p_287702_, p_287619_);
 +        this.queriedLootTableId = queriedLootTableId;
 +    }
 +
-+    public void setQueriedLootTableId(@org.jetbrains.annotations.Nullable ResourceLocation queriedLootTableId) {
++    public void setQueriedLootTableId(@org.jspecify.annotations.Nullable Identifier queriedLootTableId) {
 +        if (this.queriedLootTableId == null && queriedLootTableId != null) this.queriedLootTableId = queriedLootTableId;
 +    }
 +
-+    public ResourceLocation getQueriedLootTableId() {
++    public Identifier getQueriedLootTableId() {
 +        return this.queriedLootTableId == null ? net.neoforged.neoforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE : this.queriedLootTableId;
 +    }
 +
      public static class Builder {
          private final LootParams params;
-         @Nullable
-         private RandomSource random;
+         private @Nullable RandomSource random;
 +        @Nullable
-+        private ResourceLocation queriedLootTableId; // Forge: correctly pass around loot table ID with copy constructor
++        private Identifier queriedLootTableId; // Forge: correctly pass around loot table ID with copy constructor
  
          public Builder(LootParams p_287628_) {
              this.params = p_287628_;
@@ -41,11 +40,11 @@
          public LootContext.Builder withOptionalRandomSeed(long p_78966_) {
              if (p_78966_ != 0L) {
                  this.random = RandomSource.create(p_78966_);
-@@ -131,6 +_,11 @@
+@@ -130,6 +_,11 @@
              return this;
          }
  
-+        public LootContext.Builder withQueriedLootTableId(ResourceLocation queriedLootTableId) {
++        public LootContext.Builder withQueriedLootTableId(Identifier queriedLootTableId) {
 +            this.queriedLootTableId = queriedLootTableId;
 +            return this;
 +        }
@@ -53,7 +52,7 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -141,7 +_,7 @@
+@@ -140,7 +_,7 @@
              RandomSource randomsource = Optional.ofNullable(this.random)
                  .or(() -> p_298622_.map(serverlevel::getRandomSequence))
                  .orElseGet(serverlevel::getRandom);
@@ -62,13 +61,14 @@
          }
      }
  
-@@ -164,6 +_,11 @@
- 
-         public ContextKey<? extends Entity> getParam() {
+@@ -164,6 +_,12 @@
+         @Override
+         public ContextKey<? extends Entity> contextParam() {
              return this.param;
 +        }
 +
 +        // Forge: This method is patched in to expose the same name used in getByName so that ContextNbtProvider#forEntity serializes it properly
++        // TODO 1.21.11: To be consistent with getParam() being renamed to contextParam(), consider renaming to name()
 +        public String getName() {
 +            return this.name;
          }

@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
@@ -35,7 +35,7 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = "attachment.sync")
 public class AttachmentSyncTests {
@@ -45,7 +45,7 @@ public class AttachmentSyncTests {
         var attachment = reg.attachments().register("value", () -> AttachmentType.builder(() -> 0)
                 .serialize(Codec.INT.fieldOf("value")).sync(ByteBufCodecs.VAR_INT).build());
 
-        var packetType = new CustomPacketPayload.Type(ResourceLocation.fromNamespaceAndPath(reg.modId(), "expect_attachment"));
+        var packetType = new CustomPacketPayload.Type(Identifier.fromNamespaceAndPath(reg.modId(), "expect_attachment"));
 
         class ExpectAttachmentValuePayload implements CustomPacketPayload {
             private final int value;

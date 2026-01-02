@@ -7,7 +7,7 @@ package net.neoforged.neoforge.network.configuration;
 
 import java.util.function.Consumer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.payload.CommonVersionPayload;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record CommonVersionTask() implements ICustomConfigurationTask {
-    public static final Type TYPE = new Type(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "common_version"));
+    public static final Type TYPE = new Type(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "common_version"));
 
     @Override
     public Type type() {

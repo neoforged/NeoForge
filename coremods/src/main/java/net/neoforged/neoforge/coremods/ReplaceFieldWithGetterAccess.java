@@ -13,7 +13,7 @@ import java.util.Set;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import net.neoforged.neoforgespi.transformation.SimpleClassProcessor;
 import net.neoforged.neoforgespi.transformation.SimpleTransformationContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;

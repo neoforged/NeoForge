@@ -1,0 +1,37 @@
+--- a/net/minecraft/util/Util.java
++++ b/net/minecraft/util/Util.java
+@@ -268,8 +_,8 @@
+                 .getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().dataVersion().version()))
+                 .getChoiceType(p_469919_, p_468897_);
+         } catch (IllegalArgumentException illegalargumentexception) {
+-            LOGGER.error("No data fixer registered for {}", p_468897_);
+-            if (SharedConstants.IS_RUNNING_IN_IDE) {
++            LOGGER.debug("No data fixer registered for {}", p_468897_);
++            if (SharedConstants.IS_RUNNING_IN_IDE && false) {
+                 throw illegalargumentexception;
+             }
+         }
+@@ -679,20 +_,20 @@
+ 
+     public static void logAndPauseIfInIde(String p_468059_) {
+         LOGGER.error(p_468059_);
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
+             doPause(p_468059_);
+         }
+     }
+ 
+     public static void logAndPauseIfInIde(String p_467743_, Throwable p_467826_) {
+         LOGGER.error(p_467743_, p_467826_);
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
+             doPause(p_467743_);
+         }
+     }
+ 
+     public static <T extends Throwable> T pauseInIde(T p_469784_) {
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
+             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", p_469784_);
+             doPause(p_469784_.getMessage());
+         }

@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
@@ -26,7 +26,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         return net.minecraft.util.StringUtil.stripColor(value);
     }
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
     private final int listWidth;
 
     private ModListScreen parent;

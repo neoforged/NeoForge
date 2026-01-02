@@ -13,7 +13,7 @@ import net.minecraft.client.gui.font.providers.GlyphProviderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -30,7 +30,7 @@ public class CustomGlyphProviderTypeTest {
     public static final EnumProxy<GlyphProviderType> REFERENCE_2_PARAMS = new EnumProxy<>(
             GlyphProviderType.class, "neotests:reference_2", Reference2.CODEC);
 
-    public static final ResourceLocation LISTENER_NAME = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "glyph_test");
+    public static final Identifier LISTENER_NAME = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "glyph_test");
 
     @TestHolder(description = "Tests if custom GlyphProviderTypes were used for loading resources", enabledByDefault = true)
     static void setupGlyphProviderTypeTest(DynamicTest test) {
@@ -45,9 +45,9 @@ public class CustomGlyphProviderTypeTest {
                 final Minecraft minecraft = Minecraft.getInstance();
                 final MutableComponent component = Component.literal("iiiii");
                 final int vanillaWidth = minecraft.font.width(component.withStyle(s -> s
-                        .withFont(new FontDescription.Resource(ResourceLocation.withDefaultNamespace("uniform")))));
+                        .withFont(new FontDescription.Resource(Identifier.withDefaultNamespace("uniform")))));
                 final int moddedWidth = minecraft.font.width(component.withStyle(s -> s
-                        .withFont(new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath("custom_glyph_provider_type_test", "vanilla")))));
+                        .withFont(new FontDescription.Resource(Identifier.fromNamespaceAndPath("custom_glyph_provider_type_test", "vanilla")))));
 
                 if (moddedWidth != vanillaWidth) {
                     test.fail("Width of modded text is " + moddedWidth + ", but " + vanillaWidth + " was expected.");
@@ -58,8 +58,8 @@ public class CustomGlyphProviderTypeTest {
         }));
     }
 
-    public record Reference2(ResourceLocation what) implements GlyphProviderDefinition {
-        public static final MapCodec<Reference2> CODEC = ResourceLocation.CODEC.fieldOf("what")
+    public record Reference2(Identifier what) implements GlyphProviderDefinition {
+        public static final MapCodec<Reference2> CODEC = Identifier.CODEC.fieldOf("what")
                 .xmap(Reference2::new, Reference2::what);
 
         @Override

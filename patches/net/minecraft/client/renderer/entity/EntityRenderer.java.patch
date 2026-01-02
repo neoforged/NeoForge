@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -132,6 +_,8 @@
+@@ -126,6 +_,8 @@
  
      protected void submitNameTag(S p_436016_, PoseStack p_433473_, SubmitNodeCollector p_434265_, CameraRenderState p_451278_) {
          if (p_436016_.nameTag != null) {
@@ -9,7 +9,7 @@
              p_434265_.submitNameTag(
                  p_433473_,
                  p_436016_.nameTagAttachment,
-@@ -164,6 +_,7 @@
+@@ -157,6 +_,7 @@
          S s = this.createRenderState();
          this.extractRenderState(p_361382_, s, p_360885_);
          this.finalizeRenderState(p_361382_, s);
@@ -17,7 +17,7 @@
          return s;
      }
  
-@@ -173,6 +_,7 @@
+@@ -166,6 +_,7 @@
          p_361028_.y = Mth.lerp((double)p_362204_, p_362104_.yOld, p_362104_.getY());
          p_361028_.z = Mth.lerp((double)p_362204_, p_362104_.zOld, p_362104_.getZ());
          p_361028_.isInvisible = p_362104_.isInvisible();
@@ -25,7 +25,7 @@
          p_361028_.ageInTicks = p_362104_.tickCount + p_362204_;
          p_361028_.boundingBoxWidth = p_362104_.getBbWidth();
          p_361028_.boundingBoxHeight = p_362104_.getBbHeight();
-@@ -191,9 +_,10 @@
+@@ -184,9 +_,10 @@
  
          if (this.entityRenderDispatcher.camera != null) {
              p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);

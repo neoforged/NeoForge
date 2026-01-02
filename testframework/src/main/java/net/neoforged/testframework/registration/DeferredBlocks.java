@@ -13,8 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,7 +32,7 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     }
 
     @Override
-    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryKey, ResourceLocation key) {
+    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryKey, Identifier key) {
         return new DeferredBlockBuilder<>(ResourceKey.create(registryKey, key), registrationHelper);
     }
 
@@ -42,7 +42,7 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     }
 
     @Override
-    public <B extends Block> DeferredBlockBuilder<B> register(String name, Function<ResourceLocation, ? extends B> func) {
+    public <B extends Block> DeferredBlockBuilder<B> register(String name, Function<Identifier, ? extends B> func) {
         return (DeferredBlockBuilder<B>) super.register(name, func);
     }
 
@@ -79,8 +79,8 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
 
     public <B extends Block, E extends BlockEntity> DeferredBlockBuilder<B> registerBlockWithBEType(String name, BiFunction<BlockBehaviour.Properties, Supplier<BlockEntityType<E>>, ? extends B> func, TriFunction<BlockEntityType<?>, BlockPos, BlockState, E> beType, Supplier<BlockBehaviour.Properties> props) {
         final Supplier<BlockEntityType<E>> be = registrationHelper.registrar(Registries.BLOCK_ENTITY_TYPE).register(name, () -> new BlockEntityType<>(
-                (pos, state) -> beType.apply(BuiltInRegistries.BLOCK_ENTITY_TYPE.getValue(ResourceLocation.fromNamespaceAndPath(getNamespace(), name)), pos, state),
-                BuiltInRegistries.BLOCK.getValue(ResourceLocation.fromNamespaceAndPath(getNamespace(), name))));
+                (pos, state) -> beType.apply(BuiltInRegistries.BLOCK_ENTITY_TYPE.getValue(Identifier.fromNamespaceAndPath(getNamespace(), name)), pos, state),
+                BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(getNamespace(), name))));
         return registerBlock(name, properties -> func.apply(properties, be), props);
     }
 

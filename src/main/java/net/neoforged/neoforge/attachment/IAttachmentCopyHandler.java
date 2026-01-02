@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.attachment;
 
 import net.minecraft.core.HolderLookup;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Custom copy handler for data attachments, to improve efficiency compared to the default

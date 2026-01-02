@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -180,7 +_,7 @@
+@@ -184,7 +_,7 @@
                  DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_338600_.getItem();
                  BlockPos blockpos = p_338193_.pos().relative(p_338193_.state().getValue(DispenserBlock.FACING));
                  Level level = p_338193_.level();
@@ -9,7 +9,7 @@
                      dispensiblecontaineritem.checkExtraContent(null, level, p_338600_, blockpos);
                      return this.consumeWithRemainder(p_338193_, p_338600_, new ItemStack(Items.BUCKET));
                  } else {
-@@ -228,11 +_,12 @@
+@@ -232,11 +_,12 @@
                  if (BaseFireBlock.canBePlacedAt(serverlevel, blockpos, direction)) {
                      serverlevel.setBlockAndUpdate(blockpos, BaseFireBlock.getState(serverlevel, blockpos));
                      serverlevel.gameEvent(null, GameEvent.BLOCK_PLACE, blockpos);

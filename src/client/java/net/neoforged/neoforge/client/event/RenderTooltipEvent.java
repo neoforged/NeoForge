@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -24,7 +24,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired during tooltip rendering.
@@ -261,12 +261,12 @@ public abstract class RenderTooltipEvent extends Event {
      */
     public static class Texture extends RenderTooltipEvent {
         @Nullable
-        private final ResourceLocation originalTexture;
+        private final Identifier originalTexture;
         @Nullable
-        private ResourceLocation texture;
+        private Identifier texture;
 
         @ApiStatus.Internal
-        public Texture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable ResourceLocation texture) {
+        public Texture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
             super(stack, graphics, x, y, font, components);
             this.originalTexture = texture;
             this.texture = texture;
@@ -276,7 +276,7 @@ public abstract class RenderTooltipEvent extends Event {
          * {@return the original texture location given to the tooltip render method (may originate from {@link DataComponents#TOOLTIP_STYLE})}
          */
         @Nullable
-        public ResourceLocation getOriginalTexture() {
+        public Identifier getOriginalTexture() {
             return originalTexture;
         }
 
@@ -284,17 +284,17 @@ public abstract class RenderTooltipEvent extends Event {
          * {@return the texture location that will be used to render the tooltip}
          */
         @Nullable
-        public ResourceLocation getTexture() {
+        public Identifier getTexture() {
             return texture;
         }
 
         /**
          * Set the texture to use for the tooltip background and frame or {@code null} to use the default textures.
          * <p>
-         * The given {@link ResourceLocation} will be prefixed with {@code tooltip/} and suffixed with {@code _background}
+         * The given {@link Identifier} will be prefixed with {@code tooltip/} and suffixed with {@code _background}
          * and {@code _frame} to determine the background and frame texture respectively
          */
-        public void setTexture(@Nullable ResourceLocation texture) {
+        public void setTexture(@Nullable Identifier texture) {
             this.texture = texture;
         }
     }

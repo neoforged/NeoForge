@@ -10,29 +10,29 @@
 +    }
 +
 +    private void hurtEntities(List<BlockPos> blocks) {
-         float f = this.radius * 2.0F;
-         int i = Mth.floor(this.center.x - f - 1.0);
-         int j = Mth.floor(this.center.x + f + 1.0);
-@@ -176,7 +_,9 @@
-         int i1 = Mth.floor(this.center.z - f - 1.0);
-         int j1 = Mth.floor(this.center.z + f + 1.0);
+         if (!(this.radius < 1.0E-5F)) {
+             float f = this.radius * 2.0F;
+             int i = Mth.floor(this.center.x - f - 1.0);
+@@ -177,7 +_,9 @@
+             int i1 = Mth.floor(this.center.z - f - 1.0);
+             int j1 = Mth.floor(this.center.z + f + 1.0);
  
--        for (Entity entity : this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1))) {
+-            for (Entity entity : this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1))) {
 +        List<Entity> list = this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1));
 +        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, blocks);
 +        for (Entity entity : list) {
-             if (!entity.ignoreExplosion(this)) {
-                 double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / f;
-                 if (!(d0 > 1.0)) {
-@@ -192,6 +_,7 @@
-                     double d1 = entity instanceof LivingEntity livingentity ? livingentity.getAttributeValue(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE) : 0.0;
-                     double d2 = (1.0 - d0) * f2 * f1 * (1.0 - d1);
-                     Vec3 vec32 = vec31.scale(d2);
-+                    vec32 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec32, blocks);
-                     entity.push(vec32);
-                     if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
-                         projectile.setOwner(this.damageSource.getEntity());
-@@ -231,7 +_,7 @@
+                 if (!entity.ignoreExplosion(this)) {
+                     double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / f;
+                     if (!(d0 > 1.0)) {
+@@ -195,6 +_,7 @@
+                             : 0.0;
+                         double d2 = (1.0 - d0) * f2 * f1 * (1.0 - d1);
+                         Vec3 vec32 = vec31.scale(d2);
++                        vec32 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec32, blocks);
+                         entity.push(vec32);
+                         if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
+                             projectile.setOwner(this.damageSource.getEntity());
+@@ -235,7 +_,7 @@
      public int explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
          List<BlockPos> list = this.calculateExplodedPositions();

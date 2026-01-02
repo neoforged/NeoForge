@@ -55,7 +55,7 @@ public abstract class SoundEvent extends Event {
         @ApiStatus.Internal
         protected SoundSourceEvent(SoundEngine engine, SoundInstance sound, Channel channel) {
             super(engine);
-            this.name = sound.getLocation().getPath();
+            this.name = sound.getIdentifier().getPath();
             this.sound = sound;
             this.channel = channel;
         }

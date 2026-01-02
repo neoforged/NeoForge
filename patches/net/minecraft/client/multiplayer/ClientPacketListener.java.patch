@@ -1,14 +1,14 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -410,6 +_,7 @@
+@@ -418,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final ClientDebugSubscriber debugSubscriber;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
-     @Nullable
-     private LevelLoadTracker levelLoadTracker;
+     private @Nullable LevelLoadTracker levelLoadTracker;
      private boolean serverEnforcesSecureChat;
-@@ -437,7 +_,8 @@
+     private volatile boolean closed;
+@@ -449,7 +_,8 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
@@ -18,7 +18,7 @@
          this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
          this.levelLoadTracker = p_295121_.levelLoadTracker();
      }
-@@ -514,12 +_,13 @@
+@@ -527,12 +_,13 @@
          this.debugSubscriber.clear();
          this.minecraft.levelRenderer.debugRenderer.refreshRendererList();
          this.minecraft.player.resetPos();
@@ -33,7 +33,7 @@
          this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -965,7 +_,8 @@
+@@ -977,7 +_,8 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -43,16 +43,16 @@
                      )
                  )
              );
-@@ -1289,7 +_,7 @@
-             localplayer1 = this.minecraft.gameMode.createPlayer(this.level, localplayer.getStats(), localplayer.getRecipeBook());
+@@ -1302,7 +_,7 @@
          }
  
+         this.setClientLoaded(false);
 -        this.startWaitingForNewLevel(localplayer1, this.level, levelloadingscreen$reason);
 +        this.startWaitingForNewLevel(localplayer1, this.level, levelloadingscreen$reason, localplayer.isDeadOrDying() ? null : resourcekey, localplayer.isDeadOrDying() ? null : resourcekey1);
          localplayer1.setId(localplayer.getId());
          this.minecraft.player = localplayer1;
          if (flag) {
-@@ -1317,6 +_,7 @@
+@@ -1330,6 +_,7 @@
              localplayer1.getAttributes().assignBaseValues(localplayer.getAttributes());
          }
  
@@ -60,7 +60,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(localplayer1);
-@@ -1467,7 +_,7 @@
+@@ -1487,7 +_,7 @@
              ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(p_421289_.problemPath(), LOGGER);
  
              try {
@@ -69,7 +69,7 @@
              } catch (Throwable throwable1) {
                  try {
                      problemreporter$scopedcollector.close();
-@@ -1589,7 +_,13 @@
+@@ -1609,7 +_,13 @@
          }
      }
  
@@ -83,7 +83,7 @@
          if (this.levelLoadTracker == null) {
              this.levelLoadTracker = new LevelLoadTracker();
          }
-@@ -1599,7 +_,7 @@
+@@ -1619,7 +_,7 @@
              levelloadingscreen.update(this.levelLoadTracker, p_433545_);
          } else {
              this.minecraft.gui.getChat().preserveCurrentChatScreen();
@@ -92,7 +92,7 @@
          }
      }
  
-@@ -1648,7 +_,9 @@
+@@ -1668,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft.packetProcessor());
@@ -103,7 +103,7 @@
      }
  
      @Override
-@@ -1667,6 +_,8 @@
+@@ -1687,6 +_,8 @@
      public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
          PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft.packetProcessor());
          this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
@@ -112,7 +112,7 @@
      }
  
      @Override
-@@ -1791,8 +_,11 @@
+@@ -1811,8 +_,11 @@
          });
          list.forEach(Registry.PendingTags::apply);
          this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
@@ -126,7 +126,7 @@
      }
  
      @Override
-@@ -2625,6 +_,8 @@
+@@ -2642,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -135,7 +135,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2634,6 +_,7 @@
+@@ -2651,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -143,7 +143,7 @@
          SignableCommand<ClientSuggestionProvider> signablecommand = SignableCommand.of(this.commands.parse(p_250092_, this.suggestionsProvider));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2650,6 +_,8 @@
+@@ -2667,6 +_,8 @@
      }
  
      public void sendUnattendedCommand(String p_425988_, @Nullable Screen p_427225_) {
@@ -152,7 +152,7 @@
          switch (this.verifyCommand(p_425988_)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(p_425988_));
-@@ -2809,6 +_,10 @@
+@@ -2825,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

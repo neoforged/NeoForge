@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -85,6 +_,15 @@
+@@ -82,6 +_,15 @@
      }
  
      public void startConfiguration() {
@@ -16,7 +16,7 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          ServerLinks serverlinks = this.server.serverLinks();
          if (!serverlinks.isEmpty()) {
-@@ -94,6 +_,8 @@
+@@ -91,6 +_,8 @@
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap(p_325637_ -> p_325637_.location().knownPackInfo().stream()).toList();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
@@ -25,7 +25,7 @@
          this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(list, layeredregistryaccess);
          this.configurationTasks.add(this.synchronizeRegistriesTask);
          this.addOptionalTasks();
-@@ -125,6 +_,32 @@
+@@ -122,6 +_,32 @@
          }
  
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -58,7 +58,7 @@
      }
  
      @Override
-@@ -160,7 +_,13 @@
+@@ -157,7 +_,13 @@
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
          PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server.packetProcessor());
          this.finishCurrentTask(JoinWorldTask.TYPE);
@@ -73,7 +73,7 @@
  
          try {
              PlayerList playerlist = this.server.getPlayerList();
-@@ -175,7 +_,7 @@
+@@ -172,7 +_,7 @@
                  return;
              }
  

@@ -23,19 +23,19 @@ import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DamagePredicate;
-import net.minecraft.advancements.critereon.DamageSourcePredicate;
-import net.minecraft.advancements.critereon.DataComponentMatchers;
-import net.minecraft.advancements.critereon.EntityEquipmentPredicate;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.EntitySubPredicate;
-import net.minecraft.advancements.critereon.EntityTypePredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
-import net.minecraft.advancements.critereon.PlayerHurtEntityTrigger;
-import net.minecraft.advancements.critereon.PlayerInteractTrigger;
-import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.advancements.criterion.ContextAwarePredicate;
+import net.minecraft.advancements.criterion.DamagePredicate;
+import net.minecraft.advancements.criterion.DamageSourcePredicate;
+import net.minecraft.advancements.criterion.DataComponentMatchers;
+import net.minecraft.advancements.criterion.EntityEquipmentPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.EntitySubPredicate;
+import net.minecraft.advancements.criterion.EntityTypePredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemUsedOnLocationTrigger;
+import net.minecraft.advancements.criterion.PlayerHurtEntityTrigger;
+import net.minecraft.advancements.criterion.PlayerInteractTrigger;
+import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
@@ -67,7 +67,7 @@ import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPr
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.TridentEntityPredicate;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class NeoForgeAdvancementProvider extends AdvancementProvider {
     public NeoForgeAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -298,7 +298,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                     return RegistryOps.create(p_326817_, new RegistryOps.RegistryInfoLookup() {
                         @Override
                         public <T> Optional<RegistryOps.RegistryInfo<T>> lookup(ResourceKey<? extends Registry<? extends T>> registry) {
-                            var builtInRegistry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.location());
+                            var builtInRegistry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.identifier());
                             return registries.lookup(registry)
                                     // Need to pass the builtin registry as the holder owner to make deserialization work!
                                     .map(lookup -> new RegistryOps.RegistryInfo<>(builtInRegistry, new HolderLookup.RegistryLookup.Delegate<>() {
@@ -333,9 +333,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             });
         }
 
-        @Nullable
         @SuppressWarnings("removal")
-        private Advancement.Builder findAndReplaceInHolder(AdvancementHolder advancementHolder, HolderLookup.Provider registries) {
+        private Advancement.@Nullable Builder findAndReplaceInHolder(AdvancementHolder advancementHolder, HolderLookup.Provider registries) {
             Advancement advancement = advancementHolder.value();
             Advancement.Builder builder = Advancement.Builder.advancement();
             boolean hasReplaced = false;

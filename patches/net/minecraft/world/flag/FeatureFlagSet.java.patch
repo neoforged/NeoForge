@@ -1,13 +1,12 @@
 --- a/net/minecraft/world/flag/FeatureFlagSet.java
 +++ b/net/minecraft/world/flag/FeatureFlagSet.java
-@@ -7,14 +_,21 @@
+@@ -7,13 +_,20 @@
  
  public final class FeatureFlagSet {
      private static final FeatureFlagSet EMPTY = new FeatureFlagSet(null, 0L);
 +    private static final long[] EMPTY_EXT_MASK = new long[0];
      public static final int MAX_CONTAINER_SIZE = 64;
-     @Nullable
-     private final FeatureFlagUniverse universe;
+     private final @Nullable FeatureFlagUniverse universe;
      private final long mask;
 +    private final long[] extendedMask;
  
@@ -22,7 +21,7 @@
      }
  
      static FeatureFlagSet create(FeatureFlagUniverse p_251573_, Collection<FeatureFlag> p_251037_) {
-@@ -22,7 +_,8 @@
+@@ -21,7 +_,8 @@
              return EMPTY;
          } else {
              long i = computeMask(p_251573_, 0L, p_251037_);
@@ -32,7 +31,7 @@
          }
      }
  
-@@ -31,16 +_,19 @@
+@@ -30,16 +_,19 @@
      }
  
      public static FeatureFlagSet of(FeatureFlag p_252331_) {
@@ -55,7 +54,7 @@
              if (p_249684_ != featureflag.universe) {
                  throw new IllegalStateException("Mismatched feature universe, expected '" + p_249684_ + "', but got '" + featureflag.universe + "'");
              }
-@@ -51,8 +_,36 @@
+@@ -50,8 +_,36 @@
          return p_250982_;
      }
  
@@ -93,7 +92,7 @@
      }
  
      public boolean isEmpty() {
-@@ -62,13 +_,33 @@
+@@ -61,13 +_,33 @@
      public boolean isSubsetOf(FeatureFlagSet p_249164_) {
          if (this.universe == null) {
              return true;
@@ -130,7 +129,7 @@
      }
  
      public FeatureFlagSet join(FeatureFlagSet p_251527_) {
-@@ -79,7 +_,16 @@
+@@ -78,7 +_,16 @@
          } else if (this.universe != p_251527_.universe) {
              throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + p_251527_.universe + "'");
          } else {
@@ -148,7 +147,7 @@
          }
      }
  
-@@ -90,7 +_,15 @@
+@@ -89,7 +_,15 @@
              throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + p_341688_.universe + "'");
          } else {
              long i = this.mask & ~p_341688_.mask;
@@ -165,7 +164,7 @@
          }
      }
  
-@@ -98,11 +_,15 @@
+@@ -97,11 +_,15 @@
      public boolean equals(Object p_248691_) {
          return this == p_248691_
              ? true

@@ -9,7 +9,7 @@
  
      public Font(Font.Provider p_433313_) {
          this.provider = p_433313_;
-@@ -226,6 +_,8 @@
+@@ -224,6 +_,8 @@
      public StringSplitter getSplitter() {
          return this.splitter;
      }

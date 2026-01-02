@@ -1,7 +1,7 @@
 --- a/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
 +++ b/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
-@@ -179,7 +_,11 @@
-     private Dynamic<?> findUpdatedStructureType(Dynamic<?> p_207725_, Dynamic<?> p_339616_) {
+@@ -178,7 +_,11 @@
+     private @Nullable Dynamic<?> findUpdatedStructureType(Dynamic<?> p_207725_, Dynamic<?> p_339616_) {
          String s = p_207725_.asString("UNKNOWN").toLowerCase(Locale.ROOT);
          StructuresBecomeConfiguredFix.Conversion structuresbecomeconfiguredfix$conversion = CONVERSION_MAP.get(s);
 +        if (structuresbecomeconfiguredfix$conversion == null) structuresbecomeconfiguredfix$conversion = net.neoforged.neoforge.common.CommonHooks.getStructureConversion(s); // Neo: hook for mods to register conversions through RegisterStructureConversionsEvent

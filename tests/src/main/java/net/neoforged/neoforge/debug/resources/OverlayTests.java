@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.debug.resources;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.testframework.DynamicTest;
@@ -23,7 +23,7 @@ public class OverlayTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if neoforge:overlays overlays from mods work")
     static void neoforgeOverlay(final DynamicTest test) {
-        var tagKey = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("neoforge_overlays_test", "must_be_overlayed"));
+        var tagKey = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("neoforge_overlays_test", "must_be_overlayed"));
         test.onGameTest(helper -> {
             helper.assertTrue(Blocks.REDSTONE_BLOCK.defaultBlockState().is(tagKey), "Overlay was not applied");
             helper.assertFalse(Blocks.COBBLESTONE.defaultBlockState().is(tagKey), "File under overlay was applied");
@@ -35,7 +35,7 @@ public class OverlayTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if pack overlays from mods work")
     static void packOverlay(final DynamicTest test) {
-        var tagKey = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("pack_overlays_test", "must_be_overlayed"));
+        var tagKey = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("pack_overlays_test", "must_be_overlayed"));
         test.onGameTest(helper -> {
             helper.assertTrue(Blocks.DIAMOND_BLOCK.defaultBlockState().is(tagKey), "Overlay was not applied");
             helper.assertFalse(Blocks.COBBLESTONE.defaultBlockState().is(tagKey), "File under overlay was applied");
@@ -47,8 +47,8 @@ public class OverlayTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if conditions work for pack overlays")
     static void conditionalOverlay(final DynamicTest test) {
-        var enabledKey = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("conditional_overlays_test", "overlay_enabled"));
-        var disabledKey = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("conditional_overlays_test", "overlay_disabled"));
+        var enabledKey = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("conditional_overlays_test", "overlay_enabled"));
+        var disabledKey = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("conditional_overlays_test", "overlay_disabled"));
         test.onGameTest(helper -> {
             helper.assertTrue(Blocks.DIAMOND_BLOCK.defaultBlockState().is(enabledKey), "Enabled overlay was not applied");
             helper.assertFalse(Blocks.COBBLESTONE.defaultBlockState().is(enabledKey), "File under enabled overlay was applied");

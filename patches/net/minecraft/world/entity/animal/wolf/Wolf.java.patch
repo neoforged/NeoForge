@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/wolf/Wolf.java
 +++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
-@@ -459,10 +_,11 @@
+@@ -456,10 +_,11 @@
          Item item = itemstack.getItem();
          if (this.isTame()) {
              if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
@@ -13,7 +13,7 @@
                  return InteractionResult.SUCCESS;
              }
  
-@@ -514,7 +_,7 @@
+@@ -511,7 +_,7 @@
      }
  
      private void tryToTame(Player p_406358_) {

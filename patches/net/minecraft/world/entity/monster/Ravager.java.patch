@@ -1,20 +1,20 @@
 --- a/net/minecraft/world/entity/monster/Ravager.java
 +++ b/net/minecraft/world/entity/monster/Ravager.java
-@@ -145,7 +_,7 @@
+@@ -144,7 +_,7 @@
+                 this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(Mth.lerp(0.1, d1, d0));
+             }
  
-             if (this.level() instanceof ServerLevel serverlevel
-                 && this.horizontalCollision
--                && serverlevel.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                && net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, this)) {
+-            if (this.level() instanceof ServerLevel serverlevel && this.horizontalCollision && serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
++            if (this.level() instanceof ServerLevel serverlevel && this.horizontalCollision && net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, this)) {
                  boolean flag = false;
                  AABB aabb = this.getBoundingBox().inflate(0.2);
  
-@@ -223,7 +_,7 @@
+@@ -222,7 +_,7 @@
  
      private void roar() {
          if (this.isAlive() && this.level() instanceof ServerLevel serverlevel) {
--            Predicate<Entity> predicate = serverlevel.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+            Predicate<Entity> predicate = net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, this)
-                 ? ROAR_TARGET_WITH_GRIEFING
-                 : ROAR_TARGET_WITHOUT_GRIEFING;
+-            Predicate<Entity> predicate = serverlevel.getGameRules().get(GameRules.MOB_GRIEFING) ? ROAR_TARGET_WITH_GRIEFING : ROAR_TARGET_WITHOUT_GRIEFING;
++            Predicate<Entity> predicate = net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, this) ? ROAR_TARGET_WITH_GRIEFING : ROAR_TARGET_WITHOUT_GRIEFING;
  
+             for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0), predicate)) {
+                 if (!(livingentity instanceof AbstractIllager)) {

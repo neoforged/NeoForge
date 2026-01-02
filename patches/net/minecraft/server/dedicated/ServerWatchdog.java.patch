@@ -14,8 +14,8 @@
 +                CrashReport crashreport = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId(), message);
                  this.server.fillSystemReport(crashreport.getSystemReport());
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Performance stats");
-                 crashreportcategory.setDetail(
-@@ -77,17 +_,21 @@
+                 crashreportcategory.setDetail("Random tick rate", () -> this.server.getWorldData().getGameRules().getAsString(GameRules.RANDOM_TICK_SPEED));
+@@ -75,17 +_,21 @@
      }
  
      public static CrashReport createWatchdogCrashReport(String p_363165_, long p_364052_) {

@@ -13,7 +13,7 @@ import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,7 +41,7 @@ public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    static final TagKey<Block> SCAFFOLDING = BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", "scaffolding"));
+    static final TagKey<Block> SCAFFOLDING = BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", "scaffolding"));
 
     static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingTest.ScaffoldingMethodTestBlock::new, props -> props.mapColor(MapColor.SAND).noCollision().sound(SoundType.SCAFFOLDING).dynamicShape());
     static final DeferredItem<BlockItem> SCAFFOLDING_METHOD_TEST_ITEM = ITEMS.registerSimpleBlockItem(SCAFFOLDING_METHOD_TEST);

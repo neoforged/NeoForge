@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/font/GlyphRenderTypes.java
 +++ b/net/minecraft/client/gui/font/GlyphRenderTypes.java
-@@ -9,27 +_,49 @@
+@@ -10,27 +_,49 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -15,26 +15,26 @@
 +        this(normal, seeThrough, polygonOffset, guiPipeline, normal, seeThrough, polygonOffset);
 +    }
 +
-     public static GlyphRenderTypes createForIntensityTexture(ResourceLocation p_285411_) {
+     public static GlyphRenderTypes createForIntensityTexture(Identifier p_468890_) {
          return new GlyphRenderTypes(
-             RenderType.textIntensity(p_285411_),
-             RenderType.textIntensitySeeThrough(p_285411_),
-             RenderType.textIntensityPolygonOffset(p_285411_),
+             RenderTypes.textIntensity(p_468890_),
+             RenderTypes.textIntensitySeeThrough(p_468890_),
+             RenderTypes.textIntensityPolygonOffset(p_468890_),
 -            RenderPipelines.GUI_TEXT_INTENSITY
 +            RenderPipelines.GUI_TEXT_INTENSITY,
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityFiltered(p_285411_),
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensitySeeThroughFiltered(p_285411_),
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityPolygonOffsetFiltered(p_285411_)
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityFiltered(p_468890_),
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensitySeeThroughFiltered(p_468890_),
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityPolygonOffsetFiltered(p_468890_)
          );
      }
  
-     public static GlyphRenderTypes createForColorTexture(ResourceLocation p_285486_) {
+     public static GlyphRenderTypes createForColorTexture(Identifier p_467758_) {
          return new GlyphRenderTypes(
--            RenderType.text(p_285486_), RenderType.textSeeThrough(p_285486_), RenderType.textPolygonOffset(p_285486_), RenderPipelines.GUI_TEXT
-+            RenderType.text(p_285486_), RenderType.textSeeThrough(p_285486_), RenderType.textPolygonOffset(p_285486_), RenderPipelines.GUI_TEXT,
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextFiltered(p_285486_),
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextSeeThroughFiltered(p_285486_),
-+            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextPolygonOffsetFiltered(p_285486_)
+-            RenderTypes.text(p_467758_), RenderTypes.textSeeThrough(p_467758_), RenderTypes.textPolygonOffset(p_467758_), RenderPipelines.GUI_TEXT
++            RenderTypes.text(p_467758_), RenderTypes.textSeeThrough(p_467758_), RenderTypes.textPolygonOffset(p_467758_), RenderPipelines.GUI_TEXT,
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextFiltered(p_467758_),
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextSeeThroughFiltered(p_467758_),
++            net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextPolygonOffsetFiltered(p_467758_)
          );
      }
  

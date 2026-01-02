@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -102,6 +_,8 @@
+@@ -129,6 +_,8 @@
                      LOGGER.warn("Failed to dump atlas contents to {}", path);
                  }
              }
@@ -9,13 +9,13 @@
          }
      }
  
-@@ -184,5 +_,9 @@
+@@ -304,5 +_,9 @@
  
      int getHeight() {
          return this.height;
 +    }
 +
-+    public Map<ResourceLocation, TextureAtlasSprite> getTextures() {
++    public Map<Identifier, TextureAtlasSprite> getTextures() {
 +        return java.util.Collections.unmodifiableMap(texturesByName);
      }
  }

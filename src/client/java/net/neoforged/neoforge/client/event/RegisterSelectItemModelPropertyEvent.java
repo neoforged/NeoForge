@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperty;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
@@ -21,14 +21,14 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the mod event bus.
  */
 public class RegisterSelectItemModelPropertyEvent extends Event implements IModBusEvent {
-    private final ExtraCodecs.LateBoundIdMapper<ResourceLocation, SelectItemModelProperty.Type<?, ?>> idMapper;
+    private final ExtraCodecs.LateBoundIdMapper<Identifier, SelectItemModelProperty.Type<?, ?>> idMapper;
 
     @ApiStatus.Internal
-    public RegisterSelectItemModelPropertyEvent(ExtraCodecs.LateBoundIdMapper<ResourceLocation, SelectItemModelProperty.Type<?, ?>> idMapper) {
+    public RegisterSelectItemModelPropertyEvent(ExtraCodecs.LateBoundIdMapper<Identifier, SelectItemModelProperty.Type<?, ?>> idMapper) {
         this.idMapper = idMapper;
     }
 
-    public void register(ResourceLocation location, SelectItemModelProperty.Type<?, ?> source) {
+    public void register(Identifier location, SelectItemModelProperty.Type<?, ?> source) {
         this.idMapper.put(location, source);
     }
 }

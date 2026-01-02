@@ -63,7 +63,7 @@ public final class PoiTypeExtender {
                 message = String.format(
                         Locale.ROOT,
                         "The matchingStates set of PoiType %s was replaced after construction",
-                        Objects.requireNonNull(type.getKey()).location());
+                        Objects.requireNonNull(type.getKey()).identifier());
             } else {
                 StringBuilder accessorList = new StringBuilder();
                 for (String accessor : accessors) {
@@ -72,7 +72,7 @@ public final class PoiTypeExtender {
                 message = String.format(
                         Locale.ROOT,
                         "The matchingStates set of PoiType %s was replaced after construction. Accessor mixins for mutating the set were found:%s",
-                        Objects.requireNonNull(type.getKey()).location(),
+                        Objects.requireNonNull(type.getKey()).identifier(),
                         accessorList);
             }
             throw new IllegalStateException(message);

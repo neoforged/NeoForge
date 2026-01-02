@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.multiplayer.LevelLoadTracker;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -24,8 +24,8 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 @ForEachTest(side = Dist.CLIENT, groups = DimensionTransitionScreenTests.GROUP)
 public class DimensionTransitionScreenTests {
     public static final String GROUP = "dimension_transition";
-    public static final ResourceLocation NETHER_BG = ResourceLocation.withDefaultNamespace("textures/block/netherrack.png");
-    public static final ResourceLocation END_BG = ResourceLocation.withDefaultNamespace("textures/block/end_stone.png");
+    public static final Identifier NETHER_BG = Identifier.withDefaultNamespace("textures/block/netherrack.png");
+    public static final Identifier END_BG = Identifier.withDefaultNamespace("textures/block/end_stone.png");
 
     @EmptyTemplate
     @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when exiting the Nether")
@@ -54,10 +54,10 @@ public class DimensionTransitionScreenTests {
     }
 
     public static class CustomLevelScreen extends LevelLoadingScreen {
-        private final ResourceLocation bgTexture;
+        private final Identifier bgTexture;
         private final Component message;
 
-        public CustomLevelScreen(LevelLoadTracker tracker, Reason reason, ResourceLocation bgTexture, Component message) {
+        public CustomLevelScreen(LevelLoadTracker tracker, Reason reason, Identifier bgTexture, Component message) {
             super(tracker, reason);
             this.bgTexture = bgTexture;
             this.message = message;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -299,7 +_,7 @@
+@@ -298,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player p_316559_, InteractionHand p_316119_) {
          ItemStack itemstack = p_316559_.getItemInHand(p_316119_);

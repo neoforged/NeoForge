@@ -8,7 +8,7 @@ package net.neoforged.neoforge.fluids;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.util.Set;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for creating {@linkplain ObjectLinkedOpenCustomHashSet linked set} for {@link FluidStack}

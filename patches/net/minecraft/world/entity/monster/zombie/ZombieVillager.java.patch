@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
++++ b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
+@@ -145,7 +_,7 @@
+         if (!this.level().isClientSide() && this.isAlive() && this.isConverting()) {
+             int i = this.getConversionProgress();
+             this.villagerConversionTime -= i;
+-            if (this.villagerConversionTime <= 0) {
++            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
+                 this.finishConversion((ServerLevel)this.level());
+             }
+         }
+@@ -254,6 +_,8 @@
+                 if (!this.isSilent()) {
+                     p_479576_.levelEvent(null, 1027, this.blockPosition(), 0);
+                 }
++
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_480457_);
+             }
+         );
+     }

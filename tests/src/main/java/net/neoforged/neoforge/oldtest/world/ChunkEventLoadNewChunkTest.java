@@ -48,6 +48,6 @@ public class ChunkEventLoadNewChunkTest {
             return;
         }
 
-        LOGGER.info("Loaded freshly generated chunk at {}{}", ((ServerLevel) event.getLevel()).dimension().location(), event.getChunk().getPos());
+        LOGGER.info("Loaded freshly generated chunk at {}{}", ((ServerLevel) event.getLevel()).dimension().identifier(), event.getChunk().getPos());
     }
 }

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -31,7 +31,7 @@ public class CustomSoundTypeTest {
     private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
 
     private static final DeferredHolder<SoundEvent, SoundEvent> TEST_STEP_EVENT = SOUND_EVENTS.register("test_step",
-            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "block.sound_type_test.step")));
+            () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MODID, "block.sound_type_test.step")));
     private static final SoundType TEST_SOUND_TYPE = new DeferredSoundType(1.0F, 1.0F, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT);
 
     private static final DeferredBlock<Block> TEST_STEP_BLOCK = BLOCKS.registerSimpleBlock("test_block",

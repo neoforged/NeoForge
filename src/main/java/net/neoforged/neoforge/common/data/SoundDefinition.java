@@ -12,8 +12,8 @@ import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Contains all the data to completely define a sound event.
@@ -45,7 +45,7 @@ public final class SoundDefinition {
         private static final int DEFAULT_ATTENUATION_DISTANCE = 16;
         private static final boolean DEFAULT_PRELOAD = false;
 
-        private final ResourceLocation name;
+        private final Identifier name;
         private final SoundType type;
 
         // Optional parameters, available in specs
@@ -56,7 +56,7 @@ public final class SoundDefinition {
         private int attenuationDistance = DEFAULT_ATTENUATION_DISTANCE;
         private boolean preload = DEFAULT_PRELOAD;
 
-        private Sound(final ResourceLocation name, final SoundType type) {
+        private Sound(final Identifier name, final SoundType type) {
             this.name = name;
             this.type = type;
         }
@@ -67,7 +67,7 @@ public final class SoundDefinition {
          * @param name The name of the sound to create.
          * @param type The type of sound to create.
          */
-        public static Sound sound(final ResourceLocation name, final SoundType type) {
+        public static Sound sound(final Identifier name, final SoundType type) {
             return new Sound(name, type);
         }
 
@@ -225,7 +225,7 @@ public final class SoundDefinition {
             return this;
         }
 
-        ResourceLocation name() {
+        Identifier name() {
             return this.name;
         }
 
@@ -260,7 +260,7 @@ public final class SoundDefinition {
                     this.preload == DEFAULT_PRELOAD;
         }
 
-        private String stripMcPrefix(final ResourceLocation name) {
+        private String stripMcPrefix(final Identifier name) {
             return "minecraft".equals(name.getNamespace()) ? name.getPath() : name.toString();
         }
     }

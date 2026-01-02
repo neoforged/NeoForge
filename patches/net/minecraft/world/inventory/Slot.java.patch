@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/inventory/Slot.java
 +++ b/net/minecraft/world/inventory/Slot.java
-@@ -80,7 +_,7 @@
+@@ -79,7 +_,7 @@
+     }
  
-     @Nullable
-     public ResourceLocation getNoItemIcon() {
+     public @Nullable Identifier getNoItemIcon() {
 -        return null;
 +        return backgroundSprite;
      }
  
      public ItemStack remove(int p_40227_) {
-@@ -93,6 +_,37 @@
+@@ -92,6 +_,37 @@
  
      public boolean isActive() {
          return true;
@@ -34,14 +34,14 @@
 +        return this.container == other.container;
 +    }
 +
-+    private ResourceLocation backgroundSprite;
++    private Identifier backgroundSprite;
 +    /**
 +     * Sets the background atlas and sprite location.
 +     *
 +     * @param sprite The sprite located on that atlas.
 +     * @return this, to allow chaining.
 +     */
-+    public Slot setBackground(ResourceLocation sprite) {
++    public Slot setBackground(Identifier sprite) {
 +         this.backgroundSprite = sprite;
 +         return this;
      }

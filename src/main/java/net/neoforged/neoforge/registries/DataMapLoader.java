@@ -23,9 +23,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -134,7 +134,7 @@ public class DataMapLoader implements PreparableReloadListener {
             if (object.isPresent()) {
                 consumer.accept(object.get());
             } else if (required) {
-                LOGGER.error("Object with ID {} specified in data map for registry {} doesn't exist", value.right().orElseThrow().location(), registry.key().location());
+                LOGGER.error("Object with ID {} specified in data map for registry {} doesn't exist", value.right().orElseThrow().identifier(), registry.key().identifier());
             }
         }
     }
@@ -149,17 +149,17 @@ public class DataMapLoader implements PreparableReloadListener {
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {
             final var registryKey = registryEntry.key();
-            profiler.push("registry_data_maps/" + registryKey.location() + "/locating");
-            final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.location()));
-            for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
-                ResourceLocation key = entry.getKey();
-                final ResourceLocation attachmentId = fileToId.fileToId(key);
+            profiler.push("registry_data_maps/" + registryKey.identifier() + "/locating");
+            final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.identifier()));
+            for (Map.Entry<Identifier, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
+                Identifier key = entry.getKey();
+                final Identifier attachmentId = fileToId.fileToId(key);
                 final var attachment = RegistryManager.getDataMap((ResourceKey) registryKey, attachmentId);
                 if (attachment == null) {
-                    LOGGER.warn("Found data map file for non-existent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
+                    LOGGER.warn("Found data map file for non-existent data map type '{}' on registry '{}'.", attachmentId, registryKey.identifier());
                     continue;
                 }
-                profiler.popPush("registry_data_maps/" + registryKey.location() + "/" + attachmentId + "/loading");
+                profiler.popPush("registry_data_maps/" + registryKey.identifier() + "/" + attachmentId + "/loading");
                 values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readData(
                         ops, attachment, (ResourceKey) registryKey, entry.getValue()));
             }
@@ -169,8 +169,8 @@ public class DataMapLoader implements PreparableReloadListener {
         return values;
     }
 
-    public static String getFolderLocation(ResourceLocation registryId) {
-        return (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
+    public static String getFolderLocation(Identifier registryId) {
+        return (registryId.getNamespace().equals(Identifier.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
     private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<T, A> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {

@@ -1,12 +1,11 @@
 --- a/net/minecraft/util/TriState.java
 +++ b/net/minecraft/util/TriState.java
-@@ -12,4 +_,18 @@
-             default -> p_361506_;
-         };
+@@ -39,4 +_,17 @@
+     public String getSerializedName() {
+         return this.name;
      }
 +
 +    // Neo: Helper methods for use in patches
-+
 +    public boolean isTrue() {
 +        return this == TRUE;
 +    }

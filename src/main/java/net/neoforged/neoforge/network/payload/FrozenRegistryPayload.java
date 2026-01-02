@@ -8,7 +8,7 @@ package net.neoforged.neoforge.network.payload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -20,10 +20,10 @@ import org.jetbrains.annotations.ApiStatus;
  * @param snapshot     The snapshot of the registry
  */
 @ApiStatus.Internal
-public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {
-    public static final Type<FrozenRegistryPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "frozen_registry"));
+public record FrozenRegistryPayload(Identifier registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {
+    public static final Type<FrozenRegistryPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "frozen_registry"));
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistryPayload> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC,
+            Identifier.STREAM_CODEC,
             FrozenRegistryPayload::registryName,
             RegistrySnapshot.STREAM_CODEC,
             FrozenRegistryPayload::snapshot,

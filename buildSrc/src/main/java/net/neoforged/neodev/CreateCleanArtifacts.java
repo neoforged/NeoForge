@@ -30,6 +30,9 @@ abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
     @OutputFile
     abstract RegularFileProperty getMergedMappings();
 
+    @OutputFile
+    abstract RegularFileProperty getClientMappings();
+
     @Inject
     public CreateCleanArtifacts() {
         getAdditionalResults().put("node.downloadClient.output.output", getRawClientJar().getAsFile());
@@ -38,8 +41,6 @@ abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
         getAdditionalResults().put("node.stripServer.output.output", getCleanServerJar().getAsFile());
         getAdditionalResults().put("node.rename.output.output", getCleanJoinedJar().getAsFile());
         getAdditionalResults().put("node.mergeMappings.output.output", getMergedMappings().getAsFile());
-
-        // TODO: does anyone care about this? they should be contained in the client mappings
-        //"--write-result", "node.downloadServerMappings.output.output:" + getServerMappings().get().getAsFile().getAbsolutePath()
+        getAdditionalResults().put("node.downloadClientMappings.output.output", getClientMappings().getAsFile());
     }
 }

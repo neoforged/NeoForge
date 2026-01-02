@@ -1,23 +1,23 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -94,6 +_,7 @@
-     @Nullable
-     private static DynamicUniforms dynamicUniforms;
-     private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
+@@ -79,6 +_,7 @@
+     private static @Nullable DynamicUniforms dynamicUniforms;
+     private static final ScissorState scissorStateForRenderTypeDraws = new ScissorState();
+     private static SamplerCache samplerCache = new SamplerCache();
 +    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
-     public static void initRenderThread() {
-         if (renderThread != null) {
-@@ -207,7 +_,7 @@
-     public static void initRenderer(
-         long p_409720_, int p_69581_, boolean p_69582_, BiFunction<ResourceLocation, ShaderType, String> p_410113_, boolean p_410401_
-     ) {
--        DEVICE = new GlDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
-+        DEVICE = net.neoforged.neoforge.client.ClientHooks.createGpuDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
+     public static SamplerCache getSamplerCache() {
+         return samplerCache;
+@@ -182,7 +_,7 @@
+     }
+ 
+     public static void initRenderer(long p_409720_, int p_69581_, boolean p_69582_, ShaderSource p_460676_, boolean p_410401_) {
+-        DEVICE = new GlDevice(p_409720_, p_69581_, p_69582_, p_460676_, p_410401_);
++        DEVICE = net.neoforged.neoforge.client.ClientHooks.createGpuDevice(p_409720_, p_69581_, p_69582_, p_460676_, p_410401_);
          apiDescription = getDevice().getImplementationInformation();
          dynamicUniforms = new DynamicUniforms();
-     }
-@@ -381,6 +_,40 @@
+         samplerCache.initialize();
+@@ -315,6 +_,40 @@
          if (gpubufferslice2 != null) {
              p_418212_.setUniform("Lighting", gpubufferslice2);
          }

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
++++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
+@@ -428,8 +_,8 @@
+ 
+     public Vec3 getRedstoneDirection(BlockPos p_478000_) {
+         BlockState blockstate = this.level().getBlockState(p_478000_);
+-        if (blockstate.is(Blocks.POWERED_RAIL) && blockstate.getValue(PoweredRailBlock.POWERED)) {
+-            RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
++        if (blockstate.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail() && blockstate.getValue(PoweredRailBlock.POWERED)) {
++            RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), p_478000_, this);
+             if (railshape == RailShape.EAST_WEST) {
+                 if (this.isRedstoneConductor(p_478000_.west())) {
+                     return new Vec3(1.0, 0.0, 0.0);

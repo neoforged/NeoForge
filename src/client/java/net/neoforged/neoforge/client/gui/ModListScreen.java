@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.AddressMode;
+import com.mojang.blaze3d.textures.FilterMode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,10 +21,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.LogoRenderer;
@@ -32,10 +36,9 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
@@ -43,6 +46,7 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.StringUtil;
+import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
@@ -59,7 +63,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ModListScreen extends Screen {
     private static String stripControlCodes(String value) {
@@ -131,7 +135,7 @@ public class ModListScreen extends Screen {
 
     class InfoPanel extends ScrollPanel {
         @Nullable
-        private ResourceLocation logoPath;
+        private Identifier logoPath;
         private Size2i logoDims = new Size2i(0, 0);
         private List<FormattedCharSequence> lines = Collections.emptyList();
 
@@ -139,7 +143,7 @@ public class ModListScreen extends Screen {
             super(mcIn, widthIn, heightIn, topIn, modList.getRight() + PADDING);
         }
 
-        void setInfo(List<String> lines, ResourceLocation logoPath, Size2i logoDims) {
+        void setInfo(List<String> lines, Identifier logoPath, Size2i logoDims) {
             this.logoPath = logoPath;
             this.logoDims = logoDims;
             this.lines = resizeContent(lines);
@@ -222,7 +226,11 @@ public class ModListScreen extends Screen {
 
             FormattedCharSequence line = lines.get(lineIdx);
             if (line != null) {
-                return font.getSplitter().componentStyleAtWidth(line, mouseX - left - border - 1);
+                var styleFinder = new ActiveTextCollector.ClickableStyleFinder(
+                        // TODO 1.21.11: The calculatin of Y needs to be validated, it should be relative to the vertical line origin
+                        font, mouseX - left - border - 1, (int) (offset - (lineIdx * font.lineHeight)));
+                styleFinder.accept(TextAlignment.LEFT, 0, 0, line);
+                return styleFinder.result();
             }
             return null;
         }
@@ -230,8 +238,8 @@ public class ModListScreen extends Screen {
         @Override
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             final Style component = findTextLine((int) event.x(), (int) event.y());
-            if (component != null) {
-                ModListScreen.this.handleComponentClicked(component);
+            if (component != null && component.getClickEvent() != null) {
+                defaultHandleGameClickEvent(component.getClickEvent(), minecraft, ModListScreen.this);
                 return true;
             }
             return super.mouseClicked(event, doubleClick);
@@ -377,9 +385,9 @@ public class ModListScreen extends Screen {
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
         @SuppressWarnings("resource")
-        Pair<ResourceLocation, Size2i> logoData;
+        Pair<Identifier, Size2i> logoData;
 
-        if (selectedMod.getModId().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+        if (selectedMod.getModId().equals(Identifier.DEFAULT_NAMESPACE)) {
             logoData = Pair.of(LogoRenderer.MINECRAFT_LOGO, new Size2i(LogoRenderer.LOGO_TEXTURE_WIDTH, LogoRenderer.LOGO_TEXTURE_HEIGHT));
         } else {
             logoData = selectedMod.getLogoFile().map(logoFile -> {
@@ -392,12 +400,14 @@ public class ModListScreen extends Screen {
                     if (logoResource != null)
                         logo = NativeImage.read(logoResource.get());
                     if (logo != null) {
-                        var textureId = ResourceLocation.fromNamespaceAndPath("neoforge", "modlogo");
+                        var textureId = Identifier.fromNamespaceAndPath("neoforge", "modlogo");
                         tm.register(textureId, new DynamicTexture(textureId::toString, logo) {
                             @Override
                             public void upload() {
                                 // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
-                                this.setFilter(selectedMod.getLogoBlur(), false);
+                                // TODO 1.21.11: Unclear if this is the best way of setting linear/nearest filtering
+                                var filter = selectedMod.getLogoBlur() ? FilterMode.LINEAR : FilterMode.NEAREST;
+                                sampler = RenderSystem.getSamplerCache().getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, filter, filter, false);
                                 super.upload();
                             }
                         });
@@ -405,7 +415,7 @@ public class ModListScreen extends Screen {
                         return Pair.of(textureId, new Size2i(logo.getWidth(), logo.getHeight()));
                     }
                 } catch (IOException | IllegalArgumentException e) {}
-                return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
+                return Pair.<Identifier, Size2i>of(null, new Size2i(0, 0));
             }).orElse(Pair.of(null, new Size2i(0, 0)));
         }
 
@@ -452,11 +462,11 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft mc, int width, int height) {
+    public void resize(int width, int height) {
         String s = this.search.getValue();
         SortType sort = this.sortType;
         ModListWidget.ModEntry selected = this.selected;
-        this.init(mc, width, height);
+        this.init(width, height);
         this.search.setValue(s);
         this.selected = selected;
         if (!this.search.getValue().isEmpty())
@@ -469,10 +479,5 @@ public class ModListScreen extends Screen {
     @Override
     public void onClose() {
         this.minecraft.setScreen(this.parentScreen);
-    }
-
-    @Override
-    protected void handleClickEvent(Minecraft minecraft, ClickEvent clickEvent) {
-        defaultHandleClickEvent(clickEvent, minecraft, this);
     }
 }

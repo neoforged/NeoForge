@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/NonNullList.java
 +++ b/net/minecraft/core/NonNullList.java
-@@ -9,6 +_,28 @@
- import javax.annotation.Nullable;
+@@ -8,6 +_,28 @@
+ import org.jspecify.annotations.Nullable;
  
  public class NonNullList<E> extends AbstractList<E> {
 +
@@ -27,5 +27,5 @@
 +    }
 +
      private final List<E> list;
-     @Nullable
-     private final E defaultValue;
+     private final @Nullable E defaultValue;
+ 

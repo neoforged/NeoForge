@@ -1,0 +1,11 @@
+--- a/net/minecraft/util/worldupdate/WorldUpgrader.java
++++ b/net/minecraft/util/worldupdate/WorldUpgrader.java
+@@ -93,7 +_,7 @@
+         this.eraseCache = p_250738_;
+         this.dataFixer = p_250273_;
+         this.levelStorage = p_249922_;
+-        this.overworldDataStorage = new DimensionDataStorage(this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data"), p_250273_, p_323645_);
++        this.overworldDataStorage = new DimensionDataStorage(null, this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data"), p_250273_, p_323645_);
+         this.recreateRegionFiles = p_321700_;
+         this.thread = THREAD_FACTORY.newThread(this::work);
+         this.thread.setUncaughtExceptionHandler((p_18825_, p_18826_) -> {

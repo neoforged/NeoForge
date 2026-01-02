@@ -1,11 +1,10 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -29,6 +_,8 @@
+@@ -29,6 +_,7 @@
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
      private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
-+    @Nullable
-+    private net.neoforged.neoforge.transfer.fluid.FluidResource defaultResource;
++    private net.neoforged.neoforge.transfer.fluid.@Nullable FluidResource defaultResource;
  
      protected Fluid() {
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
@@ -18,20 +17,20 @@
 +        }
      }
  
-     @Nullable
-@@ -108,6 +_,11 @@
+     protected @Nullable ParticleOptions getDripParticle() {
+@@ -107,6 +_,11 @@
  
      public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
  
 +    @Override
-+    public String toString() {// Neo: Patch in a toString similar to Item#toString so that FluidStack#toStringis more readable
++    public String toString() {// Neo: Patch in a toString similar to Item#toString so that FluidStack#toString is more readable
 +        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
 +    }
 +
-     @Nullable
-     public AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
+     public @Nullable AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
          if (this.isEmpty()) {
-@@ -125,5 +_,22 @@
+             return null;
+@@ -123,5 +_,22 @@
      @Deprecated
      public Holder.Reference<Fluid> builtInRegistryHolder() {
          return this.builtInRegistryHolder;

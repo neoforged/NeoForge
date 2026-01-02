@@ -15,7 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class DataPackRegistriesHooks {
@@ -69,10 +69,9 @@ public final class DataPackRegistriesHooks {
         return SYNCED_CUSTOM_REGISTRIES_VIEW;
     }
 
-    @Nullable
     @ApiStatus.Internal
     @SuppressWarnings("unchecked")
-    public static <T> RegistryDataLoader.RegistryData<T> getSyncedRegistry(final ResourceKey<? extends Registry<T>> registry) {
+    public static <T> RegistryDataLoader.@Nullable RegistryData<T> getSyncedRegistry(final ResourceKey<? extends Registry<T>> registry) {
         return (RegistryDataLoader.RegistryData<T>) NETWORKABLE_REGISTRIES.stream().filter(data -> data.key().equals(registry)).findFirst().orElse(null);
     }
 }

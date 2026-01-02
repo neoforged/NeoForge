@@ -14,10 +14,10 @@ import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a complete negotiated network, which is stored on the client and server.
@@ -26,19 +26,19 @@ import org.jetbrains.annotations.Nullable;
  * @param play          The play channels.
  */
 @ApiStatus.Internal
-public record NetworkPayloadSetup(Map<ConnectionProtocol, Map<ResourceLocation, NetworkChannel>> channels) {
+public record NetworkPayloadSetup(Map<ConnectionProtocol, Map<Identifier, NetworkChannel>> channels) {
     public static StreamCodec<FriendlyByteBuf, NetworkPayloadSetup> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(IdentityHashMap::new,
                     ByteBufCodecs.idMapper(b -> ConnectionProtocol.values()[b], ConnectionProtocol::ordinal),
-                    ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, NetworkChannel.STREAM_CODEC)),
+                    ByteBufCodecs.map(HashMap::new, Identifier.STREAM_CODEC, NetworkChannel.STREAM_CODEC)),
             NetworkPayloadSetup::channels, NetworkPayloadSetup::new);
 
-    public Map<ResourceLocation, NetworkChannel> getChannels(ConnectionProtocol protocol) {
+    public Map<Identifier, NetworkChannel> getChannels(ConnectionProtocol protocol) {
         return this.channels().getOrDefault(protocol, Collections.emptyMap());
     }
 
     @Nullable
-    public NetworkChannel getChannel(ConnectionProtocol protocol, ResourceLocation id) {
+    public NetworkChannel getChannel(ConnectionProtocol protocol, Identifier id) {
         return getChannels(protocol).get(id);
     }
 
@@ -53,10 +53,10 @@ public record NetworkPayloadSetup(Map<ConnectionProtocol, Map<ResourceLocation, 
      * {@return A modded network with the given configuration and play channels.}
      */
     public static NetworkPayloadSetup from(Map<ConnectionProtocol, NegotiationResult> results) {
-        ImmutableMap.Builder<ConnectionProtocol, Map<ResourceLocation, NetworkChannel>> channels = ImmutableMap.builder();
+        ImmutableMap.Builder<ConnectionProtocol, Map<Identifier, NetworkChannel>> channels = ImmutableMap.builder();
 
         for (Map.Entry<ConnectionProtocol, NegotiationResult> result : results.entrySet()) {
-            ImmutableMap.Builder<ResourceLocation, NetworkChannel> protocolChannels = ImmutableMap.builder();
+            ImmutableMap.Builder<Identifier, NetworkChannel> protocolChannels = ImmutableMap.builder();
             result.getValue().components().forEach(component -> {
                 protocolChannels.put(component.id(), new NetworkChannel(component.id(), component.version()));
             });

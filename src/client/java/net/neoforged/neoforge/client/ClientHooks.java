@@ -14,7 +14,7 @@ import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
-import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.TextureFormat;
@@ -37,7 +37,6 @@ import java.util.SequencedMap;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -76,11 +75,11 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.object.skull.SkullModelBase;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -94,11 +93,8 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
@@ -116,23 +112,21 @@ import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.sounds.MusicInfo;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.sounds.Music;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
@@ -206,7 +200,6 @@ import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -218,16 +211,14 @@ import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.NeoForgeVersionCheck;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class for various client-side-only hooks.
@@ -236,7 +227,7 @@ public class ClientHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker CLIENTHOOKS = MarkerManager.getMarker("CLIENTHOOKS");
 
-    //private static final ResourceLocation ITEM_GLINT = ResourceLocation.withDefaultNamespace("textures/misc/enchanted_item_glint.png");
+    //private static final Identifier ITEM_GLINT = Identifier.withDefaultNamespace("textures/misc/enchanted_item_glint.png");
 
     /**
      * Contains the *extra* GUI layers.
@@ -244,8 +235,8 @@ public class ClientHooks {
      */
     private static final Stack<Screen> guiLayers = new Stack<>();
 
-    public static void resizeGuiLayers(Minecraft minecraft, int width, int height) {
-        guiLayers.forEach(screen -> screen.resize(minecraft, width, height));
+    public static void resizeGuiLayers(int width, int height) {
+        guiLayers.forEach(screen -> screen.resize(width, height));
     }
 
     public static void clearGuiLayers(Minecraft minecraft) {
@@ -263,7 +254,7 @@ public class ClientHooks {
         if (minecraft.screen != null)
             guiLayers.push(minecraft.screen);
         minecraft.screen = Objects.requireNonNull(screen);
-        screen.init(minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
+        screen.init(minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
         minecraft.getNarrator().saySystemNow(screen.getNarrationMessage());
     }
 
@@ -290,8 +281,8 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
     }
 
-    public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
-        ResourceLocation result = IClientItemExtensions.of(armor).getArmorTexture(armor, type, layer, _default);
+    public static Identifier getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier _default) {
+        Identifier result = IClientItemExtensions.of(armor).getArmorTexture(armor, type, layer, _default);
         return result != null ? result : _default;
     }
 
@@ -415,7 +406,7 @@ public class ClientHooks {
     }
 
     @Nullable
-    public static MusicInfo selectMusic(MusicInfo situational, @Nullable SoundInstance playing) {
+    public static Music selectMusic(Music situational, @Nullable SoundInstance playing) {
         SelectMusicEvent e = new SelectMusicEvent(situational, playing);
         NeoForge.EVENT_BUS.post(e);
         return e.getMusic();
@@ -438,9 +429,9 @@ public class ClientHooks {
 
     public static Vector4f getFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, float fogRed, float fogGreen, float fogBlue) {
         // Modify fog color depending on the fluid
-        FluidState state = level.getFluidState(camera.getBlockPosition());
+        FluidState state = level.getFluidState(camera.blockPosition());
         Vector4f fluidFogColor = new Vector4f(fogRed, fogGreen, fogBlue, 1F);
-        if (camera.getPosition().y < (double) ((float) camera.getBlockPosition().getY() + state.getHeight(level, camera.getBlockPosition())))
+        if (camera.position().y < (double) ((float) camera.blockPosition().getY() + state.getHeight(level, camera.blockPosition())))
             fluidFogColor = IClientFluidTypeExtensions.of(state).modifyFogColor(camera, partialTick, level, renderDistance, darkenWorldAmount, fluidFogColor);
 
         ViewportEvent.ComputeFogColor event = new ViewportEvent.ComputeFogColor(camera, partialTick, fluidFogColor.x(), fluidFogColor.y(), fluidFogColor.z());
@@ -452,15 +443,15 @@ public class ClientHooks {
 
     public static void onSetupFog(@Nullable FogEnvironment environment, FogType type, Camera camera, float partialTick, float renderDistance, FogData fogData) {
         // Modify fog rendering depending on the fluid
-        FluidState state = camera.getEntity().level().getFluidState(camera.getBlockPosition());
-        if (camera.getPosition().y < (double) ((float) camera.getBlockPosition().getY() + state.getHeight(camera.getEntity().level(), camera.getBlockPosition())))
+        FluidState state = camera.entity().level().getFluidState(camera.blockPosition());
+        if (camera.position().y < (double) ((float) camera.blockPosition().getY() + state.getHeight(camera.entity().level(), camera.blockPosition())))
             IClientFluidTypeExtensions.of(state).modifyFogRender(camera, environment, renderDistance, partialTick, fogData);
 
         NeoForge.EVENT_BUS.post(new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData));
     }
 
     public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, SpriteLoader.Preparations spriteLoaderPreparations, ModelBakery modelBakery) {
-        Function<ResourceLocation, TextureAtlasSprite> textureGetter = location -> {
+        Function<Identifier, TextureAtlasSprite> textureGetter = location -> {
             TextureAtlasSprite sprite = spriteLoaderPreparations.getSprite(location);
             if (sprite != null) {
                 return sprite;
@@ -476,67 +467,13 @@ public class ClientHooks {
     }
 
     @SuppressWarnings("deprecation")
-    public static Material getBlockMaterial(ResourceLocation loc) {
+    public static Material getBlockMaterial(Identifier loc) {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
-    }
-
-    /**
-     * Computes the packed normal of a quad based on the stored vertex positions.
-     */
-    public static int computeQuadNormal(int[] vertices) {
-        float x0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION]);
-        float y0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 1]);
-        float z0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 2]);
-        float x1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
-        float y1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
-        float z1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
-        float x2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
-        float y2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
-        float z2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
-        float x3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
-        float y3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
-        float z3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
-
-        float dx0 = x3 - x1;
-        float dy0 = y3 - y1;
-        float dz0 = z3 - z1;
-        float dx1 = x2 - x0;
-        float dy1 = y2 - y0;
-        float dz1 = z2 - z0;
-
-        float nx = dy1 * dz0 - dz1 * dy0;
-        float ny = dz1 * dx0 - dx1 * dz0;
-        float nz = dx1 * dy0 - dy1 * dx0;
-
-        float length = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        if (length > 0) {
-            nx /= length;
-            ny /= length;
-            nz /= length;
-        }
-
-        int packedx = ((byte) Math.round(nx * 127)) & 0xFF;
-        int packedy = ((byte) Math.round(ny * 127)) & 0xFF;
-        int packedz = ((byte) Math.round(nz * 127)) & 0xFF;
-
-        return packedx | (packedy << 8) | (packedz << 16);
-    }
-
-    /**
-     * Modifies the passed {@code faceData} to fill in the vertex normals.
-     * The normals are computed from the vertex positions, see {@link #computeQuadNormal}.
-     */
-    public static void fillNormal(int[] faceData) {
-        int normal = computeQuadNormal(faceData);
-
-        for (int i = 0; i < 4; i++) {
-            faceData[i * 8 + 7] = normal;
-        }
     }
 
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
         if (entity != null) {
-            ResourceLocation shader = EntitySpectatorShaderManager.get(entity.getType());
+            Identifier shader = EntitySpectatorShaderManager.get(entity.getType());
             if (shader != null) {
                 gameRenderer.setPostEffect(shader);
                 return true;
@@ -713,7 +650,7 @@ public class ClientHooks {
         return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
     }
 
-    private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/icons.png");
+    private static final Identifier ICON_SHEET = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/icons.png");
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
@@ -784,7 +721,7 @@ public class ClientHooks {
         return preEvent;
     }
 
-    public static RenderTooltipEvent.Texture onRenderTooltipTexture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable ResourceLocation texture) {
+    public static RenderTooltipEvent.Texture onRenderTooltipTexture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
         return NeoForge.EVENT_BUS.post(new RenderTooltipEvent.Texture(stack, graphics, x, y, font, components, texture));
     }
 
@@ -877,66 +814,6 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, materials, bufferSource)).isCanceled();
     }
 
-    public static int getMaxMipmapLevel(int width, int height) {
-        return Math.min(
-                Mth.log2(Math.max(1, width)),
-                Mth.log2(Math.max(1, height)));
-    }
-
-    /**
-     * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
-     * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
-     *
-     * @param elements The generated elements, may include the front and back face
-     * @param sprite   The texture from which the elements were generated
-     * @return the original elements list
-     */
-    public static List<BlockElement> fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
-        float expand = -sprite.uvShrinkRatio();
-        elements.replaceAll(element -> {
-            // Edge elements are guaranteed to have exactly one face, anything else is either invalid or the front/back
-            if (element.faces().size() != 1) return element;
-
-            var faceEntry = element.faces().entrySet().iterator().next();
-            if (faceEntry.getKey().getAxis() == Direction.Axis.Z) return element;
-
-            // Move edge quads to account for sprite expansion of the front and back quads
-            Vector3f from = new Vector3f(
-                    Mth.clamp(Mth.lerp(expand, element.from().x(), 8F), 0F, 16F),
-                    Mth.clamp(Mth.lerp(expand, element.from().y(), 8F), 0F, 16F),
-                    element.from().z());
-            Vector3f to = new Vector3f(
-                    Mth.clamp(Mth.lerp(expand, element.to().x(), 8F), 0F, 16F),
-                    Mth.clamp(Mth.lerp(expand, element.to().y(), 8F), 0F, 16F),
-                    element.to().z());
-
-            BlockElementFace face = faceEntry.getValue();
-            BlockElementFace.UVs uvs = face.uvs();
-            if (uvs == null) {
-                uvs = FaceBakery.defaultFaceUV(element.from(), element.to(), faceEntry.getKey());
-            }
-            float minU = uvs.minU();
-            float minV = uvs.minV();
-            float maxU = uvs.maxU();
-            float maxV = uvs.maxV();
-            // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
-            if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
-                float centerU = (minU + minU + maxU + maxU) / 4.0F;
-                minU = Mth.clamp(Mth.lerp(expand, minU, centerU), 0F, 16F);
-                maxU = Mth.clamp(Mth.lerp(expand, maxU, centerU), 0F, 16F);
-            } else {
-                float centerV = (minV + minV + maxV + maxV) / 4.0F;
-                minV = Mth.clamp(Mth.lerp(expand, minV, centerV), 0F, 16F);
-                maxV = Mth.clamp(Mth.lerp(expand, maxV, centerV), 0F, 16F);
-            }
-            uvs = new BlockElementFace.UVs(minU, minV, maxU, maxV);
-            face = new BlockElementFace(face.cullForDirection(), face.tintIndex(), face.texture(), uvs, face.rotation(), face.faceData(), new MutableObject<>());
-
-            return new BlockElement(from, to, Map.of(faceEntry.getKey(), face), element.rotation(), element.shade(), element.lightEmission(), element.faceData());
-        });
-        return elements;
-    }
-
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
             BlockPos sectionOrigin, Level level) {
         final var event = new AddSectionGeometryEvent(sectionOrigin, level);
@@ -986,7 +863,7 @@ public class ClientHooks {
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
         mc.gui.initModdedOverlays();
-        DimensionSpecialEffectsManager.init();
+        CustomEnvironmentEffectsRendererManager.init();
         NamedRenderTypeManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
@@ -1093,7 +970,7 @@ public class ClientHooks {
     }
 
     public static List<AtlasManager.AtlasConfig> gatherTextureAtlases(List<AtlasManager.AtlasConfig> vanillaAtlases) {
-        SequencedMap<ResourceLocation, AtlasManager.AtlasConfig> atlasMap = new LinkedHashMap<>(vanillaAtlases.size());
+        SequencedMap<Identifier, AtlasManager.AtlasConfig> atlasMap = new LinkedHashMap<>(vanillaAtlases.size());
         vanillaAtlases.forEach(atlas -> atlasMap.put(atlas.definitionLocation(), atlas));
         ModLoader.postEvent(new RegisterTextureAtlasesEvent(atlasMap));
         return List.copyOf(atlasMap.values());
@@ -1141,7 +1018,7 @@ public class ClientHooks {
         return List.copyOf(vanillaRenderers);
     }
 
-    public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
+    public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, ShaderSource defaultShaderSource, boolean enableDebugLabels) {
         final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
         boolean enableValidation;
         try {
@@ -1196,8 +1073,8 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<ResourceLocation> addEntry) {
-        var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, ResourceLocation>build();
+    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<Identifier> addEntry) {
+        var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, Identifier>build();
 
         // filter out to match search text
         // - blank/empty string, accept everything
@@ -1224,11 +1101,11 @@ public class ClientHooks {
         });
     }
 
-    private static boolean isValidDebugEntryForSearch(String searchText, ResourceLocation id) {
+    private static boolean isValidDebugEntryForSearch(String searchText, Identifier id) {
         if (searchText.isBlank()) {
             // no search provided, accept everything
             return true;
-        } else if (StringUtils.contains(searchText, ResourceLocation.NAMESPACE_SEPARATOR)) {
+        } else if (StringUtils.contains(searchText, Identifier.NAMESPACE_SEPARATOR)) {
             // search text contains ':' separator, accept all whose full id match
             return SharedSuggestionProvider.matchesSubStr(searchText, id.toString());
         } else {

@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -25,7 +25,7 @@ public record SyncAttachmentsPayload(
         List<AttachmentType<?>> types,
         byte[] syncPayload)
         implements CustomPacketPayload {
-    public static final Type<SyncAttachmentsPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "sync_attachments"));;
+    public static final Type<SyncAttachmentsPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "sync_attachments"));;
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncAttachmentsPayload> STREAM_CODEC = StreamCodec.composite(
             Target.STREAM_CODEC,
             SyncAttachmentsPayload::target,

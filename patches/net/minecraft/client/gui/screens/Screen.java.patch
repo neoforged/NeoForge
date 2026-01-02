@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -104,6 +_,7 @@
+@@ -107,6 +_,7 @@
      public final void renderWithTooltipAndSubtitles(GuiGraphics p_434220_, int p_435721_, int p_435145_, float p_435742_) {
          p_434220_.nextStratum();
          this.renderBackground(p_434220_, p_435721_, p_435145_, p_435742_);
@@ -8,7 +8,7 @@
          p_434220_.nextStratum();
          this.render(p_434220_, p_435721_, p_435145_, p_435742_);
          p_434220_.renderDeferredElements();
-@@ -191,7 +_,7 @@
+@@ -194,7 +_,7 @@
      }
  
      public void onClose() {
@@ -17,7 +17,7 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
-@@ -236,7 +_,7 @@
+@@ -239,7 +_,7 @@
          return p_282833_.getTooltipLines(
              Item.TooltipContext.of(p_281881_.level),
              p_281881_.player,
@@ -26,7 +26,7 @@
          );
      }
  
-@@ -343,8 +_,11 @@
+@@ -326,8 +_,11 @@
          this.width = p_96608_;
          this.height = p_96609_;
          if (!this.initialized) {
@@ -38,7 +38,7 @@
          } else {
              this.repositionElements();
          }
-@@ -361,8 +_,11 @@
+@@ -344,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -50,7 +50,7 @@
      }
  
      protected void fadeWidgets(float p_421625_) {
-@@ -488,6 +_,10 @@
+@@ -471,6 +_,10 @@
      public void onFilesDrop(List<Path> p_96591_) {
      }
  
@@ -61,9 +61,9 @@
      private void scheduleNarration(long p_169381_, boolean p_169382_) {
          this.nextNarrationTime = Util.getMillis() + p_169381_;
          if (p_169382_) {
-@@ -642,6 +_,14 @@
-     @Nullable
-     public Music getBackgroundMusic() {
+@@ -623,6 +_,14 @@
+ 
+     public @Nullable Music getBackgroundMusic() {
          return null;
 +    }
 +

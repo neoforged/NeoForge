@@ -7,7 +7,7 @@ package net.neoforged.neoforge.network.negotiation;
 
 import java.util.Optional;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.jetbrains.annotations.ApiStatus;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record NegotiableNetworkComponent(
-        ResourceLocation id,
+        Identifier id,
         String version,
         Optional<PacketFlow> flow,
         boolean optional) {

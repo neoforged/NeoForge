@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.oldtest.block;
 
 import java.util.Locale;
-import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.object.skull.SkullModel;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.special.SkullSpecialRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -131,7 +131,7 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, Identifier.withDefaultNamespace("textures/entity/blaze.png"));
         }
 
         @SubscribeEvent

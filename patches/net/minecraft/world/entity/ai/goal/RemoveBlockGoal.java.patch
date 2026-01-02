@@ -4,12 +4,12 @@
  
      @Override
      public boolean canUse() {
--        if (!getServerLevel(this.removerMob).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+-        if (!getServerLevel(this.removerMob).getGameRules().get(GameRules.MOB_GRIEFING)) {
 +        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.removerMob.level()), this.removerMob)) {
              return false;
          } else if (this.nextStartTick > 0) {
              this.nextStartTick--;
-@@ -148,7 +_,8 @@
+@@ -147,7 +_,8 @@
          );
          return chunkaccess == null
              ? false

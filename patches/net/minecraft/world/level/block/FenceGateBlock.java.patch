@@ -18,7 +18,7 @@
          Util.mapValues(SHAPE_OCCLUSION, p_393359_ -> p_393359_.move(0.0, -0.1875, 0.0).optimize())
      );
 +    public final net.minecraft.sounds.SoundEvent openSound, closeSound;
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
      private final WoodType type;
  
      @Override

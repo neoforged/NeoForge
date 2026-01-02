@@ -23,8 +23,8 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
@@ -47,7 +47,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
     protected final String modid;
     protected final String directory;
     protected final Codec<T> codec;
-    protected final Map<ResourceLocation, WithConditions<T>> conditions = Maps.newHashMap();
+    protected final Map<Identifier, WithConditions<T>> conditions = Maps.newHashMap();
 
     /**
      * @param output    {@linkplain PackOutput} provided by the {@link DataGenerator}.
@@ -92,11 +92,11 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
         return String.format("%s generator for %s", this.directory, this.modid);
     }
 
-    public void unconditional(ResourceLocation id, T value) {
+    public void unconditional(Identifier id, T value) {
         process(id, new WithConditions<>(List.of(), value));
     }
 
-    public void conditionally(ResourceLocation id, Consumer<WithConditions.Builder<T>> configurator) {
+    public void conditionally(Identifier id, Consumer<WithConditions.Builder<T>> configurator) {
         final WithConditions.Builder<T> builder = new WithConditions.Builder<>();
         configurator.accept(builder);
 
@@ -104,7 +104,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
         process(id, withConditions);
     }
 
-    private void process(ResourceLocation id, WithConditions<T> withConditions) {
+    private void process(Identifier id, WithConditions<T> withConditions) {
         this.conditions.put(id, withConditions);
     }
 }

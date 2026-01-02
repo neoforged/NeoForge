@@ -16,16 +16,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -48,11 +46,9 @@ import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public abstract class AbstractTest implements Test {
     protected TestFramework framework;
     protected String id;
@@ -93,18 +89,18 @@ public abstract class AbstractTest implements Test {
     protected final void configureGameTest(@Nullable GameTest gameTest, @Nullable EmptyTemplate template) {
         if (gameTest == null) return;
 
-        ResourceLocation templateFromPattern = null;
+        Identifier templateFromPattern = null;
         if (template != null) {
             var size = EmptyTemplate.Size.parse(template.value());
             if (template.floor()) {
-                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size + "_floor");
+                templateFromPattern = Identifier.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size + "_floor");
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
                             .fill(0, 0, 0, size.length() - 1, 0, size.width() - 1, Blocks.IRON_BLOCK.defaultBlockState())
                             .build());
                 }
             } else {
-                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size);
+                templateFromPattern = Identifier.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size);
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.empty(size.length(), size.height(), size.width()));
                 }
@@ -214,7 +210,6 @@ public abstract class AbstractTest implements Test {
         }
     }
 
-    @ParametersAreNonnullByDefault
     public static abstract class Dynamic extends AbstractTest implements DynamicTest {
         @Override
         public TestFramework framework() {

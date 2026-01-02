@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
++++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
+@@ -342,9 +_,9 @@
+     protected void playStepSound(BlockPos p_478526_, BlockState p_477993_) {
+         if (!p_477993_.liquid()) {
+             BlockState blockstate = this.level().getBlockState(p_478526_.above());
+-            SoundType soundtype = p_477993_.getSoundType();
++            SoundType soundtype = p_477993_.getSoundType(level(), p_478526_, this);
+             if (blockstate.is(Blocks.SNOW)) {
+-                soundtype = blockstate.getSoundType();
++                soundtype = blockstate.getSoundType(level(), p_478526_, this);
+             }
+ 
+             if (this.isVehicle() && this.canGallop) {
+@@ -771,6 +_,7 @@
+         Vec3 vec3 = this.getDeltaMovement();
+         this.setDeltaMovement(vec3.x, d0, vec3.z);
+         this.needsSync = true;
++        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+         if (p_481539_.z > 0.0) {
+             float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
+             float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
+@@ -1018,6 +_,11 @@
+ 
+         this.randomizeAttributes(p_481728_.getRandom());
+         return super.finalizeSpawn(p_481728_, p_480010_, p_481245_, p_478762_);
++    }
++
++    // Neo: Inventory getter
++    public net.minecraft.world.Container getInventory() {
++        return this.inventory;
+     }
+ 
+     public boolean hasInventoryChanged(Container p_479218_) {

@@ -7,7 +7,7 @@
 +                    // Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
 +                    tagfile.remove().forEach(e -> list.add(new TagLoader.EntryWithSource(e.withRequired(false), s, true)));
                  } catch (Exception exception) {
-                     LOGGER.error("Couldn't read tag list {} from {} in data pack {}", resourcelocation1, resourcelocation, resource.sourcePackId(), exception);
+                     LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier1, identifier, resource.sourcePackId(), exception);
                  }
 @@ -78,7 +_,7 @@
          List<TagLoader.EntryWithSource> list = new ArrayList<>();
@@ -18,16 +18,16 @@
                  list.add(tagloader$entrywithsource);
              }
          }
-@@ -111,7 +_,7 @@
+@@ -109,7 +_,7 @@
                      p_359633_ -> LOGGER.error(
                          "Couldn't load tag {} as it is missing following references: {}",
-                         p_359645_,
+                         p_468743_,
 -                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining(", "))
 +                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
                      )
                  )
-                 .ifRight(p_364232_ -> map.put(p_359645_, (List<T>)p_364232_))
-@@ -183,7 +_,11 @@
+                 .ifRight(p_364232_ -> map.put(p_468743_, (List<T>)p_364232_))
+@@ -180,7 +_,11 @@
          }
      }
  

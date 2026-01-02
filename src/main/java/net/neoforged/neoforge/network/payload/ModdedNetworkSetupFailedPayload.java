@@ -13,7 +13,7 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,11 +23,11 @@ import org.jetbrains.annotations.ApiStatus;
  * @param failureReasons A map of mod ids to the reason why the modded network failed to set up.
  */
 @ApiStatus.Internal
-public record ModdedNetworkSetupFailedPayload(Map<ResourceLocation, Component> failureReasons) implements CustomPacketPayload {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "modded_network_setup_failed");
+public record ModdedNetworkSetupFailedPayload(Map<Identifier, Component> failureReasons) implements CustomPacketPayload {
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "modded_network_setup_failed");
     public static final Type<ModdedNetworkSetupFailedPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, ModdedNetworkSetupFailedPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC),
+            ByteBufCodecs.map(HashMap::new, Identifier.STREAM_CODEC, ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC),
             ModdedNetworkSetupFailedPayload::failureReasons,
             ModdedNetworkSetupFailedPayload::new);
 

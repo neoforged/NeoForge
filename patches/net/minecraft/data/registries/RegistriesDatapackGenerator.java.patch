@@ -19,11 +19,11 @@
 +        this(p_256643_, p_255780_, null, java.util.Map.of());
 +    }
 +
-+    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
++    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, java.util.@org.jspecify.annotations.Nullable Set<String> modIds) {
 +        this(p_256643_, p_255780_, modIds, java.util.Map.of());
 +    }
 +
-+    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
++    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, java.util.@org.jspecify.annotations.Nullable Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
 +        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
          this.registries = p_255780_;
          this.output = p_256643_;
@@ -41,7 +41,7 @@
                              .flatMap(
                                  p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
                              )
-@@ -48,15 +_,17 @@
+@@ -48,19 +_,21 @@
          CachedOutput p_256502_, HolderLookup.Provider p_256492_, DynamicOps<JsonElement> p_256000_, RegistryDataLoader.RegistryData<T> p_256449_
      ) {
          ResourceKey<? extends Registry<T>> resourcekey = p_256449_.key();
@@ -52,15 +52,20 @@
                      PackOutput.PathProvider packoutput$pathprovider = this.output.createRegistryElementsPathProvider(resourcekey);
                      return CompletableFuture.allOf(
                          p_367836_.listElements()
-+                            .filter(holder -> this.namespacePredicate.test(holder.key().location().getNamespace()))
++                            .filter(holder -> this.namespacePredicate.test(holder.key().identifier().getNamespace()))
                              .map(
-                                 p_256105_ -> dumpValue(
--                                    packoutput$pathprovider.json(p_256105_.key().location()), p_256502_, p_256000_, p_256449_.elementCodec(), p_256105_.value()
-+                                    packoutput$pathprovider.json(p_256105_.key().location()), p_256502_, p_256000_, conditionalCodec, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
+                                 p_466063_ -> dumpValue(
+                                     packoutput$pathprovider.json(p_466063_.key().identifier()),
+                                     p_256502_,
+                                     p_256000_,
+-                                    p_256449_.elementCodec(),
+-                                    p_466063_.value()
++                                    conditionalCodec,
++                                    Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_466063_.key(), java.util.List.of()), p_466063_.value()))
                                  )
                              )
                              .toArray(CompletableFuture[]::new)
-@@ -66,7 +_,7 @@
+@@ -70,7 +_,7 @@
      }
  
      private static <E> CompletableFuture<?> dumpValue(

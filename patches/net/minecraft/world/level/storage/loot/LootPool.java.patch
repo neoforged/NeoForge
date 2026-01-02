@@ -49,10 +49,10 @@
 +    }
 +
 +    // Neo: Apply names for LootPools to allow easier targeting specific pools
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    private String name;
 +
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public String getName() {
 +        return this.name;
 +    }
@@ -90,7 +90,7 @@
          private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
          private NumberProvider rolls = ConstantValue.exactly(1.0F);
          private NumberProvider bonusRolls = ConstantValue.exactly(0.0F);
-+        @org.jetbrains.annotations.Nullable
++        @org.jspecify.annotations.Nullable
 +        private String name;
  
          public LootPool.Builder setRolls(NumberProvider p_165134_) {

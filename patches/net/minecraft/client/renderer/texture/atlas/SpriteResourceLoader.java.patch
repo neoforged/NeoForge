@@ -1,29 +1,28 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
-@@ -26,7 +_,7 @@
+@@ -27,7 +_,7 @@
      Logger LOGGER = LogUtils.getLogger();
  
      static SpriteResourceLoader create(Set<MetadataSectionType<?>> p_434463_) {
--        return (p_432311_, p_432312_) -> {
-+        return (p_432311_, p_432312_, constructor) -> {
+-        return (p_477742_, p_477743_) -> {
++        return (p_477742_, p_477743_, constructor) -> {
              Optional<AnimationMetadataSection> optional;
+             Optional<TextureMetadataSection> optional1;
              List<MetadataSectionType.WithValue<?>> list;
-             try {
-@@ -65,10 +_,15 @@
+@@ -68,9 +_,14 @@
                  framesize = new FrameSize(nativeimage.getWidth(), nativeimage.getHeight());
              }
  
--            return new SpriteContents(p_432311_, framesize, nativeimage, optional, list);
-+            return constructor.create(p_432311_, framesize, nativeimage, optional, list);
+-            return new SpriteContents(p_477742_, framesize, nativeimage, optional, list, optional1);
++            return constructor.create(p_477742_, framesize, nativeimage, optional, list, optional1);
          };
      }
  
-     @Nullable
--    SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_);
-+    default SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_) {
+-    @Nullable SpriteContents loadSprite(Identifier p_469874_, Resource p_294329_);
++    default SpriteContents loadSprite(Identifier p_295581_, Resource p_294329_) {
 +        return loadSprite(p_295581_, p_294329_, SpriteContents::new);
 +    }
 +
 +    @Nullable
-+    SpriteContents loadSprite(ResourceLocation id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
++    SpriteContents loadSprite(Identifier id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
  }

@@ -11,7 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -40,9 +40,9 @@ public class ShaderResourcesTest {
 
     private static class ClientInit {
         private static final RenderPipeline CUBEMAP_PIPELINE = RenderPipeline.builder()
-                .withLocation(ResourceLocation.fromNamespaceAndPath(MODID, "pipeline/vertex_cubemap"))
-                .withVertexShader(ResourceLocation.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
-                .withFragmentShader(ResourceLocation.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
+                .withLocation(Identifier.fromNamespaceAndPath(MODID, "pipeline/vertex_cubemap"))
+                .withVertexShader(Identifier.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
+                .withFragmentShader(Identifier.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
                 .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
                 .build();
         private static boolean checked = false;

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.network.payload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public final class FrozenRegistrySyncCompletedPayload implements CustomPacketPayload {
-    public static final Type<FrozenRegistrySyncCompletedPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "frozen_registry_sync_completed"));
+    public static final Type<FrozenRegistrySyncCompletedPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "frozen_registry_sync_completed"));
     public static final FrozenRegistrySyncCompletedPayload INSTANCE = new FrozenRegistrySyncCompletedPayload();
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncCompletedPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 

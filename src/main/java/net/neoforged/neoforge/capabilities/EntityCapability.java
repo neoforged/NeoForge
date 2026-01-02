@@ -9,11 +9,11 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An {@code EntityCapability} gives flexible access to objects of type {@code T} from entities.
@@ -54,7 +54,7 @@ public final class EntityCapability<T, C extends @Nullable Object> extends BaseC
      * @param typeClass    type of the queried API
      * @param contextClass type of the additional context
      */
-    public static <T, C extends @Nullable Object> EntityCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    public static <T, C extends @Nullable Object> EntityCapability<T, C> create(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         return (EntityCapability<T, C>) registry.create(name, typeClass, contextClass);
     }
 
@@ -62,9 +62,9 @@ public final class EntityCapability<T, C extends @Nullable Object> extends BaseC
      * Creates a new entity capability with {@code Void} context, or gets it if it already exists.
      * This should be used for capabilities that do not require any additional context.
      *
-     * @see #create(ResourceLocation, Class, Class)
+     * @see #create(Identifier, Class, Class)
      */
-    public static <T> EntityCapability<T, @Nullable Void> createVoid(ResourceLocation name, Class<T> typeClass) {
+    public static <T> EntityCapability<T, @Nullable Void> createVoid(Identifier name, Class<T> typeClass) {
         return create(name, typeClass, void.class);
     }
 
@@ -72,7 +72,7 @@ public final class EntityCapability<T, C extends @Nullable Object> extends BaseC
      * Creates a new entity capability with nullable {@code Direction} context, or gets it if it already exists.
      * The side is generally the side from which the entity is being accessed, or {@code null} if it is not known or not a specific side.
      */
-    public static <T> EntityCapability<T, @Nullable Direction> createSided(ResourceLocation name, Class<T> typeClass) {
+    public static <T> EntityCapability<T, @Nullable Direction> createSided(Identifier name, Class<T> typeClass) {
         return create(name, typeClass, Direction.class);
     }
 
@@ -88,7 +88,7 @@ public final class EntityCapability<T, C extends @Nullable Object> extends BaseC
     // Requires explicitly-typed constructor due to ECJ inference failure.
     private static final CapabilityRegistry<EntityCapability<?, ?>> registry = new CapabilityRegistry<EntityCapability<?, ?>>(EntityCapability::new);
 
-    private EntityCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    private EntityCapability(Identifier name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);
     }
 

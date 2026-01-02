@@ -7,12 +7,12 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.MinecartSpawner;
+import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawner;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface IOwnedSpawner {
     /**

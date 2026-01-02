@@ -1,16 +1,16 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -41,6 +_,9 @@
+@@ -42,6 +_,9 @@
          this.commands = new Commands(p_206858_, CommandBuildContext.simple(p_361583_, p_250695_));
          this.advancements = new ServerAdvancementManager(p_361583_);
-         this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
+         this.functionLibrary = new ServerFunctionLibrary(p_456167_, this.commands.getDispatcher());
 +        // Neo: Store registries and create context object
 +        this.registryLookup = p_361583_;
 +        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, p_362982_.compositeAccess(), p_250695_);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -67,6 +_,25 @@
+@@ -68,6 +_,25 @@
          return List.of(this.recipes, this.functionLibrary, this.advancements);
      }
  
@@ -36,13 +36,13 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -83,10 +_,30 @@
+@@ -84,10 +_,30 @@
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_359514_.layers(), p_359514_.lookupWithUpdatedTags(), p_250212_, p_249301_, p_363739_, p_251126_
+                         p_454398_.layers(), p_454398_.lookupWithUpdatedTags(), p_250212_, p_249301_, p_363739_, p_456254_
                      );
 +
 +                    // Neo: Fire the AddServerReloadListenersEvent and use the resulting listeners instead of the vanilla listener list.
-+                    List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_359514_.layers().compositeAccess());
++                    List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_454398_.layers().compositeAccess());
 +
 +                    // Neo: Inject the ConditionContext and RegistryLookup to any resource listener that requests it.
 +                    for (PreparableReloadListener rl : listeners) {
@@ -68,7 +68,7 @@
                          .thenApply(p_214306_ -> reloadableserverresources);
                  }
              );
-@@ -94,5 +_,6 @@
+@@ -95,5 +_,6 @@
  
      public void updateStaticRegistryTags() {
          this.postponedTags.forEach(Registry.PendingTags::apply);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/font/AtlasGlyphProvider.java
 +++ b/net/minecraft/client/gui/font/AtlasGlyphProvider.java
-@@ -88,6 +_,15 @@
+@@ -95,6 +_,15 @@
              p_439466_.addVertex(p_438913_, f1, f2, p_439476_).setUv(this.sprite.getU1(), this.sprite.getV0()).setColor(p_439047_).setLight(p_440363_);
          }
  

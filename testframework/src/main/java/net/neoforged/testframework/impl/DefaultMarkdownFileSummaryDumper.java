@@ -11,7 +11,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.summary.FileSummaryDumper;
 import net.neoforged.testframework.summary.FormattingUtil;
@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 
 public class DefaultMarkdownFileSummaryDumper implements FileSummaryDumper {
     @Override
-    public Path outputPath(ResourceLocation frameworkId) {
+    public Path outputPath(Identifier frameworkId) {
         return Path.of("logs/tests/" + frameworkId.toString().replace(":", "_") + "/summary_" + Instant.now().truncatedTo(ChronoUnit.SECONDS).toString().replaceAll("[:TZ-]", "") + ".md");
     }
 

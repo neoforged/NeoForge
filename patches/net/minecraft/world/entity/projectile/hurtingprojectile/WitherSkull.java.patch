@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/WitherSkull.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/WitherSkull.java
+@@ -51,7 +_,7 @@
+     public float getBlockExplosionResistance(
+         Explosion p_479858_, BlockGetter p_481750_, BlockPos p_480351_, BlockState p_480179_, FluidState p_480229_, float p_480544_
+     ) {
+-        return this.isDangerous() && WitherBoss.canDestroy(p_480179_) ? Math.min(0.8F, p_480544_) : p_480544_;
++        return this.isDangerous() && p_480179_.canEntityDestroy(p_481750_, p_480351_, this) ? Math.min(0.8F, p_480544_) : p_480544_;
+     }
+ 
+     @Override

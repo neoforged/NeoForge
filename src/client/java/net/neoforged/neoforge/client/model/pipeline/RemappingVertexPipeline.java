@@ -13,6 +13,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.ARGB;
 import org.joml.Vector3f;
 
 /**
@@ -33,6 +34,7 @@ public class RemappingVertexPipeline implements VertexConsumer {
     private final float[] uv0 = new float[] { 0, 0 };
     private final int[] uv1 = new int[] { OverlayTexture.NO_WHITE_U, OverlayTexture.WHITE_OVERLAY_V };
     private final int[] uv2 = new int[] { 0, 0 };
+    private float lineWidth = 0F;
 
     private final Map<VertexFormatElement, Integer> miscElementIds;
     private final int[][] misc;
@@ -60,6 +62,11 @@ public class RemappingVertexPipeline implements VertexConsumer {
     public VertexConsumer setNormal(float x, float y, float z) {
         normal.set(x, y, z);
         return this;
+    }
+
+    @Override
+    public VertexConsumer setColor(int packedColor) {
+        return setColor(ARGB.red(packedColor), ARGB.green(packedColor), ARGB.blue(packedColor), ARGB.alpha(packedColor));
     }
 
     @Override
@@ -100,6 +107,12 @@ public class RemappingVertexPipeline implements VertexConsumer {
         return this;
     }
 
+    @Override
+    public VertexConsumer setLineWidth(float lineWidth) {
+        this.lineWidth = lineWidth;
+        return this;
+    }
+
     public void endVertex() {
         // TODO 1.21: The interface no longer includes an endVertex method because
         // vanilla now automatically ends the vertex either when a new vertex is started
@@ -119,6 +132,8 @@ public class RemappingVertexPipeline implements VertexConsumer {
                 parent.setUv1(uv1[0], uv1[1]);
             else if (element.equals(VertexFormatElement.UV2))
                 parent.setUv2(uv2[0], uv2[1]);
+            else if (element.equals(VertexFormatElement.LINE_WIDTH))
+                parent.setLineWidth(lineWidth);
             else
                 parent.misc(element, misc[miscElementIds.get(element)]);
         }

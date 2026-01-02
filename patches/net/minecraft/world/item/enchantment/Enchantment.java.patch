@@ -43,7 +43,7 @@
      public boolean canEnchant(ItemStack p_44689_) {
          return this.definition.supportedItems().contains(p_44689_.getItemHolder());
      }
-@@ -511,12 +_,26 @@
+@@ -519,12 +_,26 @@
          return new Enchantment.Builder(p_345873_);
      }
  
@@ -70,12 +70,12 @@
          public Builder(Enchantment.EnchantmentDefinition p_345317_) {
              this.definition = p_345317_;
          }
-@@ -569,6 +_,16 @@
+@@ -577,6 +_,16 @@
              return this;
          }
  
 +        /**
-+         * Allows specifying an operator that can customize the default {@link Component} created by {@link #build(ResourceLocation)}.
++         * Allows specifying an operator that can customize the default {@link Component} created by {@link #build(Identifier)}.
 +         *
 +         * @return this
 +         */
@@ -87,13 +87,13 @@
          private <E> List<E> getEffectsList(DataComponentType<List<E>> p_344770_) {
              return (List<E>)this.effectLists.computeIfAbsent(p_344770_, p_346247_ -> {
                  ArrayList<E> arraylist = new ArrayList<>();
-@@ -579,7 +_,9 @@
+@@ -587,7 +_,9 @@
  
-         public Enchantment build(ResourceLocation p_344988_) {
+         public Enchantment build(Identifier p_469761_) {
              return new Enchantment(
--                Component.translatable(Util.makeDescriptionId("enchantment", p_344988_)), this.definition, this.exclusiveSet, this.effectMapBuilder.build()
+-                Component.translatable(Util.makeDescriptionId("enchantment", p_469761_)), this.definition, this.exclusiveSet, this.effectMapBuilder.build()
 +                // Neo: permit custom name components instead of a single hardcoded translatable component.
-+                this.nameFactory.apply(Component.translatable(Util.makeDescriptionId("enchantment", p_344988_))),
++                this.nameFactory.apply(Component.translatable(Util.makeDescriptionId("enchantment", p_469761_))),
 +                this.definition, this.exclusiveSet, this.effectMapBuilder.build()
              );
          }

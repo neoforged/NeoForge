@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.CommonRegisterPayload;
 import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utilities for manipulation of Netty {@link Channel} attributes
@@ -35,12 +35,12 @@ public class ChannelAttributes {
     /**
      * Known ad-hoc channels from {@link MinecraftRegisterPayload}.
      */
-    public static final AttributeKey<Set<ResourceLocation>> ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
+    public static final AttributeKey<Set<Identifier>> ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
 
     /**
      * Known common channels from {@link CommonRegisterPayload}.
      */
-    public static final AttributeKey<Map<ConnectionProtocol, Set<ResourceLocation>>> COMMON_CHANNELS = AttributeKey.valueOf("neoforge:common_channels");
+    public static final AttributeKey<Map<ConnectionProtocol, Set<Identifier>>> COMMON_CHANNELS = AttributeKey.valueOf("neoforge:common_channels");
 
     /**
      * The {@link ConnectionType} of the current connection
@@ -68,8 +68,8 @@ public class ChannelAttributes {
     /**
      * Returns a mutable set of the currently known ad-hoc channels.
      */
-    public static Set<ResourceLocation> getOrCreateAdHocChannels(Connection connection) {
-        Set<ResourceLocation> channels = connection.channel().attr(ADHOC_CHANNELS).get();
+    public static Set<Identifier> getOrCreateAdHocChannels(Connection connection) {
+        Set<Identifier> channels = connection.channel().attr(ADHOC_CHANNELS).get();
 
         if (channels == null) {
             channels = new HashSet<>();
@@ -82,8 +82,8 @@ public class ChannelAttributes {
     /**
      * Returns a mutable set of the currently known common channels for the given protocol.
      */
-    public static Set<ResourceLocation> getOrCreateCommonChannels(Connection connection, ConnectionProtocol protocol) {
-        Map<ConnectionProtocol, Set<ResourceLocation>> channels = connection.channel().attr(COMMON_CHANNELS).get();
+    public static Set<Identifier> getOrCreateCommonChannels(Connection connection, ConnectionProtocol protocol) {
+        Map<ConnectionProtocol, Set<Identifier>> channels = connection.channel().attr(COMMON_CHANNELS).get();
 
         if (channels == null) {
             channels = new EnumMap<>(ConnectionProtocol.class);

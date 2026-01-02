@@ -20,7 +20,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
@@ -130,8 +130,7 @@ public abstract class LevelEvent extends Event {
     public static class PotentialSpawns extends LevelEvent implements ICancellableEvent {
         private final MobCategory mobcategory;
         private final BlockPos pos;
-        @Nullable
-        private WeightedList.Builder<MobSpawnSettings.SpawnerData> list;
+        private WeightedList.@Nullable Builder<MobSpawnSettings.SpawnerData> list;
         private List<Weighted<MobSpawnSettings.SpawnerData>> view;
 
         public PotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedList<MobSpawnSettings.SpawnerData> oldList) {

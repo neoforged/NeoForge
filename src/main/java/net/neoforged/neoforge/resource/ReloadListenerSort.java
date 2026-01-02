@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.fml.loading.toposort.CyclePresentException;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
@@ -52,9 +52,9 @@ public class ReloadListenerSort {
      * 
      * @throws IllegalArgumentException if cycles were detected in the dependency graph.
      */
-    public static List<PreparableReloadListener> sortListeners(NameLookup lookup, MutableGraph<PreparableReloadListener> graph, Map<ResourceLocation, PreparableReloadListener> registry, PreparableReloadListener lastVanilla) {
+    public static List<PreparableReloadListener> sortListeners(NameLookup lookup, MutableGraph<PreparableReloadListener> graph, Map<Identifier, PreparableReloadListener> registry, PreparableReloadListener lastVanilla) {
         // For any entries without a dependency, ensure they depend on the last vanilla loader.
-        for (Map.Entry<ResourceLocation, PreparableReloadListener> entry : registry.entrySet()) {
+        for (Map.Entry<Identifier, PreparableReloadListener> entry : registry.entrySet()) {
             if (needsToBeLinkedToVanilla(lookup, graph, entry.getValue())) {
                 graph.putEdge(lastVanilla, entry.getValue());
             }
@@ -74,7 +74,7 @@ public class ReloadListenerSort {
         } catch (CyclePresentException ex) {
             // If a cycle is found, we have to transform the information in the exception back into the registered keys.
             Set<Set<PreparableReloadListener>> cycles = ex.getCycles();
-            Set<Set<ResourceLocation>> keyedCycles = cycles.stream().map(set -> {
+            Set<Set<Identifier>> keyedCycles = cycles.stream().map(set -> {
                 return set.stream().map(lookup::apply).collect(Collectors.toCollection(LinkedHashSet::new));
             }).collect(Collectors.toSet());
 
@@ -83,12 +83,12 @@ public class ReloadListenerSort {
             sb.append("Cycles were detected during reload listener sorting:").append('\n');
 
             idx = 0;
-            for (Set<ResourceLocation> cycle : keyedCycles) {
+            for (Set<Identifier> cycle : keyedCycles) {
                 StringBuilder msg = new StringBuilder();
 
                 msg.append(idx++).append(": ");
 
-                for (ResourceLocation key : cycle) {
+                for (Identifier key : cycle) {
                     msg.append(key).append("->");
                 }
 

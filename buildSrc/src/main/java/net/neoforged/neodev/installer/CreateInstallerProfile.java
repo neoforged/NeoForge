@@ -29,7 +29,7 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Creates the JSON profile used by legacyinstaller for installing the client into the vanilla launcher,
@@ -112,7 +112,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         var data = new LinkedHashMap<String, LauncherDataEntry>();
         var neoFormVersion = getMcAndNeoFormVersion().get();
         data.put("MOJMAPS", new LauncherDataEntry(clientMappingsCoordinate, serverMappingsCoordinate));
-        data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/server.lzma"));
+        data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/client.lzma"));
 
         var patchedClientCoordinate = new MavenIdentifier("net.neoforged", "minecraft-client-patched", getNeoForgeVersion().get(), "", "jar");
         var patchedServerCoordinate = new MavenIdentifier("net.neoforged", "minecraft-server-patched", getNeoForgeVersion().get(), "", "jar");

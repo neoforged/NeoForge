@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCopy.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCopy.java
-@@ -26,8 +_,10 @@
-     private final PalettedContainer<BlockState> section;
+@@ -25,8 +_,10 @@
+     private final @Nullable PalettedContainer<BlockState> section;
      private final boolean debug;
      private final LevelHeightAccessor levelHeightAccessor;
 +    final LevelChunk wrapped;

@@ -12,9 +12,9 @@ import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedGeometry;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base unbaked model for custom models which support the standard top-level model parameters
@@ -59,7 +59,7 @@ public abstract class AbstractUnbakedModel implements UnbakedModel {
 
     @Nullable
     @Override
-    public ResourceLocation parent() {
+    public Identifier parent() {
         return this.parameters.parent();
     }
 

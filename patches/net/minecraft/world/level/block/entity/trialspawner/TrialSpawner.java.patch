@@ -13,15 +13,14 @@
  
                  mob.setPersistenceRequired();
                  spawndata.getEquipment().ifPresent(mob::equip);
-@@ -418,5 +_,14 @@
+@@ -414,5 +_,13 @@
          TrialSpawnerState getState();
  
          void markUpdated();
 +    }
 +
 +    @Override
-+    @org.jetbrains.annotations.Nullable
-+    public com.mojang.datafixers.util.Either<net.minecraft.world.level.block.entity.BlockEntity, Entity> getOwner() {
++    public com.mojang.datafixers.util.@org.jspecify.annotations.Nullable Either<net.minecraft.world.level.block.entity.BlockEntity, Entity> getOwner() {
 +        if (this.stateAccessor instanceof net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity be) {
 +            return com.mojang.datafixers.util.Either.left(be);
 +        }

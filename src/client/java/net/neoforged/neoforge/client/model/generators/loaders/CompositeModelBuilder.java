@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class CompositeModelBuilder extends CustomLoaderBuilder {
-    private final Map<String, Either<ResourceLocation, InlineChild>> childModels = new LinkedHashMap<>();
+    private final Map<String, Either<Identifier, InlineChild>> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     public CompositeModelBuilder() {
-        super(ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "composite"), false);
+        super(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "composite"), false);
     }
 
     /**
@@ -34,7 +34,7 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
      * @param name  The part name of the child
      * @param model The child model's path relative to the models folder
      */
-    public CompositeModelBuilder child(String name, ResourceLocation model) {
+    public CompositeModelBuilder child(String name, Identifier model) {
         Preconditions.checkNotNull(name, "name must not be null");
         Preconditions.checkNotNull(model, "model must not be null");
         childModels.put(name, Either.left(model));
@@ -82,7 +82,7 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
         json = super.toJson(json);
 
         JsonObject children = new JsonObject();
-        for (Map.Entry<String, Either<ResourceLocation, InlineChild>> entry : childModels.entrySet()) {
+        for (Map.Entry<String, Either<Identifier, InlineChild>> entry : childModels.entrySet()) {
             entry.getValue()
                     .ifLeft(reference -> children.addProperty(entry.getKey(), reference.toString()))
                     .ifRight(inline -> serializeNestedTemplate(inline.template, inline.textures, inlineJson -> children.add(entry.getKey(), inlineJson)));

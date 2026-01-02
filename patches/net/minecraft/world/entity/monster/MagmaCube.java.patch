@@ -3,7 +3,7 @@
 @@ -71,17 +_,28 @@
          float f = this.getSize() * 0.1F;
          this.setDeltaMovement(vec3.x, this.getJumpPower() + f, vec3.z);
-         this.hasImpulse = true;
+         this.needsSync = true;
 +        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
      }
  
@@ -18,7 +18,7 @@
 +        if (isLava.getAsBoolean()) {
              Vec3 vec3 = this.getDeltaMovement();
              this.setDeltaMovement(vec3.x, 0.22F + this.getSize() * 0.05F, vec3.z);
-             this.hasImpulse = true;
+             this.needsSync = true;
          } else {
 -            super.jumpInLiquid(p_204065_);
 +            onSuper.run();

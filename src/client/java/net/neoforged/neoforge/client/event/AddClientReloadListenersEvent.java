@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.neoforged.fml.LogicalSide;
@@ -29,8 +29,8 @@ public class AddClientReloadListenersEvent extends SortedReloadListenerEvent imp
         super(resourceManager.getListeners(), AddClientReloadListenersEvent::lookupName);
     }
 
-    private static ResourceLocation lookupName(PreparableReloadListener listener) {
-        ResourceLocation key = VanillaClientListeners.getNameForClass(listener.getClass());
+    private static Identifier lookupName(PreparableReloadListener listener) {
+        Identifier key = VanillaClientListeners.getNameForClass(listener.getClass());
         if (key == null) {
             if (listener.getClass().getPackageName().startsWith("net.minecraft")) {
                 throw new IllegalArgumentException("A key for the reload listener " + listener + " was not provided in VanillaClientListeners!");

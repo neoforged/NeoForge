@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
-@@ -117,6 +_,7 @@
+@@ -114,6 +_,7 @@
              this.onStopHovering(slot);
          }
  
@@ -8,7 +8,7 @@
          p_418314_.pose().popMatrix();
      }
  
-@@ -203,6 +_,7 @@
+@@ -200,6 +_,7 @@
                      this.font,
                      this.getTooltipFromContainerItem(itemstack),
                      itemstack.getTooltipImage(),
@@ -16,7 +16,7 @@
                      p_282171_,
                      p_281909_,
                      itemstack.get(DataComponents.TOOLTIP_STYLE)
-@@ -221,7 +_,8 @@
+@@ -218,7 +_,8 @@
  
      private void renderFloatingItem(GuiGraphics p_282567_, ItemStack p_281330_, int p_281772_, int p_281689_, @Nullable String p_282568_) {
          p_282567_.renderItem(p_281330_, p_281772_, p_281689_);
@@ -26,7 +26,7 @@
      }
  
      protected void renderLabels(GuiGraphics p_281635_, int p_282681_, int p_283686_) {
-@@ -276,6 +_,13 @@
+@@ -273,6 +_,13 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
@@ -40,7 +40,7 @@
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
-@@ -283,7 +_,8 @@
+@@ -280,7 +_,8 @@
                  p_281607_.renderItem(itemstack, i, j, j1);
              }
  
@@ -50,7 +50,7 @@
          }
      }
  
-@@ -322,7 +_,8 @@
+@@ -318,7 +_,8 @@
          if (super.mouseClicked(p_446548_, p_432883_)) {
              return true;
          } else {
@@ -60,7 +60,7 @@
              Slot slot = this.getHoveredSlot(p_446548_.x(), p_446548_.y());
              this.doubleclick = this.lastClickSlot == slot && p_432883_;
              this.skipNextRelease = false;
-@@ -332,6 +_,7 @@
+@@ -328,6 +_,7 @@
                  int i = this.leftPos;
                  int j = this.topPos;
                  boolean flag1 = this.hasClickedOutside(p_446548_.x(), p_446548_.y(), i, j);
@@ -68,7 +68,7 @@
                  int k = -1;
                  if (slot != null) {
                      k = slot.index;
-@@ -357,7 +_,7 @@
+@@ -353,7 +_,7 @@
                          }
                      } else if (!this.isQuickCrafting) {
                          if (this.menu.getCarried().isEmpty()) {
@@ -77,7 +77,7 @@
                                  this.slotClicked(slot, k, p_446548_.button(), ClickType.CLONE);
                              } else {
                                  boolean flag2 = k != -999 && p_446548_.hasShiftDown();
-@@ -381,7 +_,7 @@
+@@ -377,7 +_,7 @@
                                  this.quickCraftingType = 0;
                              } else if (p_446548_.button() == 1) {
                                  this.quickCraftingType = 1;
@@ -86,7 +86,7 @@
                                  this.quickCraftingType = 2;
                              }
                          }
-@@ -458,10 +_,13 @@
+@@ -454,10 +_,13 @@
  
      @Override
      public boolean mouseReleased(MouseButtonEvent p_446114_) {
@@ -100,7 +100,7 @@
          int k = -1;
          if (slot != null) {
              k = slot.index;
-@@ -478,7 +_,7 @@
+@@ -474,7 +_,7 @@
                          if (slot2 != null
                              && slot2.mayPickup(this.minecraft.player)
                              && slot2.hasItem()
@@ -109,7 +109,7 @@
                              && AbstractContainerMenu.canItemQuickReplace(slot2, this.lastQuickMoved, true)) {
                              this.slotClicked(slot2, slot2.index, p_446114_.button(), ClickType.QUICK_MOVE);
                          }
-@@ -543,7 +_,7 @@
+@@ -539,7 +_,7 @@
  
                  this.slotClicked(null, -999, AbstractContainerMenu.getQuickcraftMask(2, this.quickCraftingType), ClickType.QUICK_CRAFT);
              } else if (!this.menu.getCarried().isEmpty()) {
@@ -118,7 +118,7 @@
                      this.slotClicked(slot, k, p_446114_.button(), ClickType.CLONE);
                  } else {
                      boolean flag1 = k != -999 && p_446114_.hasShiftDown();
-@@ -612,34 +_,40 @@
+@@ -608,34 +_,40 @@
  
      @Override
      public boolean keyPressed(KeyEvent p_445387_) {
@@ -146,7 +146,7 @@
 +                handled = true; // Forge MC-146650: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over a item.
              }
  
--            return true;
+-            return false;
 +            return handled;
          }
      }
@@ -166,13 +166,13 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ClickType.SWAP);
                      return true;
                  }
-@@ -682,6 +_,18 @@
+@@ -678,6 +_,18 @@
      @Override
      public T getMenu() {
          return this.menu;
 +    }
 +
-+    @org.jetbrains.annotations.Nullable
++    @org.jspecify.annotations.Nullable
 +    public Slot getSlotUnderMouse() { return this.hoveredSlot; }
 +    public int getGuiLeft() { return leftPos; }
 +    public int getGuiTop() { return topPos; }

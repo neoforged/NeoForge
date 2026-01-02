@@ -3,10 +3,10 @@
 @@ -59,7 +_,16 @@
              () -> {
                  WritableRegistry<T> writableregistry = new MappedRegistry<>(p_335741_.registryKey(), Lifecycle.experimental());
-                 Map<ResourceLocation, T> map = new HashMap<>();
+                 Map<Identifier, T> map = new HashMap<>();
 -                SimpleJsonResourceReloadListener.scanDirectory(p_335893_, p_335741_.registryKey(), p_336173_, p_335741_.codec(), map);
 +                var provider = net.neoforged.neoforge.common.CommonHooks.extractLookupProvider(p_336173_);
-+                Map<ResourceLocation, Optional<T>> optionalMap = new HashMap<>();
++                Map<Identifier, Optional<T>> optionalMap = new HashMap<>();
 +                SimpleJsonResourceReloadListener.scanDirectoryWithOptionalValues(p_335893_, p_335741_.registryKey(), p_336173_, p_335741_.conditionalCodec(), optionalMap);
 +                optionalMap.forEach((rl, optionalEntry) -> {
 +                    optionalEntry.ifPresent(entry -> p_335741_.idSetter().accept(entry, rl));
@@ -16,5 +16,5 @@
 +                        map.put(rl, value);
 +                });
                  map.forEach(
-                     (p_335721_, p_335683_) -> writableregistry.register(
-                         ResourceKey.create(p_335741_.registryKey(), p_335721_), (T)p_335683_, DEFAULT_REGISTRATION_INFO
+                     (p_466168_, p_466169_) -> writableregistry.register(
+                         ResourceKey.create(p_335741_.registryKey(), p_466168_), (T)p_466169_, DEFAULT_REGISTRATION_INFO

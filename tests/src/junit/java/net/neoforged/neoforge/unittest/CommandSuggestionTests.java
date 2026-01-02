@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
 public class CommandSuggestionTests {
@@ -23,7 +23,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_pathSearchIsNotMinecraftHardcoded() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "pickle", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "pickle", Identifier::parse, suggestions::add);
 
         // ["minecraft:sea_pickle"] is what vanilla will do without the patch
         assertEquals(List.of("minecraft:sea_pickle", "modid1:dried_pickle"), suggestions);
@@ -32,7 +32,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_minecraftNamespaceSearchStillWorks() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "minecraft:", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "minecraft:", Identifier::parse, suggestions::add);
 
         // ["minecraft:sea_pickle", "minecraft:grass"] is what vanilla will do without the patch
         assertEquals(List.of("minecraft:sea_pickle", "minecraft:grass"), suggestions);
@@ -41,7 +41,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_modNamespaceSearchStillWorks() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "modid", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "modid", Identifier::parse, suggestions::add);
 
         // ["modid1:dried_pickle", "modid2:burnt_grass"] is what vanilla will do without the patch
         assertEquals(List.of("modid1:dried_pickle", "modid2:burnt_grass"), suggestions);

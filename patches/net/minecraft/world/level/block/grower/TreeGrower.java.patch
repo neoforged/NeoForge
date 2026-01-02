@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/grower/TreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/TreeGrower.java
-@@ -128,6 +_,9 @@
+@@ -126,6 +_,9 @@
          ResourceKey<ConfiguredFeature<?, ?>> resourcekey = this.getConfiguredMegaFeature(p_304893_);
          if (resourcekey != null) {
              Holder<ConfiguredFeature<?, ?>> holder = p_304396_.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(resourcekey).orElse(null);
@@ -10,7 +10,7 @@
              if (holder != null) {
                  for (int i = 0; i >= -1; i--) {
                      for (int j = 0; j >= -1; j--) {
-@@ -158,6 +_,9 @@
+@@ -156,6 +_,9 @@
              return false;
          } else {
              Holder<ConfiguredFeature<?, ?>> holder1 = p_304396_.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(resourcekey1).orElse(null);

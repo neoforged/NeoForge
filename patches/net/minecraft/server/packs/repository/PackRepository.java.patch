@@ -58,14 +58,13 @@
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -120,6 +_,10 @@
-     @Nullable
-     public Pack getPack(String p_10508_) {
-         return this.available.get(p_10508_);
+@@ -127,5 +_,9 @@
+ 
+     public List<PackResources> openAllSelected() {
+         return this.selected.stream().map(Pack::open).collect(ImmutableList.toImmutableList());
 +    }
 +
 +    public synchronized void addPackFinder(RepositorySource packFinder) {
 +        this.sources.add(packFinder);
      }
- 
-     public boolean isAvailable(String p_10516_) {
+ }

@@ -5,7 +5,7 @@
          });
      }
 +
-+    public static <T extends Recipe<?>> RecipeType<T> simple(final ResourceLocation name) {
++    public static <T extends Recipe<?>> RecipeType<T> simple(final Identifier name) {
 +        final String toString = name.toString();
 +        return new RecipeType<T>() {
 +            @Override

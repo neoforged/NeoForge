@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
-@@ -37,8 +_,9 @@
+@@ -36,8 +_,9 @@
          return this.shared.particleIcon;
      }
  
@@ -11,7 +11,7 @@
          if (this.models == null) {
              this.models = this.shared.selectModels(this.blockState);
          }
-@@ -47,9 +_,36 @@
+@@ -46,9 +_,36 @@
  
          for (BlockStateModel blockstatemodel : this.models) {
              p_410101_.setSeed(i);
@@ -51,7 +51,7 @@
  
      @OnlyIn(Dist.CLIENT)
      public record Selector<T>(Predicate<BlockState> condition, T model) {
-@@ -86,7 +_,6 @@
+@@ -85,7 +_,6 @@
                      bitset.set(i);
                  }
              }

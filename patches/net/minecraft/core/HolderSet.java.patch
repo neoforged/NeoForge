@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderSet.java
 +++ b/net/minecraft/core/HolderSet.java
-@@ -174,6 +_,9 @@
+@@ -172,6 +_,9 @@
  
          void bind(List<Holder<T>> p_205836_) {
              this.contents = List.copyOf(p_205836_);
@@ -10,7 +10,7 @@
          }
  
          public TagKey<T> key() {
-@@ -217,6 +_,11 @@
+@@ -215,6 +_,11 @@
          @Override
          public boolean canSerializeIn(HolderOwner<T> p_256542_) {
              return this.owner.canSerializeIn(p_256542_);

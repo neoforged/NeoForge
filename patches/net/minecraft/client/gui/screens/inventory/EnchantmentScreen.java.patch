@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
-@@ -111,7 +_,7 @@
+@@ -110,7 +_,7 @@
                  int l1 = 86 - this.font.width(s);
                  FormattedText formattedtext = EnchantmentNames.getInstance().getRandomName(this.font, l1);
                  int i2 = -9937334;
@@ -17,7 +17,7 @@
 +            if (true) {
                  int l = this.menu.levelClue[j];
                  int i1 = j + 1;
--                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0 && l >= 0 && optional != null) {
+-                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0 && l >= 0) {
 +                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0) {
                      List<Component> list = Lists.newArrayList();
 -                    list.add(Component.translatable("container.enchant.clue", Enchantment.getFullname(optional.get(), l)).withStyle(ChatFormatting.WHITE));

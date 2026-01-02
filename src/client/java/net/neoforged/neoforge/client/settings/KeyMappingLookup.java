@@ -13,9 +13,9 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Util;
 
 public class KeyMappingLookup {
     private final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = Util.make(new EnumMap<>(KeyModifier.class), map -> {

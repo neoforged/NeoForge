@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
 +++ b/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
-@@ -98,8 +_,10 @@
+@@ -93,8 +_,10 @@
+         if (this.texture == null) {
              this.texture = gpudevice.createTexture(() -> "UI " + this.getTextureLabel() + " texture", 12, TextureFormat.RGBA8, p_415840_, p_415644_, 1, 1);
-             this.texture.setTextureFilter(FilterMode.NEAREST, false);
              this.textureView = gpudevice.createTextureView(this.texture);
 +            // Neo: copy stencil setting from main target
 +            TextureFormat depthFormat = net.minecraft.client.Minecraft.getInstance().getMainRenderTarget().getDepthTexture().getFormat();
@@ -12,7 +12,7 @@
              );
              this.depthTextureView = gpudevice.createTextureView(this.depthTexture);
          }
-@@ -142,4 +_,13 @@
+@@ -137,4 +_,13 @@
      protected abstract void renderToTexture(T p_415826_, PoseStack p_415928_);
  
      protected abstract String getTextureLabel();

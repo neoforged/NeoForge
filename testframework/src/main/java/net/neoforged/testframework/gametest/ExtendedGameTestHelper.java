@@ -36,6 +36,7 @@ import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -58,12 +59,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ExtendedGameTestHelper extends GameTestHelper {
     public ExtendedGameTestHelper(GameTestInfo info) {
@@ -148,11 +148,11 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         serverplayer.setYRot(180);
         serverplayer.connection.chunkSender.sendNextChunks(serverplayer);
         serverplayer.connection.chunkSender.onChunkBatchReceivedByClient(64f);
-        serverplayer.setClientLoaded(true);
+        serverplayer.connection.markClientLoaded();
         return serverplayer;
     }
 
-    public ServerPlayer makeOpMockPlayer(int commandLevel) {
+    public ServerPlayer makeOpMockPlayer(PermissionSet permissions) {
         return new FakePlayer(this.getLevel(), new GameProfile(UUID.randomUUID(), "test-mock-player")) {
             @Override
             public boolean isSpectator() {
@@ -170,8 +170,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             }
 
             @Override
-            public int getPermissionLevel() {
-                return commandLevel;
+            public PermissionSet permissions() {
+                return permissions;
             }
         };
     }
@@ -183,19 +183,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public <T extends BlockEntity> T getBlockEntity(int x, int y, int z, Class<T> type) {
         return getBlockEntity(new BlockPos(x, y, z), type);
-    }
-
-    @Nullable
-    public <T, C extends @Nullable Object> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
-        return getLevel().getCapability(cap, absolutePos(pos), context);
-    }
-
-    public <T, C extends @Nullable Object> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
-        final var capability = getCapability(cap, pos, context);
-        if (capability == null) {
-            throw this.assertionException(pos, "Expected capability %s but there was none", cap);
-        }
-        return capability;
     }
 
     public <T> ParametrizedGameTestSequence<T> startSequence(Supplier<T> value) {
@@ -361,14 +348,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void assertNotNull(@Nullable Object var, String message) {
         this.assertTrue(var != null, message);
-    }
-
-    public void fail(String message) {
-        this.fail(Component.translatable(message));
-    }
-
-    public void fail(String message, BlockPos pos) {
-        this.fail(Component.translatable(message), pos);
     }
 
     public void assertBlock(BlockPos pos, Predicate<Block> predicate, String message) {

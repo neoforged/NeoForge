@@ -8,21 +8,23 @@ package net.neoforged.neoforge.client.blaze3d.validation;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.textures.AddressMode;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.textures.TextureFormat;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.OptionalDouble;
 import java.util.function.Supplier;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The validation GpuDevice is used to ensure that both mods and backends are complying with the B3D API contract correctly.
@@ -57,6 +59,11 @@ public class ValidationGpuDevice implements GpuDevice {
     @Override
     public CommandEncoder createCommandEncoder() {
         return validationCommandEncoder;
+    }
+
+    @Override
+    public GpuSampler createSampler(AddressMode addressModeU, AddressMode addressModeV, FilterMode minFilter, FilterMode magFilter, int maxAnisotropy, OptionalDouble maxLod) {
+        return realDevice.createSampler(addressModeU, addressModeV, minFilter, magFilter, maxAnisotropy, maxLod);
     }
 
     protected ValidationGpuTexture wrapGpuTexture(GpuTexture texture, GpuDeviceUsageValidator validator) {
@@ -96,7 +103,7 @@ public class ValidationGpuDevice implements GpuDevice {
     }
 
     @Override
-    public GpuBuffer createBuffer(@Nullable Supplier<String> label, int usage, int size) {
+    public GpuBuffer createBuffer(@Nullable Supplier<String> label, int usage, long size) {
         validator.validateBufferUsage(usage);
         return realDevice.createBuffer(label, usage, size);
     }
@@ -153,7 +160,12 @@ public class ValidationGpuDevice implements GpuDevice {
     }
 
     @Override
-    public CompiledRenderPipeline precompilePipeline(RenderPipeline pipeline, @Nullable BiFunction<ResourceLocation, ShaderType, String> shaderSourceProvider) {
+    public int getMaxSupportedAnisotropy() {
+        return realDevice.getMaxSupportedAnisotropy();
+    }
+
+    @Override
+    public CompiledRenderPipeline precompilePipeline(RenderPipeline pipeline, @Nullable ShaderSource shaderSourceProvider) {
         validator.validatePipeline(pipeline);
         return realDevice.precompilePipeline(pipeline, shaderSourceProvider);
     }

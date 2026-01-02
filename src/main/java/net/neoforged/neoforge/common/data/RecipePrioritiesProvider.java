@@ -14,8 +14,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
 /**
@@ -29,7 +29,7 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
     private final CompletableFuture<HolderLookup.Provider> registriesLookup;
     protected HolderLookup.Provider registries;
     private final String modid;
-    private final Map<ResourceLocation, Integer> toSerialize = new LinkedHashMap<>();
+    private final Map<Identifier, Integer> toSerialize = new LinkedHashMap<>();
     private boolean replace = false;
 
     public RecipePrioritiesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
@@ -73,16 +73,16 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
         return DataProvider.saveStable(cache, json, path);
     }
 
-    public void add(ResourceLocation recipe, int priority) {
+    public void add(Identifier recipe, int priority) {
         this.toSerialize.put(recipe, priority);
     }
 
     public void add(ResourceKey<Recipe> recipe, int priority) {
-        this.add(recipe.location(), priority);
+        this.add(recipe.identifier(), priority);
     }
 
     public void add(String recipe, int priority) {
-        this.add(ResourceLocation.fromNamespaceAndPath(this.modid, recipe), priority);
+        this.add(Identifier.fromNamespaceAndPath(this.modid, recipe), priority);
     }
 
     @Override

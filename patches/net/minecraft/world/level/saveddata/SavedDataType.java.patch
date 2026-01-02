@@ -1,22 +1,48 @@
 --- a/net/minecraft/world/level/saveddata/SavedDataType.java
 +++ b/net/minecraft/world/level/saveddata/SavedDataType.java
-@@ -6,9 +_,17 @@
+@@ -4,7 +_,33 @@
+ import java.util.function.Supplier;
  import net.minecraft.util.datafix.DataFixTypes;
  
- public record SavedDataType<T extends SavedData>(
--    String id, Function<SavedData.Context, T> constructor, Function<SavedData.Context, Codec<T>> codec, DataFixTypes dataFixType
-+    String id, Function<SavedData.Context, T> constructor, Function<SavedData.Context, Codec<T>> codec, @org.jetbrains.annotations.Nullable DataFixTypes dataFixType // Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable type.
- ) {
--    public SavedDataType(String p_401076_, Supplier<T> p_401163_, Codec<T> p_401275_, DataFixTypes p_401088_) {
-+    public SavedDataType(String id, Function<SavedData.Context, T> constructor, Function<SavedData.Context, Codec<T>> codec) {
-+        this(id, constructor, codec, null);
+-public record SavedDataType<T extends SavedData>(String id, Supplier<T> constructor, Codec<T> codec, DataFixTypes dataFixType) {
++// Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable dataFixType.
++// Neo: We also have to reintroduce the ability to make level-dependent objects/codecs
++public record SavedDataType<T extends SavedData>(String id, Factory<T> factory, Factory<Codec<T>> codecFactory, @org.jspecify.annotations.Nullable DataFixTypes dataFixType) {
++    public SavedDataType(String id, Supplier<T> constructor, Codec<T> codec, @org.jspecify.annotations.Nullable DataFixTypes dataFixType) {
++        this(id, ignored -> constructor.get(), ignored -> codec, dataFixType);
 +    }
 +
 +    public SavedDataType(String id, Supplier<T> constructor, Codec<T> codec) {
-+        this(id, p_401100_ -> constructor.get(), p_401036_ -> codec, null);
++        this(id, ignored -> constructor.get(), ignored -> codec, null);
 +    }
 +
-+    public SavedDataType(String p_401076_, Supplier<T> p_401163_, Codec<T> p_401275_, @org.jetbrains.annotations.Nullable DataFixTypes p_401088_) {
-         this(p_401076_, p_401100_ -> p_401163_.get(), p_401036_ -> p_401275_, p_401088_);
++    public SavedDataType(String id, Factory<T> constructor, Factory<Codec<T>> codec) {
++        this(id, constructor, codec, null);
++    }
++
++    // Neo: Use the level-sensitive factory
++    @Deprecated
++    public Supplier<T> constructor() {
++        return () -> factory.create(null);
++    }
++
++    // Neo: Use the level-sensitive codecFactory
++    @Deprecated
++    public Codec<T> codec() {
++        return codecFactory.create(null);
++    }
++
+     @Override
+     public boolean equals(Object p_401293_) {
+         return p_401293_ instanceof SavedDataType<?> saveddatatype && this.id.equals(saveddatatype.id);
+@@ -18,5 +_,10 @@
+     @Override
+     public String toString() {
+         return "SavedDataType[" + this.id + "]";
++    }
++
++    @FunctionalInterface
++    public interface Factory<T> {
++        T create(net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level);
      }
- 
+ }

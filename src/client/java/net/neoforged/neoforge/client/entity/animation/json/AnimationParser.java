@@ -24,7 +24,7 @@ import java.util.function.UnaryOperator;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
@@ -39,7 +39,7 @@ public final class AnimationParser {
      * {@snippet lang = JSON : "minecraft:rotation"
      * }
      */
-    private static final Codec<AnimationTarget> TARGET_CODEC = ResourceLocation.CODEC
+    private static final Codec<AnimationTarget> TARGET_CODEC = Identifier.CODEC
             .flatXmap(
                     name -> Optional.ofNullable(AnimationTypeManager.getTarget(name))
                             .map(DataResult::success)
@@ -56,7 +56,7 @@ public final class AnimationParser {
      * {@snippet lang = JSON : "minecraft:linear"
      * }
      */
-    private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = ResourceLocation.CODEC
+    private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = Identifier.CODEC
             .flatXmap(
                     name -> Optional.ofNullable(AnimationTypeManager.getInterpolation(name))
                             .map(DataResult::success)
@@ -84,8 +84,7 @@ public final class AnimationParser {
      * }
      */
     public static final MapCodec<AnimationChannel> CHANNEL_CODEC = new KeyDispatchCodec<>(
-            "target",
-            TARGET_CODEC,
+            TARGET_CODEC.fieldOf("target"),
             channel -> Optional.ofNullable(AnimationTypeManager.getTargetFromChannelTarget(channel.target()))
                     .map(DataResult::success)
                     .orElseGet(() -> DataResult.error(() -> String.format(

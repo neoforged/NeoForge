@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -24,7 +24,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(CustomElytraTest.MOD_ID)
 public class CustomElytraTest {
     public static final String MOD_ID = "custom_elytra_test";
-    private static final ResourceKey<EquipmentAsset> TEST_ELYTRA_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_elytra"));
+    private static final ResourceKey<EquipmentAsset> TEST_ELYTRA_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(MOD_ID, "test_elytra"));
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final DeferredItem<Item> TEST_ELYTRA = ITEMS.registerItem(
             "test_elytra", props -> new Item(props.durability(100)

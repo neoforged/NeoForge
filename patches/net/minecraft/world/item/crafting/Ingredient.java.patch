@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -23,16 +_,20 @@
+@@ -23,16 +_,18 @@
  import net.minecraft.world.level.ItemLike;
  
  public final class Ingredient implements StackedContents.IngredientInfo<Holder<Item>>, Predicate<ItemStack> {
@@ -20,14 +20,12 @@
 -    public static final Codec<Ingredient> CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values);
 +    public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.codec(ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values));
      private final HolderSet<Item> values;
-+    @org.jetbrains.annotations.Nullable
-+    private net.neoforged.neoforge.common.crafting.ICustomIngredient customIngredient = null;
-+    @org.jetbrains.annotations.Nullable
-+    private List<Holder<Item>> customIngredientValues;
++    private net.neoforged.neoforge.common.crafting.@org.jspecify.annotations.Nullable ICustomIngredient customIngredient = null;
++    private @org.jspecify.annotations.Nullable List<Holder<Item>> customIngredientValues;
  
      private Ingredient(HolderSet<Item> p_365027_) {
          p_365027_.unwrap().ifRight(p_360057_ -> {
-@@ -45,30 +_,96 @@
+@@ -45,30 +_,95 @@
          this.values = p_365027_;
      }
  
@@ -108,8 +106,7 @@
 +        return this.customIngredient == null || this.customIngredient.isSimple();
 +    }
 +
-+    @org.jetbrains.annotations.Nullable
-+    public net.neoforged.neoforge.common.crafting.ICustomIngredient getCustomIngredient() {
++    public net.neoforged.neoforge.common.crafting.@org.jspecify.annotations.Nullable ICustomIngredient getCustomIngredient() {
 +        return this.customIngredient;
 +    }
 +

@@ -5,15 +5,18 @@
 
 package net.neoforged.testframework.registration;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
@@ -51,6 +54,13 @@ public interface RegistrationHelper {
      * Registers a data map.
      */
     <M extends DataMapType<?, ?>> M registerDataMap(M map);
+
+    /**
+     * Register an object created by the given {@code registrar}, with the given {@code name}, in the given {@code registry}.
+     * <p>
+     * This method can be used with vanilla registration helpers that directly register to a {@link Registry}.
+     */
+    <R, T extends R> DeferredHolder<R, T> register(ResourceKey<? extends Registry<R>> registry, String name, BiFunction<Registry<R>, Identifier, T> registrar);
 
     /**
      * {@return the mod id of this helper}

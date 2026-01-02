@@ -189,6 +189,9 @@
     "minecraft:wooden_shovel": {
       "burn_time": 200
     },
+    "minecraft:wooden_spear": {
+      "burn_time": 200
+    },
     "minecraft:wooden_sword": {
       "burn_time": 200
     }

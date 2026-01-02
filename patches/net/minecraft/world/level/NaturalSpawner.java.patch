@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -73,7 +_,7 @@
+@@ -74,7 +_,7 @@
  
          for (Entity entity : p_186526_) {
              if (!(entity instanceof Mob mob && (mob.isPersistenceRequired() || mob.requiresCustomPersistence()))) {
@@ -9,7 +9,7 @@
                  if (mobcategory != MobCategory.MISC) {
                      BlockPos blockpos = entity.blockPosition();
                      p_186527_.query(
-@@ -214,7 +_,7 @@
+@@ -215,7 +_,7 @@
                                      l1++;
                                      p_47040_.addFreshEntityWithPassengers(mob);
                                      p_47044_.run(mob, p_47041_);

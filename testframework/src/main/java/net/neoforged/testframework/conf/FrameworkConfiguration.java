@@ -10,28 +10,25 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.Permissions;
 import net.neoforged.testframework.impl.DefaultMarkdownFileSummaryDumper;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.summary.DefaultLogSummaryDumper;
 import net.neoforged.testframework.summary.SummaryDumper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
-        ResourceLocation id,
+        Identifier id,
         Collection<Feature> enabledFeatures,
-        int commandRequiredPermission,
+        Permission commandRequiredPermission,
         List<String> enabledTests,
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
         List<SummaryDumper> dumpers,
         MissingDescriptionAction onMissingDescription) {
-    public static Builder builder(ResourceLocation id) {
+    public static Builder builder(Identifier id) {
         return new Builder(id);
     }
 
@@ -44,17 +41,17 @@ public record FrameworkConfiguration(
     }
 
     public static final class Builder {
-        private final ResourceLocation id;
+        private final Identifier id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
 
-        private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
+        private Permission commandRequiredPermission = Permissions.COMMANDS_GAMEMASTER;
         private final List<String> enabledTests = new ArrayList<>();
         private MissingDescriptionAction onMissingDescription = MissingDescriptionAction.WARNING;
         private final List<SummaryDumper> dumpers = new ArrayList<>();
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
 
-        public Builder(ResourceLocation id) {
+        public Builder(Identifier id) {
             this.id = id;
 
             for (final Feature value : Feature.values()) {
@@ -74,7 +71,7 @@ public record FrameworkConfiguration(
             return this;
         }
 
-        public Builder commandRequiredPermission(int commandRequiredPermission) {
+        public Builder commandRequiredPermission(Permission commandRequiredPermission) {
             this.commandRequiredPermission = commandRequiredPermission;
             return this;
         }

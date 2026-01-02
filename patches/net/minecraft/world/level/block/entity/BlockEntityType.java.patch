@@ -10,9 +10,9 @@
 +    // Neo: Allow modded BE types to declare that they have NBT data only OPs can set
 +    private final boolean onlyOpCanSetNbt;
  
-     @Nullable
-     public static ResourceLocation getKey(BlockEntityType<?> p_58955_) {
-@@ -294,14 +_,39 @@
+     public static @Nullable Identifier getKey(BlockEntityType<?> p_58955_) {
+         return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(p_58955_);
+@@ -293,14 +_,39 @@
      }
  
      public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Set<Block> p_155260_) {
@@ -52,7 +52,7 @@
      public boolean isValid(BlockState p_155263_) {
          return this.validBlocks.contains(p_155263_.getBlock());
      }
-@@ -318,6 +_,7 @@
+@@ -316,6 +_,7 @@
      }
  
      public boolean onlyOpCanSetNbt() {

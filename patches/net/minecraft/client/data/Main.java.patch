@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -31,16 +_,34 @@
+@@ -30,17 +_,35 @@
          OptionSpec<Void> optionspec1 = optionparser.accepts("client", "Include client generators");
          OptionSpec<Void> optionspec2 = optionparser.accepts("all", "Include all generators");
          OptionSpec<String> optionspec3 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
@@ -26,6 +26,7 @@
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addClientProviders(datagenerator, flag1);
 -            datagenerator.run();
+             Util.shutdownExecutors();
 +            }
 +            java.io.File assetsDirValue = optionset.valueOf(assetsDir);
 +            String assetIndexValue = optionset.valueOf(assetIndex);

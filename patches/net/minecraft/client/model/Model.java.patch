@@ -4,10 +4,10 @@
          this.allParts = p_368583_.getAllParts();
      }
  
-+    protected static net.neoforged.neoforge.client.entity.animation.json.AnimationHolder getAnimation(ResourceLocation key) {
++    protected static net.neoforged.neoforge.client.entity.animation.json.AnimationHolder getAnimation(Identifier key) {
 +        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
 +    }
 +
-     public final RenderType renderType(ResourceLocation p_103120_) {
-         return this.renderType.apply(p_103120_);
+     public final RenderType renderType(Identifier p_469737_) {
+         return this.renderType.apply(p_469737_);
      }

@@ -16,7 +16,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.jetbrains.annotations.ApiStatus;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryPayload(Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> queries) implements CustomPacketPayload {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "register");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "register");
     public static final Type<ModdedNetworkQueryPayload> TYPE = new Type<>(ID);
     public static StreamCodec<FriendlyByteBuf, ModdedNetworkQueryPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(IdentityHashMap::new,
@@ -42,7 +42,7 @@ public record ModdedNetworkQueryPayload(Map<ConnectionProtocol, Set<ModdedNetwor
         return TYPE;
     }
 
-    public static ModdedNetworkQueryPayload fromRegistry(Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> registry) {
+    public static ModdedNetworkQueryPayload fromRegistry(Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> registry) {
         var queries = registry.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getValue().values().stream().map(ModdedNetworkQueryComponent::new).collect(Collectors.toSet())))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));

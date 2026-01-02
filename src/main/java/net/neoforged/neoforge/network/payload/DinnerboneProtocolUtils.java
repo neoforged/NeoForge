@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -25,7 +25,7 @@ public final class DinnerboneProtocolUtils {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static final StreamCodec<FriendlyByteBuf, Set<ResourceLocation>> CHANNELS_CODEC = StreamCodec.of(
+    public static final StreamCodec<FriendlyByteBuf, Set<Identifier>> CHANNELS_CODEC = StreamCodec.of(
             DinnerboneProtocolUtils::writeChannels,
             DinnerboneProtocolUtils::readChannels);
 
@@ -37,9 +37,9 @@ public final class DinnerboneProtocolUtils {
      * @param buf the buffer
      * @return the channels
      */
-    private static Set<ResourceLocation> readChannels(FriendlyByteBuf buf) {
+    private static Set<Identifier> readChannels(FriendlyByteBuf buf) {
         final StringBuilder builder = new StringBuilder();
-        final Set<ResourceLocation> channels = new HashSet<>();
+        final Set<Identifier> channels = new HashSet<>();
 
         while (buf.isReadable()) {
             final char c = (char) buf.readByte();
@@ -55,14 +55,14 @@ public final class DinnerboneProtocolUtils {
         return channels;
     }
 
-    private static void parseAndAddChannel(StringBuilder builder, Set<ResourceLocation> channels) {
+    private static void parseAndAddChannel(StringBuilder builder, Set<Identifier> channels) {
         if (builder.isEmpty()) {
             return;
         }
 
         final String channel = builder.toString();
         try {
-            channels.add(ResourceLocation.parse(channel));
+            channels.add(Identifier.parse(channel));
         } catch (Exception e) {
             LOGGER.error("Invalid channel: {}", channel, e);
         } finally {
@@ -77,8 +77,8 @@ public final class DinnerboneProtocolUtils {
      * @param buf      the buffer
      * @param channels the channels
      */
-    private static void writeChannels(FriendlyByteBuf buf, Set<ResourceLocation> channels) {
-        for (ResourceLocation channel : channels) {
+    private static void writeChannels(FriendlyByteBuf buf, Set<Identifier> channels) {
+        for (Identifier channel : channels) {
             for (char c : channel.toString().toCharArray()) {
                 buf.writeByte(c);
             }

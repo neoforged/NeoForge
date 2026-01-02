@@ -1,22 +1,21 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -76,14 +_,26 @@
-         this.cameraPos = p_173566_.getPosition();
+@@ -74,13 +_,25 @@
+         this.cameraPos = p_173566_.position();
      }
  
 +    /**
 +     * @deprecated Neo: use {@link #tryExtractRenderState(BlockEntity, float, ModelFeatureRenderer.CrumblingOverlay, net.minecraft.client.renderer.culling.Frustum)} instead
 +     */
-     @Nullable
-     public <E extends BlockEntity, S extends BlockEntityRenderState> S tryExtractRenderState(
-         E p_445799_, float p_446989_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_447358_
+     public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
+         E p_445799_, float p_446989_, ModelFeatureRenderer.@Nullable CrumblingOverlay p_447358_
      ) {
 +        return tryExtractRenderState(p_445799_, p_446989_, p_447358_, null);
 +    }
 +
 +    @Nullable
 +    public <E extends BlockEntity, S extends BlockEntityRenderState> S tryExtractRenderState(
-+            E p_445799_, float p_446989_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_447358_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum
++            E p_445799_, float p_446989_, ModelFeatureRenderer.@Nullable CrumblingOverlay p_447358_, net.minecraft.client.renderer.culling.@Nullable Frustum frustum
 +    ) {
          BlockEntityRenderer<E, S> blockentityrenderer = this.getRenderer(p_445799_);
          if (blockentityrenderer == null) {

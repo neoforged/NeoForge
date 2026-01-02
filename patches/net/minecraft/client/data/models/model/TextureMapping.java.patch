@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/data/models/model/TextureMapping.java
 +++ b/net/minecraft/client/data/models/model/TextureMapping.java
 @@ -428,4 +_,12 @@
-         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(p_386842_);
-         return resourcelocation.withPath(p_387396_ -> "item/" + p_387396_ + p_386898_);
+         Identifier identifier = BuiltInRegistries.ITEM.getKey(p_386842_);
+         return identifier.withPath(p_387396_ -> "item/" + p_387396_ + p_386898_);
      }
 +
 +    // Neo: Added to allow easier texture map copying
