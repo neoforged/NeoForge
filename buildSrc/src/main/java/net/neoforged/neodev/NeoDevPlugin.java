@@ -323,6 +323,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setMinecraftLibraries(configurations.minecraftClientClasspath);
             task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
+            task.getUniversalJar().set(universalJar.flatMap(Jar::getArchiveFile));
         });
 
         // Installer profile = the .json file used by the NeoForge installer.
@@ -538,7 +539,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(binpatcherConfig);
 
-            task.getBaseClientJar().set(clientBaseJar);
+            task.getBaseClientJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
             task.getModifiedClientJar().set(clientModifiedJar);
             task.getBaseServerJar().set(serverBaseJar);
             task.getModifiedServerJar().set(serverModifiedJar);
@@ -547,6 +548,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getModifiedJoinedJar().set(clientModifiedJar);
             task.getInclude().add("**/*.class");
             task.getInclude().add("META-INF/neoforge.mods.toml");
+            task.getInclude().add("META-INF/MANIFEST.MF");
+            task.getInclude().add("META-INF/*.SF");
 
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
         });

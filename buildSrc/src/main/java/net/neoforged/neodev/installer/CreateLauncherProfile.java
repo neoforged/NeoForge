@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -69,6 +71,9 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @OutputFile
     public abstract RegularFileProperty getLauncherProfile();
 
+    @InputFile
+    public abstract RegularFileProperty getUniversalJar();
+
     @TaskAction
     public void createLauncherProfile() throws IOException {
         var time = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
@@ -101,7 +106,19 @@ public abstract class CreateLauncherProfile extends DefaultTask {
             }
         });
 
-        var libraries = LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFiles);
+        var libraries = new ArrayList<>(LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFiles));
+        var universalJar = getUniversalJar().getAsFile().get().toPath();
+        libraries.add(new Library(
+                "net.neoforged:neoforge:%s:universal".formatted(getNeoForgeVersion().get()),
+                new LibraryDownload(new LibraryArtifact(
+                        LibraryCollector.sha1Hash(universalJar),
+                        Files.size(universalJar),
+                        "https://maven.neoforged.net/releases/net/neoforged/neoforge/%s/neoforge-%s-universal.jar".formatted(
+                                getNeoForgeVersion().get(),
+                                getNeoForgeVersion().get()),
+                        "net/neoforged/neoforge/%s/neoforge-%s-universal.jar".formatted(
+                                getNeoForgeVersion().get(),
+                                getNeoForgeVersion().get())))));
 
         var gameArguments = new ArrayList<>(List.of(
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),

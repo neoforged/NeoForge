@@ -115,7 +115,6 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         data.put("MCP_VERSION", new LauncherDataEntry(String.format("'%s'", neoFormVersion), String.format("'%s'", neoFormVersion)));
 
         var processors = new ArrayList<ProcessorEntry>();
-        BiConsumer<InstallerProcessor, List<String>> commonProcessor = (processor, args) -> addProcessor(processors, null, processor, args);
         BiConsumer<InstallerProcessor, List<String>> serverProcessor = (processor, args) -> addProcessor(processors, List.of("server"), processor, args);
 
         serverProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
@@ -126,7 +125,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--from", "data/win_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/win_args.txt".formatted(getNeoForgeVersion().get()),
                         "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get())));
 
-        commonProcessor.accept(
+        serverProcessor.accept(
                 InstallerProcessor.INSTALLERTOOLS,
                 List.of(
                         "--task",
