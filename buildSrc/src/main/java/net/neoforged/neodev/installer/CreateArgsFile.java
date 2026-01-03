@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
-import net.neoforged.neodev.utils.DependencyUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -30,23 +31,13 @@ public abstract class CreateArgsFile extends DefaultTask {
     public abstract RegularFileProperty getTemplate();
 
     @Input
-    public abstract Property<String> getMinecraftVersion();
+    public abstract Property<String> getPathSeparator();
 
-    @Input
-    public abstract Property<String> getNeoForgeVersion();
+    @Nested
+    public abstract ListProperty<IdentifiedFile> getLibraryFiles();
 
-    @Input
-    public abstract Property<String> getRawNeoFormVersion();
-
-    @Input
-    protected abstract Property<String> getPathSeparator();
-
-    @Input
-    protected abstract Property<String> getClasspath();
-
-    public void setLibraries(String separator, Configuration classpath) {
-        getPathSeparator().set(separator);
-        getClasspath().set(DependencyUtils.configurationToClasspath(classpath, "libraries/", separator));
+    public void addLibraries(Configuration libraries) {
+        getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getProject(), libraries));
     }
 
     @InputFile
@@ -58,8 +49,16 @@ public abstract class CreateArgsFile extends DefaultTask {
     @Inject
     protected abstract ArchiveOperations getArchiveOperations();
 
+    private String buildOurClasspath() {
+        return getLibraryFiles().get()
+                .stream()
+                .map(library -> library.getIdentifier().get().repositoryPath())
+                .map(path -> "libraries/" + path)
+                .collect(Collectors.joining(getPathSeparator().get()));
+    }
+
     private String resolveClasspath() throws IOException {
-        var ourClasspath = getClasspath().get();
+        var ourClasspath = buildOurClasspath();
 
         // The raw server jar also contains its own classpath.
         // We want to make sure that our versions of the libraries are used when there is a conflict.
@@ -92,9 +91,6 @@ public abstract class CreateArgsFile extends DefaultTask {
     public void createArgsFile() throws IOException {
         var replacements = new HashMap<String, String>();
         replacements.put("@CLASS_PATH@", resolveClasspath());
-        replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
-        replacements.put("@MC_VERSION@", getMinecraftVersion().get());
-        replacements.put("@MCP_VERSION@", getRawNeoFormVersion().get());
 
         var contents = Files.readString(getTemplate().get().getAsFile().toPath());
         for (var entry : replacements.entrySet()) {

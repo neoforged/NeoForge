@@ -357,11 +357,31 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(";", configurations.launcherProfileClasspath);
+            task.addLibraries(configurations.launcherProfileClasspath);
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
+            task.getPathSeparator().set(";");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(":", configurations.launcherProfileClasspath);
+            task.addLibraries(configurations.launcherProfileClasspath);
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
+            task.getPathSeparator().set(":");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
@@ -369,9 +389,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
-                task.getMinecraftVersion().set(minecraftVersion);
-                task.getNeoForgeVersion().set(neoForgeVersion);
-                task.getRawNeoFormVersion().set(rawNeoFormVersion);
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }

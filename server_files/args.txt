@@ -5,6 +5,3 @@
 -classpath
 @CLASS_PATH@
 net.neoforged.fml.startup.Server
---fml.neoForgeVersion @FORGE_VERSION@
---fml.mcVersion @MC_VERSION@
---fml.neoFormVersion @MCP_VERSION@
