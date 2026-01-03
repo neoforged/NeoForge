@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.core.NonNullList;
@@ -53,7 +52,7 @@ public abstract class StacksResourceHandler<S, T extends Resource> implements Re
     protected NonNullList<S> stacks;
     protected final Codec<NonNullList<S>> codec;
 
-    private final List<StackJournal> snapshotJournals;
+    private final ArrayList<StackJournal> snapshotJournals;
 
     protected StacksResourceHandler(int size, S emptyStack, Codec<S> stackCodec) {
         this(NonNullList.withSize(size, emptyStack), emptyStack, stackCodec);
@@ -65,9 +64,7 @@ public abstract class StacksResourceHandler<S, T extends Resource> implements Re
         // Don't use NonNullList.codecOf because it creates an unmodifiable list
         this.codec = stackCodec.listOf().xmap(this::mutableCopyOf, Function.identity());
         this.snapshotJournals = new ArrayList<>(this.stacks.size());
-        for (int i = 0; i < this.stacks.size(); i++) {
-            snapshotJournals.add(new StackJournal(i));
-        }
+        updateStacksSize();
     }
 
     /**
@@ -75,6 +72,28 @@ public abstract class StacksResourceHandler<S, T extends Resource> implements Re
      */
     private NonNullList<S> mutableCopyOf(Collection<S> list) {
         return NonNullList.of(emptyStack, (S[]) list.toArray(Object[]::new));
+    }
+
+    /**
+     * Changes the list of stacks. Can change the size of the handler.
+     *
+     * @param stacks The new list of stacks. A shallow copy will be made.
+     */
+    protected void setStacks(NonNullList<S> stacks) {
+        this.stacks = mutableCopyOf(stacks);
+        updateStacksSize();
+    }
+
+    private void updateStacksSize() {
+        snapshotJournals.ensureCapacity(stacks.size());
+        // Add missing entries
+        while (snapshotJournals.size() < stacks.size()) {
+            snapshotJournals.add(new StackJournal(snapshotJournals.size()));
+        }
+        // Remove superfluous entries
+        if (snapshotJournals.size() > stacks.size()) {
+            snapshotJournals.subList(stacks.size(), snapshotJournals.size()).clear();
+        }
     }
 
     @Override
@@ -86,6 +105,7 @@ public abstract class StacksResourceHandler<S, T extends Resource> implements Re
     public void deserialize(ValueInput input) {
         input.read(VALUE_IO_KEY, codec).ifPresent(l -> {
             stacks = l;
+            updateStacksSize();
         });
     }
 

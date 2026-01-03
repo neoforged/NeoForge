@@ -59,7 +59,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
@@ -184,19 +183,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public <T extends BlockEntity> T getBlockEntity(int x, int y, int z, Class<T> type) {
         return getBlockEntity(new BlockPos(x, y, z), type);
-    }
-
-    @Nullable
-    public <T, C extends @Nullable Object> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
-        return getLevel().getCapability(cap, absolutePos(pos), context);
-    }
-
-    public <T, C extends @Nullable Object> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
-        final var capability = getCapability(cap, pos, context);
-        if (capability == null) {
-            throw this.assertionException(pos, "Expected capability %s but there was none", cap);
-        }
-        return capability;
     }
 
     public <T> ParametrizedGameTestSequence<T> startSequence(Supplier<T> value) {
@@ -362,14 +348,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void assertNotNull(@Nullable Object var, String message) {
         this.assertTrue(var != null, message);
-    }
-
-    public void fail(String message) {
-        this.fail(Component.translatable(message));
-    }
-
-    public void fail(String message, BlockPos pos) {
-        this.fail(Component.translatable(message), pos);
     }
 
     public void assertBlock(BlockPos pos, Predicate<Block> predicate, String message) {

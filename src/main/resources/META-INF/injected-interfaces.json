@@ -317,5 +317,8 @@
   ],
   "net/minecraft/client/resources/model/EquipmentClientInfo$LayerType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/gametest/framework/GameTestHelper": [
+    "net/neoforged/neoforge/common/extensions/GameTestHelperExtension"
   ]
 }
