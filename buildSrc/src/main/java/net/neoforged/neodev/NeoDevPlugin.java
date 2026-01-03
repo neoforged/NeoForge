@@ -23,6 +23,7 @@ import net.neoforged.neodev.installer.CreateLauncherProfile;
 import net.neoforged.neodev.installer.IdentifiedFile;
 import net.neoforged.neodev.installer.InstallerProcessor;
 import net.neoforged.neodev.utils.DependencyUtils;
+import net.neoforged.neodev.utils.MavenIdentifier;
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts;
 import net.neoforged.nfrtgradle.DownloadAssets;
 import net.neoforged.nfrtgradle.NeoFormRuntimePlugin;
@@ -474,6 +475,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 configurations,
                 downloadAssets,
                 installerJar,
+                universalJar,
                 minecraftVersion,
                 neoForgeVersion,
                 createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
@@ -710,6 +712,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             NeoDevConfigurations configurations,
             TaskProvider<? extends DownloadAssets> downloadAssets,
             TaskProvider<? extends AbstractArchiveTask> installer,
+            TaskProvider<Jar> universalJar,
             Provider<String> minecraftVersion,
             Provider<String> neoForgeVersion,
             Provider<RegularFile> originalClientJar) {
@@ -725,6 +728,15 @@ public class NeoDevPlugin implements Plugin<Project> {
         Consumer<RunProductionClient> configureRunProductionClient = task -> {
             task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.neoFormClasspath));
             task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.launcherProfileClasspath));
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
             task.getAssetPropertiesFile().set(downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile));
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
