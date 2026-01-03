@@ -177,5 +177,5 @@ public interface IFluidExtension {
      * @param player     the player viewing the tooltip, or {@code null}
      * @param flag       controls tooltip verbosity and advanced information
      */
-    default void appendTooltip(FluidStack fluidStack, List<Component> tooltip, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {}
+    default void appendHoverText(FluidStack fluidStack, List<Component> tooltip, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {}
 }

@@ -388,7 +388,7 @@ public final class FluidStack implements MutableDataComponentHolder {
             Fluid fluid = getFluid();
             List<Component> list = Lists.newArrayList();
             list.add(this.getStyledHoverName());
-            fluid.appendTooltip(this, list, context, player, flag);
+            fluid.appendHoverText(this, list, context, player, flag);
             EventHooks.onFluidTooltip(this, player, list, flag, context);
             if (flag.isAdvanced()) {
                 list.add(Component.literal(BuiltInRegistries.FLUID.getKey(fluid).toString()).withStyle(ChatFormatting.DARK_GRAY));
