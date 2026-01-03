@@ -5,16 +5,16 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
@@ -162,20 +162,20 @@ public interface IFluidExtension {
     }
 
     /**
-     * Adds additional tooltip lines to the given {@link FluidStack}.
+     * Adds additional tooltip components for the given {@link FluidStack}.
      *
      * <p>This method is invoked when building the fluid's tooltip and allows
-     * fluids to append custom informational lines (e.g. temperature, effects,
-     * mod-specific data).</p>
+     * fluids to contribute custom informational lines (for example temperature,
+     * effects, or mod-specific data).</p>
      *
-     * <p>Implementations should append to {@code tooltip} and must not
-     * assume it is empty.</p>
+     * <p>Implementations should emit tooltip components via the provided
+     * {@code builder} consumer.</p>
      *
-     * @param fluidStack the fluid stack being rendered
-     * @param tooltip    the list of tooltip components to append to
-     * @param context    the tooltip context
-     * @param player     the player viewing the tooltip, or {@code null}
-     * @param flag       controls tooltip verbosity and advanced information
+     * @param fluidStack  the fluid stack being rendered
+     * @param context     the tooltip context
+     * @param display     controls which tooltip elements should be displayed
+     * @param builder     consumer used to append tooltip components
+     * @param tooltipFlag controls tooltip verbosity and advanced information
      */
-    default void appendHoverText(FluidStack fluidStack, List<Component> tooltip, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {}
+    default void appendHoverText(FluidStack fluidStack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {}
 }

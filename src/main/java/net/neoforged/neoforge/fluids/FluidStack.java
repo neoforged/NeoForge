@@ -381,14 +381,14 @@ public final class FluidStack implements MutableDataComponentHolder {
      * @return a list of tooltip components, possibly empty
      */
     public List<Component> getTooltipLines(Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
-        TooltipDisplay tooltipdisplay = this.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
-        if (!flag.isCreative() && tooltipdisplay.hideTooltip()) {
+        TooltipDisplay tooltipDisplay = this.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+        if (!flag.isCreative() && tooltipDisplay.hideTooltip()) {
             return List.of();
         } else {
             Fluid fluid = getFluid();
             List<Component> list = Lists.newArrayList();
             list.add(this.getStyledHoverName());
-            fluid.appendHoverText(this, list, context, player, flag);
+            fluid.appendHoverText(this, context, tooltipDisplay, list::add, flag);
             EventHooks.onFluidTooltip(this, player, list, flag, context);
             if (flag.isAdvanced()) {
                 list.add(Component.literal(BuiltInRegistries.FLUID.getKey(fluid).toString()).withStyle(ChatFormatting.DARK_GRAY));
