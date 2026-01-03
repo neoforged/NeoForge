@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -71,10 +_,48 @@
+@@ -71,10 +_,12 @@
              long packedUv = quad.packedUV(vertex);
              float brightnessForVertex = brightness[vertex];
              int color = ARGB.colorFromFloat(a, brightnessForVertex * r, brightnessForVertex * g, brightnessForVertex * b);
@@ -10,42 +10,6 @@
              float u = UVPair.unpackU(packedUv);
              float v = UVPair.unpackV(packedUv);
 +            applyBakedNormals(normal, quad.bakedNormals(), vertex, pose.normal()); // Neo: apply baked normals from the quad
-+            this.addVertex(pos.x(), pos.y(), pos.z(), color, u, v, overlayCoords, light, normal.x(), normal.y(), normal.z());
-+        }
-+    }
-+
-+    // Neo: Allow putting mutable quads with reduced allocations (i.e. of an intermediate BakedQuad)
-+    // Further optimization potential: Inline the code and remove the need for the two array allocations
-+    default void putBulkData(PoseStack.Pose pose, net.neoforged.neoforge.client.model.quad.MutableQuad quad, float r, float g, float b, float a, int lightCoords, int overlayCoords) {
-+        this.putBulkData(
-+                pose, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, r, g, b, a, new int[]{lightCoords, lightCoords, lightCoords, lightCoords}, overlayCoords
-+        );
-+    }
-+
-+    // Neo: Allow putting mutable quads with reduced allocations (i.e. of an intermediate BakedQuad)
-+    default void putBulkData(
-+        PoseStack.Pose pose, net.neoforged.neoforge.client.model.quad.MutableQuad quad, float[] brightness, float r, float g, float b, float a, int[] lightmapCoord, int overlayCoords
-+    ) {
-+        Matrix4f matrix = pose.pose();
-+        Vector3f faceNormal = pose.transformNormal(quad.direction().getUnitVec3f(), new Vector3f());
-+        int lightEmission = quad.lightEmission();
-+
-+        for (int vertex = 0; vertex < 4; vertex++) {
-+            long packedUv = quad.packedUv(vertex);
-+            float brightnessForVertex = brightness[vertex];
-+            int color = ARGB.colorFromFloat(a, brightnessForVertex * r, brightnessForVertex * g, brightnessForVertex * b);
-+            color = ARGB.multiply(color, quad.color(vertex)); // Neo: apply baked color from the quad
-+            int light = LightCoordsUtil.lightCoordsWithEmission(lightmapCoord[vertex], lightEmission);
-+            Vector3f pos = matrix.transformPosition(quad.x(vertex), quad.y(vertex), quad.z(vertex), new Vector3f());
-+            float u = UVPair.unpackU(packedUv);
-+            float v = UVPair.unpackV(packedUv);
-+            int packedNormal = quad.packedNormal(vertex);
-+            Vector3fc normal;
-+            if (!net.neoforged.neoforge.client.model.quad.BakedNormals.isUnspecified(packedNormal)) {
-+                normal = net.neoforged.neoforge.client.model.quad.BakedNormals.unpack(packedNormal, new Vector3f()).mul(pose.normal());
-+            } else {
-+                normal = faceNormal;
-+            }
              this.addVertex(pos.x(), pos.y(), pos.z(), color, u, v, overlayCoords, light, normal.x(), normal.y(), normal.z());
          }
      }

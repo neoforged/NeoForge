@@ -222,9 +222,6 @@ public class MutableQuad {
                 positions[2].set(right, depth, bottom);
                 positions[3].set(right, depth, top);
             }
-            default -> {
-                throw new IllegalStateException();
-            }
         }
         return this;
     }
@@ -446,8 +443,11 @@ public class MutableQuad {
     }
 
     /**
-     * Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
-     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite)} for this.
+     * Changes the texture atlas sprite used by this quad.
+     *
+     * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite)} to change sprites and remap them,
+     * {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
      */
     public MutableQuad setSprite(TextureAtlasSprite sprite) {
         this.sprite = sprite;
@@ -455,8 +455,7 @@ public class MutableQuad {
     }
 
     /**
-     * Note that changing the sprite does not automatically translate the current UV coordinates to where this new
-     * sprite is within the atlas.
+     * Changes the sprite and remaps the UV to the new sprites position in the texture atlas.
      *
      * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
      */
@@ -579,6 +578,17 @@ public class MutableQuad {
     }
 
     /**
+     * Sets the normal vector of all vertices to the normal vectors encoded in the given baked normals object.
+     */
+    public MutableQuad setNormal(BakedNormals bakedNormals) {
+        normals[0] = bakedNormals.normal(0);
+        normals[1] = bakedNormals.normal(1);
+        normals[2] = bakedNormals.normal(2);
+        normals[3] = bakedNormals.normal(3);
+        return this;
+    }
+
+    /**
      * {@return the color of a given vertex in ARGB form}
      *
      * @see ARGB
@@ -589,7 +599,7 @@ public class MutableQuad {
     }
 
     /**
-     * Sets the color of all verteices to a packed ARGB color.
+     * Sets the color of all vertices to a packed ARGB color.
      *
      * @see ARGB
      */
@@ -618,6 +628,17 @@ public class MutableQuad {
      */
     public MutableQuad setColor(int vertexIndex, int r, int g, int b, int a) {
         return setColor(vertexIndex, ARGB.color(a, r, g, b));
+    }
+
+    /**
+     * Sets the color of all vertices to a packed ARGB color.
+     */
+    public MutableQuad setColor(BakedColors bakedColors) {
+        colors[0] = bakedColors.color(0);
+        colors[1] = bakedColors.color(1);
+        colors[2] = bakedColors.color(2);
+        colors[3] = bakedColors.color(3);
+        return this;
     }
 
     @Contract(pure = true)
@@ -761,11 +782,12 @@ public class MutableQuad {
      * <p>Note that the {@linkplain #direction()} is not transformed.
      */
     public MutableQuad transform(Matrix4f rotation) {
+        Vector3f tmp = null;
         for (int i = 0; i < 4; i++) {
             rotation.transformPosition(positions[i]);
             var normal = normals[i];
             if (!BakedNormals.isUnspecified(normal)) {
-                var tmp = BakedNormals.unpack(normal, new Vector3f());
+                tmp = BakedNormals.unpack(normal, tmp);
                 rotation.transformDirection(tmp);
                 normals[i] = BakedNormals.pack(tmp);
             }
@@ -777,7 +799,7 @@ public class MutableQuad {
     /**
      * Recalculates the order of vertices to conform to the order expected by the Vanilla AO algorithm.
      *
-     * <p>It uses the current {@linkplain #direction() direction}.
+     * <p>It uses the current {@linkplain #direction() direction} and <strong>only works correctly for axis-aligned quads</strong>.
      *
      * @see FaceBakery#recalculateWinding
      */
