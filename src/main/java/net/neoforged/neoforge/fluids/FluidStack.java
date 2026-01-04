@@ -30,7 +30,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
@@ -38,10 +37,8 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
@@ -387,7 +384,7 @@ public final class FluidStack implements MutableDataComponentHolder {
         } else {
             Fluid fluid = getFluid();
             List<Component> list = Lists.newArrayList();
-            list.add(this.getStyledHoverName());
+            list.add(this.getHoverName());
             fluid.appendHoverText(this, context, tooltipDisplay, list::add, flag);
             EventHooks.onFluidTooltip(this, player, list, flag, context);
             if (flag.isAdvanced()) {
@@ -398,47 +395,6 @@ public final class FluidStack implements MutableDataComponentHolder {
                 }
             }
             return list;
-        }
-    }
-
-    /**
-     * Returns the styled hover name for this fluid stack.
-     *
-     * <p>The returned component applies the fluid's rarity styling and mirrors
-     * {@link ItemStack#getStyledHoverName()} semantics. If the stack has a custom
-     * name, the name is additionally rendered in italics.</p>
-     *
-     * @return the styled hover name component
-     */
-    public Component getStyledHoverName() {
-        MutableComponent mutablecomponent = Component.empty()
-                .append(this.getHoverName())
-                .withStyle(getRarity().getStyleModifier());
-        if (this.has(DataComponents.CUSTOM_NAME)) {
-            mutablecomponent.withStyle(ChatFormatting.ITALIC);
-        }
-        return mutablecomponent;
-    }
-
-    /**
-     * Returns the effective rarity of this fluid stack.
-     *
-     * <p>The base rarity is read from {@link DataComponents#RARITY}. If the stack
-     * has enchantments present, the rarity is promoted in the same manner as
-     * {@link ItemStack#getRarity()}:</p>
-     *
-     * @return the computed rarity of this fluid stack
-     */
-    public Rarity getRarity() {
-        Rarity rarity = this.getOrDefault(DataComponents.RARITY, Rarity.COMMON);
-        if (this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty()) {
-            return rarity;
-        } else {
-            return switch (rarity) {
-                case COMMON, UNCOMMON -> Rarity.RARE;
-                case RARE -> Rarity.EPIC;
-                default -> rarity;
-            };
         }
     }
 
