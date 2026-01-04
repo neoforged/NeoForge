@@ -237,6 +237,13 @@ public class MutableQuad {
     }
 
     /**
+     * Same as {@link #setCubeFace(Direction, float, float, float, float, float, float)}, but uses the full cube.
+     */
+    public MutableQuad setFullCubeFace(Direction side) {
+        return setCubeFace(side, 0, 0, 0, 1, 1, 1);
+    }
+
+    /**
      * Same as {@link #setCubeFace(Direction, float, float, float, float, float, float)}, but takes the from and to
      * positions from vectors.
      */
@@ -246,14 +253,7 @@ public class MutableQuad {
 
     /**
      * Sets the positions of this quad to the face of a cube as it would be defined in a Vanilla block model.
-     * <p>
-     * Inspired by the Fabric Renderer API method {@code square}.
-     * <p>
-     * The left, bottom, right and top parameters correspond to the default sprite orientation in Vanilla block models.
-     * For {@link Direction#UP} the "up" direction is facing {@link Direction#NORTH}, while for {@link Direction#DOWN},
-     * it faces {@link Direction#SOUTH}.
      * <p>All coordinates use a normalized [0,1] range.
-     * <p>Passing left=0, bottom=0, right=1, top=1, depth=0 will produce a face on the blocks {@code side}.
      */
     public MutableQuad setCubeFace(Direction side,
             float fromX,
