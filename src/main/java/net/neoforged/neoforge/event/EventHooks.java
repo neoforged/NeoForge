@@ -146,6 +146,7 @@ import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.entity.player.FluidTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
@@ -179,6 +180,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -439,6 +441,12 @@ public class EventHooks {
 
     public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
+    public static FluidTooltipEvent onFluidTooltip(FluidStack fluidStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
+        FluidTooltipEvent event = new FluidTooltipEvent(fluidStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
