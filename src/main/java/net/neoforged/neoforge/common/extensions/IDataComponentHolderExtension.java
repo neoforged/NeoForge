@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.TooltipProvider;
 
 public interface IDataComponentHolderExtension {
@@ -19,14 +20,15 @@ public interface IDataComponentHolderExtension {
         return (DataComponentHolder) this;
     }
 
-    default <T extends TooltipProvider> void addToTooltip(DataComponentType<T> type, Item.TooltipContext context, Consumer<Component> adder, TooltipFlag flag) {
+    default <T extends TooltipProvider> void addToTooltip(DataComponentType<T> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
         var value = self().get(type);
 
-        if (value != null)
+        if (value != null && display.shows(type)) {
             value.addToTooltip(context, adder, flag, self());
+        }
     }
 
-    default <T extends TooltipProvider> void addToTooltip(Supplier<? extends DataComponentType<T>> type, Item.TooltipContext context, Consumer<Component> adder, TooltipFlag flag) {
-        addToTooltip(type.get(), context, adder, flag);
+    default <T extends TooltipProvider> void addToTooltip(Supplier<? extends DataComponentType<T>> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+        addToTooltip(type.get(), context, display, adder, flag);
     }
 }
