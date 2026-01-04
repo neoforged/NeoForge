@@ -357,7 +357,7 @@ public class MutableQuad {
      * given UV coordinates within that sprite.
      */
     public MutableQuad setUvFromSprite(int vertexIndex, float u, float v) {
-        var sprite = getRequiredSprite();
+        var sprite = requiredSprite();
         return setUv(vertexIndex, sprite.getU(u), sprite.getV(v));
     }
 
@@ -444,9 +444,27 @@ public class MutableQuad {
         return this;
     }
 
+    /**
+     * {@return the sprite associated with the quad or null if no sprite has been set yet}
+     *
+     * <p>Note that {@link BakedQuad} must have an associated sprite.
+     */
     @Contract(pure = true)
     @Nullable
     public TextureAtlasSprite sprite() {
+        return sprite;
+    }
+
+    /**
+     * Same as {@link #sprite()}, but throws an exception if no sprite is set on the quad yet.
+     *
+     * @throws IllegalStateException If no sprite is set yet.
+     */
+    @Contract(pure = true)
+    public TextureAtlasSprite requiredSprite() {
+        if (sprite == null) {
+            throw new IllegalStateException("A sprite has to be set on this quad before UVs are manipulated");
+        }
         return sprite;
     }
 
@@ -681,7 +699,7 @@ public class MutableQuad {
      * them to atlas-space.
      */
     private void transformUvsFromSpriteToAtlas() {
-        var sprite = getRequiredSprite();
+        var sprite = requiredSprite();
         for (int i = 0; i < 4; i++) {
             long packedUv = packedUv(i);
             setUv(i, sprite.getU(UVPair.unpackU(packedUv)), sprite.getV(UVPair.unpackV(packedUv)));
@@ -693,7 +711,7 @@ public class MutableQuad {
      * them to sprite-space.
      */
     private void transformUvsFromAtlasToSprite() {
-        var sprite = getRequiredSprite();
+        var sprite = requiredSprite();
         var uOrigin = sprite.getU0();
         var vOrigin = sprite.getV0();
         var uWidth = sprite.getU1() - uOrigin;
@@ -751,7 +769,7 @@ public class MutableQuad {
             bakedColors = BakedColors.of(colors[0], colors[1], colors[2], colors[3]);
         }
 
-        var sprite = getRequiredSprite();
+        var sprite = requiredSprite();
         return new BakedQuad(
                 pos0,
                 pos1,
@@ -832,12 +850,5 @@ public class MutableQuad {
         lastSourceQuad = null;
 
         return this;
-    }
-
-    private TextureAtlasSprite getRequiredSprite() {
-        if (sprite == null) {
-            throw new IllegalStateException("A sprite has to be set on this quad before UVs are manipulated");
-        }
-        return sprite;
     }
 }
