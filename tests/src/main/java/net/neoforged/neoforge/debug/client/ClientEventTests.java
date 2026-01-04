@@ -44,6 +44,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -240,6 +241,15 @@ public class ClientEventTests {
                         });
                     });
                 }
+            });
+        });
+    }
+
+    @TestHolder(description = { "Test RenderNameTagEvent.CanRender is called" })
+    static void nameTagCanRender(final DynamicTest test) {
+        test.whenEnabled(listeners -> {
+            listeners.forge().addListener((final RenderNameTagEvent.CanRender canRenderEvent) -> {
+                test.pass();
             });
         });
     }
