@@ -138,6 +138,14 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              mutablecomponent.withStyle(ChatFormatting.ITALIC);
          }
+@@ -840,6 +_,7 @@
+         return mutablecomponent;
+     }
+ 
++    @Override // Neo: Add override annotation to ensure our extension method signature always matches vanilla
+     public <T extends TooltipProvider> void addToTooltip(
+         DataComponentType<T> p_331344_, Item.TooltipContext p_341231_, TooltipDisplay p_399720_, Consumer<Component> p_331885_, TooltipFlag p_331177_
+     ) {
 @@ -858,6 +_,7 @@
              List<Component> list = Lists.newArrayList();
              list.add(this.getStyledHoverName());
