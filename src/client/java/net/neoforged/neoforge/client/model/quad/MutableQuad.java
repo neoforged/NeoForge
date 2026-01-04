@@ -25,6 +25,14 @@ import org.jspecify.annotations.Nullable;
  * A mutable representation of a {@link BakedQuad}.
  *
  * <p>This class can be used for constructing quads from scratch, or for loading and modifying existing quads.
+ * <p>It provides several utility methods that go beyond simply manipulating the attributes of the quad:
+ * <ul>
+ *  <li>{@link #setCubeFaceFromSpriteCoords(Direction, float, float, float, float, float)} generates the positions of a face by using a 2D coordinate system as if you were looking at the sprite textured on that face.</li>
+ *  <li>{@link #setCubeFace(Direction, Vector3fc, Vector3fc)} generates the positions of a 3D cube face by giving the cubes extent.</li>
+ *  <li>{@link #bakeUvsFromPosition(UVTransform)} generates the texture coordinates of the quad similar to how Vanilla block models do, with optional transformations.</li>
+ *  <li>{@link #recalculateWinding()} can reorder the vertices of the quad to match the vertex order expected by Vanilla ambient occlusion for axis-aligned quads.</li>
+ *  <li>{@link #setSpriteAndMoveUv(TextureAtlasSprite)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
+ * </ul>
  */
 public class MutableQuad {
     private final Vector3f[] positions = new Vector3f[] {
@@ -804,7 +812,7 @@ public class MutableQuad {
      * @see FaceBakery#recalculateWinding
      */
     public MutableQuad recalculateWinding() {
-        FaceBakery.recalculateWinding(positions, uvs, direction);
+        FaceBakery.recalculateWinding(positions, uvs, direction, colors, normals);
         return this;
     }
 

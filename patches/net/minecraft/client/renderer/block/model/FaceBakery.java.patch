@@ -21,3 +21,42 @@
          );
      }
  
+@@ -179,6 +_,11 @@
+     }
+ 
+     public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
++        recalculateWinding(positions, uvs, direction, null, null);
++    }
++
++    // Neo: Allow swapping colors and normals alongside the positions/uvs
++    public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction, int @Nullable [] colors, int @Nullable [] normals) {
+         float minX = 999.0F;
+         float minY = 999.0F;
+         float minZ = 999.0F;
+@@ -231,6 +_,12 @@
+             if (vertexToSwap != vertex) {
+                 swap(positions, vertexToSwap, vertex);
+                 swap(uvs, vertexToSwap, vertex);
++                if (colors != null) {
++                    swap(colors, vertexToSwap, vertex);
++                }
++                if (normals != null) {
++                    swap(normals, vertexToSwap, vertex);
++                }
+             }
+         }
+     }
+@@ -254,6 +_,13 @@
+ 
+     private static void swap(long[] array, int indexA, int indexB) {
+         long tmp = array[indexA];
++        array[indexA] = array[indexB];
++        array[indexB] = tmp;
++    }
++
++    // Neo: Used by the winding patch to swap colors/normals
++    private static void swap(int[] array, int indexA, int indexB) {
++        int tmp = array[indexA];
+         array[indexA] = array[indexB];
+         array[indexB] = tmp;
+     }
