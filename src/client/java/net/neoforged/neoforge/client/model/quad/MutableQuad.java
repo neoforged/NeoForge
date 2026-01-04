@@ -370,8 +370,10 @@ public class MutableQuad {
     }
 
     /**
-     * This method simply projects each vertex onto the cube face the quad is sourcing its block lighting from,
+     * Projects each vertex onto the cube face the quad is sourcing its block lighting from,
      * and derives the vertex UV that way.
+     *
+     * <p>Requires {@link #sprite()} to be set.
      */
     public MutableQuad bakeUvsFromPosition() {
         return bakeUvsFromPosition(UVTransform.IDENTITY);
