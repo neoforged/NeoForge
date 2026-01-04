@@ -89,7 +89,7 @@ public class MutableQuad {
     /**
      * {@return a component of a vertex's position}
      *
-     * <p>See <a href="#components">components</a> for the mapping of index to component.
+     * @see Vector3f#get(int)
      */
     @Contract(pure = true)
     public float positionComponent(int vertexIndex, int componentIndex) {
@@ -139,6 +139,8 @@ public class MutableQuad {
 
     /**
      * Sets a component of a vertex's position.
+     *
+     * @see Vector3f#setComponent(int, float)
      */
     public MutableQuad setPositionComponent(int vertexIndex, int componentIndex, float value) {
         positions[vertexIndex].setComponent(componentIndex, value);
@@ -541,7 +543,7 @@ public class MutableQuad {
     /**
      * {@return a component of a vertex's normal or NaN if the normal is undefined}
      *
-     * <p>See <a href="#components">components</a> for the mapping of index to component.
+     * @see Vector3f#get(int)
      */
     @Contract(pure = true)
     public float normalComponent(int vertexIndex, int componentIndex) {
@@ -592,6 +594,37 @@ public class MutableQuad {
      */
     public MutableQuad setNormal(int vertexIndex, Vector3fc normal) {
         normals[vertexIndex] = BakedNormals.pack(normal);
+        return this;
+    }
+
+    /**
+     * Sets a component of a vertex's normal.
+     *
+     * <p>If a normal was unspecified before this method was called, its other components will be set to 0.
+     *
+     * @see Vector3f#setComponent(int, float)
+     */
+    public MutableQuad setNormalComponent(int vertexIndex, int componentIndex, float value) {
+        int normal = normals[vertexIndex];
+        float x, y, z;
+        if (BakedNormals.isUnspecified(normal)) {
+            x = 0;
+            y = 0;
+            z = 0;
+        } else {
+            x = BakedNormals.unpackX(normal);
+            y = BakedNormals.unpackY(normal);
+            z = BakedNormals.unpackZ(normal);
+        }
+
+        switch (componentIndex) {
+            case 0 -> x = value;
+            case 1 -> y = value;
+            case 2 -> z = value;
+            default -> throw new IllegalArgumentException();
+        }
+
+        normals[vertexIndex] = BakedNormals.pack(x, y, z);
         return this;
     }
 
