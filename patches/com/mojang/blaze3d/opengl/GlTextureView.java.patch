@@ -1,0 +1,37 @@
+--- a/com/mojang/blaze3d/opengl/GlTextureView.java
++++ b/com/mojang/blaze3d/opengl/GlTextureView.java
+@@ -45,10 +_,11 @@
+ 
+     public int getFbo(DirectStateAccess dsa, @Nullable GpuTexture depth) {
+         int depthId = depth == null ? 0 : ((GlTexture)depth).id;
++        var useStencil = depth != null && depth.getFormat().hasStencilAspect();
+         if (this.firstFboDepthId == depthId) {
+             return this.firstFboId;
+         } else if (this.firstFboId == -1) {
+-            this.firstFboId = this.createFbo(dsa, depthId);
++            this.firstFboId = this.createFbo(dsa, depthId, useStencil);
+             this.firstFboDepthId = depthId;
+             return this.firstFboId;
+         } else {
+@@ -56,13 +_,19 @@
+                 this.fboCache = new Int2IntArrayMap();
+             }
+ 
+-            return this.fboCache.computeIfAbsent(depthId, _depthId -> this.createFbo(dsa, _depthId));
++            return this.fboCache.computeIfAbsent(depthId, _depthId -> this.createFbo(dsa, _depthId, useStencil));
+         }
+     }
+ 
++    /** @deprecated use overload that takes useStencil */
+     private int createFbo(DirectStateAccess dsa, int depthid) {
++        return createFbo(dsa, depthid, false);
++    }
++
++    // Neo: Allow for stencil use
++    private int createFbo(DirectStateAccess dsa, int depthid, boolean useStencil) {
+         int fbo = dsa.createFrameBufferObject();
+-        dsa.bindFrameBufferTextures(fbo, this.texture().id, depthid, this.baseMipLevel(), 0);
++        dsa.bindFrameBufferTextures(fbo, this.texture().id, depthid, this.baseMipLevel(), 0, useStencil);
+         return fbo;
+     }
+ 
