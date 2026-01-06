@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.common.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.Map;
@@ -30,6 +32,8 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 
 public abstract class LanguageProvider implements DataProvider {
+    private static final Codec<Map<String, Component>> CODEC = Codec.unboundedMap(Codec.STRING, ComponentSerialization.CODEC);
+
     private final Map<String, Component> data = new TreeMap<>();
     private final PackOutput output;
     private final String modid;
@@ -59,13 +63,7 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Path target) {
-        JsonObject json = this.data.entrySet()
-                .stream()
-                .collect(
-                        JsonObject::new,
-                        (obj, entry) -> obj.add(entry.getKey(), ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow()),
-                        (a, b) -> b.asMap().forEach(a::add));
-
+        final JsonElement json = CODEC.encode(this.data, JsonOps.INSTANCE, new JsonObject()).getOrThrow();
         return DataProvider.saveStable(cache, json, target);
     }
 
