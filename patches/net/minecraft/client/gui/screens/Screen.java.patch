@@ -61,7 +61,7 @@
      private void scheduleNarration(long delay, boolean ignoreSuppression) {
          this.nextNarrationTime = Util.getMillis() + delay;
          if (ignoreSuppression) {
-@@ -616,6 +_,14 @@
+@@ -614,6 +_,14 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;

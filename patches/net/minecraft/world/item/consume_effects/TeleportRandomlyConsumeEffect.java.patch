@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/consume_effects/TeleportRandomlyConsumeEffect.java
 +++ b/net/minecraft/world/item/consume_effects/TeleportRandomlyConsumeEffect.java
-@@ -55,7 +_,9 @@
+@@ -54,7 +_,9 @@
              }
  
              Vec3 oldPos = user.position();

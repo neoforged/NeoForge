@@ -207,7 +207,7 @@ final class ClientPayloadHandler {
                 }
             }
             case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
-                var chunk = context.player().level().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+                var chunk = context.player().level().getChunk(pos.x(), pos.z(), ChunkStatus.FULL, false);
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {

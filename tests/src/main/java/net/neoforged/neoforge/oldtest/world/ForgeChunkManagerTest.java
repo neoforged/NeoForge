@@ -82,8 +82,8 @@ public class ForgeChunkManagerTest {
         public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
             super.onPlace(state, worldIn, pos, oldState, isMoving);
             if (worldIn instanceof ServerLevel) {
-                ChunkPos chunkPos = new ChunkPos(pos);
-                CONTROLLER.forceChunk((ServerLevel) worldIn, pos, chunkPos.x, chunkPos.z, true, true);
+                ChunkPos chunkPos = ChunkPos.containing(pos);
+                CONTROLLER.forceChunk((ServerLevel) worldIn, pos, chunkPos.x(), chunkPos.z(), true, true);
             }
         }
 
@@ -91,9 +91,9 @@ public class ForgeChunkManagerTest {
         @Override
         public void affectNeighborsAfterRemoval(BlockState state, ServerLevel worldIn, BlockPos pos, boolean isMoving) {
             super.affectNeighborsAfterRemoval(state, worldIn, pos, isMoving);
-            ChunkPos chunkPos = new ChunkPos(pos);
+            ChunkPos chunkPos = ChunkPos.containing(pos);
             //TODO: If the block is removed without neighbor updates this won't be fired, is there a more proper method for us to override?
-            CONTROLLER.forceChunk(worldIn, pos, chunkPos.x, chunkPos.z, false, true);
+            CONTROLLER.forceChunk(worldIn, pos, chunkPos.x(), chunkPos.z(), false, true);
         }
     }
 }

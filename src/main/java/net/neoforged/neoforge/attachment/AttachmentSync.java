@@ -115,7 +115,7 @@ public final class AttachmentSync {
         if (type.syncHandler == null || !(blockEntity.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }
-        syncUpdate(blockEntity, type, serverLevel.getChunkSource().chunkMap.getPlayers(new ChunkPos(blockEntity.getBlockPos()), false));
+        syncUpdate(blockEntity, type, serverLevel.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(blockEntity.getBlockPos()), false));
     }
 
     public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder.AsField holder, AttachmentType<?> type) {

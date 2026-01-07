@@ -113,7 +113,7 @@ public abstract class AbstractTest implements Test {
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
-                gameTest.skyAccess(), gameTest.manualOnly());
+                gameTest.skyAccess(), gameTest.padding(), gameTest.manualOnly());
     }
 
     protected String gameTestTemplate(GameTest gameTest) {

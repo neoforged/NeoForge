@@ -46,7 +46,7 @@
 +                this.addEntity(e, true);
 +                if (e instanceof Entity entity) entity.onAddedToLevel();
 +            });
-             this.chunkLoadStatuses.put(loadedChunk.getPos().toLong(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
+             this.chunkLoadStatuses.put(loadedChunk.getPos().pack(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
          }
      }
 @@ -370,6 +_,7 @@

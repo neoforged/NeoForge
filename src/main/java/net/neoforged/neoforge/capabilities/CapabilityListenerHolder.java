@@ -39,7 +39,7 @@ public class CapabilityListenerHolder {
      */
     public void addListener(BlockPos pos, ICapabilityInvalidationListener listener) {
         pos = pos.immutable();
-        var chunkHolder = byChunkThenBlock.computeIfAbsent(ChunkPos.asLong(pos), l -> new Long2ReferenceOpenHashMap<>());
+        var chunkHolder = byChunkThenBlock.computeIfAbsent(ChunkPos.pack(pos), l -> new Long2ReferenceOpenHashMap<>());
         var listenersSet = chunkHolder.computeIfAbsent(pos.asLong(), l -> new ObjectOpenHashSet<>());
 
         var reference = new ListenerReference(queue, pos, listener);
@@ -53,7 +53,7 @@ public class CapabilityListenerHolder {
      * Invalidates listeners at a specific block position.
      */
     public void invalidatePos(BlockPos pos) {
-        var chunkHolder = byChunkThenBlock.get(ChunkPos.asLong(pos));
+        var chunkHolder = byChunkThenBlock.get(ChunkPos.pack(pos));
         if (chunkHolder != null) {
             var caches = chunkHolder.get(pos.asLong());
             if (caches != null)
@@ -65,7 +65,7 @@ public class CapabilityListenerHolder {
      * Invalidates listeners at a specific chunk position.
      */
     public void invalidateChunk(ChunkPos chunkPos) {
-        var chunkHolder = byChunkThenBlock.get(chunkPos.toLong());
+        var chunkHolder = byChunkThenBlock.get(chunkPos.pack());
         if (chunkHolder != null) {
             for (var caches : chunkHolder.values())
                 invalidateList(caches);
@@ -88,7 +88,7 @@ public class CapabilityListenerHolder {
             if (ref == null)
                 return;
 
-            var chunkHolder = byChunkThenBlock.get(ChunkPos.asLong(ref.pos));
+            var chunkHolder = byChunkThenBlock.get(ChunkPos.pack(ref.pos));
             if (chunkHolder == null)
                 continue;
 
@@ -103,7 +103,7 @@ public class CapabilityListenerHolder {
             if (removed && set.isEmpty()) {
                 chunkHolder.remove(ref.pos.asLong());
                 if (chunkHolder.isEmpty()) {
-                    byChunkThenBlock.remove(ChunkPos.asLong(ref.pos));
+                    byChunkThenBlock.remove(ChunkPos.pack(ref.pos));
                 }
             }
         }

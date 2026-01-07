@@ -13,7 +13,7 @@
                  ChunkAccess chunk = chunkHolder.getLatestChunk();
                  if (this.pendingUnloads.remove(pos, chunkHolder) && chunk != null) {
 +                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, chunk); // Neo: Must be called for all chunk unloading. Not just LevelChunks.
-+                    this.chunkTypeCache.remove(chunk.getPos().toLong()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
++                    this.chunkTypeCache.remove(chunk.getPos().pack()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
                      if (chunk instanceof LevelChunk levelChunk) {
                          levelChunk.setLoaded(false);
                      }

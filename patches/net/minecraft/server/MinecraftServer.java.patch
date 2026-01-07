@@ -42,7 +42,7 @@
          } else {
              ServerChunkCache chunkSource = level.getChunkSource();
 +            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(level, levelData)) return;
-             ChunkPos spawnChunk = new ChunkPos(chunkSource.randomState().sampler().findSpawnPosition());
+             ChunkPos spawnChunk = ChunkPos.containing(chunkSource.randomState().sampler().findSpawnPosition());
              levelLoadListener.start(LevelLoadListener.Stage.PREPARE_GLOBAL_SPAWN, 0);
              levelLoadListener.updateFocus(level.dimension(), spawnChunk);
 @@ -577,6 +_,7 @@

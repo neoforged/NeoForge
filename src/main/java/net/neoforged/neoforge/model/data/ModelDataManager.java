@@ -164,7 +164,7 @@ public class ModelDataManager {
             ChunkPos chunk = event.getChunk().getPos();
             int maxSection = level.getMaxSectionY();
             for (int y = level.getMinSectionY(); y < maxSection; y++) {
-                long section = SectionPos.asLong(chunk.x, y, chunk.z);
+                long section = SectionPos.asLong(chunk.x(), y, chunk.z());
                 modelDataManager.needModelDataRefresh.remove(section);
                 modelDataManager.modelDataCache.remove(section);
             }

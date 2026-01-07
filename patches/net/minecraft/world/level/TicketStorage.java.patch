@@ -90,6 +90,6 @@
 +    }
 +
 +    public boolean shouldForceNaturalSpawning(ChunkPos chunkPos) {
-+        return chunksWithForceNaturalSpawning.contains(chunkPos.toLong());
++        return chunksWithForceNaturalSpawning.contains(chunkPos.pack());
      }
  }

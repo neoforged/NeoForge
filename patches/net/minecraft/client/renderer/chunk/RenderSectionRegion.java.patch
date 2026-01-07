@@ -40,7 +40,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(net.minecraft.world.level.ChunkPos pos) {
-+        return this.getSection(pos.x, this.minSectionY, pos.z).wrapped.getAuxLightManager(pos);
++        return this.getSection(pos.x(), this.minSectionY, pos.z()).wrapped.getAuxLightManager(pos);
      }
  
      public static int index(int minSectionX, int minSectionY, int minSectionZ, int sectionX, int sectionY, int sectionZ) {

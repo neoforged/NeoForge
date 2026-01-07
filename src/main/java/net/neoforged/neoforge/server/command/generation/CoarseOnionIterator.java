@@ -48,8 +48,8 @@ public class CoarseOnionIterator extends AbstractIterator<ChunkPos> {
         int size = this.cellSize;
         int radius = this.radius;
 
-        int x0 = pos.x * size;
-        int z0 = pos.z * size;
+        int x0 = pos.x() * size;
+        int z0 = pos.z() * size;
         int x1 = x0 + size - 1;
         int z1 = z0 + size - 1;
         return new CellIterator(

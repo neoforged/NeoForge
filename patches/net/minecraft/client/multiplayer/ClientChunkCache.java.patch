@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ClientChunkCache.java
 +++ b/net/minecraft/client/multiplayer/ClientChunkCache.java
 @@ -65,6 +_,7 @@
-             int index = this.storage.getIndex(pos.x, pos.z);
+             int index = this.storage.getIndex(pos.x(), pos.z());
              LevelChunk currentChunk = this.storage.getChunk(index);
-             if (isValidChunk(currentChunk, pos.x, pos.z)) {
+             if (isValidChunk(currentChunk, pos.x(), pos.z())) {
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(currentChunk));
                  this.storage.drop(index, currentChunk);
              }

@@ -201,7 +201,7 @@ public class GenerationTask {
                 continue;
             }
 
-            chunks.add(ChunkPos.asLong(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z));
+            chunks.add(ChunkPos.pack(chunkPosInLocalSpace.x() + this.x, chunkPosInLocalSpace.z() + this.z));
             i++;
         }
 
@@ -209,17 +209,17 @@ public class GenerationTask {
     }
 
     private void acquireChunk(long chunk) {
-        ChunkPos pos = new ChunkPos(chunk);
+        ChunkPos pos = ChunkPos.unpack(chunk);
         this.chunkSource.addTicketWithRadius(NeoForgeMod.GENERATE_FORCED_TICKET.value(), pos, 0);
     }
 
     private void releaseChunk(long chunk) {
-        ChunkPos pos = new ChunkPos(chunk);
+        ChunkPos pos = ChunkPos.unpack(chunk);
         this.chunkSource.removeTicketWithRadius(NeoForgeMod.GENERATE_FORCED_TICKET.value(), pos, 0);
     }
 
     private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {
-        ChunkPos chunkPosInWorldSpace = new ChunkPos(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z);
+        ChunkPos chunkPosInWorldSpace = new ChunkPos(chunkPosInLocalSpace.x() + this.x, chunkPosInLocalSpace.z() + this.z);
         CollectFields collectFields = new CollectFields(new FieldSelector(StringTag.TYPE, "Status"));
         this.chunkSource.chunkMap.chunkScanner().scanChunk(chunkPosInWorldSpace, collectFields).join();
 

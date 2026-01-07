@@ -9,7 +9,7 @@
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
 @@ -291,7 +_,7 @@
-                     this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x, SectionPos.blockToSectionCoord(y), this.chunkPos.z, isEmpty);
+                     this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x(), SectionPos.blockToSectionCoord(y), this.chunkPos.z(), isEmpty);
                  }
  
 -                if (LightEngine.hasDifferentLightProperties(oldState, state)) {

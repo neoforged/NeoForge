@@ -68,7 +68,7 @@ class EntityCommand {
             Map<Identifier, MutablePair<Integer, Map<ChunkPos, Integer>>> list = Maps.newHashMap();
             level.getEntities().getAll().forEach(e -> {
                 MutablePair<Integer, Map<ChunkPos, Integer>> info = list.computeIfAbsent(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()), k -> MutablePair.of(0, Maps.newHashMap()));
-                ChunkPos chunk = new ChunkPos(e.blockPosition());
+                ChunkPos chunk = ChunkPos.containing(e.blockPosition());
                 info.left++;
                 info.right.put(chunk, info.right.getOrDefault(chunk, 0) + 1);
             });
@@ -92,7 +92,7 @@ class EntityCommand {
                 long limit = 10;
                 for (Map.Entry<ChunkPos, Integer> e : toSort) {
                     if (limit-- == 0) break;
-                    sender.sendSuccess(() -> Component.literal("  " + e.getValue() + ": " + e.getKey().x + ", " + e.getKey().z), false);
+                    sender.sendSuccess(() -> Component.literal("  " + e.getValue() + ": " + e.getKey().x() + ", " + e.getKey().z()), false);
                 }
                 return toSort.size();
             } else {

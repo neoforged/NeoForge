@@ -13,4 +13,4 @@ import org.jspecify.annotations.Nullable;
 public record GameTestData(
         @Nullable String batchName, String structureName, boolean required, int maxAttempts,
         int requiredSuccesses, Consumer<GameTestHelper> function, int maxTicks,
-        int setupTicks, Rotation rotation, boolean skyAccess, boolean manualOnly) {}
+        int setupTicks, Rotation rotation, boolean skyAccess, int padding, boolean manualOnly) {}

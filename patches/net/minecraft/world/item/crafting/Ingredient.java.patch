@@ -12,7 +12,7 @@
 +    public static final StreamCodec<RegistryFriendlyByteBuf, Optional<Ingredient>> OPTIONAL_CONTENTS_STREAM_CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.optionalStreamCodec(ByteBufCodecs.holderSet(Registries.ITEM)
          .map(
              ingredient -> ingredient.size() == 0 ? Optional.empty() : Optional.of(new Ingredient((HolderSet<Item>)ingredient)),
--            ingredient -> ingredient.<HolderSet<Item>>map(i -> i.values).orElse(HolderSet.direct())
+-            ingredient -> ingredient.<HolderSet<Item>>map(i -> i.values).orElse(HolderSet.empty())
 -        );
 +            ingredient -> ingredient.map(i -> i.getValuesForSync()).orElse(HolderSet.direct())
 +        ));

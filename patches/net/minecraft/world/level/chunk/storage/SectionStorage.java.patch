@@ -13,7 +13,7 @@
 +            for (int y = this.levelHeightAccessor.getMinSectionY(); y <= this.levelHeightAccessor.getMaxSectionY(); y++) {
 +                this.storage.remove(getKey(chunkPos, y));
 +            }
-+            this.loadedChunks.remove(chunkPos.toLong());
++            this.loadedChunks.remove(chunkPos.pack());
 +        }
 +    }
 +

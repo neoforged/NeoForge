@@ -145,7 +145,7 @@ public final class GameTestRegistration {
                                     game.maxTicks(), game.setupTicks(),
                                     game.required(), game.rotation(),
                                     game.manualOnly(), game.maxAttempts(),
-                                    game.requiredSuccesses(), game.skyAccess()), framework, test.id()));
+                                    game.requiredSuccesses(), game.skyAccess(), game.padding()), framework, test.id()));
                 }
             }
         }

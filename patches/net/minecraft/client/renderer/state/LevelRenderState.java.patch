@@ -9,17 +9,17 @@
      public CameraRenderState cameraRenderState = new CameraRenderState();
      public final List<EntityRenderState> entityRenderStates = new ArrayList<>();
      public final List<BlockEntityRenderState> blockEntityRenderStates = new ArrayList<>();
-@@ -20,6 +_,9 @@
-     public final WorldBorderRenderState worldBorderRenderState = new WorldBorderRenderState();
+@@ -21,6 +_,9 @@
      public final SkyRenderState skyRenderState = new SkyRenderState();
      public long gameTime;
+     public int lastEntityRenderStateCount;
 +    public net.neoforged.neoforge.client.@Nullable CustomSkyboxRenderer customSkyboxRenderer;
 +    public net.neoforged.neoforge.client.@Nullable CustomCloudsRenderer customCloudsRenderer;
 +    public net.neoforged.neoforge.client.@Nullable CustomWeatherEffectRenderer customWeatherEffectRenderer;
  
      public void reset() {
          this.entityRenderStates.clear();
-@@ -31,5 +_,9 @@
+@@ -32,5 +_,9 @@
          this.worldBorderRenderState.reset();
          this.skyRenderState.reset();
          this.gameTime = 0L;

@@ -10,7 +10,7 @@
      }
  
 @@ -120,7 +_,7 @@
-         LightChunk chunk = this.chunkSource.getChunkForLighting(pos.x, pos.z);
+         LightChunk chunk = this.chunkSource.getChunkForLighting(pos.x(), pos.z());
          if (chunk != null) {
              chunk.findBlockLightSources((lightPos, state) -> {
 -                int lightEmission = state.getLightEmission();

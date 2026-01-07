@@ -64,9 +64,9 @@ class GenerateCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        ChunkPos origin = new ChunkPos(pos);
+        ChunkPos origin = ChunkPos.containing(pos);
 
-        activeTask = new GenerationTask(source.getLevel(), origin.x, origin.z, chunkRadius);
+        activeTask = new GenerationTask(source.getLevel(), origin.x(), origin.z(), chunkRadius);
         int diameter = chunkRadius * 2 + 1;
 
         if (progressBar) {

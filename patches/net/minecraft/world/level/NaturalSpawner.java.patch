@@ -8,7 +8,7 @@
 +                MobCategory category = entity.getClassification(true);
                  if (category != MobCategory.MISC) {
                      BlockPos pos = entity.blockPosition();
-                     chunkGetter.query(ChunkPos.asLong(pos), chunk -> {
+                     chunkGetter.query(ChunkPos.pack(pos), chunk -> {
 @@ -205,7 +_,7 @@
                                      groupSize++;
                                      level.addFreshEntityWithPassengers(mob);

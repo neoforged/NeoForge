@@ -8,5 +8,5 @@
 +                throw new RuntimeException("StructureStart \"" + this.getClass().getName() + "\": \"" + this.getStructure() + "\" unregistered, serializing impossible.");
 +            }
              tag.putString("id", context.registryAccess().lookupOrThrow(Registries.STRUCTURE).getKey(this.structure).toString());
-             tag.putInt("ChunkX", chunkPos.x);
-             tag.putInt("ChunkZ", chunkPos.z);
+             tag.putInt("ChunkX", chunkPos.x());
+             tag.putInt("ChunkZ", chunkPos.z());

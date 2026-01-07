@@ -33,7 +33,7 @@ public interface IBlockGetterExtension {
     @Nullable
     @ApiStatus.NonExtendable
     default AuxiliaryLightManager getAuxLightManager(BlockPos pos) {
-        return getAuxLightManager(new ChunkPos(pos));
+        return getAuxLightManager(ChunkPos.containing(pos));
     }
 
     /**
@@ -50,7 +50,7 @@ public interface IBlockGetterExtension {
     @Nullable
     default AuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
         if (this instanceof LevelAccessor level) {
-            LightChunk chunk = level.getChunkSource().getChunkForLighting(pos.x, pos.z);
+            LightChunk chunk = level.getChunkSource().getChunkForLighting(pos.x(), pos.z());
             return chunk != null ? chunk.getAuxLightManager(pos) : null;
         } else if (this instanceof ImposterProtoChunk chunk) {
             return chunk.getWrapped().getAuxLightManager(pos);

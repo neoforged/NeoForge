@@ -17,7 +17,7 @@
      }
  
 @@ -112,16 +_,16 @@
-             String chunkList = Joiner.on(", ").join(forcedChunks.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
+             String chunkList = Joiner.on(", ").join(forcedChunks.stream().sorted().map(ChunkPos::unpack).map(ChunkPos::toString).iterator());
              if (chunkCount == 1) {
                  source.sendSuccess(
 -                    () -> Component.translatable("commands.forceload.list.single", Component.translationArg(dimension.identifier()), chunkList), false
