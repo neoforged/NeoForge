@@ -17,8 +17,8 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * This event allows mods to register client-side {@linkplain DebugSubscription debug subscription} flags.
  * <p>
- * These flags are used to determine when subscriptions are allowed to register and store debug renderer values, failing to register a flag for a matching debug subscription will be treated as a {@code always-disabled} flag.
- * Meaning that debug no debug values will be stored for your subscription.
+ * These flags are used to determine when subscriptions are allowed to register and store debug renderer values.
+ * If no flag is registered for a given debug subscription then it will be treated as a {@code always-disabled} flag and no debug values will be stored for it.
  * <p>
  * This event is fired once per tick during {@linkplain ClientDebugSubscriber#requestedSubscriptions()}.
  * <p>

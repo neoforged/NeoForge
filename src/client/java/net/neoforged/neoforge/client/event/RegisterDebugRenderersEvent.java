@@ -15,11 +15,11 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * This event allows mods to register custom {@link DebugRenderer.SimpleDebugRenderer debug renderers}.
+ * This event allows mods to register custom {@link DebugRenderer.SimpleDebugRenderer}s.
  * <p>
- * This event is fired during {@linkplain DebugRenderer#refreshRendererList() debug renderer refreshes}.
+ * This event is fired during {@link DebugRenderer#refreshRendererList()}.
  * <p>
- * This event is fired for the mod-specific event bus and on the {@linkplain LogicalSide#CLIENT logical client}
+ * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
 public final class RegisterDebugRenderersEvent extends Event implements IModBusEvent {
     private final Consumer<Function<Minecraft, DebugRenderer.SimpleDebugRenderer>> registrar;
