@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/debug/DebugRenderer.java
 +++ b/net/minecraft/client/renderer/debug/DebugRenderer.java
-@@ -137,6 +_,8 @@
+@@ -137,6 +_,9 @@
          }
  
          this.renderers.add(new ChunkCullingDebugRenderer(minecraft));
++
 +        // Neo: Allow registering custom debug renderers
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterDebugRenderersEvent(factory -> renderers.add(factory.apply(minecraft))));
      }
