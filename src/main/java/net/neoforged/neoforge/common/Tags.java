@@ -584,6 +584,7 @@ public class Tags {
         public static final TagKey<Item> FOODS_BERRY = tag("foods/berry");
         public static final TagKey<Item> FOODS_BREAD = tag("foods/bread");
         public static final TagKey<Item> FOODS_COOKIE = tag("foods/cookie");
+        public static final TagKey<Item> FOODS_DOUGH = tag("foods/dough");
         public static final TagKey<Item> FOODS_RAW_MEAT = tag("foods/raw_meat");
         public static final TagKey<Item> FOODS_COOKED_MEAT = tag("foods/cooked_meat");
         public static final TagKey<Item> FOODS_RAW_FISH = tag("foods/raw_fish");
