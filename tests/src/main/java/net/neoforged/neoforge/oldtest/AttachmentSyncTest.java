@@ -6,7 +6,10 @@
 package net.neoforged.neoforge.oldtest;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.InteractionHand;
@@ -17,11 +20,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -42,10 +50,16 @@ public class AttachmentSyncTest {
         ITEMS.registerItem("tester_entity", EntityTester::new);
         ITEMS.registerItem("tester_level", LevelTester::new);
     }
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("test_block", TestBlock::new);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MOD_ID);
+    private static final Supplier<BlockEntityType<TestBlockEntity>> TEST_BLOCK_ENTITY_TYPE = BLOCK_ENTITY_TYPES.register("test_block", () -> new BlockEntityType<>(TestBlockEntity::new, TEST_BLOCK.get()));
 
     public AttachmentSyncTest(IEventBus modBus) {
         ATTACHMENT_TYPES.register(modBus);
         ITEMS.register(modBus);
+        BLOCKS.register(modBus);
+        BLOCK_ENTITY_TYPES.register(modBus);
     }
 
     /**
@@ -64,7 +78,7 @@ public class AttachmentSyncTest {
             Integer value = holder.getExistingDataOrNull(ATTACHMENT_TYPE);
             int newValue = value == null ? 1 : value + 1;
 
-            if (newValue == 5) {
+            if (newValue >= 5) {
                 holder.removeData(ATTACHMENT_TYPE);
             } else {
                 holder.setData(ATTACHMENT_TYPE, newValue);
@@ -141,6 +155,42 @@ public class AttachmentSyncTest {
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
             testInteraction("level", player, level);
             return InteractionResult.SUCCESS_SERVER;
+        }
+    }
+
+    /// Block with a block entity that sets data attachments at unusual timings,
+    /// to test how robust data attachment sync is in those cases.
+    private static class TestBlock extends BaseEntityBlock {
+        public TestBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected MapCodec<? extends BaseEntityBlock> codec() {
+            return simpleCodec(TestBlock::new);
+        }
+
+        @Override
+        public BlockEntity newBlockEntity(BlockPos worldPosition, BlockState blockState) {
+            return new TestBlockEntity(worldPosition, blockState);
+        }
+    }
+
+    private static class TestBlockEntity extends BlockEntity {
+        public TestBlockEntity(BlockPos worldPosition, BlockState blockState) {
+            super(TEST_BLOCK_ENTITY_TYPE.get(), worldPosition, blockState);
+        }
+
+        @Override
+        public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+            super.preRemoveSideEffects(pos, state);
+            setData(ATTACHMENT_TYPE, 10);
+        }
+
+        @Override
+        public void setRemoved() {
+            super.setRemoved();
+            setData(ATTACHMENT_TYPE, 20);
         }
     }
 }

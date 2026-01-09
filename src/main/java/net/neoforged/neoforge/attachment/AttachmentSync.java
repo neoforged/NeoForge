@@ -20,7 +20,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -111,11 +110,18 @@ public final class AttachmentSync {
         }
     }
 
-    public static void syncBlockEntityUpdate(BlockEntity blockEntity, AttachmentType<?> type) {
-        if (type.syncHandler == null || !(blockEntity.getLevel() instanceof ServerLevel serverLevel)) {
+    public static void syncBlockEntityUpdates(BlockEntity blockEntity, List<ServerPlayer> players) {
+        var toSync = blockEntity.getAndClearAttachmentTypesToSync();
+        if (toSync == null) {
             return;
         }
-        syncUpdate(blockEntity, type, serverLevel.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(blockEntity.getBlockPos()), false));
+        // For now, we send one packet per attachment type. In the future, consider bundling all the updates in a single packet.
+        for (var type : toSync) {
+            if (type.syncHandler == null) {
+                continue;
+            }
+            syncUpdate(blockEntity, type, players);
+        }
     }
 
     public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder.AsField holder, AttachmentType<?> type) {

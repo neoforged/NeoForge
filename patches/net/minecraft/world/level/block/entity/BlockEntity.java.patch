@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -39,15 +_,18 @@
+@@ -39,15 +_,20 @@
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
  
@@ -17,6 +17,8 @@
      private DataComponentMap components = DataComponentMap.EMPTY;
 +    @Nullable
 +    private CompoundTag customPersistentData;
++    @Nullable
++    private Set<net.neoforged.neoforge.attachment.AttachmentType<?>> attachmentTypesToSync;
  
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
@@ -65,7 +67,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -272,6 +_,32 @@
+@@ -272,6 +_,48 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -94,7 +96,23 @@
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
++        if (!(level instanceof ServerLevel serverLevel)) {
++            return;
++        }
++        if (attachmentTypesToSync == null) {
++            attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        }
++        attachmentTypesToSync.add(type);
++        // Schedule the BE for syncing
++        serverLevel.getChunkSource().blockChanged(worldPosition);
++    }
++
++    @Nullable
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final Set<net.neoforged.neoforge.attachment.AttachmentType<?>> getAndClearAttachmentTypesToSync() {
++        var ret = attachmentTypesToSync;
++        attachmentTypesToSync = null;
++        return ret;
      }
  
      @Override
