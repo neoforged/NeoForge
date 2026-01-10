@@ -5,18 +5,27 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -259,5 +268,58 @@ public class GuiTests {
         armorStand.yHeadRotO = armorStand.getYRot();
         armorStand.setItemSlot(EquipmentSlot.CHEST, new ItemStack(armor));
         return armorStand;
+    }
+
+    @TestHolder(description = "Checks that non-quad vertex format modes can be used in UI rendering by drawing an octahedron in the top-right corner", enabledByDefault = true)
+    static void testNonQuadUiGeometry(DynamicTest test) {
+        String modId = test.createModId();
+
+        RenderPipeline triStripPipeline = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+                .withLocation(Identifier.fromNamespaceAndPath(modId, "tri_strip"))
+                .withVertexShader("core/position_color")
+                .withFragmentShader("core/position_color")
+                .withCull(false)
+                .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN)
+                .build();
+
+        record CircleGuiElementRenderState(
+                int centerX,
+                int centerY,
+                int radius,
+                int divisions,
+                int color,
+                RenderPipeline pipeline,
+                TextureSetup textureSetup,
+                ScreenRectangle bounds,
+                @Nullable ScreenRectangle scissorArea) implements GuiElementRenderState {
+            static CircleGuiElementRenderState create(
+                    int centerX,
+                    int centerY,
+                    int radius,
+                    int divisions,
+                    int color,
+                    RenderPipeline pipeline) {
+                ScreenRectangle bounds = new ScreenRectangle(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+                return new CircleGuiElementRenderState(centerX, centerY, radius, divisions, color, pipeline, TextureSetup.noTexture(), bounds, null);
+            }
+
+            @Override
+            public void buildVertices(VertexConsumer builder) {
+                builder.addVertex(centerX, centerY, 0).setColor(color);
+                for (int i = 0; i <= divisions; i++) {
+                    float vx = centerX + (radius * Mth.cos(i * Mth.TWO_PI / divisions));
+                    float vy = centerY + (radius * Mth.sin(i * Mth.TWO_PI / divisions));
+                    builder.addVertex(vx, vy, 0).setColor(color);
+                }
+            }
+        }
+
+        test.framework().modEventBus().addListener(RegisterGuiLayersEvent.class, event -> {
+            Identifier id = Identifier.fromNamespaceAndPath(modId, "test");
+            event.registerAboveAll(id, (graphics, deltaTracker) -> {
+                int centerX = graphics.guiWidth() - 20;
+                graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 20, 15, 8, 0xFFAA0000, triStripPipeline));
+            });
+        });
     }
 }

@@ -75,6 +75,21 @@
      }
  
      private void renderItemToAtlas(TrackingItemStackRenderState p_428843_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
+@@ -653,6 +_,14 @@
+             p_416119_.bindTexture("Sampler2", p_416097_.textureSetup.texure2(), p_416097_.textureSetup.sampler2());
+         }
+ 
++        // Neo: support non-quad vertex format modes
++        VertexFormat.Mode formatMode = renderpipeline.getVertexFormatMode();
++        if (formatMode != VertexFormat.Mode.QUADS) {
++            RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(formatMode);
++            p_416661_ = autoStorageIndexBuffer.getBuffer(p_416097_.indexCount);
++            p_415757_ = autoStorageIndexBuffer.type();
++        }
++
+         p_416119_.setIndexBuffer(p_416661_, p_415757_);
+         p_416119_.drawIndexed(p_416097_.baseVertex, 0, p_416097_.indexCount, 1);
+     }
 @@ -699,7 +_,7 @@
              this.itemsAtlasDepthView.close();
          }
