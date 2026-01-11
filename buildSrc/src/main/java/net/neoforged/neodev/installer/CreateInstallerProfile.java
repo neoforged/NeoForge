@@ -109,9 +109,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         var neoFormVersion = getMcAndNeoFormVersion().get();
         data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/client.lzma"));
 
-        var patchedClientCoordinate = new MavenIdentifier("net.neoforged", "minecraft-client-patched", getNeoForgeVersion().get(), "", "jar");
-        var patchedServerCoordinate = new MavenIdentifier("net.neoforged", "minecraft-server-patched", getNeoForgeVersion().get(), "", "jar");
-        data.put("PATCHED", new LauncherDataEntry(patchedClientCoordinate, patchedServerCoordinate));
+        var serverCoordinate = new MavenIdentifier("net.minecraft", "server", getMinecraftVersion().get(), "", "jar");
+        data.put("ORIGINAL_SERVER", new LauncherDataEntry(serverCoordinate, serverCoordinate));
         data.put("MCP_VERSION", new LauncherDataEntry(String.format("'%s'", neoFormVersion), String.format("'%s'", neoFormVersion)));
 
         var processors = new ArrayList<ProcessorEntry>();
@@ -134,11 +133,9 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--input",
                         "{MINECRAFT_JAR}",
                         "--output",
-                        "{PATCHED}",
+                        "{ORIGINAL_SERVER}",
                         "--extract-libraries-to",
-                        "{ROOT}/libraries/",
-                        "--apply-patches",
-                        "{BINPATCH}"));
+                        "{ROOT}/libraries/"));
 
         getLogger().info("Collecting libraries for Installer Profile");
         // Remove potential duplicates.

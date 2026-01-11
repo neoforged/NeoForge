@@ -388,6 +388,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         for (var taskProvider : List.of(createWindowsServerArgsFile, createUnixServerArgsFile)) {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
+                task.getMinecraftVersion().set(minecraftVersion);
                 task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });

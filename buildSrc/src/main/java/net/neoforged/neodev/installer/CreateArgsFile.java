@@ -43,6 +43,9 @@ public abstract class CreateArgsFile extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getRawServerJar();
 
+    @Input
+    public abstract Property<String> getMinecraftVersion();
+
     @OutputFile
     public abstract RegularFileProperty getArgsFile();
 
@@ -76,7 +79,11 @@ public abstract class CreateArgsFile extends DefaultTask {
                 .filter(path -> path.startsWith("libraries/"))
                 .collect(Collectors.joining(getPathSeparator().get()));
 
-        return ourClasspath + getPathSeparator().get() + filteredServerClasspath;
+        return ourClasspath + getPathSeparator().get() + getServerJarPath() + getPathSeparator().get() + filteredServerClasspath;
+    }
+
+    private String getServerJarPath() {
+        return "libraries/net/minecraft/server/" + getMinecraftVersion().get() + "/server-" + getMinecraftVersion().get() + ".jar";
     }
 
     // Example:
