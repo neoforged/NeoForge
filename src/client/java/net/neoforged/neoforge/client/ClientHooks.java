@@ -196,6 +196,7 @@ import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
@@ -469,6 +470,11 @@ public class ClientHooks {
     @SuppressWarnings("deprecation")
     public static Material getBlockMaterial(Identifier loc) {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Material getItemMaterial(Identifier loc) {
+        return new Material(TextureAtlas.LOCATION_ITEMS, loc);
     }
 
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
@@ -872,6 +878,7 @@ public class ClientHooks {
         DimensionTransitionScreenManager.init();
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
+        GameRuleEntryFactoryManager.register();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup

@@ -320,5 +320,8 @@
   ],
   "net/minecraft/gametest/framework/GameTestHelper": [
     "net/neoforged/neoforge/common/extensions/GameTestHelperExtension"
+  ],
+  "net/minecraft/world/level/gamerules/GameRuleType": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ]
 }
