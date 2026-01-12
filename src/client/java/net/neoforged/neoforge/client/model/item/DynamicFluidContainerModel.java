@@ -88,10 +88,10 @@ public class DynamicFluidContainerModel implements ItemModel {
     private ItemModel bakeModelForFluid(Fluid fluid) {
         var sprites = bakingContext.blockModelBaker().sprites();
 
-        Material particleLocation = unbakedModel.textures.particle.map(ClientHooks::getBlockMaterial).orElse(null);
-        Material baseLocation = unbakedModel.textures.base.map(ClientHooks::getBlockMaterial).orElse(null);
-        Material fluidMaskLocation = unbakedModel.textures.fluid.map(ClientHooks::getBlockMaterial).orElse(null);
-        Material coverLocation = unbakedModel.textures.cover.map(ClientHooks::getBlockMaterial).orElse(null);
+        Material particleLocation = unbakedModel.textures.particle.map(ClientHooks::getItemMaterial).orElse(null);
+        Material baseLocation = unbakedModel.textures.base.map(ClientHooks::getItemMaterial).orElse(null);
+        Material fluidMaskLocation = unbakedModel.textures.fluid.map(ClientHooks::getItemMaterial).orElse(null);
+        Material coverLocation = unbakedModel.textures.cover.map(ClientHooks::getItemMaterial).orElse(null);
 
         TextureAtlasSprite baseSprite = baseLocation != null ? sprites.get(baseLocation, DEBUG_NAME) : null;
         TextureAtlasSprite fluidSprite = fluid != Fluids.EMPTY ? sprites.get(ClientHooks.getBlockMaterial(IClientFluidTypeExtensions.of(fluid).getStillTexture()), DEBUG_NAME) : null;

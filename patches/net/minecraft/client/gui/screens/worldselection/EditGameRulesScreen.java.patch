@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen.java
+@@ -268,6 +_,12 @@
+                         );
+                     }
+ 
++                    @Override
++                    public <T> void visit(GameRule<T> p_461081_) {
++                        // Neo: Append custom entries for none bool/int game rules
++                        net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager.appendGameRuleEntry(EditGameRulesScreen.this, p_461081_, this::addEntry);
++                    }
++
+                     private <T> void addEntry(GameRule<T> p_461117_, EditGameRulesScreen.EntryFactory<T> p_101226_) {
+                         Component component = Component.translatable(p_461117_.getDescriptionId());
+                         Component component1 = Component.literal(p_461117_.id()).withStyle(ChatFormatting.YELLOW);

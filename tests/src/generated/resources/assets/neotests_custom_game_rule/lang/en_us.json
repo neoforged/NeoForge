@@ -1,0 +1,11 @@
+{
+  "gamerule.category.neotests_custom_game_rule.game_rules": "Custom GameRules",
+  "gamerule.neotests_custom_game_rule.custom_boolean_game_rule": "Custom Boolean",
+  "gamerule.neotests_custom_game_rule.custom_boolean_game_rule.description": "A custom boolean game rule",
+  "gamerule.neotests_custom_game_rule.custom_double_game_rule": "Custom Double",
+  "gamerule.neotests_custom_game_rule.custom_double_game_rule.description": "A custom double game rule",
+  "gamerule.neotests_custom_game_rule.custom_integer_game_rule": "Custom Integer",
+  "gamerule.neotests_custom_game_rule.custom_integer_game_rule.description": "A custom integer game rule",
+  "gamerule.neotests_custom_game_rule.custom_string_game_rule": "Custom String",
+  "gamerule.neotests_custom_game_rule.custom_string_game_rule.description": "A custom string game rule"
+}
