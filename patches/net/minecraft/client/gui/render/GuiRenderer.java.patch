@@ -40,6 +40,14 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
+@@ -292,6 +_,7 @@
+         ScreenRectangle screenrectangle = p_419849_.scissorArea();
+         if (renderpipeline != this.previousPipeline
+             || this.scissorChanged(screenrectangle, this.previousScissorArea)
++            || renderpipeline.getVertexFormatMode().connectedPrimitives // Neo: flush elements with connected primitives individually
+             || !texturesetup.equals(this.previousTextureSetup)) {
+             if (this.bufferBuilder != null) {
+                 this.recordMesh(this.bufferBuilder, this.previousPipeline, this.previousTextureSetup, this.previousScissorArea);
 @@ -419,14 +_,31 @@
  
      private void preparePictureInPicture() {
