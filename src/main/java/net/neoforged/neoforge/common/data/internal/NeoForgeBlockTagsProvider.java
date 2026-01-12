@@ -310,7 +310,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.SANDS).addOptionalTag(forge("sand"));
         tag(Tags.Blocks.SANDS_COLORLESS).addOptionalTag(forge("sand/colorless"));
         tag(Tags.Blocks.SANDS_RED).addOptionalTag(forge("sand/red"));
-        tag(Tags.Blocks.SHEARS_EFFICIENT).addTag(BlockTags.WOOL);
+        tag(Tags.Blocks.SHEARS_EFFICIENT);
     }
 
     private TagAppender<Block, Block> tagWithOptionalLegacy(TagKey<Block> tag) {
