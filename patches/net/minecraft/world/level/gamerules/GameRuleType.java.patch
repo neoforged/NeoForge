@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/gamerules/GameRuleType.java
++++ b/net/minecraft/world/level/gamerules/GameRuleType.java
+@@ -2,6 +_,7 @@
+ 
+ import net.minecraft.util.StringRepresentable;
+ 
++@net.neoforged.fml.common.asm.enumextension.NamedEnum
+ public enum GameRuleType implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+     INT("integer"),
+     BOOL("boolean");
+@@ -15,5 +_,9 @@
+     @Override
+     public String getSerializedName() {
+         return this.name;
++    }
++
++    public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++        return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(GameRuleType.class);
+     }
+ }
