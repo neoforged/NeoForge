@@ -98,7 +98,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         } else {
             ItemStack existing = contents.getItemUnsafe(index);
             if (resource.matches(existing)) {
-                inserted += mutable.tryInsert(resource.toStack(Math.min(amount, existing.getMaxStackSize() - existing.getCount())));
+                inserted += mutable.tryInsert(resource.toStack(amount));
             } else {
                 return 0;
             }
@@ -112,6 +112,11 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         TransferPreconditions.checkNonNegative(index);
 
+        int accessAmount = itemAccess.getAmount();
+        if (accessAmount == 0)
+            return 0;
+        int extractedPerItem = amount / accessAmount;
+
         ItemResource accessResource = itemAccess.getResource();
         BundleContents contents = accessResource.get(component);
         if (contents == null || index >= contents.size()) return 0;
@@ -119,7 +124,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         ItemStack stack = contents.getItemUnsafe(index);
         if (stack.isEmpty() || !resource.matches(stack)) return 0;
 
-        int toExtract = Math.min(amount, stack.getCount());
+        int toExtract = Math.min(extractedPerItem, stack.getCount());
         if (toExtract <= 0) return 0;
 
         List<ItemStack> items = new ObjectArrayList<>(contents.size());
@@ -131,6 +136,6 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
             items.set(index, stack.copy().split(toExtract));
         }
 
-        return toExtract * itemAccess.exchange(accessResource.with(component, new BundleContents(items)), itemAccess.getAmount(), transaction);
+        return toExtract * itemAccess.exchange(accessResource.with(component, new BundleContents(items)), accessAmount, transaction);
     }
 }
