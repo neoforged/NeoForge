@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
+@@ -36,7 +_,9 @@
+                 Tool.Rule.minesAndDrops(HolderSet.direct(Blocks.COBWEB.builtInRegistryHolder()), 15.0F),
+                 Tool.Rule.overrideSpeed(holdergetter.getOrThrow(BlockTags.LEAVES), 15.0F),
+                 Tool.Rule.overrideSpeed(holdergetter.getOrThrow(BlockTags.WOOL), 5.0F),
+-                Tool.Rule.overrideSpeed(HolderSet.direct(Blocks.VINE.builtInRegistryHolder(), Blocks.GLOW_LICHEN.builtInRegistryHolder()), 2.0F)
++                Tool.Rule.overrideSpeed(HolderSet.direct(Blocks.VINE.builtInRegistryHolder(), Blocks.GLOW_LICHEN.builtInRegistryHolder()), 2.0F),
++                // Neo: Allow modded blocks be mined faster with shears
++                Tool.Rule.overrideSpeed(holdergetter.getOrThrow(net.neoforged.neoforge.common.Tags.Blocks.SHEARS_EFFICIENT), 5.0F)
+             ),
+             1.0F,
+             1,
 @@ -58,20 +_,57 @@
          }
      }
