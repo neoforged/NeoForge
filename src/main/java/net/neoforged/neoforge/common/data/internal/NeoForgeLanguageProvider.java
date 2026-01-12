@@ -141,6 +141,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STRIPPED_WOODS, "Stripped Woods");
         add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Blocks.VILLAGER_FARMLANDS, "Villager Farmlands");
+        add(Tags.Blocks.SHEARS_EFFICIENT, "Shears Efficient");
 
         // Items
         add(Tags.Items.BARRELS, "Barrels");

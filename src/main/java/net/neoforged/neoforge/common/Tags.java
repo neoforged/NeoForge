@@ -314,6 +314,11 @@ public class Tags {
          */
         public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
 
+        /**
+         * For blocks which should mine faster when shears are used.
+         */
+        public static final TagKey<Block> SHEARS_EFFICIENT = neoforgeTag("shears_efficient");
+
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
