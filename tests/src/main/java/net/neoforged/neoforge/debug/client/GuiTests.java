@@ -319,6 +319,7 @@ public class GuiTests {
             event.registerAboveAll(id, (graphics, deltaTracker) -> {
                 int centerX = graphics.guiWidth() - 20;
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 20, 15, 8, 0xFFAA0000, triStripPipeline));
+                graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 60, 15, 8, 0xFFAA0000, triStripPipeline));
             });
         });
     }
