@@ -1,0 +1,15 @@
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -1774,7 +1796,11 @@
+ 
+                             @Override
+                             public void onInteraction(InteractionHand hand, Vec3 location) {
+-                                this.performInteraction(hand, (player, targetxx, h) -> targetxx.interactAt(player, location, h));
++                                this.performInteraction(hand, (player, target, h) -> {
++                                    InteractionResult onInteractEntityAtResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, target, location, hand);
++                                    if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
++                                    return target.interactAt(player, location, h);
++                                });
+                             }
+ 
+                             @Override

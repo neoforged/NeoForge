@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/BubbleColumnBlock.java
++++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
+@@ -97,10 +97,12 @@
+     private static BlockState getColumnState(BlockState belowState) {
+         if (belowState.is(Blocks.BUBBLE_COLUMN)) {
+             return belowState;
+-        } else if (belowState.is(Blocks.SOUL_SAND)) {
++        }
++        net.neoforged.neoforge.common.enums.BubbleColumnDirection bubbleColumnDirection = belowState.getBubbleColumnDirection(); // Neo: PR #931
++        if (bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) {
+             return Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, false);
+         } else {
+-            return belowState.is(Blocks.MAGMA_BLOCK) ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, true) : Blocks.WATER.defaultBlockState();
++            return bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, true) : Blocks.WATER.defaultBlockState();
+         }
+     }
+ 
+@@ -167,7 +169,7 @@
+     @Override
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+         BlockState belowState = level.getBlockState(pos.below());
+-        return belowState.is(Blocks.BUBBLE_COLUMN) || belowState.is(Blocks.MAGMA_BLOCK) || belowState.is(Blocks.SOUL_SAND);
++        return belowState.is(Blocks.BUBBLE_COLUMN) || belowState.getBubbleColumnDirection() != net.neoforged.neoforge.common.enums.BubbleColumnDirection.NONE; // Neo: PR #931
+     }
+ 
+     @Override

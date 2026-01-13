@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/item/ItemStack.java
++++ b/net/minecraft/world/item/ItemStack.java
+@@ -250,6 +250,10 @@
+         return !this.isEmpty() && this.components.hasNonDefault(type);
+     }
+ 
++    public boolean isComponentsPatchEmpty() {
++        return this.isEmpty() || this.components.isPatchEmpty();
++    }
++
+     public ItemStack(ItemLike item) {
+         this(item, 1);
+     }
+@@ -393,7 +411,7 @@
+     }
+ 
+     public int getMaxStackSize() {
+-        return this.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
++        return this.getItem().getMaxStackSize(this);
+     }
+ 
+     public boolean isStackable() {

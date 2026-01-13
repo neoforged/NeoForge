@@ -1,0 +1,14 @@
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -641,7 +660,11 @@
+     public void sendLevelInfo(ServerPlayer player, ServerLevel level) {
+         WorldBorder worldBorder = level.getWorldBorder();
+         player.connection.send(new ClientboundInitializeBorderPacket(worldBorder));
++        if (player.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++            player.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME), level.getDayTimeFraction(), level.getDayTimePerTick()));
++        } else {
+         player.connection.send(new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME)));
++        }
+         player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getRespawnData()));
+         if (level.isRaining()) {
+             player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));

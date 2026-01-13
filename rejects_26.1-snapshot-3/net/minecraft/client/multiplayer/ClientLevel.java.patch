@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -156,6 +157,7 @@
+     private final int seaLevel;
+     private boolean tickDayTime;
+     private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
++    private final net.neoforged.neoforge.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.model.data.ModelDataManager(this);
+ 
+     public void handleBlockChangedAck(int sequence) {
+         if (SharedConstants.DEBUG_BLOCK_BREAK) {
+@@ -320,7 +328,7 @@
+     private void tickTime() {
+         this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
+         if (this.tickDayTime) {
+-            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + 1L);
++            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + advanceDaytime());
+         }
+     }
+ 
