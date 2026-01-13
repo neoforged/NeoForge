@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
  * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}
  * <ul>
  * <li>{@link #getOriginalAboutToBeSetTarget()} returns the target that should originally be set.
- * The return value cannot be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.</li>
+ * The return value <strong>cannot</strong> be changed.</li>
  * <li>{@link #getNewAboutToBeSetTarget()} returns the new target that this entity will have.
  * The return value can be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.</li>
  * <li>{@link #getTargetType()} returns the target type that caused the change of targets.</li>
