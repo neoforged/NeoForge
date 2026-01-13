@@ -14,7 +14,6 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Base class of the events specific to LivingEntities.
- * <p>
  * 
  * @see LivingEvent.LivingJumpEvent
  * @see LivingEvent.LivingVisibilityEvent
