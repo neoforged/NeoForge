@@ -365,6 +365,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * <p>
      * Note: The player may be in the process of logging out or otherwise
      * departing from the world. Don't assume its association with the world.
+     * <p>
      * This allows mods to load an additional file from the players directory
      * containing additional mod related player data.
      * <p>
