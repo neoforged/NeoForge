@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/item/crafting/CraftingRecipe.java
 +++ b/net/minecraft/world/item/crafting/CraftingRecipe.java
-@@ -23,7 +23,7 @@
+@@ -24,7 +_,7 @@
          NonNullList<ItemStack> result = NonNullList.withSize(input.size(), ItemStack.EMPTY);
  
          for (int slot = 0; slot < result.size(); slot++) {
 -            Item item = input.getItem(slot).getItem();
 +            var item = input.getItem(slot);
-             result.set(slot, item.getCraftingRemainder());
+             ItemStackTemplate remainder = item.getCraftingRemainder();
+             result.set(slot, remainder != null ? remainder.create() : ItemStack.EMPTY);
          }
- 
