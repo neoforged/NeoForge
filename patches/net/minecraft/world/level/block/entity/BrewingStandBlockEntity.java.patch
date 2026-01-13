@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -173,6 +_,7 @@
+@@ -174,6 +_,7 @@
      }
  
      private static void doBrew(Level level, BlockPos pos, NonNullList<ItemStack> items) {
@@ -8,15 +8,7 @@
          ItemStack ingredient = items.get(3);
          PotionBrewing potionBrewing = level.potionBrewing();
  
-@@ -180,6 +_,7 @@
-             items.set(dest, potionBrewing.mix(ingredient, items.get(dest)));
-         }
- 
-+        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
-         ingredient.shrink(1);
-         ItemStack remainder = ingredient.getItem().getCraftingRemainder();
-         if (!remainder.isEmpty()) {
-@@ -217,13 +_,13 @@
+@@ -218,13 +_,13 @@
  
      @Override
      public boolean canPlaceItem(int slot, ItemStack itemStack) {

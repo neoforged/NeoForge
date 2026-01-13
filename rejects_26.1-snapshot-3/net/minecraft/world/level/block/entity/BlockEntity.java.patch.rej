@@ -1,0 +1,35 @@
+++++ REJECTED HUNK: 6
+@@ -270,6 +284,32 @@
+ 
+     public BlockEntityType<?> getType() {
+         return this.type;
++    }
++
++    @Override
++    public CompoundTag getPersistentData() {
++        if (this.customPersistentData == null)
++            this.customPersistentData = new CompoundTag();
++        return this.customPersistentData;
++    }
++
++    @Override
++    @Nullable
++    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++        setChanged();
++        return super.setData(type, data);
++    }
++
++    @Override
++    @Nullable
++    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        setChanged();
++        return super.removeData(type);
++    }
++
++    @Override
++    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
+     }
+ 
+     @Deprecated
+++++ END HUNK

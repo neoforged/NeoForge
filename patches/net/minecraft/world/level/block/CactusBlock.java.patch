@@ -31,6 +31,6 @@
          BlockState belowState = level.getBlockState(pos.below());
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return (belowState.is(Blocks.CACTUS) || belowState.is(BlockTags.SAND)) && !level.getBlockState(pos.above()).liquid();
+         return (belowState.is(this) || belowState.is(BlockTags.SUPPORTS_CACTUS)) && !level.getBlockState(pos.above()).liquid();
      }
  

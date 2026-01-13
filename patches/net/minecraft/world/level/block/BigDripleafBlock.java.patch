@@ -6,6 +6,6 @@
          BlockState belowState = level.getBlockState(belowPos);
 +        var soilDecision = belowState.canSustainPlant(level, belowPos, Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return belowState.is(this) || belowState.is(Blocks.BIG_DRIPLEAF_STEM) || belowState.is(BlockTags.BIG_DRIPLEAF_PLACEABLE);
+         return belowState.is(this) || belowState.is(Blocks.BIG_DRIPLEAF_STEM) || belowState.is(BlockTags.SUPPORTS_BIG_DRIPLEAF);
      }
  

@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -46,7 +_,7 @@
+@@ -47,7 +_,7 @@
  
      @Override
      protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(Blocks.FARMLAND);
+-        return state.is(BlockTags.SUPPORTS_CROPS);
 +        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
      }
  
      protected IntegerProperty getAgeProperty() {
-@@ -76,12 +_,14 @@
+@@ -77,12 +_,14 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -26,7 +26,7 @@
                  }
              }
          }
-@@ -96,7 +_,8 @@
+@@ -97,7 +_,8 @@
          return Mth.nextInt(level.getRandom(), 2, 5);
      }
  
@@ -36,20 +36,7 @@
          float speed = 1.0F;
          BlockPos below = pos.below();
  
-@@ -104,9 +_,10 @@
-             for (int zz = -1; zz <= 1; zz++) {
-                 float blockSpeed = 0.0F;
-                 BlockState blockState = level.getBlockState(below.offset(xx, 0, zz));
--                if (blockState.is(Blocks.FARMLAND)) {
-+                var soilDecision = blockState.canSustainPlant(level, below.offset(xx, 0, zz), net.minecraft.core.Direction.UP, blockState);
-+                if (soilDecision.isDefault() ? blockState.getBlock() instanceof net.minecraft.world.level.block.FarmBlock : soilDecision.isTrue()) {
-                     blockSpeed = 1.0F;
--                    if (blockState.getValue(FarmBlock.MOISTURE) > 0) {
-+                    if (blockState.isFertile(level, pos.offset(xx, 0, zz))) {
-                         blockSpeed = 3.0F;
-                     }
-                 }
-@@ -142,6 +_,8 @@
+@@ -143,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
@@ -58,7 +45,7 @@
          return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
      }
  
-@@ -151,7 +_,7 @@
+@@ -152,7 +_,7 @@
  
      @Override
      protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {

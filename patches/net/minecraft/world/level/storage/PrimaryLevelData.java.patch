@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -70,6 +_,7 @@
+@@ -71,6 +_,7 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
      private final TimerQueue<MinecraftServer> scheduledEvents;
@@ -8,7 +8,7 @@
  
      private PrimaryLevelData(
          @Nullable CompoundTag loadedPlayerTag,
-@@ -168,7 +_,7 @@
+@@ -169,7 +_,7 @@
          Lifecycle worldGenSettingsLifecycle
      ) {
          long gameTime = input.get("Time").asLong(0L);
@@ -17,7 +17,7 @@
              input.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
              input.get("WasModded").asBoolean(false),
              input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
-@@ -187,7 +_,8 @@
+@@ -191,7 +_,8 @@
              input.get("WanderingTraderSpawnChance").asInt(0),
              input.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null),
              input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
@@ -27,7 +27,7 @@
              new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, input.get("ScheduledEvents").asStream()),
              (CompoundTag)input.get("CustomBossEvents").orElseEmptyMap().getValue(),
              input.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
-@@ -195,7 +_,11 @@
+@@ -199,7 +_,11 @@
              worldOptions,
              specialWorldProperty,
              worldGenSettingsLifecycle
@@ -40,7 +40,7 @@
      }
  
      @Override
-@@ -260,6 +_,12 @@
+@@ -264,6 +_,12 @@
          tag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
          tag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
          tag.storeNullable("WanderingTraderId", UUIDUtil.CODEC, this.wanderingTraderId);
@@ -53,7 +53,7 @@
      }
  
      private static ListTag stringCollectionToTag(Set<String> values) {
-@@ -550,10 +_,58 @@
+@@ -554,10 +_,58 @@
          return this.settings.copy();
      }
  

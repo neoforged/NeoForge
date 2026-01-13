@@ -1,6 +1,5 @@
---- a/net/minecraft/core/registries/Registries.java
-+++ b/net/minecraft/core/registries/Registries.java
-@@ -313,10 +_,10 @@
+++++ REJECTED HUNK: 1
+@@ -313,10 +313,10 @@
      }
  
      public static String elementsDirPath(ResourceKey<? extends Registry<?>> registryKey) {
@@ -13,3 +12,4 @@
 +        return "tags/" + net.neoforged.neoforge.common.CommonHooks.prefixNamespace(registryKey.identifier());
      }
  }
+++++ END HUNK

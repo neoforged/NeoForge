@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -282,7 +_,7 @@
+@@ -286,7 +_,7 @@
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> factory) {
          AtomicReference<S> serverReference = new AtomicReference<>();
@@ -9,7 +9,7 @@
          thread.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in server thread", e));
          if (Runtime.getRuntime().availableProcessors() > 4) {
              thread.setPriority(8);
-@@ -328,9 +_,9 @@
+@@ -332,9 +_,9 @@
              this.structureTemplateManager = new StructureTemplateManager(worldStem.resourceManager(), storageSource, fixerUpper, blockLookup);
              this.serverThread = serverThread;
              this.executor = Util.backgroundExecutor();
@@ -21,7 +21,7 @@
              this.tickFrame = TracyClient.createDiscontinuousFrame("Server Tick");
              this.notificationManager = new NotificationManager();
              this.serverActivityMonitor = new ServerActivityMonitor(this.notificationManager, 30);
-@@ -416,6 +_,7 @@
+@@ -422,6 +_,7 @@
          this.scoreboard.load(overworldDataStorage.computeIfAbsent(ScoreboardSaveData.TYPE).getData());
          this.commandStorage = new CommandStorage(overworldDataStorage);
          this.stopwatches = overworldDataStorage.computeIfAbsent(Stopwatches.TYPE);
@@ -29,7 +29,7 @@
          if (!levelData.isInitialized()) {
              try {
                  setInitialSpawn(overworld, levelData, worldOptions.generateBonusChest(), isDebug, this.levelLoadListener);
-@@ -466,6 +_,7 @@
+@@ -472,6 +_,7 @@
                      randomSequences
                  );
                  this.levels.put(dimension, level);
@@ -37,7 +37,7 @@
              } else {
                  level = overworld;
              }
-@@ -513,6 +_,7 @@
+@@ -519,6 +_,7 @@
              levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), BlockPos.ZERO.above(80), 0.0F, 0.0F));
          } else {
              ServerChunkCache chunkSource = level.getChunkSource();
@@ -45,7 +45,7 @@
              ChunkPos spawnChunk = ChunkPos.containing(chunkSource.randomState().sampler().findSpawnPosition());
              levelLoadListener.start(LevelLoadListener.Stage.PREPARE_GLOBAL_SPAWN, 0);
              levelLoadListener.updateFocus(level.dimension(), spawnChunk);
-@@ -577,6 +_,7 @@
+@@ -583,6 +_,7 @@
                  TicketStorage savedTickets = level.getDataStorage().get(TicketStorage.TYPE);
                  if (savedTickets != null) {
                      savedTickets.activateAllDeactivatedTickets();
@@ -53,7 +53,7 @@
                  }
              });
          }
-@@ -697,6 +_,7 @@
+@@ -705,6 +_,7 @@
          for (ServerLevel levelx : this.getAllLevels()) {
              if (levelx != null) {
                  try {
@@ -61,7 +61,7 @@
                      levelx.close();
                  } catch (IOException var5) {
                      LOGGER.error("Exception closing the level", (Throwable)var5);
-@@ -743,9 +_,11 @@
+@@ -751,9 +_,11 @@
                  throw new IllegalStateException("Failed to initialize server");
              }
  
@@ -73,7 +73,7 @@
  
              while (this.running) {
                  long thisTickNanos;
-@@ -799,6 +_,8 @@
+@@ -807,6 +_,8 @@
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
              }
@@ -82,7 +82,7 @@
          } catch (Throwable var69) {
              LOGGER.error("Encountered an unexpected exception", var69);
              CrashReport report = constructOrExtractCrashReport(var69);
-@@ -810,6 +_,7 @@
+@@ -818,6 +_,7 @@
                  LOGGER.error("We were unable to save this crash report to disk.");
              }
  
@@ -90,7 +90,7 @@
              this.onServerCrash(report);
          } finally {
              try {
-@@ -818,6 +_,7 @@
+@@ -826,6 +_,7 @@
              } catch (Throwable var64) {
                  LOGGER.error("Exception stopping the server", var64);
              } finally {
@@ -98,7 +98,7 @@
                  this.onServerExit();
              }
          }
-@@ -1017,11 +_,13 @@
+@@ -1025,11 +_,13 @@
          }
  
          this.tickCount++;
@@ -112,7 +112,7 @@
          }
  
          this.ticksUntilAutosave--;
-@@ -1039,6 +_,7 @@
+@@ -1047,6 +_,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)tickTime / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(nano);
          profiler.pop();
@@ -120,7 +120,7 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
-@@ -1069,6 +_,16 @@
+@@ -1077,6 +_,16 @@
          }
      }
  
@@ -137,7 +137,7 @@
      private int computeNextAutosaveInterval() {
          float ticksPerSecond;
          if (this.tickRateManager.isSprinting()) {
-@@ -1100,7 +_,8 @@
+@@ -1108,7 +_,8 @@
              Optional.of(players),
              Optional.of(ServerStatus.Version.current()),
              Optional.ofNullable(this.statusIcon),
@@ -147,25 +147,7 @@
          );
      }
  
-@@ -1132,7 +_,8 @@
-         profiler.popPush("levels");
-         this.updateEffectiveRespawnData();
- 
--        for (ServerLevel level : this.getAllLevels()) {
-+        for (ServerLevel level : this.getWorldArray()) {
-+            long tickStart = Util.getNanos();
-             profiler.push(() -> level + " " + level.dimension().identifier());
-             if (this.tickCount % 20 == 0) {
-                 profiler.push("timeSync");
-@@ -1141,6 +_,7 @@
-             }
- 
-             profiler.push("tick");
-+            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(level, haveTime);
- 
-             try {
-                 level.tick(haveTime);
-@@ -1149,9 +_,11 @@
+@@ -1164,9 +_,11 @@
                  level.fillReportDetails(report);
                  throw new ReportedException(report);
              }
@@ -177,7 +159,7 @@
          }
  
          profiler.popPush("connection");
-@@ -1160,8 +_,8 @@
+@@ -1175,8 +_,8 @@
          this.playerList.tick();
          profiler.popPush("debugSubscribers");
          this.debugSubscribers.tick();
@@ -187,38 +169,7 @@
              GameTestTicker.SINGLETON.tick();
          }
  
-@@ -1193,10 +_,17 @@
-     }
- 
-     private void synchronizeTime(ServerLevel level) {
--        this.playerList
--            .broadcastAll(
--                new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME)), level.dimension()
--            );
-+        ClientboundSetTimePacket vanillaPacket = new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME));
-+        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME), level.getDayTimeFraction(), level.getDayTimePerTick());
-+        for (ServerPlayer serverplayer : playerList.getPlayers()) {
-+            if (serverplayer.level().dimension() == level.dimension()) {
-+                if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
-+                    serverplayer.connection.send(neoPacket);
-+                } else {
-+                    serverplayer.connection.send(vanillaPacket);
-+                }
-+            }
-+        }
-     }
- 
-     public void forceTimeSynchronization() {
-@@ -1257,7 +_,7 @@
-     }
- 
-     public String getServerModName() {
--        return "vanilla";
-+        return net.neoforged.neoforge.internal.BrandingControl.getServerBranding();
-     }
- 
-     public SystemReport fillSystemReport(SystemReport systemReport) {
-@@ -1547,9 +_,9 @@
+@@ -1555,9 +_,9 @@
  
      public CompletableFuture<Void> reloadResources(Collection<String> packsToEnable) {
          CompletableFuture<Void> result = CompletableFuture.<ImmutableList>supplyAsync(
@@ -231,7 +182,7 @@
                      .map(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
-@@ -1588,7 +_,8 @@
+@@ -1596,7 +_,8 @@
                  this.getPlayerList().reloadResources();
                  this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
                  this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
@@ -241,7 +192,7 @@
              }, this);
          if (this.isSameThread()) {
              this.managedBlock(result::isDone);
-@@ -1604,8 +_,10 @@
+@@ -1612,8 +_,10 @@
          FeatureFlagSet forcedFeatures = initMode ? FeatureFlagSet.of() : initialDataConfig.enabledFeatures();
          FeatureFlagSet allowedFeatures = initMode ? FeatureFlags.REGISTRY.allFlags() : initialDataConfig.enabledFeatures();
          packRepository.reload();
@@ -253,7 +204,7 @@
          } else {
              Set<String> selected = Sets.newLinkedHashSet();
  
-@@ -1651,6 +_,8 @@
+@@ -1659,6 +_,8 @@
                  selected.add("vanilla");
              }
  
@@ -262,7 +213,7 @@
              return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
          }
      }
-@@ -1850,6 +_,31 @@
+@@ -1858,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(NameAndId nameAndId);
  
@@ -294,24 +245,14 @@
      public void dumpServerProperties(Path path) throws IOException {
      }
  
-@@ -2014,6 +_,10 @@
-         return this.worldData;
-     }
+@@ -2020,6 +_,10 @@
  
-+    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
+     public WorldData getWorldData() {
+         return this.worldData;
 +    }
 +
-     public RegistryAccess.Frozen registryAccess() {
-         return this.registries.compositeAccess();
-     }
-@@ -2142,6 +_,9 @@
-         } else if (rule == GameRules.SPAWN_MONSTERS) {
-             this.updateMobSpawningFlags();
-         }
-+
-+        // Neo: Allow mods to react to game rule state changes
-+        net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(this, rule, value);
++    public MinecraftServer.ReloadableResources getServerResources() {
++         return resources;
      }
  
-     public boolean acceptsTransfers() {
+     public RegistryAccess.Frozen registryAccess() {

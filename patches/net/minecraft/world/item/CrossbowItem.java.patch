@@ -7,4 +7,4 @@
 +            if (shooter instanceof Player player && net.neoforged.neoforge.event.EventHooks.onArrowLoose(weapon, shooter.level(), player, 1, true) < 0) return;
              ChargedProjectiles charged = weapon.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
              if (charged != null && !charged.isEmpty()) {
-                 this.shoot(serverLevel, shooter, hand, weapon, charged.getItems(), power, uncertainty, shooter instanceof Player, targetOverride);
+                 this.shoot(serverLevel, shooter, hand, weapon, charged.itemCopies(), power, uncertainty, shooter instanceof Player, targetOverride);

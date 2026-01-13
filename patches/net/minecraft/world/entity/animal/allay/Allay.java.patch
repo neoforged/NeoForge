@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -354,9 +_,9 @@
+@@ -343,9 +_,9 @@
      public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
          ItemStack itemInHand = this.getItemInHand(InteractionHand.MAIN_HAND);
          return !itemInHand.isEmpty()

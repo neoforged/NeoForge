@@ -1,30 +1,21 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -64,10 +_,13 @@
+@@ -65,10 +_,13 @@
          BlockPos above = pos.above();
          if (level.isEmptyBlock(above) && above.getY() <= level.getMaxY()) {
              int currentAge = state.getValue(AGE);
 -            if (currentAge < 5) {
 +            if (currentAge < 5 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {
                  boolean growUpwards = false;
-                 boolean pillarOnEndStone = false;
+                 boolean pillarOnSupportBlock = false;
                  BlockState belowState = level.getBlockState(pos.below());
 +                var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +                if (!soilDecision.isDefault()) growUpwards = soilDecision.isTrue();
 +                else
-                 if (belowState.is(Blocks.END_STONE)) {
+                 if (belowState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
                      growUpwards = true;
                  } else if (belowState.is(this.plant)) {
-@@ -76,6 +_,8 @@
-                     for (int i = 0; i < 4; i++) {
-                         BlockState testState = level.getBlockState(pos.below(height + 1));
-                         if (!testState.is(this.plant)) {
-+                            var soilDecision2 = testState.canSustainPlant(level, pos.below(height + 1), Direction.UP, state);
-+                            if (!soilDecision2.isDefault()) pillarOnEndStone = soilDecision2.isTrue();
-                             if (testState.is(Blocks.END_STONE)) {
-                                 pillarOnEndStone = true;
-                             }
-@@ -120,6 +_,7 @@
+@@ -121,6 +_,7 @@
                  } else {
                      this.placeDeadFlower(level, pos);
                  }
@@ -32,12 +23,12 @@
              }
          }
      }
-@@ -165,6 +_,8 @@
+@@ -166,6 +_,8 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockState belowState = level.getBlockState(pos.below());
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         if (!belowState.is(this.plant) && !belowState.is(Blocks.END_STONE)) {
+         if (!belowState.is(this.plant) && !belowState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
              if (!belowState.isAir()) {
                  return false;

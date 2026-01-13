@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -57,12 +_,15 @@
+@@ -57,11 +_,14 @@
  
              if (height < 3) {
                  int age = state.getValue(AGE);
@@ -11,25 +11,7 @@
                      level.setBlock(pos, state.setValue(AGE, 0), 260);
                  } else {
                      level.setBlock(pos, state.setValue(AGE, age + 1), 260);
-                 }
 +                }
+                 }
              }
          }
-     }
-@@ -91,13 +_,15 @@
-         if (stateBelow.is(this)) {
-             return true;
-         } else {
-+            var soilDecision = stateBelow.canSustainPlant(level, pos.below(), Direction.UP, state);
-+            if (!soilDecision.isDefault()) return soilDecision.isTrue();
-             if (stateBelow.is(BlockTags.DIRT) || stateBelow.is(BlockTags.SAND)) {
-                 BlockPos below = pos.below();
- 
-                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                     BlockState blockState = level.getBlockState(below.relative(direction));
-                     FluidState fluidState = level.getFluidState(below.relative(direction));
--                    if (fluidState.is(FluidTags.WATER) || blockState.is(Blocks.FROSTED_ICE)) {
-+                    if (state.canBeHydrated(level, pos, fluidState, below.relative(direction)) || blockState.is(Blocks.FROSTED_ICE)) {
-                         return true;
-                     }
-                 }

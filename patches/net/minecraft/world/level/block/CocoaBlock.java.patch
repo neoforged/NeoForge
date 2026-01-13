@@ -20,6 +20,6 @@
          BlockState relativeState = level.getBlockState(pos.relative(state.getValue(FACING)));
 +        var soilDecision = relativeState.canSustainPlant(level, pos.relative(state.getValue(FACING)), state.getValue(FACING).getOpposite(), state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return relativeState.is(BlockTags.JUNGLE_LOGS);
+         return relativeState.is(BlockTags.SUPPORTS_COCOA);
      }
  

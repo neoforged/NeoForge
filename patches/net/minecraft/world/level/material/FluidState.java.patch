@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -107,6 +_,7 @@
+@@ -111,6 +_,7 @@
          return this.getType().builtInRegistryHolder();
      }
  

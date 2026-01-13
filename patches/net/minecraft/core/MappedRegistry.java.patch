@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -29,7 +_,7 @@
+@@ -30,7 +_,7 @@
  import net.minecraft.util.Util;
  import org.jspecify.annotations.Nullable;
  
@@ -9,7 +9,7 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), t -> t.defaultReturnValue(-1));
-@@ -84,9 +_,17 @@
+@@ -86,9 +_,17 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
@@ -27,7 +27,7 @@
          if (this.byLocation.containsKey(key.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
          } else if (this.byValue.containsKey(value)) {
-@@ -102,16 +_,18 @@
+@@ -104,16 +_,18 @@
                  holder.bindKey(key);
              } else {
                  holder = this.byKey.computeIfAbsent(key, k -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)k));
@@ -47,7 +47,7 @@
              return holder;
          }
      }
-@@ -134,7 +_,7 @@
+@@ -136,7 +_,7 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
@@ -56,7 +56,7 @@
      }
  
      @Override
-@@ -149,12 +_,12 @@
+@@ -151,12 +_,12 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
@@ -71,7 +71,7 @@
      }
  
      @Override
-@@ -169,12 +_,12 @@
+@@ -171,12 +_,12 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
@@ -87,7 +87,7 @@
              }
          });
      }
-@@ -201,7 +_,7 @@
+@@ -203,7 +_,7 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
@@ -96,8 +96,8 @@
          return getValueFromNullable(result);
      }
  
-@@ -262,13 +_,23 @@
-         return this.byKey.containsKey(key);
+@@ -269,13 +_,23 @@
+         return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
 +    /** @deprecated Forge: For internal use only. Use the Register events when registering values. */
@@ -121,7 +121,7 @@
              List<Identifier> unboundEntries = this.byKey
                  .entrySet()
                  .stream()
-@@ -284,11 +_,15 @@
+@@ -291,11 +_,15 @@
                          throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                      }
  
@@ -139,7 +139,7 @@
                  } else {
                      List<Identifier> unboundTags = this.frozenTags
                          .entrySet()
-@@ -455,6 +_,55 @@
+@@ -463,6 +_,55 @@
                  }
              };
          }

@@ -1,6 +1,5 @@
---- a/net/minecraft/world/item/crafting/BookCloningRecipe.java
-+++ b/net/minecraft/world/item/crafting/BookCloningRecipe.java
-@@ -87,7 +_,7 @@
+++++ REJECTED HUNK: 1
+@@ -87,7 +87,7 @@
  
          for (int slot = 0; slot < result.size(); slot++) {
              ItemStack itemStack = input.getItem(slot);
@@ -9,3 +8,4 @@
              if (!remainder.isEmpty()) {
                  result.set(slot, remainder);
              } else if (itemStack.has(DataComponents.WRITTEN_BOOK_CONTENT)) {
+++++ END HUNK

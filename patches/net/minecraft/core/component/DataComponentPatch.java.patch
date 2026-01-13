@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
-@@ -248,6 +_,7 @@
+@@ -255,6 +_,7 @@
          }
  
          public <T> DataComponentPatch.Builder set(DataComponentType<T> type, T value) {

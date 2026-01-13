@@ -4,7 +4,7 @@
                          Codec.STRING.optionalFieldOf("group", "").forGetter(SingleItemRecipe::group),
                          CookingBookCategory.CODEC.fieldOf("category").orElse(CookingBookCategory.MISC).forGetter(AbstractCookingRecipe::category),
                          Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
--                        ItemStack.STRICT_SINGLE_ITEM_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result),
+-                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(SingleItemRecipe::result),
 +                        ItemStack.CODEC.fieldOf("result").forGetter(SingleItemRecipe::result),
                          Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(AbstractCookingRecipe::experience),
                          Codec.INT.fieldOf("cookingtime").orElse(defaultCookingTime).forGetter(AbstractCookingRecipe::cookingTime)

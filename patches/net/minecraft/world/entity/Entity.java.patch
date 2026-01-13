@@ -339,7 +339,7 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3564,9 +_,36 @@
+@@ -3560,9 +_,36 @@
          return Mth.lerp(partial, this.yRotO, this.yRot);
      }
  
@@ -377,7 +377,7 @@
          } else {
              AABB box = this.getBoundingBox().deflate(0.001);
              int x0 = Mth.floor(box.minX);
-@@ -3581,25 +_,37 @@
+@@ -3577,25 +_,37 @@
              Vec3 current = Vec3.ZERO;
              int numberOfCurrents = 0;
              BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -422,7 +422,7 @@
                                  }
                              }
                          }
-@@ -3607,27 +_,30 @@
+@@ -3603,27 +_,30 @@
                  }
              }
  
@@ -463,7 +463,7 @@
          }
      }
  
-@@ -3640,7 +_,10 @@
+@@ -3636,7 +_,10 @@
          return !this.level().hasChunksAt(x0, z0, x1, z1);
      }
  
@@ -474,7 +474,7 @@
          return this.fluidHeight.getDouble(type);
      }
  
-@@ -3791,6 +_,10 @@
+@@ -3787,6 +_,10 @@
                  }
              }
          }
@@ -485,7 +485,7 @@
      }
  
      public void checkDespawn() {
-@@ -3931,6 +_,130 @@
+@@ -3927,6 +_,130 @@
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
          return true;

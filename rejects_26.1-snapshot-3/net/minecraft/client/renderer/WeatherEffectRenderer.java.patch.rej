@@ -1,0 +1,22 @@
+++++ REJECTED HUNK: 1
+@@ -92,7 +92,19 @@
+         }
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #render(MultiBufferSource, Vec3, WeatherRenderState, net.minecraft.client.renderer.state.LevelRenderState)} instead
++     */
++    @Deprecated
+     public void render(MultiBufferSource bufferSource, Vec3 cameraPos, WeatherRenderState renderState) {
++        this.render(bufferSource, cameraPos, renderState, null);
++    }
++
++    public void render(MultiBufferSource bufferSource, Vec3 cameraPos, WeatherRenderState renderState, net.minecraft.client.renderer.state.@org.jspecify.annotations.Nullable LevelRenderState levelRenderState) {
++        if (levelRenderState != null && levelRenderState.customWeatherEffectRenderer != null && levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(levelRenderState, renderState, bufferSource, cameraPos)) {
++            return;
++        }
++
+         if (!renderState.rainColumns.isEmpty()) {
+             RenderType renderType = RenderTypes.weather(RAIN_LOCATION, Minecraft.useShaderTransparency());
+             this.renderInstances(bufferSource.getBuffer(renderType), renderState.rainColumns, cameraPos, 1.0F, renderState.radius, renderState.intensity);
+++++ END HUNK

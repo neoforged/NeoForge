@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/block/ChorusPlantBlock.java
 +++ b/net/minecraft/world/level/block/ChorusPlantBlock.java
-@@ -49,7 +_,8 @@
+@@ -50,7 +_,8 @@
          BlockState south = level.getBlockState(pos.south());
          BlockState west = level.getBlockState(pos.west());
          Block block = defaultState.getBlock();
--        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(Blocks.END_STONE))
+-        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(BlockTags.SUPPORTS_CHORUS_PLANT))
 +        var soilDecision = down.canSustainPlant(level, pos.below(), Direction.UP, defaultState);
 +        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(Blocks.END_STONE) || soilDecision.isTrue())
              .trySetValue(UP, up.is(block) || up.is(Blocks.CHORUS_FLOWER))
              .trySetValue(NORTH, north.is(block) || north.is(Blocks.CHORUS_FLOWER))
              .trySetValue(EAST, east.is(block) || east.is(Blocks.CHORUS_FLOWER))
-@@ -75,6 +_,12 @@
+@@ -76,6 +_,12 @@
              boolean connect = neighbourState.is(this)
                  || neighbourState.is(Blocks.CHORUS_FLOWER)
-                 || directionToNeighbour == Direction.DOWN && neighbourState.is(Blocks.END_STONE);
+                 || directionToNeighbour == Direction.DOWN && neighbourState.is(BlockTags.SUPPORTS_CHORUS_PLANT);
 +            if (directionToNeighbour == Direction.DOWN) {
 +                var soilDecision = neighbourState.canSustainPlant(level, neighbourPos.relative(directionToNeighbour), directionToNeighbour.getOpposite(), state);
 +                if (!soilDecision.isDefault()) {
@@ -23,12 +23,12 @@
              return state.setValue(PROPERTY_BY_DIRECTION.get(directionToNeighbour), connect);
          }
      }
-@@ -106,6 +_,8 @@
+@@ -107,6 +_,8 @@
              }
          }
  
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return belowState.is(this) || belowState.is(Blocks.END_STONE);
+         return belowState.is(this) || belowState.is(BlockTags.SUPPORTS_CHORUS_PLANT);
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -1637,4 +_,9 @@
+@@ -1611,4 +_,9 @@
      public boolean release(int decrement) {
          return this.source.release(decrement);
      }

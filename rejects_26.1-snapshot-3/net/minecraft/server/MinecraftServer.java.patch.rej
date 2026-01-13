@@ -1,0 +1,73 @@
+++++ REJECTED HUNK: 16
+@@ -1132,7 +1157,8 @@
+         profiler.popPush("levels");
+         this.updateEffectiveRespawnData();
+ 
+-        for (ServerLevel level : this.getAllLevels()) {
++        for (ServerLevel level : this.getWorldArray()) {
++            long tickStart = Util.getNanos();
+             profiler.push(() -> level + " " + level.dimension().identifier());
+             if (this.tickCount % 20 == 0) {
+                 profiler.push("timeSync");
+++++ END HUNK
+
+++++ REJECTED HUNK: 17
+@@ -1141,6 +1167,7 @@
+             }
+ 
+             profiler.push("tick");
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(level, haveTime);
+ 
+             try {
+                 level.tick(haveTime);
+++++ END HUNK
+
+++++ REJECTED HUNK: 20
+@@ -1193,10 +1222,17 @@
+     }
+ 
+     private void synchronizeTime(ServerLevel level) {
+-        this.playerList
+-            .broadcastAll(
+-                new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME)), level.dimension()
+-            );
++        ClientboundSetTimePacket vanillaPacket = new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME));
++        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME), level.getDayTimeFraction(), level.getDayTimePerTick());
++        for (ServerPlayer serverplayer : playerList.getPlayers()) {
++            if (serverplayer.level().dimension() == level.dimension()) {
++                if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++                    serverplayer.connection.send(neoPacket);
++                } else {
++                    serverplayer.connection.send(vanillaPacket);
++                }
++            }
++        }
+     }
+ 
+     public void forceTimeSynchronization() {
+++++ END HUNK
+
+++++ REJECTED HUNK: 21
+@@ -1257,7 +1293,7 @@
+     }
+ 
+     public String getServerModName() {
+-        return "vanilla";
++        return net.neoforged.neoforge.internal.BrandingControl.getServerBranding();
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport systemReport) {
+++++ END HUNK
+
+++++ REJECTED HUNK: 28
+@@ -2142,6 +2212,9 @@
+         } else if (rule == GameRules.SPAWN_MONSTERS) {
+             this.updateMobSpawningFlags();
+         }
++
++        // Neo: Allow mods to react to game rule state changes
++        net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(this, rule, value);
+     }
+ 
+     public boolean acceptsTransfers() {
+++++ END HUNK

@@ -170,7 +170,7 @@
 +            if (cancelResult != null) return cancelResult;
              ItemStack itemStack = this.getItemInHand(hand);
              ItemStack itemStackClone = itemStack.copy();
-             InteractionResult interact = entity.interact(this, hand);
+             InteractionResult interact = entity.interact(this, hand, location);
 @@ -824,6 +_,10 @@
                      itemStack.setCount(itemStackClone.getCount());
                  }

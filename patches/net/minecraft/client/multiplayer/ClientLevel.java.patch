@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -136,7 +_,7 @@
+@@ -137,7 +_,7 @@
      private final @Nullable EndFlashState endFlashState;
      private final Minecraft minecraft = Minecraft.getInstance();
      private final List<AbstractClientPlayer> players = Lists.newArrayList();
@@ -9,7 +9,7 @@
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private int skyFlashTime;
      private final Object2ObjectArrayMap<ColorResolver, BlockTintCache> tintCaches = Util.make(new Object2ObjectArrayMap<>(3), cache -> {
-@@ -144,6 +_,7 @@
+@@ -145,6 +_,7 @@
          cache.put(BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.WATER_COLOR_RESOLVER)));
@@ -17,14 +17,6 @@
      });
      private final ClientChunkCache chunkSource;
      private final Deque<Runnable> lightUpdateQueue = Queues.newArrayDeque();
-@@ -156,6 +_,7 @@
-     private final int seaLevel;
-     private boolean tickDayTime;
-     private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
-+    private final net.neoforged.neoforge.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.model.data.ModelDataManager(this);
- 
-     public void handleBlockChangedAck(int sequence) {
-         if (SharedConstants.DEBUG_BLOCK_BREAK) {
 @@ -201,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {
@@ -49,16 +41,7 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-@@ -320,7 +_,7 @@
-     private void tickTime() {
-         this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
-         if (this.tickDayTime) {
--            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + 1L);
-+            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + advanceDaytime());
-         }
-     }
- 
-@@ -355,7 +_,11 @@
+@@ -350,7 +_,11 @@
          entity.setOldPosAndRot();
          entity.tickCount++;
          Profiler.get().push(entity.typeHolder()::getRegisteredName);
@@ -71,7 +54,7 @@
          Profiler.get().pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -406,8 +_,10 @@
+@@ -401,8 +_,10 @@
      }
  
      public void addEntity(Entity entity) {
@@ -82,7 +65,7 @@
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -553,6 +_,13 @@
+@@ -548,6 +_,13 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -96,7 +79,7 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -562,6 +_,12 @@
+@@ -557,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -109,7 +92,7 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -767,7 +_,7 @@
+@@ -766,7 +_,7 @@
          return this.players;
      }
  
@@ -118,7 +101,7 @@
          return this.dragonParts;
      }
  
-@@ -873,7 +_,7 @@
+@@ -872,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos pos, BlockState blockState) {
@@ -127,7 +110,7 @@
              VoxelShape shape = blockState.getShape(this, pos);
              double density = 0.25;
              shape.forAllBoxes(
-@@ -899,7 +_,7 @@
+@@ -898,7 +_,7 @@
                                      .add(
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
@@ -136,7 +119,7 @@
                                      );
                              }
                          }
-@@ -909,9 +_,16 @@
+@@ -908,9 +_,16 @@
          }
      }
  
@@ -154,7 +137,7 @@
              int x = pos.getX();
              int y = pos.getY();
              int z = pos.getZ();
-@@ -944,7 +_,7 @@
+@@ -943,7 +_,7 @@
                  xp = x + shape.maxX + 0.1F;
              }
  
@@ -163,7 +146,7 @@
          }
      }
  
-@@ -1089,6 +_,7 @@
+@@ -1078,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty difficulty) {
@@ -171,7 +154,7 @@
              this.difficulty = difficulty;
          }
  
-@@ -1135,6 +_,9 @@
+@@ -1124,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -181,7 +164,7 @@
              }
          }
  
-@@ -1148,10 +_,62 @@
+@@ -1137,10 +_,62 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:

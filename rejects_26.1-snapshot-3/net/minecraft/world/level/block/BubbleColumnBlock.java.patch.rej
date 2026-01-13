@@ -1,6 +1,5 @@
---- a/net/minecraft/world/level/block/BubbleColumnBlock.java
-+++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
-@@ -97,10 +_,12 @@
+++++ REJECTED HUNK: 1
+@@ -97,10 +97,12 @@
      private static BlockState getColumnState(BlockState belowState) {
          if (belowState.is(Blocks.BUBBLE_COLUMN)) {
              return belowState;
@@ -15,7 +14,10 @@
          }
      }
  
-@@ -167,7 +_,7 @@
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -167,7 +169,7 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockState belowState = level.getBlockState(pos.below());
@@ -24,3 +26,4 @@
      }
  
      @Override
+++++ END HUNK

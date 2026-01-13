@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 1
+@@ -21,7 +21,7 @@
+     protected abstract MapCodec<? extends VegetationBlock> codec();
+ 
+     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+-        return state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND);
++        return state.is(BlockTags.DIRT) || state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     }
+ 
+     @Override
+++++ END HUNK

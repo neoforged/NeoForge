@@ -1,32 +1,6 @@
 --- a/net/minecraft/data/recipes/ShapedRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapedRecipeBuilder.java
-@@ -28,6 +_,7 @@
-     private final RecipeCategory category;
-     private final Item result;
-     private final int count;
-+    private final ItemStack resultStack; // Neo: add stack result support
-     private final List<String> rows = Lists.newArrayList();
-     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
-     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
-@@ -35,10 +_,15 @@
-     private boolean showNotification = true;
- 
-     private ShapedRecipeBuilder(HolderGetter<Item> items, RecipeCategory category, ItemLike result, int count) {
-+        this(items, category, new ItemStack(result, count));
-+    }
-+
-+    private ShapedRecipeBuilder(HolderGetter<Item> items, RecipeCategory category, ItemStack result) {
-         this.items = items;
-         this.category = category;
--        this.result = result.asItem();
--        this.count = count;
-+        this.result = result.getItem();
-+        this.count = result.getCount();
-+        this.resultStack = result;
-     }
- 
-     public static ShapedRecipeBuilder shaped(HolderGetter<Item> items, RecipeCategory category, ItemLike item) {
-@@ -49,6 +_,10 @@
+@@ -51,6 +_,10 @@
          return new ShapedRecipeBuilder(items, category, item, count);
      }
  
@@ -37,12 +11,3 @@
      public ShapedRecipeBuilder define(Character symbol, TagKey<Item> tag) {
          return this.define(symbol, Ingredient.of(this.items.getOrThrow(tag)));
      }
-@@ -109,7 +_,7 @@
-             Objects.requireNonNullElse(this.group, ""),
-             RecipeBuilder.determineBookCategory(this.category),
-             pattern,
--            new ItemStack(this.result, this.count),
-+            this.resultStack,
-             this.showNotification
-         );
-         output.accept(id, recipe, advancement.build(id.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/")));

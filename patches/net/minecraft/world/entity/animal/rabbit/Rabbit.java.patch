@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
-@@ -595,7 +_,7 @@
+@@ -602,7 +_,7 @@
          @Override
          public boolean canUse() {
              if (this.nextStartTick <= 0) {
@@ -9,12 +9,3 @@
                      return false;
                  }
  
-@@ -644,7 +_,7 @@
-         @Override
-         protected boolean isValidTarget(LevelReader level, BlockPos pos) {
-             BlockState state = level.getBlockState(pos);
--            if (state.is(Blocks.FARMLAND) && this.wantsToRaid && !this.canRaid) {
-+            if (state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock && this.wantsToRaid && !this.canRaid) {
-                 state = level.getBlockState(pos.above());
-                 if (state.getBlock() instanceof CarrotBlock && ((CarrotBlock)state.getBlock()).isMaxAge(state)) {
-                     this.canRaid = true;

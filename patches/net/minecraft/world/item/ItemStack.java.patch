@@ -1,17 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -250,6 +_,10 @@
-         return !this.isEmpty() && this.components.hasNonDefault(type);
-     }
- 
-+    public boolean isComponentsPatchEmpty() {
-+        return this.isEmpty() || this.components.isPatchEmpty();
-+    }
-+
-     public ItemStack(ItemLike item) {
-         this(item, 1);
-     }
-@@ -338,13 +_,27 @@
+@@ -358,13 +_,27 @@
      }
  
      public InteractionResult useOn(UseOnContext context) {
@@ -40,16 +29,7 @@
              if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
                  player.awardStat(Stats.ITEM_USED.get(usedItem));
              }
-@@ -393,7 +_,7 @@
-     }
- 
-     public int getMaxStackSize() {
--        return this.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
-+        return this.getItem().getMaxStackSize(this);
-     }
- 
-     public boolean isStackable() {
-@@ -405,19 +_,19 @@
+@@ -421,19 +_,19 @@
      }
  
      public boolean isDamaged() {
@@ -73,7 +53,7 @@
      }
  
      public boolean isBroken() {
-@@ -429,6 +_,11 @@
+@@ -445,6 +_,11 @@
      }
  
      public void hurtAndBreak(int amount, ServerLevel level, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
@@ -85,7 +65,7 @@
          int newAmount = this.processDurabilityChange(amount, level, player);
          if (newAmount != 0) {
              this.applyDamage(this.getDamageValue() + newAmount, player, onBreak);
-@@ -436,6 +_,10 @@
+@@ -452,6 +_,10 @@
      }
  
      private int processDurabilityChange(int amount, ServerLevel level, @Nullable ServerPlayer player) {
@@ -96,7 +76,7 @@
          if (!this.isDamageableItem()) {
              return 0;
          } else if (player != null && player.hasInfiniteMaterials()) {
-@@ -446,8 +_,12 @@
+@@ -462,8 +_,12 @@
      }
  
      private void applyDamage(int newDamage, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
@@ -111,7 +91,7 @@
          }
  
          this.setDamageValue(newDamage);
-@@ -477,7 +_,7 @@
+@@ -493,7 +_,7 @@
      public void hurtAndBreak(int amount, LivingEntity owner, EquipmentSlot slot) {
          if (owner.level() instanceof ServerLevel serverLevel) {
              this.hurtAndBreak(
@@ -120,7 +100,7 @@
              );
          }
      }
-@@ -804,7 +_,7 @@
+@@ -820,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -129,7 +109,7 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              hoverName.withStyle(ChatFormatting.ITALIC);
          }
-@@ -812,6 +_,7 @@
+@@ -828,6 +_,7 @@
          return hoverName;
      }
  
@@ -137,7 +117,7 @@
      public <T extends TooltipProvider> void addToTooltip(
          DataComponentType<T> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag
      ) {
-@@ -830,6 +_,7 @@
+@@ -846,6 +_,7 @@
              List<Component> lines = Lists.newArrayList();
              lines.add(this.getStyledHoverName());
              this.addDetailsToTooltip(context, display, player, tooltipFlag, lines::add);
@@ -145,7 +125,7 @@
              return lines;
          }
      }
-@@ -858,7 +_,8 @@
+@@ -874,7 +_,8 @@
          this.addToTooltip(DataComponents.DYED_COLOR, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.PROFILE, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.LORE, context, display, builder, tooltipFlag);
@@ -155,7 +135,7 @@
          this.addUnitComponentToTooltip(DataComponents.INTANGIBLE_PROJECTILE, INTANGIBLE_TOOLTIP, display, builder);
          this.addUnitComponentToTooltip(DataComponents.UNBREAKABLE, UNBREAKABLE_TOOLTIP, display, builder);
          this.addToTooltip(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, context, display, builder, tooltipFlag);
-@@ -911,7 +_,10 @@
+@@ -927,7 +_,10 @@
              builder.accept(component);
          }
      }
@@ -167,7 +147,7 @@
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup slot : EquipmentSlotGroup.values()) {
-@@ -966,6 +_,17 @@
+@@ -982,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -185,7 +165,7 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -989,14 +_,26 @@
+@@ -1005,14 +_,26 @@
      }
  
      public void forEachModifier(EquipmentSlotGroup slot, TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> consumer) {
@@ -212,16 +192,16 @@
          EnchantmentHelper.forEachModifier(this, slot, consumer);
      }
  
-@@ -1008,7 +_,7 @@
+@@ -1024,7 +_,7 @@
  
          MutableComponent result = ComponentUtils.wrapInSquareBrackets(hoverName);
          if (!this.isEmpty()) {
--            result.withStyle(this.getRarity().color()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(this)));
+-            result.withStyle(this.getRarity().color()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(this))));
 +            result.withStyle(this.getRarity().getStyleModifier()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(this)));
          }
  
          return result;
-@@ -1084,11 +_,14 @@
+@@ -1105,11 +_,14 @@
          }
      }
  

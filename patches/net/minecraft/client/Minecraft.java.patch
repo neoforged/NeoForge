@@ -258,36 +258,7 @@
                              this.player.swing(InteractionHand.MAIN_HAND);
                          }
                      }
-@@ -1643,9 +_,16 @@
-                 return false;
-             } else {
-                 boolean endAttack = false;
-+                var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
-                 PiercingWeapon piercingWeapon = heldItem.get(DataComponents.PIERCING_WEAPON);
-+                if (inputEvent.isCanceled()) {
-+                    if (inputEvent.shouldSwingHand())
-+                        this.player.swing(InteractionHand.MAIN_HAND);
-+                    return endAttack;
-+                }
-                 if (piercingWeapon != null && !this.gameMode.isSpectator()) {
-                     this.gameMode.piercingAttack(piercingWeapon);
-+                    if (inputEvent.shouldSwingHand())
-                     this.player.swing(InteractionHand.MAIN_HAND);
-                     return true;
-                 } else {
-@@ -1672,9 +_,10 @@
-                             }
- 
-                             this.player.resetAttackStrengthTicker();
-+                            net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
-                     }
- 
--                    if (!this.player.isSpectator()) {
-+                    if (!this.player.isSpectator() && inputEvent.shouldSwingHand()) {
-                         this.player.swing(InteractionHand.MAIN_HAND);
-                     }
- 
-@@ -1693,6 +_,11 @@
+@@ -1696,6 +_,11 @@
                  }
  
                  for (InteractionHand hand : InteractionHand.values()) {
@@ -299,16 +270,7 @@
                      ItemStack heldItem = this.player.getItemInHand(hand);
                      if (!heldItem.isItemEnabled(this.level.enabledFeatures())) {
                          return;
-@@ -1714,7 +_,7 @@
-                                     }
- 
-                                     if (result instanceof InteractionResult.Success success) {
--                                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
-+                                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT && inputEvent.shouldSwingHand()) {
-                                             this.player.swing(hand);
-                                         }
- 
-@@ -1727,7 +_,7 @@
+@@ -1724,7 +_,7 @@
                                  int oldCount = heldItem.getCount();
                                  InteractionResult useResult = this.gameMode.useItemOn(this.player, hand, blockHit);
                                  if (useResult instanceof InteractionResult.Success success) {
@@ -317,7 +279,7 @@
                                          this.player.swing(hand);
                                          if (!heldItem.isEmpty() && (heldItem.getCount() != oldCount || this.player.hasInfiniteMaterials())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(hand);
-@@ -1743,6 +_,9 @@
+@@ -1740,6 +_,9 @@
                          }
                      }
  
@@ -327,7 +289,7 @@
                      if (!heldItem.isEmpty() && this.gameMode.useItem(this.player, hand) instanceof InteractionResult.Success success) {
                          if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
                              this.player.swing(hand);
-@@ -1762,6 +_,10 @@
+@@ -1759,6 +_,10 @@
  
      public void tick() {
          this.clientTickCount++;
@@ -338,7 +300,7 @@
          if (this.level != null && !this.pause) {
              this.level.tickRateManager().tick();
          }
-@@ -1852,6 +_,7 @@
+@@ -1849,6 +_,7 @@
  
                  this.tutorial.tick();
  
@@ -346,7 +308,7 @@
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable var6) {
-@@ -1865,6 +_,7 @@
+@@ -1862,6 +_,7 @@
  
                      throw new ReportedException(report);
                  }
@@ -354,7 +316,7 @@
              }
  
              profiler.popPush("animateTick");
-@@ -1889,6 +_,10 @@
+@@ -1886,6 +_,10 @@
          profiler.popPush("keyboard");
          this.keyboardHandler.tick();
          profiler.pop();
@@ -365,7 +327,7 @@
      }
  
      private boolean isLevelRunningNormally() {
-@@ -2105,6 +_,7 @@
+@@ -2102,6 +_,7 @@
      }
  
      public void setLevel(ClientLevel level) {
@@ -373,7 +335,7 @@
          this.level = level;
          this.updateLevelInEngines(level);
      }
-@@ -2166,13 +_,16 @@
+@@ -2163,13 +_,16 @@
          IntegratedServer server = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -390,7 +352,7 @@
              }
  
              if (server != null) {
-@@ -2195,6 +_,7 @@
+@@ -2192,6 +_,7 @@
          } finally {
              this.clientLevelTeardownInProgress = false;
          }
@@ -398,7 +360,7 @@
      }
  
      public void clearDownloadedResourcePacks() {
-@@ -2327,6 +_,7 @@
+@@ -2324,6 +_,7 @@
  
      private void pickBlock() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
@@ -406,7 +368,7 @@
              boolean includeData = this.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockHitResult:
-@@ -2393,7 +_,14 @@
+@@ -2390,7 +_,14 @@
          systemReport.setDetail("Backend API", RenderSystem::getApiDescription);
          systemReport.setDetail("Window size", () -> minecraft != null ? minecraft.window.getWidth() + "x" + minecraft.window.getHeight() : "<not initialized>");
          systemReport.setDetail("GFLW Platform", Window::getPlatform);

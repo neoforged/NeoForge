@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/world/level/block/FungusBlock.java
 +++ b/net/minecraft/world/level/block/FungusBlock.java
-@@ -72,6 +_,9 @@
+@@ -72,6 +72,9 @@
  
      @Override
      public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {

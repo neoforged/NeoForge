@@ -9,12 +9,3 @@
      public static final ContextKeySet COMMAND = register(
          "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
      );
-@@ -30,7 +_,7 @@
-         "villager_trade", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.THIS_ENTITY)
-     );
-     public static final ContextKeySet FISHING = register(
--        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY)
-+        "fishing", p_81446_ -> p_81446_.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) //Forge: Add the fisher as a killer.
-     );
-     public static final ContextKeySet ENTITY = register(
-         "entity",

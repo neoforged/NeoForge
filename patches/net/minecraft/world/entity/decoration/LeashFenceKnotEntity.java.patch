@@ -6,6 +6,6 @@
          } else {
 -            if (player.getItemInHand(hand).is(Items.SHEARS)) {
 +            if (player.getItemInHand(hand).canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST)) {
-                 InteractionResult result = super.interact(player, hand);
+                 InteractionResult result = super.interact(player, hand, location);
                  if (result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
                      return result;

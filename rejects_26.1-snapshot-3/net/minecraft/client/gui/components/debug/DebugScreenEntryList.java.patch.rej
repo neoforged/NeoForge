@@ -1,6 +1,5 @@
---- a/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
-+++ b/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
-@@ -166,7 +_,8 @@
+++++ REJECTED HUNK: 1
+@@ -166,7 +166,8 @@
              }
          }
  
@@ -10,3 +9,4 @@
          this.currentlyEnabledVersion++;
      }
  
+++++ END HUNK

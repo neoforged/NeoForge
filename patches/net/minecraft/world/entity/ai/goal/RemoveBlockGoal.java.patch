@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
-@@ -35,7 +_,7 @@
+@@ -34,7 +_,7 @@
  
      @Override
      public boolean canUse() {
@@ -9,7 +9,7 @@
              return false;
          } else if (this.nextStartTick > 0) {
              this.nextStartTick--;
-@@ -142,6 +_,6 @@
+@@ -139,6 +_,6 @@
          ChunkAccess chunk = level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false);
          return chunk == null
              ? false

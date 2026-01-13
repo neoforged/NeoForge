@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -100,6 +_,7 @@
+@@ -101,6 +_,7 @@
      private @Nullable Runnable deferredTooltip;
      private @Nullable Style hoveredTextStyle;
      private @Nullable Style clickableTextStyle;
@@ -8,7 +8,7 @@
  
      private GuiGraphics(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {
          this.minecraft = minecraft;
-@@ -881,6 +_,8 @@
+@@ -877,6 +_,8 @@
              this.renderItemCooldown(itemStack, x, y);
              this.renderItemCount(font, itemStack, x, y, countText);
              this.pose.popMatrix();
@@ -17,7 +17,7 @@
          }
      }
  
-@@ -893,9 +_,21 @@
+@@ -889,9 +_,21 @@
      }
  
      public void setTooltipForNextFrame(Font font, ItemStack itemStack, int xo, int yo) {
@@ -39,7 +39,7 @@
      }
  
      public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo) {
-@@ -903,11 +_,7 @@
+@@ -899,11 +_,7 @@
      }
  
      public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo, @Nullable Identifier style) {
@@ -52,7 +52,7 @@
          this.setTooltipForNextFrameInternal(font, components, xo, yo, DefaultTooltipPositioner.INSTANCE, style, false);
      }
  
-@@ -922,7 +_,6 @@
+@@ -918,7 +_,6 @@
          @Nullable Identifier style
      ) {
          List<ClientTooltipComponent> components = tooltip.stream().map(ClientTooltipComponent::create).collect(Collectors.toList());
@@ -60,7 +60,7 @@
          this.setTooltipForNextFrameInternal(font, components, xo, yo, positioner, style, replaceExisting);
      }
  
-@@ -935,13 +_,14 @@
+@@ -931,13 +_,14 @@
      }
  
      public void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo) {
@@ -77,7 +77,7 @@
              xo,
              yo,
              DefaultTooltipPositioner.INSTANCE,
-@@ -950,6 +_,28 @@
+@@ -946,6 +_,28 @@
          );
      }
  
@@ -106,7 +106,7 @@
      public void setTooltipForNextFrame(Font font, List<? extends FormattedCharSequence> lines, int xo, int yo) {
          this.setTooltipForNextFrame(font, lines, xo, yo, null);
      }
-@@ -973,12 +_,24 @@
+@@ -969,12 +_,24 @@
      ) {
          if (!lines.isEmpty()) {
              if (this.deferredTooltip == null || replaceExisting) {
@@ -132,7 +132,7 @@
          int textWidth = 0;
          int tempHeight = lines.size() == 1 ? -2 : 0;
  
-@@ -997,7 +_,8 @@
+@@ -993,7 +_,8 @@
          int x = positionedTooltip.x();
          int y = positionedTooltip.y();
          this.pose.pushMatrix();
@@ -142,7 +142,7 @@
          int localY = y;
  
          for (int i = 0; i < lines.size(); i++) {
-@@ -1189,6 +_,31 @@
+@@ -1185,6 +_,31 @@
  
      public void submitProfilerChartRenderState(List<ResultField> chartData, int x0, int y0, int x1, int y1) {
          this.guiRenderState.submitPicturesInPictureState(new GuiProfilerChartRenderState(chartData, x0, y0, x1, y1, this.scissorStack.peek()));

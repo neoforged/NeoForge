@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -126,11 +_,12 @@
+@@ -128,11 +_,12 @@
                  } else if (oldState.isAir()) {
                      return false;
                  } else {
@@ -15,7 +15,7 @@
                      }
  
                      if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -157,6 +_,7 @@
+@@ -159,6 +_,7 @@
                  }
  
                  this.startPrediction(this.minecraft.level, sequence -> {
@@ -23,7 +23,7 @@
                      this.destroyBlock(pos);
                      return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
                  });
-@@ -170,6 +_,7 @@
+@@ -172,6 +_,7 @@
                      this.connection
                          .send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, this.destroyBlockPos, direction));
                  }
@@ -31,7 +31,7 @@
  
                  BlockState state = this.minecraft.level.getBlockState(pos);
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, 0.0F);
-@@ -180,9 +_,12 @@
+@@ -182,9 +_,12 @@
                  this.startPrediction(this.minecraft.level, sequence -> {
                      boolean notAir = !state.isAir();
                      if (notAir && this.destroyProgress == 0.0F) {
@@ -44,7 +44,7 @@
                      if (notAir && state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos) >= 1.0F) {
                          this.destroyBlock(pos);
                      } else {
-@@ -194,7 +_,7 @@
+@@ -196,7 +_,7 @@
                          this.minecraft.level.destroyBlockProgress(this.minecraft.player.getId(), this.destroyBlockPos, this.getDestroyStage());
                      }
  
@@ -53,7 +53,7 @@
                  });
              }
  
-@@ -233,6 +_,7 @@
+@@ -235,6 +_,7 @@
              }
  
              this.startPrediction(this.minecraft.level, sequence -> {
@@ -61,7 +61,7 @@
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });
-@@ -244,8 +_,8 @@
+@@ -246,8 +_,8 @@
                  return false;
              } else {
                  this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
@@ -72,7 +72,7 @@
                      this.minecraft
                          .getSoundManager()
                          .play(
-@@ -262,6 +_,7 @@
+@@ -264,6 +_,7 @@
  
                  this.destroyTicks++;
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
@@ -80,7 +80,7 @@
                  if (this.destroyProgress >= 1.0F) {
                      this.isDestroying = false;
                      if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -304,7 +_,7 @@
+@@ -306,7 +_,7 @@
  
      private boolean sameDestroyTarget(BlockPos pos) {
          ItemStack selected = this.minecraft.player.getMainHandItem();
@@ -89,7 +89,7 @@
      }
  
      private void ensureHasSentCarriedItem() {
-@@ -332,12 +_,23 @@
+@@ -334,12 +_,23 @@
      private InteractionResult performUseItemOn(LocalPlayer player, InteractionHand hand, BlockHitResult blockHit) {
          BlockPos pos = blockHit.getBlockPos();
          ItemStack itemStack = player.getItemInHand(hand);
@@ -115,7 +115,7 @@
                  BlockState blockState = this.minecraft.level.getBlockState(pos);
                  if (!this.connection.isFeatureEnabled(blockState.getBlock().requiredFeatures())) {
                      return InteractionResult.FAIL;
-@@ -356,7 +_,10 @@
+@@ -358,7 +_,10 @@
                  }
              }
  
@@ -127,7 +127,7 @@
                  UseOnContext context = new UseOnContext(player, hand, blockHit);
                  InteractionResult success;
                  if (player.hasInfiniteMaterials()) {
-@@ -387,6 +_,11 @@
+@@ -389,6 +_,11 @@
                      interactionResult.setValue(InteractionResult.PASS);
                      return packet;
                  } else {
@@ -139,7 +139,7 @@
                      InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
                      ItemStack result;
                      if (resultHolder instanceof InteractionResult.Success success) {
-@@ -397,6 +_,8 @@
+@@ -399,6 +_,8 @@
  
                      if (result != itemStack) {
                          player.setItemInHand(hand, result);
@@ -148,13 +148,3 @@
                      }
  
                      interactionResult.setValue(resultHolder);
-@@ -434,6 +_,9 @@
-         this.ensureHasSentCarriedItem();
-         Vec3 location = hitResult.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
-         this.connection.send(ServerboundInteractPacket.createInteractionPacket(entity, player.isShiftKeyDown(), hand, location));
-+        if (this.localPlayerMode == GameType.SPECTATOR) return InteractionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
-+        InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, hitResult, hand);
-+        if(cancelResult != null) return cancelResult;
-         return (InteractionResult)(this.localPlayerMode == GameType.SPECTATOR ? InteractionResult.PASS : entity.interactAt(player, location, hand));
-     }
- 

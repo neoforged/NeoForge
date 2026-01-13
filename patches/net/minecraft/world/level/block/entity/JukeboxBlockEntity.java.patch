@@ -33,5 +33,5 @@
 +    }
 +    private void itemChanged() {
          boolean itemWasInserted = !this.item.isEmpty();
-         Optional<Holder<JukeboxSong>> maybeSong = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
+         Optional<Holder<JukeboxSong>> maybeSong = JukeboxSong.fromStack(this.item);
          this.notifyItemChangedInJukebox(itemWasInserted);

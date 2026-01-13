@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -104,6 +_,7 @@
+@@ -105,6 +_,7 @@
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_OVERLAY
          );

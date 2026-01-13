@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -22,16 +_,18 @@
+@@ -23,16 +_,18 @@
  import net.minecraft.world.level.ItemLike;
  
  public final class Ingredient implements Predicate<ItemStack>, StackedContents.IngredientInfo<Holder<Item>> {
@@ -25,7 +25,7 @@
  
      private Ingredient(HolderSet<Item> values) {
          values.unwrap().ifRight(directValues -> {
-@@ -44,30 +_,95 @@
+@@ -45,30 +_,95 @@
          this.values = values;
      }
  
@@ -122,7 +122,7 @@
      }
  
      public static Ingredient of(ItemLike itemLike) {
-@@ -87,6 +_,9 @@
+@@ -88,6 +_,9 @@
      }
  
      public SlotDisplay display() {

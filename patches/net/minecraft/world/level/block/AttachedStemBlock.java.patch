@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/block/AttachedStemBlock.java
 +++ b/net/minecraft/world/level/block/AttachedStemBlock.java
-@@ -80,7 +_,7 @@
+@@ -86,7 +_,7 @@
  
      @Override
      protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(Blocks.FARMLAND);
+-        return state.is(this.supportBlocks);
 +        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
      }
  

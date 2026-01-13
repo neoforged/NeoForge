@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BundleItem.java
 +++ b/net/minecraft/world/item/BundleItem.java
-@@ -49,7 +_,7 @@
+@@ -60,7 +_,7 @@
      @Override
      public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
          BundleContents initialContents = self.get(DataComponents.BUNDLE_CONTENTS);
@@ -9,7 +9,7 @@
              return false;
          } else {
              ItemStack other = slot.getItem();
-@@ -86,6 +_,7 @@
+@@ -97,6 +_,7 @@
  
      @Override
      public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {

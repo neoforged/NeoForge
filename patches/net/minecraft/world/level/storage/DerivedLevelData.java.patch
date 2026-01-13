@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/DerivedLevelData.java
 +++ b/net/minecraft/world/level/storage/DerivedLevelData.java
-@@ -187,4 +_,26 @@
+@@ -188,4 +_,26 @@
          category.setDetail("Derived", true);
          this.wrapped.fillCrashReportCategory(category, levelHeightAccessor);
      }

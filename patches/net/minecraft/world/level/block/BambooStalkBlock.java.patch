@@ -4,7 +4,7 @@
              return null;
          } else {
              BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
--            if (belowState.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
+-            if (belowState.is(BlockTags.SUPPORTS_BAMBOO)) {
 +            var soilDecision = belowState.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
 +            if (soilDecision.isDefault() ? belowState.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision.isTrue()) {
                  if (belowState.is(Blocks.BAMBOO_SAPLING)) {
@@ -30,6 +30,6 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return level.getBlockState(pos.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
+         return level.getBlockState(pos.below()).is(BlockTags.SUPPORTS_BAMBOO);
      }
  

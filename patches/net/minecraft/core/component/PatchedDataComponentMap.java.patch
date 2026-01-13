@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/PatchedDataComponentMap.java
 +++ b/net/minecraft/core/component/PatchedDataComponentMap.java
-@@ -66,6 +_,7 @@
+@@ -65,6 +_,7 @@
      }
  
      public <T> @Nullable T set(DataComponentType<T> type, @Nullable T value) {
@@ -8,7 +8,7 @@
          this.ensureMapOwnership();
          T defaultValue = this.prototype.get(type);
          Optional<T> lastValue;
-@@ -204,6 +_,10 @@
+@@ -203,6 +_,10 @@
          return size;
      }
  
@@ -19,7 +19,7 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -231,7 +_,24 @@
+@@ -230,7 +_,24 @@
  
      @Override
      public int hashCode() {

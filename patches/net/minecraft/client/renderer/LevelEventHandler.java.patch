@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelEventHandler.java
 +++ b/net/minecraft/client/renderer/LevelEventHandler.java
-@@ -302,8 +_,8 @@
+@@ -301,8 +_,8 @@
                  break;
              case 2001:
                  BlockState blockState = Block.stateById(data);

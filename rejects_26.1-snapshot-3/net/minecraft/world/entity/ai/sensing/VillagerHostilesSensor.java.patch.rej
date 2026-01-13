@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 3
+@@ -37,6 +40,7 @@
+     }
+ 
+     private boolean isHostile(LivingEntity entity) {
+-        return ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(entity.getType());
++        var acceptableDistanceFromHostile = entity.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
++        return acceptableDistanceFromHostile != null || ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(entity.getType());
+     }
+ }
+++++ END HUNK

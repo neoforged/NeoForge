@@ -1,0 +1,14 @@
+++++ REJECTED HUNK: 1
+@@ -274,8 +274,11 @@
+     );
+     private static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(COMMAND_BLOCK, LECTERN, SIGN, HANGING_SIGN, MOB_SPAWNER, TRIAL_SPAWNER);
+     private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
++    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
+     private final Set<Block> validBlocks;
+     private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
++    // Neo: Allow modded BE types to declare that they have NBT data only OPs can set
++    private final boolean onlyOpCanSetNbt;
+ 
+     public static @Nullable Identifier getKey(BlockEntityType<?> type) {
+         return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
+++++ END HUNK

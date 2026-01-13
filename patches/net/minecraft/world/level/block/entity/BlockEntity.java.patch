@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -37,15 +_,18 @@
+@@ -39,15 +_,18 @@
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
  
--public abstract class BlockEntity implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
+-public abstract class BlockEntity implements DebugValueSource, TypedInstance<BlockEntityType<?>>, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -20,7 +20,7 @@
  
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
-@@ -61,7 +_,7 @@
+@@ -63,7 +_,7 @@
      }
  
      public boolean isValidBlockState(BlockState blockState) {
@@ -29,7 +29,7 @@
      }
  
      public static BlockPos getPosFromTag(ChunkPos base, CompoundTag entityTag) {
-@@ -92,6 +_,8 @@
+@@ -94,6 +_,8 @@
      }
  
      protected void loadAdditional(ValueInput input) {
@@ -38,7 +38,7 @@
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -104,6 +_,11 @@
+@@ -106,6 +_,11 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
@@ -50,7 +50,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
-@@ -237,10 +_,14 @@
+@@ -239,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -65,36 +65,3 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -270,6 +_,32 @@
- 
-     public BlockEntityType<?> getType() {
-         return this.type;
-+    }
-+
-+    @Override
-+    public CompoundTag getPersistentData() {
-+        if (this.customPersistentData == null)
-+            this.customPersistentData = new CompoundTag();
-+        return this.customPersistentData;
-+    }
-+
-+    @Override
-+    @Nullable
-+    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setChanged();
-+        return super.setData(type, data);
-+    }
-+
-+    @Override
-+    @Nullable
-+    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setChanged();
-+        return super.removeData(type);
-+    }
-+
-+    @Override
-+    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
-     }
- 
-     @Deprecated

@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
 @@ -37,7 +_,7 @@
              if (recipe.isPresent()) {
-                 ItemStack result = recipe.get().value().assemble(input, context.getLevel().registryAccess());
+                 ItemStack result = recipe.get().value().assemble(input);
                  if (!result.isEmpty()) {
 -                    return result.copyWithCount(itemStack.getCount());
 +                    return result.copyWithCount(itemStack.getCount() * result.getCount()); // Forge: Support smelting returning multiple

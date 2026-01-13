@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
 @@ -22,12 +_,14 @@
-     private final ItemStack result;
+     private final ItemStackTemplate result;
      private final List<Ingredient> ingredients;
      private @Nullable PlacementInfo placementInfo;
 +    private final boolean isSimple;
  
-     public ShapelessRecipe(String group, CraftingBookCategory category, ItemStack result, List<Ingredient> ingredients) {
+     public ShapelessRecipe(String group, CraftingBookCategory category, ItemStackTemplate result, List<Ingredient> ingredients) {
          this.group = group;
          this.category = category;
          this.result = result;
@@ -31,7 +31,7 @@
 @@ -85,7 +_,7 @@
                      Codec.STRING.optionalFieldOf("group", "").forGetter(o -> o.group),
                      CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(o -> o.category),
-                     ItemStack.STRICT_CODEC.fieldOf("result").forGetter(o -> o.result),
+                     ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.result),
 -                    Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(o -> o.ingredients)
 +                    Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(o -> o.ingredients)
                  )

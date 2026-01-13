@@ -1,6 +1,5 @@
---- a/net/minecraft/world/item/crafting/CraftingRecipe.java
-+++ b/net/minecraft/world/item/crafting/CraftingRecipe.java
-@@ -23,7 +_,7 @@
+++++ REJECTED HUNK: 1
+@@ -23,7 +23,7 @@
          NonNullList<ItemStack> result = NonNullList.withSize(input.size(), ItemStack.EMPTY);
  
          for (int slot = 0; slot < result.size(); slot++) {
@@ -9,3 +8,4 @@
              result.set(slot, item.getCraftingRemainder());
          }
  
+++++ END HUNK

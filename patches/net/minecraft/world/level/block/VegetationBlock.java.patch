@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/VegetationBlock.java
 +++ b/net/minecraft/world/level/block/VegetationBlock.java
-@@ -21,7 +_,7 @@
-     protected abstract MapCodec<? extends VegetationBlock> codec();
- 
-     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND);
-+        return state.is(BlockTags.DIRT) || state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
-     }
- 
-     @Override
 @@ -43,7 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {

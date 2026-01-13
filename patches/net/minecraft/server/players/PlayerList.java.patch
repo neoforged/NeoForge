@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -128,6 +_,7 @@
+@@ -127,6 +_,7 @@
      private int simulationDistance;
      private boolean allowCommandsForAllPlayers;
      private int sendAllPlayerInfoIn;
@@ -8,7 +8,7 @@
  
      public PlayerList(
          MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService
-@@ -161,7 +_,7 @@
+@@ -160,7 +_,7 @@
          LevelData levelData = level.getLevelData();
          ServerGamePacketListenerImpl playerConnection = new ServerGamePacketListenerImpl(this.server, connection, player, cookie);
          connection.setupInboundProtocol(
@@ -17,7 +17,7 @@
          );
          playerConnection.suspendFlushing();
          GameRules gameRules = level.getGameRules();
-@@ -186,10 +_,12 @@
+@@ -185,10 +_,12 @@
          playerConnection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
          playerConnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerConnection.send(new ClientboundSetHeldSlotPacket(player.getInventory().getSelectedSlot()));
@@ -30,7 +30,7 @@
          this.sendPlayerPermissionLevel(player);
          player.getStats().markAllDirty();
          player.getRecipeBook().sendInitialRecipeBook(player);
-@@ -220,6 +_,9 @@
+@@ -219,6 +_,9 @@
          player.initInventoryMenu();
          this.server.notificationManager().playerJoined(player);
          playerConnection.resumeFlushing();
@@ -40,7 +40,7 @@
      }
  
      protected void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
-@@ -293,6 +_,7 @@
+@@ -292,6 +_,7 @@
      }
  
      protected void save(ServerPlayer player) {
@@ -48,7 +48,7 @@
          this.playerIo.save(player);
          ServerStatsCounter stats = this.stats.get(player.getUUID());
          if (stats != null) {
-@@ -306,6 +_,7 @@
+@@ -305,6 +_,7 @@
      }
  
      public void remove(ServerPlayer player) {
@@ -56,7 +56,7 @@
          ServerLevel level = player.level();
          player.awardStat(Stats.LEAVE_GAME);
          this.save(player);
-@@ -391,13 +_,20 @@
+@@ -390,13 +_,20 @@
          TeleportTransition respawnInfo = serverPlayer.findRespawnPositionAndUseSpawnBlock(!keepAllPlayerData, TeleportTransition.DO_NOTHING);
          this.players.remove(serverPlayer);
          serverPlayer.level().removePlayerImmediately(serverPlayer, removalReason);
@@ -78,7 +78,7 @@
              player.copyRespawnPosition(serverPlayer);
          }
  
-@@ -427,6 +_,8 @@
+@@ -426,6 +_,8 @@
          this.playersByUUID.put(player.getUUID(), player);
          player.initInventoryMenu();
          player.setHealth(player.getHealth());
@@ -87,7 +87,7 @@
          ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
          if (!keepAllPlayerData && respawnConfig != null) {
              LevelData.RespawnData respawnData = respawnConfig.respawnData();
-@@ -540,6 +_,7 @@
+@@ -539,6 +_,7 @@
      }
  
      public void op(NameAndId nameAndId, Optional<LevelBasedPermissionSet> permissions, Optional<Boolean> canBypassPlayerLimit) {
@@ -95,7 +95,7 @@
          this.ops
              .add(
                  new ServerOpListEntry(
-@@ -553,6 +_,7 @@
+@@ -552,6 +_,7 @@
      }
  
      public void deop(NameAndId nameAndId) {
@@ -103,19 +103,7 @@
          if (this.ops.remove(nameAndId)) {
              ServerPlayer player = this.getPlayer(nameAndId.id());
              if (player != null) {
-@@ -641,7 +_,11 @@
-     public void sendLevelInfo(ServerPlayer player, ServerLevel level) {
-         WorldBorder worldBorder = level.getWorldBorder();
-         player.connection.send(new ClientboundInitializeBorderPacket(worldBorder));
-+        if (player.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
-+            player.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME), level.getDayTimeFraction(), level.getDayTimePerTick()));
-+        } else {
-         player.connection.send(new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME)));
-+        }
-         player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getRespawnData()));
-         if (level.isRaining()) {
-             player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));
-@@ -651,6 +_,7 @@
+@@ -650,6 +_,7 @@
  
          player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
          this.server.tickRateManager().updateJoiningPlayer(player);
@@ -123,7 +111,7 @@
      }
  
      public void sendAllPlayerInfo(ServerPlayer player) {
-@@ -795,6 +_,8 @@
+@@ -794,6 +_,8 @@
              this.advancements.put(uuid, result);
          }
  
@@ -132,7 +120,7 @@
          result.setPlayer(player);
          return result;
      }
-@@ -818,7 +_,7 @@
+@@ -817,7 +_,7 @@
      }
  
      public List<ServerPlayer> getPlayers() {
@@ -141,7 +129,7 @@
      }
  
      public @Nullable ServerPlayer getPlayer(UUID uuid) {
-@@ -844,6 +_,7 @@
+@@ -843,6 +_,7 @@
              advancements.reload(this.server.getAdvancements());
          }
  
@@ -149,7 +137,7 @@
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipeManager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
-@@ -853,10 +_,15 @@
+@@ -852,10 +_,15 @@
          for (ServerPlayer player : this.players) {
              player.connection.send(recipes);
              player.getRecipeBook().sendInitialRecipeBook(player);

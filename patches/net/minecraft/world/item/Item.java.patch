@@ -1,24 +1,15 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -101,7 +_,7 @@
-         .validate(item -> item.is(Items.AIR.builtInRegistryHolder()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(item));
-     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Item>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.ITEM);
-     private static final Logger LOGGER = LogUtils.getLogger();
--    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
-+    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
-     public static final Identifier BASE_ATTACK_DAMAGE_ID = Identifier.withDefaultNamespace("base_attack_damage");
-     public static final Identifier BASE_ATTACK_SPEED_ID = Identifier.withDefaultNamespace("base_attack_speed");
-     public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -113,6 +_,7 @@
-     private final @Nullable Item craftingRemainingItem;
+@@ -117,6 +_,7 @@
+     private final @Nullable ItemStackTemplate craftingRemainingItem;
      protected final String descriptionId;
      private final FeatureFlagSet requiredFeatures;
 +    private net.neoforged.neoforge.transfer.item.@Nullable ItemResource defaultResource;
  
      public static int getId(Item item) {
          return item == null ? 0 : BuiltInRegistries.ITEM.getId(item);
-@@ -132,12 +_,13 @@
-         this.components = properties.buildAndValidateComponents(Component.translatable(this.descriptionId), properties.effectiveModel());
+@@ -139,12 +_,13 @@
+         BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.add(properties.itemIdOrThrow(), componentInitializer);
          this.craftingRemainingItem = properties.craftingRemainingItem;
          this.requiredFeatures = properties.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
@@ -32,33 +23,7 @@
      }
  
      @Deprecated
-@@ -149,6 +_,25 @@
-         return this.components;
-     }
- 
-+    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.event.ModifyDefaultComponentsEvent the event} instead */
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
-+    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
-+        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
-+        var builder = DataComponentMap.builder().addAll(components);
-+        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
-+        components = Properties.validateComponents(builder.build());
-+        defaultResource = null;
-+    }
-+
-+    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
-+    public net.neoforged.neoforge.transfer.item.ItemResource computeDefaultResource(java.util.function.Function<Item, net.neoforged.neoforge.transfer.item.ItemResource> resourceConstructor) {
-+        if (this.defaultResource == null) {
-+            this.defaultResource = resourceConstructor.apply(this);
-+        }
-+        return this.defaultResource;
-+    }
-+
-     public int getDefaultMaxStackSize() {
-         return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
-     }
-@@ -156,6 +_,8 @@
+@@ -163,6 +_,8 @@
      public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int ticksRemaining) {
      }
  
@@ -67,15 +32,7 @@
      public void onDestroyed(ItemEntity itemEntity) {
      }
  
-@@ -272,6 +_,7 @@
-         return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
-     }
- 
-+    @Deprecated // Use ItemStack sensitive version.
-     public final ItemStack getCraftingRemainder() {
-         return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
-     }
-@@ -342,13 +_,26 @@
+@@ -345,13 +_,26 @@
      }
  
      public boolean useOnRelease(ItemStack itemStack) {
@@ -103,7 +60,7 @@
      public boolean canFitInsideContainerItems() {
          return true;
      }
-@@ -371,6 +_,12 @@
+@@ -376,6 +_,12 @@
          private @Nullable ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
          private final DependantName<Item, Identifier> model = ResourceKey::identifier;
@@ -116,26 +73,7 @@
  
          public Item.Properties food(FoodProperties foodProperties) {
              return this.food(foodProperties, Consumables.DEFAULT_FOOD);
-@@ -628,6 +_,7 @@
-         }
- 
-         public <T> Item.Properties component(DataComponentType<T> type, T value) {
-+            net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
-             this.components.set(type, value);
-             return this;
-         }
-@@ -638,6 +_,10 @@
- 
-         private DataComponentMap buildAndValidateComponents(Component name, Identifier model) {
-             DataComponentMap components = this.components.set(DataComponents.ITEM_NAME, name).set(DataComponents.ITEM_MODEL, model).build();
-+            return validateComponents(components);
-+        }
-+
-+        public static DataComponentMap validateComponents(DataComponentMap components) {
-             if (components.has(DataComponents.DAMAGE) && components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
-                 throw new IllegalStateException("Item cannot have both durability and be stackable");
-             } else {
-@@ -677,6 +_,14 @@
+@@ -700,6 +_,14 @@
  
          boolean isPeaceful();
  
@@ -150,7 +88,7 @@
          static Item.TooltipContext of(@Nullable Level level) {
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -697,6 +_,11 @@
+@@ -720,6 +_,11 @@
                  @Override
                  public boolean isPeaceful() {
                      return level.getDifficulty() == Difficulty.PEACEFUL;

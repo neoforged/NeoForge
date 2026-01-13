@@ -61,24 +61,7 @@
          ContainerHelper.saveAllItems(output, this.items);
          output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
      }
-@@ -171,11 +_,15 @@
-                 entity.litTotalTime = entity.litTimeRemaining;
-                 if (entity.isLit()) {
-                     changed = true;
-+                    var remainder = fuel.getCraftingRemainder();
-+                    if (!remainder.isEmpty())
-+                        entity.items.set(1, remainder);
-+                    else
-                     if (hasFuel) {
-                         Item fuelItem = fuel.getItem();
-                         fuel.shrink(1);
-                         if (fuel.isEmpty()) {
--                            entity.items.set(1, fuelItem.getCraftingRemainder());
-+                            entity.items.set(1, fuelItem.getCraftingRemainder()); // Neo: Remainder is handled in the `if` check above.
-                         }
-                     }
-                 }
-@@ -228,9 +_,9 @@
+@@ -225,9 +_,9 @@
                  } else if (!ItemStack.isSameItemSameComponents(resultItemStack, burnResult)) {
                      return false;
                  } else {
@@ -90,7 +73,7 @@
                  }
              }
          } else {
-@@ -267,7 +_,7 @@
+@@ -260,7 +_,7 @@
      }
  
      protected int getBurnDuration(FuelValues fuelValues, ItemStack itemStack) {
@@ -99,7 +82,7 @@
      }
  
      private static int getTotalCookTime(ServerLevel level, AbstractFurnaceBlockEntity entity) {
-@@ -311,17 +_,57 @@
+@@ -304,17 +_,57 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -158,7 +141,7 @@
      @Override
      public boolean canPlaceItem(int slot, ItemStack itemStack) {
          if (slot == 2) {
-@@ -330,7 +_,7 @@
+@@ -323,7 +_,7 @@
              return true;
          } else {
              ItemStack fuelSlot = this.items.get(1);

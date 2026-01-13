@@ -19,7 +19,7 @@
      }
  
      public GlDebugLabel debugLabels() {
-@@ -211,6 +_,67 @@
+@@ -235,6 +_,67 @@
          }
      }
  
@@ -87,7 +87,7 @@
      @Override
      public GpuTextureView createTextureView(GpuTexture texture) {
          return this.createTextureView(texture, 0, texture.getMipLevels());
-@@ -473,5 +_,15 @@
+@@ -497,5 +_,15 @@
              String string = this.id + " (" + this.type + ")";
              return !this.defines.isEmpty() ? string + " with " + this.defines : string;
          }

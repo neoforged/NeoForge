@@ -266,7 +266,7 @@
          if (oldCamera != this.camera) {
              if (this.camera.level() instanceof ServerLevel level) {
                  this.teleportTo(level, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1947,7 +_,11 @@
+@@ -1938,7 +_,11 @@
      }
  
      public @Nullable Component getTabListDisplayName() {
@@ -279,7 +279,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1981,6 +_,7 @@
+@@ -1972,6 +_,7 @@
      }
  
      public void setRespawnPosition(ServerPlayer.@Nullable RespawnConfig respawnConfig, boolean showMessage) {
@@ -287,7 +287,7 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2018,6 +_,75 @@
+@@ -2009,6 +_,75 @@
          return entity;
      }
  
@@ -363,7 +363,7 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -2032,6 +_,7 @@
+@@ -2023,6 +_,7 @@
      }
  
      private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
@@ -371,7 +371,7 @@
          GameType forcedGameType = this.server.getForcedGameType();
          if (forcedGameType != null) {
              return forcedGameType;
-@@ -2068,6 +_,8 @@
+@@ -2059,6 +_,8 @@
  
      public void drop(boolean all) {
          Inventory inventory = this.getInventory();
@@ -380,7 +380,7 @@
          ItemStack removed = inventory.removeFromSelected(all);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())
-@@ -2076,7 +_,7 @@
+@@ -2067,7 +_,7 @@
              this.stopUsingItem();
          }
  

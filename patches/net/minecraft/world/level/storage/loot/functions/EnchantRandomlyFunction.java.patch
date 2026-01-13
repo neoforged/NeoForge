@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/functions/EnchantRandomlyFunction.java
 +++ b/net/minecraft/world/level/storage/loot/functions/EnchantRandomlyFunction.java
-@@ -64,7 +_,7 @@
+@@ -72,7 +_,7 @@
          Stream<Holder<Enchantment>> compatibleEnchantmentsStream = this.options
              .map(HolderSet::stream)
              .orElseGet(() -> context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements().map(Function.identity()))
