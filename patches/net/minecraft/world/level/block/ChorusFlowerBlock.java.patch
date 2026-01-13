@@ -15,6 +15,17 @@
                  if (belowState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
                      growUpwards = true;
                  } else if (belowState.is(this.plant)) {
+@@ -77,7 +_,9 @@
+                     for (int i = 0; i < 4; i++) {
+                         BlockState testState = level.getBlockState(pos.below(height + 1));
+                         if (!testState.is(this.plant)) {
+-                            if (testState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
++                            var soilDecision2 = testState.canSustainPlant(level, pos.below(height + 1), Direction.UP, state);
++                            if (!soilDecision2.isDefault()) pillarOnSupportBlock = soilDecision2.isTrue();
++                            else if (testState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
+                                 pillarOnSupportBlock = true;
+                             }
+                             break;
 @@ -121,6 +_,7 @@
                  } else {
                      this.placeDeadFlower(level, pos);

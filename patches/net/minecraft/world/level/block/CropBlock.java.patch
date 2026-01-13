@@ -36,6 +36,19 @@
          float speed = 1.0F;
          BlockPos below = pos.below();
  
+@@ -105,9 +_,10 @@
+             for (int zz = -1; zz <= 1; zz++) {
+                 float blockSpeed = 0.0F;
+                 BlockState blockState = level.getBlockState(below.offset(xx, 0, zz));
+-                if (blockState.is(BlockTags.GROWS_CROPS)) {
++                var soilDecision = blockState.canSustainPlant(level, below.offset(xx, 0, zz), net.minecraft.core.Direction.UP, blockState);
++                if (soilDecision.isDefault() ? blockState.is(BlockTags.GROWS_CROPS) : soilDecision.isTrue()) {
+                     blockSpeed = 1.0F;
+-                    if (blockState.getValueOrElse(FarmlandBlock.MOISTURE, 0) > 0) {
++                    if (blockState.isFertile(level, pos.offset(xx, 0, zz))) {
+                         blockSpeed = 3.0F;
+                     }
+                 }
 @@ -143,6 +_,8 @@
  
      @Override

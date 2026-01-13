@@ -147,6 +147,19 @@
          );
      }
  
+@@ -1153,9 +_,11 @@
+         profiler.push("levels");
+         this.updateEffectiveRespawnData();
+ 
+-        for (ServerLevel level : this.getAllLevels()) {
++        for (ServerLevel level : this.getWorldArray()) {
++            long tickStart = Util.getNanos();
+             profiler.push(() -> level + " " + level.dimension().identifier());
+             profiler.push("tick");
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(level, haveTime);
+ 
+             try {
+                 level.tick(haveTime);
 @@ -1164,9 +_,11 @@
                  level.fillReportDetails(report);
                  throw new ReportedException(report);
@@ -169,6 +182,15 @@
              GameTestTicker.SINGLETON.tick();
          }
  
+@@ -1261,7 +_,7 @@
+     }
+ 
+     public String getServerModName() {
+-        return "vanilla";
++        return net.neoforged.neoforge.internal.BrandingControl.getServerBranding();
+     }
+ 
+     public ServerClockManager clockManager() {
 @@ -1555,9 +_,9 @@
  
      public CompletableFuture<Void> reloadResources(Collection<String> packsToEnable) {
@@ -245,14 +267,24 @@
      public void dumpServerProperties(Path path) throws IOException {
      }
  
-@@ -2020,6 +_,10 @@
- 
-     public WorldData getWorldData() {
+@@ -2022,6 +_,10 @@
          return this.worldData;
-+    }
-+
-+    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
      }
  
++    public MinecraftServer.ReloadableResources getServerResources() {
++         return resources;
++    }
++
      public RegistryAccess.Frozen registryAccess() {
+         return this.registries.compositeAccess();
+     }
+@@ -2152,6 +_,9 @@
+         } else if (rule == GameRules.ADVANCE_TIME) {
+             this.getPlayerList().broadcastAll(this.clockManager().createFullSyncPacket());
+         }
++
++        // Neo: Allow mods to react to game rule state changes
++        net.neoforged.neoforge.event.EventHooks.onGameRuleChanged(this, rule, value);
+     }
+ 
+     @Deprecated

@@ -18,3 +18,24 @@
          RenderType renderType = material.renderType(RenderTypes::entityCutout);
          TextureAtlasSprite sprite = this.materials.get(material);
          if (state.type != ChestType.SINGLE) {
+@@ -124,5 +_,20 @@
+         } else {
+             return entity instanceof TrappedChestBlockEntity ? ChestRenderState.ChestMaterialType.TRAPPED : ChestRenderState.ChestMaterialType.REGULAR;
+         }
++    }
++
++    /**
++     * Neo: Return a custom {@link Material} to render the chest with or {@code null} to
++     * fall back to the vanilla material selection.
++     */
++    @Nullable
++    protected Material getCustomMaterial(T blockEntity, ChestRenderState renderState) {
++        return null;
++    }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(T blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
+     }
+ }

@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
+@@ -239,6 +_,10 @@
+         return !this.isEmpty() && this.components.hasNonDefault(type);
+     }
+ 
++    public boolean isComponentsPatchEmpty() {
++        return this.isEmpty() || this.components.isPatchEmpty();
++    }
++
+     public ItemStack(ItemLike item, int count) {
+         this(item.asItem().builtInRegistryHolder(), count);
+     }
 @@ -358,13 +_,27 @@
      }
  
@@ -29,6 +40,19 @@
              if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
                  player.awardStat(Stats.ITEM_USED.get(usedItem));
              }
+@@ -412,6 +_,12 @@
+         return result;
+     }
+ 
++    // Neo: Delegate max stack size logic to the item to allow it to be stack-sensitive
++    @Override
++    public int getMaxStackSize() {
++        return this.getItem().getMaxStackSize(this);
++    }
++
+     public boolean isStackable() {
+         return this.getMaxStackSize() > 1 && (!this.isDamageableItem() || !this.isDamaged());
+     }
 @@ -421,19 +_,19 @@
      }
  

@@ -8,6 +8,14 @@
          ItemStack ingredient = items.get(3);
          PotionBrewing potionBrewing = level.potionBrewing();
  
+@@ -181,6 +_,7 @@
+             items.set(dest, potionBrewing.mix(ingredient, items.get(dest)));
+         }
+ 
++        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
+         ingredient.shrink(1);
+         ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
+         if (remainder != null) {
 @@ -218,13 +_,13 @@
  
      @Override

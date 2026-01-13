@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/renderer/ItemBlockRenderTypes.java
 +++ b/net/minecraft/client/renderer/ItemBlockRenderTypes.java
+@@ -18,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class ItemBlockRenderTypes {
++    @Deprecated
+     private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), map -> {
+         ChunkSectionLayer cutout = ChunkSectionLayer.CUTOUT;
+         map.put(Blocks.GRASS_BLOCK, cutout);
 @@ -360,6 +_,8 @@
      });
      private static boolean cutoutLeaves;

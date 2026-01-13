@@ -258,6 +258,34 @@
                              this.player.swing(InteractionHand.MAIN_HAND);
                          }
                      }
+@@ -1649,9 +_,16 @@
+                 return false;
+             } else {
+                 boolean endAttack = false;
++                var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++                if (inputEvent.isCanceled()) {
++                    if (inputEvent.shouldSwingHand())
++                        this.player.swing(InteractionHand.MAIN_HAND);
++                    return endAttack;
++                }
+                 PiercingWeapon piercingWeapon = heldItem.get(DataComponents.PIERCING_WEAPON);
+                 if (piercingWeapon != null) {
+                     this.gameMode.piercingAttack(piercingWeapon);
++                    if (inputEvent.shouldSwingHand())
+                     this.player.swing(InteractionHand.MAIN_HAND);
+                     return true;
+                 } else {
+@@ -1678,8 +_,10 @@
+                             }
+ 
+                             this.player.resetAttackStrengthTicker();
++                            net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
+                     }
+ 
++                    if (inputEvent.shouldSwingHand())
+                     this.player.swing(InteractionHand.MAIN_HAND);
+                     return endAttack;
+                 }
 @@ -1696,6 +_,11 @@
                  }
  
@@ -270,6 +298,15 @@
                      ItemStack heldItem = this.player.getItemInHand(hand);
                      if (!heldItem.isItemEnabled(this.level.enabledFeatures())) {
                          return;
+@@ -1712,7 +_,7 @@
+ 
+                                 if (this.player.isWithinEntityInteractionRange(entity, 0.0)
+                                     && this.gameMode.interact(this.player, entity, entityHit, hand) instanceof InteractionResult.Success success) {
+-                                    if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
++                                    if (success.swingSource() == InteractionResult.SwingSource.CLIENT && inputEvent.shouldSwingHand()) {
+                                         this.player.swing(hand);
+                                     }
+ 
 @@ -1724,7 +_,7 @@
                                  int oldCount = heldItem.getCount();
                                  InteractionResult useResult = this.gameMode.useItemOn(this.player, hand, blockHit);
@@ -279,7 +316,7 @@
                                          this.player.swing(hand);
                                          if (!heldItem.isEmpty() && (heldItem.getCount() != oldCount || this.player.hasInfiniteMaterials())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(hand);
-@@ -1740,6 +_,9 @@
+@@ -1740,8 +_,11 @@
                          }
                      }
  
@@ -287,8 +324,11 @@
 +                        net.neoforged.neoforge.common.CommonHooks.onEmptyClick(this.player, hand);
 +
                      if (!heldItem.isEmpty() && this.gameMode.useItem(this.player, hand) instanceof InteractionResult.Success success) {
-                         if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
+-                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
++                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT && inputEvent.shouldSwingHand()) {
                              this.player.swing(hand);
+                         }
+ 
 @@ -1759,6 +_,10 @@
  
      public void tick() {

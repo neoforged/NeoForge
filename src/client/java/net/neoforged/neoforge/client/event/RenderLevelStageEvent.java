@@ -128,15 +128,6 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired near the end of {@linkplain LevelRenderer#addMainPass} after tripwire chunk geometry has been rendered.
-     */
-    public static class AfterTripwireBlocks extends RenderLevelStageEvent {
-        public AfterTripwireBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
-            super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
-        }
-    }
-
-    /**
      * Fired at the end of {@linkplain LevelRenderer#addParticlesPass} after particles have been rendered.
      */
     public static class AfterParticles extends RenderLevelStageEvent {

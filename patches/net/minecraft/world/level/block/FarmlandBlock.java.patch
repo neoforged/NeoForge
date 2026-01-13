@@ -1,7 +1,6 @@
-++++ Target missing
---- a/net/minecraft/world/level/block/FarmBlock.java
-+++ b/net/minecraft/world/level/block/FarmBlock.java
-@@ -109,10 +109,7 @@
+--- a/net/minecraft/world/level/block/FarmlandBlock.java
++++ b/net/minecraft/world/level/block/FarmlandBlock.java
+@@ -109,10 +_,7 @@
      @Override
      public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
          if (level instanceof ServerLevel serverLevel
@@ -9,11 +8,11 @@
 -            && entity instanceof LivingEntity
 -            && (entity instanceof Player || serverLevel.getGameRules().get(GameRules.MOB_GRIEFING))
 -            && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
-+            && net.neoforged.neoforge.common.CommonHooks.onFarmlandTrample(serverLevel, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity)) { // Forge: Move logic to Entity#canTrample
++            && net.neoforged.neoforge.common.CommonHooks.onFarmlandTrample(serverLevel, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity)) { // Neo: Move logic to Entity#canTrample
              turnToDirt(entity, state, level, pos);
          }
  
-@@ -130,13 +127,14 @@
+@@ -130,13 +_,14 @@
      }
  
      private static boolean isNearWater(LevelReader level, BlockPos pos) {

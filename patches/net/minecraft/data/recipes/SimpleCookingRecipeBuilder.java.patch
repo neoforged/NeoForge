@@ -6,34 +6,34 @@
  
 +    public static <T extends AbstractCookingRecipe> SimpleCookingRecipeBuilder generic(
 +            Ingredient ingredient,
-+            RecipeCategory category,
-+            ItemStack result,
++            RecipeCategory craftingCategory,
++            CookingBookCategory cookingCategory,
++            net.minecraft.world.item.ItemStack result,
 +            float experience,
 +            int cookingTime,
-+            RecipeSerializer<T> serializer,
 +            AbstractCookingRecipe.Factory<T> factory
 +    ) {
-+        return new SimpleCookingRecipeBuilder(category, determineSmeltingRecipeCategory(result.getItem()), result, ingredient, experience, cookingTime, factory);
++        return new SimpleCookingRecipeBuilder(craftingCategory, cookingCategory, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, factory);
 +    }
 +
-+    public static SimpleCookingRecipeBuilder campfireCooking(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-+        return new SimpleCookingRecipeBuilder(category, CookingBookCategory.FOOD, result, ingredient, experience, cookingTime, CampfireCookingRecipe::new);
++    public static SimpleCookingRecipeBuilder campfireCooking(Ingredient ingredient, RecipeCategory craftingCategory, net.minecraft.world.item.ItemStack result, float experience, int cookingTime) {
++        return new SimpleCookingRecipeBuilder(craftingCategory, CookingBookCategory.FOOD, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, CampfireCookingRecipe::new);
 +    }
 +
-+    public static SimpleCookingRecipeBuilder blasting(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
++    public static SimpleCookingRecipeBuilder blasting(Ingredient ingredient, RecipeCategory craftingCategory, CookingBookCategory cookingCategory, net.minecraft.world.item.ItemStack result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(
-+                category, determineBlastingRecipeCategory(result.getItem()), result, ingredient, experience, cookingTime, BlastingRecipe::new
++                craftingCategory, cookingCategory, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, BlastingRecipe::new
 +        );
 +    }
 +
-+    public static SimpleCookingRecipeBuilder smelting(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
++    public static SimpleCookingRecipeBuilder smelting(Ingredient ingredient, RecipeCategory craftingCategory, CookingBookCategory cookingCategory, net.minecraft.world.item.ItemStack result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(
-+                category, determineSmeltingRecipeCategory(result.getItem()), result, ingredient, experience, cookingTime, SmeltingRecipe::new
++                craftingCategory, cookingCategory, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, SmeltingRecipe::new
 +        );
 +    }
 +
-+    public static SimpleCookingRecipeBuilder smoking(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-+        return new SimpleCookingRecipeBuilder(category, CookingBookCategory.FOOD, result, ingredient, experience, cookingTime, SmokingRecipe::new);
++    public static SimpleCookingRecipeBuilder smoking(Ingredient ingredient, RecipeCategory craftingCategory, net.minecraft.world.item.ItemStack result, float experience, int cookingTime) {
++        return new SimpleCookingRecipeBuilder(craftingCategory, CookingBookCategory.FOOD, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, SmokingRecipe::new);
 +    }
 +
      public SimpleCookingRecipeBuilder unlockedBy(String name, Criterion<?> criterion) {

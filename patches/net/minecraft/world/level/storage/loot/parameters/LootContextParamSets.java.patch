@@ -9,3 +9,12 @@
      public static final ContextKeySet COMMAND = register(
          "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
      );
+@@ -33,7 +_,7 @@
+             .required(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED)
+     );
+     public static final ContextKeySet FISHING = register(
+-        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY)
++        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) // Neo: Add the fisher as a killer.
+     );
+     public static final ContextKeySet ENTITY = register(
+         "entity",

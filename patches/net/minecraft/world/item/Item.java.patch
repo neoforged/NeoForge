@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
+@@ -106,7 +_,7 @@
+             : DataResult.success(item)
+     );
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
++    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
+     public static final Identifier BASE_ATTACK_DAMAGE_ID = Identifier.withDefaultNamespace("base_attack_damage");
+     public static final Identifier BASE_ATTACK_SPEED_ID = Identifier.withDefaultNamespace("base_attack_speed");
+     public static final int DEFAULT_MAX_STACK_SIZE = 64;
 @@ -117,6 +_,7 @@
      private final @Nullable ItemStackTemplate craftingRemainingItem;
      protected final String descriptionId;
@@ -23,6 +32,32 @@
      }
  
      @Deprecated
+@@ -156,6 +_,25 @@
+         return this.builtInRegistryHolder.components();
+     }
+ 
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.event.ModifyDefaultComponentsEvent the event} instead */
++    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
++        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
++        var builder = DataComponentMap.builder().addAll(components);
++        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
++        components = Properties.validateComponents(builder.build());
++        defaultResource = null;
++    }
++
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
++    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    public net.neoforged.neoforge.transfer.item.ItemResource computeDefaultResource(java.util.function.Function<Item, net.neoforged.neoforge.transfer.item.ItemResource> resourceConstructor) {
++        if (this.defaultResource == null) {
++            this.defaultResource = resourceConstructor.apply(this);
++        }
++        return this.defaultResource;
++    }
++
+     public int getDefaultMaxStackSize() {
+         return this.components().getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
+     }
 @@ -163,6 +_,8 @@
      public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int ticksRemaining) {
      }
@@ -32,6 +67,15 @@
      public void onDestroyed(ItemEntity itemEntity) {
      }
  
+@@ -279,6 +_,8 @@
+         return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
+     }
+ 
++    /** @deprecated use {@link #getCraftingRemainder(ItemStack)} instead */
++    @Deprecated
+     public final @Nullable ItemStackTemplate getCraftingRemainder() {
+         return this.craftingRemainingItem;
+     }
 @@ -345,13 +_,26 @@
      }
  
@@ -73,6 +117,19 @@
  
          public Item.Properties food(FoodProperties foodProperties) {
              return this.food(foodProperties, Consumables.DEFAULT_FOOD);
+@@ -651,7 +_,11 @@
+         }
+ 
+         public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
+-            this.componentInitializer = this.componentInitializer.andThen((components, context, key) -> components.set(type, context.getOrThrow(valueKey)));
++            this.componentInitializer = this.componentInitializer.andThen((components, context, key) -> {
++                var value = context.getOrThrow(valueKey);
++                net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
++                components.set(type, value);
++            });
+             return this;
+         }
+ 
 @@ -700,6 +_,14 @@
  
          boolean isPeaceful();

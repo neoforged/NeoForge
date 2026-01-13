@@ -46,3 +46,32 @@
      ) {
          return CompletableFuture.<CompletableFuture<RegistryAccess.Frozen>>supplyAsync(
                  () -> {
+@@ -203,6 +_,15 @@
+                     return CompletableFuture.allOf(loadCompletions)
+                         .thenApplyAsync(
+                             ignored -> {
++                                if (fromResources && net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
++                                    var byKeyMap = loadTasks.stream().collect(java.util.stream.Collectors.toMap(d -> d.registryKey(), d -> d.readOnlyRegistry()));
++                                    var envRegistry = (net.minecraft.core.WritableRegistry) byKeyMap.get(Registries.TEST_ENVIRONMENT);
++                                    var testsRegistry = (net.minecraft.core.WritableRegistry) byKeyMap.get(Registries.TEST_INSTANCE);
++                                    if (envRegistry != null && testsRegistry != null) {
++                                        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterGameTestsEvent(envRegistry, testsRegistry));
++                                    }
++                                }
++
+                                 List<RegistryLoadTask<?>> frozenRegistries = loadTasks.stream().filter(task -> task.freezeRegistry(loadingErrors)).toList();
+                                 if (!loadingErrors.isEmpty()) {
+                                     throw logErrors(loadingErrors);
+@@ -297,7 +_,11 @@
+     public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
+     }
+ 
+-    public record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, RegistryValidator<T> validator) {
++    public record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, RegistryValidator<T> validator, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> registryBuilderConsumer) {
++        public RegistryData(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, RegistryValidator<T> validator) {
++            this(key, elementCodec, validator, _ -> {});
++        }
++
+         private RegistryData(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec) {
+             this(key, elementCodec, RegistryValidator.none());
+         }

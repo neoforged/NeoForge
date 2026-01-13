@@ -61,6 +61,24 @@
          ContainerHelper.saveAllItems(output, this.items);
          output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
      }
+@@ -171,12 +_,15 @@
+                 entity.litTotalTime = entity.litTimeRemaining;
+                 if (entity.isLit()) {
+                     changed = true;
++                    var remainder = fuel.getCraftingRemainder();
++                    if (!remainder.isEmpty())
++                        entity.items.set(1, remainder);
++                    else
+                     if (hasFuel) {
+                         Item fuelItem = fuel.getItem();
+                         fuel.shrink(1);
+                         if (fuel.isEmpty()) {
+-                            ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
+-                            entity.items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
++                            entity.items.set(1, ItemStack.EMPTY); // Neo: Remainder is handled in the `if` check above.
+                         }
+                     }
+                 }
 @@ -225,9 +_,9 @@
                  } else if (!ItemStack.isSameItemSameComponents(resultItemStack, burnResult)) {
                      return false;

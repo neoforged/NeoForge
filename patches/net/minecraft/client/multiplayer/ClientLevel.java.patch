@@ -17,6 +17,14 @@
      });
      private final ClientChunkCache chunkSource;
      private final Deque<Runnable> lightUpdateQueue = Queues.newArrayDeque();
+@@ -156,6 +_,7 @@
+     private final EnvironmentAttributeSystem environmentAttributes;
+     private final int seaLevel;
+     private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
++    private final net.neoforged.neoforge.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.model.data.ModelDataManager(this);
+ 
+     public void handleBlockChangedAck(int sequence) {
+         if (SharedConstants.DEBUG_BLOCK_BREAK) {
 @@ -201,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {

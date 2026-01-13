@@ -93,6 +93,15 @@
                  if (renderOutline) {
                      this.renderBlockOutline(bufferSource, poseStack, false, levelRenderState);
                  }
+@@ -721,6 +_,8 @@
+ 
+                 profiler.push("translucent");
+                 chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, this.chunkLayerSampler);
++                profiler.popPush("neoforge_render_after_translucent_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
+                 if (renderOutline) {
+                     this.renderBlockOutline(bufferSource, poseStack, true, levelRenderState);
+                 }
 @@ -731,7 +_,15 @@
          );
      }
@@ -158,6 +167,16 @@
          int renderDistance = this.minecraft.options.getEffectiveRenderDistance() * 16;
          float depthFar = this.minecraft.gameRenderer.getDepthFar();
          FramePass pass = frame.addPass("weather");
+@@ -781,6 +_,9 @@
+             RenderSystem.setShaderFog(fog);
+             CameraRenderState cameraState = this.levelRenderState.cameraRenderState;
+             this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState);
++            Profiler.get().push("neoforge_render_after_weather");
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
++            Profiler.get().pop();
+             this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, depthFar);
+         });
+     }
 @@ -832,7 +_,7 @@
                              || camera.isDetached()
                              || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping()
