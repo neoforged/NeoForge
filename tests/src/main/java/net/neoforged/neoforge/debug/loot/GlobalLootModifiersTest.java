@@ -111,7 +111,7 @@ public class GlobalLootModifiersTest {
         private static ItemStack smelt(ItemStack stack, LootContext context) {
             SingleRecipeInput input = new SingleRecipeInput(stack);
             return context.getLevel().recipeAccess().getRecipeFor(RecipeType.SMELTING, input, context.getLevel())
-                    .map(smeltingRecipe -> smeltingRecipe.value().assemble(input, context.getLevel().registryAccess()))
+                    .map(smeltingRecipe -> smeltingRecipe.value().assemble(input))
                     .filter(itemStack -> !itemStack.isEmpty())
                     .map(itemStack -> itemStack.copyWithCount(stack.getCount() * itemStack.getCount()))
                     .orElse(stack);

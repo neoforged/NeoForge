@@ -21,6 +21,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
@@ -86,9 +87,9 @@ public class DataComponentIngredient implements ICustomIngredient {
     public SlotDisplay display() {
         return new SlotDisplay.Composite(Stream.of(stacks)
                 .map(stack -> {
-                    SlotDisplay display = new SlotDisplay.ItemStackSlotDisplay(stack);
-                    ItemStack remainder = stack.getCraftingRemainder();
-                    if (!remainder.isEmpty()) {
+                    SlotDisplay display = new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(stack));
+                    var remainder = stack.getCraftingRemainder();
+                    if (remainder != null) {
                         SlotDisplay remainderDisplay = new SlotDisplay.ItemStackSlotDisplay(remainder);
                         return new SlotDisplay.WithRemainder(display, remainderDisplay);
                     } else {

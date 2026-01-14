@@ -106,7 +106,7 @@ public class FarmlandWaterManager {
     }
 
     /**
-     * Tests if a block is in a region that is watered by blocks. This does not check vanilla water, see {@code net.minecraft.level.level.block.FarmBlock#isNearWater(LevelReader, BlockPos)}
+     * Tests if a block is in a region that is watered by blocks. This does not check vanilla water, see {@code net.minecraft.level.level.block.FarmlandBlock#isNearWater(LevelReader, BlockPos)}
      * 
      * @return true if there is a ticket with an AABB that includes your block
      */

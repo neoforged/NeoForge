@@ -184,7 +184,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
             RecipeHolder<RecipeBookTestRecipe> recipeholder = optional.get();
             RecipeBookTestRecipe craftingrecipe = recipeholder.value();
             if (resultSlots.setRecipeUsed(serverplayer, recipeholder)) {
-                ItemStack itemstack1 = craftingrecipe.assemble(craftinginput, level.registryAccess());
+                ItemStack itemstack1 = craftingrecipe.assemble(craftinginput);
                 if (itemstack1.isItemEnabled(level.enabledFeatures())) {
                     itemstack = itemstack1;
                 }

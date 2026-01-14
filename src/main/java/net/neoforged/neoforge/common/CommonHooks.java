@@ -803,15 +803,6 @@ public class CommonHooks {
         return craftingPlayer.get();
     }
 
-    public static ItemStack getCraftingRemainder(ItemStack stack) {
-        stack = stack.getCraftingRemainder();
-        if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
-            EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
-            return ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
     public static boolean onPlayerAttackTarget(Player player, Entity target) {
         if (NeoForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
             return false;

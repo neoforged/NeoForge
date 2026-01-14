@@ -46,7 +46,6 @@ public final class NamedRenderTypeManager {
         blockRenderTypes.put(Identifier.withDefaultNamespace("solid"), new RenderTypeGroup(ChunkSectionLayer.SOLID, NeoForgeRenderTypes::getItemLayeredSolid));
         blockRenderTypes.put(Identifier.withDefaultNamespace("cutout"), new RenderTypeGroup(ChunkSectionLayer.CUTOUT, NeoForgeRenderTypes::getItemLayeredCutout));
         blockRenderTypes.put(Identifier.withDefaultNamespace("translucent"), new RenderTypeGroup(ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getItemLayeredTranslucent));
-        blockRenderTypes.put(Identifier.withDefaultNamespace("tripwire"), new RenderTypeGroup(ChunkSectionLayer.TRIPWIRE, NeoForgeRenderTypes::getItemLayeredTranslucent));
     }
 
     private NamedRenderTypeManager() {}

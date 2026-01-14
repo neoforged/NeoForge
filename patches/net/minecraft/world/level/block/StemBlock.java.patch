@@ -5,7 +5,7 @@
      @Override
      protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
 -        return state.is(this.supportBlocks);
-+        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
++        return state.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock;
      }
  
      @Override
@@ -26,7 +26,7 @@
                      BlockPos relative = pos.relative(direction);
                      BlockState stateBelow = level.getBlockState(relative.below());
 -                    if (level.getBlockState(relative).isAir() && stateBelow.is(BlockTags.GROWS_CROPS)) {
-+                    if (level.isEmptyBlock(relative) && (stateBelow.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || stateBelow.is(BlockTags.DIRT))) {
++                    if (level.isEmptyBlock(relative) && (stateBelow.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock || stateBelow.is(BlockTags.DIRT))) {
                          Registry<Block> blocks = level.registryAccess().lookupOrThrow(Registries.BLOCK);
                          Optional<Block> fruit = blocks.getOptional(this.fruit);
                          Optional<Block> stem = blocks.getOptional(this.attachedStem);

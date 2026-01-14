@@ -1,5 +1,34 @@
 --- a/net/minecraft/core/component/DataComponentInitializers.java
 +++ b/net/minecraft/core/component/DataComponentInitializers.java
+@@ -64,10 +_,28 @@
+     ) {
+         final List<DataComponentInitializers.BakedEntry<T>> entries = new ArrayList<>();
+         final ResourceKey<? extends Registry<T>> registryKey = elementBuilders.registryKey;
++
+         HolderLookup.RegistryLookup<T> registry = context.lookupOrThrow(registryKey);
+         Set<Holder.Reference<T>> elementsWithComponents = Sets.newIdentityHashSet();
+         elementBuilders.builders.forEach((elementKey, elementBuilder) -> {
+             Holder.Reference<T> element = registry.getOrThrow((ResourceKey<T>)elementKey);
++
++            // Neo: Support programmatic customization of the default components for items
++            if (elementKey.isFor(net.minecraft.core.registries.Registries.ITEM)) {
++                var item = (net.minecraft.world.item.Item) element.value();
++                var modifier = net.neoforged.neoforge.internal.RegistrationEvents.componentModifiersByItem.get(item);
++                if (modifier != null) {
++                    modifier.accept(elementBuilder);
++                }
++                for (var pair : net.neoforged.neoforge.internal.RegistrationEvents.componentModifiersByPredicate) {
++                    if (pair.getFirst().test(item)) {
++                        pair.getSecond().accept(elementBuilder);
++                    }
++                }
++
++                item.resetDefaultResource();
++            }
++
+             DataComponentMap components = elementBuilder.build();
+             entries.add(new DataComponentInitializers.BakedEntry<>(element, components));
+             elementsWithComponents.add(element);
 @@ -115,6 +_,7 @@
          }
  

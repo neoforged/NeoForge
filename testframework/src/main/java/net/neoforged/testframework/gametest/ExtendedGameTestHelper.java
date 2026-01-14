@@ -213,7 +213,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         }
 
         if (count < lowerLimit) {
-            throw this.assertionException(pos, "Expected at least %s %s items to exist (found %s)", lowerLimit, item.getName().getString(), count);
+            throw this.assertionException(pos, "Expected at least %s %s items to exist (found %s)", lowerLimit, item.getName(item.getDefaultInstance()).getString(), count);
         }
     }
 

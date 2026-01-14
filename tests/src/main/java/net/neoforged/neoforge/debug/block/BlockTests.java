@@ -212,7 +212,7 @@ public class BlockTests {
 
         @Override
         protected void tick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource) {
-            BubbleColumnBlock.updateColumn(serverLevel, blockPos.above(), blockState);
+            BubbleColumnBlock.updateColumn(Blocks.BUBBLE_COLUMN, serverLevel, blockPos.above(), blockState);
         }
 
         @Override

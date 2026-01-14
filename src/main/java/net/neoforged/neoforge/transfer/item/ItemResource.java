@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.item;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -39,10 +40,14 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
 
     /**
      * Codec for an item resource.
-     * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack);
+    public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(
+            () -> RecordCodecBuilder.create(
+                    i -> i.group(
+                            Item.CODEC.fieldOf("id").forGetter(ItemResource::typeHolder),
+                            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemResource::getComponentsPatch))
+                            .apply(i, ItemResource::of)));
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.

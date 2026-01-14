@@ -186,9 +186,8 @@ final class ClientPayloadHandler {
     private static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
         @SuppressWarnings("resource")
         final ClientLevel level = Minecraft.getInstance().level;
-        level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
-        level.setDayTimeFraction(payload.dayTimeFraction());
-        level.setDayTimePerTick(payload.dayTimePerTick());
+        level.setTimeFromServer(payload.gameTime());
+        level.clockManager().handleExtendedUpdates(payload.gameTime(), payload.clockUpdates());
     }
 
     private static void handle(final RecipeContentPayload payload, final IPayloadContext context) {

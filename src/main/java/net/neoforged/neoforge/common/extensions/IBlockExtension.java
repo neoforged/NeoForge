@@ -47,7 +47,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.CandleCakeBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.GrowingPlantHeadBlock;
@@ -457,8 +457,8 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.getBlock() instanceof FarmBlock)
-            return state.getValue(FarmBlock.MOISTURE) > 0;
+        if (state.getBlock() instanceof FarmlandBlock)
+            return state.getValue(FarmlandBlock.MOISTURE) > 0;
 
         return false;
     }

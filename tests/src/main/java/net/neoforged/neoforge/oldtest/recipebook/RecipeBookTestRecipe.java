@@ -18,8 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -90,8 +90,8 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput p_44001_, HolderLookup.Provider registryAccess) {
-        return this.ingredients.result.copy();
+    public ItemStack assemble(CraftingInput input) {
+        return this.ingredients.result.create();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
         }
     }
 
-    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStack result) {
+    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStackTemplate result) {
         private static final Function<String, DataResult<String>> VERIFY_LENGTH_2 = s -> s.length() == 2 ? DataResult.success(s) : DataResult.error(() -> "Key row length must be of 2!");
         private static final Function<List<String>, DataResult<List<String>>> VERIFY_SIZE = l -> {
             if (l.size() <= 4 && l.size() >= 1) {
@@ -153,6 +153,6 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
                 Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
                 Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
                 Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),
-                ItemStack.CODEC.fieldOf("result").forGetter(Ingredients::result)).apply(inst, Ingredients::new));
+                ItemStackTemplate.CODEC.fieldOf("result").forGetter(Ingredients::result)).apply(inst, Ingredients::new));
     }
 }

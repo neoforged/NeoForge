@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -197,6 +198,18 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public boolean isBound() {
         bind(false);
         return this.holder != null && this.holder.isBound();
+    }
+
+    @Override
+    public boolean areComponentsBound() {
+        bind(false);
+        return this.holder != null && this.holder.areComponentsBound();
+    }
+
+    @Override
+    public DataComponentMap components() {
+        bind(true);
+        return this.holder != null ? this.holder.components() : DataComponentMap.EMPTY;
     }
 
     /**

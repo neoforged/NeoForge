@@ -12,7 +12,7 @@
      @Override
      protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
 -        return state.is(BlockTags.SUPPORTS_CROPS);
-+        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
++        return state.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock;
      }
  
      @Override

@@ -221,7 +221,7 @@
          MutableComponent result = ComponentUtils.wrapInSquareBrackets(hoverName);
          if (!this.isEmpty()) {
 -            result.withStyle(this.getRarity().color()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(this))));
-+            result.withStyle(this.getRarity().getStyleModifier()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(this)));
++            result.withStyle(this.getRarity().getStyleModifier()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowItem(toTemplate())));
          }
  
          return result;
@@ -240,3 +240,14 @@
          DamageResistant damageResistant = this.get(DataComponents.DAMAGE_RESISTANT);
          return damageResistant == null || !damageResistant.isResistantTo(source);
      }
+@@ -1128,5 +_,10 @@
+             .map(type -> new DamageSource((Holder<DamageType>)type, attacker))
+             .or(() -> Optional.ofNullable(this.getItem().getItemDamageSource(attacker)))
+             .orElseGet(defaultSource);
++    }
++
++    @Override
++    public ItemStackTemplate toTemplate() {
++        return ItemStackTemplate.fromNonEmptyStack(this);
+     }
+ }

@@ -6,7 +6,7 @@
          BlockState below = level.getBlockState(belowPos);
 -        return below.is(BlockTags.OVERRIDES_MUSHROOM_LIGHT_REQUIREMENT) ? true : level.getRawBrightness(pos, 0) < 13 && this.mayPlaceOn(below, level, belowPos);
 +        var soilDecision = below.canSustainPlant(level, belowPos, net.minecraft.core.Direction.UP, state);
-+        return below.is(BlockTags.MUSHROOM_GROW_BLOCK) ? true : soilDecision.isDefault() ? (level.getRawBrightness(pos, 0) < 13 && this.mayPlaceOn(below, level, belowPos)) : soilDecision.isTrue();
++        return below.is(BlockTags.OVERRIDES_MUSHROOM_LIGHT_REQUIREMENT) ? true : soilDecision.isDefault() ? (level.getRawBrightness(pos, 0) < 13 && this.mayPlaceOn(below, level, belowPos)) : soilDecision.isTrue();
      }
  
      public boolean growMushroom(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {

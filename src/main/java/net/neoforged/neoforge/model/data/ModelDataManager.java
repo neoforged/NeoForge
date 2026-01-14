@@ -17,7 +17,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -132,7 +131,7 @@ public class ModelDataManager {
                     // Sanity check so that mods cannot cause impossible-to-trace NPEs in other code later
                     //noinspection ConstantValue
                     if (newData == null) {
-                        throw new NullPointerException("Null ModelData provided by " + BlockEntityType.getKey(toUpdate.getType()) + " @ " + pos);
+                        throw new NullPointerException("Null ModelData provided by " + toUpdate.typeHolder().getRegisteredName() + " @ " + pos);
                     }
                 }
                 // Make sure we don't bother storing empty data in the map

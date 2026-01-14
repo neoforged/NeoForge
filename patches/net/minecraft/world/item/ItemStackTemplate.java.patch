@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/ItemStackTemplate.java
++++ b/net/minecraft/world/item/ItemStackTemplate.java
+@@ -96,4 +_,9 @@
+     public <T> @Nullable T get(DataComponentType<? extends T> type) {
+         return this.components.get(this.item.components(), type);
+     }
++
++    @Override
++    public ItemStackTemplate toTemplate() {
++        return this;
++    }
+ }

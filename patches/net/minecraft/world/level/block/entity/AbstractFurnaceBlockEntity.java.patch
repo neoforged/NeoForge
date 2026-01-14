@@ -66,8 +66,8 @@
                  if (entity.isLit()) {
                      changed = true;
 +                    var remainder = fuel.getCraftingRemainder();
-+                    if (!remainder.isEmpty())
-+                        entity.items.set(1, remainder);
++                    if (remainder != null)
++                        entity.items.set(1, remainder.create());
 +                    else
                      if (hasFuel) {
                          Item fuelItem = fuel.getItem();

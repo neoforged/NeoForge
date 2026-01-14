@@ -11,24 +11,40 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(container.containerId, id, value));
          }
  
-@@ -378,6 +_,7 @@
+@@ -378,6 +_,8 @@
      private Set<DebugSubscription<?>> requestedDebugSubscriptions = Set.of();
      private int containerCounter;
      public boolean wonGame;
-+    private long lastDayTimeTick = -1L; // Neo: Used to limit TIME_SINCE_REST increases when day length is non-standard. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
++    // Neo: Used to track partial TIME_SINCE_REST increases for dimensions in which clocks move at different speeds. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
++    private float partialTimeSinceRestTick;
  
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
-@@ -675,7 +_,11 @@
+@@ -675,7 +_,26 @@
                  }
  
                  if (!this.isSleeping()) {
 -                    this.awardStat(Stats.TIME_SINCE_REST);
 +                    // Neo: Advance TIME_SINCE_REST if (a) vanilla daytime handling in effect, or (b) days are shorter, or (c) dayTime has ticked, or (d) dayTime advances are off and we need to ignore day length
-+                    if (level().getDayTimeFraction() < 0 || level().getDayTimeFraction() >= 1 || lastDayTimeTick != level().getDayTime() || !level().getGameRules().get(GameRules.ADVANCE_TIME)) {
-+                        lastDayTimeTick = level().getDayTime();
++                    var defaultClock = level().dimensionType().defaultClock();
++                    if (defaultClock.isEmpty() || !level().getGameRules().get(GameRules.ADVANCE_TIME)) {
++                        // TODO 26.1: It's debatable whether this should advance in a dimension with no clock BUT in Vanilla it does!
 +                        this.awardStat(Stats.TIME_SINCE_REST);
++                    } else {
++                        var speed = level().clockManager().getSpeed(defaultClock.get());
++                        var fullTicks = (int) speed;
++                        partialTimeSinceRestTick += speed;
++                        if (partialTimeSinceRestTick >= 1) {
++                            partialTimeSinceRestTick = 0;
++                            fullTicks++;
++                        }
++
++                        for (int i = 0; i < fullTicks; i++) {
++                            this.awardStat(Stats.TIME_SINCE_REST);
++                        }
 +                    }
++                } else {
++                    partialTimeSinceRestTick = 0;
                  }
              }
  

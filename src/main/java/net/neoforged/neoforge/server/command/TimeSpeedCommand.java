@@ -33,8 +33,15 @@ class TimeSpeedCommand {
     }
 
     private static int query(CommandSourceStack source) {
-        final float speed = source.getLevel().getDayTimePerTick();
-        if (speed < 0) {
+        var clockManager = source.getLevel().clockManager();
+        var defaultClock = source.getLevel().dimensionType().defaultClock().orElse(null);
+        if (defaultClock == null) {
+            source.sendFailure(CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.no_default_clock", levelName(source)));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        final float speed = clockManager.getSpeed(defaultClock);
+        if (speed == 1) {
             source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.default", levelName(source)), true);
         } else {
             source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query", levelName(source), speed, minutes(speed)), true);
@@ -61,7 +68,15 @@ class TimeSpeedCommand {
             source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.gamerule.set", GameRules.ADVANCE_TIME.id(), gameRules.getAsString(GameRules.ADVANCE_TIME)), true);
             return Command.SINGLE_SUCCESS;
         }
-        source.getLevel().setDayTimePerTick(speed);
+
+        var clockManager = source.getLevel().clockManager();
+        var defaultClock = source.getLevel().dimensionType().defaultClock().orElse(null);
+        if (defaultClock == null) {
+            source.sendFailure(CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.no_default_clock", levelName(source)));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        clockManager.setSpeed(defaultClock, speed);
         source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set", levelName(source), speed, minutes(speed)), true);
         return Command.SINGLE_SUCCESS;
     }
@@ -74,7 +89,14 @@ class TimeSpeedCommand {
     }
 
     private static int setDefault(CommandSourceStack source) {
-        source.getLevel().setDayTimePerTick(-1f);
+        var clockManager = source.getLevel().clockManager();
+        var defaultClock = source.getLevel().dimensionType().defaultClock().orElse(null);
+        if (defaultClock == null) {
+            source.sendFailure(CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.no_default_clock", levelName(source)));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        clockManager.setSpeed(defaultClock, 1);
         source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set.default", levelName(source)), true);
         return Command.SINGLE_SUCCESS;
     }

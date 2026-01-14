@@ -6,7 +6,7 @@
      public static boolean canItemBeInBundle(ItemStack itemToAdd) {
 -        return !itemToAdd.isEmpty() && itemToAdd.getItem().canFitInsideContainerItems();
 +        // Neo: stack-aware placeability check
-+        return !itemsToAdd.isEmpty() && itemsToAdd.canFitInsideContainerItems();
++        return !itemToAdd.isEmpty() && itemToAdd.canFitInsideContainerItems();
      }
  
      public int getNumberOfItemsToShow() {

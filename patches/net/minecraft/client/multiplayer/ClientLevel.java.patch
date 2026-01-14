@@ -172,7 +172,7 @@
              }
          }
  
-@@ -1137,10 +_,62 @@
+@@ -1137,10 +_,38 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -209,29 +209,5 @@
 +            return constantAmbientLight ? 0.9F : 1.0F;
 +        float yFactor = constantAmbientLight ? 0.9F : normalY < 0 ? 0.5F : 1.0F;
 +        return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
-+    }
-+
-+    // Neo: Variable day time code
-+
-+    private float dayTimeFraction = 0.0f;
-+    private float dayTimePerTick = -1.0f;
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimeFraction(float dayTimeFraction) {
-+        this.dayTimeFraction = dayTimeFraction;
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public float getDayTimeFraction() {
-+        return dayTimeFraction;
-+    }
-+
-+    public float getDayTimePerTick() {
-+        return dayTimePerTick;
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimePerTick(float dayTimePerTick) {
-+        this.dayTimePerTick = dayTimePerTick;
      }
  }

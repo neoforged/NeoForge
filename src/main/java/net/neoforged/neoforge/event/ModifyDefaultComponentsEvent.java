@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.event;
 
+import com.mojang.datafixers.util.Pair;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
@@ -43,8 +44,15 @@ import org.jetbrains.annotations.ApiStatus;
  * }
  */
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
+    private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
+    private final List<Pair<Predicate<? super Item>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
+
     @ApiStatus.Internal
-    public ModifyDefaultComponentsEvent() {}
+    public ModifyDefaultComponentsEvent(Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem,
+            List<Pair<Predicate<? super Item>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
+        this.modifiersByItem = modifiersByItem;
+        this.modifiersByPredicate = modifiersByPredicate;
+    }
 
     /**
      * Patches the default components of the given {@code item}.
@@ -52,13 +60,8 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * @param item  the item to modify the default components for
      * @param patch the patch to apply
      */
-    public void modify(ItemLike item, Consumer<DataComponentPatch.Builder> patch) {
-        var builder = DataComponentPatch.builder();
-        patch.accept(builder);
-        var compPatch = builder.build();
-        if (!compPatch.isEmpty()) {
-            item.asItem().modifyDefaultComponentsFrom(builder.build());
-        }
+    public void modify(ItemLike item, Consumer<DataComponentMap.Builder> patch) {
+        modifiersByItem.merge(item.asItem(), patch, Consumer::andThen);
     }
 
     /**
@@ -71,14 +74,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * @param predicate the item filter
      * @param patch     the patch to apply
      */
-    public void modifyMatching(Predicate<? super Item> predicate, Consumer<DataComponentPatch.Builder> patch) {
-        getAllItems().filter(predicate).forEach(item -> modify(item, patch));
-    }
-
-    /**
-     * {@return all registered items}
-     */
-    public Stream<Item> getAllItems() {
-        return BuiltInRegistries.ITEM.stream();
+    public void modifyMatching(Predicate<? super Item> predicate, Consumer<DataComponentMap.Builder> patch) {
+        modifiersByPredicate.add(Pair.of(predicate, patch));
     }
 }

@@ -964,7 +964,7 @@ public class ClientHooks {
         model.collectParts(level, pos, state, OUTLINE_PASS_RANDOM, OUTLINE_PART_SCRATCH_LIST);
         for (BlockModelPart part : OUTLINE_PART_SCRATCH_LIST) {
             ChunkSectionLayer renderType = part.getRenderType(state);
-            if (renderType == ChunkSectionLayer.TRANSLUCENT || renderType == ChunkSectionLayer.TRIPWIRE) {
+            if (renderType == ChunkSectionLayer.TRANSLUCENT) {
                 return true;
             }
         }

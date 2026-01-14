@@ -1,5 +1,20 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
+@@ -156,6 +_,14 @@
+         return new DataComponentPatch.Builder();
+     }
+ 
++    /**
++     * {@return the patch stored for the given component type, null if no patch is stored}
++     */
++    @SuppressWarnings("unchecked")
++    public <T> @Nullable Optional<T> getPatch(DataComponentType<? extends T> type) {
++        return (Optional<T>) this.map.get(type);
++    }
++
+     public <T> @Nullable T get(DataComponentGetter prototype, DataComponentType<? extends T> type) {
+         return getFromPatchAndPrototype(this.map, prototype, type);
+     }
 @@ -255,6 +_,7 @@
          }
  

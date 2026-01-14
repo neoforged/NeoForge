@@ -14,13 +14,24 @@
          return Ingredient.of(this.items.getOrThrow(id));
      }
  
-+    protected ShapedRecipeBuilder shaped(RecipeCategory category, ItemStack stack) {
++    protected ShapedRecipeBuilder shaped(RecipeCategory category, net.minecraft.world.item.ItemInstance stack) {
 +        return ShapedRecipeBuilder.shaped(this.items, category, stack);
 +    }
 +
      protected ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike item) {
          return ShapedRecipeBuilder.shaped(this.items, category, item);
      }
+@@ -766,8 +_,8 @@
+         return ShapedRecipeBuilder.shaped(this.items, category, item, count);
+     }
+ 
+-    protected ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStackTemplate result) {
+-        return ShapelessRecipeBuilder.shapeless(this.items, category, result);
++    protected ShapelessRecipeBuilder shapeless(RecipeCategory category, net.minecraft.world.item.ItemInstance result) {
++        return ShapelessRecipeBuilder.shapeless(this.items, category, result.toTemplate());
+     }
+ 
+     protected ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike item) {
 @@ -802,18 +_,14 @@
                          final Set<ResourceKey<Recipe<?>>> allRecipes = Sets.newHashSet();
                          final List<CompletableFuture<?>> tasks = new ArrayList<>();

@@ -73,7 +73,7 @@ public class ItemComponentTests {
                 .withLang("Test components item");
         test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
             event.modify(testItem, builder -> builder
-                    .remove(DataComponents.BASE_COLOR)
+                    .set(DataComponents.BASE_COLOR, null)
                     .set(DataComponents.MAX_STACK_SIZE, 5));
         });
 

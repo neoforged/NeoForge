@@ -4,7 +4,7 @@
  
      @Override
      public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-+        InteractionResult ret = super.interact(player, hand);
++        InteractionResult ret = super.interact(player, hand, location);
 +        if (ret.consumesAction()) return ret;
          ItemStack itemStack = player.getItemInHand(hand);
          if (this.addFuel(player.position(), itemStack)) {

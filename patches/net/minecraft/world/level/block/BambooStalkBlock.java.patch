@@ -6,7 +6,7 @@
              BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
 -            if (belowState.is(BlockTags.SUPPORTS_BAMBOO)) {
 +            var soilDecision = belowState.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
-+            if (soilDecision.isDefault() ? belowState.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision.isTrue()) {
++            if (soilDecision.isDefault() ? belowState.is(BlockTags.SUPPORTS_BAMBOO) : soilDecision.isTrue()) {
                  if (belowState.is(Blocks.BAMBOO_SAPLING)) {
                      return this.defaultBlockState().setValue(AGE, 0);
                  } else if (belowState.is(Blocks.BAMBOO)) {
