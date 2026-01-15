@@ -81,6 +81,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         return itemAccess.getResource().is(validItem) && BundleContents.canItemBeInBundle(resource.toStack());
     }
 
+    // TODO: We should potentially refuse the insertion if the bundle contains the item already
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
