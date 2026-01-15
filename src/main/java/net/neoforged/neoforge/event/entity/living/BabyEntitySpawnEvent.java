@@ -31,8 +31,6 @@ import org.jspecify.annotations.Nullable;
  * If this event is canceled, the child Entity is not added to the world, and the parents <br>
  * will no longer attempt to mate.
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class BabyEntitySpawnEvent extends net.neoforged.bus.api.Event implements ICancellableEvent {

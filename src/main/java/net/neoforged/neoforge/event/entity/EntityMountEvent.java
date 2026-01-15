@@ -18,8 +18,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the entity does not mount/dismount the other entity.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  *
  */

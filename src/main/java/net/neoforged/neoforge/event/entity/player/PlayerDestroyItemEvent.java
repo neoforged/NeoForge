@@ -38,8 +38,6 @@ import org.jspecify.annotations.Nullable;
  * <br>
  * This event is not {@link ICancellableEvent}.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired from {@link EventHooks#onPlayerDestroyItem(Player, ItemStack, InteractionHand)}.<br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/

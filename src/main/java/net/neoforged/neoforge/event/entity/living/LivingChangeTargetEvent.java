@@ -8,31 +8,26 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jspecify.annotations.Nullable;
 
 /**
- * This event allows you to change the target an entity has. <br>
- * This event is fired before {@link LivingSetAttackTargetEvent}. <br>
- * <br>
- * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
- * <br>
- * {@link #getOriginalAboutToBeSetTarget()} returns the target that should originally be set.
- * The return value cannot be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.<br>
- * {@link #getNewAboutToBeSetTarget()} returns the new target that this entity will have.
- * The return value can be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.<br>
- * {@link #getTargetType()} returns the target type that caused the change of targets.<br>
- * <br>
- * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
- * <br>
- * If you cancel this event, the target will not be changed and it will stay the same.
- * Cancelling this event will prevent {@link LivingSetAttackTargetEvent} from being posted.<br>
- * <br>
- * This event does not have a result. {@link Event.HasResult}<br>
- * <br>
+ * This event allows you to change what target an entity is about to have.
+ * <p>
+ * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}
+ * <ul>
+ * <li>{@link #getOriginalAboutToBeSetTarget()} returns the target that should originally be set.
+ * The return value <strong>cannot</strong> be changed.</li>
+ * <li>{@link #getNewAboutToBeSetTarget()} returns the new target that this entity will have.
+ * The return value can be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.</li>
+ * <li>{@link #getTargetType()} returns the target type that caused the change of targets.</li>
+ * </ul>
+ * This event is {@link net.neoforged.bus.api.ICancellableEvent}.
+ * <p>
+ * If you cancel this event, the target will stay the same to what the entity already is targeting and not be changed.
+ * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {

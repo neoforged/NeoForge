@@ -13,13 +13,12 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * EntityEvent is fired when an event involving any Entity occurs.<br>
- * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
- * receive every child event of this class.<br>
- * <br>
- * {@link #entity} contains the entity that caused this event to occur.<br>
- * <br>
- * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
+ * Base class of the events involving entities.
+ * <p>
+ * 
+ * @see EntityEvent.EntityConstructing
+ * @see EntityEvent.EnteringSection
+ * @see EntityEvent.Size
  **/
 public abstract class EntityEvent extends Event {
     private final Entity entity;
@@ -33,14 +32,13 @@ public abstract class EntityEvent extends Event {
     }
 
     /**
-     * EntityConstructing is fired when an Entity is being created. <br>
-     * This event is fired within the constructor of the Entity.<br>
-     * <br>
-     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
+     * EntityConstructing is fired when an Entity is being created.
+     * This event is fired within the constructor of the Entity.
+     * <p>
+     * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
+     * <p>
+     * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class EntityConstructing extends EntityEvent {
         public EntityConstructing(Entity entity) {
@@ -49,16 +47,16 @@ public abstract class EntityEvent extends Event {
     }
 
     /**
-     * This event is fired on server and client after an Entity has entered a different section. <br>
-     * Sections are 16x16x16 block grids of the world.<br>
+     * This event is fired on server and client after an Entity has entered a different section.
+     * Sections are 16x16x16 block grids of the world.
+     * <p>
      * This event does not fire when a new entity is spawned, only when an entity moves from one section to another one.
      * Use {@link EntityJoinLevelEvent} to detect new entities joining the world.
-     * <br>
-     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
+     * <p>
+     * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
+     * <p>
+     * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class EnteringSection extends EntityEvent {
         private final long packedOldPos;
@@ -119,8 +117,10 @@ public abstract class EntityEvent extends Event {
      * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance
      * might not be fully initialized. Be cautious in using methods and fields from the instance, and check
      * {@link Entity#isAddedToLevel()} or {@link Entity#firstTick}.
-     *
-     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * <p>
+     * <ul><li>{@link #getEntity} contains the entity that caused this event to occur.</li></ul>
+     * <p>
+     * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class Size extends EntityEvent {
