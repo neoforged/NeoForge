@@ -31,7 +31,6 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Base class of the events specific to Players.
- * <p>
  * 
  * @see PlayerEvent.HarvestCheck
  * @see PlayerEvent.BreakSpeed
