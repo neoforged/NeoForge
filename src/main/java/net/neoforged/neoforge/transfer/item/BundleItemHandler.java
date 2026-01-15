@@ -86,6 +86,11 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         TransferPreconditions.checkNonNegative(index);
 
+        int accessAmount = itemAccess.getAmount();
+        if (accessAmount == 0)
+            return 0;
+        int extractedPerItem = amount / accessAmount;
+
         ItemResource accessResource = itemAccess.getResource();
         BundleContents contents = accessResource.get(component);
         if (contents == null || index > contents.size()) return 0;
@@ -94,17 +99,17 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         int inserted = 0;
 
         if (index == contents.size()) {
-            inserted = mutable.tryInsert(resource.toStack(amount));
+            inserted = mutable.tryInsert(resource.toStack(extractedPerItem));
         } else {
             ItemStack existing = contents.getItemUnsafe(index);
             if (resource.matches(existing)) {
-                inserted += mutable.tryInsert(resource.toStack(amount));
+                inserted += mutable.tryInsert(resource.toStack(extractedPerItem));
             } else {
                 return 0;
             }
         }
 
-        return inserted * itemAccess.exchange(accessResource.with(component, mutable.toImmutable()), itemAccess.getAmount(), transaction);
+        return inserted * itemAccess.exchange(accessResource.with(component, mutable.toImmutable()), accessAmount, transaction);
     }
 
     @Override
