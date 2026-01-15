@@ -11,11 +11,12 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * PlayerXpEvent is fired whenever an event involving player experience occurs. <br>
- * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
- * receive every child event of this class.<br>
- * <br>
- * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
+ * Base class of events involving player experience.
+ * <p>
+ * 
+ * @see PlayerXpEvent.PickupXp
+ * @see PlayerXpEvent.XpChange
+ * @see PlayerXpEvent.LevelChange
  */
 public abstract class PlayerXpEvent extends PlayerEvent {
     public PlayerXpEvent(Player player) {
@@ -24,7 +25,10 @@ public abstract class PlayerXpEvent extends PlayerEvent {
 
     /**
      * This event is fired after the player collides with an experience orb, but before the player has been given the experience.
+     * <p>
      * It can be cancelled, and no further processing will be done.
+     * <p>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
     public static class PickupXp extends PlayerXpEvent implements ICancellableEvent {
         private final ExperienceOrb orb;
@@ -41,7 +45,10 @@ public abstract class PlayerXpEvent extends PlayerEvent {
 
     /**
      * This event is fired when the player's experience changes through the {@link Player#giveExperiencePoints(int)} method.
+     * <p>
      * It can be cancelled, and no further processing will be done.
+     * <p>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
     public static class XpChange extends PlayerXpEvent implements ICancellableEvent {
         private int amount;
@@ -62,7 +69,10 @@ public abstract class PlayerXpEvent extends PlayerEvent {
 
     /**
      * This event is fired when the player's experience level changes through the {@link Player#giveExperienceLevels(int)} method.
+     * <p>
      * It can be cancelled, and no further processing will be done.
+     * <p>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
     public static class LevelChange extends PlayerXpEvent implements ICancellableEvent {
         private int levels;

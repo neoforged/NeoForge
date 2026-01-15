@@ -28,8 +28,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the Entity does not drop anything.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingDropsEvent extends LivingEvent implements ICancellableEvent {

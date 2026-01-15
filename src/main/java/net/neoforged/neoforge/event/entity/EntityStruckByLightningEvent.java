@@ -21,8 +21,6 @@ import net.neoforged.neoforge.event.EventHooks;
  * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the Entity is not struck by the lightening.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityStruckByLightningEvent extends EntityEvent implements ICancellableEvent {

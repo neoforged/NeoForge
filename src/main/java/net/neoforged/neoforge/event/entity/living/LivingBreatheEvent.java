@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -15,8 +16,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is fired via {@link CommonHooks#onLivingBreathe(LivingEntity, int, int)}.<br>
  * <br>
  * This event is not {@link ICancellableEvent}.<br>
- * <br>
- * This event does not have a result. {@link HasResult}
  * <br>
  * This event is fired on {@link NeoForge#EVENT_BUS}
  */

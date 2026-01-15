@@ -92,8 +92,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
      * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
@@ -113,8 +111,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
      * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
@@ -132,8 +128,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
@@ -159,8 +153,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
@@ -210,8 +202,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
