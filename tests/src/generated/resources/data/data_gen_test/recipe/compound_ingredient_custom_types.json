@@ -10,59 +10,7 @@
         {
           "neoforge:ingredient_type": "neoforge:components",
           "components": {
-            "minecraft:attribute_modifiers": [
-              {
-                "type": "minecraft:attack_damage",
-                "amount": 2.0,
-                "id": "minecraft:base_attack_damage",
-                "operation": "add_value",
-                "slot": "mainhand"
-              },
-              {
-                "type": "minecraft:attack_speed",
-                "amount": -2.799999952316284,
-                "id": "minecraft:base_attack_speed",
-                "operation": "add_value",
-                "slot": "mainhand"
-              }
-            ],
-            "minecraft:break_sound": "minecraft:entity.item.break",
-            "minecraft:damage": 3,
-            "minecraft:enchantable": {
-              "value": 5
-            },
-            "minecraft:enchantments": {},
-            "minecraft:item_model": "minecraft:stone_pickaxe",
-            "minecraft:item_name": {
-              "translate": "item.minecraft.stone_pickaxe"
-            },
-            "minecraft:lore": [],
-            "minecraft:max_damage": 131,
-            "minecraft:max_stack_size": 1,
-            "minecraft:rarity": "common",
-            "minecraft:repair_cost": 0,
-            "minecraft:repairable": {
-              "items": "#minecraft:stone_tool_materials"
-            },
-            "minecraft:swing_animation": {},
-            "minecraft:tool": {
-              "rules": [
-                {
-                  "blocks": "#minecraft:incorrect_for_stone_tool",
-                  "correct_for_drops": false
-                },
-                {
-                  "blocks": "#minecraft:mineable/pickaxe",
-                  "correct_for_drops": true,
-                  "speed": 4.0
-                }
-              ]
-            },
-            "minecraft:tooltip_display": {},
-            "minecraft:use_effects": {},
-            "minecraft:weapon": {
-              "item_damage_per_attack": 2
-            }
+            "minecraft:damage": 3
           },
           "items": "minecraft:stone_pickaxe",
           "strict": true
@@ -75,7 +23,6 @@
     "#"
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:gold_block"
   }
 }
