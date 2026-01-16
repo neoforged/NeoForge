@@ -28,6 +28,20 @@
          } else {
              return input.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(input.getItem(0))
+@@ -64,6 +_,13 @@
+         }
+     }
+ 
++    /**
++     * {@return the result of this shapeless recipe or null if it is not static and needs ot be obtained by assembling it}
++     */
++    public @Nullable ItemStackTemplate result() {
++        return result;
++    }
++
+     public ItemStack assemble(CraftingInput input) {
+         return this.result.create();
+     }
 @@ -85,7 +_,7 @@
                      Codec.STRING.optionalFieldOf("group", "").forGetter(o -> o.group),
                      CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(o -> o.category),

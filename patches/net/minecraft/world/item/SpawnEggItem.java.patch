@@ -15,8 +15,8 @@
 +    // TODO 26.1: It's questionable that this is even needed anymore
 +    @net.neoforged.bus.api.SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
 +    private static void registerDispenseBehavior(final net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) {
-+        event.enqueueWork(() -> BuiltInRegistries.ITEM.componentLookup().findAll(DataComponents.ENTITY_DATA).forEach(item -> {
-+            if (item.value() instanceof SpawnEggItem egg && !net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(egg)) {
++        event.enqueueWork(() -> BuiltInRegistries.ITEM.forEach(item -> {
++            if (item instanceof SpawnEggItem egg && !net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(egg)) {
 +                var beh = egg.createDispenseBehavior();
 +                if (beh != null) {
 +                    net.minecraft.world.level.block.DispenserBlock.registerBehavior(egg, beh);
