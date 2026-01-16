@@ -26,6 +26,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jspecify.annotations.Nullable;
 
 @Mod(CreativeModeTabTest.MOD_ID)
 public class CreativeModeTabTest {
@@ -143,20 +144,22 @@ public class CreativeModeTabTest {
     }
 
     private static class CreativeModeColorTab extends CreativeModeTab {
-        private final ItemStack[] iconItems;
+        private ItemStack @Nullable [] iconItems;
 
         public CreativeModeColorTab(CreativeModeTab.Builder builder) {
             super(builder);
-
-            DyeColor[] colors = DyeColor.values();
-            iconItems = new ItemStack[colors.length];
-            for (int i = 0; i < colors.length; i++) {
-                iconItems[i] = new ItemStack(DyeItem.byColor(colors[i]));
-            }
         }
 
         @Override
         public ItemStack getIconItem() {
+            if (iconItems == null) {
+                DyeColor[] colors = DyeColor.values();
+                iconItems = new ItemStack[colors.length];
+                for (int i = 0; i < colors.length; i++) {
+                    iconItems[i] = new ItemStack(DyeItem.byColor(colors[i]));
+                }
+            }
+
             int idx = (int) (System.currentTimeMillis() / 1200) % iconItems.length;
             return iconItems[idx];
         }

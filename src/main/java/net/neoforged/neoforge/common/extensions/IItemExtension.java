@@ -35,6 +35,7 @@ import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -177,10 +178,10 @@ public interface IItemExtension {
      * ItemStack sensitive version of {@link Item#getCraftingRemainder()} ()}.
      * Returns a full ItemStack instance of the result.
      *
-     * @param itemStack The current ItemStack
+     * @param instance The current ItemStack
      * @return The resulting ItemStack
      */
-    default @Nullable ItemStackTemplate getCraftingRemainder(ItemStack itemStack) {
+    default @Nullable ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
         return self().getCraftingRemainder();
     }
 

@@ -244,7 +244,7 @@ public class IngredientTests {
         }
 
         public CompressedShapelessRecipe(ShapelessRecipe uncompressed) {
-            this(uncompressed.group(), uncompressed.category(), ItemStackTemplate.fromNonEmptyStack(uncompressed.assemble(null)), compressIngredients(shapelessRecipeIngredients(uncompressed)));
+            this(uncompressed.group(), uncompressed.category(), uncompressed.result(), compressIngredients(shapelessRecipeIngredients(uncompressed)));
         }
 
         private static NonNullList<Ingredient> decompressList(List<SizedIngredient> ingredients) {
@@ -277,8 +277,8 @@ public class IngredientTests {
         private static final MapCodec<CompressedShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 p_337958_ -> p_337958_.group(
                         Codec.STRING.optionalFieldOf("group", "").forGetter(ShapelessRecipe::group),
-                        CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(o -> o.category()),
-                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> ItemStackTemplate.fromNonEmptyStack(o.assemble(null))),
+                        CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapelessRecipe::category),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(ShapelessRecipe::result),
                         SizedIngredient.NESTED_CODEC
                                 .listOf()
                                 .fieldOf("ingredients")
@@ -331,7 +331,7 @@ public class IngredientTests {
         }
 
         public static CompressedShapelessRecipeBuilder compressedShapeless(RecipeCategory category, ItemLike item, int count) {
-            return new CompressedShapelessRecipeBuilder(category, item.asItem().getDefaultInstance().copyWithCount(count).toTemplate());
+            return new CompressedShapelessRecipeBuilder(category, new ItemStackTemplate(item.asItem(), count));
         }
 
         public CompressedShapelessRecipeBuilder requires(Ingredient ingredient, int count) {

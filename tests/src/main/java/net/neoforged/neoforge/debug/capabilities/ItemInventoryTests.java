@@ -38,9 +38,13 @@ public class ItemInventoryTests {
     private static final DeferredItem<Item> BACKPACK;
 
     static {
-        NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-        defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
-        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> props.component(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents)));
+        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> {
+            return props.delayedComponent(DataComponents.CONTAINER, context -> {
+                NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
+                defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
+                return ItemContainerContents.fromItems(defaultContents);
+            });
+        });
     }
 
     @OnInit

@@ -39,6 +39,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -69,7 +71,7 @@ import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.Util;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -254,9 +256,7 @@ public class DataGeneratorTest {
                     .pattern("#")
                     .pattern("#")
                     .define('#', CompoundIngredient.of(tag(ItemTags.PLANKS), tag(ItemTags.LOGS), net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, Util.make(() -> {
-                        ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
-                        stack.setDamageValue(3);
-                        return stack;
+                        return new ItemStackTemplate(Items.STONE_PICKAXE, DataComponentPatch.builder().set(DataComponents.DAMAGE, 3).build());
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));

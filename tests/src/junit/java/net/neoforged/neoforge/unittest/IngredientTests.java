@@ -68,7 +68,7 @@ public class IngredientTests {
     void testComponentIngredient(boolean strict, MinecraftServer server) {
         var stack = new ItemStack(Items.DIAMOND_AXE);
         stack.set(DataComponents.DAMAGE, 1);
-        var ingredient = DataComponentIngredient.of(strict, stack);
+        var ingredient = DataComponentIngredient.of(strict, stack.getComponents(), stack.getItem());
         Assertions.assertThat(ingredient.test(stack)).withFailMessage("Base ingredient doesn't match").isTrue();
 
         stack.set(DataComponents.DAMAGE, 2);

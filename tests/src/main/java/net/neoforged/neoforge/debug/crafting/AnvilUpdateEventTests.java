@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -36,8 +37,6 @@ public class AnvilUpdateEventTests {
     // MENU_SLOT_INV_FIRST is the same in the menu as INVENTORY_SLOT_FIRST in player's inventory
     private static final int INVENTORY_SLOT_FIRST = 0;
     private static final int INVENTORY_SLOT_SECOND = 1;
-
-    private static final ItemStack MOCK_OUTPUT = new ItemStack(Items.COBBLESTONE);
 
     private static ItemStack sampleStack() {
         ItemStack s = new ItemStack(Items.GOLDEN_HOE, 1);
@@ -104,8 +103,10 @@ public class AnvilUpdateEventTests {
         final int CUSTOM_COST = 7;
         final int CUSTOM_MATERIAL_COST = 3;
 
+        var mockOutput = Lazy.of(() -> new ItemStack(Items.COBBLESTONE));
+
         test.whenEnabled(listeners -> listeners.forge().addListener((AnvilUpdateEvent e) -> {
-            e.setOutput(MOCK_OUTPUT.copy());
+            e.setOutput(mockOutput.get().copy());
             e.setXpCost(CUSTOM_COST);
             e.setMaterialCost(CUSTOM_MATERIAL_COST);
         }));
@@ -117,7 +118,7 @@ public class AnvilUpdateEventTests {
             moveItemsToInputs(ctx.menu, ctx.player);
             ItemStack out = ctx.menu.getSlot(MENU_SLOT_RESULT).getItem();
             ctx.helper.assertTrue(
-                    ItemStack.isSameItemSameComponents(out, MOCK_OUTPUT),
+                    ItemStack.isSameItemSameComponents(out, mockOutput.get()),
                     "Expected custom cobblestone output; output is " + out);
             ctx.helper.assertValueEqual(
                     CUSTOM_COST, ctx.menu.getCost(),
