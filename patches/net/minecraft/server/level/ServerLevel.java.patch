@@ -29,6 +29,19 @@
      }
  
      @Deprecated
+@@ -357,7 +_,11 @@
+         if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
+             Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
+             if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
+-                this.server.clockManager().skipToTimeMarker(defaultClock.get(), ClockTimeMarkers.WAKE_UP_FROM_SLEEP);
++                // Neo: Allow mods to control how the clock is adjusted after sleep
++                var adjustment = net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, new net.neoforged.neoforge.common.util.ClockAdjustment.Marker(ClockTimeMarkers.WAKE_UP_FROM_SLEEP));
++                if (adjustment != null) {
++                    adjustment.apply(this.server.clockManager(), defaultClock.get());
++                }
+             }
+ 
+             this.wakeUpAllPlayers();
 @@ -395,7 +_,7 @@
  
          this.handlingTick = false;
