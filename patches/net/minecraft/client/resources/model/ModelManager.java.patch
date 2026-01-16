@@ -128,20 +128,13 @@
                      Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                          bakingResult.blockStateModels(), bakingResult.missingModels().block()
                      );
-@@ -313,6 +_,16 @@
+@@ -313,6 +_,9 @@
          this.itemProperties = bakedModels.itemProperties();
          this.modelGroups = preparations.modelGroups;
          this.missingModels = bakedModels.missingModels();
 +        this.bakedStandaloneModels = bakedModels.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, bakedModels, this.modelBakery.get());
 +        this.reportedMissingItemModels = new java.util.HashSet<>();
-+        for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
-+            Identifier modelId = item.components().get(net.minecraft.core.component.DataComponents.ITEM_MODEL);
-+            if (modelId != null && !this.bakedItemStackModels.containsKey(modelId)) {
-+                this.reportedMissingItemModels.add(modelId);
-+                LOGGER.warn("No model loaded for default item model ID {} of {}", modelId, item);
-+            }
-+        }
          this.blockModelShaper.replaceCache(preparations.modelCache);
          this.specialBlockModelRenderer = preparations.specialBlockModelRenderer;
          this.entityModelSet = preparations.entityModelSet;
