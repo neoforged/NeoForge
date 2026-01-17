@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/level/gamerules/GameRuleCategory.java
++++ b/net/minecraft/world/level/gamerules/GameRuleCategory.java
+@@ -25,6 +_,9 @@
+         return register(Identifier.withDefaultNamespace(name));
+     }
+ 
++    /**
++     * @deprecated Prefer registering using {@link net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent}
++     */
+     public static GameRuleCategory register(Identifier id) {
+         GameRuleCategory category = new GameRuleCategory(id);
+         if (SORT_ORDER.contains(category)) {
+@@ -37,5 +_,17 @@
+ 
+     public MutableComponent label() {
+         return Component.translatable(this.id.toLanguageKey("gamerule.category"));
++    }
++
++    // Neo: Allow custom categories to be registered safely
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void registerModdedCategories() {
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent(category -> {
++            if (SORT_ORDER.contains(category)) {
++                throw new IllegalArgumentException(String.format(Locale.ROOT, "Category '%s' is already registered.", category.id));
++            } else {
++                SORT_ORDER.add(category);
++            }
++        }));
+     }
+ }

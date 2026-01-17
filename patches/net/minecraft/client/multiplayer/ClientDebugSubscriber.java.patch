@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/multiplayer/ClientDebugSubscriber.java
++++ b/net/minecraft/client/multiplayer/ClientDebugSubscriber.java
+@@ -64,6 +_,8 @@
+             addFlag(subscriptions, DebugSubscriptions.VILLAGE_SECTIONS, SharedConstants.DEBUG_VILLAGE_SECTIONS);
+         }
+ 
++        // Neo: Allow requesting custom subscriptions
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.AddDebugSubscriptionFlagsEvent((subscription, flag) -> addFlag(subscriptions, subscription, flag)));
+         return subscriptions;
+     }
+ 
