@@ -16,10 +16,6 @@
     "#c:storage_blocks/redstone",
     "#c:storage_blocks/resin",
     "#c:storage_blocks/slime",
-    "#c:storage_blocks/wheat",
-    {
-      "id": "#forge:storage_blocks",
-      "required": false
-    }
+    "#c:storage_blocks/wheat"
   ]
 }

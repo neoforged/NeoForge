@@ -901,15 +901,16 @@ public class Tags {
          */
         public static final TagKey<Item> TOOLS_FISHING_ROD = tag("tools/fishing_rod");
         /**
-         * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
-         * should not be put into this tag and should be put into their own tool tags.
+         * A tag containing all existing throwable stick-like weapons like tridents.
+         * Other tools such as throwing knives or boomerangs should not be put into
+         * this tag and should be put into their own tool tags.
          * Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
          * @see ItemAbility
          * @see ItemAbilities
          */
-        public static final TagKey<Item> TOOLS_SPEAR = tag("tools/spear");
+        public static final TagKey<Item> TOOLS_TRIDENT = tag("tools/trident");
         /**
          * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.

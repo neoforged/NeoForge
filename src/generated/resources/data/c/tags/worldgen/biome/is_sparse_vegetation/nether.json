@@ -1,12 +1,3 @@
 {
-  "values": [
-    {
-      "id": "#forge:is_sparse_vegetation/nether",
-      "required": false
-    },
-    {
-      "id": "#forge:is_sparse/nether",
-      "required": false
-    }
-  ]
+  "values": []
 }

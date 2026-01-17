@@ -6,10 +6,6 @@
     "minecraft:eroded_badlands",
     "minecraft:savanna",
     "minecraft:savanna_plateau",
-    "minecraft:windswept_savanna",
-    {
-      "id": "#forge:is_dry/overworld",
-      "required": false
-    }
+    "minecraft:windswept_savanna"
   ]
 }

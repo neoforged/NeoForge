@@ -378,7 +378,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_FISHING_ROD, "Fishing Rods");
         add(Tags.Items.TOOLS_BRUSH, "Brushes");
         add(Tags.Items.TOOLS_MACE, "Maces");
-        add(Tags.Items.TOOLS_SPEAR, "Spears");
+        add(Tags.Items.TOOLS_TRIDENT, "Tridents");
         add(Tags.Items.TOOLS_IGNITER, "Igniters");
         add(Tags.Items.TOOLS_WRENCH, "Wrenches");
         add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");

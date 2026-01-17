@@ -599,7 +599,6 @@ public class NeoForgeMod {
 
         UsernameCache.load();
         DualStackUtils.initialise();
-        TagConventionLogWarning.init();
 
         modEventBus.addListener(EventPriority.HIGH, CapabilityHooks::markProxyableCapabilities);
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);

@@ -7,10 +7,6 @@
     "minecraft:gold_ore",
     "minecraft:iron_ore",
     "minecraft:lapis_ore",
-    "minecraft:redstone_ore",
-    {
-      "id": "#forge:ores_in_ground/stone",
-      "required": false
-    }
+    "minecraft:redstone_ore"
   ]
 }

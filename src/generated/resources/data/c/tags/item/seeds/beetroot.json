@@ -1,9 +1,5 @@
 {
   "values": [
-    "minecraft:beetroot_seeds",
-    {
-      "id": "#forge:seeds/beetroot",
-      "required": false
-    }
+    "minecraft:beetroot_seeds"
   ]
 }

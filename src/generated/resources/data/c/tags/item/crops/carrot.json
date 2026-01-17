@@ -1,9 +1,5 @@
 {
   "values": [
-    "minecraft:carrot",
-    {
-      "id": "#forge:crops/carrot",
-      "required": false
-    }
+    "minecraft:carrot"
   ]
 }

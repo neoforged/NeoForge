@@ -1,9 +1,5 @@
 {
   "values": [
-    "minecraft:ender_pearl",
-    {
-      "id": "#forge:ender_pearls",
-      "required": false
-    }
+    "minecraft:ender_pearl"
   ]
 }

@@ -15,10 +15,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.TagConventionLogWarning;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +26,14 @@ public final class TagConventionLogWarningClient {
     private TagConventionLogWarningClient() {}
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public enum LogWarningMode {
+        SILENCED,
+        DEV_SHORT,
+        DEV_VERBOSE,
+        PROD_SHORT,
+        PROD_VERBOSE
+    }
 
     /*package private*/
     static void init() {
@@ -40,10 +47,10 @@ public final class TagConventionLogWarningClient {
         // Log missing item tag translations only in integrated server so we can safely get translations.
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeCommonConfig.INSTANCE.logUntranslatedItemTagWarnings.get();
-            if (FMLEnvironment.getDist().isClient() && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
-                boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_SHORT ||
-                        untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;
+            TagConventionLogWarningClient.LogWarningMode untranslatedTagWarningMode = NeoForgeClientConfig.INSTANCE.logUntranslatedItemTagWarnings.get();
+            if (FMLEnvironment.getDist().isClient() && untranslatedTagWarningMode != TagConventionLogWarningClient.LogWarningMode.SILENCED) {
+                boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarningClient.LogWarningMode.DEV_SHORT ||
+                        untranslatedTagWarningMode == TagConventionLogWarningClient.LogWarningMode.DEV_VERBOSE;
 
                 if (!FMLEnvironment.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> untranslatedTags = new ObjectArrayList<>();
@@ -61,8 +68,8 @@ public final class TagConventionLogWarningClient {
                                 """);
 
                         // Print out all untranslated tags when desired.
-                        boolean isConfigSetToVerbose = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE ||
-                                untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.PROD_VERBOSE;
+                        boolean isConfigSetToVerbose = untranslatedTagWarningMode == TagConventionLogWarningClient.LogWarningMode.DEV_VERBOSE ||
+                                untranslatedTagWarningMode == TagConventionLogWarningClient.LogWarningMode.PROD_VERBOSE;
 
                         if (isConfigSetToVerbose) {
                             stringBuilder.append("\nUntranslated item tags:");

@@ -9,10 +9,6 @@
     "#c:ores/lapis",
     "#c:ores/netherite_scrap",
     "#c:ores/redstone",
-    "#c:ores/quartz",
-    {
-      "id": "#forge:ores",
-      "required": false
-    }
+    "#c:ores/quartz"
   ]
 }

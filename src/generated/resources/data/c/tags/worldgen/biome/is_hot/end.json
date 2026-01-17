@@ -1,8 +1,3 @@
 {
-  "values": [
-    {
-      "id": "#forge:is_hot/end",
-      "required": false
-    }
-  ]
+  "values": []
 }

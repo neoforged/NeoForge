@@ -7,10 +7,6 @@
     "minecraft:deepslate_gold_ore",
     "minecraft:deepslate_iron_ore",
     "minecraft:deepslate_lapis_ore",
-    "minecraft:deepslate_redstone_ore",
-    {
-      "id": "#forge:ores_in_ground/deepslate",
-      "required": false
-    }
+    "minecraft:deepslate_redstone_ore"
   ]
 }

@@ -19,10 +19,6 @@
     "minecraft:mob_projectile",
     "minecraft:sonic_boom",
     "minecraft:in_wall",
-    "minecraft:generic",
-    {
-      "id": "#forge:is_physical",
-      "required": false
-    }
+    "minecraft:generic"
   ]
 }

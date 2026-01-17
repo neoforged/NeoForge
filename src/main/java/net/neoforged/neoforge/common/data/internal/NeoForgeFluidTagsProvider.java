@@ -36,17 +36,6 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.RABBIT_STEW);
         tag(Fluids.BEETROOT_SOUP);
         tag(Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
-
-        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
-        // TODO: Remove backwards compat tag entries in 1.22
-        tagWithOptionalLegacy(Fluids.MILK);
-        tagWithOptionalLegacy(Fluids.GASEOUS);
-        tagWithOptionalLegacy(Fluids.HONEY);
-        tagWithOptionalLegacy(Fluids.POTION);
-        tagWithOptionalLegacy(Fluids.SUSPICIOUS_STEW);
-        tagWithOptionalLegacy(Fluids.MUSHROOM_STEW);
-        tagWithOptionalLegacy(Fluids.RABBIT_STEW);
-        tagWithOptionalLegacy(Fluids.BEETROOT_SOUP);
     }
 
     private TagAppender<Fluid, Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {

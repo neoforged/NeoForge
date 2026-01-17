@@ -107,16 +107,6 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         tag(DamageTypes.OUTSIDE_BORDER, Tags.DamageTypes.IS_TECHNICAL);
         tag(DamageTypes.FELL_OUT_OF_WORLD, Tags.DamageTypes.IS_TECHNICAL);
         tag(Tags.DamageTypes.NO_FLINCH);
-
-        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
-        // TODO: Remove backwards compat tag entries in 1.22
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_POISON);
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_WITHER);
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_MAGIC);
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_ENVIRONMENT);
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_PHYSICAL);
-        tagWithOptionalLegacy(Tags.DamageTypes.IS_TECHNICAL);
-        tagWithOptionalLegacy(Tags.DamageTypes.NO_FLINCH);
     }
 
     /** {@return an appender for vanilla tags that contain the given entry directly} */

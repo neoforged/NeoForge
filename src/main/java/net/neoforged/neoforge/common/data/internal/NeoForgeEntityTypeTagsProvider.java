@@ -7,12 +7,9 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
-import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.Tags;
 
@@ -39,15 +36,5 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         EntityType.BAMBOO_CHEST_RAFT);
         tag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED);
         tag(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED);
-
-        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
-        // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.EntityTypes.BOSSES).addOptionalTag(forge("bosses"));
-        tag(Tags.EntityTypes.MINECARTS).addOptionalTag(forge("minecarts"));
-        tag(Tags.EntityTypes.BOATS).addOptionalTag(forge("boats"));
-    }
-
-    private TagKey<EntityType<?>> forge(String id) {
-        return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("forge", id));
     }
 }
