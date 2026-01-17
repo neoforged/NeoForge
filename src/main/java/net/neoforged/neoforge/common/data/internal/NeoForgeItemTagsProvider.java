@@ -370,6 +370,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
                 .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/yellow"));
         tagWithOptionalLegacy(Tags.Items.ENDER_PEARLS);
         tagWithOptionalLegacy(Tags.Items.FEATHERS);
+        tag(Tags.Items.FOODS_DOUGH).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "foods/doughs"));
         tagWithOptionalLegacy(Tags.Items.GEMS);
         tagWithOptionalLegacy(Tags.Items.GEMS_AMETHYST);
         tagWithOptionalLegacy(Tags.Items.GEMS_DIAMOND);
@@ -462,7 +463,6 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
 
     private void addColoredTags(Consumer<TagKey<Item>> consumer, TagKey<Item> group) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        tag(Tags.Items.FOODS_DOUGH).addOptionalTag(ItemTags.create(Identifier.fromNamespaceAndPath("c", "foods/doughs")));
         for (DyeColor color : DyeColor.values()) {
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             consumer.accept(tag);
