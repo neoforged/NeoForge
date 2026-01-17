@@ -12,6 +12,9 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -76,6 +79,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportPr
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.DefaultComponentsUpdatedEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
@@ -134,6 +138,19 @@ public class ClientNeoForgeMod {
                                         ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.debug_class_loading_transformations.message", ClassTransformStatistics.getTransformationSummary(), ClassTransformStatistics.getMixinParsedClassesSummary()), false);
                                         return Command.SINGLE_SUCCESS;
                                     })));
+        });
+
+        // Eagerly report missing item models when client resources reload
+        NeoForge.EVENT_BUS.addListener(DefaultComponentsUpdatedEvent.class, event -> {
+            if (event.getRegistry() == Registries.ITEM) {
+                for (var item : BuiltInRegistries.ITEM) {
+                    var modelId = item.components().get(DataComponents.ITEM_MODEL);
+                    if (modelId != null) {
+                        // This will internally warn about each missing model at most once
+                        Minecraft.getInstance().getModelManager().getItemModel(modelId);
+                    }
+                }
+            }
         });
     }
 

@@ -25,6 +25,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -48,6 +49,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -128,6 +130,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import net.neoforged.neoforge.event.DefaultComponentsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -608,6 +611,13 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
 
         NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
+
+        // When the components are bound, we have to reset the default resources too
+        NeoForge.EVENT_BUS.addListener(DefaultComponentsUpdatedEvent.class, event -> {
+            if (event.getRegistry() == Registries.ITEM) {
+                BuiltInRegistries.ITEM.forEach(Item::resetDefaultResource);
+            }
+        });
 
         modEventBus.register(NeoForgeDataMaps.class);
 
