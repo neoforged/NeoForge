@@ -13,25 +13,16 @@
              }
          }
      }
-@@ -38,6 +_,18 @@
+@@ -35,6 +_,9 @@
+             ClientClockManager.ClockInstance clock = this.getInstance((Holder<WorldClock>)definition);
+             clock.totalTicks = state.totalTicks();
+             clock.paused = state.paused();
++            // Neo: Handle extended state sent by server
++            clock.fractionalTick = state.fractionalTick();
++            clock.speed = state.speed();
          });
      }
  
-+    // Neo: Handle extended state sent by server
-+    public void handleExtendedUpdates(long gameTime, Map<Holder<WorldClock>, net.neoforged.neoforge.network.payload.ExtendedClockState> updates) {
-+        this.tick(gameTime);
-+        updates.forEach((definition, state) -> {
-+            ClientClockManager.ClockInstance clock = this.getInstance((Holder<WorldClock>)definition);
-+            clock.totalTicks = state.state().totalTicks();
-+            clock.paused = state.state().paused();
-+            clock.speed = state.speed();
-+            clock.fractionalTick = state.fractionalTick();
-+        });
-+    }
-+
-     @Override
-     public long getTotalTicks(Holder<WorldClock> definition) {
-         return this.getInstance(definition).totalTicks;
 @@ -47,5 +_,7 @@
      private static class ClockInstance {
          private long totalTicks;

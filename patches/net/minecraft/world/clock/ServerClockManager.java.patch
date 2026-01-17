@@ -1,22 +1,8 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -46,7 +_,23 @@
-         return new PackedClockStates(Util.mapValues(this.clocks, ServerClockManager.ClockInstance::packState));
+@@ -47,6 +_,9 @@
      }
  
-+    // Neo: Supports extended state per clock
-+    public void loadFrom(net.neoforged.neoforge.network.payload.PackedExtendedClockStates states) {
-+        states.clocks().forEach((definition, state) -> {
-+            ServerClockManager.ClockInstance instance = this.getInstance((Holder<WorldClock>)definition);
-+            instance.loadFrom(state);
-+        });
-+    }
-+
-+    // Neo: Supports extended state per clock
-+    public net.neoforged.neoforge.network.payload.PackedExtendedClockStates packExtendedState() {
-+        return new net.neoforged.neoforge.network.payload.PackedExtendedClockStates(Util.mapValues(this.clocks, ServerClockManager.ClockInstance::packExtendedState));
-+    }
-+
      public void tick() {
 +        if (this.server.overworld() == null) {
 +            return; // Neo: Our JUnit ephemeral testserver has no overworld and getGlobalGameRules() would crash
@@ -24,7 +10,7 @@
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
          if (advanceTime) {
              this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
-@@ -93,15 +_,54 @@
+@@ -93,11 +_,45 @@
          this.server.getPlayerList().broadcastAll(new ClientboundSetTimePacket(this.getGameTime(), updates));
      }
  
@@ -70,16 +56,7 @@
      public ClientboundSetTimePacket createFullSyncPacket() {
          return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packNetworkState(this.server)));
      }
- 
-+    // Neo: Support extra state per clock synced to the client
-+    public net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload createFullExtendedSyncPacket() {
-+        return new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packExtendedNetworkState(this.server)));
-+    }
-+
-     private long getGameTime() {
-         return this.server.overworld().getGameTime();
-     }
-@@ -119,26 +_,51 @@
+@@ -119,26 +_,37 @@
      private static class ClockInstance {
          private final Map<ResourceKey<ClockTimeMarker>, ClockTimeMarker> timeMarkers = new Reference2ObjectOpenHashMap<>();
          private long totalTicks;
@@ -90,17 +67,11 @@
 +        // Neo: Replaced with ExtendedClockState
          public void loadFrom(ClockState state) {
              this.totalTicks = state.totalTicks();
-+            this.fractionalTick = 0;
-+            this.speed = 1;
++            this.fractionalTick = state.fractionalTick();
++            this.speed = state.speed();
              this.paused = state.paused();
          }
  
-+        public void loadFrom(net.neoforged.neoforge.network.payload.ExtendedClockState state) {
-+            loadFrom(state.state());
-+            this.fractionalTick = state.fractionalTick();
-+            this.speed = state.speed();
-+        }
-+
          public void tick() {
              if (!this.paused) {
 -                this.totalTicks++;
@@ -114,21 +85,15 @@
  
 +        // Neo: Replaced with ExtendedClockState
          public ClockState packState() {
-             return new ClockState(this.totalTicks, this.paused);
+-            return new ClockState(this.totalTicks, this.paused);
++            return new ClockState(this.totalTicks, this.paused, this.fractionalTick, this.speed);
          }
  
 +        // Neo: Replaced with ExtendedClockState
          public ClockState packNetworkState(MinecraftServer server) {
              boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
-             return new ClockState(this.totalTicks, this.paused || !advanceTime);
-+        }
-+
-+        public net.neoforged.neoforge.network.payload.ExtendedClockState packExtendedState() {
-+            return new net.neoforged.neoforge.network.payload.ExtendedClockState(packState(), fractionalTick, speed);
-+        }
-+
-+        public net.neoforged.neoforge.network.payload.ExtendedClockState packExtendedNetworkState(MinecraftServer server) {
-+            return new net.neoforged.neoforge.network.payload.ExtendedClockState(packNetworkState(server), fractionalTick, speed);
+-            return new ClockState(this.totalTicks, this.paused || !advanceTime);
++            return new ClockState(this.totalTicks, this.paused || !advanceTime, this.fractionalTick, this.speed);
          }
      }
  }
