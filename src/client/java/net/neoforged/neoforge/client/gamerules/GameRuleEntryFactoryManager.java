@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.gamerules;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
+import net.minecraft.client.gui.screens.worldselection.AbstractGameRulesScreen;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.neoforged.fml.ModLoader;
@@ -24,7 +24,7 @@ public final class GameRuleEntryFactoryManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void appendGameRuleEntry(EditGameRulesScreen screen, GameRule<T> gameRule, BiConsumer<GameRule<T>, EditGameRulesScreen.EntryFactory<T>> addEntry) {
+    public static <T> void appendGameRuleEntry(AbstractGameRulesScreen screen, GameRule<T> gameRule, BiConsumer<GameRule<T>, AbstractGameRulesScreen.EntryFactory<T>> addEntry) {
         var ruleType = gameRule.gameRuleType();
 
         if (ruleType == GameRuleType.BOOL || ruleType == GameRuleType.INT) {

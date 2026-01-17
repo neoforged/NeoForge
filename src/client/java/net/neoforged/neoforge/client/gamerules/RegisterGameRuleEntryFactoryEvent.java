@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.gamerules;
 import java.util.Map;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
+import net.minecraft.client.gui.screens.worldselection.AbstractGameRulesScreen;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
@@ -16,7 +16,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired to allow modders to register custom {@link EditGameRulesScreen.RuleEntry} factories.
+ * Fired to allow modders to register custom {@link AbstractGameRulesScreen.RuleEntry} factories.
  * <p>
  * This event is fired on the mod-specific event bus, only on the {@link LogicalSide#CLIENT logical client}.
  * <p>

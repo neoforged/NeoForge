@@ -12,15 +12,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
+import net.minecraft.client.gui.screens.worldselection.AbstractGameRulesScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Copy of {@link EditGameRulesScreen.GameRuleEntry} modified to be used in a static context.
+ * Copy of {@link AbstractGameRulesScreen.GameRuleEntry} modified to be used in a static context.
  */
-public abstract class GameRuleEntry extends EditGameRulesScreen.RuleEntry {
+public abstract class GameRuleEntry extends AbstractGameRulesScreen.RuleEntry {
     private final List<FormattedCharSequence> label;
     protected final List<AbstractWidget> children = Lists.newArrayList();
     protected final Font font;

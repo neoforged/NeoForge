@@ -8,21 +8,21 @@ package net.neoforged.neoforge.client.gamerules;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
+import net.minecraft.client.gui.screens.worldselection.AbstractGameRulesScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.gamerules.GameRule;
 
 /**
- * Copy of {@link EditGameRulesScreen.IntegerRuleEntry} updated to be used in a static context for any {@link GameRule}
+ * Copy of {@link AbstractGameRulesScreen.IntegerRuleEntry} updated to be used in a static context for any {@link GameRule}
  * <p>
  * It is recommended for advanced types to make use of {@link RegisterGameRuleEntryFactoryEvent}
  */
 public class GenericGameRuleEntry<T> extends GameRuleEntry {
     private final EditBox input;
 
-    public GenericGameRuleEntry(EditGameRulesScreen screen, Component label, List<FormattedCharSequence> tooltip, String narration, GameRule<T> gameRule) {
+    public GenericGameRuleEntry(AbstractGameRulesScreen screen, Component label, List<FormattedCharSequence> tooltip, String narration, GameRule<T> gameRule) {
         super(screen.getFont(), tooltip, label);
 
         input = new EditBox(screen.getFont(), 10, 5, 44, 20, label.copy().append("\n").append(narration).append("\n"));
