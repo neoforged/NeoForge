@@ -1,12 +1,6 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -69,23 +_,23 @@
- 
-     @Override
-     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(this.supportBlocks);
-+        return state.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock;
-     }
+@@ -74,13 +_,13 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -24,12 +18,6 @@
                  } else {
                      Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
                      BlockPos relative = pos.relative(direction);
-                     BlockState stateBelow = level.getBlockState(relative.below());
--                    if (level.getBlockState(relative).isAir() && stateBelow.is(BlockTags.GROWS_CROPS)) {
-+                    if (level.isEmptyBlock(relative) && (stateBelow.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock || stateBelow.is(BlockTags.DIRT))) {
-                         Registry<Block> blocks = level.registryAccess().lookupOrThrow(Registries.BLOCK);
-                         Optional<Block> fruit = blocks.getOptional(this.fruit);
-                         Optional<Block> stem = blocks.getOptional(this.attachedStem);
 @@ -95,6 +_,7 @@
                          }
                      }

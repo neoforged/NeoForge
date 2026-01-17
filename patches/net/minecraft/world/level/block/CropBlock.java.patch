@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -47,7 +_,7 @@
- 
-     @Override
-     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(BlockTags.SUPPORTS_CROPS);
-+        return state.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock;
-     }
- 
-     protected IntegerProperty getAgeProperty() {
 @@ -77,12 +_,14 @@
  
      @Override

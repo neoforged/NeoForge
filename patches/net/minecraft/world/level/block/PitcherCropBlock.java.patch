@@ -1,18 +1,12 @@
 --- a/net/minecraft/world/level/block/PitcherCropBlock.java
 +++ b/net/minecraft/world/level/block/PitcherCropBlock.java
-@@ -102,12 +_,13 @@
+@@ -102,7 +_,8 @@
  
      @Override
      public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 -        return isLower(state) && !sufficientLight(level, pos) ? false : super.canSurvive(state, level, pos);
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
 +        return isLower(state) && !sufficientLight(level, pos) ? soilDecision.isTrue() : super.canSurvive(state, level, pos);
-     }
- 
-     @Override
-     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
--        return state.is(BlockTags.SUPPORTS_CROPS);
-+        return state.getBlock() instanceof net.minecraft.world.level.block.FarmlandBlock;
      }
  
      @Override
