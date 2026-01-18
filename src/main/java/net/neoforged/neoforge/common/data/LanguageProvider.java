@@ -129,7 +129,7 @@ public abstract class LanguageProvider implements DataProvider {
         add(fluidType.getDescriptionId(), name);
     }
 
-    public void add(DeferredHolder<FluidType, FluidType> fluidType, String name) {
-        add(fluidType.get(), name);
+    public void add(Supplier<DeferredHolder<FluidType, FluidType>> fluidType, String name) {
+        add(fluidType.get().get(), name);
     }
 }
