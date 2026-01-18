@@ -86,7 +86,7 @@ public class FluidTypeTest {
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()
+    public static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()
             .supportsBoating(true)
             .canHydrate(true)
             .addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)));

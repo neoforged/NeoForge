@@ -5,5 +5,6 @@
   "data_gen_test.test.unicode": "ʇsǝ┴ ǝpoɔᴉu∩",
   "effect.minecraft.poison": "Poison",
   "entity.minecraft.cat": "Cat",
+  "fluid_type.fluid_type_test.test_fluid": "Test Fluid",
   "item.minecraft.diamond": "Diamond"
 }

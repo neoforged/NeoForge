@@ -99,6 +99,7 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.oldtest.fluid.FluidTypeTest;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -519,6 +520,7 @@ public class DataGeneratorTest {
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
             add(Fluids.WATER.getFluidType(), "Water");
             add(Fluids.LAVA.getFluidType(), "Lava");
+            add(FluidTypeTest.TEST_FLUID_TYPE.value(),"Test Fluid");
         }
     }
 
