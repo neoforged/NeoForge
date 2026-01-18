@@ -517,7 +517,7 @@ public class DataGeneratorTest {
             add(MobEffects.POISON.value(), "Poison");
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
-            add(FluidTypeTest.TEST_FLUID_TYPE.value(),"Test Fluid");
+            add(FluidTypeTest.TEST_FLUID_TYPE.value(), "Test Fluid");
         }
     }
 
