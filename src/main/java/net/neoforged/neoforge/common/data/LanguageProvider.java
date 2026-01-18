@@ -128,7 +128,7 @@ public abstract class LanguageProvider implements DataProvider {
         add(fluidType.getDescriptionId(), name);
     }
 
-    public void addFluidType(Supplier<? extends FluidType> fluidType, String name) {
+    public void add(Supplier<? extends FluidType> fluidType, String name) {
         add(fluidType.get(), name);
     }
 }
