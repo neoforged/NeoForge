@@ -1,5 +1,25 @@
 {
   "block.minecraft.stone": "Stone",
+  "data_gen_test.test.component.appended": {
+    "extra": [
+      {
+        "color": "gold",
+        "text": "Second"
+      }
+    ],
+    "text": "First"
+  },
+  "data_gen_test.test.component.literal": "Literal",
+  "data_gen_test.test.component.nested": {
+    "translate": "data_gen_test.test.component.literal",
+    "with": [
+      "minecraft:test"
+    ]
+  },
+  "data_gen_test.test.component.styled": {
+    "color": "blue",
+    "text": "Blue"
+  },
   "data_gen_test.test.unicode": "ʇsǝ┴ ǝpoɔᴉu∩",
   "effect.minecraft.poison": "Poison",
   "entity.minecraft.cat": "Cat",
