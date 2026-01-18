@@ -124,11 +124,11 @@ public abstract class LanguageProvider implements DataProvider {
         add(biome.identifier().toLanguageKey("biome"), value);
     }
 
-    public void addFluidType(FluidType fluidType, String name) {
+    public void add(FluidType fluidType, String name) {
         add(fluidType.getDescriptionId(), name);
     }
 
     public void addFluidType(Supplier<? extends FluidType> fluidType, String name) {
-        addFluidType(fluidType.get(), name);
+        add(fluidType.get(), name);
     }
 }
