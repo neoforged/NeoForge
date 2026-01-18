@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 public abstract class LanguageProvider implements DataProvider {
     private final Map<String, String> data = new TreeMap<>();
@@ -125,11 +124,11 @@ public abstract class LanguageProvider implements DataProvider {
         add(biome.identifier().toLanguageKey("biome"), value);
     }
 
-    public void add(FluidType fluidType, String name) {
+    public void addFluidType(FluidType fluidType, String name) {
         add(fluidType.getDescriptionId(), name);
     }
 
-    public void add(DeferredHolder<FluidType, FluidType> fluidType, String name) {
-        add(fluidType.get(), name);
+    public void addFluidType(Supplier<? extends FluidType> fluidType, String name) {
+        addFluidType(fluidType.get(), name);
     }
 }
