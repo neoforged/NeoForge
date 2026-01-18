@@ -518,6 +518,7 @@ public class DataGeneratorTest {
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
             add(Fluids.WATER.getFluidType(), "Water");
+            add(Fluids.LAVA.getFluidType(), "Lava");
         }
     }
 
