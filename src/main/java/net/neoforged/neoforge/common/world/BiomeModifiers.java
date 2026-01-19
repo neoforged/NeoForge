@@ -50,7 +50,10 @@ public final class BiomeModifiers {
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
                 BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();
-                this.features.forEach(holder -> generationSettings.addFeature(this.step, holder));
+                this.features.forEach(holder -> {
+                    if (!generationSettings.getFeatures(this.step).contains(holder))
+                        generationSettings.addFeature(this.step, holder);
+                });
             }
         }
 
