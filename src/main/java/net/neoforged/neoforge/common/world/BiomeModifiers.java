@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.MapCodec;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -50,8 +51,9 @@ public final class BiomeModifiers {
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
                 BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();
+                List<Holder<PlacedFeature>> featuresInStep = generationSettings.getFeatures(this.step);
                 this.features.forEach(holder -> {
-                    if (!generationSettings.getFeatures(this.step).contains(holder))
+                    if (!featuresInStep.contains(holder))
                         generationSettings.addFeature(this.step, holder);
                 });
             }
