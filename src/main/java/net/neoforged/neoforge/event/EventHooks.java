@@ -26,7 +26,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -1150,10 +1149,5 @@ public class EventHooks {
 
     public static <T> void onGameRuleChanged(MinecraftServer server, GameRule<T> gameRule, T newValue) {
         NeoForge.EVENT_BUS.post(new GameRuleChangedEvent(server, gameRule, newValue));
-    }
-
-    @ApiStatus.Internal
-    public static <T> void onDefaultComponentsUpdated(ResourceKey<? extends Registry<T>> registryKey) {
-        NeoForge.EVENT_BUS.post(new DefaultComponentsUpdatedEvent(registryKey));
     }
 }

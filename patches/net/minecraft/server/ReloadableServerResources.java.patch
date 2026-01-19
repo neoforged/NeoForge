@@ -73,11 +73,12 @@
                                  .thenApply(ignore -> result);
                          }
                      )
-@@ -116,6 +_,7 @@
+@@ -116,6 +_,8 @@
  
      public void updateComponentsAndStaticRegistryTags() {
          this.postponedTags.forEach(Registry.PendingTags::apply);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(registryLookup, false, false));
          this.newComponents.forEach(DataComponentInitializers.PendingComponents::apply);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent(false, false));
      }
  }

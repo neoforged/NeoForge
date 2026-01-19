@@ -22,14 +22,6 @@
              DataComponentMap components = elementBuilder.build();
              entries.add(new DataComponentInitializers.BakedEntry<>(element, components));
              elementsWithComponents.add(element);
-@@ -93,6 +_,7 @@
-             @Override
-             public void apply() {
-                 entries.forEach(DataComponentInitializers.BakedEntry::apply);
-+                net.neoforged.neoforge.event.EventHooks.onDefaultComponentsUpdated(registryKey);
-             }
-         };
-     }
 @@ -115,6 +_,7 @@
          }
  

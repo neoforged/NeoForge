@@ -130,7 +130,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
-import net.neoforged.neoforge.event.DefaultComponentsUpdatedEvent;
+import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -612,8 +612,8 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
 
         // When the components are bound, we have to reset the default resources too
-        NeoForge.EVENT_BUS.addListener(DefaultComponentsUpdatedEvent.class, event -> {
-            if (event.getRegistry() == Registries.ITEM) {
+        NeoForge.EVENT_BUS.addListener(DefaultDataComponentsBoundEvent.class, event -> {
+            if (event.shouldUpdateStaticData()) {
                 BuiltInRegistries.ITEM.forEach(Item::resetDefaultResource);
             }
         });

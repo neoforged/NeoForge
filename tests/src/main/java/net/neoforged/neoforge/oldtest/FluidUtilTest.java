@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,7 +13,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.DefaultComponentsUpdatedEvent;
+import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -36,10 +35,7 @@ public class FluidUtilTest {
         NeoForge.EVENT_BUS.addListener(FluidUtilTest::runTests);
     }
 
-    private static void runTests(DefaultComponentsUpdatedEvent event) {
-        if (event.getRegistry() != Registries.ITEM) {
-            return;
-        }
+    private static void runTests(DefaultDataComponentsBoundEvent event) {
         test_tryEmptyContainer();
         test_tryFillContainer();
         test_tryEmptyContainerAndStow_stackable();
