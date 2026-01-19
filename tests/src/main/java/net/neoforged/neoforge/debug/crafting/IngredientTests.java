@@ -22,6 +22,7 @@ import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
@@ -175,7 +176,10 @@ public class IngredientTests {
                     protected void buildRecipes() {
                         this.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)
                                 .requires(new TestEnabledIngredient(
-                                        DataComponentIngredient.of(true, DataComponents.DAMAGE, 4, Items.DIAMOND_PICKAXE),
+                                        DataComponentIngredient.of(DataComponentPatch.builder()
+                                                .set(DataComponents.DAMAGE, 4)
+                                                .remove(DataComponents.CUSTOM_DATA)
+                                                .build(), Items.DIAMOND_PICKAXE),
                                         test.framework(), test.id()).toVanilla())
                                 .requires(Items.ACACIA_PLANKS)
                                 .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))

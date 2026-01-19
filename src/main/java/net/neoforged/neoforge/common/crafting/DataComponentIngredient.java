@@ -149,6 +149,13 @@ public class DataComponentIngredient implements ICustomIngredient {
     /**
      * Creates a new ingredient matching any item from the list, containing the given components
      */
+    public static <T> Ingredient of(DataComponentType<? super T> type, T value, ItemLike... items) {
+        return of(false, DataComponentPatch.builder().set(type, value).build(), items);
+    }
+
+    /**
+     * Creates a new ingredient matching any item from the list, containing the given components
+     */
     public static <T> Ingredient of(boolean exhaustive, DataComponentType<? super T> type, T value, ItemLike... items) {
         return of(exhaustive, DataComponentPatch.builder().set(type, value).build(), items);
     }
@@ -199,7 +206,18 @@ public class DataComponentIngredient implements ICustomIngredient {
     }
 
     /**
-     * Creates a new ingredient matching any item from the list, containing the given components
+     * Creates a new ingredient matching any item from the list, that contains the components set on the given patch
+     * and that does <strong>not</strong> contain the components removed by the given patch.
+     */
+    public static Ingredient of(DataComponentPatch predicate, ItemLike... items) {
+        return of(false, predicate, HolderSet.direct(Arrays.stream(items).map(ItemLike::asItem).map(Item::builtInRegistryHolder).toList()));
+    }
+
+    /**
+     * Creates a new ingredient matching any item from the list, that contains the components set on the given patch
+     * and that does <strong>not</strong> contain the components removed by the given patch.
+     *
+     * @param exhaustive If true, no other components besides the components set on the patch are allowed on an item to match.
      */
     public static Ingredient of(boolean exhaustive, DataComponentPatch predicate, ItemLike... items) {
         return of(exhaustive, predicate, HolderSet.direct(Arrays.stream(items).map(ItemLike::asItem).map(Item::builtInRegistryHolder).toList()));

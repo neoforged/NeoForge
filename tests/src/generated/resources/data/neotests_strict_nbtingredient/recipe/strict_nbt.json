@@ -7,10 +7,10 @@
       "base": {
         "neoforge:ingredient_type": "neoforge:components",
         "components": {
+          "!minecraft:custom_data": {},
           "minecraft:damage": 4
         },
-        "items": "minecraft:diamond_pickaxe",
-        "strict": true
+        "items": "minecraft:diamond_pickaxe"
       },
       "framework": "neotests:tests",
       "testId": "strictNBTIngredient"

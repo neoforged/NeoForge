@@ -6,14 +6,15 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.DefaultComponentsUpdatedEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -31,11 +32,14 @@ import org.apache.logging.log4j.LogManager;
 public class FluidUtilTest {
     public static final String MODID = "fluid_util_test";
 
-    public FluidUtilTest(IEventBus modEventBus) {
-        modEventBus.addListener(FluidUtilTest::runTests);
+    public FluidUtilTest() {
+        NeoForge.EVENT_BUS.addListener(FluidUtilTest::runTests);
     }
 
-    private static void runTests(FMLLoadCompleteEvent commonSetupEvent) {
+    private static void runTests(DefaultComponentsUpdatedEvent event) {
+        if (event.getRegistry() != Registries.ITEM) {
+            return;
+        }
         test_tryEmptyContainer();
         test_tryFillContainer();
         test_tryEmptyContainerAndStow_stackable();

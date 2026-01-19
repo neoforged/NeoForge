@@ -38,13 +38,7 @@ public class ItemInventoryTests {
     private static final DeferredItem<Item> BACKPACK;
 
     static {
-        BACKPACK = ITEMS.registerItem("test_backpack", Item::new, props -> {
-            return props.delayedComponent(DataComponents.CONTAINER, context -> {
-                NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-                defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
-                return ItemContainerContents.fromItems(defaultContents);
-            });
-        });
+        BACKPACK = ITEMS.registerItem("test_backpack", Item::new);
     }
 
     @OnInit
@@ -63,6 +57,10 @@ public class ItemInventoryTests {
     public static void testItemInventory(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BACKPACK.toStack();
+            NonNullList<ItemStack> defaultContents = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
+            defaultContents.set(STICK_SLOT, Items.STICK.getDefaultInstance().copyWithCount(64));
+            stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(defaultContents));
+
             ItemAccess itemAccess = ItemAccess.forStack(stack);
             // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
             IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
