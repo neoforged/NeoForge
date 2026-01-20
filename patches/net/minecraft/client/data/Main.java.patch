@@ -22,7 +22,7 @@
 +            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
 +            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
 +            boolean validate = optionSet.has(validateSpec);
-+            DataGenerator generator = new DataGenerator(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
++            DataGenerator generator = new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addClientProviders(generator, client);
 -            generator.run();

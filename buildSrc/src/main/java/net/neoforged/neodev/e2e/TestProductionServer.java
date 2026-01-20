@@ -28,6 +28,7 @@ public abstract class TestProductionServer extends RunProductionServer {
     @Override
     public void exec() {
         var selfTestReport = new File(getTemporaryDir(), "server_self_test.txt");
+        selfTestReport.delete();
 
         environment("NEOFORGE_DEDICATED_SERVER_SELFTEST", selfTestReport.getAbsolutePath());
 
