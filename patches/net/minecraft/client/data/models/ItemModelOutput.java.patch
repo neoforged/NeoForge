@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ItemModelOutput.java
 +++ b/net/minecraft/client/data/models/ItemModelOutput.java
-@@ -15,4 +_,10 @@
+@@ -15,4 +_,16 @@
      void accept(Item p_456234_, ItemModel.Unbaked p_454728_, ClientItem.Properties p_455827_);
  
      void copy(Item p_387316_, Item p_387995_);
@@ -9,5 +9,11 @@
 +     * Neo: Pulled up from {@link ModelProvider.ItemInfoCollector} to give modders full control over the {@link net.minecraft.client.renderer.item.ClientItem} instead of just the {@link ItemModel.Unbaked} in {@link #accept(Item, ItemModel.Unbaked)
 +     */
 +    default void register(Item item, net.minecraft.client.renderer.item.ClientItem clientItem) {
++    }
++
++    /**
++     * Neo: Pulled up from {@link ModelProvider.ItemInfoCollector} to allow for arbitrarily named model files to be generated
++     */
++    default void register(net.minecraft.resources.Identifier identifier, net.minecraft.client.renderer.item.ClientItem clientItem) {
 +    }
  }
