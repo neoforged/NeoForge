@@ -1,0 +1,21 @@
+++++ REJECTED HUNK: 1
+@@ -22,6 +22,7 @@
+     private final Map<String, DataProvider> providersToRun = new LinkedHashMap<>();
+     private final WorldVersion version;
+     private final boolean alwaysGenerate;
++    private final Map<String, DataProvider> providersView = java.util.Collections.unmodifiableMap(this.providersToRun);
+ 
+     public DataGenerator(Path output, WorldVersion version, boolean alwaysGenerate) {
+         this.rootOutputFolder = output;
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -39,6 +40,7 @@
+                 LOGGER.debug("Generator {} already run for version {}", providerId, this.version.name());
+             } else {
+                 LOGGER.info("Starting provider: {}", providerId);
++                net.neoforged.fml.loading.progress.StartupNotificationManager.addModMessage("Generating: " + providerId);
+                 stopwatch.start();
+                 cache.applyUpdate(cache.generateUpdate(providerId, provider::run).join());
+                 stopwatch.stop();
+++++ END HUNK

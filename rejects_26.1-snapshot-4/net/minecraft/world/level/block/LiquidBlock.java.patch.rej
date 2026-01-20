@@ -1,6 +1,5 @@
---- a/net/minecraft/world/level/block/LiquidBlock.java
-+++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -190,11 +_,12 @@
+++++ REJECTED HUNK: 1
+@@ -190,11 +190,12 @@
  
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
@@ -14,3 +13,4 @@
      private boolean shouldSpreadLiquid(Level level, BlockPos pos, BlockState state) {
          if (this.fluid.is(FluidTags.LAVA)) {
              boolean isOverSoulSoil = level.getBlockState(pos.below()).is(Blocks.SOUL_SOIL);
+++++ END HUNK

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -74,13 +_,13 @@
+@@ -81,13 +_,13 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -18,7 +18,7 @@
                  } else {
                      Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
                      BlockPos relative = pos.relative(direction);
-@@ -95,6 +_,7 @@
+@@ -102,6 +_,7 @@
                          }
                      }
                  }

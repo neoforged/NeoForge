@@ -1,0 +1,17 @@
+++++ REJECTED HUNK: 1
+@@ -102,10 +102,12 @@
+     private static BlockState getColumnState(Block bubbleColumn, BlockState belowState, BlockState occupyState) {
+         if (belowState.is(bubbleColumn)) {
+             return belowState;
+-        } else if (belowState.is(BlockTags.ENABLES_BUBBLE_COLUMN_PUSH_UP)) {
++        }
++        net.neoforged.neoforge.common.enums.BubbleColumnDirection bubbleColumnDirection = belowState.getBubbleColumnDirection(); // Neo: PR #931
++        if (bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) {
+             return bubbleColumn.defaultBlockState().setValue(DRAG_DOWN, false);
+         } else {
+-            return belowState.is(BlockTags.ENABLES_BUBBLE_COLUMN_DRAG_DOWN) ? bubbleColumn.defaultBlockState().setValue(DRAG_DOWN, true) : occupyState;
++            return bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD ? bubbleColumn.defaultBlockState().setValue(DRAG_DOWN, true) : occupyState;
+         }
+     }
+ 
+++++ END HUNK

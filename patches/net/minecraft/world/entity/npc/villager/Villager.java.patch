@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -290,7 +_,7 @@
+@@ -299,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);
@@ -9,7 +9,7 @@
              return super.mobInteract(player, hand);
          } else if (this.isBaby()) {
              this.setUnhappy();
-@@ -746,10 +_,11 @@
+@@ -755,10 +_,11 @@
  
      @Override
      public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
@@ -22,7 +22,7 @@
                  w.setPersistenceRequired();
                  this.releaseAllPois();
              });
-@@ -769,7 +_,10 @@
+@@ -778,7 +_,10 @@
      @Override
      public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
          Item item = itemStack.getItem();

@@ -1,6 +1,5 @@
---- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
-+++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
-@@ -31,7 +_,7 @@
+++++ REJECTED HUNK: 1
+@@ -31,7 +31,7 @@
              MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
              BlockState blockState = movingBlockRenderState.blockState;
              List<BlockModelPart> parts = blockRenderDispatcher.getBlockModel(blockState)
@@ -9,7 +8,10 @@
              PoseStack poseStack = new PoseStack();
              poseStack.mulPose(submit.pose());
              blockRenderDispatcher.getModelRenderer()
-@@ -41,7 +_,8 @@
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -41,7 +41,8 @@
                      blockState,
                      movingBlockRenderState.blockPos,
                      poseStack,
@@ -19,3 +21,4 @@
                      false,
                      OverlayTexture.NO_OVERLAY
                  );
+++++ END HUNK

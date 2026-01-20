@@ -202,7 +202,7 @@
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -909,17 +_,20 @@
+@@ -916,17 +_,20 @@
  
      public abstract Scoreboard getScoreboard();
  
@@ -228,7 +228,7 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -982,6 +_,18 @@
+@@ -989,6 +_,18 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;

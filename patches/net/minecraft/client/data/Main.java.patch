@@ -17,7 +17,7 @@
              boolean client = allOptions || optionSet.has(clientOption);
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
--            DataGenerator generator = new DataGenerator(output, SharedConstants.getCurrentVersion(), true);
+-            DataGenerator generator = new DataGenerator.Cached(output, SharedConstants.getCurrentVersion(), true);
 +            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
 +            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
 +            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
