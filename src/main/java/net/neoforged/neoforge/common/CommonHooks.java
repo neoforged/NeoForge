@@ -71,6 +71,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -664,8 +665,8 @@ public class CommonHooks {
                     level.restoringBlockSnapshots = false;
                 }
                 // inform the client that the item was not consumed
-                if (player instanceof ServerPlayer) {
-                    player.containerMenu.sendAllDataToRemote();
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.connection.send(new ClientboundSetPlayerInventoryPacket(serverPlayer.getInventory().getSelectedSlot(), itemstack));
                 }
             } else {
                 // Change the stack to its new content
