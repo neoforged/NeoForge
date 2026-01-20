@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 1
+--- a/net/minecraft/world/level/block/BubbleColumnBlock.java
++++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
 @@ -102,10 +102,12 @@
      private static BlockState getColumnState(Block bubbleColumn, BlockState belowState, BlockState occupyState) {
          if (belowState.is(bubbleColumn)) {
@@ -14,4 +15,3 @@
          }
      }
  
-++++ END HUNK

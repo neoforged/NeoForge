@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 3
+--- a/net/minecraft/world/entity/ai/sensing/VillagerHostilesSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/VillagerHostilesSensor.java
 @@ -38,7 +41,8 @@
      }
  
@@ -9,4 +10,3 @@
      }
  
      @Override
-++++ END HUNK

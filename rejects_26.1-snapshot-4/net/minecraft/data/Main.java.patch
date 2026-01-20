@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 2
+--- a/net/minecraft/data/Main.java
++++ b/net/minecraft/data/Main.java
 @@ -85,10 +88,17 @@
              boolean dev = allOptions || optionSet.has(devOption);
              boolean reports = allOptions || optionSet.has(reportsOption);
@@ -19,4 +20,3 @@
          } else {
              parser.printHelpOn(System.out);
          }
-++++ END HUNK

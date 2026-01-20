@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 2
+--- a/net/minecraft/client/renderer/LevelRenderer.java
++++ b/net/minecraft/client/renderer/LevelRenderer.java
 @@ -514,6 +514,13 @@
                  this.minecraft.options.getEffectiveRenderDistance() * 16,
                  this.levelRenderState.worldBorderRenderState
@@ -13,9 +14,6 @@
          profiler.pop();
          profiler.popPush("debug");
          this.debugRenderer.emitGizmos(frustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
-++++ END HUNK
-
-++++ REJECTED HUNK: 6
 @@ -566,19 +576,19 @@
          }
  
@@ -39,9 +37,6 @@
          if (transparencyChain != null) {
              transparencyChain.addToFrame(frame, screenWidth, screenHeight, this.targets);
          }
-++++ END HUNK
-
-++++ REJECTED HUNK: 7
 @@ -658,6 +668,9 @@
  
                  ChunkSectionsToRender chunkSectionsToRender = this.prepareChunkRenders(modelViewMatrix, camX, camY, camZ);
@@ -52,9 +47,6 @@
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (itemEntityTarget != null) {
                      itemEntityTarget.get().copyDepthFrom(this.minecraft.getMainRenderTarget());
-++++ END HUNK
-
-++++ REJECTED HUNK: 8
 @@ -692,6 +705,8 @@
                  bufferSource.endBatch(Sheets.hangingSignSheet());
                  bufferSource.endBatch(Sheets.chestSheet());
@@ -64,9 +56,6 @@
                  if (renderOutline) {
                      this.renderBlockOutline(bufferSource, poseStack, false, levelRenderState);
                  }
-++++ END HUNK
-
-++++ REJECTED HUNK: 9
 @@ -721,6 +736,8 @@
  
                  profiler.push("translucent");
@@ -76,9 +65,6 @@
                  if (renderOutline) {
                      this.renderBlockOutline(bufferSource, poseStack, true, levelRenderState);
                  }
-++++ END HUNK
-
-++++ REJECTED HUNK: 10
 @@ -731,7 +748,15 @@
          );
      }
@@ -95,9 +81,6 @@
          FramePass pass = frame.addPass("particles");
          if (this.targets.particles != null) {
              this.targets.particles = pass.readsAndWrites(this.targets.particles);
-++++ END HUNK
-
-++++ REJECTED HUNK: 11
 @@ -751,12 +776,24 @@
              this.particlesRenderState.submit(this.submitNodeStorage, this.levelRenderState.cameraRenderState);
              this.featureRenderDispatcher.renderAllFeatures();
@@ -123,4 +106,3 @@
          FramePass pass = frame.addPass("clouds");
          if (this.targets.clouds != null) {
              this.targets.clouds = pass.readsAndWrites(this.targets.clouds);
-++++ END HUNK
