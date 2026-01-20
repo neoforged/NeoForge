@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
++++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
+@@ -53,7 +_,7 @@
+             RenderType renderType = ItemBlockRenderTypes.getMovingBlockRenderType(blockState);
+             if (renderType.hasBlending() == translucent) {
+                 List<BlockModelPart> parts = blockRenderDispatcher.getBlockModel(blockState)
+-                    .collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
++                        .collectParts(movingBlockRenderState.level, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
+                 PoseStack poseStack = new PoseStack();
+                 poseStack.mulPose(submit.pose());
+                 blockRenderDispatcher.getModelRenderer()
+@@ -63,7 +_,8 @@
+                         blockState,
+                         movingBlockRenderState.blockPos,
+                         poseStack,
+-                        bufferSource.getBuffer(renderType),
++                        // TODO: this needs further thought as it violates the "one submit == one rendertype" contract
++                        partRenderType -> bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(partRenderType)),
+                         false,
+                         OverlayTexture.NO_OVERLAY
+                     );

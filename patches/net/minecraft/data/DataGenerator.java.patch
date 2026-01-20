@@ -1,5 +1,13 @@
 --- a/net/minecraft/data/DataGenerator.java
 +++ b/net/minecraft/data/DataGenerator.java
+@@ -19,6 +_,7 @@
+     protected final PackOutput vanillaPackOutput;
+     protected final Set<String> allProviderIds = new HashSet<>();
+     protected final Map<String, DataProvider> providersToRun = new LinkedHashMap<>();
++    private final Map<String, DataProvider> providersView = java.util.Collections.unmodifiableMap(this.providersToRun);
+ 
+     public DataGenerator(Path output) {
+         this.vanillaPackOutput = new PackOutput(output);
 @@ -35,6 +_,55 @@
          return new DataGenerator.PackGenerator(toRun, packId, new PackOutput(packOutputDir));
      }
@@ -18,7 +26,7 @@
 +    }
 +
 +    public PackOutput getPackOutput(String path) {
-+        return new PackOutput(rootOutputFolder.resolve(path));
++        return new PackOutput(vanillaPackOutput.getOutputFolder().resolve(path));
 +    }
 +
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, String path) {
@@ -56,3 +64,19 @@
      static {
          Bootstrap.bootStrap();
      }
+@@ -61,6 +_,7 @@
+                     DataGenerator.LOGGER.debug("Generator {} already run for version {}", providerId, this.version.name());
+                 } else {
+                     DataGenerator.LOGGER.info("Starting provider: {}", providerId);
++                    net.neoforged.fml.loading.progress.StartupNotificationManager.addModMessage("Generating: " + providerId);
+                     stopwatch.start();
+                     cache.applyUpdate(cache.generateUpdate(providerId, provider::run).join());
+                     stopwatch.stop();
+@@ -112,6 +_,7 @@
+             Stopwatch stopwatch = Stopwatch.createUnstarted();
+             this.providersToRun.forEach((providerId, provider) -> {
+                 DataGenerator.LOGGER.info("Starting uncached provider: {}", providerId);
++                net.neoforged.fml.loading.progress.StartupNotificationManager.addModMessage("Generating: " + providerId);
+                 stopwatch.start();
+                 provider.run(CachedOutput.NO_CACHE).join();
+                 stopwatch.stop();

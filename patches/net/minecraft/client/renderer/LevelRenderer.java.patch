@@ -9,6 +9,20 @@
          profiler.popPush("blockOutline");
          this.extractBlockOutline(camera, this.levelRenderState);
          profiler.popPush("blockBreaking");
+@@ -516,6 +_,13 @@
+             );
+         profiler.popPush("particles");
+         this.minecraft.particleEngine.extract(this.particlesRenderState, new Frustum(frustum).offset(-3.0F), camera, deltaPartialTick);
++        profiler.popPush("neoforge_custom");
++        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, camera.position());
++        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomSkyboxRenderer(this.level, camera.position());
++        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomCloudsRenderer(this.level, camera.position());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
++                this, this.levelRenderState, this.level, camera, frustum, deltaTracker, this.ticks
++        ));
+         profiler.pop();
+         profiler.popPush("debug");
+         this.debugRenderer.emitGizmos(frustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
 @@ -528,7 +_,7 @@
          this.targets.main = frame.importExternal("main", this.minecraft.getMainRenderTarget());
          int screenWidth = this.minecraft.getMainRenderTarget().width;
@@ -37,6 +51,79 @@
          }
  
          this.addMainPass(frame, frustum, modelViewMatrix, terrainFog, renderOutline, this.levelRenderState, deltaTracker, profiler);
+@@ -573,12 +_,12 @@
+             if (ARGB.alpha(cloudColor) > 0) {
+                 float cloudHeight = camera.attributeProbe().getValue(EnvironmentAttributes.CLOUD_HEIGHT, deltaPartialTick);
+                 this.addCloudsPass(
+-                    frame, cloudsType, this.levelRenderState.cameraRenderState.pos, this.levelRenderState.gameTime, deltaPartialTick, cloudColor, cloudHeight
++                    frame, cloudsType, this.levelRenderState.cameraRenderState.pos, this.levelRenderState.gameTime, deltaPartialTick, cloudColor, cloudHeight, modelViewMatrix
+                 );
+             }
+         }
+ 
+-        this.addWeatherPass(frame, terrainFog);
++        this.addWeatherPass(frame, terrainFog, modelViewMatrix);
+         if (transparencyChain != null) {
+             transparencyChain.addToFrame(frame, screenWidth, screenHeight, this.targets);
+         }
+@@ -663,6 +_,9 @@
+ 
+                 ChunkSectionsToRender chunkSectionsToRender = this.prepareChunkRenders(modelViewMatrix, camX, camY, camZ);
+                 chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.OPAQUE, this.chunkLayerSampler);
++                profiler.push("neoforge_render_after_opaque_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
++                profiler.pop();
+                 this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
+                 if (this.shouldShowEntityOutlines() && entityOutlineTarget != null) {
+                     RenderTarget outlineTarget = entityOutlineTarget.get();
+@@ -680,6 +_,9 @@
+                 this.submitBlockEntities(poseStack, levelRenderState, this.submitNodeStorage);
+                 profiler.popPush("submitParticles");
+                 this.particlesRenderState.submit(this.submitNodeStorage, levelRenderState.cameraRenderState);
++                Profiler.get().push("neoforge_render_after_particles");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterParticles(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
++                Profiler.get().pop();
+                 profiler.popPush("solidFeatures");
+                 this.featureRenderDispatcher.renderSolidFeatures();
+                 bufferSource.endBatch();
+@@ -706,6 +_,8 @@
+                 crumblingBufferSource.endBatch();
+                 profiler.pop();
+                 this.renderBuffers.outlineBufferSource().endOutlineBatch();
++                profiler.popPush("neoforge_render_after_entities");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterEntities(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
+                 if (renderOutline) {
+                     this.renderBlockOutline(bufferSource, poseStack, false, levelRenderState);
+                     bufferSource.endBatch();
+@@ -717,6 +_,8 @@
+                 this.checkPoseStack(poseStack);
+                 profiler.push("translucentTerrain");
+                 chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, this.chunkLayerSampler);
++                profiler.popPush("neoforge_render_after_translucent_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
+                 if (renderOutline) {
+                     this.renderBlockOutline(bufferSource, poseStack, true, levelRenderState);
+                 }
+@@ -729,9 +_,18 @@
+         );
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #addCloudsPass(FrameGraphBuilder, CloudStatus, Vec3, long, float, int, float, Matrix4f)} instead
++     */
++    @Deprecated
+     private void addCloudsPass(
+-        FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight
++            FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight
+     ) {
++        addCloudsPass(frame, cloudsType, cameraPosition, gameTime, partialTicks, cloudColor, cloudHeight, RenderSystem.getModelViewMatrix());
++    }
++
++    // Neo: Add modelViewMatrix for use in our event
++    private void addCloudsPass(FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight, Matrix4f modelViewMatrix) {
+         FramePass pass = frame.addPass("clouds");
+         if (this.targets.clouds != null) {
+             this.targets.clouds = pass.readsAndWrites(this.targets.clouds);
 @@ -739,10 +_,22 @@
              this.targets.main = pass.readsAndWrites(this.targets.main);
          }

@@ -1,5 +1,19 @@
 --- a/net/minecraft/world/level/block/BubbleColumnBlock.java
 +++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
+@@ -102,9 +_,11 @@
+     private static BlockState getColumnState(Block bubbleColumn, BlockState belowState, BlockState occupyState) {
+         if (belowState.is(bubbleColumn)) {
+             return belowState;
+-        } else if (belowState.is(BlockTags.ENABLES_BUBBLE_COLUMN_PUSH_UP)) {
++        }
++        net.neoforged.neoforge.common.enums.BubbleColumnDirection bubbleColumnDirection = belowState.getBubbleColumnDirection(); // Neo: PR #931
++        if (bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) {
+             return bubbleColumn.defaultBlockState().setValue(DRAG_DOWN, false);
+-        } else if (belowState.is(BlockTags.ENABLES_BUBBLE_COLUMN_DRAG_DOWN)) {
++        } else if (bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD) {
+             return bubbleColumn.defaultBlockState().setValue(DRAG_DOWN, true);
+         } else {
+             return occupyState.is(bubbleColumn) ? Blocks.WATER.defaultBlockState() : occupyState;
 @@ -174,7 +_,7 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
