@@ -113,8 +113,7 @@
 +     */
 +    @Deprecated
      private void addCloudsPass(
--        FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight
-+            FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight
+         FrameGraphBuilder frame, CloudStatus cloudsType, Vec3 cameraPosition, long gameTime, float partialTicks, int cloudColor, float cloudHeight
      ) {
 +        addCloudsPass(frame, cloudsType, cameraPosition, gameTime, partialTicks, cloudColor, cloudHeight, RenderSystem.getModelViewMatrix());
 +    }

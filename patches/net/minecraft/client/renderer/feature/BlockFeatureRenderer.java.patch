@@ -5,7 +5,7 @@
              if (renderType.hasBlending() == translucent) {
                  List<BlockModelPart> parts = blockRenderDispatcher.getBlockModel(blockState)
 -                    .collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
-+                        .collectParts(movingBlockRenderState.level, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
++                    .collectParts(movingBlockRenderState.level, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
                  PoseStack poseStack = new PoseStack();
                  poseStack.mulPose(submit.pose());
                  blockRenderDispatcher.getModelRenderer()
