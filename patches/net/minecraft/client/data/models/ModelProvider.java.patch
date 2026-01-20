@@ -117,18 +117,18 @@
  
          @Override
          public void accept(Item p_387063_, ItemModel.Unbaked p_388578_, ClientItem.Properties p_455547_) {
-@@ -110,15 +_,22 @@
-             }
+@@ -111,14 +_,22 @@
          }
  
+         @Override
 +        public void register(Identifier identifier, ClientItem clientItem) {
-+            ClientItem existing = this.idItemInfos.put(identifier, clientItem);
++            ClientItem existing = this.idItemInfos.putIfAbsent(identifier, clientItem);
 +            if (existing != null) {
 +                throw new IllegalStateException("Duplicate item model definition for " + identifier);
 +            }
 +        }
 +
-         @Override
++        @Override
          public void copy(Item p_386920_, Item p_386789_) {
              this.copies.put(p_386789_, p_386920_);
          }
