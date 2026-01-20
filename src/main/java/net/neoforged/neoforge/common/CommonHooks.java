@@ -663,6 +663,10 @@ public class CommonHooks {
                     blocksnapshot.restore(blocksnapshot.getFlags() | Block.UPDATE_CLIENTS);
                     level.restoringBlockSnapshots = false;
                 }
+                // inform the client that the item was not consumed
+                if (player instanceof ServerPlayer) {
+                    player.containerMenu.sendAllDataToRemote();
+                }
             } else {
                 // Change the stack to its new content
                 itemstack.setCount(newSize);
