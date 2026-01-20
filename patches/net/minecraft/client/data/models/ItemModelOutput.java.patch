@@ -12,7 +12,7 @@
 +    }
 +
 +    /**
-+     * Neo: Pulled up from {@link ModelProvider.ItemInfoCollector} to allow for arbitrarily named model files to be generated
++     * Neo: Allow generating arbitrarily named client item files
 +     */
 +    default void register(net.minecraft.resources.Identifier identifier, net.minecraft.client.renderer.item.ClientItem clientItem) {
 +    }
