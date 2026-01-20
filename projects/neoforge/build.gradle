@@ -197,6 +197,10 @@ neoDev {
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
+
+            if(Boolean.parseBoolean(System.getenv("CI"))) {
+                programArgument "--uncached"
+            }
         }
     }
 }

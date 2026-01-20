@@ -29,11 +29,19 @@ neoDev {
         clientData {
             clientData()
             programArgument "--all"
+
+            if(Boolean.parseBoolean(System.getenv("CI"))) {
+                programArgument "--uncached"
+            }
         }
         // Generated files are in run/serverData/generated
         serverData {
             serverData()
             programArgument "--all"
+
+            if(Boolean.parseBoolean(System.getenv("CI"))) {
+                programArgument "--uncached"
+            }
         }
     }
 }
