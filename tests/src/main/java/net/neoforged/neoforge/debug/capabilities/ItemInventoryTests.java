@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -56,10 +57,11 @@ public class ItemInventoryTests {
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests that ComponentItemHandler can read and write from a data component")
-    public static void testItemInventory(DynamicTest test, RegistrationHelper reg) {
+    public static void testItemContainer(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
-            ItemStack stack = BACKPACK.toStack();
-            ItemAccess itemAccess = ItemAccess.forStack(stack);
+            ItemStack container = BACKPACK.toStack();
+
+            ItemAccess itemAccess = ItemAccess.forStack(container);
             // Note: this uses the legacy wrappers, testing the wrappers and that the new ItemAccessItemHandler matches the old ComponentItemHandler.
             IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
 
@@ -67,18 +69,18 @@ public class ItemInventoryTests {
             helper.assertValueEqual(storedStick.getItem(), Items.STICK, "Default contents should contain a stick at slot " + STICK_SLOT);
 
             ItemStack toInsert = Items.APPLE.getDefaultInstance().copyWithCount(32);
-            ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+            ItemContainerContents contents = container.get(DataComponents.CONTAINER);
 
             ItemStack remainder = items.insertItem(STICK_SLOT, toInsert, false);
             helper.assertTrue(ItemStack.matches(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
             // Check identity equality to assert that the component object was not updated at all, even to an equivalent form.
-            helper.assertTrue(contents == stack.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
+            helper.assertTrue(contents == container.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
 
             remainder = items.insertItem(0, toInsert, false);
             helper.assertTrue(remainder.isEmpty(), "Successfully inserting the entire item should return an empty stack.");
             helper.assertTrue(ItemStack.matches(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
 
-            ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
+            ItemContainerContents newContents = container.get(DataComponents.CONTAINER);
             helper.assertTrue(ItemStack.matches(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
 
             ItemStack extractedApple = items.extractItem(0, 64, false);
@@ -90,6 +92,82 @@ public class ItemInventoryTests {
             for (int i = 0; i < SLOTS; i++) {
                 helper.assertTrue(items.getStackInSlot(i).isEmpty(), "Stack at slot " + i + " must be empty.");
             }
+
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that BundleItemHandler can read and write from a data component")
+    public static void testItemBundle(DynamicTest test, RegistrationHelper reg) {
+        test.onGameTest(helper -> {
+            ItemStack bundle = Items.BUNDLE.getDefaultInstance();
+            BundleContents.Mutable mutable = new BundleContents.Mutable(bundle.get(DataComponents.BUNDLE_CONTENTS));
+            mutable.tryInsert(Items.STICK.getDefaultInstance().copyWithCount(16));
+            mutable.tryInsert(Items.APPLE.getDefaultInstance().copyWithCount(16));
+            bundle.set(DataComponents.BUNDLE_CONTENTS, mutable.toImmutable());
+
+            ItemAccess itemAccess = ItemAccess.forStack(bundle);
+            IItemHandler items = IItemHandler.of(itemAccess.getCapability(Capabilities.Item.ITEM));
+
+            helper.assertValueEqual(items.getSlots(), 3, "Bundle with 2 stacks should report 3 slots (2 items + 1 empty).");
+
+            boolean foundStick = false;
+            boolean foundApple = false;
+            for (int i = 0; i < 2; i++) {
+                ItemStack s = items.getStackInSlot(i);
+                if (s.getItem() == Items.STICK && s.getCount() == 16) foundStick = true;
+                if (s.getItem() == Items.APPLE && s.getCount() == 16) foundApple = true;
+            }
+            helper.assertTrue(foundStick, "Bundle should contain 16 sticks.");
+            helper.assertTrue(foundApple, "Bundle should contain 16 apples.");
+
+            ItemStack moreApples = new ItemStack(Items.APPLE, 32);
+            ItemStack remainder = items.insertItem(2, moreApples, false);
+            helper.assertTrue(remainder.isEmpty(), "Should be able to insert 32 more apples.");
+
+            helper.assertValueEqual(items.getSlots(), 2, "After merging to full, slot count should be 2.");
+
+            int appleCount = 0;
+            for (int i = 0; i < 2; i++) {
+                if (items.getStackInSlot(i).getItem() == Items.APPLE) appleCount += items.getStackInSlot(i).getCount();
+            }
+            helper.assertValueEqual(appleCount, 48, "Total apples should be 16 + 32 = 48.");
+
+            ItemStack excessApple = new ItemStack(Items.APPLE, 1);
+            remainder = items.insertItem(2, excessApple, false);
+            helper.assertValueEqual(remainder.getCount(), 1, "Should not accept apple when bundle is full.");
+
+            bundle.set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+            helper.assertValueEqual(items.getSlots(), 1, "Empty bundle should have 1 slot.");
+
+            ItemStack snowballs = new ItemStack(Items.SNOWBALL, 16);
+            remainder = items.insertItem(0, snowballs, false);
+            helper.assertTrue(remainder.isEmpty(), "Should accept 16 snowballs.");
+
+            remainder = items.insertItem(1, new ItemStack(Items.STICK), false);
+            helper.assertValueEqual(remainder.getCount(), 1, "Full bundle should not accept sticks.");
+
+            bundle.set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+
+            ItemStack shulker = new ItemStack(Items.SHULKER_BOX);
+            remainder = items.insertItem(0, shulker, false);
+            helper.assertValueEqual(remainder.getCount(), 1, "Bundle should reject Shulker Box.");
+
+            items.insertItem(0, new ItemStack(Items.DIRT, 32), false);
+
+            ItemStack extracted = items.extractItem(0, 16, false);
+            helper.assertValueEqual(extracted.getCount(), 16, "Should extract 16 dirt.");
+            helper.assertValueEqual(extracted.getItem(), Items.DIRT, "Should be dirt.");
+
+            helper.assertValueEqual(items.getStackInSlot(0).getCount(), 16, "Bundle should have 16 dirt left.");
+
+            extracted = items.extractItem(0, 64, false);
+            helper.assertValueEqual(extracted.getCount(), 16, "Should extract remaining 16 dirt.");
+
+            helper.assertValueEqual(items.getSlots(), 1, "Empty bundle should have 1 slot.");
+            helper.assertTrue(items.getStackInSlot(0).isEmpty(), "Slot 0 should be empty.");
 
             helper.succeed();
         });
