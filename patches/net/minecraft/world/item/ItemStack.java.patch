@@ -124,6 +124,26 @@
              );
          }
      }
+@@ -644,6 +_,19 @@
+         }
+     }
+ 
++    /**
++     * Compares the item and components of this stack against an {@link ItemStackTemplate}.
++     *
++     * @return True if either this stack is empty and the template is null, or they reference the same item and have equivalent component patches.
++     */
++    public static boolean isSameItemSameComponents(ItemStack a, @Nullable ItemStackTemplate b) {
++        if (a.isEmpty() || b == null) {
++            return a.isEmpty() == (b == null);
++        } else {
++            return a.is(b.item()) && a.components.patchEquals(b.components());
++        }
++    }
++
+     public static boolean matchesIgnoringComponents(ItemStack a, ItemStack b, Predicate<DataComponentType<?>> ignoredPredicate) {
+         if (a == b) {
+             return true;
 @@ -820,7 +_,7 @@
      }
  

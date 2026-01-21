@@ -23,10 +23,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -75,6 +77,23 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
             return of(stack.getItem());
         }
         return new ItemResource(stack.copyWithCount(1));
+    }
+
+    /**
+     * Creates an ItemResource using the default or copy of the passed in item stack. Note the count is lost.
+     *
+     * @param template stack to copy with a size of 1
+     * @return If null was given, an empty resource is returned.
+     *         If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
+     */
+    public static ItemResource of(@Nullable ItemStackTemplate template) {
+        if (template == null) {
+            return EMPTY;
+        }
+        if (template.components().isEmpty()) {
+            return of(template.item());
+        }
+        return new ItemResource(new ItemStack(template.item(), 1, template.components()));
     }
 
     /**
@@ -167,6 +186,15 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
      */
     public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
+    }
+
+    /**
+     * {@return true if this resource matches the item and components of the passed template}
+     *
+     * @param template the item stack template to check
+     */
+    public boolean matches(@Nullable ItemStackTemplate template) {
+        return ItemStack.isSameItemSameComponents(innerStack, template);
     }
 
     /**

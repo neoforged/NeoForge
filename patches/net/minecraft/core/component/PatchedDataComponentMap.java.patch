@@ -19,6 +19,20 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
+@@ -221,6 +_,13 @@
+         return (DataComponentMap)(this.patch.isEmpty() ? this.prototype : this.copy());
+     }
+ 
++    /**
++     * {@return true if the contained patch equals the given patch.}
++     */
++    public boolean patchEquals(DataComponentPatch patch) {
++        return this.patch.equals(patch.map);
++    }
++
+     @Override
+     public boolean equals(Object obj) {
+         return this == obj
 @@ -230,7 +_,24 @@
  
      @Override
