@@ -141,5 +141,4 @@ public class ItemAttributeModifierEvent extends Event {
 
         return this.builder;
     }
-
 }

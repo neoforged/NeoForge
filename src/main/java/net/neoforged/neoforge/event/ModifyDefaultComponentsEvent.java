@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -43,7 +42,7 @@ import org.jetbrains.annotations.ApiStatus;
  *                     new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 7, AttributeModifier.Operation.ADD_VALUE),
  *                     EquipmentSlotGroup.MAINHAND);
  *             return attributes.build();
- *         });
+ *         })
  *     );
  * }
  *
