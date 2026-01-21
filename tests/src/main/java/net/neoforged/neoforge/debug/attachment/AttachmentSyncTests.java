@@ -176,17 +176,22 @@ public class AttachmentSyncTests {
                     })
                     // Test that players receive updates for changes to block entities in tracked chunks
                     .thenExecute(() -> {
-                        var testValue = helper.randomInt();
+                        var testValue = 12345;
                         helper.setBlock(feetPos, Blocks.FURNACE);
                         var be = helper.getBlockEntity(feetPos, FurnaceBlockEntity.class);
                         be.setData(intAttachment, testValue);
-
+                    })
+                    // Wait for the BE to get synced
+                    .thenIdle(1)
+                    // Resume flushing after idling else packets won't get sent immediately
+                    .thenExecute(() -> player.connection.resumeFlushing())
+                    .thenExecute(() -> {
                         var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
                         helper.expectTarget(payload, new SyncAttachmentsPayload.BlockEntityTarget(helper.absolutePos(feetPos)));
 
                         var holder = helper.holder();
                         holder.readFrom(payload);
-                        holder.assertEqual(intAttachment, testValue);
+                        holder.assertEqual(intAttachment, 12345);
 
                         player.clearOutboundPackets();
                     })
