@@ -124,14 +124,17 @@
              );
          }
      }
-@@ -617,6 +_,13 @@
+@@ -617,6 +_,16 @@
          }
      }
  
 +    /**
 +     * Compares an itemstack with an {@link ItemStackTemplate} as per {@link #matches(ItemStack, ItemStack)}.
 +     */
-+    public static boolean matches(ItemStack a, ItemStackTemplate b) {
++    public static boolean matches(ItemStack a, @Nullable ItemStackTemplate b) {
++        if (b == null) {
++            return a.isEmpty();
++        }
 +        return a.getCount() == b.count() && isSameItemSameComponents(a, b);
 +    }
 +
