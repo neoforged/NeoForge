@@ -5,12 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
-import com.google.common.collect.ImmutableList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -21,8 +16,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.util.ItemAttributeModifiersBuilder;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemStack#getAttributeModifiers()}.
@@ -147,114 +142,4 @@ public class ItemAttributeModifierEvent extends Event {
         return this.builder;
     }
 
-    /**
-     * Advanced version of {@link ItemAttributeModifiers.Builder} which supports removal and better sanity-checking.
-     * <p>
-     * The original builder only supports additions and does not guarantee that no duplicate modifiers exist for a given id.
-     */
-    private static class ItemAttributeModifiersBuilder {
-        private List<ItemAttributeModifiers.Entry> entries;
-        private Map<Key, ItemAttributeModifiers.Entry> entriesByKey;
-
-        ItemAttributeModifiersBuilder(ItemAttributeModifiers defaultModifiers) {
-            this.entries = new LinkedList<>();
-            this.entriesByKey = new HashMap<>(defaultModifiers.modifiers().size());
-
-            for (ItemAttributeModifiers.Entry entry : defaultModifiers.modifiers()) {
-                entries.add(entry);
-                entriesByKey.put(new Key(entry.attribute(), entry.modifier().id()), entry);
-            }
-        }
-
-        /**
-         * {@return an unmodifiable view of the underlying entry list}
-         */
-        List<ItemAttributeModifiers.Entry> getEntryView() {
-            return Collections.unmodifiableList(this.entries);
-        }
-
-        /**
-         * Attempts to add a new modifier, refusing if one is already present with the same id.
-         * 
-         * @return true if the modifier was added
-         */
-        boolean addModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
-            Key key = new Key(attribute, modifier.id());
-            if (entriesByKey.containsKey(key)) {
-                return false;
-            }
-
-            ItemAttributeModifiers.Entry entry = new ItemAttributeModifiers.Entry(attribute, modifier, slot);
-            entries.add(entry);
-            entriesByKey.put(key, entry);
-            return true;
-        }
-
-        /**
-         * Removes a modifier for the target attribute with the given id.
-         * 
-         * @return true if a modifier was removed
-         */
-        boolean removeModifier(Holder<Attribute> attribute, Identifier id) {
-            ItemAttributeModifiers.Entry entry = entriesByKey.remove(new Key(attribute, id));
-
-            if (entry != null) {
-                entries.remove(entry);
-                return true;
-            }
-
-            return false;
-        }
-
-        /**
-         * Adds a modifier to the list, replacing any existing modifiers with the same id.
-         * 
-         * @return the previous modifier, or null if there was no previous modifier with the same id
-         */
-        ItemAttributeModifiers.@Nullable Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
-            Key key = new Key(attribute, modifier.id());
-            ItemAttributeModifiers.Entry entry = new ItemAttributeModifiers.Entry(attribute, modifier, slot);
-            if (entriesByKey.containsKey(key)) {
-                ItemAttributeModifiers.Entry previousEntry = entriesByKey.get(key);
-                int index = entries.indexOf(previousEntry);
-                if (index != -1) {
-                    entries.set(index, entry);
-                } else { // This should never happen, but it can't hurt to have anyways
-                    entries.add(entry);
-                }
-                entriesByKey.put(key, entry);
-                return previousEntry;
-            } else {
-                entries.add(entry);
-                entriesByKey.put(key, entry);
-                return null;
-            }
-        }
-
-        /**
-         * Removes modifiers based on a condition.
-         * 
-         * @return true if any modifiers were removed
-         */
-        boolean removeIf(Predicate<ItemAttributeModifiers.Entry> condition) {
-            this.entries.removeIf(condition);
-            return this.entriesByKey.values().removeIf(condition);
-        }
-
-        void clear() {
-            this.entries.clear();
-            this.entriesByKey.clear();
-        }
-
-        public ItemAttributeModifiers build() {
-            return new ItemAttributeModifiers(ImmutableList.copyOf(this.entries));
-        }
-
-        /**
-         * Internal key class. Attribute modifiers are unique by id for each Attribute.
-         */
-        private static record Key(Holder<Attribute> attr, Identifier id) {
-
-        }
-    }
 }
