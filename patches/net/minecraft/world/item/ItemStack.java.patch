@@ -124,10 +124,32 @@
              );
          }
      }
-@@ -644,6 +_,19 @@
+@@ -617,6 +_,13 @@
          }
      }
  
++    /**
++     * Compares an itemstack with an {@link ItemStackTemplate} as per {@link #matches(ItemStack, ItemStack)}.
++     */
++    public static boolean matches(ItemStack a, ItemStackTemplate b) {
++        return a.getCount() == b.count() && isSameItemSameComponents(a, b);
++    }
++
+     @Deprecated
+     public static boolean listMatches(List<ItemStack> left, List<ItemStack> right) {
+         if (left.size() != right.size()) {
+@@ -644,6 +_,27 @@
+         }
+     }
+ 
++
++    /**
++     * {@return true if a and b refer to the same item, or if a is empty and b is null}
++     */
++    public static boolean isSameItem(ItemStack a, @Nullable ItemStackTemplate b) {
++        return b == null ? a.isEmpty() : a.is(b.item());
++    }
++
 +    /**
 +     * Compares the item and components of this stack against an {@link ItemStackTemplate}.
 +     *
