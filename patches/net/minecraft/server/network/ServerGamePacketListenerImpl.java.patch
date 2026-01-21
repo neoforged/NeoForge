@@ -155,3 +155,15 @@
      }
  
      @Override
+@@ -2169,5 +_,11 @@
+     @FunctionalInterface
+     interface EntityInteraction {
+         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
++    }
++
++    @Override
++    public void handleCustomClickAction(net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket packet) {
++        super.handleCustomClickAction(packet);
++        net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, packet);
+     }
+ }
