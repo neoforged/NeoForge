@@ -35,15 +35,13 @@ import org.jetbrains.annotations.ApiStatus;
  *     event.modify(Items.APPLE, builder -> builder
  *             .remove(DataComponents.FOOD)); // Remove the ability of eating apples
  *
- *     event.modify(Items.GOLDEN_SWORD, builder ->
- *         builder.modify(DataComponents.ATTRIBUTE_MODIFIERS, orig -> {
- *             var attributes = new ItemAttributeModifiersBuilder(orig);
- *             attributes.replaceModifier(Attributes.ATTACK_DAMAGE, // Change golden swords base attack damage to +7
- *                     new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 7, AttributeModifier.Operation.ADD_VALUE),
- *                     EquipmentSlotGroup.MAINHAND);
- *             return attributes.build();
- *         })
- *     );
+ *     event.modify(Items.GOLDEN_SWORD, builder -> builder.modify(DataComponents.ATTRIBUTE_MODIFIERS, orig -> {
+ *         var attributes = new ItemAttributeModifiersBuilder(orig);
+ *         attributes.replaceModifier(Attributes.ATTACK_DAMAGE, // Change golden swords base attack damage to +7
+ *                 new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 7, AttributeModifier.Operation.ADD_VALUE),
+ *                 EquipmentSlotGroup.MAINHAND);
+ *         return attributes.build();
+ *     }));
  * }
  *
  * // Lowest priority listener

@@ -6,6 +6,12 @@
 package net.neoforged.neoforge.common.util;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -13,9 +19,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jspecify.annotations.Nullable;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Advanced version of {@link ItemAttributeModifiers.Builder} which supports removal and better sanity-checking.
@@ -39,6 +42,7 @@ public class ItemAttributeModifiersBuilder {
     /**
      * Do not use the returned value to create an {@link ItemAttributeModifiers}
      * since the underlying list is not immutable, instead use {@link #build}.
+     * 
      * @return an unmodifiable view of the underlying entry list.
      */
     public List<ItemAttributeModifiers.Entry> getEntryView() {
