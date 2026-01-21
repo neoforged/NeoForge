@@ -99,11 +99,12 @@
                  .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + list);
-@@ -97,6 +_,16 @@
+@@ -97,6 +_,17 @@
      static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
 +        private final Supplier<Stream<? extends Holder<Item>>> knownItems;
++        private final Map<Identifier, ClientItem> idItemInfos = new HashMap<>();
 +
 +        public ItemInfoCollector(Supplier<Stream<? extends Holder<Item>>> knownItems) {
 +            this.knownItems = knownItems;
@@ -116,7 +117,20 @@
  
          @Override
          public void accept(Item p_387063_, ItemModel.Unbaked p_388578_, ClientItem.Properties p_455547_) {
-@@ -116,9 +_,9 @@
+@@ -111,14 +_,22 @@
+         }
+ 
+         @Override
++        public void register(Identifier identifier, ClientItem clientItem) {
++            ClientItem existing = this.idItemInfos.putIfAbsent(identifier, clientItem);
++            if (existing != null) {
++                throw new IllegalStateException("Duplicate item model definition for " + identifier);
++            }
++        }
++
++        @Override
+         public void copy(Item p_386920_, Item p_386789_) {
+             this.copies.put(p_386789_, p_386920_);
          }
  
          public void finalizeAndValidate() {
@@ -142,3 +156,17 @@
                  .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing item model definitions for: " + list);
+@@ -143,9 +_,11 @@
+         }
+ 
+         public CompletableFuture<?> save(CachedOutput p_387552_, PackOutput.PathProvider p_388501_) {
+-            return DataProvider.saveAll(
++            return CompletableFuture.allOf(DataProvider.saveAll(
+                 p_387552_, ClientItem.CODEC, p_465443_ -> p_388501_.json(p_465443_.builtInRegistryHolder().key().identifier()), this.itemInfos
+-            );
++            ), DataProvider.saveAll(
++                    p_387552_, ClientItem.CODEC, p_388501_::json, this.idItemInfos
++            ));
+         }
+     }
+ 
