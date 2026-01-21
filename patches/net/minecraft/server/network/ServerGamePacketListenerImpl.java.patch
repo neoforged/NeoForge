@@ -155,3 +155,15 @@
      }
  
      @Override
+@@ -2227,5 +_,11 @@
+     private void restartClientLoadTimerAfterRespawn() {
+         this.waitingForRespawn = false;
+         this.clientLoadedTimeoutTimer = 60;
++    }
++
++    @Override
++    public void handleCustomClickAction(net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket packet) {
++        super.handleCustomClickAction(packet);
++        net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, packet);
+     }
+ }
