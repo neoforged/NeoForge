@@ -2,8 +2,8 @@
 +++ b/net/minecraft/world/item/AxeItem.java
 @@ -24,6 +_,8 @@
  import net.minecraft.world.level.gameevent.GameEvent;
-
- public class AxeItem extends Item {
+ 
+ public class AxeItem extends DiggerItem {
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
 +    @Deprecated
      protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
@@ -56,10 +56,10 @@
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
-+        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null) {
-+            return Optional.of(strippable.strippedBlock().withPropertiesOf(p_150691_));
-+        }
++	    var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++	    if (strippable != null) {
++		    return Optional.of(strippable.strippedBlock().withPropertiesOf(p_150691_));
++	    }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +    }
