@@ -6,6 +6,12 @@
 package net.neoforged.neoforge.common.data.internal;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -45,13 +51,6 @@ import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
@@ -105,13 +104,13 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         });
     }
 
-	private static class StrippablesAccess extends AxeItem {
-		private StrippablesAccess(Tier tier, Properties properties) {
-			super(tier, properties);
-		}
+    private static class StrippablesAccess extends AxeItem {
+        private StrippablesAccess(Tier tier, Properties properties) {
+            super(tier, properties);
+        }
 
-		public static Map<Block, Block> getStrippables() {
-			return STRIPPABLES;
-		}
-	}
+        public static Map<Block, Block> getStrippables() {
+            return STRIPPABLES;
+        }
+    }
 }
