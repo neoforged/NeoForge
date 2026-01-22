@@ -291,6 +291,18 @@ public class MutableQuad {
     }
 
     /**
+     * {@return the a texture coordinate in atlas-space for a vertex}
+     */
+    @Contract(pure = true)
+    public float uvComponent(int vertexIndex, int componentIndex) {
+        return switch (componentIndex) {
+            case 0 -> u(vertexIndex);
+            case 1 -> v(vertexIndex);
+            default -> throw new IllegalArgumentException("Invalid UV index: " + componentIndex);
+        };
+    }
+
+    /**
      * {@return the texture coordinates in atlas-space for a vertex in packed form}
      *
      * @see UVPair#unpackU(long)
@@ -340,6 +352,21 @@ public class MutableQuad {
      */
     public MutableQuad setUv(int vertexIndex, Vector2fc uv) {
         return setUv(vertexIndex, uv.x(), uv.y());
+    }
+
+    /**
+     * Sets a component of the texture coordinate of a vertex.
+     *
+     * <p>Note that this method expects texture coordinates in the coordinate space of the atlas, not the sprite.
+     *
+     * @see #setUvFromSprite(int, float, float)
+     */
+    public MutableQuad setUvComponent(int vertexIndex, int componentIndex, float value) {
+        return switch (componentIndex) {
+            case 0 -> setUv(vertexIndex, value, v(vertexIndex));
+            case 1 -> setUv(vertexIndex, u(vertexIndex), value);
+            default -> throw new IllegalArgumentException("Invalid UV index: " + componentIndex);
+        };
     }
 
     /**
@@ -650,6 +677,23 @@ public class MutableQuad {
     }
 
     /**
+     * Recomputes the quad normal from the vertex positions.
+     *
+     * <p>Assumes that the quad is planar.
+     */
+    public MutableQuad recomputeNormals(boolean updateDirection) {
+        int normal = BakedNormals.computeQuadNormal(positions[0], positions[1], positions[2], positions[3]);
+        Arrays.fill(normals, normal);
+        if (updateDirection) {
+            float nX = BakedNormals.unpackX(normal);
+            float nY = BakedNormals.unpackY(normal);
+            float nZ = BakedNormals.unpackZ(normal);
+            setDirection(Direction.getApproximateNearest(nX, nY, nZ));
+        }
+        return this;
+    }
+
+    /**
      * {@return the color of a given vertex in ARGB form}
      *
      * @see ARGB
@@ -867,6 +911,33 @@ public class MutableQuad {
     public MutableQuad recalculateWinding() {
         FaceBakery.recalculateWinding(positions, uvs, direction, colors, normals);
         return this;
+    }
+
+    /**
+     * {@return a copy of this mutable quad}
+     */
+    public MutableQuad copy() {
+        return copyInto(new MutableQuad());
+    }
+
+    /**
+     * Copies the contents of this mutable quad into the provided mutable quad and returns it.
+     */
+    public MutableQuad copyInto(MutableQuad dest) {
+        for (int i = 0; i < 4; i++) {
+            dest.positions[i].set(positions[i]);
+        }
+        System.arraycopy(uvs, 0, dest.uvs, 0, uvs.length);
+        System.arraycopy(normals, 0, dest.normals, 0, normals.length);
+        System.arraycopy(colors, 0, dest.colors, 0, colors.length);
+        dest.tintIndex = tintIndex;
+        dest.direction = direction;
+        dest.sprite = sprite;
+        dest.shade = shade;
+        dest.lightEmission = lightEmission;
+        dest.hasAmbientOcclusion = hasAmbientOcclusion;
+        dest.lastSourceQuad = lastSourceQuad;
+        return dest;
     }
 
     public MutableQuad reset() {
