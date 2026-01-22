@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.event.entity;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
@@ -30,15 +32,30 @@ import org.jspecify.annotations.Nullable;
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent {
+    protected ResourceKey<Level> targetLevel;
     protected double targetX;
     protected double targetY;
     protected double targetZ;
 
+    @Deprecated(since = "1.21.11", forRemoval = true)
     public EntityTeleportEvent(Entity entity, double targetX, double targetY, double targetZ) {
         super(entity);
+        this.targetLevel = entity.level().dimension();
         this.targetX = targetX;
         this.targetY = targetY;
         this.targetZ = targetZ;
+    }
+
+    public EntityTeleportEvent(Entity entity, ResourceKey<Level> targetLevel, double targetX, double targetY, double targetZ) {
+        super(entity);
+        this.targetLevel = targetLevel;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.targetZ = targetZ;
+    }
+
+    public ResourceKey<Level> getTargetLevel() {
+        return targetLevel;
     }
 
     public double getTargetX() {
@@ -99,8 +116,17 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * If this event is canceled, the entity will not be teleported.
      */
     public static class TeleportCommand extends EntityTeleportEvent implements ICancellableEvent {
+        @Deprecated(since = "1.21.11", forRemoval = true)
         public TeleportCommand(Entity entity, double targetX, double targetY, double targetZ) {
-            super(entity, targetX, targetY, targetZ);
+            super(entity, entity.level().dimension(), targetX, targetY, targetZ);
+        }
+
+        public TeleportCommand(Entity entity, ResourceKey<Level> targetLevel, double targetX, double targetY, double targetZ) {
+            super(entity, targetLevel, targetX, targetY, targetZ);
+        }
+
+        public void setTargetLevel(ResourceKey<Level> targetLevel) {
+            this.targetLevel = targetLevel;
         }
     }
 
@@ -118,8 +144,17 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * If this event is canceled, the entity will not be teleported.
      */
     public static class SpreadPlayersCommand extends EntityTeleportEvent implements ICancellableEvent {
+        @Deprecated(since = "1.21.11", forRemoval = true)
         public SpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ) {
-            super(entity, targetX, targetY, targetZ);
+            super(entity, entity.level().dimension(), targetX, targetY, targetZ);
+        }
+
+        public SpreadPlayersCommand(Entity entity, ResourceKey<Level> targetLevel, double targetX, double targetY, double targetZ) {
+            super(entity, targetLevel, targetX, targetY, targetZ);
+        }
+
+        public void setTargetLevel(ResourceKey<Level> targetLevel) {
+            this.targetLevel = targetLevel;
         }
     }
 
@@ -139,7 +174,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         private final LivingEntity entityLiving;
 
         public EnderEntity(LivingEntity entity, double targetX, double targetY, double targetZ) {
-            super(entity, targetX, targetY, targetZ);
+            super(entity, entity.level().dimension(), targetX, targetY, targetZ);
             this.entityLiving = entity;
         }
 
@@ -168,7 +203,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
 
         @ApiStatus.Internal
         public EnderPearl(ServerPlayer entity, double targetX, double targetY, double targetZ, ThrownEnderpearl pearlEntity, float attackDamage, HitResult hitResult) {
-            super(entity, targetX, targetY, targetZ);
+            super(entity, pearlEntity.level().dimension(), targetX, targetY, targetZ);
             this.pearlEntity = pearlEntity;
             this.player = entity;
             this.attackDamage = attackDamage;
@@ -195,6 +230,10 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         public void setAttackDamage(float attackDamage) {
             this.attackDamage = attackDamage;
         }
+
+        public void setTargetLevel(ResourceKey<Level> targetLevel) {
+            this.targetLevel = targetLevel;
+        }
     }
 
     /**
@@ -214,7 +253,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         private final ItemStack itemStack;
 
         public ItemConsumption(LivingEntity entity, ItemStack itemStack, double targetX, double targetY, double targetZ) {
-            super(entity, targetX, targetY, targetZ);
+            super(entity, entity.level().dimension(), targetX, targetY, targetZ);
             this.entityLiving = entity;
             this.itemStack = itemStack;
         }
