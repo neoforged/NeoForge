@@ -61,8 +61,8 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * @param item  the item to modify the default components for
      * @param patch the patch to apply
      */
-    public void modify(ItemLike item, Consumer<Builder> patch) {
-        var builder = new Builder(item.asItem().components());
+    public void modify(ItemLike item, Consumer<ModifyingBuilder> patch) {
+        var builder = new ModifyingBuilder(item.asItem().components());
         patch.accept(builder);
         var compPatch = builder.build();
         if (!compPatch.isEmpty()) {
@@ -80,7 +80,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * @param predicate the item filter
      * @param patch     the patch to apply
      */
-    public void modifyMatching(Predicate<? super Item> predicate, Consumer<Builder> patch) {
+    public void modifyMatching(Predicate<? super Item> predicate, Consumer<ModifyingBuilder> patch) {
         getAllItems().filter(predicate).forEach(item -> modify(item, patch));
     }
 
@@ -91,10 +91,14 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         return BuiltInRegistries.ITEM.stream();
     }
 
-    public static class Builder extends DataComponentPatch.Builder {
+    /**
+     * An extension of the vanilla builder that includes some methods for modifying components either already in
+     * the builder or from a base set of components.
+     */
+    public static class ModifyingBuilder extends DataComponentPatch.Builder {
         private final DataComponentMap base;
 
-        private Builder(DataComponentMap baseComponents) {
+        private ModifyingBuilder(DataComponentMap baseComponents) {
             base = baseComponents;
         }
 
