@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/layers/MushroomCowMushroomLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/MushroomCowMushroomLayer.java
+@@ -77,7 +_,7 @@
+     ) {
+         if (appearsGlowingWithInvisibility) {
+             submitNodeCollector.submitBlockModel(
+-                poseStack, RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS), model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, outlineColor
++                poseStack, RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS), model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, outlineColor, mushroomBlockState
+             );
+         } else {
+             submitNodeCollector.submitBlock(poseStack, mushroomBlockState, lightCoords, overlayCoords, outlineColor);

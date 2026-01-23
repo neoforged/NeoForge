@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/layers/SnowGolemHeadLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/SnowGolemHeadLayer.java
+@@ -43,7 +_,7 @@
+                 RenderType renderType = state.appearsGlowing() && state.isInvisible
+                     ? RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)
+                     : ItemBlockRenderTypes.getRenderType(pumpkinBlockState);
+-                submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor);
++                submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor, pumpkinBlockState);
+                 poseStack.popPose();
+             }
+         }

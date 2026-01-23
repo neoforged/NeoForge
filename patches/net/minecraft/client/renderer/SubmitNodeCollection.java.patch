@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/SubmitNodeCollection.java
++++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
+@@ -172,9 +_,16 @@
+     public void submitBlockModel(
+         PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, int outlineColor
+     ) {
++        submitBlockModel(poseStack, renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor, null);
++    }
++
++    @Override
++    public void submitBlockModel(
++            PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, int outlineColor, @Nullable BlockState state
++    ) {
+         this.wasUsed = true;
+         this.blockModelSubmits
+-            .add(new SubmitNodeStorage.BlockModelSubmit(poseStack.last().copy(), renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor));
++            .add(new SubmitNodeStorage.BlockModelSubmit(poseStack.last().copy(), renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor, state));
+     }
+ 
+     @Override

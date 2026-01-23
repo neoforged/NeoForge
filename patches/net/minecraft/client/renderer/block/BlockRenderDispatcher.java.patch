@@ -35,7 +35,7 @@
              Objects.requireNonNull(this.liquidBlockRenderer).tesselate(level, pos, builder, blockState, fluidState);
          } catch (Throwable var9) {
              CrashReport report = CrashReport.forThrowable(var9, "Tesselating liquid in world");
-@@ -90,7 +_,12 @@
+@@ -90,7 +_,16 @@
          return this.blockModelShaper.getBlockModel(state);
      }
  
@@ -45,6 +45,10 @@
 +    }
 +
 +    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos) {
++        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, level, pos, null);
++    }
++
++    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos, java.util.function.@Nullable Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter) {
          RenderShape shape = state.getRenderShape();
          if (shape != RenderShape.INVISIBLE) {
              BlockStateModel model = this.getBlockModel(state);
@@ -53,7 +57,7 @@
              float b = (col & 0xFF) / 255.0F;
              ModelBlockRenderer.renderModel(
 -                poseStack.last(), bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(state)), model, r, g, b, lightCoords, overlayCoords
-+                    poseStack.last(), bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state
++                poseStack.last(), bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state, chunkLayerFilter
              );
          }
      }
