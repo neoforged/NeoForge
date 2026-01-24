@@ -5,7 +5,7 @@
                      ? RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)
                      : ItemBlockRenderTypes.getRenderType(pumpkinBlockState);
 -                submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor);
-+                submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor, pumpkinBlockState);
++                submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor, state.appearsGlowing() && state.isInvisible ? null : pumpkinBlockState);
                  poseStack.popPose();
              }
          }

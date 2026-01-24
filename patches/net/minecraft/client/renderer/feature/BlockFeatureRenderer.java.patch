@@ -1,6 +1,12 @@
 --- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
 +++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
-@@ -50,10 +_,12 @@
+@@ -47,13 +_,18 @@
+     private void renderMovingBlockSubmits(
+         SubmitNodeCollection nodeCollection, MultiBufferSource.BufferSource bufferSource, BlockRenderDispatcher blockRenderDispatcher, boolean translucent
+     ) {
++        if (nodeCollection.getMovingBlockSubmits().isEmpty()) return;
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, com.mojang.blaze3d.vertex.VertexConsumer> bufferLookup =
++                chunkLayer -> bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(chunkLayer));
          for (SubmitNodeStorage.MovingBlockSubmit submit : nodeCollection.getMovingBlockSubmits()) {
              MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
              BlockState blockState = movingBlockRenderState.blockState;
@@ -12,7 +18,7 @@
 -                    .collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
 +                    .collectParts(movingBlockRenderState.level, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
 +                // Neo: filter out parts using a render type which does not match the translucent flag
-+                parts.removeIf(part -> part.getRenderType(movingBlockRenderState.blockState).sortOnUpload() != translucent);
++                parts.removeIf(part -> part.getRenderType(blockState).sortOnUpload() != translucent);
                  PoseStack poseStack = new PoseStack();
                  poseStack.mulPose(submit.pose());
                  blockRenderDispatcher.getModelRenderer()
@@ -21,13 +27,17 @@
                          movingBlockRenderState.blockPos,
                          poseStack,
 -                        bufferSource.getBuffer(renderType),
-+                        partRenderType -> bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(partRenderType)),
++                        bufferLookup,
                          false,
                          OverlayTexture.NO_OVERLAY
                      );
-@@ -79,14 +_,14 @@
+@@ -78,15 +_,18 @@
+         OutlineBufferSource outlineBufferSource,
          boolean translucent
      ) {
++        if (nodeCollection.getBlockSubmits().isEmpty()) return;
++        java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter =
++                translucent ? layer -> layer.sortOnUpload() : layer -> !layer.sortOnUpload();
          for (SubmitNodeStorage.BlockSubmit submit : nodeCollection.getBlockSubmits()) {
 -            RenderType renderType = ItemBlockRenderTypes.getRenderType(submit.state());
 -            if (renderType.hasBlending() == translucent) {
@@ -36,18 +46,24 @@
                  this.poseStack.pushPose();
                  this.poseStack.last().set(submit.pose());
 -                blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, bufferSource, submit.lightCoords(), submit.overlayCoords());
-+                blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, bufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO, layer -> layer.sortOnUpload() == translucent);
++                blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, bufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO, chunkLayerFilter);
                  if (submit.outlineColor() != 0) {
                      outlineBufferSource.setColor(submit.outlineColor());
 -                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords());
-+                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO, layer -> layer.sortOnUpload() == translucent);
++                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO, chunkLayerFilter);
                  }
  
                  this.poseStack.popPose();
-@@ -98,6 +_,41 @@
+@@ -97,7 +_,47 @@
+     private void renderBlockModelSubmits(
          SubmitNodeCollection nodeCollection, MultiBufferSource.BufferSource bufferSource, OutlineBufferSource outlineBufferSource, boolean translucent
      ) {
++        if (nodeCollection.getBlockModelSubmits().isEmpty()) return;
++        java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter =
++                translucent ? layer -> layer.sortOnUpload() : layer -> !layer.sortOnUpload();
          for (SubmitNodeStorage.BlockModelSubmit submit : nodeCollection.getBlockModelSubmits()) {
++            // Neo: render with multi-pass path if a blockstate is provided for the model part's render type lookup, otherwise fall back to vanilla
++            //      (any part falling back to ItemBlockRenderTypes would render solid as the state used for the fallback would be air)
 +            if (submit.state() != null) {
 +                ModelBlockRenderer.renderModel(
 +                    submit.pose(),
@@ -61,7 +77,7 @@
 +                    net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE,
 +                    net.minecraft.core.BlockPos.ZERO,
 +                    submit.state(),
-+                    layer -> layer.sortOnUpload() == translucent
++                    chunkLayerFilter
 +                );
 +                if (submit.outlineColor() != 0) {
 +                    outlineBufferSource.setColor(submit.outlineColor());
@@ -77,7 +93,7 @@
 +                        net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE,
 +                        net.minecraft.core.BlockPos.ZERO,
 +                        submit.state(),
-+                        layer -> layer.sortOnUpload() == translucent
++                        chunkLayerFilter
 +                    );
 +                }
 +                continue;
