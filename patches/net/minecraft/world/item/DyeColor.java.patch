@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/DyeColor.java
 +++ b/net/minecraft/world/item/DyeColor.java
-@@ -50,6 +_,8 @@
+@@ -58,6 +_,8 @@
      private final MapColor mapColor;
      private final int textureDiffuseColor;
      private final int fireworkColor;
@@ -9,7 +9,7 @@
      private final int textColor;
  
      private DyeColor(int id, String name, int textureDiffuseColor, MapColor mapColor, int fireworkColor, int textColor) {
-@@ -57,6 +_,8 @@
+@@ -65,6 +_,8 @@
          this.name = name;
          this.mapColor = mapColor;
          this.textColor = ARGB.opaque(textColor);
@@ -18,7 +18,7 @@
          this.textureDiffuseColor = ARGB.opaque(textureDiffuseColor);
          this.fireworkColor = fireworkColor;
      }
-@@ -107,6 +_,36 @@
+@@ -115,6 +_,36 @@
      @Override
      public String getSerializedName() {
          return this.name;

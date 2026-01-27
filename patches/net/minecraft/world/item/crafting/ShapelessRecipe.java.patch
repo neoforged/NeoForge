@@ -1,21 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -22,12 +_,14 @@
-     private final ItemStackTemplate result;
-     private final List<Ingredient> ingredients;
-     private @Nullable PlacementInfo placementInfo;
-+    private final boolean isSimple;
- 
-     public ShapelessRecipe(String group, CraftingBookCategory category, ItemStackTemplate result, List<Ingredient> ingredients) {
-         this.group = group;
-         this.category = category;
-         this.result = result;
-         this.ingredients = ingredients;
-+        this.isSimple = ingredients.stream().allMatch(Ingredient::isSimple);
-     }
- 
-     @Override
-@@ -57,6 +_,12 @@
+@@ -58,11 +_,24 @@
      public boolean matches(CraftingInput input, Level level) {
          if (input.ingredientCount() != this.ingredients.size()) {
              return false;
@@ -28,26 +13,15 @@
          } else {
              return input.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(input.getItem(0))
-@@ -64,6 +_,13 @@
+                 : input.stackedContents().canCraft(this, null);
          }
-     }
- 
++    }
++
 +    /**
 +     * {@return the result of this shapeless recipe or null if it is not static and needs ot be obtained by assembling it}
 +     */
 +    public @Nullable ItemStackTemplate result() {
 +        return result;
-+    }
-+
-     public ItemStack assemble(CraftingInput input) {
-         return this.result.create();
      }
-@@ -85,7 +_,7 @@
-                     Codec.STRING.optionalFieldOf("group", "").forGetter(o -> o.group),
-                     CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(o -> o.category),
-                     ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.result),
--                    Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(o -> o.ingredients)
-+                    Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(o -> o.ingredients)
-                 )
-                 .apply(r, ShapelessRecipe::new)
-         );
+ 
+     public ItemStack assemble(CraftingInput input) {

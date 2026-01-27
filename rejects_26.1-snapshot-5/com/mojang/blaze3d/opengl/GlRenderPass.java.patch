@@ -1,0 +1,23 @@
+--- a/com/mojang/blaze3d/opengl/GlRenderPass.java
++++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
+@@ -21,7 +21,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public class GlRenderPass implements RenderPass {
+     protected static final int MAX_VERTEX_BUFFERS = 1;
+-    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
++    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.getBoolean("neoforge.disableGlValidation");
+     private final GlCommandEncoder encoder;
+     private final boolean hasDepthTexture;
+     private boolean closed;
+@@ -102,6 +103,11 @@
+             this.uniforms.put(name, value);
+             this.dirtyUniforms.add(name);
+         }
++    }
++
++    @Override
++    public void setViewport(int x, int y, int width, int height){
++        GlStateManager._viewport(x, y, width, height);
+     }
+ 
+     @Override

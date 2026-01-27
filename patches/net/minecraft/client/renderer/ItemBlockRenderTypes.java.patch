@@ -8,7 +8,7 @@
      private static final Map<Block, ChunkSectionLayer> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), map -> {
          ChunkSectionLayer cutout = ChunkSectionLayer.CUTOUT;
          map.put(Blocks.GRASS_BLOCK, cutout);
-@@ -360,6 +_,8 @@
+@@ -362,6 +_,8 @@
      });
      private static boolean cutoutLeaves;
  
@@ -17,7 +17,7 @@
      public static ChunkSectionLayer getChunkRenderType(BlockState state) {
          Block block = state.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -370,6 +_,8 @@
+@@ -372,6 +_,8 @@
          }
      }
  
@@ -26,7 +26,7 @@
      public static RenderType getMovingBlockRenderType(BlockState state) {
          Block block = state.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -388,6 +_,8 @@
+@@ -390,6 +_,8 @@
          }
      }
  
@@ -35,7 +35,7 @@
      public static RenderType getRenderType(BlockState state) {
          ChunkSectionLayer renderType = getChunkRenderType(state);
          return renderType == ChunkSectionLayer.TRANSLUCENT ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockSheet();
-@@ -400,5 +_,30 @@
+@@ -402,5 +_,30 @@
  
      public static void setCutoutLeaves(boolean cutoutLeaves) {
          ItemBlockRenderTypes.cutoutLeaves = cutoutLeaves;

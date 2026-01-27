@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/AbstractGameRulesScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/AbstractGameRulesScreen.java
-@@ -314,6 +_,12 @@
+@@ -314,6 +314,12 @@
                              this.addEntry(gameRule, (x$0, x$1, x$2, x$3) -> AbstractGameRulesScreen.this.new IntegerRuleEntry(x$0, x$1, x$2, x$3));
                          }
  

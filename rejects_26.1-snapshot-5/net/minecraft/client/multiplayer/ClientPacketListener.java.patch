@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/multiplayer/ClientPacketListener.java
++++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -1589,7 +1594,13 @@
+         }
+     }
+ 
++    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)} instead. */
++    @Deprecated
+     private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason) {
++        this.startWaitingForNewLevel(player, level, reason, null, null);
++    }
++
++    private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
+         if (this.levelLoadTracker == null) {
+             this.levelLoadTracker = new LevelLoadTracker();
+         }

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlBackend.java
 +++ b/com/mojang/blaze3d/opengl/GlBackend.java
-@@ -25,6 +_,13 @@
+@@ -26,6 +_,13 @@
      public WindowAndDevice createDeviceWithWindow(
          int width, int height, String title, long monitor, ShaderSource defaultShaderSource, GpuDebugOptions debugOptions
      ) throws BackendCreationException {
@@ -14,11 +14,11 @@
          GLFWErrorCapture glfwErrors = new GLFWErrorCapture();
  
          WindowAndDevice error;
-@@ -54,7 +_,7 @@
+@@ -55,7 +_,7 @@
                  throw new BackendCreationException("Failed to create window with OpenGL context");
              }
  
--            error = new WindowAndDevice(window, new GlDevice(window, defaultShaderSource, debugOptions));
+-            error = new WindowAndDevice(window, new GpuDevice(new GlDevice(window, defaultShaderSource, debugOptions)));
 +            error = new WindowAndDevice(window, net.neoforged.neoforge.client.ClientHooks.createGpuDevice(window, defaultShaderSource, debugOptions));
          }
  

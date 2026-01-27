@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -520,7 +_,14 @@
+@@ -527,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent sound, float volume, float pitch) {
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -762,6 +_,7 @@
+@@ -769,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -24,7 +24,7 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean wasAutoJump = false;
          if (this.autoJumpTime > 0) {
-@@ -806,7 +_,7 @@
+@@ -813,7 +_,7 @@
          }
  
          boolean justToggledCreativeFlight = false;
@@ -33,7 +33,7 @@
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -903,7 +_,7 @@
+@@ -910,7 +_,7 @@
      }
  
      private boolean shouldStopSwimSprinting() {
@@ -42,7 +42,7 @@
      }
  
      public Portal.Transition getActivePortalLocalTransition() {
-@@ -948,6 +_,10 @@
+@@ -955,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();

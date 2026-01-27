@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Recipe.java
 +++ b/net/minecraft/world/item/crafting/Recipe.java
-@@ -15,6 +_,7 @@
+@@ -18,6 +_,7 @@
  public interface Recipe<T extends RecipeInput> {
      Codec<Recipe<?>> CODEC = BuiltInRegistries.RECIPE_SERIALIZER.byNameCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
      Codec<ResourceKey<Recipe<?>>> KEY_CODEC = ResourceKey.codec(Registries.RECIPE);

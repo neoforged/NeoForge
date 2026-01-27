@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -599,8 +_,7 @@
+@@ -613,8 +_,7 @@
      }
  
      protected void waxRecipes(FeatureFlagSet flagSet) {
@@ -10,7 +10,7 @@
              .forEach(
                  (block, waxedBlock) -> {
                      if (waxedBlock.requiredFeatures().isSubsetOf(flagSet)) {
-@@ -758,6 +_,10 @@
+@@ -825,6 +_,10 @@
          return Ingredient.of(this.items.getOrThrow(id));
      }
  
@@ -21,7 +21,7 @@
      protected ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike item) {
          return ShapedRecipeBuilder.shaped(this.items, category, item);
      }
-@@ -802,18 +_,14 @@
+@@ -874,18 +_,14 @@
                          final Set<ResourceKey<Recipe<?>>> allRecipes = Sets.newHashSet();
                          final List<CompletableFuture<?>> tasks = new ArrayList<>();
                          RecipeOutput recipeOutput = new RecipeOutput() {
@@ -43,7 +43,7 @@
                                      }
                                  }
                              }
-@@ -832,13 +_,19 @@
+@@ -904,13 +_,19 @@
                              }
  
                              private void saveRecipe(ResourceKey<Recipe<?>> id, Recipe<?> recipe) {

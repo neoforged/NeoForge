@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -46,7 +_,19 @@
+@@ -47,7 +_,19 @@
  import org.jspecify.annotations.Nullable;
  
  public class EnchantmentHelper {
@@ -8,7 +8,7 @@
 +     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemStack)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
 +     */
 +    @Deprecated
-     public static int getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemStack piece) {
+     public static int getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
 +        // Neo: To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
 +        return piece.getEnchantmentLevel(enchantment);
 +    }
@@ -20,7 +20,7 @@
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return enchantments.getLevel(enchantment);
      }
-@@ -126,6 +_,12 @@
+@@ -127,6 +_,12 @@
      public static void runIterationOnItem(ItemStack piece, EnchantmentHelper.EnchantmentVisitor method) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -33,7 +33,7 @@
          for (Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
              method.accept(entry.getKey(), entry.getIntValue());
          }
-@@ -134,6 +_,10 @@
+@@ -135,6 +_,10 @@
      public static void runIterationOnItem(ItemStack piece, EquipmentSlot slot, LivingEntity owner, EnchantmentHelper.EnchantmentInSlotVisitor method) {
          if (!piece.isEmpty()) {
              ItemEnchantments itemEnchantments = piece.get(DataComponents.ENCHANTMENTS);
@@ -44,7 +44,7 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -419,6 +_,12 @@
+@@ -420,6 +_,12 @@
      public static boolean hasTag(ItemStack item, TagKey<Enchantment> tag) {
          ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -57,7 +57,7 @@
          for (Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
              Holder<Enchantment> enchantment = entry.getKey();
              if (enchantment.is(tag)) {
-@@ -573,7 +_,9 @@
+@@ -574,7 +_,9 @@
      public static List<EnchantmentInstance> getAvailableEnchantmentResults(int value, ItemStack itemStack, Stream<Holder<Enchantment>> source) {
          List<EnchantmentInstance> results = Lists.newArrayList();
          boolean isBook = itemStack.is(Items.BOOK);

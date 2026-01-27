@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RepairItemRecipe.java
 +++ b/net/minecraft/world/item/crafting/RepairItemRecipe.java
-@@ -45,7 +_,9 @@
+@@ -49,7 +_,9 @@
              && first.has(DataComponents.MAX_DAMAGE)
              && second.has(DataComponents.MAX_DAMAGE)
              && first.has(DataComponents.DAMAGE)

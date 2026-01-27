@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
 +++ b/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
-@@ -37,7 +_,7 @@
+@@ -37,7 +37,7 @@
              if (recipe.isPresent()) {
                  ItemStack result = recipe.get().value().assemble(input);
                  if (!result.isEmpty()) {

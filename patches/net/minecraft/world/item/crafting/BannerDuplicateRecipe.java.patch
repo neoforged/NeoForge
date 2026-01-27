@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/BannerDuplicateRecipe.java
 +++ b/net/minecraft/world/item/crafting/BannerDuplicateRecipe.java
-@@ -81,7 +_,7 @@
+@@ -97,7 +_,7 @@
          for (int slot = 0; slot < result.size(); slot++) {
              ItemStack itemStack = input.getItem(slot);
              if (!itemStack.isEmpty()) {

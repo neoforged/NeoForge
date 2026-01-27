@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/BookCloningRecipe.java
 +++ b/net/minecraft/world/item/crafting/BookCloningRecipe.java
-@@ -87,7 +_,7 @@
+@@ -130,7 +_,7 @@
  
          for (int slot = 0; slot < result.size(); slot++) {
              ItemStack itemStack = input.getItem(slot);

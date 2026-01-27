@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/ShapedRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapedRecipeBuilder.java
-@@ -51,6 +_,10 @@
+@@ -45,6 +_,10 @@
          return new ShapedRecipeBuilder(items, category, item, count);
      }
  

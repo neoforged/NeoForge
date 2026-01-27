@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -109,14 +_,39 @@
+@@ -110,14 +_,39 @@
          }
      }
  
@@ -40,7 +40,7 @@
          public LootContext.Builder withOptionalRandomSeed(long seed) {
              if (seed != 0L) {
                  this.random = RandomSource.create(seed);
-@@ -130,6 +_,11 @@
+@@ -131,6 +_,11 @@
              return this;
          }
  
@@ -52,7 +52,7 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -138,7 +_,7 @@
+@@ -139,7 +_,7 @@
              ServerLevel level = this.getLevel();
              MinecraftServer server = level.getServer();
              RandomSource random = Optional.ofNullable(this.random).or(() -> randomSequenceKey.map(level::getRandomSequence)).orElseGet(level::getRandom);
@@ -61,7 +61,7 @@
          }
      }
  
-@@ -162,6 +_,12 @@
+@@ -163,6 +_,12 @@
          @Override
          public ContextKey<? extends Entity> contextParam() {
              return this.param;

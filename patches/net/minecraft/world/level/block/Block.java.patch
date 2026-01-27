@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -78,7 +_,7 @@
+@@ -79,7 +_,7 @@
      public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
@@ -9,7 +9,7 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -237,7 +_,7 @@
+@@ -238,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -18,7 +18,7 @@
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", className);
-@@ -290,12 +_,22 @@
+@@ -291,12 +_,22 @@
          }
      }
  
@@ -41,7 +41,7 @@
          } else if (occluder == Shapes.empty()) {
              return true;
          } else {
-@@ -368,22 +_,28 @@
+@@ -369,22 +_,28 @@
  
      public static void dropResources(BlockState state, Level level, BlockPos pos) {
          if (level instanceof ServerLevel) {
@@ -73,7 +73,7 @@
          }
      }
  
-@@ -413,19 +_,26 @@
+@@ -414,19 +_,26 @@
      }
  
      private static void popResource(Level level, Supplier<ItemEntity> entityFactory, ItemStack itemStack) {
@@ -103,7 +103,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -494,6 +_,7 @@
+@@ -495,6 +_,7 @@
      public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
      }
  
@@ -111,7 +111,7 @@
      public boolean dropFromExplosion(Explosion explosion) {
          return true;
      }
-@@ -576,6 +_,35 @@
+@@ -577,6 +_,35 @@
          return state.setValue(property, (T)value);
      }
  

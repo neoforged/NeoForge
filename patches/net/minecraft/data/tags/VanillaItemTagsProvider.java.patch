@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/VanillaItemTagsProvider.java
 +++ b/net/minecraft/data/tags/VanillaItemTagsProvider.java
-@@ -544,5 +_,29 @@
+@@ -580,5 +_,29 @@
              this.itemAppender.addOptionalTag(blockTagToItemTag(tag));
              return this;
          }

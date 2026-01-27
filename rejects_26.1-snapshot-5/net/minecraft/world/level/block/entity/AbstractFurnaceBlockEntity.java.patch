@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+@@ -171,12 +178,15 @@
+                 entity.litTotalTime = entity.litTimeRemaining;
+                 if (entity.isLit()) {
+                     changed = true;
++                    var remainder = fuel.getCraftingRemainder();
++                    if (remainder != null)
++                        entity.items.set(1, remainder.create());
++                    else
+                     if (hasFuel) {
+                         Item fuelItem = fuel.getItem();
+                         fuel.shrink(1);
+                         if (fuel.isEmpty()) {
+-                            ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
+-                            entity.items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
++                            entity.items.set(1, ItemStack.EMPTY); // Neo: Remainder is handled in the `if` check above.
+                         }
+                     }
+                 }
+@@ -225,9 +235,9 @@
+                 } else if (!ItemStack.isSameItemSameComponents(resultItemStack, burnResult)) {
+                     return false;
+                 } else {
+-                    return resultItemStack.getCount() < maxStackSize && resultItemStack.getCount() < resultItemStack.getMaxStackSize()
++                    return resultItemStack.getCount() + burnResult.getCount() <= maxStackSize && resultItemStack.getCount() + burnResult.getCount() <= resultItemStack.getMaxStackSize() // Neo fix: make furnace respect stack sizes in furnace recipes
+                         ? true
+-                        : resultItemStack.getCount() < burnResult.getMaxStackSize();
++                        : resultItemStack.getCount() + burnResult.getCount() <= burnResult.getMaxStackSize(); // Neo fix: make furnace respect stack sizes in furnace recipes
+                 }
+             }
+         } else {
