@@ -41,6 +41,9 @@
   "net/minecraft/client/renderer/blockentity/BlockEntityRenderer": [
     "net/neoforged/neoforge/client/extensions/IBlockEntityRendererExtension<T>"
   ],
+  "net/minecraft/client/renderer/feature/BlockFeatureRenderer": [
+    "net/neoforged/neoforge/client/extensions/BlockFeatureRendererExtension"
+  ],
   "net/minecraft/client/renderer/texture/atlas/SpriteSource": [
     "net/neoforged/neoforge/client/extensions/SpriteSourceExtension"
   ],

@@ -54,51 +54,13 @@
                  }
  
                  this.poseStack.popPose();
-@@ -97,7 +_,47 @@
+@@ -97,6 +_,9 @@
      private void renderBlockModelSubmits(
          SubmitNodeCollection nodeCollection, MultiBufferSource.BufferSource bufferSource, OutlineBufferSource outlineBufferSource, boolean translucent
      ) {
-+        if (nodeCollection.getBlockModelSubmits().isEmpty()) return;
-+        java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter =
-+                translucent ? layer -> layer.sortOnUpload() : layer -> !layer.sortOnUpload();
-         for (SubmitNodeStorage.BlockModelSubmit submit : nodeCollection.getBlockModelSubmits()) {
-+            // Neo: render with multi-pass path if a blockstate is provided for the model part's render type lookup, otherwise fall back to vanilla
-+            //      (any part falling back to ItemBlockRenderTypes would render solid as the state used for the fallback would be air)
-+            if (submit.state() != null) {
-+                ModelBlockRenderer.renderModel(
-+                    submit.pose(),
-+                    bufferSource,
-+                    submit.model(),
-+                    submit.r(),
-+                    submit.g(),
-+                    submit.b(),
-+                    submit.lightCoords(),
-+                    submit.overlayCoords(),
-+                    net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE,
-+                    net.minecraft.core.BlockPos.ZERO,
-+                    submit.state(),
-+                    chunkLayerFilter
-+                );
-+                if (submit.outlineColor() != 0) {
-+                    outlineBufferSource.setColor(submit.outlineColor());
-+                    ModelBlockRenderer.renderModel(
-+                        submit.pose(),
-+                        outlineBufferSource,
-+                        submit.model(),
-+                        submit.r(),
-+                        submit.g(),
-+                        submit.b(),
-+                        submit.lightCoords(),
-+                        submit.overlayCoords(),
-+                        net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE,
-+                        net.minecraft.core.BlockPos.ZERO,
-+                        submit.state(),
-+                        chunkLayerFilter
-+                    );
-+                }
-+                continue;
-+            }
++        // Neo: render extended block model submits with support for per-part render types
++        renderExtendedBlockModelSubmits(nodeCollection.getExtendedBlockModelSubmits(), bufferSource, outlineBufferSource, translucent);
 +
+         for (SubmitNodeStorage.BlockModelSubmit submit : nodeCollection.getBlockModelSubmits()) {
              if (submit.renderType().hasBlending() == translucent) {
                  ModelBlockRenderer.renderModel(
-                     submit.pose(),

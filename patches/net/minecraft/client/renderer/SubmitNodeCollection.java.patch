@@ -1,20 +1,46 @@
 --- a/net/minecraft/client/renderer/SubmitNodeCollection.java
 +++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
-@@ -172,9 +_,16 @@
-     public void submitBlockModel(
-         PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, int outlineColor
-     ) {
-+        submitBlockModel(poseStack, renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor, null);
-+    }
-+
-+    @Override
-+    public void submitBlockModel(
-+            PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, int outlineColor, @Nullable BlockState state
-+    ) {
-         this.wasUsed = true;
-         this.blockModelSubmits
--            .add(new SubmitNodeStorage.BlockModelSubmit(poseStack.last().copy(), renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor));
-+            .add(new SubmitNodeStorage.BlockModelSubmit(poseStack.last().copy(), renderType, model, r, g, b, lightCoords, overlayCoords, outlineColor, state));
+@@ -40,6 +_,7 @@
+     private final List<SubmitNodeStorage.BlockSubmit> blockSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.MovingBlockSubmit> movingBlockSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.BlockModelSubmit> blockModelSubmits = new ArrayList<>();
++    private final List<SubmitNodeStorage.ExtendedBlockModelSubmit> extendedBlockModelSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.ItemSubmit> itemSubmits = new ArrayList<>();
+     private final List<SubmitNodeCollector.ParticleGroupRenderer> particleGroupRenderers = new ArrayList<>();
+     private final ModelFeatureRenderer.Storage modelSubmits = new ModelFeatureRenderer.Storage();
+@@ -178,6 +_,15 @@
      }
  
      @Override
++    public void submitBlockModel(
++        PoseStack poseStack, BlockState state, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, int outlineColor
++    ) {
++        this.wasUsed = true;
++        this.extendedBlockModelSubmits
++            .add(new SubmitNodeStorage.ExtendedBlockModelSubmit(poseStack.last().copy(), state, model, r, g, b, lightCoords, overlayCoords, outlineColor));
++    }
++
++    @Override
+     public void submitItem(
+         PoseStack poseStack,
+         ItemDisplayContext displayContext,
+@@ -242,6 +_,11 @@
+         return this.blockModelSubmits;
+     }
+ 
++    /** NeoForge: expose extended block model submits with support for per-part render types */
++    public List<SubmitNodeStorage.ExtendedBlockModelSubmit> getExtendedBlockModelSubmits() {
++        return this.extendedBlockModelSubmits;
++    }
++
+     public ModelPartFeatureRenderer.Storage getModelPartSubmits() {
+         return this.modelPartSubmits;
+     }
+@@ -275,6 +_,7 @@
+         this.blockSubmits.clear();
+         this.movingBlockSubmits.clear();
+         this.blockModelSubmits.clear();
++        this.extendedBlockModelSubmits.clear();
+         this.itemSubmits.clear();
+         this.particleGroupRenderers.clear();
+         this.modelSubmits.clear();
