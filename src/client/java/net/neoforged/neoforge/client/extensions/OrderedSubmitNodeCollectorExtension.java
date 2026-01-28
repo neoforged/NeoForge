@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.extensions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
@@ -43,6 +44,6 @@ public interface OrderedSubmitNodeCollectorExtension {
             int lightCoords,
             int overlayCoords,
             int outlineColor) {
-        self().submitBlockModel(poseStack, state, model, r, g, b, lightCoords, overlayCoords, outlineColor);
+        self().submitBlockModel(poseStack, ItemBlockRenderTypes.getRenderType(state), model, r, g, b, lightCoords, overlayCoords, outlineColor);
     }
 }
