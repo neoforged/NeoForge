@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -108,7 +109,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
          * To be able to remove a component, use {@link #modifyOptional}
          */
         @SuppressWarnings("unchecked") // Safe provided the map keeps the guarantee that a DCT<T> maps to an Optional<T>
-        public <T> DataComponentPatch.Builder modify(DataComponentType<T> type, java.util.function.UnaryOperator<T> modification) {
+        public <T> DataComponentPatch.Builder modify(DataComponentType<T> type, UnaryOperator<T> modification) {
             if (map.containsKey(type)) {
                 Optional<T> val = ((Optional<T>) map.get(type)).map(modification);
                 val.ifPresent(CommonHooks::validateComponent);
@@ -128,7 +129,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
          * Modify a component, whether it's already present or not. Return {@link Optional#empty} to remove the component.
          */
         @SuppressWarnings("unchecked") // Safe provided the map keeps the guarantee that a DCT<T> maps to an Optional<T>
-        public <T> DataComponentPatch.Builder modifyOptional(DataComponentType<T> type, java.util.function.UnaryOperator<Optional<T>> modification) {
+        public <T> DataComponentPatch.Builder modifyOptional(DataComponentType<T> type, UnaryOperator<Optional<T>> modification) {
             Optional<T> val = map.containsKey(type) ? (Optional<T>) map.get(type) : Optional.ofNullable(base.get(type));
             val = modification.apply(val);
             val.ifPresent(CommonHooks::validateComponent);
