@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -15,8 +16,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.TabVisibility;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -50,7 +49,7 @@ public class CreativeModeTabTest {
             helper.register(LOGS, CreativeModeTab.builder().icon(() -> new ItemStack(Blocks.ACACIA_LOG))
                     .title(Component.literal("Logs"))
                     .withLabelColor(0x00FF00)
-                    .displayItems((params, output) -> {
+                    .displayItems((_, output) -> {
                         output.accept(new ItemStack(Blocks.ACACIA_LOG));
                         output.accept(new ItemStack(Blocks.BIRCH_LOG));
                         output.accept(new ItemStack(Blocks.DARK_OAK_LOG));
@@ -62,7 +61,7 @@ public class CreativeModeTabTest {
             helper.register(STONE, CreativeModeTab.builder().icon(() -> new ItemStack(Blocks.STONE))
                     .title(Component.literal("Stone"))
                     .withLabelColor(0x0000FF)
-                    .displayItems((params, output) -> {
+                    .displayItems((_, output) -> {
                         output.accept(new ItemStack(Blocks.STONE));
                         output.accept(new ItemStack(Blocks.GRANITE));
                         output.accept(new ItemStack(Blocks.DIORITE));
@@ -72,17 +71,30 @@ public class CreativeModeTabTest {
                     .build());
 
             helper.register(Identifier.fromNamespaceAndPath(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
-                    .displayItems((params, output) -> {
-                        for (DyeColor color : DyeColor.values()) {
-                            output.accept(DyeItem.byColor(color));
-                        }
+                    .displayItems((_, output) -> {
+                        output.accept(Items.WHITE_DYE);
+                        output.accept(Items.ORANGE_DYE);
+                        output.accept(Items.MAGENTA_DYE);
+                        output.accept(Items.LIGHT_BLUE_DYE);
+                        output.accept(Items.YELLOW_DYE);
+                        output.accept(Items.LIME_DYE);
+                        output.accept(Items.PINK_DYE);
+                        output.accept(Items.GRAY_DYE);
+                        output.accept(Items.LIGHT_GRAY_DYE);
+                        output.accept(Items.CYAN_DYE);
+                        output.accept(Items.PURPLE_DYE);
+                        output.accept(Items.BLUE_DYE);
+                        output.accept(Items.BROWN_DYE);
+                        output.accept(Items.GREEN_DYE);
+                        output.accept(Items.RED_DYE);
+                        output.accept(Items.BLACK_DYE);
                     })
                     .withTabFactory(CreativeModeColorTab::new)
                     .withTabsBefore(CreativeModeTabs.COLORED_BLOCKS)
                     .build());
 
             helper.register(DAMAGED_SWORDS, CreativeModeTab.builder().title(Component.literal("Damaged Wooden Swords"))
-                    .displayItems((params, output) -> {
+                    .displayItems((_, output) -> {
                         output.accept(new ItemStack(Items.WOODEN_SWORD));
                         output.accept(new ItemStack(Items.WOODEN_SWORD), TabVisibility.SEARCH_TAB_ONLY); // Should still be added
                         for (int i = 1; i <= 59; i++) {
@@ -99,7 +111,7 @@ public class CreativeModeTabTest {
                 helper.register(Identifier.fromNamespaceAndPath(MOD_ID, "dummy" + i), CreativeModeTab.builder()
                         .title(Component.literal("Dummy " + i))
                         .icon(() -> new ItemStack(block))
-                        .displayItems((params, output) -> output.accept(block))
+                        .displayItems((_, output) -> output.accept(block))
                         .build());
             }
 
@@ -107,7 +119,7 @@ public class CreativeModeTabTest {
             helper.register(Identifier.fromNamespaceAndPath(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.with_tabs_image"))
                     .icon(() -> new ItemStack(Blocks.BRICKS))
-                    .displayItems((params, output) -> output.accept(Blocks.BRICKS))
+                    .displayItems((_, output) -> output.accept(Blocks.BRICKS))
                     .withTabsImage(custom_tabs_image)
                     .build());
         });
@@ -153,11 +165,25 @@ public class CreativeModeTabTest {
         @Override
         public ItemStack getIconItem() {
             if (iconItems == null) {
-                DyeColor[] colors = DyeColor.values();
-                iconItems = new ItemStack[colors.length];
-                for (int i = 0; i < colors.length; i++) {
-                    iconItems[i] = new ItemStack(DyeItem.byColor(colors[i]));
-                }
+                iconItems = Stream.of(
+                        Items.WHITE_DYE,
+                        Items.ORANGE_DYE,
+                        Items.MAGENTA_DYE,
+                        Items.LIGHT_BLUE_DYE,
+                        Items.YELLOW_DYE,
+                        Items.LIME_DYE,
+                        Items.PINK_DYE,
+                        Items.GRAY_DYE,
+                        Items.LIGHT_GRAY_DYE,
+                        Items.CYAN_DYE,
+                        Items.PURPLE_DYE,
+                        Items.BLUE_DYE,
+                        Items.BROWN_DYE,
+                        Items.GREEN_DYE,
+                        Items.RED_DYE,
+                        Items.BLACK_DYE)
+                        .map(ItemStack::new)
+                        .toArray(ItemStack[]::new);
             }
 
             int idx = (int) (System.currentTimeMillis() / 1200) % iconItems.length;

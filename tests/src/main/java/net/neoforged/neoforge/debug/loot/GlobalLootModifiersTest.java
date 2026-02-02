@@ -135,7 +135,7 @@ public class GlobalLootModifiersTest {
 
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-            ItemStack ctxTool = context.getOptionalParameter(LootContextParams.TOOL);
+            ItemStack ctxTool = context.getOptionalParameter(LootContextParams.TOOL) instanceof ItemStack stack ? stack : null;
             var reg = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
             // return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
             if (ctxTool == null || ctxTool.getEnchantmentLevel(reg.getOrThrow(Enchantments.SILK_TOUCH)) > 0)

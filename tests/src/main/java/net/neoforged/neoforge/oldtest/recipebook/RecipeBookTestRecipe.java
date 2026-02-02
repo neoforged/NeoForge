@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -36,6 +39,9 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
+    static final MapCodec<RecipeBookTestRecipe> CODEC = Ingredients.CODEC.xmap(RecipeBookTestRecipe::new, recipeBookTestRecipe -> recipeBookTestRecipe.ingredients);
+    static final StreamCodec<RegistryFriendlyByteBuf, RecipeBookTestRecipe> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
+
     public final Ingredients ingredients;
     private final int width;
     private final int height;
@@ -102,6 +108,11 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     @Override
     public RecipeType<RecipeBookTestRecipe> getType() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get();
+    }
+
+    @Override
+    public boolean showNotification() {
+        return false;
     }
 
     @Override
