@@ -8,18 +8,9 @@
 +        if (earlyLoadingScreen != null) {
 +            var window = earlyLoadingScreen.takeOverGlfwWindow();
 +            GLFW.glfwSetWindowTitle(window, title);
-+            return new WindowAndDevice(window, net.neoforged.neoforge.client.ClientHooks.createGpuDevice(window, defaultShaderSource, debugOptions));
++            return new WindowAndDevice(window, new GpuDevice(new GlDevice(window, defaultShaderSource, debugOptions)));
 +        }
 +
          GLFWErrorCapture glfwErrors = new GLFWErrorCapture();
  
          WindowAndDevice error;
-@@ -55,7 +_,7 @@
-                 throw new BackendCreationException("Failed to create window with OpenGL context");
-             }
- 
--            error = new WindowAndDevice(window, new GpuDevice(new GlDevice(window, defaultShaderSource, debugOptions)));
-+            error = new WindowAndDevice(window, net.neoforged.neoforge.client.ClientHooks.createGpuDevice(window, defaultShaderSource, debugOptions));
-         }
- 
-         return error;

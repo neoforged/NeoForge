@@ -1,9 +1,89 @@
 --- a/com/mojang/blaze3d/opengl/GlCommandEncoder.java
 +++ b/com/mojang/blaze3d/opengl/GlCommandEncoder.java
-@@ -603,6 +_,26 @@
-             GlStateManager._disableScissorTest();
-         }
+@@ -140,7 +_,8 @@
  
+     @Override
+     public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
+-        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)depthTexture).id, 0, 36160);
++        boolean hasStencil = depthTexture.getFormat().hasStencilAspect();
++        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)depthTexture).id, 0, 36160, hasStencil);
+         GL11.glDrawBuffer(0);
+         GL11.glClearDepth(clearDepth);
+         GlStateManager._depthMask(true);
+@@ -152,6 +_,17 @@
+     }
+ 
+     @Override
++    public void clearStencilTexture(GpuTexture texture, int value) {
++        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)texture).id, 0, GlConst.GL_FRAMEBUFFER, true);
++        GL11.glDrawBuffer(GlConst.GL_NONE);
++        GL11.glClearStencil(value);
++        GlStateManager._depthMask(true);
++        GlStateManager._clear(GL11.GL_STENCIL_BUFFER_BIT);
++        GL11.glDrawBuffer(GlConst.GL_COLOR_ATTACHMENT0);
++        GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
++    }
++
++    @Override
+     public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
+         GlBuffer buffer = (GlBuffer)slice.buffer();
+         if (buffer.closed) {
+@@ -268,16 +_,46 @@
+     public void copyTextureToTexture(
+         GpuTexture source, GpuTexture destination, int mipLevel, int destX, int destY, int sourceX, int sourceY, int width, int height
+     ) {
++        TextureFormat sourceFormat = source.getFormat();
++        TextureFormat destFormat = destination.getFormat();
++
++        if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
++            if (sourceFormat != destFormat) {
++                throw new IllegalArgumentException(
++                        "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
++                                + sourceFormat + ", Destination: " + destFormat
++                );
++            }
++        }
++
++        if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
++            throw new IllegalArgumentException(
++                    "Source and destination texture formats must have consistent color aspects. Source: "
++                            + sourceFormat + ", Destination: " + destFormat
++            );
++        }
++
+         GlStateManager.clearGlErrors();
+         GlStateManager._disableScissorTest();
+         boolean isDepth = source.getFormat().hasDepthAspect();
+         int sourceId = ((GlTexture)source).glId();
+         int destId = ((GlTexture)destination).glId();
+-        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, 0, 0);
+-        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, 0, 0);
++        boolean hasStencil = source.getFormat().hasStencilAspect();
++        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, 0, 0, hasStencil);
++        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, 0, 0, hasStencil);
++        int bufferMask = 0;
++        if (source.getFormat().hasColorAspect()) {
++            bufferMask |= GlConst.GL_COLOR_BUFFER_BIT;
++        }
++        if (source.getFormat().hasDepthAspect()) {
++            bufferMask |= GlConst.GL_DEPTH_BUFFER_BIT;
++        }
++        if (source.getFormat().hasStencilAspect()) {
++            bufferMask |= GL11.GL_STENCIL_BUFFER_BIT;
++        }
+         this.device
+             .directStateAccess()
+-            .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, isDepth ? 256 : 16384, 9728);
++            .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, bufferMask, 9728);
+         int error = GlStateManager._getError();
+         if (error != 0) {
+             throw new IllegalStateException(
+@@ -601,6 +_,26 @@
+             GlStateManager._scissorBox(renderPass.getScissorX(), renderPass.getScissorY(), renderPass.getScissorWidth(), renderPass.getScissorHeight());
+         } else {
+             GlStateManager._disableScissorTest();
++        }
++
 +        var stencilTestOpt = renderPass.pipeline.info().getStencilTest();
 +        if (stencilTestOpt.isPresent()) {
 +            var stencilTest = stencilTestOpt.get();
@@ -22,8 +102,6 @@
 +            GlStateManager._stencilMask(stencilTest.writeMask());
 +        } else {
 +            GlStateManager._disableStencilTest();
-+        }
-+
-         return true;
-     }
+         }
  
+         return true;

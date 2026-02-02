@@ -1,6 +1,6 @@
---- a/com/mojang/blaze3d/systems/RenderPass.java
-+++ b/com/mojang/blaze3d/systems/RenderPass.java
-@@ -27,6 +27,8 @@
+--- a/com/mojang/blaze3d/systems/RenderPassBackend.java
++++ b/com/mojang/blaze3d/systems/RenderPassBackend.java
+@@ -26,6 +_,8 @@
  
      void setUniform(final String name, final GpuBufferSlice value);
  

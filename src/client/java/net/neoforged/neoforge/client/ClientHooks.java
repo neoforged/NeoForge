@@ -9,14 +9,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
-import com.mojang.blaze3d.shaders.GpuDebugOptions;
-import com.mojang.blaze3d.shaders.ShaderSource;
-import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -151,7 +147,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -1024,21 +1019,6 @@ public class ClientHooks {
         vanillaRenderers = new ArrayList<>(vanillaRenderers);
         ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers));
         return List.copyOf(vanillaRenderers);
-    }
-
-    public static GpuDevice createGpuDevice(long window, ShaderSource defaultShaderSource, GpuDebugOptions debugOptions) {
-        final var glDevice = new GlDevice(window, defaultShaderSource, debugOptions);
-        boolean enableValidation;
-        try {
-            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getAsBoolean();
-        } catch (NullPointerException | IllegalStateException e) {
-            // We're in an early error state, config is not available. Assume environment default.
-            enableValidation = NeoForgeClientConfig.INSTANCE.enableB3DValidationLayer.getDefault();
-        }
-        if (enableValidation) {
-            return new ValidationGpuDevice(glDevice, true);
-        }
-        return glDevice;
     }
 
     @ApiStatus.Internal

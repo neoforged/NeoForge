@@ -1,0 +1,37 @@
+--- a/com/mojang/blaze3d/systems/CommandEncoder.java
++++ b/com/mojang/blaze3d/systems/CommandEncoder.java
+@@ -106,6 +_,15 @@
+         }
+     }
+ 
++    public void clearStencilTexture(GpuTexture texture, int value) {
++        if (this.backend.isInRenderPass()) {
++            throw new IllegalStateException("Close the existing render pass before creating a new one!");
++        } else {
++            this.verifyStencilTexture(texture);
++            this.backend.clearStencilTexture(texture, value);
++        }
++    }
++
+     public void writeToBuffer(GpuBufferSlice destination, ByteBuffer data) {
+         if (this.backend.isInRenderPass()) {
+             throw new IllegalStateException("Close the existing render pass before performing additional commands");
+@@ -480,6 +_,18 @@
+             throw new IllegalStateException("Depth texture must have USAGE_COPY_DST");
+         } else if (depthTexture.getDepthOrLayers() > 1) {
+             throw new UnsupportedOperationException("Clearing a texture with multiple layers or depths is not yet supported");
++        }
++    }
++
++    private void verifyStencilTexture(GpuTexture stencilTexture) {
++        if (!stencilTexture.getFormat().hasStencilAspect()) {
++            throw new IllegalStateException("Trying to clear stencil in a texture that has no stencil component!");
++        } else if (stencilTexture.isClosed()) {
++            throw new IllegalStateException("Stencil texture is closed");
++        } else if ((stencilTexture.usage() & GpuTexture.USAGE_RENDER_ATTACHMENT) == 0) {
++            throw new IllegalStateException("Stencil texture must have USAGE_RENDER_ATTACHMENT");
++        } else if ((stencilTexture.usage() & GpuTexture.USAGE_COPY_DST) == 0) {
++            throw new IllegalStateException("Stencil texture must have USAGE_COPY_DST");
+         }
+     }
+ 
