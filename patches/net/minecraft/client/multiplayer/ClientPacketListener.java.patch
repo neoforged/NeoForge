@@ -69,6 +69,19 @@
              } catch (Throwable var7) {
                  try {
                      reporter.close();
+@@ -1619,7 +_,12 @@
+             );
+     }
+ 
++    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)} instead. */
+     private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason) {
++        startWaitingForNewLevel(player, level, reason, null, null);
++    }
++
++    private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
+         if (this.levelLoadTracker == null) {
+             this.levelLoadTracker = new LevelLoadTracker();
+         }
 @@ -1629,7 +_,7 @@
              loadingScreen.update(this.levelLoadTracker, reason);
          } else {

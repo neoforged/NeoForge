@@ -10,7 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -37,13 +37,15 @@ public class CanItemPerformAbility implements LootItemCondition {
         return CODEC;
     }
 
+    @Override
     public Set<ContextKey<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.TOOL);
     }
 
+    @Override
     public boolean test(LootContext lootContext) {
-        ItemStack itemstack = lootContext.getOptionalParameter(LootContextParams.TOOL);
-        return itemstack != null && itemstack.canPerformAction(this.ability);
+        ItemInstance stack = lootContext.getOptionalParameter(LootContextParams.TOOL);
+        return stack != null && stack.canPerformAction(this.ability);
     }
 
     public static LootItemCondition.Builder canItemPerformAbility(ItemAbility action) {

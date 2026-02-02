@@ -18,7 +18,7 @@
          this.textureDiffuseColor = ARGB.opaque(textureDiffuseColor);
          this.fireworkColor = fireworkColor;
      }
-@@ -115,6 +_,36 @@
+@@ -115,6 +_,38 @@
      @Override
      public String getSerializedName() {
          return this.name;
@@ -42,8 +42,10 @@
 +
 +    @Nullable
 +    public static DyeColor getColor(ItemStack stack) {
-+        if (stack.getItem() instanceof DyeItem)
-+            return ((DyeItem)stack.getItem()).getDyeColor();
++        DyeColor dyeColor = stack.get(DataComponents.DYE);
++        if (dyeColor != null) {
++            return dyeColor;
++        }
 +
 +        for (int x = 0; x < BLACK.getId(); x++) {
 +            DyeColor color = byId(x);

@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -212,7 +211,7 @@ public interface IClientItemExtensions {
      * @return a default color for the layer, in ARGB format
      */
     default int getDefaultDyeColor(ItemStack stack) {
-        return stack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(stack, 0) : 0;
+        return DyedItemColor.getOrDefault(stack, 0);
     }
 
     /**

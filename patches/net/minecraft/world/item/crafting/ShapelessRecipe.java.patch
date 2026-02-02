@@ -1,5 +1,28 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
+@@ -20,7 +_,7 @@
+                 Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
+                 CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
+                 ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.result),
+-                Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(o -> o.ingredients)
++                com.mojang.serialization.Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(o -> o.ingredients)
+             )
+             .apply(i, ShapelessRecipe::new)
+     );
+@@ -38,11 +_,13 @@
+     public static final RecipeSerializer<ShapelessRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+     private final ItemStackTemplate result;
+     private final List<Ingredient> ingredients;
++    private final boolean isSimple;
+ 
+     public ShapelessRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, ItemStackTemplate result, List<Ingredient> ingredients) {
+         super(commonInfo, bookInfo);
+         this.result = result;
+         this.ingredients = ingredients;
++        this.isSimple = ingredients.stream().allMatch(Ingredient::isSimple);
+     }
+ 
+     @Override
 @@ -58,11 +_,24 @@
      public boolean matches(CraftingInput input, Level level) {
          if (input.ingredientCount() != this.ingredients.size()) {
@@ -20,7 +43,7 @@
 +    /**
 +     * {@return the result of this shapeless recipe or null if it is not static and needs ot be obtained by assembling it}
 +     */
-+    public @Nullable ItemStackTemplate result() {
++    public @org.jspecify.annotations.Nullable ItemStackTemplate result() {
 +        return result;
      }
  

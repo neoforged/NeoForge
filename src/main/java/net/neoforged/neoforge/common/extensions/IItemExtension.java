@@ -342,7 +342,7 @@ public interface IItemExtension {
      * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+    default boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         if (itemAbility == ItemAbilities.SWORD_SWEEP) {
             return stack.is(ItemTags.SWORDS);
         }
@@ -417,7 +417,7 @@ public interface IItemExtension {
      * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel}.
      */
     @ApiStatus.OverrideOnly
-    default int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+    default int getEnchantmentLevel(ItemInstance stack, Holder<Enchantment> enchantment) {
         ItemEnchantments itemenchantments = stack.getTagEnchantments();
         return itemenchantments.getLevel(enchantment);
     }

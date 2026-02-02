@@ -73,6 +73,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
@@ -1054,7 +1055,7 @@ public class EventHooks {
      * @param ench  The enchantment being queried for.
      * @return The new level of the enchantment.
      */
-    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Holder<Enchantment> ench) {
+    public static int getEnchantmentLevelSpecific(int level, ItemInstance stack, Holder<Enchantment> ench) {
         RegistryLookup<Enchantment> lookup = ench.unwrapLookup();
         if (lookup == null) { // Pretty sure this is never null, but I can't *prove* that it isn't.
             return level;

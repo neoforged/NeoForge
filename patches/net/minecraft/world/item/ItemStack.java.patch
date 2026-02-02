@@ -216,13 +216,14 @@
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup slot : EquipmentSlotGroup.values()) {
-@@ -982,6 +_,17 @@
+@@ -982,6 +_,18 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
 +    /**
 +     * Gets all enchantments from NBT. Use {@link ItemStack#getAllEnchantments} for gameplay logic.
 +     */
++    @Override
 +    public ItemEnchantments getTagEnchantments() {
 +        return getEnchantments();
 +    }

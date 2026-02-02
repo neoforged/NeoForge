@@ -5,7 +5,7 @@
  
  public class EnchantmentHelper {
 +    /**
-+     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemStack)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
++     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemInstance)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
 +     */
 +    @Deprecated
      public static int getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
@@ -16,7 +16,7 @@
 +    /**
 +     * Gets the level of an enchantment from NBT. Use {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay logic.
 +     */
-+    public static int getTagEnchantmentLevel(Holder<Enchantment> enchantment, ItemStack piece) {
++    public static int getTagEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return enchantments.getLevel(enchantment);
      }

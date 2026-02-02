@@ -179,6 +179,9 @@
   "net/minecraft/world/item/Item$Properties": [
     "net/neoforged/neoforge/common/extensions/IItemPropertiesExtensions"
   ],
+  "net/minecraft/world/item/ItemInstance": [
+    "net/neoforged/neoforge/common/extensions/ItemInstanceExtension"
+  ],
   "net/minecraft/world/item/ItemStack": [
     "net/neoforged/neoforge/common/extensions/IItemStackExtension",
     "net/neoforged/neoforge/common/MutableDataComponentHolder"
