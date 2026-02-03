@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 1
+--- a/net/minecraft/world/level/storage/ServerLevelData.java
++++ b/net/minecraft/world/level/storage/ServerLevelData.java
 @@ -95,4 +95,10 @@
      PackedClockStates clockStates();
  
@@ -10,4 +11,3 @@
 +    void setDayTimeFraction(float dayTimeFraction);
 +    void setDayTimePerTick(float dayTimePerTick);
  }
-++++ END HUNK

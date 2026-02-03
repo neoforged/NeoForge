@@ -4,9 +4,9 @@
              LOGGER.error("Failed to create dimension data storage directory", (Throwable)var14);
          }
  
--        this.dataStorage = new DimensionDataStorage(dataFolder, fixerUpper, level.registryAccess());
+-        this.savedDataStorage = new SavedDataStorage(dataFolder, fixerUpper, level.registryAccess());
 +        this.dataStorage = new DimensionDataStorage(level, dataFolder, fixerUpper, level.registryAccess());
-         this.ticketStorage = this.dataStorage.computeIfAbsent(TicketStorage.TYPE);
+         this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(
              level,
 @@ -161,6 +_,10 @@

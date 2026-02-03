@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 2
+--- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
++++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 @@ -44,20 +45,28 @@
      }
  
@@ -30,4 +31,3 @@
                  break;
              }
  
-++++ END HUNK

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/CommandEncoder.java
 +++ b/com/mojang/blaze3d/systems/CommandEncoder.java
-@@ -106,6 +_,15 @@
+@@ -108,6 +_,15 @@
          }
      }
  
@@ -16,7 +16,7 @@
      public void writeToBuffer(GpuBufferSlice destination, ByteBuffer data) {
          if (this.backend.isInRenderPass()) {
              throw new IllegalStateException("Close the existing render pass before performing additional commands");
-@@ -480,6 +_,18 @@
+@@ -482,6 +_,18 @@
              throw new IllegalStateException("Depth texture must have USAGE_COPY_DST");
          } else if (depthTexture.getDepthOrLayers() > 1) {
              throw new UnsupportedOperationException("Clearing a texture with multiple layers or depths is not yet supported");

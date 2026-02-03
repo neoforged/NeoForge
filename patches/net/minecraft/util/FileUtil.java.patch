@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/FileUtil.java
 +++ b/net/minecraft/util/FileUtil.java
-@@ -20,6 +_,7 @@
+@@ -18,6 +_,7 @@
      private static final Pattern COPY_COUNTER_PATTERN = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
      private static final int MAX_FILE_NAME = 255;
      private static final Pattern RESERVED_WINDOWS_FILENAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
@@ -8,14 +8,3 @@
      private static final Pattern STRICT_PATH_SEGMENT_CHECK = Pattern.compile("[-._a-z0-9]+");
  
      public static String sanitizeName(String baseName) {
-@@ -87,8 +_,8 @@
-         return true;
-     }
- 
--    public static boolean isPathPartPortable(String name) {
--        return !RESERVED_WINDOWS_FILENAMES.matcher(name).matches();
-+    public static boolean isPathPartPortable(String p_428321_) {
-+        return !(net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_428321_).matches();
-     }
- 
-     public static Path createPathToResource(Path resourceDirectory, String resource, String extension) {

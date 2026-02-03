@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -528,7 +_,7 @@
+@@ -530,7 +_,7 @@
              int ravagersSpawned = 0;
  
              for (int i = 0; i < numSpawns; i++) {
@@ -9,7 +9,7 @@
                  if (raider == null) {
                      break;
                  }
-@@ -540,7 +_,7 @@
+@@ -542,7 +_,7 @@
                  }
  
                  this.joinRaid(level, groupNumber, raider, pos, false);
@@ -18,7 +18,7 @@
                      Raider ridingRaider = null;
                      if (groupNumber == this.getNumGroups(Difficulty.NORMAL)) {
                          ridingRaider = EntityType.PILLAGER.create(level, EntitySpawnReason.EVENT);
-@@ -833,12 +_,26 @@
+@@ -835,12 +_,26 @@
          RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  
          private static final Raid.RaiderType[] VALUES = values();

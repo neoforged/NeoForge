@@ -1,16 +1,6 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -109,7 +_,8 @@
-     private final MultiBufferSource.BufferSource bufferSource;
-     private final SubmitNodeCollector submitNodeCollector;
-     private final FeatureRenderDispatcher featureRenderDispatcher;
--    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
-+    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
-+    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
-     private @Nullable GpuTexture itemsAtlas;
-     private @Nullable GpuTextureView itemsAtlasView;
-     private @Nullable GpuTexture itemsAtlasDepth;
-@@ -128,19 +_,13 @@
+@@ -110,19 +_,13 @@
          MultiBufferSource.BufferSource bufferSource,
          SubmitNodeCollector submitNodeCollector,
          FeatureRenderDispatcher featureRenderDispatcher,
@@ -31,8 +21,8 @@
 +        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(bufferSource, pipRendererFactories);
      }
  
-     public void incrementFrameNumber() {
-@@ -160,6 +_,7 @@
+     public void endFrame() {
+@@ -144,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -40,7 +30,7 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -429,14 +_,31 @@
+@@ -352,14 +_,31 @@
  
      private void preparePictureInPicture() {
          int guiScale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -74,13 +64,4 @@
 +        return false;
      }
  
-     private void renderItemToAtlas(TrackingItemStackRenderState itemStackRenderState, PoseStack poseStack, int renderX, int renderY, int singleItemTextureSize) {
-@@ -711,7 +_,7 @@
-             this.itemsAtlasDepthView.close();
-         }
- 
--        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
-+        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
-         this.guiProjectionMatrixBuffer.close();
-         this.itemsProjectionMatrixBuffer.close();
- 
+     private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {

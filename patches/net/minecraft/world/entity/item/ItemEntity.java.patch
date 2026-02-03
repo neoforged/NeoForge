@@ -113,7 +113,7 @@
                  player.take(this, orgCount);
                  if (itemStack.isEmpty()) {
                      this.discard();
-@@ -377,6 +_,15 @@
+@@ -369,6 +_,15 @@
          this.target = target;
      }
  
@@ -129,7 +129,7 @@
      public void setThrower(Entity thrower) {
          this.thrower = EntityReference.of(thrower);
      }
-@@ -415,7 +_,7 @@
+@@ -407,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();

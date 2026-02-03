@@ -1,17 +1,6 @@
 --- a/net/minecraft/world/level/TicketStorage.java
 +++ b/net/minecraft/world/level/TicketStorage.java
-@@ -34,7 +_,9 @@
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final Codec<Pair<ChunkPos, Ticket>> TICKET_ENTRY = Codec.mapPair(ChunkPos.CODEC.fieldOf("chunk_pos"), Ticket.CODEC).codec();
-     public static final Codec<TicketStorage> CODEC = RecordCodecBuilder.create(
--        i -> i.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets)).apply(i, TicketStorage::fromPacked)
-+        i -> i.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets))
-+                .and(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.defineExtraStorageParams())
-+                .apply(i, (tickets, neoData) -> net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readStoredTickets(TicketStorage::fromPacked, tickets, neoData))
-     );
-     public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>("chunks", TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
-     private final Long2ObjectOpenHashMap<List<Ticket>> tickets;
-@@ -47,6 +_,7 @@
+@@ -50,6 +_,7 @@
          this.tickets = tickets;
          this.deactivatedTickets = deactivatedTickets;
          this.updateForcedChunks();
@@ -19,7 +8,7 @@
      }
  
      public TicketStorage() {
-@@ -170,6 +_,7 @@
+@@ -173,6 +_,7 @@
          if (ticket.getType().equals(TicketType.FORCED)) {
              this.chunksWithForcedTickets.add(key);
          }
@@ -27,7 +16,7 @@
  
          this.setDirty();
          return true;
-@@ -256,6 +_,7 @@
+@@ -259,6 +_,7 @@
                  if (ticket.getType().equals(TicketType.FORCED)) {
                      this.updateForcedChunks();
                  }
@@ -35,7 +24,7 @@
  
                  this.setDirty();
                  return true;
-@@ -298,11 +_,14 @@
+@@ -301,11 +_,14 @@
  
      public void deactivateTicketsOnClosing() {
          this.removeTicketIf((ticket, chunkPos) -> ticket.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
@@ -50,7 +39,7 @@
  
          while (ticketsPerChunkIterator.hasNext()) {
              Entry<List<Ticket>> entry = ticketsPerChunkIterator.next();
-@@ -331,6 +_,7 @@
+@@ -334,6 +_,7 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
                          removedForced = true;
                      }
@@ -58,7 +47,7 @@
                  }
              }
  
-@@ -353,6 +_,7 @@
+@@ -356,6 +_,7 @@
          if (removedForced) {
              this.updateForcedChunks();
          }
@@ -66,7 +55,7 @@
      }
  
      public void replaceTicketLevelOfType(int newLevel, TicketType ticketType) {
-@@ -406,5 +_,26 @@
+@@ -409,5 +_,26 @@
  
      public interface TicketPredicate {
          boolean test(Ticket ticket, long chunkPos);

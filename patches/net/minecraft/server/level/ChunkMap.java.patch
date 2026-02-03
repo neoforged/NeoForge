@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -391,6 +_,7 @@
+@@ -389,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,7 +8,7 @@
              return chunk;
          }
      }
-@@ -520,12 +_,15 @@
+@@ -518,12 +_,15 @@
              } else {
                  ChunkAccess chunk = chunkHolder.getLatestChunk();
                  if (this.pendingUnloads.remove(pos, chunkHolder) && chunk != null) {
@@ -24,7 +24,7 @@
                          this.level.unload(levelChunk);
                      }
  
-@@ -568,6 +_,7 @@
+@@ -566,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
                  if (chunkData.isPresent()) {
                      ChunkAccess chunk = chunkData.get().read(this.level, this.poiManager, this.storageInfo(), pos);
@@ -32,7 +32,7 @@
                      this.markPosition(pos, chunk.getPersistedStatus().getChunkType());
                      return chunk;
                  } else {
-@@ -761,6 +_,7 @@
+@@ -759,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData data = SerializableChunkData.copyOf(this.level, chunk);
@@ -40,7 +40,7 @@
                  CompletableFuture<CompoundTag> encodedData = CompletableFuture.supplyAsync(data::write, Util.backgroundExecutor());
                  this.write(pos, encodedData::join).handle((ignored, throwable) -> {
                      if (throwable != null) {
-@@ -827,9 +_,11 @@
+@@ -825,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer player, LevelChunk chunk) {
          player.connection.chunkSender.markChunkPendingToSend(chunk);
@@ -52,7 +52,7 @@
          player.connection.chunkSender.dropChunk(player, pos);
      }
  
-@@ -937,7 +_,7 @@
+@@ -935,7 +_,7 @@
              ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
              if (holder != null) {
                  LevelChunk chunk = holder.getTickingChunk();
@@ -61,7 +61,7 @@
                      output.add(chunk);
                  }
              }
-@@ -961,6 +_,19 @@
+@@ -959,6 +_,19 @@
          return triState == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(pos) : triState.toBoolean(true);
      }
  
@@ -81,7 +81,7 @@
      boolean anyPlayerCloseEnoughTo(BlockPos pos, int maxDistance) {
          Vec3 target = new Vec3(pos);
  
-@@ -1090,6 +_,7 @@
+@@ -1088,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(player);
              }
  
@@ -89,7 +89,7 @@
              this.updateChunkTracking(player);
          }
      }
-@@ -1134,7 +_,7 @@
+@@ -1132,7 +_,7 @@
      }
  
      protected void addEntity(Entity entity) {
@@ -98,7 +98,7 @@
              EntityType<?> type = entity.getType();
              int range = type.clientTrackingRange() * 16;
              if (range != 0) {
-@@ -1293,6 +_,20 @@
+@@ -1291,6 +_,20 @@
          }
      }
  
@@ -119,7 +119,7 @@
      private class DistanceManager extends net.minecraft.server.level.DistanceManager {
          protected DistanceManager(TicketStorage ticketStorage, Executor executor, Executor mainThreadExecutor) {
              Objects.requireNonNull(ChunkMap.this);
-@@ -1428,5 +_,20 @@
+@@ -1426,5 +_,20 @@
                  this.updatePlayer(player);
              }
          }

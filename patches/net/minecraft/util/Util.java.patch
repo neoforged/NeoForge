@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/Util.java
 +++ b/net/minecraft/util/Util.java
-@@ -266,8 +_,8 @@
+@@ -267,8 +_,8 @@
                  .getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().dataVersion().version()))
                  .getChoiceType(reference, name);
          } catch (IllegalArgumentException var4) {
@@ -11,7 +11,7 @@
                  throw var4;
              }
          }
-@@ -677,20 +_,20 @@
+@@ -678,20 +_,20 @@
  
      public static void logAndPauseIfInIde(String message) {
          LOGGER.error(message);

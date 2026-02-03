@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -199,8 +_,10 @@
+@@ -235,8 +_,10 @@
      }
  
      private void ageUp() {

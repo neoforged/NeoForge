@@ -8,7 +8,7 @@
  
      public DedicatedServer(
          Thread serverThread,
-@@ -199,6 +_,7 @@
+@@ -210,6 +_,7 @@
  
              @Override
              public void run() {
@@ -16,7 +16,7 @@
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;
-@@ -272,11 +_,13 @@
+@@ -283,11 +_,13 @@
              this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
              long levelNanoTime = Util.getNanos();
              this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
@@ -28,9 +28,9 @@
              LOGGER.info("Done ({})! For help, type \"help\"", time);
 +            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spamming during long load.
              if (properties.announcePlayerAchievements != null) {
-                 this.worldData.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
+                 this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
              }
-@@ -305,6 +_,12 @@
+@@ -316,6 +_,12 @@
              }
  
              this.notificationManager().serverStarted();
@@ -43,7 +43,7 @@
              return true;
          }
      }
-@@ -450,6 +_,11 @@
+@@ -461,6 +_,11 @@
              this.queryThreadGs4.stop();
          }
  
@@ -55,7 +55,7 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -739,7 +_,12 @@
+@@ -750,7 +_,12 @@
      @Override
      protected void stopServer() {
          this.notificationManager().serverShuttingDown();

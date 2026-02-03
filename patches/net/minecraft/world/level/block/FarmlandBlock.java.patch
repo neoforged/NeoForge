@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FarmlandBlock.java
 +++ b/net/minecraft/world/level/block/FarmlandBlock.java
-@@ -109,10 +_,7 @@
+@@ -108,10 +_,7 @@
      @Override
      public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
          if (level instanceof ServerLevel serverLevel
@@ -12,7 +12,7 @@
              turnToDirt(entity, state, level, pos);
          }
  
-@@ -130,13 +_,14 @@
+@@ -129,13 +_,14 @@
      }
  
      private static boolean isNearWater(LevelReader level, BlockPos pos) {

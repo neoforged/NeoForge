@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlCommandEncoder.java
 +++ b/com/mojang/blaze3d/opengl/GlCommandEncoder.java
-@@ -140,7 +_,8 @@
+@@ -141,7 +_,8 @@
  
      @Override
      public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
@@ -10,7 +10,7 @@
          GL11.glDrawBuffer(0);
          GL11.glClearDepth(clearDepth);
          GlStateManager._depthMask(true);
-@@ -152,6 +_,17 @@
+@@ -153,6 +_,17 @@
      }
  
      @Override
@@ -28,7 +28,7 @@
      public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
          GlBuffer buffer = (GlBuffer)slice.buffer();
          if (buffer.closed) {
-@@ -268,16 +_,46 @@
+@@ -269,16 +_,46 @@
      public void copyTextureToTexture(
          GpuTexture source, GpuTexture destination, int mipLevel, int destX, int destY, int sourceX, int sourceY, int width, int height
      ) {
@@ -78,7 +78,7 @@
          int error = GlStateManager._getError();
          if (error != 0) {
              throw new IllegalStateException(
-@@ -601,6 +_,26 @@
+@@ -602,6 +_,26 @@
              GlStateManager._scissorBox(renderPass.getScissorX(), renderPass.getScissorY(), renderPass.getScissorWidth(), renderPass.getScissorHeight());
          } else {
              GlStateManager._disableScissorTest();

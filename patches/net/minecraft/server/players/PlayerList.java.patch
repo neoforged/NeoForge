@@ -111,7 +111,7 @@
      }
  
      public void sendAllPlayerInfo(ServerPlayer player) {
-@@ -794,6 +_,8 @@
+@@ -790,6 +_,8 @@
              this.advancements.put(uuid, result);
          }
  
@@ -120,7 +120,7 @@
          result.setPlayer(player);
          return result;
      }
-@@ -817,7 +_,7 @@
+@@ -813,7 +_,7 @@
      }
  
      public List<ServerPlayer> getPlayers() {
@@ -129,7 +129,7 @@
      }
  
      public @Nullable ServerPlayer getPlayer(UUID uuid) {
-@@ -843,6 +_,7 @@
+@@ -839,6 +_,7 @@
              advancements.reload(this.server.getAdvancements());
          }
  
@@ -137,7 +137,7 @@
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipeManager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
-@@ -852,10 +_,15 @@
+@@ -848,10 +_,15 @@
          for (ServerPlayer player : this.players) {
              player.connection.send(recipes);
              player.getRecipeBook().sendInitialRecipeBook(player);

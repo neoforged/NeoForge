@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 1
+--- a/net/minecraft/world/level/TicketStorage.java
++++ b/net/minecraft/world/level/TicketStorage.java
 @@ -34,7 +34,9 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Codec<Pair<ChunkPos, Ticket>> TICKET_ENTRY = Codec.mapPair(ChunkPos.CODEC.fieldOf("chunk_pos"), Ticket.CODEC).codec();
@@ -10,4 +11,3 @@
      );
      public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>("chunks", TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
      private final Long2ObjectOpenHashMap<List<Ticket>> tickets;
-++++ END HUNK

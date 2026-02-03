@@ -34,7 +34,7 @@
 +    @Deprecated // Note: this method does NOT support model-based render types
      public static RenderType getRenderType(BlockState state) {
          ChunkSectionLayer renderType = getChunkRenderType(state);
-         return renderType == ChunkSectionLayer.TRANSLUCENT ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockSheet();
+         return renderType == ChunkSectionLayer.TRANSLUCENT ? Sheets.translucentBlockSheet() : Sheets.cutoutBlockSheet();
 @@ -402,5 +_,30 @@
  
      public static void setCutoutLeaves(boolean cutoutLeaves) {

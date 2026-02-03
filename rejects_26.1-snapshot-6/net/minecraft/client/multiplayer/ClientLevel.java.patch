@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 5
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
 @@ -241,6 +248,7 @@
          if (this.canHaveWeather()) {
              this.prepareWeather();
@@ -7,4 +8,3 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-++++ END HUNK

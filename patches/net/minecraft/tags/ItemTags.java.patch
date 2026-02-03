@@ -1,6 +1,6 @@
 --- a/net/minecraft/tags/ItemTags.java
 +++ b/net/minecraft/tags/ItemTags.java
-@@ -216,4 +_,8 @@
+@@ -219,4 +_,8 @@
      private static TagKey<Item> bind(String name) {
          return TagKey.create(Registries.ITEM, Identifier.withDefaultNamespace(name));
      }

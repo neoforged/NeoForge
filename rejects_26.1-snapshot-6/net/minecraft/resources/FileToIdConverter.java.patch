@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 1
+--- a/net/minecraft/resources/FileToIdConverter.java
++++ b/net/minecraft/resources/FileToIdConverter.java
 @@ -40,4 +40,26 @@
      public Map<Identifier, List<Resource>> listMatchingResourceStacks(ResourceManager manager) {
          return manager.listResourceStacks(this.prefix, id -> id.getPath().endsWith(this.extension));
@@ -26,4 +27,3 @@
 +        return manager.listResourceStacks(this.prefix, path -> path.getNamespace().equals(namespace) && path.getPath().endsWith(this.extension));
 +    }
  }
-++++ END HUNK

@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 +++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
-@@ -24,19 +_,20 @@
+@@ -26,19 +_,20 @@
      public void place(TreeDecorator.Context context) {
          List<BlockPos> blockPositions = TreeFeature.getLowestTrunkOrRootOfTree(context);
          if (!blockPositions.isEmpty()) {
 +            var eventProvider = net.neoforged.neoforge.event.EventHooks.alterGround(context, blockPositions, this.provider::getState);
-             int minY = blockPositions.get(0).getY();
+             int minY = blockPositions.getFirst().getY();
              blockPositions.stream().filter(pos -> pos.getY() == minY).forEach(pos -> {
 -                this.placeCircle(context, pos.west().north());
 -                this.placeCircle(context, pos.east(2).north());
@@ -26,34 +26,3 @@
                      }
                  }
              });
-@@ -44,20 +_,28 @@
-     }
- 
-     private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
-+        placeCircle(context, pos, this.provider::getState);
-+    }
-+
-+    private void placeCircle(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
-         for (int xx = -2; xx <= 2; xx++) {
-             for (int zz = -2; zz <= 2; zz++) {
-                 if (Math.abs(xx) != 2 || Math.abs(zz) != 2) {
--                    this.placeBlockAt(context, pos.offset(xx, 0, zz));
-+                    this.placeBlockAt(context, pos.offset(xx, 0, zz), eventProvider);
-                 }
-             }
-         }
-     }
- 
-     private void placeBlockAt(TreeDecorator.Context context, BlockPos pos) {
-+        placeCircle(context, pos, this.provider::getState);
-+    }
-+
-+    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
-         for (int dy = 2; dy >= -3; dy--) {
-             BlockPos blockPos = pos.above(dy);
-             if (Feature.isGrassOrDirt(context.level(), blockPos)) {
--                context.setBlock(blockPos, this.provider.getState(context.random(), pos));
-+                context.setBlock(blockPos, eventProvider.getState(context.random(), pos));
-                 break;
-             }
- 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -88,6 +_,13 @@
+@@ -89,6 +_,13 @@
                  parser.printHelpOn(System.err);
                  return;
              }
@@ -14,7 +14,7 @@
  
              Path pidFilePath = options.valueOf(pidFile);
              if (pidFilePath != null) {
-@@ -103,24 +_,22 @@
+@@ -104,24 +_,22 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path settingsFile = Paths.get("server.properties");
@@ -43,24 +43,8 @@
 +            }
              LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
              LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
-             Dynamic<?> loadedDataTag;
-@@ -129,6 +_,7 @@
-                 try {
-                     loadedDataTag = access.getDataTag();
-                     summary = access.getSummary(loadedDataTag);
-+                    access.readAdditionalLevelSaveData(false);
-                 } catch (NbtException | ReportedNbtException | IOException var41) {
-                     LevelStorageSource.LevelDirectory levelDirectory = access.getLevelDirectory();
-                     LOGGER.warn("Failed to load world data from {}", levelDirectory.dataFile(), var41);
-@@ -137,6 +_,7 @@
-                     try {
-                         loadedDataTag = access.getDataTagFallback();
-                         summary = access.getSummary(loadedDataTag);
-+                        access.readAdditionalLevelSaveData(true);
-                     } catch (NbtException | ReportedNbtException | IOException var40) {
-                         LOGGER.error("Failed to load world data from {}", levelDirectory.oldDataFile(), var40);
-                         LOGGER.error(
-@@ -227,6 +_,7 @@
+             Dynamic<?> levelDataTag;
+@@ -224,6 +_,7 @@
                  @Override
                  public void run() {
                      dedicatedServer.halt(true);
@@ -68,7 +52,7 @@
                  }
              };
              shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
-@@ -261,6 +_,9 @@
+@@ -256,6 +_,9 @@
              dimensions = properties.createDimensions(context.datapackWorldgen());
          }
  
@@ -77,4 +61,4 @@
 +        dimensions = WorldDimensions.CODEC.encoder().encodeStart(registryOps, dimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(registryOps, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(dimensions);
          WorldDimensions.Complete finalDimensions = dimensions.bake(datapackDimensions);
          Lifecycle lifecycle = finalDimensions.lifecycle().add(context.datapackWorldgen().allRegistriesLifecycle());
-         return new WorldLoader.DataLoadOutput<>(
+         PrimaryLevelData primaryLevelData = new PrimaryLevelData(createLevelSettings, finalDimensions.specialWorldProperty(), lifecycle);

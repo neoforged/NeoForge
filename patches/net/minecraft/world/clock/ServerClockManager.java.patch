@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -47,6 +_,9 @@
+@@ -59,6 +_,9 @@
      }
  
      public void tick() {
@@ -10,8 +10,8 @@
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
          if (advanceTime) {
              this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
-@@ -93,11 +_,45 @@
-         this.server.getPlayerList().broadcastAll(new ClientboundSetTimePacket(this.getGameTime(), updates));
+@@ -107,11 +_,45 @@
+         this.setDirty();
      }
  
 +    /**
@@ -56,7 +56,7 @@
      public ClientboundSetTimePacket createFullSyncPacket() {
          return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packNetworkState(this.server)));
      }
-@@ -119,26 +_,37 @@
+@@ -133,26 +_,37 @@
      private static class ClockInstance {
          private final Map<ResourceKey<ClockTimeMarker>, ClockTimeMarker> timeMarkers = new Reference2ObjectOpenHashMap<>();
          private long totalTicks;

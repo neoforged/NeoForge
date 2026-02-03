@@ -55,7 +55,7 @@
 @@ -139,7 +_,7 @@
              ServerLevel level = this.getLevel();
              MinecraftServer server = level.getServer();
-             RandomSource random = Optional.ofNullable(this.random).or(() -> randomSequenceKey.map(level::getRandomSequence)).orElseGet(level::getRandom);
+             RandomSource random = Optional.ofNullable(this.random).or(() -> randomSequenceKey.map(server::getRandomSequence)).orElseGet(level::getRandom);
 -            return new LootContext(this.params, random, server.reloadableRegistries().lookup());
 +            return new LootContext(this.params, random, server.reloadableRegistries().lookup(), queriedLootTableId);
          }

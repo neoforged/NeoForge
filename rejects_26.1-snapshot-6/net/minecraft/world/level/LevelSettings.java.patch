@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/LevelSettings.java
 +++ b/net/minecraft/world/level/LevelSettings.java
-@@ -15,6 +_,7 @@
+@@ -15,6 +15,7 @@
      private final boolean allowCommands;
      private final GameRules gameRules;
      private final WorldDataConfiguration dataConfiguration;
@@ -8,7 +8,7 @@
  
      public LevelSettings(
          String levelName,
-@@ -25,6 +_,19 @@
+@@ -25,6 +26,19 @@
          GameRules gameRules,
          WorldDataConfiguration dataConfiguration
      ) {
@@ -28,7 +28,7 @@
          this.levelName = levelName;
          this.gameType = gameType;
          this.hardcore = hardcore;
-@@ -32,6 +_,7 @@
+@@ -32,6 +46,7 @@
          this.allowCommands = allowCommands;
          this.gameRules = gameRules;
          this.dataConfiguration = dataConfiguration;
@@ -36,7 +36,7 @@
      }
  
      public static LevelSettings parse(Dynamic<?> input, WorldDataConfiguration loadConfig) {
-@@ -43,7 +_,8 @@
+@@ -43,7 +58,8 @@
              input.get("Difficulty").asNumber().map(n -> Difficulty.byId(n.byteValue())).result().orElse(Difficulty.NORMAL),
              input.get("allowCommands").asBoolean(gameType == GameType.CREATIVE),
              GameRules.codec(loadConfig.enabledFeatures()).parse(input.get("game_rules").orElseEmptyMap()).resultOrPartial(LOGGER::warn).orElseThrow(),
@@ -46,7 +46,7 @@
          );
      }
  
-@@ -76,15 +_,15 @@
+@@ -76,15 +92,15 @@
      }
  
      public LevelSettings withGameType(GameType gameType) {
@@ -65,7 +65,7 @@
      }
  
      public LevelSettings copy() {
-@@ -95,7 +_,16 @@
+@@ -95,7 +111,16 @@
              this.difficulty,
              this.allowCommands,
              this.gameRules.copy(this.dataConfiguration.enabledFeatures()),

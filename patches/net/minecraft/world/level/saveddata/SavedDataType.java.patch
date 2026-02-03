@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/saveddata/SavedDataType.java
 +++ b/net/minecraft/world/level/saveddata/SavedDataType.java
-@@ -4,7 +_,33 @@
- import java.util.function.Supplier;
+@@ -5,7 +_,33 @@
+ import net.minecraft.resources.Identifier;
  import net.minecraft.util.datafix.DataFixTypes;
  
--public record SavedDataType<T extends SavedData>(String id, Supplier<T> constructor, Codec<T> codec, DataFixTypes dataFixType) {
+-public record SavedDataType<T extends SavedData>(Identifier id, Supplier<T> constructor, Codec<T> codec, DataFixTypes dataFixType) {
 +// Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable dataFixType.
 +// Neo: We also have to reintroduce the ability to make level-dependent objects/codecs
 +public record SavedDataType<T extends SavedData>(String id, Factory<T> factory, Factory<Codec<T>> codecFactory, @org.jspecify.annotations.Nullable DataFixTypes dataFixType) {
@@ -35,7 +35,7 @@
      @Override
      public boolean equals(Object obj) {
          return obj instanceof SavedDataType<?> type && this.id.equals(type.id);
-@@ -18,5 +_,10 @@
+@@ -19,5 +_,10 @@
      @Override
      public String toString() {
          return "SavedDataType[" + this.id + "]";

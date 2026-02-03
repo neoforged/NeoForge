@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 2
+--- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 @@ -304,6 +305,10 @@
              SystemToast.onPackCopyFailure(this.minecraft, worldFolder);
              return false;
@@ -10,4 +11,3 @@
              this.minecraft.createWorldOpenFlows().createLevelFromExistingSettings(newWorldAccess.get(), context.dataPackResources(), finalLayers, worldData);
              return true;
          }
-++++ END HUNK

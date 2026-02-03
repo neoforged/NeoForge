@@ -11,7 +11,7 @@
      private static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> consumer) {
          consumer.accept(
              EquipmentAssets.LEATHER,
-@@ -121,21 +_,21 @@
+@@ -127,21 +_,21 @@
      }
  
      public static EquipmentClientInfo onlyHumanoid(String name) {

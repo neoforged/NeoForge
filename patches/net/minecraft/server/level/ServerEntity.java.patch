@@ -11,7 +11,7 @@
 +                MapItemSavedData data = MapItem.getSavedData(itemStack, this.level);
                  if (data != null) {
                      for (ServerPlayer player : this.level.players()) {
-                         data.tickCarriedBy(player, itemStack);
+                         data.tickCarriedBy(player, itemStack, frame);
 @@ -255,6 +_,7 @@
      public void removePairing(ServerPlayer player) {
          this.entity.stopSeenByPlayer(player);

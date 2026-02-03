@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -90,6 +_,11 @@
+@@ -91,6 +_,11 @@
      private final Stopwatch stopwatch = Stopwatch.createUnstarted();
      private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
      private @Nullable MultipleTestTracker testTracker;
@@ -12,16 +12,7 @@
  
      public static GameTestServer create(
          Thread serverThread,
-@@ -105,7 +_,7 @@
-         enabledPacks.addFirst("vanilla");
-         WorldDataConfiguration defaultTestConfig = new WorldDataConfiguration(new DataPackConfig(enabledPacks, List.of()), ENABLED_FEATURES);
-         LevelSettings testSettings = new LevelSettings(
--            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(ENABLED_FEATURES), defaultTestConfig
-+            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, defaultTestConfig
-         );
-         WorldLoader.PackConfig packConfig = new WorldLoader.PackConfig(packRepository, defaultTestConfig, false, true);
-         WorldLoader.InitConfig initConfig = new WorldLoader.InitConfig(packConfig, Commands.CommandSelection.DEDICATED, LevelBasedPermissionSet.OWNER);
-@@ -177,10 +_,12 @@
+@@ -178,10 +_,12 @@
              }
          });
          Gizmos.withCollector(GizmoCollector.NOOP);
@@ -34,7 +25,7 @@
          return true;
      }
  
-@@ -259,8 +_,14 @@
+@@ -260,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,7 +41,7 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -276,11 +_,11 @@
+@@ -277,11 +_,11 @@
  
      private static void logFailedTest(GameTestInfo testInfo) {
          if (testInfo.getRotation() != Rotation.NONE) {

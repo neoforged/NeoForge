@@ -136,7 +136,7 @@
      }
  
      public boolean isLoaded(BlockPos pos) {
-@@ -704,8 +_,8 @@
+@@ -695,8 +_,8 @@
              }
          });
  
@@ -147,7 +147,7 @@
                  output.add(dragonPart);
              }
          }
-@@ -734,6 +_,7 @@
+@@ -725,6 +_,7 @@
                  }
              }
  
@@ -155,7 +155,7 @@
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
-@@ -748,6 +_,15 @@
+@@ -739,6 +_,15 @@
  
              return AbortableIterationConsumer.Continuation.CONTINUE;
          });
@@ -171,7 +171,7 @@
      }
  
      public <T extends Entity> boolean hasEntities(EntityTypeTest<Entity, T> type, AABB bb, Predicate<? super T> selector) {
-@@ -758,6 +_,7 @@
+@@ -749,6 +_,7 @@
                  hasEntities.setTrue();
                  return AbortableIterationConsumer.Continuation.ABORT;
              } else {
@@ -179,7 +179,7 @@
                  if (e instanceof EnderDragon enderDragon) {
                      for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                          T castSubPart = type.tryCast(subEntity);
-@@ -771,6 +_,13 @@
+@@ -762,6 +_,13 @@
                  return AbortableIterationConsumer.Continuation.CONTINUE;
              }
          });
@@ -193,7 +193,7 @@
          return hasEntities.isTrue();
      }
  
-@@ -792,7 +_,7 @@
+@@ -783,7 +_,7 @@
          return this.getPlayerByUUID(uuid);
      }
  
@@ -202,7 +202,7 @@
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -916,17 +_,20 @@
+@@ -907,17 +_,20 @@
  
      public abstract Scoreboard getScoreboard();
  
@@ -228,7 +228,7 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -989,6 +_,18 @@
+@@ -980,6 +_,18 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;

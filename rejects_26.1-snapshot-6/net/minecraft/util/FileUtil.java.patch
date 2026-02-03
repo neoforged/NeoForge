@@ -1,4 +1,5 @@
-++++ REJECTED HUNK: 2
+--- a/net/minecraft/util/FileUtil.java
++++ b/net/minecraft/util/FileUtil.java
 @@ -87,8 +88,8 @@
          return true;
      }
@@ -10,4 +11,3 @@
      }
  
      public static Path createPathToResource(Path resourceDirectory, String resource, String extension) {
-++++ END HUNK

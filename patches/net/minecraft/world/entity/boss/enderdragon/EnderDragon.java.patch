@@ -14,7 +14,7 @@
 +            this.subEntities[i].setId(id + i + 1);
      }
  
-     public void setDragonFight(EndDragonFight fight) {
+     public void setDragonFight(EnderDragonFight fight) {
 @@ -148,8 +_,19 @@
          entityData.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());
      }

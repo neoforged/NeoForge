@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -216,7 +_,7 @@
+@@ -215,7 +_,7 @@
      private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
-     private @Nullable EndDragonFight dragonFight;
+     private @Nullable EnderDragonFight dragonFight;
 -    private final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 +    final Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -239,7 +_,6 @@
+@@ -236,7 +_,6 @@
          super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
          this.tickTime = tickTime;
          this.server = server;
@@ -17,7 +17,7 @@
          this.serverLevelData = levelData;
          ChunkGenerator generator = levelStem.generator();
          boolean syncWrites = server.forceSynchronousWrites();
-@@ -306,6 +_,11 @@
+@@ -303,6 +_,11 @@
          this.waypointManager = new ServerWaypointManager();
          this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
          this.updateSkyBrightness();
@@ -29,7 +29,7 @@
      }
  
      @Deprecated
-@@ -357,7 +_,11 @@
+@@ -346,7 +_,11 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
              if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
@@ -42,7 +42,7 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -395,7 +_,7 @@
+@@ -384,7 +_,7 @@
  
          this.handlingTick = false;
          profiler.pop();
@@ -51,7 +51,7 @@
          if (isActive) {
              this.resetEmptyTime();
          }
-@@ -432,7 +_,9 @@
+@@ -421,7 +_,9 @@
                                      }
  
                                      profiler.push("tick");
@@ -62,7 +62,7 @@
                                      profiler.pop();
                                  }
                              }
-@@ -572,6 +_,7 @@
+@@ -561,6 +_,7 @@
          BlockPos topPos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
          BlockPos belowPos = topPos.below();
          Biome biome = this.getBiome(topPos).value();
@@ -70,7 +70,7 @@
          if (biome.shouldFreeze(this, belowPos)) {
              this.setBlockAndUpdate(belowPos, Blocks.ICE.defaultBlockState());
          }
-@@ -764,15 +_,19 @@
+@@ -763,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -115,7 +115,7 @@
          }
      }
  
-@@ -965,6 +_,7 @@
+@@ -961,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer player) {
@@ -123,7 +123,7 @@
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -972,7 +_,8 @@
+@@ -968,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)existing, Entity.RemovalReason.DISCARDED);
          }
  
@@ -133,7 +133,7 @@
      }
  
      private boolean addEntity(Entity entity) {
-@@ -980,7 +_,12 @@
+@@ -976,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", entity.typeHolder().getRegisteredName());
              return false;
          } else {
@@ -147,7 +147,7 @@
          }
      }
  
-@@ -1021,6 +_,12 @@
+@@ -1017,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -160,7 +160,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1038,6 +_,12 @@
+@@ -1034,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -173,7 +173,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1096,6 +_,7 @@
+@@ -1092,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
@@ -181,7 +181,7 @@
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
-@@ -1134,6 +_,7 @@
+@@ -1130,6 +_,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos pos, Block sourceBlock) {
@@ -189,7 +189,7 @@
          this.updateNeighborsAt(pos, sourceBlock, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1144,6 +_,10 @@
+@@ -1140,6 +_,10 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
@@ -200,7 +200,7 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
-@@ -1190,7 +_,7 @@
+@@ -1186,7 +_,7 @@
          Explosion.BlockInteraction blockInteraction = switch (interactionType) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
@@ -209,7 +209,7 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-@@ -1198,6 +_,7 @@
+@@ -1194,6 +_,7 @@
          };
          Vec3 center = new Vec3(x, y, z);
          ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
@@ -217,7 +217,7 @@
          int blockCount = explosion.explode();
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
-@@ -1375,7 +_,7 @@
+@@ -1371,7 +_,7 @@
      }
  
      @Override
@@ -226,7 +226,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1899,8 +_,8 @@
+@@ -1903,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -237,7 +237,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -1920,25 +_,62 @@
+@@ -1924,25 +_,62 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String message = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
