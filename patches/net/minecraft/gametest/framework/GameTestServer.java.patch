@@ -12,6 +12,15 @@
  
      public static GameTestServer create(
          Thread serverThread,
+@@ -159,7 +_,7 @@
+             levelStorageSource,
+             packRepository,
+             worldStem,
+-            Optional.of(new GameRules(ENABLED_FEATURES)),
++            Optional.of(TEST_GAME_RULES),
+             Proxy.NO_PROXY,
+             DataFixers.getDataFixer(),
+             NO_SERVICES,
 @@ -178,10 +_,12 @@
              }
          });

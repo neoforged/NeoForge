@@ -1,5 +1,15 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
+@@ -97,7 +_,8 @@
+     private final MultiBufferSource.BufferSource bufferSource;
+     private final SubmitNodeCollector submitNodeCollector;
+     private final FeatureRenderDispatcher featureRenderDispatcher;
+-    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
++    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
++    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
+     private @Nullable GuiItemAtlas itemAtlas;
+     private int cachedGuiScale;
+     private @Nullable ScreenRectangle previousScissorArea = null;
 @@ -110,19 +_,13 @@
          MultiBufferSource.BufferSource bufferSource,
          SubmitNodeCollector submitNodeCollector,
@@ -65,3 +75,12 @@
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
+@@ -567,7 +_,7 @@
+             this.itemAtlas = null;
+         }
+ 
+-        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
++        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
+         this.guiProjectionMatrixBuffer.close();
+ 
+         for (MappableRingBuffer buffer : this.vertexBuffers.values()) {
