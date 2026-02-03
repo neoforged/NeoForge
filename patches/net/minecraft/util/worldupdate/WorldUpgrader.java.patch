@@ -5,7 +5,7 @@
          this.dataFixer = dataFixer;
          this.levelStorage = levelSource;
 -        this.overworldSavedDataStorage = new SavedDataStorage(this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data"), dataFixer, registryAccess);
-+        this.overworldDataStorage = new DimensionDataStorage(null, this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data"), dataFixer, registryAccess);
++        this.overworldSavedDataStorage = new SavedDataStorage(null, this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data"), dataFixer, registryAccess);
          this.recreateRegionFiles = recreateRegionFiles;
          this.thread = THREAD_FACTORY.newThread(this::work);
          this.thread.setUncaughtExceptionHandler((t, e) -> {

@@ -45,7 +45,7 @@
          CompoundTag var8;
          try (
              InputStream in = Files.newInputStream(dataFile);
-@@ -121,9 +_,20 @@
+@@ -121,9 +_,19 @@
                  }
              }
  
@@ -59,10 +59,9 @@
 +            }
          }
 +
-+
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
 +        this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(
-+                () -> net.neoforged.neoforge.common.IOUtilities.tryCleanupTempFiles(this.dataFolder, id),
++                () -> net.neoforged.neoforge.common.IOUtilities.tryCleanupTempFiles(this.dataFolder, dataFile.getFileName().toString()),
 +                Util.ioPool()
 +        );
  

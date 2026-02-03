@@ -66,9 +66,9 @@ public class LevelEventTests {
 
         test.eventListeners().forge().addListener((final AlterGroundEvent event) -> {
             final AlterGroundEvent.StateProvider old = event.getStateProvider();
-            event.setStateProvider((rand, pos) -> {
-                final BlockState state = old.getState(rand, pos);
-                return state.is(Blocks.PODZOL) ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
+            event.setStateProvider((level, rand, pos) -> {
+                final BlockState state = old.getState(level, rand, pos);
+                return state != null && state.is(Blocks.PODZOL) ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
             });
         });
 

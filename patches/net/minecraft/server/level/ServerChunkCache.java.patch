@@ -5,7 +5,7 @@
          }
  
 -        this.savedDataStorage = new SavedDataStorage(dataFolder, fixerUpper, level.registryAccess());
-+        this.dataStorage = new DimensionDataStorage(level, dataFolder, fixerUpper, level.registryAccess());
++        this.savedDataStorage = new SavedDataStorage(level, dataFolder, fixerUpper, level.registryAccess());
          this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(
              level,

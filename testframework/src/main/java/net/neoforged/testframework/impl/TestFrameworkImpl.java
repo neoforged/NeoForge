@@ -174,7 +174,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         }
 
         this.playerTestStoreType = new SavedDataType<>(
-                "tests/" + id().getNamespace() + "_" + id().getPath(),
+                id().withPrefix("tests/"),
                 PlayerTestStore::new, PlayerTestStore.FACTORY);
     }
 

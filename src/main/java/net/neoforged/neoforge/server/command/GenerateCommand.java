@@ -70,7 +70,7 @@ class GenerateCommand {
         int diameter = chunkRadius * 2 + 1;
 
         if (progressBar) {
-            generationBar = new GenerationBar();
+            generationBar = new GenerationBar(source.getLevel());
 
             if (source.getEntity() instanceof ServerPlayer) {
                 generationBar.addPlayer(source.getPlayer());

@@ -14,10 +14,12 @@ import net.minecraft.util.TriState;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.RuleBasedBlockStateProvider;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -46,9 +48,9 @@ public class OnTreeGrowBlockTest {
         }
 
         @Override
-        public boolean onTreeGrow(BlockState state, LevelReader level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
+        public boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
             // Respect vanilla behavior for trees that want custom dirt blocks
-            if (config.forceDirt) {
+            if (config.belowTrunkProvider.rules().stream().map(RuleBasedBlockStateProvider.Rule::ifTrue).anyMatch(pred -> pred.test(level, pos))) {
                 return false;
             } else {
                 placeFunction.accept(pos, TEST_DIRT.value().defaultBlockState());
