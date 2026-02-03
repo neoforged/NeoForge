@@ -26,7 +26,7 @@
                      }
                  }
              });
-@@ -46,6 +_,10 @@
+@@ -46,19 +_,27 @@
      }
  
      private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
@@ -37,7 +37,11 @@
          for (int xx = -2; xx <= 2; xx++) {
              for (int zz = -2; zz <= 2; zz++) {
                  if (Math.abs(xx) != 2 || Math.abs(zz) != 2) {
-@@ -56,9 +_,13 @@
+-                    this.placeBlockAt(context, pos.offset(xx, 0, zz));
++                    this.placeBlockAt(context, pos.offset(xx, 0, zz), eventProvider);
+                 }
+             }
+         }
      }
  
      private void placeBlockAt(TreeDecorator.Context context, BlockPos pos) {

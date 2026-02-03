@@ -4,6 +4,7 @@
   "coordinate_scale": 1,
   "has_skylight": true,
   "has_ceiling": false,
+  "has_ender_dragon_fight": false,
   "ambient_light": 0.1,
   "piglin_safe": true,
   "bed_works": false,

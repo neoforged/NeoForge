@@ -5,20 +5,21 @@
 
 package net.neoforged.testframework.gametest;
 
+import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
@@ -29,17 +30,9 @@ public class DynamicStructureTemplates {
     private final Map<Identifier, Supplier<StructureTemplate>> templates = new ConcurrentHashMap<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void setup(StructureTemplateManager manager) throws Throwable {
-        final List sources = new ArrayList(ReflectionUtils.<List>getInstanceField(manager, SOURCES_FIELD));
-
-        final Class sourceClazz = Stream.of(StructureTemplateManager.class.getDeclaredClasses())
-                .filter(it -> it.getSimpleName().equals("Source")).findFirst().orElseThrow();
-        final MethodHandle ctor = ReflectionUtils.constructor(sourceClazz, MethodType.methodType(void.class, Function.class, Supplier.class));
-
-        final Function<Identifier, Optional<StructureTemplate>> loader = this::load;
-        final Supplier<Stream<Identifier>> lister = this::list;
-        sources.add(ctor.invokeWithArguments(loader, lister));
-
+    public void setup(StructureTemplateManager manager, DataFixer fixerUpper, HolderGetter<Block> blockLookup) {
+        final List<TemplateSource> sources = new ArrayList(ReflectionUtils.<List>getInstanceField(manager, SOURCES_FIELD));
+        sources.add(new DynamicTemplateSource(fixerUpper, blockLookup));
         ObfuscationReflectionHelper.setPrivateValue(StructureTemplateManager.class, manager, sources, SOURCES_FIELD);
 
         LogUtils.getLogger().debug("Injected dynamic template source in manager {}", manager);
@@ -65,5 +58,21 @@ public class DynamicStructureTemplates {
 
     public void register(Identifier id, StructureTemplate template) {
         register(id, () -> template);
+    }
+
+    private final class DynamicTemplateSource extends TemplateSource {
+        DynamicTemplateSource(DataFixer fixerUpper, HolderGetter<Block> blockLookup) {
+            super(fixerUpper, blockLookup);
+        }
+
+        @Override
+        public Optional<StructureTemplate> load(Identifier id) {
+            return DynamicStructureTemplates.this.load(id);
+        }
+
+        @Override
+        public Stream<Identifier> list() {
+            return DynamicStructureTemplates.this.list();
+        }
     }
 }
