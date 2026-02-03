@@ -21,17 +21,14 @@ public class EntityTeleportTest {
     public static class TeleportEvents {
         @SubscribeEvent
         static void onTeleportCommand(EntityTeleportEvent.TeleportCommand event) {
-            if (event.getEntity() instanceof Pig && event.getTargetLevel() != Level.END) {
-                event.setTargetLevel(Level.OVERWORLD);
-                event.setTargetX(0);
-                event.setTargetY(-60);
-                event.setTargetZ(0);
+            if (event.getEntity() instanceof Pig && event.getTargetLevel().dimension() != Level.END) {
+                event.setCanceled(true);
             }
         }
 
         @SubscribeEvent
         static void onEnderPearlTeleport(EntityTeleportEvent.EnderPearl event) {
-            if (event.getEntity() instanceof Player && event.getTargetLevel() != Level.OVERWORLD) {
+            if (event.getEntity() instanceof Player && event.getTargetLevel().dimension() != Level.OVERWORLD) {
                 event.setCanceled(true);
             }
         }
