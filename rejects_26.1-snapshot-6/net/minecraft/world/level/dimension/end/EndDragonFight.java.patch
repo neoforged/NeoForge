@@ -1,0 +1,18 @@
+++++ Target missing
+--- a/net/minecraft/world/level/dimension/end/EndDragonFight.java
++++ b/net/minecraft/world/level/dimension/end/EndDragonFight.java
+@@ -527,6 +527,14 @@
+         }
+     }
+ 
++    public void addPlayer(ServerPlayer player) {
++        this.dragonEvent.addPlayer(player);
++    }
++
++    public void removePlayer(ServerPlayer player) {
++        this.dragonEvent.removePlayer(player);
++    }
++
+     public @Nullable UUID getDragonUUID() {
+         return this.dragonUUID;
+     }

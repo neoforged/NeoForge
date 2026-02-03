@@ -1,0 +1,15 @@
+++++ REJECTED HUNK: 1
+@@ -148,6 +148,12 @@
+         return result;
+     }
+ 
++    // Normal compare sorts by path first, this compares namespace first.
++    public int compareNamespaced(Identifier o) {
++        int ret = this.namespace.compareTo(o.namespace);
++        return ret != 0 ? ret : this.path.compareTo(o.path);
++    }
++
+     public String toDebugFileName() {
+         return this.toString().replace('/', '_').replace(':', '_');
+     }
+++++ END HUNK

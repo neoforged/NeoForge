@@ -1,0 +1,13 @@
+++++ REJECTED HUNK: 2
+@@ -304,6 +305,10 @@
+             SystemToast.onPackCopyFailure(this.minecraft, worldFolder);
+             return false;
+         } else {
++            if (worldData.worldGenSettingsLifecycle() != Lifecycle.stable()) {
++                // Neo: set experimental settings confirmation flag so user is not shown warning on next open
++                ((PrimaryLevelData) worldData).withConfirmedWarning(true);
++            }
+             this.minecraft.createWorldOpenFlows().createLevelFromExistingSettings(newWorldAccess.get(), context.dataPackResources(), finalLayers, worldData);
+             return true;
+         }
+++++ END HUNK

@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 2
+@@ -105,7 +110,7 @@
+         enabledPacks.addFirst("vanilla");
+         WorldDataConfiguration defaultTestConfig = new WorldDataConfiguration(new DataPackConfig(enabledPacks, List.of()), ENABLED_FEATURES);
+         LevelSettings testSettings = new LevelSettings(
+-            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(ENABLED_FEATURES), defaultTestConfig
++            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, defaultTestConfig
+         );
+         WorldLoader.PackConfig packConfig = new WorldLoader.PackConfig(packRepository, defaultTestConfig, false, true);
+         WorldLoader.InitConfig initConfig = new WorldLoader.InitConfig(packConfig, Commands.CommandSelection.DEDICATED, LevelBasedPermissionSet.OWNER);
+++++ END HUNK

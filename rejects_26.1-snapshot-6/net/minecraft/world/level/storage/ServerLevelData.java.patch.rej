@@ -1,0 +1,13 @@
+++++ REJECTED HUNK: 1
+@@ -95,4 +95,10 @@
+     PackedClockStates clockStates();
+ 
+     GameRules getGameRules();
++
++    //Neo
++    float getDayTimeFraction();
++    float getDayTimePerTick();
++    void setDayTimeFraction(float dayTimeFraction);
++    void setDayTimePerTick(float dayTimePerTick);
+ }
+++++ END HUNK

@@ -1,0 +1,21 @@
+++++ REJECTED HUNK: 3
+@@ -422,6 +422,7 @@
+         this.scoreboard.load(overworldDataStorage.computeIfAbsent(ScoreboardSaveData.TYPE).getData());
+         this.commandStorage = new CommandStorage(overworldDataStorage);
+         this.stopwatches = overworldDataStorage.computeIfAbsent(Stopwatches.TYPE);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(Level.OVERWORLD)));
+         if (!levelData.isInitialized()) {
+             try {
+                 setInitialSpawn(overworld, levelData, worldOptions.generateBonusChest(), isDebug, this.levelLoadListener);
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -472,6 +473,7 @@
+                     randomSequences
+                 );
+                 this.levels.put(dimension, level);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(name)));
+             } else {
+                 level = overworld;
+             }
+++++ END HUNK

@@ -1,0 +1,14 @@
+++++ REJECTED HUNK: 1
+@@ -218,7 +218,10 @@
+             backupWarning = Component.translatable("selectWorld.backupWarning.customized");
+         } else {
+             backupQuestion = Component.translatable("selectWorld.backupQuestion.experimental");
+-            backupWarning = Component.translatable("selectWorld.backupWarning.experimental");
++            // Neo: Add a line saying that the message won't show again.
++            backupWarning = Component.translatable("selectWorld.backupWarning.experimental")
++                    .append("\n\n")
++                    .append(Component.translatable("neoforge.selectWorld.backupWarning.experimental.additional"));
+         }
+ 
+         this.minecraft.setScreen(new BackupConfirmScreen(cancelCallback, (backup, eraseCache) -> {
+++++ END HUNK

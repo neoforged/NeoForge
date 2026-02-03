@@ -1,0 +1,24 @@
+++++ REJECTED HUNK: 1
+@@ -109,7 +109,8 @@
+     private final MultiBufferSource.BufferSource bufferSource;
+     private final SubmitNodeCollector submitNodeCollector;
+     private final FeatureRenderDispatcher featureRenderDispatcher;
+-    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
++    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
++    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
+     private @Nullable GpuTexture itemsAtlas;
+     private @Nullable GpuTextureView itemsAtlasView;
+     private @Nullable GpuTexture itemsAtlasDepth;
+++++ END HUNK
+
+++++ REJECTED HUNK: 5
+@@ -711,7 +724,7 @@
+             this.itemsAtlasDepthView.close();
+         }
+ 
+-        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
++        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
+         this.guiProjectionMatrixBuffer.close();
+         this.itemsProjectionMatrixBuffer.close();
+ 
+++++ END HUNK

@@ -1,0 +1,21 @@
+++++ REJECTED HUNK: 3
+@@ -129,6 +134,7 @@
+                 try {
+                     loadedDataTag = access.getDataTag();
+                     summary = access.getSummary(loadedDataTag);
++                    access.readAdditionalLevelSaveData(false);
+                 } catch (NbtException | ReportedNbtException | IOException var41) {
+                     LevelStorageSource.LevelDirectory levelDirectory = access.getLevelDirectory();
+                     LOGGER.warn("Failed to load world data from {}", levelDirectory.dataFile(), var41);
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -137,6 +143,7 @@
+                     try {
+                         loadedDataTag = access.getDataTagFallback();
+                         summary = access.getSummary(loadedDataTag);
++                        access.readAdditionalLevelSaveData(true);
+                     } catch (NbtException | ReportedNbtException | IOException var40) {
+                         LOGGER.error("Failed to load world data from {}", levelDirectory.oldDataFile(), var40);
+                         LOGGER.error(
+++++ END HUNK

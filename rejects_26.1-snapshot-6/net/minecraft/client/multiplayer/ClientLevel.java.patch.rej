@@ -1,0 +1,10 @@
+++++ REJECTED HUNK: 5
+@@ -241,6 +248,7 @@
+         if (this.canHaveWeather()) {
+             this.prepareWeather();
+         }
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
+     }
+ 
+     private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
+++++ END HUNK

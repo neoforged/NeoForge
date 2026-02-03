@@ -1,0 +1,13 @@
+++++ REJECTED HUNK: 2
+@@ -87,8 +88,8 @@
+         return true;
+     }
+ 
+-    public static boolean isPathPartPortable(String name) {
+-        return !RESERVED_WINDOWS_FILENAMES.matcher(name).matches();
++    public static boolean isPathPartPortable(String p_428321_) {
++        return !(net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_428321_).matches();
+     }
+ 
+     public static Path createPathToResource(Path resourceDirectory, String resource, String extension) {
+++++ END HUNK

@@ -1,0 +1,67 @@
+++++ REJECTED HUNK: 1
+@@ -71,6 +71,7 @@
+     private boolean wasModded;
+     private final Set<String> removedFeatureFlags;
+     private final TimerQueue<MinecraftServer> scheduledEvents;
++    private boolean confirmedExperimentalWarning = false;
+ 
+     private PrimaryLevelData(
+         @Nullable CompoundTag loadedPlayerTag,
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -169,7 +170,7 @@
+         Lifecycle worldGenSettingsLifecycle
+     ) {
+         long gameTime = input.get("Time").asLong(0L);
+-        return new PrimaryLevelData(
++        var result = new PrimaryLevelData(
+             input.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
+             input.get("WasModded").asBoolean(false),
+             input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
+++++ END HUNK
+
+++++ REJECTED HUNK: 3
+@@ -191,7 +192,8 @@
+             input.get("WanderingTraderSpawnChance").asInt(0),
+             input.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null),
+             input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+-            input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toSet()),
++            // Neo: Append removed modded feature flags
++            updateRemovedFeatureFlags(input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()), input.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
+             new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, input.get("ScheduledEvents").asStream()),
+             (CompoundTag)input.get("CustomBossEvents").orElseEmptyMap().getValue(),
+             input.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -199,7 +201,11 @@
+             worldOptions,
+             specialWorldProperty,
+             worldGenSettingsLifecycle
+-        );
++        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false));
++        // Neo:
++        result.setDayTimeFraction(input.get("neoDayTimeFraction").asFloat(0f));
++        result.setDayTimePerTick(input.get("neoDayTimePerTick").asFloat(-1f));
++        return result;
+     }
+ 
+     @Override
+++++ END HUNK
+
+++++ REJECTED HUNK: 5
+@@ -264,6 +270,12 @@
+         tag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
+         tag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
+         tag.storeNullable("WanderingTraderId", UUIDUtil.CODEC, this.wanderingTraderId);
++
++        // Neo:
++        tag.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
++        tag.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
++        tag.putFloat("neoDayTimeFraction", dayTimeFraction);
++        tag.putFloat("neoDayTimePerTick", dayTimePerTick);
+     }
+ 
+     private static ListTag stringCollectionToTag(Set<String> values) {
+++++ END HUNK
