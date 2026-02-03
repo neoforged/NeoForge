@@ -107,6 +107,7 @@ import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -662,6 +663,11 @@ public class CommonHooks {
                     level.restoringBlockSnapshots = true;
                     blocksnapshot.restore(blocksnapshot.getFlags() | Block.UPDATE_CLIENTS);
                     level.restoringBlockSnapshots = false;
+                }
+                // inform the client that the item was not consumed
+                if (player instanceof ServerPlayer serverPlayer) {
+                    int slot = context.getHand() == InteractionHand.MAIN_HAND ? serverPlayer.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
+                    serverPlayer.connection.send(serverPlayer.getInventory().createInventoryUpdatePacket(slot));
                 }
             } else {
                 // Change the stack to its new content
