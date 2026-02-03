@@ -1,0 +1,73 @@
+--- a/net/minecraft/world/level/LevelSettings.java
++++ b/net/minecraft/world/level/LevelSettings.java
+@@ -6,8 +_,13 @@
+ import net.minecraft.world.Difficulty;
+ 
+ public record LevelSettings(
+-    String levelName, GameType gameType, LevelSettings.DifficultySettings difficultySettings, boolean allowCommands, WorldDataConfiguration dataConfiguration
++    String levelName, GameType gameType, LevelSettings.DifficultySettings difficultySettings, boolean allowCommands, WorldDataConfiguration dataConfiguration, com.mojang.serialization.Lifecycle lifecycle
+ ) {
++    // Neo: Overload that defaults the new lifecycle parameter
++    public LevelSettings(String levelName, GameType gameType, DifficultySettings difficultySettings, boolean allowCommands, WorldDataConfiguration dataConfiguration) {
++        this(levelName, gameType, difficultySettings, allowCommands, dataConfiguration, com.mojang.serialization.Lifecycle.stable());
++    }
++
+     public static LevelSettings parse(Dynamic<?> input, WorldDataConfiguration loadConfig) {
+         GameType gameType = GameType.byId(input.get("GameType").asInt(0));
+         return new LevelSettings(
+@@ -15,12 +_,13 @@
+             gameType,
+             input.get("difficulty_settings").read(LevelSettings.DifficultySettings.CODEC).result().orElse(LevelSettings.DifficultySettings.DEFAULT),
+             input.get("allowCommands").asBoolean(gameType == GameType.CREATIVE),
+-            loadConfig
++            loadConfig,
++            net.neoforged.neoforge.common.CommonHooks.parseLifecycle(input.get("forgeLifecycle").asString("stable"))
+         );
+     }
+ 
+     public LevelSettings withGameType(GameType gameType) {
+-        return new LevelSettings(this.levelName, gameType, this.difficultySettings, this.allowCommands, this.dataConfiguration);
++        return new LevelSettings(this.levelName, gameType, this.difficultySettings, this.allowCommands, this.dataConfiguration, this.lifecycle);
+     }
+ 
+     public LevelSettings withDifficulty(Difficulty difficulty) {
+@@ -29,7 +_,8 @@
+             this.gameType,
+             new LevelSettings.DifficultySettings(difficulty, this.difficultySettings.hardcore(), this.difficultySettings.locked()),
+             this.allowCommands,
+-            this.dataConfiguration
++            this.dataConfiguration,
++            this.lifecycle
+         );
+     }
+ 
+@@ -39,16 +_,26 @@
+             this.gameType,
+             new LevelSettings.DifficultySettings(this.difficultySettings.difficulty(), this.difficultySettings.hardcore(), locked),
+             this.allowCommands,
+-            this.dataConfiguration
++            this.dataConfiguration,
++            this.lifecycle
+         );
+     }
+ 
+     public LevelSettings withDataConfiguration(WorldDataConfiguration dataConfiguration) {
+-        return new LevelSettings(this.levelName, this.gameType, this.difficultySettings, this.allowCommands, dataConfiguration);
++        return new LevelSettings(this.levelName, this.gameType, this.difficultySettings, this.allowCommands, dataConfiguration, this.lifecycle);
++    }
++
++    // Neo: Changes the lifecycle, keeps every other property
++    public LevelSettings withLifecycle(com.mojang.serialization.Lifecycle lifecycle) {
++        return new LevelSettings(this.levelName, this.gameType, this.difficultySettings, this.allowCommands, this.dataConfiguration, lifecycle);
+     }
+ 
+     public LevelSettings copy() {
+-        return new LevelSettings(this.levelName, this.gameType, this.difficultySettings, this.allowCommands, this.dataConfiguration);
++        return new LevelSettings(this.levelName, this.gameType, this.difficultySettings, this.allowCommands, this.dataConfiguration, this.lifecycle);
++    }
++
++    public com.mojang.serialization.Lifecycle getLifecycle() {
++        return this.lifecycle;
+     }
+ 
+     public record DifficultySettings(Difficulty difficulty, boolean hardcore, boolean locked) {
