@@ -20,6 +20,19 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
+@@ -538,10 +_,12 @@
+             Dynamic<?> unfixedDataTag;
+             try {
+                 unfixedDataTag = this.getUnfixedDataTag(false);
++                this.readAdditionalLevelSaveData(false);
+             } catch (NbtException | ReportedNbtException | IOException var3) {
+                 LevelStorageSource.LOGGER.warn("Failed to load world data from {}", this.levelDirectory.dataFile(), var3);
+                 LevelStorageSource.LOGGER.info("Attempting to use fallback {}", this.levelDirectory.oldDataFile());
+                 unfixedDataTag = this.getUnfixedDataTag(true);
++                this.readAdditionalLevelSaveData(true);
+                 this.restoreLevelDataFromOld();
+             }
+ 
 @@ -567,6 +_,7 @@
              CompoundTag dataTag = levelData.createTag(singleplayerUUID);
              CompoundTag root = new CompoundTag();
