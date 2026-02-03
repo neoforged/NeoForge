@@ -21,5 +21,6 @@
   ],
   "result": {
     "id": "minecraft:cherry_fence"
-  }
+  },
+  "show_notification": false
 }
