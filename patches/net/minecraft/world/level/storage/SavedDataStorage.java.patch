@@ -1,29 +1,24 @@
-++++ Target missing
---- a/net/minecraft/world/level/storage/DimensionDataStorage.java
-+++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -38,13 +38,21 @@
- 
- public class DimensionDataStorage implements AutoCloseable {
-     private static final Logger LOGGER = LogUtils.getLogger();
-+    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
-     private final Map<SavedDataType<?>, Optional<SavedData>> cache = new HashMap<>();
-     private final DataFixer fixerUpper;
-     private final HolderLookup.Provider registries;
+--- a/net/minecraft/world/level/storage/SavedDataStorage.java
++++ b/net/minecraft/world/level/storage/SavedDataStorage.java
+@@ -46,8 +_,17 @@
      private final Path dataFolder;
      private CompletableFuture<?> pendingWriteFuture = CompletableFuture.completedFuture(null);
+     private boolean closed;
++    // Neo: Needed to make level context available to modded saved data
++    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
  
-+    // Neo: Use the version that has a level
++    /** @deprecated Neo: Use the version that has a level */
 +    @Deprecated
-     public DimensionDataStorage(Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
+     public SavedDataStorage(Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
 +        this(null, dataFolder, fixerUpper, registries);
 +    }
 +
-+    public DimensionDataStorage(net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level, Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
++    public SavedDataStorage(net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level, Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
 +        this.level = level;
          this.fixerUpper = fixerUpper;
          this.dataFolder = dataFolder;
          this.registries = registries;
-@@ -59,7 +67,7 @@
+@@ -67,7 +_,7 @@
          if (data != null) {
              return data;
          } else {
@@ -32,25 +27,25 @@
              this.set(type, newData);
              return newData;
          }
-@@ -81,7 +89,7 @@
+@@ -89,7 +_,7 @@
              if (Files.exists(file)) {
-                 CompoundTag tag = this.readTagFromDisk(type.id(), type.dataFixType(), SharedConstants.getCurrentVersion().dataVersion().version());
+                 CompoundTag tag = this.readTagFromDisk(file, type.dataFixType(), SharedConstants.getCurrentVersion().dataVersion().version());
                  RegistryOps<Tag> ops = this.registries.createSerializationContext(NbtOps.INSTANCE);
 -                return type.codec()
 +                return type.codecFactory().create(this.level)
                      .parse(ops, tag.get("data"))
                      .resultOrPartial(error -> LOGGER.error("Failed to parse saved data for '{}': {}", type, error))
                      .orElse(null);
-@@ -98,7 +106,7 @@
+@@ -106,7 +_,7 @@
          data.setDirty();
      }
  
--    public CompoundTag readTagFromDisk(String id, DataFixTypes type, int newVersion) throws IOException {
-+    public CompoundTag readTagFromDisk(String id, @Nullable DataFixTypes type, int newVersion) throws IOException {
+-    public CompoundTag readTagFromDisk(Path dataFile, DataFixTypes type, int newVersion) throws IOException {
++    public CompoundTag readTagFromDisk(Path dataFile, @Nullable DataFixTypes type, int newVersion) throws IOException {
          CompoundTag var8;
          try (
-             InputStream in = Files.newInputStream(this.getDataFile(id));
-@@ -113,9 +121,19 @@
+             InputStream in = Files.newInputStream(dataFile);
+@@ -121,9 +_,20 @@
                  }
              }
  
@@ -64,6 +59,7 @@
 +            }
          }
 +
++
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
 +        this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(
 +                () -> net.neoforged.neoforge.common.IOUtilities.tryCleanupTempFiles(this.dataFolder, id),
@@ -72,7 +68,7 @@
  
          return var8;
      }
-@@ -187,7 +205,7 @@
+@@ -199,7 +_,7 @@
      }
  
      private <T extends SavedData> CompoundTag encodeUnchecked(SavedDataType<T> type, SavedData data, RegistryOps<Tag> ops) {
@@ -81,10 +77,10 @@
          CompoundTag tag = new CompoundTag();
          tag.put("data", codec.encodeStart(ops, (T)data).getOrThrow());
          NbtUtils.addCurrentDataVersion(tag);
-@@ -198,7 +216,11 @@
-         Path path = this.getDataFile(type.id());
+@@ -211,7 +_,11 @@
  
          try {
+             FileUtil.createDirectoriesSafe(path.getParent());
 -            NbtIo.writeCompressed(tag, path);
 +            // Neo: ensure parent directories exist if the SavedData's path contains slashes
 +            if (!Files.exists(path)) {
