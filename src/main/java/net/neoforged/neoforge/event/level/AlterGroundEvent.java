@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired when {@link AlterGroundDecorator#placeBlockAt(TreeDecorator.Context, BlockPos)} attempts to alter a ground block when generating a feature.<br>
@@ -106,6 +108,7 @@ public class AlterGroundEvent extends Event {
         /**
          * Gets the BlockState that will be placed at the passed position.
          */
-        BlockState getState(RandomSource random, BlockPos state);
+        @Nullable
+        BlockState getState(WorldGenLevel level, RandomSource random, BlockPos state);
     }
 }

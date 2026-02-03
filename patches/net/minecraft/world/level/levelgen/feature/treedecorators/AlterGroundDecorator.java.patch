@@ -26,3 +26,29 @@
                      }
                  }
              });
+@@ -46,6 +_,10 @@
+     }
+ 
+     private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
++        placeCircle(context, pos, this.provider::getState);
++    }
++
++    private void placeCircle(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
+         for (int xx = -2; xx <= 2; xx++) {
+             for (int zz = -2; zz <= 2; zz++) {
+                 if (Math.abs(xx) != 2 || Math.abs(zz) != 2) {
+@@ -56,9 +_,13 @@
+     }
+ 
+     private void placeBlockAt(TreeDecorator.Context context, BlockPos pos) {
++        placeBlockAt(context, pos, this.provider::getState);
++    }
++
++    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
+         for (int dy = 2; dy >= -3; dy--) {
+             BlockPos blockPos = pos.above(dy);
+-            BlockState replaceWith = this.provider.getState(context.level(), context.random(), pos);
++            BlockState replaceWith = eventProvider.getState(context.level(), context.random(), pos);
+             if (replaceWith != null) {
+                 context.setBlock(blockPos, replaceWith);
+                 break;
