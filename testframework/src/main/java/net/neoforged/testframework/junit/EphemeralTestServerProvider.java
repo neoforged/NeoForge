@@ -178,8 +178,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                                     WorldDimensions.Complete worlddimensions$complete = worldDimensions.bake(registry);
                                     LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings = new LevelDataAndDimensions.WorldDataAndGenSettings(
                                             new PrimaryLevelData(levelsettings, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
-                                            new WorldGenSettings(WORLD_OPTIONS, worldDimensions)
-                                    );
+                                            new WorldGenSettings(WORLD_OPTIONS, worldDimensions));
                                     return new WorldLoader.DataLoadOutput<>(
                                             worldDataAndGenSettings,
                                             worlddimensions$complete.dimensionsRegistryAccess());
