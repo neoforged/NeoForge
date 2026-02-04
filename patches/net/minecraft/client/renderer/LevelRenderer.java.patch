@@ -66,45 +66,54 @@
          if (transparencyChain != null) {
              transparencyChain.addToFrame(frame, screenWidth, screenHeight, this.targets);
          }
-@@ -663,6 +_,9 @@
+@@ -663,6 +_,8 @@
  
                  ChunkSectionsToRender chunkSectionsToRender = this.prepareChunkRenders(modelViewMatrix, camX, camY, camZ);
                  chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.OPAQUE, this.chunkLayerSampler);
-+                profiler.push("neoforge_render_after_opaque_blocks");
++                profiler.popPush("neoforge_render_after_opaque_blocks");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
-+                profiler.pop();
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (this.shouldShowEntityOutlines() && entityOutlineTarget != null) {
                      RenderTarget outlineTarget = entityOutlineTarget.get();
-@@ -680,6 +_,9 @@
+@@ -680,9 +_,13 @@
                  this.submitBlockEntities(poseStack, levelRenderState, this.submitNodeStorage);
                  profiler.popPush("submitParticles");
                  this.particlesRenderState.submit(this.submitNodeStorage, levelRenderState.cameraRenderState);
-+                Profiler.get().push("neoforge_render_after_particles");
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterParticles(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
-+                Profiler.get().pop();
++                profiler.popPush("neoforge_submit_custom");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent(this.levelRenderState, this.submitNodeStorage, poseStack, this.getRenderableSections()));
                  profiler.popPush("solidFeatures");
                  this.featureRenderDispatcher.renderSolidFeatures();
                  bufferSource.endBatch();
-@@ -705,6 +_,8 @@
-                 crumblingBufferSource.endBatch();
++                profiler.popPush("neoforge_render_after_opaque_features");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueFeatures(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
                  profiler.pop();
-                 this.renderBuffers.outlineBufferSource().endOutlineBatch();
-+                profiler.popPush("neoforge_render_after_entities");
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterEntities(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
-                 if (renderOutline) {
-                     this.renderBlockOutline(bufferSource, poseStack, false, levelRenderState);
-                     bufferSource.endBatch();
+                 this.checkPoseStack(poseStack);
+                 if (translucentTarget != null) {
+@@ -700,6 +_,8 @@
+                 profiler.push("translucentFeatures");
+                 this.featureRenderDispatcher.renderTranslucentFeatures();
+                 bufferSource.endBatch();
++                profiler.popPush("neoforge_render_after_translucent_features");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
+                 profiler.popPush("destroyProgress");
+                 this.renderBlockDestroyAnimation(poseStack, crumblingBufferSource, levelRenderState);
+                 crumblingBufferSource.endBatch();
 @@ -716,6 +_,8 @@
                  this.checkPoseStack(poseStack);
                  profiler.push("translucentTerrain");
                  chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, this.chunkLayerSampler);
 +                profiler.popPush("neoforge_render_after_translucent_blocks");
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
                  if (renderOutline) {
                      this.renderBlockOutline(bufferSource, poseStack, true, levelRenderState);
                  }
-@@ -730,9 +_,18 @@
+@@ -726,13 +_,24 @@
+                 bufferSource.endBatch();
+                 this.featureRenderDispatcher.clearSubmitNodes();
+                 this.particlesRenderState.reset();
++                profiler.push("neoforge_render_after_translucent_particles");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, this.levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
+             }
          );
      }
  
@@ -147,10 +156,12 @@
          int renderDistance = this.minecraft.options.getEffectiveRenderDistance() * 16;
          float depthFar = this.minecraft.gameRenderer.getDepthFar();
          FramePass pass = frame.addPass("weather");
-@@ -757,6 +_,9 @@
+@@ -756,7 +_,10 @@
+         pass.executes(() -> {
              RenderSystem.setShaderFog(fog);
              CameraRenderState cameraState = this.levelRenderState.cameraRenderState;
-             this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState);
+-            this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState);
++            this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState, this.levelRenderState);
 +            Profiler.get().push("neoforge_render_after_weather");
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
 +            Profiler.get().pop();

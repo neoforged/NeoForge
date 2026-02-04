@@ -63,7 +63,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
     }
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent.AfterEntities event) {
+    public static void onRenderLevelStage(RenderLevelStageEvent.AfterOpaqueFeatures event) {
         if (!enabled) {
             return;
         }
