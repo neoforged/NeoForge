@@ -256,15 +256,15 @@
 +    public static void renderModel(
 +        PoseStack.Pose pose, net.minecraft.client.renderer.MultiBufferSource bufferSource, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state
 +    ) {
-+        renderModel(pose, bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state, null);
++        renderModel(pose, bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state, _ -> true);
 +    }
 +
 +    public static void renderModel(
-+            PoseStack.Pose pose, net.minecraft.client.renderer.MultiBufferSource bufferSource, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state, java.util.function.@org.jspecify.annotations.Nullable Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter
++            PoseStack.Pose pose, net.minecraft.client.renderer.MultiBufferSource bufferSource, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state, java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter
 +    ) {
 +        for (BlockModelPart part : model.collectParts(level, pos, state, RandomSource.create(42L))) {
 +            net.minecraft.client.renderer.chunk.ChunkSectionLayer chunkLayer = part.getRenderType(state);
-+            if (chunkLayerFilter != null && !chunkLayerFilter.test(chunkLayer)) continue;
++            if (!chunkLayerFilter.test(chunkLayer)) continue;
 +
 +            VertexConsumer builder = bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(chunkLayer));
              for (Direction direction : DIRECTIONS) {

@@ -45,10 +45,10 @@
 +    }
 +
 +    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos) {
-+        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, level, pos, null);
++        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, level, pos, _ -> true);
 +    }
 +
-+    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos, java.util.function.@Nullable Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter) {
++    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos, java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter) {
          RenderShape shape = state.getRenderShape();
          if (shape != RenderShape.INVISIBLE) {
              BlockStateModel model = this.getBlockModel(state);
