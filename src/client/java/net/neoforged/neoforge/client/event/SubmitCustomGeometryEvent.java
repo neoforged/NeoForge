@@ -22,12 +22,14 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * This event can be used to submit custom geometry outside of {@link BlockEntityRenderer}s,
  * {@link EntityRenderer}s and {@link Particle}s.
+ * Custom render state used by the submits must be extracted in {@link ExtractLevelRenderStateEvent} and
+ * stored in the provided {@link LevelRenderState}
  *
  * <p>This event is fired between particle submission and rendering of opaque submits.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}</p>
  *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}, only on the
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main NeoForge event bus}, only on the
  * {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public final class SubmitCustomGeometryEvent extends Event {

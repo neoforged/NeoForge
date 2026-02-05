@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -22,6 +23,9 @@ import org.jspecify.annotations.Nullable;
  * Fires at various times during {@linkplain LevelRenderer#renderLevel} and {@linkplain GameRenderer#renderLevel}.
  * Custom render state used in the various stages must be extracted in {@link ExtractLevelRenderStateEvent} and
  * stored in the provided {@link LevelRenderState}
+ *
+ *
+ * <p>To submit custom geometry to the {@link SubmitNodeCollector} system, use {@link SubmitCustomGeometryEvent} instead.
  *
  * <p>The sub-events are not {@linkplain ICancellableEvent cancellable}. </p>
  *
