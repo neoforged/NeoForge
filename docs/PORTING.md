@@ -11,10 +11,13 @@ To update to a new Minecraft version, perform these actions to update the source
 
 1. Update `minecraft_version` and `neoform_version` in the `gradle.properties` file.
 2. Run `gradlew setup -Pupdating=true` to patch the Minecraft sources in a lenient/"fuzzy" way.
-3. Patches that could not be fuzzily applied will be put in the `rejects/` folder. Rename it to `rejects-<minecraft version>/`.
+3. Patches that could not be fuzzily applied will be put in the `rejects/` folder.
+   The folder must be renamed such that running `gradlew setup` again will not wipe it.
+   Rename it to `rejects-<minecraft version>/`. For example `rejects-26.1-snapshot-3/`.
 4. Run `gradlew genPatches` to generated updated patches, such that a plain `gradlew setup` will work.
 5. Commit the updated files and push them to the repo.
-   If this is the first snapshot for a new version, push it to a `port/<mc_version>` branch.
+   If this is the first snapshot for a new upcoming version, push it to a `port/<upcoming mc>` branch.
+   For example `port/26.1` for the snapshots leading up to the 26.1 release.
 
 At this stage, NeoForge will likely not compile or run yet.
 The following steps are usually taken:
@@ -45,6 +48,7 @@ For example, in the 26.1 cycle we published the following alphas:
 Once you have the version figured out:
 1. Create the corresponding (lightweight) tag: `git tag release/<version>`.
 2. Push it: `git push origin release/<version>`.
+   This will automatically trigger a release of the snapshot build to our Maven repository.
 
 Contributor License Agreement
 =============================
