@@ -1504,13 +1504,11 @@ public class CommonHooks {
                 int i = entity.getTicksFrozen();
                 if (i > 0) {
                     AttributeInstance attributeinstance = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-                    if (attributeinstance == null) {
-                        return;
+                    if (attributeinstance != null) {
+                        entity.setTicksRequiredToFreeze(freezeEvent.getTicksRequiredToFreeze());
+                        float f = freezeEvent.getSlowAmount() * entity.getPercentFrozen();
+                        attributeinstance.addTransientModifier(new AttributeModifier(speedModifierPowderSnowId, f, AttributeModifier.Operation.ADD_VALUE));
                     }
-
-                    entity.setTicksRequiredToFreeze(freezeEvent.getTicksRequiredToFreeze());
-                    float f = freezeEvent.getSlowAmount() * entity.getPercentFrozen();
-                    attributeinstance.addTransientModifier(new AttributeModifier(speedModifierPowderSnowId, f, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }
