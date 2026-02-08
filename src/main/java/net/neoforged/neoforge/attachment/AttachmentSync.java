@@ -30,6 +30,7 @@ import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.registries.callback.AddCallback;
@@ -105,7 +106,9 @@ public final class AttachmentSync {
         var packet = new SyncAttachmentsPayload(syncTarget(holder), List.of(type), data).toVanillaClientbound();
         for (var player : players) {
             if (type.syncHandler.sendToPlayer(holder.getExposedHolder(), player)) {
-                player.connection.send(packet);
+                if (player.connection.hasChannel(SyncAttachmentsPayload.TYPE.id())) {
+                    player.connection.send(packet);
+                }
             }
         }
     }
@@ -159,6 +162,9 @@ public final class AttachmentSync {
     @Nullable
     private static SyncAttachmentsPayload syncInitialAttachments(AttachmentHolder holder, ServerPlayer to) {
         if (holder.attachments == null) {
+            return null;
+        }
+        if (!to.connection.hasChannel(SyncAttachmentsPayload.TYPE.id())) {
             return null;
         }
         boolean anySyncableAttachment = false;
