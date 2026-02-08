@@ -1466,7 +1466,7 @@ public class CommonHooks {
         }
     }
 
-    public static void onLivingFreeze(LivingEntity entity, ServerLevel serverLevel) {
+    public static void onLivingFreeze(LivingEntity entity, Level level) {
         boolean isFreezing = entity.isInPowderSnow && entity.canFreeze();
 
         LivingFreezeEvent freezeEvent = new LivingFreezeEvent(entity, isFreezing);
@@ -1498,6 +1498,7 @@ public class CommonHooks {
                         return;
                     }
 
+                    entity.setTicksRequiredToFreeze(freezeEvent.getTicksRequiredToFreeze());
                     float f = freezeEvent.getSlowAmount() * entity.getPercentFrozen();
                     attributeinstance.addTransientModifier(new AttributeModifier(speedModifierPowderSnowId, f, AttributeModifier.Operation.ADD_VALUE));
                 }
@@ -1508,10 +1509,12 @@ public class CommonHooks {
             LivingFrozenEvent frozenEvent = new LivingFrozenEvent(entity);
             NeoForge.EVENT_BUS.post(frozenEvent);
 
-            if (!frozenEvent.isCanceled()) {
-                if (entity.tickCount % frozenEvent.getDamageTickRate() == 0) {
-                    if (frozenEvent.getDamageAmount() > 0) {
-                        entity.hurtServer(serverLevel, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
+            if (!level.isClientSide()) {
+                if (!frozenEvent.isCanceled()) {
+                    if (entity.tickCount % frozenEvent.getDamageTickRate() == 0) {
+                        if (frozenEvent.getDamageAmount() > 0) {
+                            entity.hurtServer((ServerLevel) level, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
+                        }
                     }
                 }
             }
