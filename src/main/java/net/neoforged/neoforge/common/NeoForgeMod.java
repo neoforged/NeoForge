@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
 import net.minecraft.SharedConstants;
 import net.minecraft.advancements.criterion.EntitySubPredicate;
 import net.minecraft.commands.Commands;
@@ -26,6 +28,7 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -84,6 +87,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
@@ -188,6 +192,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, MOD_ID);
     private static final DeferredRegister<AttributeType<?>> ATTRIBUTE_TYPES = DeferredRegister.create(Registries.ATTRIBUTE_TYPE, MOD_ID);
     private static final DeferredRegister<EnvironmentAttribute<?>> ENVIRONMENT_ATTRIBUTES = DeferredRegister.create(Registries.ENVIRONMENT_ATTRIBUTE, MOD_ID);
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
 
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -351,6 +356,10 @@ public class NeoForgeMod {
      * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
+
+    public static final Supplier<AttachmentType<Integer>> TICKS_REQUIRED_TO_FREEZE = ATTACHMENT_TYPES.register(
+            "ticks_required_to_freeze", () -> AttachmentType.builder(() -> Entity.BASE_TICKS_REQUIRED_TO_FREEZE).serialize(Codec.INT.fieldOf("ticks_required_to_freeze")).sync(ByteBufCodecs.INT).build()
+    );
 
     private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, MOD_ID);
 
@@ -584,6 +593,7 @@ public class NeoForgeMod {
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ATTRIBUTE_TYPES.register(modEventBus);
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
+        ATTACHMENT_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
