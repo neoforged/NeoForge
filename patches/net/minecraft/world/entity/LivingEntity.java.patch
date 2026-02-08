@@ -619,7 +619,7 @@
          profilerfiller.pop();
          if (this.level() instanceof ServerLevel serverlevel) {
              profilerfiller.push("freezing");
-+            net.neoforged.neoforge.common.CommonHooks.onLivingFreeze(this, this.level());
++            net.neoforged.neoforge.common.CommonHooks.onLivingFreeze(this, serverlevel);
 +            if (false) {
              if (!this.isInPowderSnow || !this.canFreeze()) {
                  this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
