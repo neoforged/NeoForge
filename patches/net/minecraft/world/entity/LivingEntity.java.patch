@@ -653,30 +653,23 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3117,8 +_,10 @@
-         }
- 
+@@ -3119,6 +_,8 @@
          profiler.pop();
-+        profiler.push("freezing");
-+        net.neoforged.neoforge.common.CommonHooks.onLivingFreeze(this, serverLevel);
-+        if (false) {
          if (this.level() instanceof ServerLevel serverLevel) {
--            profiler.push("freezing");
+             profiler.push("freezing");
++            net.neoforged.neoforge.common.CommonHooks.onLivingFreeze(this, serverLevel);
++            if (false) {
              if (!this.isInPowderSnow || !this.canFreeze()) {
                  this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
              }
-@@ -3129,8 +_,9 @@
+@@ -3128,6 +_,7 @@
+             if (this.tickCount % 40 == 0 && this.isFullyFrozen() && this.canFreeze()) {
                  this.hurtServer(serverLevel, this.damageSources().freeze(), 1.0F);
              }
++            }
  
--            profiler.pop();
--        }
-+        }
-+        }
-+        profiler.pop();
- 
-         profiler.push("push");
-         if (this.autoSpinAttackTicks > 0) {
+             profiler.pop();
+         }
 @@ -3171,8 +_,11 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {

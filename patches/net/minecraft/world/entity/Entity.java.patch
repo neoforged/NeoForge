@@ -17,15 +17,20 @@
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
      private int id = 0;
-@@ -307,6 +_,7 @@
-     protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
-     protected final InterpolationHandler interpolationHandler;
-     private CustomData customData = CustomData.EMPTY;
-+    private int ticksRequiredToFreeze = 140;
- 
-     public Entity(EntityType<?> type, Level level) {
-         this.type = type;
-@@ -329,7 +_,10 @@
+@@ -274,6 +_,7 @@
+     private static final EntityDataAccessor<Boolean> DATA_NO_GRAVITY = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);
+     protected static final EntityDataAccessor<Pose> DATA_POSE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.POSE);
+     private static final EntityDataAccessor<Integer> DATA_TICKS_FROZEN = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
++    private static final EntityDataAccessor<Integer> DATA_TICKS_REQUIRED_TO_FREEZE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
+     private EntityInLevelCallback levelCallback = EntityInLevelCallback.NULL;
+     private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
+     public boolean needsSync;
+@@ -325,11 +_,15 @@
+         entityDataBuilder.define(DATA_NO_GRAVITY, false);
+         entityDataBuilder.define(DATA_POSE, Pose.STANDING);
+         entityDataBuilder.define(DATA_TICKS_FROZEN, 0);
++        entityDataBuilder.define(DATA_TICKS_REQUIRED_TO_FREEZE, 140);
+         this.defineSynchedData(entityDataBuilder);
          this.entityData = entityDataBuilder.build();
          this.interpolationHandler = this.createInterpolationHandler();
          this.setPos(0.0, 0.0, 0.0);
@@ -324,11 +329,11 @@
  
      public int getTicksRequiredToFreeze() {
 -        return 140;
-+        return this.ticksRequiredToFreeze;
++        return this.entityData.get(DATA_TICKS_REQUIRED_TO_FREEZE);
 +    }
 +
 +    public void setTicksRequiredToFreeze(int ticksRequiredToFreeze) {
-+        this.ticksRequiredToFreeze = ticksRequiredToFreeze;
++        this.entityData.set(DATA_TICKS_REQUIRED_TO_FREEZE, ticksRequiredToFreeze);
      }
  
      public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
