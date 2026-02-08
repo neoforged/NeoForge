@@ -30,7 +30,7 @@ public class LivingFreezeEventTest {
 
     public static void onFrozenEvent(LivingFrozenEvent event) {
         //event.setCanceled(true);
-        event.setDamageTickRate(1);
+        event.setDamageTickInterval(1);
         event.setDamageAmount(4);
     }
 }
