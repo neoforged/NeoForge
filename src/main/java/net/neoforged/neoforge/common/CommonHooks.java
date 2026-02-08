@@ -1521,7 +1521,7 @@ public class CommonHooks {
 
             if (!level.isClientSide()) {
                 if (!frozenEvent.isCanceled()) {
-                    if (entity.tickCount % frozenEvent.getDamageTickRate() == 0) {
+                    if (entity.tickCount % frozenEvent.getDamageTickInterval() == 0) {
                         if (frozenEvent.getDamageAmount() > 0) {
                             entity.hurtServer((ServerLevel) level, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
                         }

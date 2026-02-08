@@ -25,12 +25,12 @@ import net.neoforged.neoforge.common.NeoForge;
  **/
 public class LivingFrozenEvent extends LivingEvent implements ICancellableEvent {
     private float damageAmount;
-    private int damageTickRate;
+    private int damageTickInterval;
 
     public LivingFrozenEvent(LivingEntity entity) {
         super(entity);
         this.damageAmount = 1.0F;
-        this.damageTickRate = 40;
+        this.damageTickInterval = 40;
     }
 
     /**
@@ -58,17 +58,17 @@ public class LivingFrozenEvent extends LivingEvent implements ICancellableEvent 
     /**
      * @return The amount of ticks between two damages instances.
      */
-    public int getDamageTickRate() {
-        return damageTickRate;
+    public int getDamageTickInterval() {
+        return damageTickInterval;
     }
 
     /**
      * Sets the amount of ticks between two damages instances.
      *
-     * @param damageTickRate The new value.
+     * @param damageTickInterval The new value.
      */
-    public void setDamageTickRate(int damageTickRate) {
-        this.damageTickRate = damageTickRate;
+    public void setDamageTickInterval(int damageTickInterval) {
+        this.damageTickInterval = damageTickInterval;
     }
 
     /**
