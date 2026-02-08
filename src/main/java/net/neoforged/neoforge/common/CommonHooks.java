@@ -1476,7 +1476,7 @@ public class CommonHooks {
         }
     }
 
-    public static void onLivingFreeze(LivingEntity entity, Level level) {
+    public static void onLivingFreeze(LivingEntity entity, ServerLevel level) {
         boolean isFreezing = entity.isInPowderSnow && entity.canFreeze();
 
         LivingFreezeEvent freezeEvent = new LivingFreezeEvent(entity, isFreezing);
@@ -1519,13 +1519,9 @@ public class CommonHooks {
             LivingFrozenEvent frozenEvent = new LivingFrozenEvent(entity);
             NeoForge.EVENT_BUS.post(frozenEvent);
 
-            if (!level.isClientSide()) {
-                if (!frozenEvent.isCanceled()) {
-                    if (entity.tickCount % frozenEvent.getDamageTickInterval() == 0) {
-                        if (frozenEvent.getDamageAmount() > 0) {
-                            entity.hurtServer((ServerLevel) level, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
-                        }
-                    }
+            if (!frozenEvent.isCanceled() || frozenEvent.getDamageAmount() > 0) {
+                if (entity.tickCount % frozenEvent.getDamageTickInterval() == 0) {
+                    entity.hurtServer(level, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
                 }
             }
         }
