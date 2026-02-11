@@ -20,6 +20,7 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -106,7 +107,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
                     template = ModelTemplates.CUBE_ALL;
                 }
 
-                var modelPath = template.create(value(), TextureMapping.cube(Identifier.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
+                var modelPath = template.create(value(), TextureMapping.cube(new Material(Identifier.fromNamespaceAndPath("testframework", "block/white"))), blockModels.modelOutput);
                 blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(value(), BlockModelGenerators.plainVariant(modelPath)));
             }
 

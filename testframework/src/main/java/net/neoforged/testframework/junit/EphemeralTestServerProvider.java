@@ -206,7 +206,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 PackRepository pack,
                 WorldStem stem,
                 Path tempDir) {
-            super(thread, access, pack, stem, Optional.of(TEST_GAME_RULES), Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer());
+            super(thread, access, pack, stem, Optional.of(TEST_GAME_RULES), Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer(), true);
             this.tempDir = tempDir;
         }
 

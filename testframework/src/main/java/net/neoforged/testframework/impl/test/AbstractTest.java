@@ -198,15 +198,14 @@ public abstract class AbstractTest implements Test {
 
     public final void requestConfirmation(Player player, Component message) {
         if (framework instanceof MutableTestFramework internal) {
-            player.displayClientMessage(message.copy().append(" ").append(
+            player.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
                             .withClickEvent(internal.setStatusCommand(
                                     id(), Result.PASSED, "")))
                             .append(" ").append(
                                     Component.literal("No").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)
                                             .withClickEvent(internal.setStatusCommand(
-                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))),
-                    false);
+                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))));
         }
     }
 
