@@ -1,0 +1,9 @@
+--- a/net/minecraft/client/renderer/state/CameraEntityRenderState.java
++++ b/net/minecraft/client/renderer/state/CameraEntityRenderState.java
+@@ -16,4 +_,6 @@
+     public float hurtDir;
+     public float backwardsInterpolatedWalkDistance;
+     public float bob;
++    // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++    public boolean preventFlinch;
+ }

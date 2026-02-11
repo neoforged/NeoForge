@@ -1,5 +1,85 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
+@@ -56,6 +_,7 @@
+     private final Vector3f left = new Vector3f(LEFT);
+     private float xRot;
+     private float yRot;
++    private float roll;
+     private final Quaternionf rotation = new Quaternionf();
+     private boolean detached;
+     private float eyeHeight;
+@@ -131,6 +_,9 @@
+             cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - partialTicks;
+             cameraState.entityRenderState.deathTime = livingEntity.deathTime + partialTicks;
+             cameraState.entityRenderState.hurtDuration = livingEntity.hurtDuration;
++            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++            var lastDamage = livingEntity.getLastDamageSource();
++            cameraState.entityRenderState.preventFlinch = lastDamage != null && lastDamage.is(net.neoforged.neoforge.common.Tags.DamageTypes.NO_FLINCH);
+         } else {
+             cameraState.entityRenderState.isLiving = false;
+             cameraState.entityRenderState.isSleeping = false;
+@@ -212,15 +_,21 @@
+             return 90.0F;
+         } else {
+             float fov = this.minecraft.options.fov().get().intValue() * Mth.lerp(partialTicks, this.oldFovModifier, this.fovModifier);
+-            return this.modifyFovBasedOnDeathOrFluid(partialTicks, fov);
++            return this.modifyFovBasedOnDeathOrFluid(partialTicks, fov, true);
+         }
+     }
+ 
+     private float calculateHudFov(float partialTicks) {
+-        return this.modifyFovBasedOnDeathOrFluid(partialTicks, 70.0F);
++        return this.modifyFovBasedOnDeathOrFluid(partialTicks, 70.0F, false);
+     }
+ 
++    /** @deprecated Neo: use {@link #modifyFovBasedOnDeathOrFluid(float, float, boolean)} instead */
++    @Deprecated
+     private float modifyFovBasedOnDeathOrFluid(float partialTicks, float fov) {
++        return modifyFovBasedOnDeathOrFluid(partialTicks, fov, false);
++    }
++
++    private float modifyFovBasedOnDeathOrFluid(float partialTicks, float fov, boolean useFovSetting) {
+         if (this.entity instanceof LivingEntity cameraEntity && cameraEntity.isDeadOrDying()) {
+             float duration = Math.min(cameraEntity.deathTime + partialTicks, 20.0F);
+             fov /= (1.0F - 500.0F / (duration + 500.0F)) * 2.0F + 1.0F;
+@@ -232,6 +_,7 @@
+             fov *= Mth.lerp(effectScale, 1.0F, 0.85714287F);
+         }
+ 
++        fov = net.neoforged.neoforge.client.ClientHooks.getFieldOfView(this.minecraft.gameRenderer, this, partialTicks, fov, useFovSetting);
+         return fov;
+     }
+ 
+@@ -244,7 +_,10 @@
+                 .subtract(minecart.position())
+                 .subtract(this.entity.getVehicleAttachmentPoint(minecart))
+                 .add(new Vec3(0.0, Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight), 0.0));
+-            this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
++            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
++                    this, partialTicks, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0)
++            );
++            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
+             this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
+         } else {
+             this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
+@@ -258,7 +_,7 @@
+         this.detached = !this.minecraft.options.getCameraType().isFirstPerson();
+         if (this.detached) {
+             if (this.minecraft.options.getCameraType().isMirrored()) {
+-                this.setRotation(this.yRot + 180.0F, -this.xRot);
++                this.setRotation(this.yRot + 180.0F, -this.xRot, -this.roll);
+             }
+ 
+             float cameraDistance = 4.0F;
+@@ -275,7 +_,7 @@
+                 mountDistance = (float)mount.getAttributeValue(Attributes.CAMERA_DISTANCE);
+             }
+ 
+-            this.move(-this.getMaxZoom(Math.max(cameraScale * cameraDistance, mountScale * mountDistance)), 0.0F, 0.0F);
++            this.move(-this.getMaxZoom(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, this.minecraft.options.getCameraType().isMirrored(), cameraDistance, cameraScale, mountScale, mountDistance)), 0.0F, 0.0F);
+         } else if (this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isSleeping()) {
+             Direction bedOrientation = ((LivingEntity)this.entity).getBedOrientation();
+             this.setRotation(bedOrientation != null ? bedOrientation.toYRot() - 180.0F : 0.0F, 0.0F);
 @@ -325,10 +_,17 @@
          this.setPosition(new Vec3(this.position.x + offset.x, this.position.y + offset.y, this.position.z + offset.z));
      }
@@ -19,3 +99,21 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
+@@ -488,6 +_,17 @@
+ 
+     public void disablePanoramicMode() {
+         this.isPanoramicMode = false;
++    }
++
++    public float getRoll() {
++        return this.roll;
++    }
++
++    public net.minecraft.world.level.block.state.BlockState getBlockAtCamera() {
++        if (!this.initialized)
++            return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
++        else
++            return this.level.getBlockState(this.blockPosition).getStateAtViewpoint(this.level, this.blockPosition, this.position);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

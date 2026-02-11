@@ -95,9 +95,9 @@ import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -977,8 +977,8 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
-        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4f modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, cameraState, modelViewMatrix, deltaTracker, profiler));
     }
 
     @ApiStatus.Internal

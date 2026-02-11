@@ -31,6 +31,16 @@
                  this.clearPostEffect();
          }
      }
+@@ -342,6 +_,9 @@
+                 return;
+             }
+ 
++            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++            if (cameraState.entityRenderState.preventFlinch) return;
++
+             hurt /= cameraState.entityRenderState.hurtDuration;
+             hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
+             float rr = cameraState.entityRenderState.hurtDir;
 @@ -473,7 +_,8 @@
                  }
              } else if (resourcesLoaded && this.minecraft.screen != null) {
@@ -41,3 +51,13 @@
                  } catch (Throwable var14) {
                      CrashReport report = CrashReport.forThrowable(var14, "Rendering screen");
                      CrashReportCategory category = report.addCategory("Screen render details");
+@@ -710,6 +_,9 @@
+                 !shouldCreateBossFog,
+                 chunkSectionsToRender
+             );
++        profiler.popPush("neoforge_render_after_level");
++        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, modelViewMatrix, levelRenderer.getRenderableSections()));
+         profiler.popPush("hand");
+         boolean isSleeping = cameraState.entityRenderState.isSleeping;
+         this.hudProjection.setupPerspective(0.05F, 100.0F, cameraState.hudFov, this.minecraft.getWindow().getWidth(), this.minecraft.getWindow().getHeight());

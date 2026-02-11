@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -33,9 +34,8 @@ public final class FrameGraphSetupEvent extends Event {
     private final LevelTargetBundle targets;
     private final RenderTargetDescriptor renderTargetDescriptor;
     private final Frustum frustum;
-    private final Camera camera;
+    private final CameraRenderState cameraState;
     private final Matrix4f modelViewMatrix;
-    private final Matrix4f projectionMatrix;
     private final DeltaTracker deltaTracker;
     private final ProfilerFiller profiler;
     private boolean enableOutline;
@@ -45,19 +45,16 @@ public final class FrameGraphSetupEvent extends Event {
             FrameGraphBuilder builder,
             LevelTargetBundle targets,
             RenderTargetDescriptor renderTargetDescriptor,
-            Frustum frustum,
-            Camera camera,
+            CameraRenderState cameraState,
             Matrix4f modelViewMatrix,
-            Matrix4f projectionMatrix,
             DeltaTracker deltaTracker,
             ProfilerFiller profiler) {
         this.builder = builder;
         this.targets = targets;
         this.renderTargetDescriptor = renderTargetDescriptor;
-        this.frustum = frustum;
-        this.camera = camera;
+        this.frustum = cameraState.cullFrustum;
+        this.cameraState = cameraState;
         this.modelViewMatrix = modelViewMatrix;
-        this.projectionMatrix = projectionMatrix;
         this.deltaTracker = deltaTracker;
         this.profiler = profiler;
     }
@@ -91,10 +88,10 @@ public final class FrameGraphSetupEvent extends Event {
     }
 
     /**
-     * {@return the active {@link Camera}}
+     * {@return the {@link CameraRenderState}} extracted from the active {@link Camera}
      */
-    public Camera getCamera() {
-        return camera;
+    public CameraRenderState getCameraState() {
+        return cameraState;
     }
 
     /**
@@ -102,13 +99,6 @@ public final class FrameGraphSetupEvent extends Event {
      */
     public Matrix4f getModelViewMatrix() {
         return modelViewMatrix;
-    }
-
-    /**
-     * {@return the projection matrix}
-     */
-    public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
     }
 
     /**
