@@ -1,32 +1,14 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -53,16 +_,23 @@
+@@ -53,7 +_,7 @@
              BlockStateModel model = this.blockModelShaper.getBlockModel(state);
              this.singleThreadRandom.setSeed(state.getSeed(pos));
              this.singleThreadPartList.clear();
 -            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
--            this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, output, true, OverlayTexture.NO_OVERLAY);
 +            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
-+            this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, type -> builder, true, OverlayTexture.NO_OVERLAY);
+             this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, output, true, OverlayTexture.NO_OVERLAY);
          }
      }
- 
-+    @Deprecated // Neo: Buffer lookup parameter
-     public void renderBatched(
-         BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, BakedQuadOutput output, boolean cull, List<BlockModelPart> parts
-     ) {
-+        renderBatched(blockState, pos, level, poseStack, type -> builder, cull, parts);
-+    }
-+
-+    public void renderBatched(
-+        BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup, boolean cull, List<BlockModelPart> parts
-+    ) {
-         try {
--            this.modelRenderer.tesselateBlock(level, parts, blockState, pos, poseStack, output, cull, OverlayTexture.NO_OVERLAY);
-+            this.modelRenderer.tesselateBlock(level, parts, blockState, pos, poseStack, bufferLookup, cull, OverlayTexture.NO_OVERLAY);
-         } catch (Throwable var11) {
-             CrashReport report = CrashReport.forThrowable(var11, "Tesselating block in world");
-             CrashReportCategory category = report.addCategory("Block being tesselated");
 @@ -73,6 +_,7 @@
  
      public void renderLiquid(BlockPos pos, BlockAndTintGetter level, VertexConsumer builder, BlockState blockState, FluidState fluidState) {
@@ -35,7 +17,7 @@
              Objects.requireNonNull(this.liquidBlockRenderer).tesselate(level, pos, builder, blockState, fluidState);
          } catch (Throwable var9) {
              CrashReport report = CrashReport.forThrowable(var9, "Tesselating liquid in world");
-@@ -90,7 +_,16 @@
+@@ -90,12 +_,17 @@
          return this.blockModelShaper.getBlockModel(state);
      }
  
@@ -45,13 +27,15 @@
 +    }
 +
 +    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos) {
-+        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, level, pos, _ -> true);
-+    }
-+
-+    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos, java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter) {
          RenderShape shape = state.getRenderShape();
          if (shape != RenderShape.INVISIBLE) {
              BlockStateModel model = this.getBlockModel(state);
+             int tintColor = this.blockColors.getColor(state, null, null, 0);
+-            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords);
++            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords, level, pos, state);
+         }
+     }
+ 
 @@ -109,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager resourceManager) {

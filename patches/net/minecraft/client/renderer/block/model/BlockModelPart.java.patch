@@ -1,5 +1,6 @@
-++++ REJECTED HUNK: 1
-@@ -13,6 +13,8 @@
+--- a/net/minecraft/client/renderer/block/model/BlockModelPart.java
++++ b/net/minecraft/client/renderer/block/model/BlockModelPart.java
+@@ -12,6 +_,8 @@
  public interface BlockModelPart extends net.neoforged.neoforge.client.extensions.BlockModelPartExtension {
      List<BakedQuad> getQuads(@Nullable Direction direction);
  
@@ -7,5 +8,4 @@
 +    @Deprecated
      boolean useAmbientOcclusion();
  
-     TextureAtlasSprite particleIcon();
-++++ END HUNK
+     Material.Baked particleMaterial();

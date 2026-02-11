@@ -1,5 +1,26 @@
 --- a/net/minecraft/client/renderer/block/model/BlockStateModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockStateModel.java
+@@ -22,14 +_,20 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface BlockStateModel extends net.neoforged.neoforge.client.extensions.BlockStateModelExtension {
++    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)}. */
++    @Deprecated
+     void collectParts(RandomSource random, List<BlockModelPart> output);
+ 
++    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource)}. */
++    @Deprecated
+     default List<BlockModelPart> collectParts(RandomSource random) {
+         List<BlockModelPart> parts = new ObjectArrayList<>();
+         this.collectParts(random, parts);
+         return parts;
+     }
+ 
++    /** @deprecated Neo: Use {@link #particleMaterial(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)}. */
++    @Deprecated
+     Material.Baked particleMaterial();
+ 
+     boolean hasTranslucency();
 @@ -73,30 +_,41 @@
              i -> i.group(Variant.MAP_CODEC.forGetter(Weighted::value), ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Weighted::weight))
                  .apply(i, Weighted::new)

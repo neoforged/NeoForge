@@ -12,6 +12,22 @@
              return this.lastRebuildTask;
          }
  
+@@ -492,6 +_,15 @@
+             return success;
+         }
+ 
++        // Neo: start
++
++        @Override
++        public boolean isEmpty() {
++            return !getSectionMesh().hasRenderableLayers();
++        }
++
++        // Neo: end
++
+         @OnlyIn(Dist.CLIENT)
+         public abstract class CompileTask {
+             protected final AtomicBoolean isCancelled;
 @@ -530,11 +_,19 @@
          @OnlyIn(Dist.CLIENT)
          private class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
@@ -32,3 +48,12 @@
              }
  
              @Override
+@@ -557,7 +_,7 @@
+                         SectionCompiler.Results results;
+                         try (Zone ignored = Profiler.get().zone("Compile Section")) {
+                             results = SectionRenderDispatcher.this.sectionCompiler
+-                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers);
++                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers, this.additionalRenderers);
+                         }
+ 
+                         if (results.renderedLayers.isEmpty()) {

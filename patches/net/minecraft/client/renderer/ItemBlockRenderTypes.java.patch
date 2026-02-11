@@ -1,20 +1,9 @@
 --- a/net/minecraft/client/renderer/ItemBlockRenderTypes.java
 +++ b/net/minecraft/client/renderer/ItemBlockRenderTypes.java
-@@ -54,4 +_,29 @@
+@@ -54,4 +_,18 @@
      public static void setCutoutLeaves(boolean cutoutLeaves) {
          ItemBlockRenderTypes.cutoutLeaves = cutoutLeaves;
      }
-+
-+    // Neo: RenderType for block setters injected
-+    /**
-+     * Helper to set the RenderType for Blocks
-+     * @deprecated Set your render type in your block model's JSON (e.g. {@code "render_type": "cutout"}) or override {@link net.minecraft.client.renderer.block.model.BlockModelPart#getRenderType(BlockState)}
-+     * */
-+    @Deprecated(since = "1.19")
-+    public static synchronized void setRenderLayer(Block block, ChunkSectionLayer layer) {
-+        checkClientLoading();
-+        TYPE_BY_BLOCK.put(block, layer);
-+    }
 +
 +    /**
 +     * Helper to set the RenderType for Fluids
