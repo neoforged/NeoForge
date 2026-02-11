@@ -8,7 +8,6 @@ package net.neoforged.neoforge.fluids;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
@@ -19,17 +18,14 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.TypedInstance;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
@@ -51,12 +47,10 @@ import org.slf4j.Logger;
  *
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
-public final class FluidStack implements MutableDataComponentHolder, TypedInstance<Fluid> {
-    public static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
-        return holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> {
-            return "Fluid must not be minecraft:empty";
-        }) : DataResult.success(holder);
-    });
+public final class FluidStack implements MutableDataComponentHolder, FluidInstance {
+    /// @deprecated Use {@linkplain #FLUID_HOLDER_CODEC}
+    @Deprecated
+    public static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = FLUID_HOLDER_CODEC;
     /**
      * A standard map codec for fluid stacks that does not accept empty stacks.
      */
@@ -64,9 +58,9 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
             "FluidStack",
             c -> RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
-                            FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::typeHolder),
-                            ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(FluidStack::getAmount), // note: no .orElse(1) compared to ItemStack
-                            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
+                            FLUID_HOLDER_CODEC_WITH_BOUND_COMPONENTS.fieldOf(FIELD_ID).forGetter(FluidStack::typeHolder),
+                            ExtraCodecs.POSITIVE_INT.fieldOf(FIELD_AMOUNT).forGetter(FluidStack::getAmount), // note: no .orElse(1) compared to ItemStack
+                            DataComponentPatch.CODEC.optionalFieldOf(FIELD_COMPONENTS, DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
                             .apply(instance, FluidStack::new)));
     /**
@@ -84,8 +78,8 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
         return Codec.lazyInitialized(
                 () -> RecordCodecBuilder.create(
                         instance -> instance.group(
-                                FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::typeHolder),
-                                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
+                                FLUID_HOLDER_CODEC.fieldOf(FIELD_ID).forGetter(FluidStack::typeHolder),
+                                DataComponentPatch.CODEC.optionalFieldOf(FIELD_COMPONENTS, DataComponentPatch.EMPTY)
                                         .forGetter(stack -> stack.components.asPatch()))
                                 .apply(instance, (holder, patch) -> new FluidStack(holder, amount, patch))));
     }
@@ -99,15 +93,13 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
      * A stream codec for fluid stacks that accepts empty stacks.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> OPTIONAL_STREAM_CODEC = new StreamCodec<>() {
-        private static final StreamCodec<RegistryFriendlyByteBuf, Holder<Fluid>> FLUID_STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.FLUID);
-
         @Override
         public FluidStack decode(RegistryFriendlyByteBuf buf) {
             int amount = buf.readVarInt();
             if (amount <= 0) {
                 return FluidStack.EMPTY;
             } else {
-                Holder<Fluid> holder = FLUID_STREAM_CODEC.decode(buf);
+                Holder<Fluid> holder = FLUID_HOLDER_STREAM_CODEC.decode(buf);
                 DataComponentPatch patch = DataComponentPatch.STREAM_CODEC.decode(buf);
                 return new FluidStack(holder, amount, patch);
             }
@@ -119,7 +111,7 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
                 buf.writeVarInt(0);
             } else {
                 buf.writeVarInt(stack.getAmount());
-                FLUID_STREAM_CODEC.encode(buf, stack.typeHolder());
+                FLUID_HOLDER_STREAM_CODEC.encode(buf, stack.typeHolder());
                 DataComponentPatch.STREAM_CODEC.encode(buf, stack.components.asPatch());
             }
         }
@@ -280,6 +272,15 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
         }
     }
 
+    /// Compares an fluidstack with an [FluidStackTemplate] as per [#matches(FluidStack, FluidStack)].
+    public static boolean matches(FluidStack a, @Nullable FluidStackTemplate b) {
+        if (b == null) {
+            return a.isEmpty();
+        }
+
+        return a.amount() == b.amount() && isSameFluidSameComponents(a, b);
+    }
+
     /**
      * Checks if the two fluid stacks have the same fluid. Ignores amount and components.
      *
@@ -299,6 +300,22 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
             return false;
         } else {
             return first.isEmpty() && second.isEmpty() ? true : Objects.equals(first.components, second.components);
+        }
+    }
+
+    /// {@return true if a and b refer to the same fluid, or if a is empty and b is null}
+    public static boolean isSameItem(FluidStack a, @Nullable FluidStackTemplate b) {
+        return b == null ? a.isEmpty() : a.is(b.fluid());
+    }
+
+    /// Compares the fluid and components of this stack against an [FluidStackTemplate].
+    ///
+    /// @return True if either this stack is empty and the template is null, or they reference the same fluid and have equivalent component patches.
+    public static boolean isSameFluidSameComponents(FluidStack a, @Nullable FluidStackTemplate b) {
+        if (a.isEmpty() || b == null) {
+            return a.isEmpty() == (b == null);
+        } else {
+            return a.is(b.fluid()) && a.components.patchEquals(b.components());
         }
     }
 
@@ -418,11 +435,16 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
         return getFluidType().getDescription(this);
     }
 
+    @Override
+    public int amount() {
+        return this.isEmpty() ? 0 : this.amount;
+    }
+
     /**
      * Returns the amount of this stack.
      */
     public int getAmount() {
-        return this.isEmpty() ? 0 : this.amount;
+        return amount();
     }
 
     /**
@@ -456,18 +478,4 @@ public final class FluidStack implements MutableDataComponentHolder, TypedInstan
     }
 
     // Extra methods that are not directly adapted from ItemStack go below
-
-    /**
-     * Returns the fluid type of this stack.
-     */
-    public FluidType getFluidType() {
-        return getFluid().getFluidType();
-    }
-
-    /**
-     * Check if the fluid type of this stack is equal to the given fluid type.
-     */
-    public boolean is(FluidType fluidType) {
-        return getFluidType() == fluidType;
-    }
 }
