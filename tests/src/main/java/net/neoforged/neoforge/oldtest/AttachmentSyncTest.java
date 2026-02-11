@@ -69,11 +69,10 @@ public class AttachmentSyncTest {
     private static void testInteraction(String what, Player player, IAttachmentHolder holder) {
         if (player.level().isClientSide()) {
             Integer data = holder.getExistingDataOrNull(ATTACHMENT_TYPE);
-            player.displayClientMessage(Component.literal(
+            player.sendSystemMessage(Component.literal(
                     "[Client] Current value on %s is %s.".formatted(
                             what,
-                            data == null ? "null" : data.toString())),
-                    false);
+                            data == null ? "null" : data.toString())));
         } else {
             Integer value = holder.getExistingDataOrNull(ATTACHMENT_TYPE);
             int newValue = value == null ? 1 : value + 1;
@@ -84,12 +83,11 @@ public class AttachmentSyncTest {
                 holder.setData(ATTACHMENT_TYPE, newValue);
             }
 
-            player.displayClientMessage(Component.literal(
+            player.sendSystemMessage(Component.literal(
                     "[Server] Changed value on %s from %s to %s.".formatted(
                             what,
                             value == null ? "null" : value.toString(),
-                            newValue == 5 ? "null" : newValue)),
-                    false);
+                            newValue == 5 ? "null" : newValue)));
         }
     }
 

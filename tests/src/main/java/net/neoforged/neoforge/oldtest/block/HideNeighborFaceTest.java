@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -17,12 +15,8 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -76,14 +70,6 @@ public class HideNeighborFaceTest {
             }
 
             return false;
-        }
-    }
-
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
-    public static class ClientEvents {
-        @SubscribeEvent
-        public static void onClientSetup(final FMLClientSetupEvent event) {
-            ItemBlockRenderTypes.setRenderLayer(GLASS_SLAB.get(), ChunkSectionLayer.CUTOUT);
         }
     }
 }

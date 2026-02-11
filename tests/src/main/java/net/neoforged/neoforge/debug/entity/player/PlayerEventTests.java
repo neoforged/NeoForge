@@ -92,7 +92,7 @@ public class PlayerEventTests {
                     BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
                     if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER) {
                         if (!level.isClientSide()) {
-                            context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
+                            context.getPlayer().sendSystemMessage(Component.literal("Can't place dirt on dispenser"));
                         }
                         test.pass();
                         event.cancelWithResult(InteractionResult.SUCCESS);

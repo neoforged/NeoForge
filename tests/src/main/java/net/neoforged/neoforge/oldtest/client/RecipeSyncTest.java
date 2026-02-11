@@ -41,7 +41,7 @@ public class RecipeSyncTest {
                 if (!recipesForTypes.equals(RECIPE_TYPES)) {
                     throw new AssertionError("Expected to receive recipes only for " + RECIPE_TYPES + ", but got recipes for: " + recipesForTypes);
                 }
-                Minecraft.getInstance().gui.getChat().addMessage(Component.literal("Received " + event.getRecipeMap().values().size() + " recipes from server"));
+                Minecraft.getInstance().gui.getChat().addClientSystemMessage(Component.literal("Received " + event.getRecipeMap().values().size() + " recipes from server"));
             });
         }
     }

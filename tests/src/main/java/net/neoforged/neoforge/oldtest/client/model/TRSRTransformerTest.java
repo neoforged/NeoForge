@@ -98,7 +98,7 @@ public class TRSRTransformerTest {
                         }
                     }
                 }
-                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleIcon(), part.getRenderType(state)));
+                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial(), part.hasTranslucency()));
             }
         }
     }

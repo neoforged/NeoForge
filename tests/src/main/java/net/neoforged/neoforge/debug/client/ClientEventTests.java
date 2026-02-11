@@ -7,9 +7,13 @@ package net.neoforged.neoforge.debug.client;
 
 import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BakedQuadOutput;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -36,7 +40,6 @@ import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
@@ -113,12 +116,16 @@ public class ClientEventTests {
                                 testBlockAt.getZ() - sectionOrigin.getZ());
                         var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
                                 .collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, Blocks.DIAMOND_BLOCK.defaultBlockState(), new SingleThreadedRandomSource(0));
+                        BakedQuadOutput quadOutput = (pose, quad, brightness, color, lightmapCoord, overlayCoords) -> {
+                            VertexConsumer builder = context.getOrCreateChunkBuffer(quad.spriteInfo().layer());
+                            builder.putBulkData(pose, quad, brightness, color, lightmapCoord, overlayCoords);
+                        };
                         Minecraft.getInstance().getBlockRenderer().renderBatched(
                                 Blocks.DIAMOND_BLOCK.defaultBlockState(),
                                 testBlockAt,
                                 context.getRegion(),
                                 poseStack,
-                                context::getOrCreateChunkBuffer,
+                                quadOutput,
                                 false,
                                 parts);
                         poseStack.popPose();
@@ -227,12 +234,17 @@ public class ClientEventTests {
                                     section.getRenderOrigin().getZ() - camera.z);
 
                             var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
+                            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+                            BakedQuadOutput quadOutput = (pose, quad, brightness, color, lightmapCoord, overlayCoords) -> {
+                                VertexConsumer builder = bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(quad.spriteInfo().layer()));
+                                builder.putBulkData(pose, quad, brightness, color, lightmapCoord, overlayCoords);
+                            };
                             Minecraft.getInstance().getBlockRenderer().renderBatched(
                                     state,
                                     section.getRenderOrigin(),
                                     EmptyBlockAndTintGetter.INSTANCE,
                                     stack,
-                                    csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
+                                    quadOutput,
                                     false,
                                     parts);
                             stack.popPose();

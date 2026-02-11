@@ -273,7 +273,7 @@ public class FullPotsAccessorDemo {
                     QuadCollection.Builder builder = new QuadCollection.Builder();
                     for (Direction side : DIRECTIONS) {
                         for (BakedQuad quad : part.getQuads(side)) {
-                            Identifier texture = quad.sprite().contents().name();
+                            Identifier texture = quad.spriteInfo().sprite().contents().name();
                             if (!texture.equals(POT_TEXTURE) && !texture.equals(DIRT_TEXTURE)) {
                                 if (side == null) {
                                     builder.addUnculledFace(quad);
@@ -283,7 +283,7 @@ public class FullPotsAccessorDemo {
                             }
                         }
                     }
-                    parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleIcon(), part.getRenderType(potState)));
+                    parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial(), part.hasTranslucency()));
                 }
             }
         }
