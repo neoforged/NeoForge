@@ -16,6 +16,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -170,23 +171,19 @@ public abstract class ViewportEvent extends Event {
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ComputeFogColor extends ViewportEvent {
-        private float red;
-        private float green;
-        private float blue;
+        private final Vector4f color;
 
         @ApiStatus.Internal
-        public ComputeFogColor(Camera camera, float partialTicks, float red, float green, float blue) {
+        public ComputeFogColor(Camera camera, float partialTicks, Vector4f color) {
             super(Minecraft.getInstance().gameRenderer, camera, partialTicks);
-            this.setRed(red);
-            this.setGreen(green);
-            this.setBlue(blue);
+            this.color = color;
         }
 
         /**
          * {@return the red color value of the fog}
          */
         public float getRed() {
-            return red;
+            return this.color.x;
         }
 
         /**
@@ -195,14 +192,14 @@ public abstract class ViewportEvent extends Event {
          * @param red the new red color value
          */
         public void setRed(float red) {
-            this.red = red;
+            this.color.x = red;
         }
 
         /**
          * {@return the green color value of the fog}
          */
         public float getGreen() {
-            return green;
+            return this.color.y;
         }
 
         /**
@@ -211,14 +208,14 @@ public abstract class ViewportEvent extends Event {
          * @param green the new blue color value
          */
         public void setGreen(float green) {
-            this.green = green;
+            this.color.y = green;
         }
 
         /**
          * {@return the blue color value of the fog}
          */
         public float getBlue() {
-            return blue;
+            return this.color.z;
         }
 
         /**
@@ -227,7 +224,7 @@ public abstract class ViewportEvent extends Event {
          * @param blue the new blue color value
          */
         public void setBlue(float blue) {
-            this.blue = blue;
+            this.color.z = blue;
         }
     }
 

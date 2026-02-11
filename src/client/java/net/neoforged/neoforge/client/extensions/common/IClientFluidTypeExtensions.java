@@ -162,8 +162,8 @@ public interface IClientFluidTypeExtensions {
     /**
      * Modifies the color of the fog when the camera is within the fluid.
      *
-     * <p>The result expects a three float vector representing the red, green,
-     * and blue channels respectively. Each channel should be between [0,1].
+     * <p>The result expects a four float vector representing the red, green,
+     * blue and alpha channels respectively. Each channel should be between [0,1].
      *
      * @param camera            the camera instance
      * @param partialTick       the delta time of where the current frame is within a tick
@@ -171,10 +171,8 @@ public interface IClientFluidTypeExtensions {
      * @param renderDistance    the render distance of the client
      * @param darkenWorldAmount the amount to darken the world by
      * @param fluidFogColor     the current RGBA color of the fog
-     * @return the color of the fog
      */
-    default Vector4f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {
-        return fluidFogColor;
+    default void modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {
     }
 
     /**

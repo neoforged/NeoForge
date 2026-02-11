@@ -424,18 +424,15 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 
-    public static Vector4f getFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, float fogRed, float fogGreen, float fogBlue) {
+    public static void getFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, float fogRed, float fogGreen, float fogBlue, Vector4f dest) {
         // Modify fog color depending on the fluid
         FluidState state = level.getFluidState(camera.blockPosition());
-        Vector4f fluidFogColor = new Vector4f(fogRed, fogGreen, fogBlue, 1F);
+        dest.set(fogRed, fogGreen, fogBlue, 1F);
         if (camera.position().y < (double) ((float) camera.blockPosition().getY() + state.getHeight(level, camera.blockPosition())))
-            fluidFogColor = IClientFluidTypeExtensions.of(state).modifyFogColor(camera, partialTick, level, renderDistance, darkenWorldAmount, fluidFogColor);
+            IClientFluidTypeExtensions.of(state).modifyFogColor(camera, partialTick, level, renderDistance, darkenWorldAmount, dest);
 
-        ViewportEvent.ComputeFogColor event = new ViewportEvent.ComputeFogColor(camera, partialTick, fluidFogColor.x(), fluidFogColor.y(), fluidFogColor.z());
+        ViewportEvent.ComputeFogColor event = new ViewportEvent.ComputeFogColor(camera, partialTick, dest);
         NeoForge.EVENT_BUS.post(event);
-
-        fluidFogColor.set(event.getRed(), event.getGreen(), event.getBlue());
-        return fluidFogColor;
     }
 
     public static void onSetupFog(@Nullable FogEnvironment environment, FogType type, Camera camera, float partialTick, float renderDistance, FogData fogData) {

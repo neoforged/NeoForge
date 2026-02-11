@@ -5,7 +5,7 @@
              }
  
 -            dest.set(fogRed, fogGreen, fogBlue, 1.0F);
-+            return net.neoforged.neoforge.client.ClientHooks.getFogColor(camera, partialTicks, level, renderDistance, darkenWorldAmount, fogRed, fogGreen, fogBlue);
++            net.neoforged.neoforge.client.ClientHooks.getFogColor(camera, partialTicks, level, renderDistance, darkenWorldAmount, fogRed, fogGreen, fogBlue, dest);
          }
      }
  
@@ -21,3 +21,11 @@
                  break;
              }
          }
+@@ -177,6 +_,7 @@
+         float renderDistanceFogSpan = Mth.clamp(renderDistanceInBlocks / 10.0F, 4.0F, 64.0F);
+         fog.renderDistanceStart = renderDistanceInBlocks - renderDistanceFogSpan;
+         fog.renderDistanceEnd = renderDistanceInBlocks;
++        net.neoforged.neoforge.client.ClientHooks.onSetupFog(chosenEnvironment, fogType, camera, partialTickTime, renderDistanceInChunks, fog);
+         return fog;
+     }
+ 
