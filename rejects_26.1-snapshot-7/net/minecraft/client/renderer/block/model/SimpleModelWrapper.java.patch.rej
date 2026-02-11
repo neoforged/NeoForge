@@ -1,0 +1,25 @@
+++++ REJECTED HUNK: 1
+@@ -18,11 +18,21 @@
+ import org.slf4j.Logger;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) implements BlockModelPart {
++public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon, net.minecraft.client.renderer.chunk.@Nullable ChunkSectionLayer renderType) implements BlockModelPart {
+     private static final Logger LOGGER = LogUtils.getLogger();
+ 
++    @Deprecated // Neo: Use render type aware version
++    public SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) {
++        this(quads, useAmbientOcclusion, particleIcon, null);
++    }
++
+     public static BlockModelPart bake(ModelBaker modelBakery, Identifier location, ModelState state) {
+         ResolvedModel model = modelBakery.getModel(location);
++        return bake(modelBakery, model, state);
++    }
++
++    // Neo: split off to allow baking an existing ResolvedModel into a BlockModelPart
++    public static BlockModelPart bake(ModelBaker modelBakery, ResolvedModel model, ModelState state) {
+         TextureSlots textureSlots = model.getTopTextureSlots();
+         boolean hasAmbientOcclusion = model.getTopAmbientOcclusion();
+         TextureAtlasSprite particleSprite = model.resolveParticleSprite(textureSlots, modelBakery);
+++++ END HUNK

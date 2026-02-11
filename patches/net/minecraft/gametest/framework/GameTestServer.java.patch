@@ -21,7 +21,7 @@
              Proxy.NO_PROXY,
              DataFixers.getDataFixer(),
              NO_SERVICES,
-@@ -178,10 +_,12 @@
+@@ -179,10 +_,12 @@
              }
          });
          Gizmos.withCollector(GizmoCollector.NOOP);
@@ -34,7 +34,7 @@
          return true;
      }
  
-@@ -260,8 +_,14 @@
+@@ -261,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,7 +50,7 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -277,11 +_,11 @@
+@@ -278,11 +_,11 @@
  
      private static void logFailedTest(GameTestInfo testInfo) {
          if (testInfo.getRotation() != Rotation.NONE) {

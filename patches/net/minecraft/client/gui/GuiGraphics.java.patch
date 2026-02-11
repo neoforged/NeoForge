@@ -173,4 +173,4 @@
 +        return this.scissorStack.peek();
      }
  
-     public TextureAtlasSprite getSprite(Material sprite) {
+     public TextureAtlasSprite getSprite(SpriteId sprite) {

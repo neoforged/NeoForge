@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -135,16 +_,27 @@
+@@ -145,16 +_,27 @@
      public static final EntityDataSerializer<ResolvableProfile> RESOLVABLE_PROFILE = EntityDataSerializer.forValueType(ResolvableProfile.STREAM_CODEC);
      public static final EntityDataSerializer<HumanoidArm> HUMANOID_ARM = EntityDataSerializer.forValueType(HumanoidArm.STREAM_CODEC);
  

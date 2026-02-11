@@ -1,6 +1,5 @@
---- a/net/minecraft/client/renderer/item/BlockModelWrapper.java
-+++ b/net/minecraft/client/renderer/item/BlockModelWrapper.java
-@@ -175,7 +_,9 @@
+++++ REJECTED HUNK: 1
+@@ -175,7 +175,9 @@
              TextureSlots textureSlots = resolvedModel.getTopTextureSlots();
              List<BakedQuad> quads = resolvedModel.bakeTopGeometry(textureSlots, baker, BlockModelRotation.IDENTITY).getAll();
              ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
@@ -11,3 +10,4 @@
              return new BlockModelWrapper(this.tints, quads, properties, renderTypeGetter);
          }
  
+++++ END HUNK

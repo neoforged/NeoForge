@@ -24,7 +24,7 @@
      public void submitItem(
          PoseStack poseStack,
          ItemDisplayContext displayContext,
-@@ -242,6 +_,11 @@
+@@ -239,6 +_,11 @@
          return this.blockModelSubmits;
      }
  
@@ -36,7 +36,7 @@
      public ModelPartFeatureRenderer.Storage getModelPartSubmits() {
          return this.modelPartSubmits;
      }
-@@ -275,6 +_,7 @@
+@@ -272,6 +_,7 @@
          this.blockSubmits.clear();
          this.movingBlockSubmits.clear();
          this.blockModelSubmits.clear();

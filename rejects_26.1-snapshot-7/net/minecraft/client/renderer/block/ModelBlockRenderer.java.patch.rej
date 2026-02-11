@@ -1,0 +1,93 @@
+++++ REJECTED HUNK: 9
+@@ -130,6 +201,19 @@
+         BlockPos pos,
+         PoseStack poseStack,
+         VertexConsumer builder,
++        boolean cull,
++        int overlayCoords
++    ) {
++        this.tesselateWithoutAO(level, parts, state, pos, poseStack, type -> builder, cull, overlayCoords);
++    }
++
++    public void tesselateWithoutAO(
++        BlockAndTintGetter level,
++        List<BlockModelPart> parts,
++        BlockState state,
++        BlockPos pos,
++        PoseStack poseStack,
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup,
+         boolean cull,
+         int overlayCoords
+     ) {
+++++ END HUNK
+
+++++ REJECTED HUNK: 13
+@@ -290,17 +380,30 @@
+         ModelBlockRenderer.CommonRenderStorage shapeState
+     ) {
+         for (BakedQuad quad : quads) {
++            renderModelQuadFlat(level, state, pos, lightCoords, overlayCoords, checkLight, poseStack, builder, quad, shapeState);
++        }
++    }
++
++    private void renderModelQuadFlat(
++        BlockAndTintGetter level,
++        BlockState state,
++        BlockPos pos,
++        int lightCoords,
++        int overlayCoords,
++        boolean checkLight,
++        PoseStack poseStack,
++        VertexConsumer builder,
++        BakedQuad quad,
++        ModelBlockRenderer.CommonRenderStorage shapeState
++    ) {
++        {
+             if (checkLight) {
+                 calculateShape(level, state, pos, quad, shapeState);
+                 BlockPos lightPos = (BlockPos)(shapeState.faceCubic ? shapeState.scratchPos.setWithOffset(pos, quad.direction()) : pos);
+                 lightCoords = shapeState.cache.getLightCoords(state, level, lightPos);
+             }
+ 
+-            float directionalBrightness = level.getShade(quad.direction(), quad.shade());
+-            shapeState.brightness[0] = directionalBrightness;
+-            shapeState.brightness[1] = directionalBrightness;
+-            shapeState.brightness[2] = directionalBrightness;
+-            shapeState.brightness[3] = directionalBrightness;
++            net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.applyFlatQuadBrightness(level, quad, shapeState);
+             shapeState.lightmap[0] = lightCoords;
+             shapeState.lightmap[1] = lightCoords;
+             shapeState.lightmap[2] = lightCoords;
+++++ END HUNK
+
+++++ REJECTED HUNK: 14
+@@ -309,10 +412,27 @@
+         }
+     }
+ 
++    @Deprecated // Neo: Level, position, and buffer source parameters
+     public static void renderModel(
+         PoseStack.Pose pose, VertexConsumer builder, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords
+     ) {
+-        for (BlockModelPart part : model.collectParts(RandomSource.create(42L))) {
++        renderModel(pose, type -> builder, model, r, g, b, lightCoords, overlayCoords, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
++    }
++
++    public static void renderModel(
++        PoseStack.Pose pose, net.minecraft.client.renderer.MultiBufferSource bufferSource, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state
++    ) {
++        renderModel(pose, bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state, _ -> true);
++    }
++
++    public static void renderModel(
++            PoseStack.Pose pose, net.minecraft.client.renderer.MultiBufferSource bufferSource, BlockStateModel model, float r, float g, float b, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state, java.util.function.Predicate<net.minecraft.client.renderer.chunk.ChunkSectionLayer> chunkLayerFilter
++    ) {
++        for (BlockModelPart part : model.collectParts(level, pos, state, RandomSource.create(42L))) {
++            net.minecraft.client.renderer.chunk.ChunkSectionLayer chunkLayer = part.getRenderType(state);
++            if (!chunkLayerFilter.test(chunkLayer)) continue;
++
++            VertexConsumer builder = bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(chunkLayer));
+             for (Direction direction : DIRECTIONS) {
+                 renderQuadList(pose, builder, r, g, b, part.getQuads(direction), lightCoords, overlayCoords);
+             }
+++++ END HUNK

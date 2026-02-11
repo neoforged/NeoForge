@@ -1,6 +1,5 @@
---- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-+++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -58,8 +_,8 @@
+++++ REJECTED HUNK: 1
+@@ -58,8 +58,8 @@
                  break;
              }
  
@@ -11,3 +10,4 @@
          }
  
          return SimpleUnbakedGeometry.bake(elements, textureSlots, modelBaker, modelState, name);
+++++ END HUNK

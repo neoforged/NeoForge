@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -77,6 +_,8 @@
+@@ -110,6 +_,8 @@
  
          Direction finalDirection = calculateFacing(vertexPositions);
          if (elementRotation == null && finalDirection != null) {
@@ -9,9 +9,9 @@
              recalculateWinding(vertexPositions, vertexPackedUvs, finalDirection);
          }
  
-@@ -93,7 +_,10 @@
+@@ -126,7 +_,10 @@
              Objects.requireNonNullElse(finalDirection, Direction.UP),
-             icon,
+             spriteInfo,
              shade,
 -            lightEmission
 +            Math.max(lightEmission, face.faceData().lightEmission()),
@@ -21,7 +21,7 @@
          );
      }
  
-@@ -179,6 +_,11 @@
+@@ -212,6 +_,11 @@
      }
  
      public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
@@ -33,7 +33,7 @@
          float minX = 999.0F;
          float minY = 999.0F;
          float minZ = 999.0F;
-@@ -231,6 +_,12 @@
+@@ -264,6 +_,12 @@
              if (vertexToSwap != vertex) {
                  swap(positions, vertexToSwap, vertex);
                  swap(uvs, vertexToSwap, vertex);
@@ -46,7 +46,7 @@
              }
          }
      }
-@@ -254,6 +_,13 @@
+@@ -287,6 +_,13 @@
  
      private static void swap(long[] array, int indexA, int indexB) {
          long tmp = array[indexA];

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -119,4 +_,14 @@
+@@ -124,4 +_,14 @@
      public void close() {
          this.contents.close();
      }

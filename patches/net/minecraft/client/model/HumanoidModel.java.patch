@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -306,6 +_,9 @@
+@@ -389,6 +_,9 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, true, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
@@ -10,7 +10,7 @@
          }
      }
  
-@@ -351,6 +_,9 @@
+@@ -434,6 +_,9 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, false, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
@@ -20,7 +20,7 @@
          }
      }
  
-@@ -445,9 +_,20 @@
+@@ -518,9 +_,20 @@
          private final boolean twoHanded;
          private final boolean affectsOffhandPose;
  
@@ -41,7 +41,7 @@
          }
  
          public boolean isTwoHanded() {
-@@ -456,6 +_,14 @@
+@@ -529,6 +_,14 @@
  
          public boolean affectsOffhandPose() {
              return this.affectsOffhandPose;

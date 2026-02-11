@@ -1,29 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
 +++ b/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
-@@ -18,11 +_,21 @@
- import org.slf4j.Logger;
- 
- @OnlyIn(Dist.CLIENT)
--public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) implements BlockModelPart {
-+public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon, net.minecraft.client.renderer.chunk.@Nullable ChunkSectionLayer renderType) implements BlockModelPart {
-     private static final Logger LOGGER = LogUtils.getLogger();
- 
-+    @Deprecated // Neo: Use render type aware version
-+    public SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) {
-+        this(quads, useAmbientOcclusion, particleIcon, null);
-+    }
-+
-     public static BlockModelPart bake(ModelBaker modelBakery, Identifier location, ModelState state) {
-         ResolvedModel model = modelBakery.getModel(location);
-+        return bake(modelBakery, model, state);
-+    }
-+
-+    // Neo: split off to allow baking an existing ResolvedModel into a BlockModelPart
-+    public static BlockModelPart bake(ModelBaker modelBakery, ResolvedModel model, ModelState state) {
-         TextureSlots textureSlots = model.getTopTextureSlots();
-         boolean hasAmbientOcclusion = model.getTopAmbientOcclusion();
-         TextureAtlasSprite particleSprite = model.resolveParticleSprite(textureSlots, modelBakery);
-@@ -41,15 +_,22 @@
+@@ -45,15 +_,22 @@
          }
  
          if (forbiddenSprites != null) {
@@ -31,7 +8,7 @@
 +            LOGGER.warn("Rejecting block model {}, since it contains sprites from outside of supported atlas: {}", model.debugName(), forbiddenSprites);
              return modelBakery.missingBlockModelPart();
          } else {
--            return new SimpleModelWrapper(geometry, hasAmbientOcclusion, particleSprite);
+-            return new SimpleModelWrapper(geometry, hasAmbientOcclusion, particleMaterial, hasTranslucency);
 +            var renderTypeGroup = model.getTopAdditionalProperties().getOptional(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE);
 +            var renderTypes = renderTypeGroup == null || renderTypeGroup.isEmpty() ? null : renderTypeGroup.block();
 +            return new SimpleModelWrapper(geometry, hasAmbientOcclusion, particleSprite, renderTypes);

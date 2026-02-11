@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
 +++ b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
-@@ -149,7 +_,7 @@
+@@ -152,7 +_,7 @@
          if (!this.level().isClientSide() && this.isAlive() && this.isConverting()) {
              int amount = this.getConversionProgress();
              this.villagerConversionTime -= amount;
@@ -9,7 +9,7 @@
                  this.finishConversion((ServerLevel)this.level());
              }
          }
-@@ -258,6 +_,8 @@
+@@ -266,6 +_,8 @@
                  if (!this.isSilent()) {
                      level.levelEvent(null, 1027, this.blockPosition(), 0);
                  }

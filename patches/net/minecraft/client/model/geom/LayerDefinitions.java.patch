@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
-@@ -529,6 +_,7 @@
+@@ -559,6 +_,7 @@
                  result.put(ModelLayers.createHangingSignModelName(woodType, attachmentType), hangingSignModel);
              }
          });

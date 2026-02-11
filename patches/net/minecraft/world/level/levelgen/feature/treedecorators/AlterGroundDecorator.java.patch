@@ -50,9 +50,9 @@
 +
 +    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
          for (int dy = 2; dy >= -3; dy--) {
-             BlockPos blockPos = pos.above(dy);
--            BlockState replaceWith = this.provider.getState(context.level(), context.random(), pos);
+             BlockPos cursor = pos.above(dy);
+-            BlockState replaceWith = this.provider.getState(context.level(), context.random(), cursor);
 +            BlockState replaceWith = eventProvider.getState(context.level(), context.random(), pos);
              if (replaceWith != null) {
-                 context.setBlock(blockPos, replaceWith);
+                 context.setBlock(cursor, replaceWith);
                  break;

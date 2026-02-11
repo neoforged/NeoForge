@@ -249,7 +249,7 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1641,6 +_,15 @@
+@@ -1636,6 +_,15 @@
          this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
          this.setLastDeathLocation(oldPlayer.getLastDeathLocation());
          this.waypointIcon().copyFrom(oldPlayer.waypointIcon());
@@ -265,7 +265,7 @@
      }
  
      private void transferInventoryXpAndScore(Player oldPlayer) {
-@@ -1743,6 +_,8 @@
+@@ -1738,6 +_,8 @@
  
      public boolean setGameMode(GameType mode) {
          boolean wasSpectator = this.isSpectator();
@@ -274,7 +274,7 @@
          if (!this.gameMode.changeGameModeForPlayer(mode)) {
              return false;
          } else {
-@@ -1912,6 +_,7 @@
+@@ -1913,6 +_,7 @@
      public void setCamera(@Nullable Entity newCamera) {
          Entity oldCamera = this.getCamera();
          this.camera = (Entity)(newCamera == null ? this : newCamera);
@@ -282,7 +282,7 @@
          if (oldCamera != this.camera) {
              if (this.camera.level() instanceof ServerLevel level) {
                  this.teleportTo(level, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1938,7 +_,11 @@
+@@ -1939,7 +_,11 @@
      }
  
      public @Nullable Component getTabListDisplayName() {
@@ -295,7 +295,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1972,6 +_,7 @@
+@@ -1973,6 +_,7 @@
      }
  
      public void setRespawnPosition(ServerPlayer.@Nullable RespawnConfig respawnConfig, boolean showMessage) {
@@ -303,7 +303,7 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2009,6 +_,75 @@
+@@ -2010,6 +_,75 @@
          return entity;
      }
  
@@ -379,7 +379,7 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -2023,6 +_,7 @@
+@@ -2024,6 +_,7 @@
      }
  
      private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
@@ -387,7 +387,7 @@
          GameType forcedGameType = this.server.getForcedGameType();
          if (forcedGameType != null) {
              return forcedGameType;
-@@ -2059,6 +_,8 @@
+@@ -2060,6 +_,8 @@
  
      public void drop(boolean all) {
          Inventory inventory = this.getInventory();
@@ -396,7 +396,7 @@
          ItemStack removed = inventory.removeFromSelected(all);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())
-@@ -2067,7 +_,7 @@
+@@ -2068,7 +_,7 @@
              this.stopUsingItem();
          }
  

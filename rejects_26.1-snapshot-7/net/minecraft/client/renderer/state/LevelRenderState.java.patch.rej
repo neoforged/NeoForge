@@ -1,0 +1,12 @@
+++++ REJECTED HUNK: 2
+@@ -21,6 +21,9 @@
+     public final SkyRenderState skyRenderState = new SkyRenderState();
+     public long gameTime;
+     public int lastEntityRenderStateCount;
++    public net.neoforged.neoforge.client.@Nullable CustomSkyboxRenderer customSkyboxRenderer;
++    public net.neoforged.neoforge.client.@Nullable CustomCloudsRenderer customCloudsRenderer;
++    public net.neoforged.neoforge.client.@Nullable CustomWeatherEffectRenderer customWeatherEffectRenderer;
+ 
+     public void reset() {
+         this.entityRenderStates.clear();
+++++ END HUNK

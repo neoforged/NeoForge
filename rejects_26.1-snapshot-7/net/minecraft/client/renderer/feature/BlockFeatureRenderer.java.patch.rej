@@ -1,0 +1,49 @@
+++++ REJECTED HUNK: 1
+@@ -47,13 +47,18 @@
+     private void renderMovingBlockSubmits(
+         SubmitNodeCollection nodeCollection, MultiBufferSource.BufferSource bufferSource, BlockRenderDispatcher blockRenderDispatcher, boolean translucent
+     ) {
++        if (nodeCollection.getMovingBlockSubmits().isEmpty()) return;
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, com.mojang.blaze3d.vertex.VertexConsumer> bufferLookup =
++                chunkLayer -> bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(chunkLayer));
+         for (SubmitNodeStorage.MovingBlockSubmit submit : nodeCollection.getMovingBlockSubmits()) {
+             MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
+             BlockState blockState = movingBlockRenderState.blockState;
+-            RenderType renderType = ItemBlockRenderTypes.getMovingBlockRenderType(blockState);
+-            if (renderType.hasBlending() == translucent) {
++            // Neo: bypass single-rendertype blending check
++            if (true) {
+                 List<BlockModelPart> parts = blockRenderDispatcher.getBlockModel(blockState)
+-                    .collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
++                    .collectParts(movingBlockRenderState.level, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
++                // Neo: filter out parts using a render type which does not match the translucent flag
++                parts.removeIf(part -> part.getRenderType(blockState).sortOnUpload() != translucent);
+                 PoseStack poseStack = new PoseStack();
+                 poseStack.mulPose(submit.pose());
+                 blockRenderDispatcher.getModelRenderer()
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -63,7 +68,7 @@
+                         blockState,
+                         movingBlockRenderState.blockPos,
+                         poseStack,
+-                        bufferSource.getBuffer(renderType),
++                        bufferLookup,
+                         false,
+                         OverlayTexture.NO_OVERLAY
+                     );
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -97,6 +105,9 @@
+     private void renderBlockModelSubmits(
+         SubmitNodeCollection nodeCollection, MultiBufferSource.BufferSource bufferSource, OutlineBufferSource outlineBufferSource, boolean translucent
+     ) {
++        // Neo: render extended block model submits with support for per-part render types
++        renderExtendedBlockModelSubmits(nodeCollection.getExtendedBlockModelSubmits(), bufferSource, outlineBufferSource, translucent);
++
+         for (SubmitNodeStorage.BlockModelSubmit submit : nodeCollection.getBlockModelSubmits()) {
+             if (submit.renderType().hasBlending() == translucent) {
+                 ModelBlockRenderer.renderModel(
+++++ END HUNK

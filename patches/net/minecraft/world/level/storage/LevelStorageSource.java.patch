@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -509,6 +_,19 @@
+@@ -511,6 +_,19 @@
              }
          }
  
@@ -20,7 +20,7 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
-@@ -538,10 +_,12 @@
+@@ -540,10 +_,12 @@
              Dynamic<?> unfixedDataTag;
              try {
                  unfixedDataTag = this.getUnfixedDataTag(false);
@@ -33,7 +33,7 @@
                  this.restoreLevelDataFromOld();
              }
  
-@@ -567,6 +_,7 @@
+@@ -569,6 +_,7 @@
              CompoundTag dataTag = levelData.createTag(singleplayerUUID);
              CompoundTag root = new CompoundTag();
              root.put("Data", dataTag);
@@ -41,7 +41,7 @@
              this.saveLevelData(root);
          }
  
-@@ -593,6 +_,10 @@
+@@ -595,6 +_,10 @@
  
          public Optional<Path> getIconFile() {
              return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());

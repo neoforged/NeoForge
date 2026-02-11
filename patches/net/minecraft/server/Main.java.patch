@@ -44,7 +44,7 @@
              LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
              LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
              Dynamic<?> levelDataTag;
-@@ -224,6 +_,7 @@
+@@ -219,6 +_,7 @@
                  @Override
                  public void run() {
                      dedicatedServer.halt(true);
@@ -52,7 +52,7 @@
                  }
              };
              shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
-@@ -256,6 +_,9 @@
+@@ -251,6 +_,9 @@
              dimensions = properties.createDimensions(context.datapackWorldgen());
          }
  

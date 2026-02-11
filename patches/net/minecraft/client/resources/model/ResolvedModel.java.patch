@@ -8,7 +8,7 @@
 +        return this.getTopGeometry().bake(textureSlots, baker, state, this, this.getTopAdditionalProperties());
      }
  
-     static TextureAtlasSprite resolveParticleSprite(TextureSlots textureSlots, ModelBaker baker, ModelDebugName resolvedModel) {
+     static Material.Baked resolveParticleMaterial(TextureSlots textureSlots, ModelBaker baker, ModelDebugName resolvedModel) {
 @@ -122,8 +_,17 @@
          ItemTransform ground = findTopTransform(top, ItemDisplayContext.GROUND);
          ItemTransform fixed = findTopTransform(top, ItemDisplayContext.FIXED);

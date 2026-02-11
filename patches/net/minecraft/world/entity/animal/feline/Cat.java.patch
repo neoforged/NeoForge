@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/feline/Cat.java
 +++ b/net/minecraft/world/entity/animal/feline/Cat.java
-@@ -445,7 +_,7 @@
+@@ -473,7 +_,7 @@
      }
  
      private void tryToTame(Player player) {

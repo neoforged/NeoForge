@@ -1,6 +1,5 @@
---- a/net/minecraft/network/chat/SignableCommand.java
-+++ b/net/minecraft/network/chat/SignableCommand.java
-@@ -22,7 +_,8 @@
+++++ REJECTED HUNK: 1
+@@ -22,7 +22,8 @@
          List<SignableCommand.Argument<S>> arguments = collectArguments(commandString, rootContext);
  
          CommandContextBuilder<S> child;
@@ -10,3 +9,4 @@
              arguments.addAll(collectArguments(commandString, child));
              context = child;
          }
+++++ END HUNK

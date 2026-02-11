@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 3
+@@ -177,6 +179,8 @@
+         float renderDistanceFogSpan = Mth.clamp(renderDistanceInBlocks / 10.0F, 4.0F, 64.0F);
+         fog.renderDistanceStart = renderDistanceInBlocks - renderDistanceFogSpan;
+         fog.renderDistanceEnd = renderDistanceInBlocks;
++
++        net.neoforged.neoforge.client.ClientHooks.onSetupFog(chosenEnvironment, fogType, camera, partialTickTime, renderDistanceInChunks, fog);
+ 
+         try (GpuBuffer.MappedView view = RenderSystem.getDevice().createCommandEncoder().mapBuffer(this.regularBuffer.currentBuffer(), false, true)) {
+             this.updateBuffer(
+++++ END HUNK

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
-@@ -42,6 +_,10 @@
+@@ -43,6 +_,10 @@
      }
  
      public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders) {
@@ -11,24 +11,11 @@
          SectionCompiler.Results results = new SectionCompiler.Results();
          BlockPos minPos = sectionPos.origin();
          BlockPos maxPos = minPos.offset(15, 15, 15);
-@@ -49,8 +_,10 @@
-         PoseStack poseStack = new PoseStack();
-         ModelBlockRenderer.enableCaching();
-         Map<ChunkSectionLayer, BufferBuilder> startedLayers = new EnumMap<>(ChunkSectionLayer.class);
--        RandomSource random = RandomSource.create();
-+        // Neo: use a SingleThreadedRandomSource to avoid overhead of atomics
-+        RandomSource random = new net.minecraft.world.level.levelgen.SingleThreadedRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed());
-         List<BlockModelPart> parts = new ObjectArrayList<>();
-+        java.util.function.Function<ChunkSectionLayer, com.mojang.blaze3d.vertex.VertexConsumer> bufferLookup = renderType -> this.getOrBeginLayer(startedLayers, builders, renderType);
- 
-         for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
-             BlockState blockState = region.getBlockState(pos);
-@@ -73,20 +_,19 @@
+@@ -82,19 +_,19 @@
              }
  
              if (blockState.getRenderShape() == RenderShape.MODEL) {
--                ChunkSectionLayer layer = ItemBlockRenderTypes.getChunkRenderType(blockState);
--                BufferBuilder builder = this.getOrBeginLayer(startedLayers, builders, layer);
+-                boolean forceOpaque = ItemBlockRenderTypes.forceOpaque(blockState);
                  random.setSeed(blockState.getSeed(pos));
 -                this.blockRenderer.getBlockModel(blockState).collectParts(random, parts);
 +                this.blockRenderer.getBlockModel(blockState).collectParts(region, pos, blockState, random, parts);
@@ -36,7 +23,7 @@
                  poseStack.translate(
                      (float)SectionPos.sectionRelative(pos.getX()), (float)SectionPos.sectionRelative(pos.getY()), (float)SectionPos.sectionRelative(pos.getZ())
                  );
--                this.blockRenderer.renderBatched(blockState, pos, region, poseStack, builder, true, parts);
+-                this.blockRenderer.renderBatched(blockState, pos, region, poseStack, forceOpaque ? opaqueQuadOutput : quadOutput, true, parts);
 +                this.blockRenderer.renderBatched(blockState, pos, region, poseStack, bufferLookup, true, parts);
                  poseStack.popPose();
                  parts.clear();

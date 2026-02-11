@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/TerrainParticle.java
 +++ b/net/minecraft/client/particle/TerrainParticle.java
-@@ -30,7 +_,7 @@
+@@ -29,7 +_,7 @@
          this.rCol = 0.6F;
          this.gCol = 0.6F;
          this.bCol = 0.6F;
@@ -9,7 +9,7 @@
              int col = Minecraft.getInstance().getBlockColors().getColor(blockState, level, pos, 0);
              this.rCol *= (col >> 16 & 0xFF) / 255.0F;
              this.gCol *= (col >> 8 & 0xFF) / 255.0F;
-@@ -73,8 +_,14 @@
+@@ -72,8 +_,14 @@
      ) {
          BlockState state = options.getState();
          return !state.isAir() && !state.is(Blocks.MOVING_PISTON) && state.shouldSpawnTerrainParticles()

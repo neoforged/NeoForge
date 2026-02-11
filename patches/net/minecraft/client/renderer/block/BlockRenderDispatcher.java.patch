@@ -5,7 +5,7 @@
              this.singleThreadRandom.setSeed(state.getSeed(pos));
              this.singleThreadPartList.clear();
 -            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
--            this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, builder, true, OverlayTexture.NO_OVERLAY);
+-            this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, output, true, OverlayTexture.NO_OVERLAY);
 +            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
 +            this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, type -> builder, true, OverlayTexture.NO_OVERLAY);
          }
@@ -13,7 +13,7 @@
  
 +    @Deprecated // Neo: Buffer lookup parameter
      public void renderBatched(
-         BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, VertexConsumer builder, boolean cull, List<BlockModelPart> parts
+         BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, BakedQuadOutput output, boolean cull, List<BlockModelPart> parts
      ) {
 +        renderBatched(blockState, pos, level, poseStack, type -> builder, cull, parts);
 +    }
@@ -22,7 +22,7 @@
 +        BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup, boolean cull, List<BlockModelPart> parts
 +    ) {
          try {
--            this.modelRenderer.tesselateBlock(level, parts, blockState, pos, poseStack, builder, cull, OverlayTexture.NO_OVERLAY);
+-            this.modelRenderer.tesselateBlock(level, parts, blockState, pos, poseStack, output, cull, OverlayTexture.NO_OVERLAY);
 +            this.modelRenderer.tesselateBlock(level, parts, blockState, pos, poseStack, bufferLookup, cull, OverlayTexture.NO_OVERLAY);
          } catch (Throwable var11) {
              CrashReport report = CrashReport.forThrowable(var11, "Tesselating block in world");
@@ -52,19 +52,10 @@
          RenderShape shape = state.getRenderShape();
          if (shape != RenderShape.INVISIBLE) {
              BlockStateModel model = this.getBlockModel(state);
-@@ -99,7 +_,7 @@
-             float g = (col >> 8 & 0xFF) / 255.0F;
-             float b = (col & 0xFF) / 255.0F;
-             ModelBlockRenderer.renderModel(
--                poseStack.last(), bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(state)), model, r, g, b, lightCoords, overlayCoords
-+                poseStack.last(), bufferSource, model, r, g, b, lightCoords, overlayCoords, level, pos, state, chunkLayerFilter
-             );
-         }
-     }
-@@ -107,5 +_,9 @@
+@@ -109,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager resourceManager) {
-         this.liquidBlockRenderer = new LiquidBlockRenderer(this.materials);
+         this.liquidBlockRenderer = new LiquidBlockRenderer(this.sprites);
 +    }
 +
 +    public LiquidBlockRenderer getLiquidBlockRenderer() {

@@ -5,8 +5,8 @@
      }
  
 +    @Deprecated
-     public TextureAtlasSprite getParticleIcon(BlockState blockState) {
--        return this.getBlockModel(blockState).particleIcon();
+     public Material.Baked getParticleMaterial(BlockState blockState) {
+-        return this.getBlockModel(blockState).particleMaterial();
 +        return getParticleIcon(blockState, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
 +    }
 +

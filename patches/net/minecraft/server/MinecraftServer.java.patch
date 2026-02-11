@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -298,7 +_,7 @@
+@@ -297,7 +_,7 @@
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> factory) {
          AtomicReference<S> serverReference = new AtomicReference<>();
@@ -98,7 +98,7 @@
                  this.onServerExit();
              }
          }
-@@ -1005,11 +_,13 @@
+@@ -987,11 +_,13 @@
          }
  
          this.tickCount++;
@@ -112,7 +112,7 @@
          }
  
          this.ticksUntilAutosave--;
-@@ -1027,6 +_,7 @@
+@@ -1009,6 +_,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)tickTime / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(nano);
          profiler.pop();
@@ -120,7 +120,7 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
-@@ -1057,6 +_,16 @@
+@@ -1039,6 +_,16 @@
          }
      }
  
@@ -137,7 +137,7 @@
      private int computeNextAutosaveInterval() {
          float ticksPerSecond;
          if (this.tickRateManager.isSprinting()) {
-@@ -1088,7 +_,8 @@
+@@ -1070,7 +_,8 @@
              Optional.of(players),
              Optional.of(ServerStatus.Version.current()),
              Optional.ofNullable(this.statusIcon),
@@ -147,7 +147,7 @@
          );
      }
  
-@@ -1133,9 +_,11 @@
+@@ -1115,9 +_,11 @@
          profiler.push("levels");
          this.updateEffectiveRespawnData();
  
@@ -160,7 +160,7 @@
  
              try {
                  level.tick(haveTime);
-@@ -1144,9 +_,11 @@
+@@ -1126,9 +_,11 @@
                  level.fillReportDetails(report);
                  throw new ReportedException(report);
              }
@@ -172,7 +172,7 @@
          }
  
          profiler.popPush("connection");
-@@ -1155,8 +_,8 @@
+@@ -1137,8 +_,8 @@
          this.playerList.tick();
          profiler.popPush("debugSubscribers");
          this.debugSubscribers.tick();
@@ -182,7 +182,7 @@
              GameTestTicker.SINGLETON.tick();
          }
  
-@@ -1188,6 +_,9 @@
+@@ -1170,6 +_,9 @@
      }
  
      public void forceGameTimeSynchronization() {
@@ -192,7 +192,7 @@
          ProfilerFiller profiler = Profiler.get();
          profiler.push("timeSync");
          this.playerList.broadcastAll(new ClientboundSetTimePacket(this.overworld().getGameTime(), Map.of()));
-@@ -1241,7 +_,7 @@
+@@ -1223,7 +_,7 @@
      }
  
      public String getServerModName() {
@@ -201,7 +201,7 @@
      }
  
      public ServerClockManager clockManager() {
-@@ -1535,9 +_,9 @@
+@@ -1517,9 +_,9 @@
  
      public CompletableFuture<Void> reloadResources(Collection<String> packsToEnable) {
          CompletableFuture<Void> result = CompletableFuture.<ImmutableList>supplyAsync(
@@ -214,7 +214,7 @@
                      .map(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
-@@ -1576,7 +_,8 @@
+@@ -1558,7 +_,8 @@
                  this.getPlayerList().reloadResources();
                  this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
                  this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
@@ -224,7 +224,7 @@
              }, this);
          if (this.isSameThread()) {
              this.managedBlock(result::isDone);
-@@ -1592,8 +_,10 @@
+@@ -1574,8 +_,10 @@
          FeatureFlagSet forcedFeatures = initMode ? FeatureFlagSet.of() : initialDataConfig.enabledFeatures();
          FeatureFlagSet allowedFeatures = initMode ? FeatureFlags.REGISTRY.allFlags() : initialDataConfig.enabledFeatures();
          packRepository.reload();
@@ -236,7 +236,7 @@
          } else {
              Set<String> selected = Sets.newLinkedHashSet();
  
-@@ -1639,6 +_,8 @@
+@@ -1621,6 +_,8 @@
                  selected.add("vanilla");
              }
  
@@ -245,7 +245,7 @@
              return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
          }
      }
-@@ -1863,6 +_,31 @@
+@@ -1845,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(NameAndId nameAndId);
  
@@ -277,7 +277,7 @@
      public void dumpServerProperties(Path path) throws IOException {
      }
  
-@@ -2027,6 +_,10 @@
+@@ -2009,6 +_,10 @@
          return this.worldData;
      }
  
@@ -288,7 +288,7 @@
      public RegistryAccess.Frozen registryAccess() {
          return this.registries.compositeAccess();
      }
-@@ -2157,6 +_,9 @@
+@@ -2139,6 +_,9 @@
          } else if (rule == GameRules.ADVANCE_TIME) {
              this.getPlayerList().broadcastAll(this.clockManager().createFullSyncPacket());
          }

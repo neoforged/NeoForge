@@ -1,0 +1,30 @@
+++++ REJECTED HUNK: 2
+@@ -382,6 +383,15 @@
+             );
+         }
+ 
++        // Neo: start
++
++        @Override
++        public boolean isEmpty() {
++            return !getSectionMesh().hasRenderableLayers();
++        }
++
++        // Neo: end
++
+         @OnlyIn(Dist.CLIENT)
+         public abstract class CompileTask {
+             protected final AtomicBoolean isCancelled;
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -439,7 +457,7 @@
+                         SectionCompiler.Results results;
+                         try (Zone ignored = Profiler.get().zone("Compile Section")) {
+                             results = SectionRenderDispatcher.this.sectionCompiler
+-                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos), buffers);
++                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos), buffers, this.additionalRenderers);
+                         }
+ 
+                         TranslucencyPointOfView translucencyPointOfView = TranslucencyPointOfView.of(SectionRenderDispatcher.this.cameraPosition, sectionNode);
+++++ END HUNK

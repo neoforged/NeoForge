@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/GenerationChunkHolder.java
 +++ b/net/minecraft/server/level/GenerationChunkHolder.java
-@@ -33,6 +_,7 @@
+@@ -32,6 +_,7 @@
      private final AtomicReference<@Nullable ChunkGenerationTask> task = new AtomicReference<>();
      private final AtomicInteger generationRefCount = new AtomicInteger();
      private volatile CompletableFuture<Void> generationSaveSyncFuture = CompletableFuture.completedFuture(null);

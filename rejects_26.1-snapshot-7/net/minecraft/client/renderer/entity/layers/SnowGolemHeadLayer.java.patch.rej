@@ -1,6 +1,5 @@
---- a/net/minecraft/client/renderer/entity/layers/SnowGolemHeadLayer.java
-+++ b/net/minecraft/client/renderer/entity/layers/SnowGolemHeadLayer.java
-@@ -43,6 +_,9 @@
+++++ REJECTED HUNK: 1
+@@ -43,6 +43,9 @@
                  RenderType renderType = state.appearsGlowing() && state.isInvisible
                      ? RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)
                      : ItemBlockRenderTypes.getRenderType(pumpkinBlockState);
@@ -10,3 +9,4 @@
                  submitNodeCollector.submitBlockModel(poseStack, renderType, model, 0.0F, 0.0F, 0.0F, lightCoords, overlayCoords, state.outlineColor);
                  poseStack.popPose();
              }
+++++ END HUNK

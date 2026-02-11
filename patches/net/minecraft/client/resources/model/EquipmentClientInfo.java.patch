@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/EquipmentClientInfo.java
 +++ b/net/minecraft/client/resources/model/EquipmentClientInfo.java
-@@ -108,6 +_,7 @@
+@@ -110,6 +_,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
@@ -8,7 +8,7 @@
      public static enum LayerType implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          HUMANOID("humanoid"),
          HUMANOID_LEGGINGS("humanoid_leggings"),
-@@ -132,7 +_,7 @@
+@@ -135,7 +_,7 @@
          private final String id;
  
          private LayerType(String id) {
@@ -17,7 +17,7 @@
          }
  
          @Override
-@@ -142,6 +_,10 @@
+@@ -145,6 +_,10 @@
  
          public String trimAssetPrefix() {
              return "trims/entity/" + this.id;

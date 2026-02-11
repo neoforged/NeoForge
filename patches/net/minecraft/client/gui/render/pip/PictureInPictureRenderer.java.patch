@@ -11,7 +11,7 @@
              this.depthTextureView = device.createTextureView(this.depthTexture);
          }
  
-@@ -135,4 +_,13 @@
+@@ -136,4 +_,13 @@
      protected abstract void renderToTexture(final T renderState, final PoseStack poseStack);
  
      protected abstract String getTextureLabel();

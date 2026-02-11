@@ -6,7 +6,7 @@
              if (!player.noPhysics) {
 -                BlockState blockState = getViewBlockingState(player);
 -                if (blockState != null) {
--                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(blockState), poseStack, this.bufferSource);
+-                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
 +                org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), materials, bufferSource)) {
 +                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(overlay.getLeft(), this.minecraft.level, overlay.getRight()), poseStack, this.bufferSource);
@@ -21,7 +21,7 @@
 +                else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, poseStack, this.bufferSource);
  
                  if (this.minecraft.player.isOnFire()) {
-                     TextureAtlasSprite fireSprite = this.materials.get(ModelBakery.FIRE_1);
+                     TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, poseStack, materials, bufferSource))
                      renderFire(poseStack, this.bufferSource, fireSprite);
                  }

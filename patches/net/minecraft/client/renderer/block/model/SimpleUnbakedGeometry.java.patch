@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry.java
 +++ b/net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry.java
-@@ -16,7 +_,11 @@
+@@ -15,7 +_,11 @@
  @OnlyIn(Dist.CLIENT)
  public record SimpleUnbakedGeometry(List<BlockElement> elements) implements UnbakedGeometry, net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry {
      @Override

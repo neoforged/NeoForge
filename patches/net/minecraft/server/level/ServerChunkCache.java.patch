@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -100,7 +_,7 @@
+@@ -99,7 +_,7 @@
              LOGGER.error("Failed to create dimension data storage directory", (Throwable)var14);
          }
  
@@ -9,7 +9,7 @@
          this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(
              level,
-@@ -161,6 +_,10 @@
+@@ -160,6 +_,10 @@
                  }
              }
  
@@ -20,7 +20,7 @@
              profiler.incrementCounter("getChunkCacheMiss");
              CompletableFuture<ChunkResult<ChunkAccess>> serverFuture = this.getChunkFutureMainThread(x, z, targetStatus, loadOrGenerate);
              this.mainThreadProcessor.managedBlock(serverFuture::isDone);
-@@ -194,6 +_,7 @@
+@@ -193,6 +_,7 @@
              if (chunkHolder == null) {
                  return null;
              } else {

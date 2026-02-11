@@ -1,44 +1,6 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
-@@ -48,6 +_,7 @@
-     private float eyeHeightOld;
-     private float partialTickTime;
-     private final EnvironmentAttributeProbe attributeProbe = new EnvironmentAttributeProbe();
-+    private float roll;
- 
-     public void setup(Level level, Entity entity, boolean detached, boolean mirror, float a) {
-         this.initialized = true;
-@@ -66,7 +_,10 @@
-             this.setRotation(entity.getViewYRot(a), entity.getViewXRot(a));
-             this.setPosition(behavior.getCartLerpPosition(a).add(positionOffset));
-         } else {
--            this.setRotation(entity.getViewYRot(a), entity.getViewXRot(a));
-+            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
-+                    this, a, entity.getViewYRot(a), entity.getViewXRot(a), 0)
-+            );
-+            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
-             this.setPosition(
-                 Mth.lerp((double)a, entity.xo, entity.getX()),
-                 Mth.lerp((double)a, entity.yo, entity.getY()) + Mth.lerp(a, this.eyeHeightOld, this.eyeHeight),
-@@ -76,7 +_,7 @@
- 
-         if (detached) {
-             if (mirror) {
--                this.setRotation(this.yRot + 180.0F, -this.xRot);
-+                this.setRotation(this.yRot + 180.0F, -this.xRot, -this.roll);
-             }
- 
-             float cameraDistance = 4.0F;
-@@ -93,7 +_,7 @@
-                 mountDistance = (float)mount.getAttributeValue(Attributes.CAMERA_DISTANCE);
-             }
- 
--            this.move(-this.getMaxZoom(Math.max(cameraScale * cameraDistance, mountScale * mountDistance)), 0.0F, 0.0F);
-+            this.move(-this.getMaxZoom(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, mirror, cameraDistance, cameraScale, mountScale, mountDistance)), 0.0F, 0.0F);
-         } else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
-             Direction bedOrientation = ((LivingEntity)entity).getBedOrientation();
-             this.setRotation(bedOrientation != null ? bedOrientation.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -135,10 +_,17 @@
+@@ -325,10 +_,17 @@
          this.setPosition(new Vec3(this.position.x + offset.x, this.position.y + offset.y, this.position.z + offset.z));
      }
  
@@ -57,21 +19,3 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -258,6 +_,17 @@
- 
-     public float getPartialTickTime() {
-         return this.partialTickTime;
-+    }
-+
-+    public float getRoll() {
-+        return this.roll;
-+    }
-+
-+    public net.minecraft.world.level.block.state.BlockState getBlockAtCamera() {
-+        if (!this.initialized)
-+            return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
-+        else
-+            return this.level.getBlockState(this.blockPosition).getStateAtViewpoint(this.level, this.blockPosition, this.position);
-     }
- 
-     @OnlyIn(Dist.CLIENT)

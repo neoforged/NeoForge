@@ -12,7 +12,7 @@
 +        }
 +
          @OnlyIn(Dist.CLIENT)
--        public record Simple(EntityModelSet entityModelSet, MaterialSet materials, PlayerSkinRenderCache playerSkinRenderCache)
+-        public record Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache)
 +        public record Simple(EntityModelSet entityModelSet, MaterialSet materials, PlayerSkinRenderCache playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations)
              implements SpecialModelRenderer.BakingContext {
 +

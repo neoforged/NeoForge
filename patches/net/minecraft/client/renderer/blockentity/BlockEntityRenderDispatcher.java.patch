@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -74,13 +_,25 @@
-         this.cameraPos = camera.position();
+@@ -73,13 +_,25 @@
+         this.cameraPos = cameraPos;
      }
  
 +    /**

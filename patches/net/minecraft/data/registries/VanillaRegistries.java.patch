@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/VanillaRegistries.java
 +++ b/net/minecraft/data/registries/VanillaRegistries.java
-@@ -101,6 +_,9 @@
+@@ -109,6 +_,9 @@
          .add(Registries.VILLAGER_TRADE, VillagerTrades::bootstrap)
          .add(Registries.TRADE_SET, TradeSets::bootstrap);
  

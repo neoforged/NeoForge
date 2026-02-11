@@ -1,6 +1,5 @@
---- a/net/minecraft/client/gui/screens/ChatScreen.java
-+++ b/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -120,7 +_,10 @@
+++++ REJECTED HUNK: 1
+@@ -120,7 +120,10 @@
          } else if (event.isConfirmation()) {
              this.handleChatInput(this.input.getValue(), true);
              this.exitReason = ChatScreen.ExitReason.DONE;
@@ -12,3 +11,4 @@
              return true;
          } else {
              switch (event.key()) {
+++++ END HUNK

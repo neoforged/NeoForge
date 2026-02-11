@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
-@@ -602,7 +_,7 @@
+@@ -600,7 +_,7 @@
          @Override
          public boolean canUse() {
              if (this.nextStartTick <= 0) {

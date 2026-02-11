@@ -4,14 +4,14 @@
                  fogBlue = Mth.lerp(brightenFactor, fogBlue, fogBlue * targetScale);
              }
  
--            return new Vector4f(fogRed, fogGreen, fogBlue, 1.0F);
+-            dest.set(fogRed, fogGreen, fogBlue, 1.0F);
 +            return net.neoforged.neoforge.client.ClientHooks.getFogColor(camera, partialTicks, level, renderDistance, darkenWorldAmount, fogRed, fogGreen, fogBlue);
          }
      }
  
 @@ -167,9 +_,11 @@
-         Entity entity = camera.entity();
          FogData fog = new FogData();
+         this.computeFogColor(camera, partialTickTime, level, renderDistanceInChunks, darkenWorldAmount, fog.color);
  
 +        FogEnvironment chosenEnvironment = null;
          for (FogEnvironment fogEnvironment : FOG_ENVIRONMENTS) {
@@ -21,12 +21,3 @@
                  break;
              }
          }
-@@ -177,6 +_,8 @@
-         float renderDistanceFogSpan = Mth.clamp(renderDistanceInBlocks / 10.0F, 4.0F, 64.0F);
-         fog.renderDistanceStart = renderDistanceInBlocks - renderDistanceFogSpan;
-         fog.renderDistanceEnd = renderDistanceInBlocks;
-+
-+        net.neoforged.neoforge.client.ClientHooks.onSetupFog(chosenEnvironment, fogType, camera, partialTickTime, renderDistanceInChunks, fog);
- 
-         try (GpuBuffer.MappedView view = RenderSystem.getDevice().createCommandEncoder().mapBuffer(this.regularBuffer.currentBuffer(), false, true)) {
-             this.updateBuffer(

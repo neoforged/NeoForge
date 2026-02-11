@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -122,7 +_,7 @@
+@@ -130,7 +_,7 @@
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
@@ -9,7 +9,7 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -147,7 +_,7 @@
+@@ -159,7 +_,7 @@
          new RegistryDataLoader.RegistryData<>(Registries.DIALOG, Dialog.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.WORLD_CLOCK, WorldClock.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TIMELINE, Timeline.NETWORK_CODEC)
@@ -18,7 +18,7 @@
  
      public static CompletableFuture<RegistryAccess.Frozen> load(
          ResourceManager resourceManager,
-@@ -161,7 +_,7 @@
+@@ -173,7 +_,7 @@
                  return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager);
              }
          };
@@ -27,7 +27,7 @@
      }
  
      public static CompletableFuture<RegistryAccess.Frozen> load(
-@@ -177,14 +_,16 @@
+@@ -189,14 +_,16 @@
                  return new NetworkRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, entries, knownDataSource);
              }
          };
@@ -46,7 +46,7 @@
      ) {
          return CompletableFuture.<CompletableFuture<RegistryAccess.Frozen>>supplyAsync(
                  () -> {
-@@ -203,6 +_,15 @@
+@@ -215,6 +_,15 @@
                      return CompletableFuture.allOf(loadCompletions)
                          .thenApplyAsync(
                              ignored -> {
@@ -62,7 +62,7 @@
                                  List<RegistryLoadTask<?>> frozenRegistries = loadTasks.stream().filter(task -> task.freezeRegistry(loadingErrors)).toList();
                                  if (!loadingErrors.isEmpty()) {
                                      throw logErrors(loadingErrors);
-@@ -297,7 +_,11 @@
+@@ -309,7 +_,11 @@
      public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  

@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/data/models/model/TextureMapping.java
 +++ b/net/minecraft/client/data/models/model/TextureMapping.java
-@@ -428,4 +_,12 @@
+@@ -436,4 +_,12 @@
          Identifier id = BuiltInRegistries.ITEM.getKey(item);
-         return id.withPath(path -> "item/" + path + suffix);
+         return new Material(id.withPath(path -> "item/" + path + suffix));
      }
 +
 +    // Neo: Added to allow easier texture map copying

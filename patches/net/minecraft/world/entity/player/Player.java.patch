@@ -334,7 +334,7 @@
          super.stopSleeping();
          if (this.level() instanceof ServerLevel && updateLevelList) {
              ((ServerLevel)this.level()).updateSleepingPlayerList();
-@@ -1403,7 +_,8 @@
+@@ -1406,7 +_,8 @@
  
      @Override
      public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
@@ -344,7 +344,7 @@
              return false;
          } else {
              if (fallDistance >= 2.0) {
-@@ -1438,13 +_,13 @@
+@@ -1441,13 +_,13 @@
      protected void playStepSound(BlockPos onPos, BlockState onState) {
          if (this.isInWater()) {
              this.waterSwimSound();
@@ -360,7 +360,7 @@
                  } else {
                      super.playStepSound(primaryStepSoundPos, primaryStepState);
                  }
-@@ -1475,6 +_,10 @@
+@@ -1478,6 +_,10 @@
      }
  
      public void giveExperiencePoints(int i) {
@@ -371,7 +371,7 @@
          this.increaseScore(i);
          this.experienceProgress = this.experienceProgress + (float)i / this.getXpNeededForNextLevel();
          this.totalExperience = Mth.clamp(this.totalExperience + i, 0, Integer.MAX_VALUE);
-@@ -1502,7 +_,7 @@
+@@ -1505,7 +_,7 @@
      }
  
      public void onEnchantmentPerformed(ItemStack itemStack, int enchantmentCost) {
@@ -380,7 +380,7 @@
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
              this.experienceProgress = 0.0F;
-@@ -1513,6 +_,10 @@
+@@ -1516,6 +_,10 @@
      }
  
      public void giveExperienceLevels(int amount) {
@@ -391,7 +391,7 @@
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, amount);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
-@@ -1544,7 +_,7 @@
+@@ -1547,7 +_,7 @@
      }
  
      protected boolean hasEnoughFoodToDoExhaustiveManoeuvres() {
@@ -400,7 +400,7 @@
      }
  
      public Optional<WardenSpawnTracker> getWardenSpawnTracker() {
-@@ -1651,7 +_,11 @@
+@@ -1654,7 +_,11 @@
  
      @Override
      public Component getDisplayName() {
@@ -413,7 +413,7 @@
          return this.decorateDisplayNameComponent(result);
      }
  
-@@ -1840,21 +_,21 @@
+@@ -1843,21 +_,21 @@
          if (!(heldWeapon.getItem() instanceof ProjectileWeaponItem)) {
              return ItemStack.EMPTY;
          } else {
@@ -440,7 +440,7 @@
              }
          }
      }
-@@ -1894,7 +_,7 @@
+@@ -1897,7 +_,7 @@
      }
  
      public boolean isScoping() {
@@ -449,7 +449,7 @@
      }
  
      @Override
-@@ -2000,5 +_,41 @@
+@@ -2003,5 +_,41 @@
          public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
          public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem(null);
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));

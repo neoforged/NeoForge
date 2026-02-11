@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
 +++ b/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-@@ -40,8 +_,10 @@
+@@ -40,8 +40,10 @@
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
          if (!canBeGrass(state, level, pos)) {

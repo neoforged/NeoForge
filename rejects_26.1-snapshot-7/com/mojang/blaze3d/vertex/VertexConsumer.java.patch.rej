@@ -1,6 +1,5 @@
---- a/com/mojang/blaze3d/vertex/VertexConsumer.java
-+++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -71,10 +_,12 @@
+++++ REJECTED HUNK: 1
+@@ -71,10 +71,12 @@
              long packedUv = quad.packedUV(vertex);
              float brightnessForVertex = brightness[vertex];
              int color = ARGB.colorFromFloat(a, brightnessForVertex * r, brightnessForVertex * g, brightnessForVertex * b);
@@ -13,3 +12,4 @@
              this.addVertex(pos.x(), pos.y(), pos.z(), color, u, v, overlayCoords, light, normal.x(), normal.y(), normal.z());
          }
      }
+++++ END HUNK

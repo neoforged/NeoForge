@@ -1,0 +1,107 @@
+++++ REJECTED HUNK: 2
+@@ -516,6 +516,13 @@
+             );
+         profiler.popPush("particles");
+         this.minecraft.particleEngine.extract(this.particlesRenderState, new Frustum(frustum).offset(-3.0F), camera, deltaPartialTick);
++        profiler.popPush("neoforge_custom");
++        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, camera.position());
++        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomSkyboxRenderer(this.level, camera.position());
++        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomCloudsRenderer(this.level, camera.position());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
++                this, this.levelRenderState, this.level, camera, frustum, deltaTracker, this.ticks
++        ));
+         profiler.pop();
+         profiler.popPush("debug");
+         this.debugRenderer.emitGizmos(frustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
+++++ END HUNK
+
+++++ REJECTED HUNK: 6
+@@ -573,12 +583,12 @@
+             if (ARGB.alpha(cloudColor) > 0) {
+                 float cloudHeight = camera.attributeProbe().getValue(EnvironmentAttributes.CLOUD_HEIGHT, deltaPartialTick);
+                 this.addCloudsPass(
+-                    frame, cloudsType, this.levelRenderState.cameraRenderState.pos, this.levelRenderState.gameTime, deltaPartialTick, cloudColor, cloudHeight
++                    frame, cloudsType, this.levelRenderState.cameraRenderState.pos, this.levelRenderState.gameTime, deltaPartialTick, cloudColor, cloudHeight, modelViewMatrix
+                 );
+             }
+         }
+ 
+-        this.addWeatherPass(frame, terrainFog);
++        this.addWeatherPass(frame, terrainFog, modelViewMatrix);
+         if (transparencyChain != null) {
+             transparencyChain.addToFrame(frame, screenWidth, screenHeight, this.targets);
+         }
+++++ END HUNK
+
+++++ REJECTED HUNK: 7
+@@ -663,6 +673,8 @@
+ 
+                 ChunkSectionsToRender chunkSectionsToRender = this.prepareChunkRenders(modelViewMatrix, camX, camY, camZ);
+                 chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.OPAQUE, this.chunkLayerSampler);
++                profiler.popPush("neoforge_render_after_opaque_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
+                 this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
+                 if (this.shouldShowEntityOutlines() && entityOutlineTarget != null) {
+                     RenderTarget outlineTarget = entityOutlineTarget.get();
+++++ END HUNK
+
+++++ REJECTED HUNK: 12
+@@ -740,10 +771,22 @@
+             this.targets.main = pass.readsAndWrites(this.targets.main);
+         }
+ 
+-        pass.executes(() -> this.cloudRenderer.render(cloudColor, cloudsType, cloudHeight, cameraPosition, gameTime, partialTicks));
++        pass.executes(() -> {
++            if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cameraPosition, cloudsType, cloudColor, cloudHeight, modelViewMatrix)) {
++                this.cloudRenderer.render(cloudColor, cloudsType, cloudHeight, cameraPosition, gameTime, partialTicks);
++            }
++        });
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #addWeatherPass(FrameGraphBuilder, GpuBufferSlice, Matrix4f)} instead
++     */
++    @Deprecated
+     private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog) {
++        addWeatherPass(frame, fog, RenderSystem.getModelViewMatrix());
++    }
++
++    private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog, Matrix4f modelViewMatrix) {
+         int renderDistance = this.minecraft.options.getEffectiveRenderDistance() * 16;
+         float depthFar = this.minecraft.gameRenderer.getDepthFar();
+         FramePass pass = frame.addPass("weather");
+++++ END HUNK
+
+++++ REJECTED HUNK: 13
+@@ -756,7 +799,10 @@
+         pass.executes(() -> {
+             RenderSystem.setShaderFog(fog);
+             CameraRenderState cameraState = this.levelRenderState.cameraRenderState;
+-            this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState);
++            this.weatherEffectRenderer.render(cameraState.pos, this.levelRenderState.weatherRenderState, this.levelRenderState);
++            Profiler.get().push("neoforge_render_after_weather");
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, modelViewMatrix, this.getRenderableSections()));
++            Profiler.get().pop();
+             this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, depthFar);
+         });
+     }
+++++ END HUNK
+
+++++ REJECTED HUNK: 21
+@@ -1152,7 +1226,15 @@
+         }
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #addSkyPass(FrameGraphBuilder, Camera, GpuBufferSlice, Matrix4f)} instead
++     */
++    @Deprecated
+     private void addSkyPass(FrameGraphBuilder frame, Camera camera, GpuBufferSlice skyFog) {
++        this.addSkyPass(frame, camera, skyFog, RenderSystem.getModelViewMatrix());
++    }
++
++    private void addSkyPass(FrameGraphBuilder frame, Camera camera, GpuBufferSlice skyFog, Matrix4f modelViewMatrix) {
+         FogType fogType = camera.getFluidInCamera();
+         if (fogType != FogType.POWDER_SNOW && fogType != FogType.LAVA && !this.doesMobEffectBlockSky(camera)) {
+             SkyRenderState state = this.levelRenderState.skyRenderState;
+++++ END HUNK

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/SingleVariant.java
 +++ b/net/minecraft/client/renderer/block/model/SingleVariant.java
-@@ -23,13 +_,19 @@
+@@ -27,13 +_,19 @@
      }
  
      @Override
@@ -9,8 +9,8 @@
 +    }
 +
 +    @Override
-     public TextureAtlasSprite particleIcon() {
-         return this.model.particleIcon();
+     public boolean hasTranslucency() {
+         return this.model.hasTranslucency();
      }
  
      @OnlyIn(Dist.CLIENT)

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
-@@ -37,8 +_,9 @@
-         return this.shared.particleIcon;
+@@ -42,8 +_,9 @@
+         return this.shared.hasTranslucency;
      }
  
 +    // Neo: Implement our overloads (here and below) so child models can have custom logic
@@ -11,7 +11,7 @@
          if (this.models == null) {
              this.models = this.shared.selectModels(this.blockState);
          }
-@@ -47,9 +_,36 @@
+@@ -52,9 +_,36 @@
  
          for (BlockStateModel model : this.models) {
              random.setSeed(seed);
@@ -51,7 +51,7 @@
  
      @OnlyIn(Dist.CLIENT)
      public record Selector<T>(Predicate<BlockState> condition, T model) {
-@@ -86,7 +_,6 @@
+@@ -103,7 +_,6 @@
                      selectedModels.set(i);
                  }
              }
