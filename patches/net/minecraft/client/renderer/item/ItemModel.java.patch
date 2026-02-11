@@ -7,18 +7,18 @@
 +        , net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
      ) implements SpecialModelRenderer.BakingContext {
 +        /**
-+         * @deprecated Neo: use {@link #BakingContext(ModelBaker, EntityModelSet, MaterialSet, PlayerSkinRenderCache, ItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
++         * @deprecated Neo: use {@link #BakingContext(ModelBaker, EntityModelSet, SpriteGetter, PlayerSkinRenderCache, ItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
 +         */
 +        @Deprecated
 +        public BakingContext(
 +                ModelBaker blockModelBaker,
 +                EntityModelSet entityModelSet,
-+                MaterialSet materials,
++                SpriteGetter sprites,
 +                PlayerSkinRenderCache playerSkinRenderCache,
 +                ItemModel missingItemModel,
 +                @Nullable RegistryContextSwapper contextSwapper
 +        ) {
-+            this(blockModelBaker, entityModelSet, materials, playerSkinRenderCache, missingItemModel, contextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++            this(blockModelBaker, entityModelSet, sprites, playerSkinRenderCache, missingItemModel, contextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +        }
      }
  

@@ -25,8 +25,8 @@
 +     * Not threadsafe. Enqueue it in client setup.
 +     */
 +    public static void addWoodType(WoodType woodType) {
-+        SIGN_MATERIALS.put(woodType, createSignMaterial(woodType));
-+        HANGING_SIGN_MATERIALS.put(woodType, createHangingSignMaterial(woodType));
++        SIGN_SPRITES.put(woodType, createSignSprite(woodType));
++        HANGING_SIGN_SPRITES.put(woodType, createHangingSignSprite(woodType));
 +    }
 +
 +    static {

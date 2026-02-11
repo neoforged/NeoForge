@@ -5,7 +5,7 @@
              state.lightCoords = combineResult.apply(new BrightnessCombiner<>()).applyAsInt(state.lightCoords);
          }
 +
-+        state.customMaterial = getCustomMaterial(blockEntity, state);
++        state.customSprite = getCustomSprite(blockEntity, state);
      }
  
      public void submit(ChestRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
@@ -14,7 +14,7 @@
          open = 1.0F - open;
          open = 1.0F - open * open * open;
 -        SpriteId spriteId = Sheets.chooseSprite(state.material, state.type);
-+        Material material = state.customMaterial != null ? state.customMaterial : Sheets.chooseMaterial(state.material, state.type);
++        SpriteId spriteId = state.customSprite != null ? state.customSprite : Sheets.chooseSprite(state.material, state.type);
          RenderType renderType = spriteId.renderType(RenderTypes::entityCutoutCull);
          TextureAtlasSprite sprite = this.sprites.get(spriteId);
          if (state.type != ChestType.SINGLE) {
@@ -25,11 +25,11 @@
 +    }
 +
 +    /**
-+     * Neo: Return a custom {@link Material} to render the chest with or {@code null} to
++     * Neo: Return a custom {@link SpriteId} to render the chest with or {@code null} to
 +     * fall back to the vanilla material selection.
 +     */
 +    @Nullable
-+    protected Material getCustomMaterial(T blockEntity, ChestRenderState renderState) {
++    protected SpriteId getCustomSprite(T blockEntity, ChestRenderState renderState) {
 +        return null;
 +    }
 +

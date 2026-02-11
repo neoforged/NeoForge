@@ -129,7 +129,7 @@ public class ClientCommandHandler {
 
             @Override
             public void sendSystemMessage(Component message) {
-                Minecraft.getInstance().gui.getChat().addMessage(message);
+                Minecraft.getInstance().gui.getChat().addClientSystemMessage(message);
             }
         };
         return new ClientCommandSourceStack(commandSource, player.position(), player.getRotationVector(), player.permissions(),
@@ -184,7 +184,7 @@ public class ClientCommandHandler {
                 // in case of unknown command, let the server try and handle it
                 return false;
             }
-            Minecraft.getInstance().gui.getChat().addMessage(
+            Minecraft.getInstance().gui.getChat().addClientSystemMessage(
                     Component.literal("").append(ComponentUtils.fromMessage(syntax.getRawMessage())).withStyle(ChatFormatting.RED));
             if (syntax.getInput() != null && syntax.getCursor() >= 0) {
                 int position = Math.min(syntax.getInput().length(), syntax.getCursor());
@@ -200,12 +200,12 @@ public class ClientCommandHandler {
                     details.append(Component.literal(syntax.getInput().substring(position)).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE));
                 }
                 details.append(Component.translatable("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
-                Minecraft.getInstance().gui.getChat().addMessage(Component.literal("").append(details).withStyle(ChatFormatting.RED));
+                Minecraft.getInstance().gui.getChat().addClientSystemMessage(Component.literal("").append(details).withStyle(ChatFormatting.RED));
             }
         } catch (Exception generic)// Probably thrown by the command
         {
             MutableComponent message = Component.literal(generic.getMessage() == null ? generic.getClass().getName() : generic.getMessage());
-            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("command.failed")
+            Minecraft.getInstance().gui.getChat().addClientSystemMessage(Component.translatable("command.failed")
                     .withStyle(ChatFormatting.RED)
                     .withStyle((style) -> style
                             .withHoverEvent(new HoverEvent.ShowText(message))));

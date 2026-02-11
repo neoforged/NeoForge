@@ -10,13 +10,12 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import net.neoforged.neoforge.client.model.quad.BakedColors;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
-import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Vertex consumer that outputs {@linkplain BakedQuad baked quads}.
@@ -36,7 +35,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
 
     private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    private TextureAtlasSprite sprite = UnitTextureAtlasSprite.INSTANCE;
+    private BakedQuad.@Nullable SpriteInfo spriteInfo = null;
     private boolean shade;
     private int lightEmission;
     private boolean hasAmbientOcclusion;
@@ -109,8 +108,8 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.direction = direction;
     }
 
-    public void setSprite(TextureAtlasSprite sprite) {
-        this.sprite = sprite;
+    public void setSpriteInfo(BakedQuad.SpriteInfo sprite) {
+        this.spriteInfo = sprite;
     }
 
     public void setShade(boolean shade) {
@@ -129,6 +128,9 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         if (!building || ++vertexIndex != 4) {
             throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
         }
+        if (spriteInfo == null) {
+            throw new IllegalStateException("No BakedQuad.SpriteInfo set");
+        }
 
         BakedQuad quad = new BakedQuad(
                 positions[0],
@@ -141,7 +143,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
                 uvs[3],
                 tintIndex,
                 direction,
-                sprite,
+                spriteInfo,
                 shade,
                 lightEmission,
                 BakedNormals.of(normals[0], normals[1], normals[2], normals[3]),
@@ -159,7 +161,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         Arrays.fill(normals, 0);
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
-        sprite = UnitTextureAtlasSprite.INSTANCE;
+        spriteInfo = null;
         lightEmission = 0;
     }
 }

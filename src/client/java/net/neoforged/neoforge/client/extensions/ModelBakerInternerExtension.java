@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.extensions;
 import net.neoforged.neoforge.client.model.quad.BakedColors;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 
-public interface ModelBakerPartCacheExtension {
+public interface ModelBakerInternerExtension {
     default BakedNormals normals(BakedNormals normals) {
         return normals;
     }

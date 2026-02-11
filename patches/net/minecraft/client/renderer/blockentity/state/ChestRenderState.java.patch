@@ -4,7 +4,7 @@
      public float open;
      public float angle;
      public ChestRenderState.ChestMaterialType material = ChestRenderState.ChestMaterialType.REGULAR;
-+    public net.minecraft.client.resources.model.@org.jspecify.annotations.Nullable Material customMaterial;
++    public net.minecraft.client.resources.model.@org.jspecify.annotations.Nullable SpriteId customSprite;
  
      @OnlyIn(Dist.CLIENT)
      public static enum ChestMaterialType {

@@ -53,8 +53,8 @@
   "net/minecraft/client/resources/model/ModelBaker": [
     "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
   ],
-  "net/minecraft/client/resources/model/ModelBaker$PartCache": [
-    "net/neoforged/neoforge/client/extensions/ModelBakerPartCacheExtension"
+  "net/minecraft/client/resources/model/ModelBaker$Interner": [
+    "net/neoforged/neoforge/client/extensions/ModelBakerInternerExtension"
   ],
   "net/minecraft/client/resources/model/ModelState": [
     "net/neoforged/neoforge/client/extensions/ModelStateExtension"

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
+import com.mojang.blaze3d.vertex.QuadBrightness;
+import com.mojang.blaze3d.vertex.QuadLightmapCoords;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -58,18 +60,15 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                     normal = quadNormal;
                 }
 
-                storage.brightness[vertex] = level.getShade(
+                storage.brightness.set(vertex, level.getShade(
                         BakedNormals.unpackX(normal),
                         BakedNormals.unpackY(normal),
                         BakedNormals.unpackZ(normal),
-                        quad.shade());
+                        quad.shade()));
             }
         } else {
             float f = level.getShade(quad.direction(), quad.shade());
-            storage.brightness[0] = f;
-            storage.brightness[1] = f;
-            storage.brightness[2] = f;
-            storage.brightness[3] = f;
+            storage.brightness.setAll(f);
         }
     }
 
@@ -150,32 +149,38 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         for (int vertex = 0; vertex < 4; ++vertex) {
             Vector3fc vertPos = this.currentQuad.position(vertex);
             aoFace.computeCornerWeights(weights, vertPos.x(), vertPos.y(), vertPos.z());
-            brightness[vertex] = interpolateBrightness(fullFace, weights);
-            lightmap[vertex] = interpolateLightmap(fullFace, weights);
+            brightness.set(vertex, interpolateBrightness(fullFace, weights));
+            lightmap.set(vertex, interpolateLightmap(fullFace, weights));
         }
 
         // Debug option to compare emulated vanilla AO with actual vanilla AO.
         // Since we make changes compared to vanilla's AO, many quads will trigger the warning.
         if (COMPARE_WITH_VANILLA) {
             // This is a debug option, so allocations are fine
-            float[] emulatedBrightness = brightness.clone();
-            int[] emulatedLightmap = lightmap.clone();
+            QuadBrightness.Mutable emulatedBrightness = new QuadBrightness.Mutable();
+            QuadLightmapCoords.Mutable emulatedLightmap = new QuadLightmapCoords.Mutable();
+            for (int vertex = 0; vertex < 4; vertex++) {
+                emulatedBrightness.set(vertex, brightness.get(vertex));
+                emulatedLightmap.set(vertex, lightmap.get(vertex));
+            }
 
             super.calculate(level, state, pos, direction, shade);
 
             for (int vertex = 0; vertex < 4; ++vertex) {
-                if (!Mth.equal(emulatedBrightness[vertex], brightness[vertex]) || emulatedLightmap[vertex] != lightmap[vertex]) {
+                if (!Mth.equal(emulatedBrightness.get(vertex), brightness.get(vertex)) || emulatedLightmap.get(vertex) != lightmap.get(vertex)) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
                             + "Vanilla: lightmap = {}, brightness = {}\n"
                             + "Emulated: lightmap = {}, brightness = {}\n",
-                            vertex, direction, state.getBlock(), pos, lightmap[vertex], brightness[vertex], emulatedLightmap[vertex], emulatedBrightness[vertex]);
+                            vertex, direction, state.getBlock(), pos, lightmap.get(vertex), brightness.get(vertex), emulatedLightmap.get(vertex), emulatedBrightness.get(vertex));
                     break;
                 }
             }
 
             // Revert to our AO
-            System.arraycopy(emulatedBrightness, 0, brightness, 0, 4);
-            System.arraycopy(emulatedLightmap, 0, lightmap, 0, 4);
+            for (int vertex = 0; vertex < 4; vertex++) {
+                brightness.set(vertex, emulatedBrightness.get(vertex));
+                lightmap.set(vertex, emulatedLightmap.get(vertex));
+            }
         }
     }
 
@@ -249,8 +254,8 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
             // Do an average between the max and the weighted average.
             // Using only the weighted average looks a bit too dark.
-            brightness[vertex] = Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F);
-            lightmap[vertex] = lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT);
+            brightness.set(vertex, Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F));
+            lightmap.set(vertex, lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT));
         }
     }
 

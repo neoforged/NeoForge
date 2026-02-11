@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.resources.model.SpriteGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,17 +52,17 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
     private final OverlayType overlayType;
     private final BlockState blockState;
     private final BlockPos blockPos;
-    private final MaterialSet materials;
+    private final SpriteGetter sprites;
     private final MultiBufferSource bufferSource;
 
     @ApiStatus.Internal
-    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos, MaterialSet materials, MultiBufferSource bufferSource) {
+    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos, SpriteGetter sprites, MultiBufferSource bufferSource) {
         this.player = player;
         this.poseStack = poseStack;
         this.overlayType = type;
         this.blockState = block;
         this.blockPos = blockPos;
-        this.materials = materials;
+        this.sprites = sprites;
         this.bufferSource = bufferSource;
     }
 
@@ -104,8 +104,8 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
     /**
      * {@return the materials used in rendering}
      */
-    public MaterialSet getMaterials() {
-        return materials;
+    public SpriteGetter getSprites() {
+        return sprites;
     }
 
     /**

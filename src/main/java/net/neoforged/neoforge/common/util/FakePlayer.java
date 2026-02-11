@@ -92,7 +92,7 @@ public class FakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void displayClientMessage(Component chatComponent, boolean actionBar) {}
+    public void sendSystemMessage(Component chatComponent, boolean actionBar) {}
 
     @Override
     public void awardStat(Stat<?> stat, int amount) {}

@@ -7,12 +7,12 @@
 +    @Deprecated
      public Material.Baked getParticleMaterial(BlockState blockState) {
 -        return this.getBlockModel(blockState).particleMaterial();
-+        return getParticleIcon(blockState, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
++        return getParticleMaterial(blockState, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
 +    }
 +
-+    public TextureAtlasSprite getParticleIcon(BlockState blockState, net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
++    public Material.Baked getParticleMaterial(BlockState blockState, net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
 +        var model = this.getBlockModel(blockState);
-+        return model.particleIcon(level, pos, blockState);
++        return model.particleMaterial(level, pos, blockState);
      }
  
      public BlockStateModel getBlockModel(BlockState state) {

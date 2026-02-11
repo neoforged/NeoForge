@@ -13,15 +13,15 @@
 +
          @OnlyIn(Dist.CLIENT)
 -        public record Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache)
-+        public record Simple(EntityModelSet entityModelSet, MaterialSet materials, PlayerSkinRenderCache playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations)
++        public record Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations)
              implements SpecialModelRenderer.BakingContext {
 +
 +            /**
-+             * @deprecated Neo: use {@link #Simple(EntityModelSet, MaterialSet, PlayerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
++             * @deprecated Neo: use {@link #Simple(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
 +             */
 +            @Deprecated
-+            public Simple(EntityModelSet entityModelSet, MaterialSet materials, PlayerSkinRenderCache playerSkinRenderCache) {
-+                this(entityModelSet, materials, playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++            public Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache) {
++                this(entityModelSet, sprites, playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +            }
          }
      }

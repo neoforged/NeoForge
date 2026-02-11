@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -91,7 +91,7 @@ public interface BlockStateModelExtension {
      *
      * <p>Block entity data can be accessed using {@link IBlockGetterExtension#getModelData(BlockPos)}.
      */
-    default TextureAtlasSprite particleIcon(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return self().particleIcon();
+    default Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return self().particleMaterial();
     }
 }

@@ -19,7 +19,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.floats.FloatComparators;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,8 +89,6 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
@@ -104,10 +101,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.SpriteGetter;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -124,7 +120,6 @@ import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.sounds.Music;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -460,16 +455,6 @@ public class ClientHooks {
         ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, bakingResult, modelBakery));
     }
 
-    @SuppressWarnings("deprecation")
-    public static Material getBlockMaterial(Identifier loc) {
-        return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static Material getItemMaterial(Identifier loc) {
-        return new Material(TextureAtlas.LOCATION_ITEMS, loc);
-    }
-
     public static boolean loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {
         if (entity != null) {
             Identifier shader = EntitySpectatorShaderManager.get(entity.getType());
@@ -801,16 +786,16 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
-    public static boolean renderFireOverlay(Player player, PoseStack poseStack, MaterialSet materials, MultiBufferSource bufferSource) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), materials, bufferSource);
+    public static boolean renderFireOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, MultiBufferSource bufferSource) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), sprites, bufferSource);
     }
 
-    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, MaterialSet materials, MultiBufferSource bufferSource) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), materials, bufferSource);
+    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, MultiBufferSource bufferSource) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), sprites, bufferSource);
     }
 
-    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, MaterialSet materials, MultiBufferSource bufferSource) {
-        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, materials, bufferSource)).isCanceled();
+    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, SpriteGetter sprites, MultiBufferSource bufferSource) {
+        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, sprites, bufferSource)).isCanceled();
     }
 
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
@@ -947,22 +932,9 @@ public class ClientHooks {
         return event.getTooltip();
     }
 
-    private static final RandomSource OUTLINE_PASS_RANDOM = RandomSource.create();
-    private static final List<BlockModelPart> OUTLINE_PART_SCRATCH_LIST = new ObjectArrayList<>();
-
     public static boolean isInTranslucentBlockOutlinePass(Level level, BlockPos pos, BlockState state) {
-        OUTLINE_PASS_RANDOM.setSeed(42);
-        OUTLINE_PART_SCRATCH_LIST.clear();
-
-        BlockStateModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        model.collectParts(level, pos, state, OUTLINE_PASS_RANDOM, OUTLINE_PART_SCRATCH_LIST);
-        for (BlockModelPart part : OUTLINE_PART_SCRATCH_LIST) {
-            ChunkSectionLayer renderType = part.getRenderType(state);
-            if (renderType == ChunkSectionLayer.TRANSLUCENT) {
-                return true;
-            }
-        }
-        return false;
+        // TODO 26.1: consider adding overload with level context
+        return Minecraft.getInstance().getBlockRenderer().getBlockModel(state).hasTranslucency();
     }
 
     public static void reloadRenderer() {

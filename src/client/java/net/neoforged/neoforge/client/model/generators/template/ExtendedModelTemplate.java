@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -49,7 +50,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     }
 
     @Override
-    public JsonObject createBaseTemplate(Identifier modelPath, Map<TextureSlot, Identifier> textureMap) {
+    public JsonObject createBaseTemplate(Identifier modelPath, Map<TextureSlot, Material> textureMap) {
         var root = super.createBaseTemplate(modelPath, textureMap);
 
         if (this.ambientOcclusion != null) {

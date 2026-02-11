@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.model;
 import java.util.List;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -41,12 +41,17 @@ public abstract class DelegateBlockStateModel implements BlockStateModel {
 
     @Override
     @Deprecated
-    public TextureAtlasSprite particleIcon() {
-        return this.delegate.particleIcon();
+    public Material.Baked particleMaterial() {
+        return this.delegate.particleMaterial();
     }
 
     @Override
-    public TextureAtlasSprite particleIcon(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return this.delegate.particleIcon(level, pos, state);
+    public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return this.delegate.particleMaterial(level, pos, state);
+    }
+
+    @Override
+    public boolean hasTranslucency() {
+        return delegate.hasTranslucency();
     }
 }

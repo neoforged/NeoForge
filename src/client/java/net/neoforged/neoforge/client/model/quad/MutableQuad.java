@@ -10,7 +10,6 @@ import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.FaceInfo;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Contract;
@@ -31,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  * <li>{@link #setCubeFace(Direction, Vector3fc, Vector3fc)} generates the positions of a 3D cube face by giving the cubes extent.</li>
  * <li>{@link #bakeUvsFromPosition(UVTransform)} generates the texture coordinates of the quad similar to how Vanilla block models do, with optional transformations.</li>
  * <li>{@link #recalculateWinding()} can reorder the vertices of the quad to match the vertex order expected by Vanilla ambient occlusion for axis-aligned quads.</li>
- * <li>{@link #setSpriteAndMoveUv(TextureAtlasSprite)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
+ * <li>{@link #setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
  * </ul>
  */
 public class MutableQuad {
@@ -47,8 +46,7 @@ public class MutableQuad {
 
     private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    @Nullable
-    private TextureAtlasSprite sprite;
+    private BakedQuad.@Nullable SpriteInfo spriteInfo;
     private boolean shade = true;
     private int lightEmission;
     private boolean hasAmbientOcclusion;
@@ -382,16 +380,16 @@ public class MutableQuad {
     }
 
     /**
-     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #sprite() sprite} and the
+     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #spriteInfo() sprite} and the
      * given UV coordinates within that sprite.
      */
     public MutableQuad setUvFromSprite(int vertexIndex, float u, float v) {
-        var sprite = requiredSprite();
+        var sprite = requiredSpriteInfo().sprite();
         return setUv(vertexIndex, sprite.getU(u), sprite.getV(v));
     }
 
     /**
-     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #sprite() sprite} and the
+     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #spriteInfo() sprite} and the
      * given UV coordinates within that sprite.
      */
     public MutableQuad setUvFromSprite(int vertexIndex, Vector2fc uv) {
@@ -402,7 +400,7 @@ public class MutableQuad {
      * Projects each vertex onto the cube face the quad is sourcing its block lighting from,
      * and derives the vertex UV that way.
      *
-     * <p>Requires {@link #sprite()} to be set.
+     * <p>Requires {@link #spriteInfo()} to be set.
      */
     public MutableQuad bakeUvsFromPosition() {
         return bakeUvsFromPosition(UVTransform.IDENTITY);
@@ -481,33 +479,32 @@ public class MutableQuad {
      * <p>Note that {@link BakedQuad} must have an associated sprite.
      */
     @Contract(pure = true)
-    @Nullable
-    public TextureAtlasSprite sprite() {
-        return sprite;
+    public BakedQuad.@Nullable SpriteInfo spriteInfo() {
+        return spriteInfo;
     }
 
     /**
-     * Same as {@link #sprite()}, but throws an exception if no sprite is set on the quad yet.
+     * Same as {@link #spriteInfo()}, but throws an exception if no sprite is set on the quad yet.
      *
      * @throws IllegalStateException If no sprite is set yet.
      */
     @Contract(pure = true)
-    public TextureAtlasSprite requiredSprite() {
-        if (sprite == null) {
+    public BakedQuad.SpriteInfo requiredSpriteInfo() {
+        if (spriteInfo == null) {
             throw new IllegalStateException("A sprite has to be set on this quad before UVs are manipulated");
         }
-        return sprite;
+        return spriteInfo;
     }
 
     /**
      * Changes the texture atlas sprite used by this quad.
      *
      * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
-     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite)} to change sprites and remap them,
+     * to be within this new sprite. Use {@link #setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo)} to change sprites and remap them,
      * {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
      */
-    public MutableQuad setSprite(TextureAtlasSprite sprite) {
-        this.sprite = sprite;
+    public MutableQuad setSpriteInfo(BakedQuad.SpriteInfo spriteInfo) {
+        this.spriteInfo = spriteInfo;
         return this;
     }
 
@@ -516,9 +513,9 @@ public class MutableQuad {
      *
      * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
      */
-    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite) {
+    public MutableQuad setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo spriteInfo) {
         transformUvsFromAtlasToSprite();
-        this.sprite = sprite;
+        this.spriteInfo = spriteInfo;
         transformUvsFromSpriteToAtlas();
         return this;
     }
@@ -766,7 +763,7 @@ public class MutableQuad {
         }
         tintIndex = quad.tintIndex();
         direction = quad.direction();
-        sprite = quad.sprite();
+        spriteInfo = quad.spriteInfo();
         shade = quad.shade();
         lightEmission = quad.lightEmission();
         hasAmbientOcclusion = quad.hasAmbientOcclusion();
@@ -778,7 +775,7 @@ public class MutableQuad {
      * them to atlas-space.
      */
     private void transformUvsFromSpriteToAtlas() {
-        var sprite = requiredSprite();
+        var sprite = requiredSpriteInfo().sprite();
         for (int i = 0; i < 4; i++) {
             long packedUv = packedUv(i);
             setUv(i, sprite.getU(UVPair.unpackU(packedUv)), sprite.getV(UVPair.unpackV(packedUv)));
@@ -790,7 +787,7 @@ public class MutableQuad {
      * them to sprite-space.
      */
     private void transformUvsFromAtlasToSprite() {
-        var sprite = requiredSprite();
+        var sprite = requiredSpriteInfo().sprite();
         var uOrigin = sprite.getU0();
         var vOrigin = sprite.getV0();
         var uWidth = sprite.getU1() - uOrigin;
@@ -848,7 +845,7 @@ public class MutableQuad {
             bakedColors = BakedColors.of(colors[0], colors[1], colors[2], colors[3]);
         }
 
-        var sprite = requiredSprite();
+        var spriteInfo = requiredSpriteInfo();
         return new BakedQuad(
                 pos0,
                 pos1,
@@ -860,7 +857,7 @@ public class MutableQuad {
                 uvs[3],
                 tintIndex,
                 direction,
-                sprite,
+                spriteInfo,
                 shade,
                 lightEmission,
                 bakedNormals,
@@ -932,7 +929,7 @@ public class MutableQuad {
         System.arraycopy(colors, 0, dest.colors, 0, colors.length);
         dest.tintIndex = tintIndex;
         dest.direction = direction;
-        dest.sprite = sprite;
+        dest.spriteInfo = spriteInfo;
         dest.shade = shade;
         dest.lightEmission = lightEmission;
         dest.hasAmbientOcclusion = hasAmbientOcclusion;
@@ -948,7 +945,7 @@ public class MutableQuad {
         Arrays.fill(normals, 0);
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
-        sprite = null;
+        spriteInfo = null;
         tintIndex = -1;
         shade = true;
         lightEmission = 0;

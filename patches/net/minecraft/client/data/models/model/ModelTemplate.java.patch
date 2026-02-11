@@ -10,7 +10,7 @@
 +    }
 +
 +    // Neo: Reintroduced to allow subclasses to customize the serialization logic, many implementations just delegating
-+    public JsonObject createBaseTemplate(Identifier p_388380_, Map<TextureSlot, Identifier> slots) {
++    public JsonObject createBaseTemplate(Identifier target, Map<TextureSlot, Material> slots) {
              JsonObject result = new JsonObject();
              this.model.ifPresent(m -> result.addProperty("parent", m.toString()));
              if (!slots.isEmpty()) {

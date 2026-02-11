@@ -49,7 +49,7 @@ public final class QuadTransforms {
                 quad.tintIndex(),
                 // TODO: the direction is currently not being transformed, but probably should be
                 quad.direction(),
-                quad.sprite(),
+                quad.spriteInfo(),
                 quad.shade(),
                 quad.lightEmission(),
                 updatedNormals,
