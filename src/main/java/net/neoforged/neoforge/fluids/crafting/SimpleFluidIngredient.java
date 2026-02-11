@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidInstance;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 
@@ -31,7 +32,7 @@ import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
  */
 public class SimpleFluidIngredient extends FluidIngredient {
     private static final Codec<HolderSet<Fluid>> HOLDER_SET_NO_EMPTY_FLUID = HolderSetCodec.create(
-            Registries.FLUID, FluidStack.FLUID_NON_EMPTY_CODEC, false);
+            Registries.FLUID, FluidInstance.FLUID_HOLDER_CODEC, false);
 
     static final Codec<SimpleFluidIngredient> CODEC = ExtraCodecs.nonEmptyHolderSet(HOLDER_SET_NO_EMPTY_FLUID)
             .xmap(SimpleFluidIngredient::new, SimpleFluidIngredient::fluidSet);
