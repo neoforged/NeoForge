@@ -1,0 +1,12 @@
+--- a/net/minecraft/commands/ArgumentVisitor.java
++++ b/net/minecraft/commands/ArgumentVisitor.java
+@@ -15,7 +_,8 @@
+         visitNodeArguments(rootContext, output);
+ 
+         CommandContextBuilder<S> child;
+-        while ((child = context.getChild()) != null && (!rejectRootRedirects || child.getRootNode() != rootContext.getRootNode())) {
++        // Neo: Check if the command node is a RootCommandNode, instead of simply being the original root node; fixes NeoForge#186
++        while ((child = context.getChild()) != null && (!rejectRootRedirects || !(child.getRootNode() instanceof com.mojang.brigadier.tree.RootCommandNode))) {
+             visitNodeArguments(child, output);
+             context = child;
+         }
