@@ -136,6 +136,24 @@
              boolean oomRecovery = false;
  
              while (this.running) {
+@@ -953,7 +_,7 @@
+         CrashReport finalReport = this.fillReport(partialReport);
+         int exitCode = saveReportAndShutdownSoundManager(this, this.gameDirectory, finalReport);
+         this.emergencySave();
+-        System.exit(exitCode);
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(exitCode);
+     }
+ 
+     public static int saveReport(File gameDirectory, CrashReport crash) {
+@@ -985,7 +_,7 @@
+ 
+     public static void crash(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash) {
+         int exitCode = saveReportAndShutdownSoundManager(minecraft, gameDirectory, crash);
+-        System.exit(exitCode);
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(exitCode);
+     }
+ 
+     private static int saveReportAndShutdownSoundManager(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash) {
 @@ -1104,9 +_,7 @@
              LOGGER.error("setScreen called from non-game thread");
          }
@@ -175,6 +193,14 @@
              LOGGER.info("Stopping!");
  
              try {
+@@ -1177,6 +_,7 @@
+             }
+ 
+             this.close();
++            net.neoforged.neoforge.client.ClientLifecycleHooks.handleClientStopped(this);
+         } finally {
+             Util.timeSource = System::nanoTime;
+             if (!this.hasDelayedCrash()) {
 @@ -1294,9 +_,13 @@
          this.window.setErrorSection("Post render");
          this.frames++;
