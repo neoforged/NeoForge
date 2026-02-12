@@ -327,6 +327,7 @@ public class Tags {
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
         public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
         public static final TagKey<EntityType<?>> BOATS = tag("boats");
+        public static final TagKey<EntityType<?>> ITEM_FRAMES = tag("item_frames");
 
         /**
          * Entities should be included in this tag if they are not allowed to be picked up by items or grabbed in a way
