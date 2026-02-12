@@ -35,7 +35,7 @@ public record FluidStackTemplate(Holder<Fluid> fluid, int amount, DataComponentP
 
     public FluidStackTemplate {
         if (fluid.is(Fluids.EMPTY.builtInRegistryHolder()) || amount <= 0) {
-            throw new IllegalStateException("Fluid mst be non-empty");
+            throw new IllegalStateException("Fluid must be non-empty");
         }
     }
 
