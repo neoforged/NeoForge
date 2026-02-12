@@ -304,7 +304,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
     }
 
     /// {@return true if a and b refer to the same fluid, or if a is empty and b is null}
-    public static boolean isSameItem(FluidStack a, @Nullable FluidStackTemplate b) {
+    public static boolean isSameFluid(FluidStack a, @Nullable FluidStackTemplate b) {
         return b == null ? a.isEmpty() : a.is(b.fluid());
     }
 
