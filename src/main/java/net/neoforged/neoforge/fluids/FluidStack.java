@@ -142,7 +142,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final FluidStack EMPTY = new FluidStack(null);
     private int amount;
-    private final Fluid fluid;
+    private final @Nullable Holder<Fluid> fluid;
     private final PatchedDataComponentMap components;
 
     @Override
@@ -163,22 +163,22 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
-        this(fluid.value(), amount, patch);
+        this(fluid, amount, PatchedDataComponentMap.fromPatch(fluid.components(), patch));
     }
 
     public FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
-        this(fluid, amount, PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch));
+        this(fluid.builtInRegistryHolder(), amount, patch);
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount) {
-        this(fluid.value(), amount);
+        this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
     public FluidStack(Fluid fluid, int amount) {
-        this(fluid, amount, new PatchedDataComponentMap(DataComponentMap.EMPTY));
+        this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
-    private FluidStack(Fluid fluid, int amount, PatchedDataComponentMap components) {
+    private FluidStack(Holder<Fluid> fluid, int amount, PatchedDataComponentMap components) {
         this.fluid = fluid;
         this.amount = amount;
         this.components = components;
@@ -223,7 +223,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
      * Returns the fluid in this stack, or {@link Fluids#EMPTY} if this stack is empty.
      */
     public Fluid getFluid() {
-        return this.isEmpty() ? Fluids.EMPTY : this.fluid;
+        return this.isEmpty() ? Fluids.EMPTY : this.fluid.value();
     }
 
     @Override
