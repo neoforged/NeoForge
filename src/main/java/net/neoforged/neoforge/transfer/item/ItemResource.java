@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.item;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
@@ -29,12 +30,14 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
 public final class ItemResource implements DataComponentHolderResource<Item> {
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * The empty resource instance of a {@link ItemResource}
      */
@@ -93,7 +96,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
         if (template.components().isEmpty()) {
             return of(template.item());
         }
-        return new ItemResource(new ItemStack(template.item(), 1, template.components()));
+        return new ItemResource(template.withCount(1).create());
     }
 
     /**
@@ -144,7 +147,11 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
         if (holder.value() == Items.AIR || patch.isEmpty()) {
             return of(holder.value());
         }
-        return new ItemResource(new ItemStack(holder, 1, patch));
+
+        return ItemStack.validateStrict(new ItemStack(holder, 1, patch)).mapOrElse(ItemResource::new, err -> {
+            LOGGER.warn("Can't create item resource '{}' with components {}, error: {}", holder.getRegisteredName(), patch, err.message());
+            return EMPTY;
+        });
     }
 
     /**
