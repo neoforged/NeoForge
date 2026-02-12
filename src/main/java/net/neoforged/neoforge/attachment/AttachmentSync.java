@@ -105,7 +105,7 @@ public final class AttachmentSync {
         var packet = new SyncAttachmentsPayload(syncTarget(holder), List.of(type), data).toVanillaClientbound();
         for (var player : players) {
             if (type.syncHandler.sendToPlayer(holder.getExposedHolder(), player)) {
-                if (player.connection.hasChannel(SyncAttachmentsPayload.TYPE.id())) {
+                if (player.connection.hasChannel(SyncAttachmentsPayload.TYPE)) {
                     player.connection.send(packet);
                 }
             }
@@ -163,7 +163,7 @@ public final class AttachmentSync {
         if (holder.attachments == null) {
             return null;
         }
-        if (!to.connection.hasChannel(SyncAttachmentsPayload.TYPE.id())) {
+        if (!to.connection.hasChannel(SyncAttachmentsPayload.TYPE)) {
             return null;
         }
         boolean anySyncableAttachment = false;
