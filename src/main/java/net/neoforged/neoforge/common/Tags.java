@@ -14,6 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -327,6 +328,9 @@ public class Tags {
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
         public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
         public static final TagKey<EntityType<?>> BOATS = tag("boats");
+
+        /// Tag containing entity types, generally extending {@link ItemFrame},
+        /// that can be placed on the surfaces of blocks to display an item.
         public static final TagKey<EntityType<?>> ITEM_FRAMES = tag("item_frames");
 
         /**
