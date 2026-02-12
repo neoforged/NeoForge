@@ -85,7 +85,10 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
         if (template.components().isEmpty()) {
             return of(template.fluid());
         }
-        return new FluidResource(template.withAmount(FluidType.BUCKET_VOLUME).create());
+
+        var stack = template.create();
+        stack.setAmount(FluidType.BUCKET_VOLUME);
+        return new FluidResource(stack);
     }
 
     /**

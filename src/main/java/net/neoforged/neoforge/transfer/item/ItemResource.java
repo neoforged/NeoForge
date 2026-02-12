@@ -96,7 +96,10 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
         if (template.components().isEmpty()) {
             return of(template.item());
         }
-        return new ItemResource(template.withCount(1).create());
+
+        var stack = template.create();
+        stack.setCount(1);
+        return new ItemResource(stack);
     }
 
     /**
