@@ -12,6 +12,7 @@ import com.mojang.blaze3d.textures.GpuSampler;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -38,6 +39,14 @@ public enum NeoForgeRenderTypes {
     // TODO 1.21.11: Some render types previously enabled linear filtering, this intends to be equivalent, but was not checked. Also check the mipmap flag.
     private static final Supplier<GpuSampler> LINEAR_FILTERING_SAMPLER = () -> RenderSystem.getSamplerCache()
             .getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.LINEAR, FilterMode.NEAREST, false);
+
+    public static RenderType getItemCutoutUnlit(Identifier texture) {
+        return Internal.ITEM_CUTOUT_UNLIT.apply(texture);
+    }
+
+    public static RenderType getItemTranslucentUnlit(Identifier texture) {
+        return Internal.ITEM_TRANSLUCENT_UNLIT.apply(texture);
+    }
 
     /**
      * @return A RenderType fit for multi-layer solid item rendering.
@@ -148,6 +157,31 @@ public enum NeoForgeRenderTypes {
     }
 
     private static final class Internal {
+        private static final Function<Identifier, RenderType> ITEM_CUTOUT_UNLIT = Util.memoize(Internal::itemCutoutUnlit);
+        private static final Function<Identifier, RenderType> ITEM_TRANSLUCENT_UNLIT = Util.memoize(Internal::itemTranslucentUnlit);
+
+        private static RenderType itemCutoutUnlit(Identifier texture) {
+            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_CUTOUT_UNLIT)
+                    .withTexture("Sampler0", texture)
+                    .useLightmap()
+                    .affectsCrumbling()
+                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
+                    .createRenderSetup();
+            return RenderType.create("neoforge_item_cutout_unlit", state);
+        }
+
+        private static RenderType itemTranslucentUnlit(Identifier texture) {
+            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_TRANSLUCENT_UNLIT)
+                    .withTexture("Sampler0", texture)
+                    .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+                    .useLightmap()
+                    .affectsCrumbling()
+                    .sortOnUpload()
+                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
+                    .createRenderSetup();
+            return RenderType.create("neoforge_item_translucent_unlit", state);
+        }
+
         public static Function<Identifier, RenderType> UNSORTED_TRANSLUCENT = Util.memoize(Internal::unsortedTranslucent);
 
         private static RenderType unsortedTranslucent(Identifier textureLocation) {

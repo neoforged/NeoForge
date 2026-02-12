@@ -9,69 +9,45 @@ import com.mojang.math.Quadrant;
 import com.mojang.math.Transformation;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
+import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import org.joml.Vector3f;
-import org.jspecify.annotations.Nullable;
 
 public final class UnbakedElementsHelper {
     private UnbakedElementsHelper() {}
 
-    private static final ModelBaker.PartCache DUMMY_PART_CACHE = vector -> vector;
-
     /**
-     * @see #createUnbakedItemElements(int, TextureAtlasSprite, ExtraFaceData)
+     * @see #bakeItemMaskQuads(ModelBaker, int, Material.Baked, Material.Baked, ModelState, ExtraFaceData)
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, TextureAtlasSprite sprite) {
-        return createUnbakedItemElements(layerIndex, sprite, null);
+    public static List<BakedQuad> bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState) {
+        return bakeItemMaskQuads(baker, layerIndex, maskMaterial, outputMaterial, modelState, ExtraFaceData.DEFAULT);
     }
 
     /**
-     * Creates a list of {@linkplain BlockElement block elements} in the shape of the specified sprite contents.
-     * These can later be baked using the same, or another texture.
+     * Bakes quads in the shape of the specified mask texture with the specified output texture applied to them.
      * <p>
-     * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up the whole surface.
+     * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the mask texture uses.
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, TextureAtlasSprite sprite, @Nullable ExtraFaceData faceData) {
-        var elements = ItemModelGenerator.processFrames(layerIndex, "layer" + layerIndex, sprite.contents());
-        if (faceData != null) {
-            elements.replaceAll(elem -> new BlockElement(elem.from(), elem.to(), elem.faces(), elem.rotation(), elem.shade(), elem.lightEmission(), faceData));
-        }
-        return elements;
-    }
+    public static List<BakedQuad> bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData) {
+        QuadCollection.Builder builder = new QuadCollection.Builder();
+        ModelBaker.Interner interner = baker.interner();
+        BakedQuad.SpriteInfo maskSpriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(maskMaterial, outputMaterial.sprite().transparency()));
+        BakedQuad.SpriteInfo outSpriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(outputMaterial, outputMaterial.sprite().transparency()));
 
-    /**
-     * @see #createUnbakedItemMaskElements(int, TextureAtlasSprite, ExtraFaceData)
-     */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, TextureAtlasSprite sprite) {
-        return createUnbakedItemMaskElements(layerIndex, sprite, null);
-    }
+        // TODO 26.1: why are the side faces included at all?
+        ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskSpriteInfo, layerIndex);
 
-    /**
-     * Creates a list of {@linkplain BlockElement block elements} in the shape of the specified sprite contents.
-     * These can later be baked using the same, or another texture.
-     * <p>
-     * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the texture uses.
-     */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, TextureAtlasSprite sprite, @Nullable ExtraFaceData faceData) {
-        List<BlockElement> elements = createUnbakedItemElements(layerIndex, sprite, faceData);
-        elements.removeFirst(); // Remove north and south faces
-
-        SpriteContents spriteContents = sprite.contents();
+        SpriteContents spriteContents = maskMaterial.sprite().contents();
         int width = spriteContents.width();
         int height = spriteContents.height();
         BitSet bits = new BitSet(width * height);
@@ -114,34 +90,31 @@ public final class UnbakedElementsHelper {
                     // Create UVs
                     BlockElementFace.UVs northUvs = FaceBakery.defaultFaceUV(from, to, Direction.NORTH);
                     BlockElementFace.UVs southUvs = FaceBakery.defaultFaceUV(from, to, Direction.SOUTH);
-                    // Create faces
-                    Map<Direction, BlockElementFace> faces = Map.of(
-                            Direction.NORTH, new BlockElementFace(null, layerIndex, "layer" + layerIndex, northUvs, Quadrant.R0),
-                            Direction.SOUTH, new BlockElementFace(null, layerIndex, "layer" + layerIndex, southUvs, Quadrant.R0));
-                    // Create element
-                    elements.add(new BlockElement(from, to, faces, null, true, 0));
+                    // Create quads
+                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, northUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.SOUTH, modelState, null, true, 0, faceData));
+                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, southUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.NORTH, modelState, null, true, 0, faceData));
 
                     // Reset xStart
                     xStart = -1;
                 }
             }
         }
-        return elements;
+        return builder.build().getAll();
     }
 
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and feeds the baked quads to a {@linkplain QuadCollection.Builder quad collection builder}.
      */
-    public static void bakeElements(QuadCollection.Builder builder, List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
+    public static void bakeElements(ModelBaker baker, QuadCollection.Builder builder, List<BlockElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
         for (BlockElement element : elements) {
             element.faces().forEach((side, face) -> {
-                var sprite = spriteGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, Identifier.parse(face.texture())));
+                Material.Baked material = materialGetter.apply(face.texture());
                 BakedQuad quad = FaceBakery.bakeQuad(
-                        DUMMY_PART_CACHE,
+                        baker,
                         element.from(),
                         element.to(),
                         face,
-                        sprite,
+                        material,
                         side,
                         modelState,
                         element.rotation(),
@@ -158,11 +131,11 @@ public final class UnbakedElementsHelper {
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and returns the list of baked quads.
      */
-    public static List<BakedQuad> bakeElements(List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
+    public static List<BakedQuad> bakeElements(ModelBaker baker, List<BlockElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
         if (elements.isEmpty())
             return List.of();
         var builder = new QuadCollection.Builder();
-        bakeElements(builder, elements, spriteGetter, modelState);
+        bakeElements(baker, builder, elements, materialGetter, modelState);
         return builder.build().getAll();
     }
 
