@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.fluids;
 
 import com.google.common.collect.Lists;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,6 +22,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 
 /**
  * {@link ItemStack} equivalent for fluids.
@@ -136,15 +135,18 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
             }
         }
     };
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final FluidStack EMPTY = new FluidStack(null);
     private int amount;
     private final @Nullable Holder<Fluid> fluid;
     private final PatchedDataComponentMap components;
 
     @Override
-    public PatchedDataComponentMap getComponents() {
-        return components;
+    public DataComponentMap getComponents() {
+        return isEmpty() ? DataComponentMap.EMPTY : components;
+    }
+
+    public DataComponentMap getPrototype() {
+        return isEmpty() ? DataComponentMap.EMPTY : typeHolder().components();
     }
 
     public DataComponentPatch getComponentsPatch() {
@@ -153,6 +155,10 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
 
     public DataComponentMap immutableComponents() {
         return !this.isEmpty() ? this.components.toImmutableMap() : DataComponentMap.EMPTY;
+    }
+
+    public boolean hasNonDefault(DataComponentType<?> type) {
+        return !isEmpty() && components.hasNonDefault(type);
     }
 
     public boolean isComponentsPatchEmpty() {
@@ -190,14 +196,14 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
      * Checks if this fluid stack is empty.
      */
     public boolean isEmpty() {
-        return this == EMPTY || this.fluid == Fluids.EMPTY || this.amount <= 0;
+        return this == EMPTY || fluid.value().isSame(Fluids.EMPTY) || this.amount <= 0;
     }
 
     /**
      * Splits off a stack of the given amount of this stack and reduces this stack by the amount.
      */
     public FluidStack split(int amount) {
-        int i = Math.min(amount, this.amount);
+        int i = Math.min(amount, getAmount());
         FluidStack fluidStack = this.copyWithAmount(i);
         this.shrink(i);
         return fluidStack;
@@ -220,12 +226,12 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
      * Returns the fluid in this stack, or {@link Fluids#EMPTY} if this stack is empty.
      */
     public Fluid getFluid() {
-        return this.isEmpty() ? Fluids.EMPTY : this.fluid.value();
+        return typeHolder().value();
     }
 
     @Override
     public Holder<Fluid> typeHolder() {
-        return this.getFluid().builtInRegistryHolder();
+        return isEmpty() ? Fluids.EMPTY.builtInRegistryHolder() : fluid;
     }
 
     public boolean is(Predicate<Holder<Fluid>> holderPredicate) {
@@ -239,7 +245,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
         if (this.isEmpty()) {
             return EMPTY;
         } else {
-            return new FluidStack(this.fluid, this.amount, this.components.copy());
+            return new FluidStack(typeHolder(), amount(), this.components.copy());
         }
     }
 
@@ -254,6 +260,18 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
             fluidStack.setAmount(amount);
             return fluidStack;
         }
+    }
+
+    public FluidStack transmuteCopy(Fluid newFluid) {
+        return transmuteCopy(newFluid, amount());
+    }
+
+    public FluidStack transmuteCopy(Fluid newFluid, int newAmount) {
+        return isEmpty() ? EMPTY : transmuteCopyIgnoreEmpty(newFluid, newAmount);
+    }
+
+    private FluidStack transmuteCopyIgnoreEmpty(Fluid newFluid, int newAmount) {
+        return new FluidStack(newFluid, newAmount, components.asPatch());
     }
 
     /**
@@ -398,6 +416,10 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
     @Override
     public <T> T set(DataComponentType<T> type, @Nullable T component) {
         return this.components.set(type, component);
+    }
+
+    public <T> @Nullable T set(TypedDataComponent<T> value) {
+        return components.set(value);
     }
 
     /**
