@@ -151,10 +151,15 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
             return of(holder.value());
         }
 
-        return ItemStack.validateStrict(new ItemStack(holder, 1, patch)).mapOrElse(ItemResource::new, err -> {
-            LOGGER.warn("Can't create item resource '{}' with components {}, error: {}", holder.getRegisteredName(), patch, err.message());
+        var stack = new ItemStack(holder, 1, patch);
+        var err = ItemStack.validateStrict(stack).error();
+
+        if (err.isPresent()) {
+            LOGGER.warn("Can't create item resource '{}' with components {}, error: {}", holder.getRegisteredName(), patch, err.get().message());
             return EMPTY;
-        });
+        }
+
+        return new ItemResource(stack);
     }
 
     /**
