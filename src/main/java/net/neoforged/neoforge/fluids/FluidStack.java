@@ -48,9 +48,6 @@ import org.slf4j.Logger;
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
 public final class FluidStack implements MutableDataComponentHolder, FluidInstance {
-    /// @deprecated Use {@linkplain #FLUID_HOLDER_CODEC}
-    @Deprecated
-    public static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = FLUID_HOLDER_CODEC;
     /**
      * A standard map codec for fluid stacks that does not accept empty stacks.
      */
