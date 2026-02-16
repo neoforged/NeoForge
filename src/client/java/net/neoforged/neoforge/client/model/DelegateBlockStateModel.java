@@ -51,7 +51,13 @@ public abstract class DelegateBlockStateModel implements BlockStateModel {
     }
 
     @Override
+    @Deprecated
     public boolean hasTranslucency() {
         return delegate.hasTranslucency();
+    }
+
+    @Override
+    public boolean hasTranslucency(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return delegate.hasTranslucency(level, pos, state);
     }
 }

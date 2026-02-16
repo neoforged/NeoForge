@@ -94,4 +94,13 @@ public interface BlockStateModelExtension {
     default Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         return self().particleMaterial();
     }
+
+    /// Returns whether this model contains any translucent quads.
+    ///
+    /// @param level a level to query block entity data or other world state
+    /// @param pos   the position of the block being rendered
+    /// @param state the state of the block being rendered
+    default boolean hasTranslucency(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return self().hasTranslucency();
+    }
 }

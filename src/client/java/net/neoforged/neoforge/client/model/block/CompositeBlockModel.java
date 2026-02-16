@@ -75,6 +75,16 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
         return hasTranslucency;
     }
 
+    @Override
+    public boolean hasTranslucency(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        for (BlockStateModel model : models) {
+            if (model.hasTranslucency(level, pos, state)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public record Unbaked(List<BlockStateModel.Unbaked> models) implements CustomUnbakedBlockStateModel {
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 BlockStateModel.Unbaked.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("models").forGetter(Unbaked::models))
