@@ -52,7 +52,7 @@
          for (int dy = 2; dy >= -3; dy--) {
              BlockPos cursor = pos.above(dy);
 -            BlockState replaceWith = this.provider.getState(context.level(), context.random(), cursor);
-+            BlockState replaceWith = eventProvider.getState(context.level(), context.random(), pos);
++            BlockState replaceWith = eventProvider.getState(context.level(), context.random(), cursor);
              if (replaceWith != null) {
                  context.setBlock(cursor, replaceWith);
                  break;
