@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/WeightedVariants.java
 +++ b/net/minecraft/client/resources/model/WeightedVariants.java
-@@ -43,9 +_,25 @@
+@@ -43,9 +_,31 @@
          return this.hasTranslucency;
      }
  
@@ -14,8 +14,14 @@
 +    }
 +
 +    @Override
++    @org.jspecify.annotations.Nullable
 +    public Object createGeometryKey(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random) {
 +        return this.list.getRandomOrThrow(random).createGeometryKey(level, pos, state, random);
++    }
++
++    @Override
++    public Material.Baked particleMaterial(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++        return this.list.unwrap().getFirst().value().particleMaterial(level, pos, state);
 +    }
 +
 +    @Override

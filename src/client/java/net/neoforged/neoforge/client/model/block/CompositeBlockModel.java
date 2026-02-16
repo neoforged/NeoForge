@@ -71,6 +71,11 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
     }
 
     @Override
+    public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return models.getFirst().particleMaterial(level, pos, state);
+    }
+
+    @Override
     public boolean hasTranslucency() {
         return hasTranslucency;
     }
