@@ -1,14 +1,17 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -63,6 +_,8 @@
+@@ -63,7 +_,11 @@
      private final Map<Identifier, ClientItem> clientInfos;
      private final Map<Identifier, ResolvedModel> resolvedModels;
      private final ResolvedModel missingModel;
 +    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
 +    private final net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations;
  
++    /// @deprecated Neo: use [#ModelBakery(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
++    @Deprecated
      public ModelBakery(
          EntityModelSet entityModelSet,
+         SpriteGetter sprites,
 @@ -73,6 +_,20 @@
          Map<Identifier, ResolvedModel> resolvedModels,
          ResolvedModel missingModel
