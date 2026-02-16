@@ -241,7 +241,7 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
 -                    boolean isBlockTranslucent = this.minecraft.getBlockRenderer().getBlockModel(state).hasTranslucency();
-+                    boolean isBlockTranslucent = net.neoforged.neoforge.client.ClientHooks.isInTranslucentBlockOutlinePass(this.level, pos, state);
++                    boolean isBlockTranslucent = this.minecraft.getBlockRenderer().getBlockModel(state).hasTranslucency(this.level, pos, state);
                      boolean highContrast = this.minecraft.options.highContrastBlockOutline().get();
                      CollisionContext context = CollisionContext.of(camera.entity());
 +                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, pos, state, blockHitResult, context, isBlockTranslucent, highContrast, camera, levelRenderState);

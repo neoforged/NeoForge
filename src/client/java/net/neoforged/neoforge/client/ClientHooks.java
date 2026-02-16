@@ -931,11 +931,6 @@ public class ClientHooks {
         return event.getTooltip();
     }
 
-    public static boolean isInTranslucentBlockOutlinePass(Level level, BlockPos pos, BlockState state) {
-        // TODO 26.1: consider adding overload with level context
-        return Minecraft.getInstance().getBlockRenderer().getBlockModel(state).hasTranslucency();
-    }
-
     public static void reloadRenderer() {
         Minecraft.getInstance().levelRenderer.allChanged();
     }
