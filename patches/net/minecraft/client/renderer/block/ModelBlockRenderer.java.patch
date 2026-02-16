@@ -121,7 +121,7 @@
              storage.calculate(level, state, pos, quad.direction(), quad.shade());
              this.putQuadData(level, state, pos, output, poseStack.last(), quad, storage, overlayCoords);
          }
-@@ -278,23 +_,43 @@
+@@ -278,23 +_,45 @@
          ModelBlockRenderer.CommonRenderStorage shapeState
      ) {
          for (BakedQuad quad : quads) {
@@ -156,6 +156,8 @@
          }
      }
  
++    /// @deprecated Neo: use [#renderModel(PoseStack.Pose, BakedQuadOutput, BlockStateModel, int, int, int, net.minecraft.world.level.BlockAndTintGetter, BlockPos, BlockState)] instead
++    @Deprecated
      public static void renderModel(PoseStack.Pose pose, BakedQuadOutput output, BlockStateModel model, int tintColor, int lightCoords, int overlayCoords) {
 +        renderModel(pose, output, model, tintColor, lightCoords, overlayCoords, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 +    }
