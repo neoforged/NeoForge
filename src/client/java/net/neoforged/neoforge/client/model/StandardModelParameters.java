@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.RenderTypeGroup;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -30,7 +29,6 @@ public record StandardModelParameters(
         @Nullable Boolean ambientOcclusion,
         UnbakedModel.@Nullable GuiLight guiLight,
         @Nullable Transformation rootTransform,
-        RenderTypeGroup renderTypeGroup,
         Map<String, Boolean> partVisibility) {
     public static StandardModelParameters parse(JsonObject jsonObject, JsonDeserializationContext context) {
         String parentName = GsonHelper.getAsString(jsonObject, "parent", "");
@@ -59,9 +57,8 @@ public record StandardModelParameters(
         }
 
         Transformation rootTransform = NeoForgeModelProperties.deserializeRootTransform(jsonObject, context);
-        RenderTypeGroup renderTypeGroup = NeoForgeModelProperties.deserializeRenderType(jsonObject);
         Map<String, Boolean> partVisibility = NeoForgeModelProperties.deserializePartVisibility(jsonObject);
 
-        return new StandardModelParameters(parent, textures, itemTransforms, ambientOcclusion, guiLight, rootTransform, renderTypeGroup, partVisibility);
+        return new StandardModelParameters(parent, textures, itemTransforms, ambientOcclusion, guiLight, rootTransform, partVisibility);
     }
 }

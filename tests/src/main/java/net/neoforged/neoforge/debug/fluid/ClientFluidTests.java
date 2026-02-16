@@ -68,7 +68,6 @@ public class ClientFluidTests {
                 blockModels.createTrivialBlock(glass.value(), TexturedModel.CUBE
                         .updateTemplate(modelTemplate -> modelTemplate
                                 .extend()
-                                .renderType("cutout")
                                 .build())
                         .updateTexture(textures -> textures.put(TextureSlot.ALL, TextureMapping.getBlockTexture(Blocks.GLASS))));
             }

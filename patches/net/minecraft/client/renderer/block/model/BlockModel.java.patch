@@ -1,13 +1,12 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -27,22 +_,49 @@
+@@ -27,22 +_,47 @@
      @Nullable Boolean ambientOcclusion,
      @Nullable ItemTransforms transforms,
      TextureSlots.Data textureSlots,
 -    @Nullable Identifier parent
 +    @Nullable Identifier parent,
 +    com.mojang.math.@Nullable Transformation rootTransform,
-+    net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup,
 +    java.util.Map<String, Boolean> partVisibility
  ) implements UnbakedModel {
      @VisibleForTesting
@@ -38,30 +37,28 @@
 +            TextureSlots.Data textureSlots,
 +            @Nullable Identifier parent
 +    ) {
-+        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY, java.util.Map.of());
++        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of());
 +    }
 +
 +    @Override
 +    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
 +        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.rootTransform);
-+        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRenderTypeProperty(propertiesBuilder, this.renderTypeGroup);
 +        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.partVisibility);
 +    }
 +
      public static class Deserializer implements JsonDeserializer<BlockModel> {
          public BlockModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
              JsonObject object = json.getAsJsonObject();
-@@ -62,7 +_,12 @@
+@@ -62,7 +_,11 @@
              }
  
              Identifier parentLocation = parentName.isEmpty() ? null : Identifier.parse(parentName);
 -            return new BlockModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation);
 +
 +            var rootTransform = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRootTransform(object, context);
-+            var renderTypeGroup = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRenderType(object);
 +            var partVisibility = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializePartVisibility(object);
 +
-+            return new BlockModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, renderTypeGroup, partVisibility);
++            return new BlockModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, partVisibility);
          }
  
          private TextureSlots.Data getTextureMap(JsonObject object) {

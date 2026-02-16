@@ -848,7 +848,6 @@ public class ClientHooks {
         RecipeBookManager.init();
         mc.gui.initModdedOverlays();
         CustomEnvironmentEffectsRendererManager.init();
-        NamedRenderTypeManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();

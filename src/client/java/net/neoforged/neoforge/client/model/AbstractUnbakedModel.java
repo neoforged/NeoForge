@@ -66,7 +66,6 @@ public abstract class AbstractUnbakedModel implements UnbakedModel {
     @Override
     public void fillAdditionalProperties(ContextMap.Builder propertiesBuilder) {
         NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.parameters.rootTransform());
-        NeoForgeModelProperties.fillRenderTypeProperty(propertiesBuilder, this.parameters.renderTypeGroup());
         NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.parameters.partVisibility());
     }
 }

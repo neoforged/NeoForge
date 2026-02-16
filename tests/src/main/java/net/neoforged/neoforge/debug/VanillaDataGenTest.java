@@ -50,7 +50,7 @@ public interface VanillaDataGenTest {
                 blockModels.createTrivialCube(block.value());
 
                 // generate simple flat model for our item
-                itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.extend().renderType("cutout").build());
+                itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.extend().build());
             }
         });
 

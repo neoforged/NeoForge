@@ -9,7 +9,6 @@ import com.mojang.brigadier.Command;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -44,7 +43,6 @@ import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
-import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -200,11 +198,6 @@ public class ClientNeoForgeMod {
         event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
         // Animations need to be loaded before entity renderers are instantiated
         event.addDependency(NeoForgeReloadListeners.ENTITY_ANIMATIONS, VanillaClientListeners.ENTITY_RENDERER);
-    }
-
-    @SubscribeEvent
-    static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(Identifier.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnlitUnsortedTranslucent);
     }
 
     @SubscribeEvent

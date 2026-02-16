@@ -13,12 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.util.context.ContextMap;
-import net.neoforged.neoforge.client.NamedRenderTypeManager;
-import net.neoforged.neoforge.client.RenderTypeGroup;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -31,11 +28,6 @@ public final class NeoForgeModelProperties {
      * Root transform. For block models, this can be specified under the {@code transform} JSON key.
      */
     public static final ContextKey<Transformation> TRANSFORM = ContextKey.vanilla("transform");
-
-    /**
-     * Render type to use. For block models, this can be specified under the {@code render_type} JSON key.
-     */
-    public static final ContextKey<RenderTypeGroup> RENDER_TYPE = ContextKey.vanilla("render_type");
 
     /**
      * Part visibilities. For models with named parts (i.e. OBJ and composite), this can be specified under the {@code visibility} JSON key
@@ -52,17 +44,6 @@ public final class NeoForgeModelProperties {
             return context.deserialize(transform, Transformation.class);
         }
         return null;
-    }
-
-    /**
-     * {@return a {@link RenderTypeGroup} if the {@code render_type} key is present, otherwise {@link RenderTypeGroup#EMPTY}}
-     */
-    public static RenderTypeGroup deserializeRenderType(JsonObject jsonObject) {
-        if (jsonObject.has("render_type")) {
-            String renderTypeHintName = GsonHelper.getAsString(jsonObject, "render_type");
-            return NamedRenderTypeManager.get(Identifier.parse(renderTypeHintName));
-        }
-        return RenderTypeGroup.EMPTY;
     }
 
     /**
@@ -85,15 +66,6 @@ public final class NeoForgeModelProperties {
     public static void fillRootTransformProperty(ContextMap.Builder propertiesBuilder, @Nullable Transformation rootTransform) {
         if (rootTransform != null) {
             propertiesBuilder.withParameter(NeoForgeModelProperties.TRANSFORM, rootTransform);
-        }
-    }
-
-    /**
-     * Puts the given {@link RenderTypeGroup} into the given builder if present, overwriting any value specified in a parent model
-     */
-    public static void fillRenderTypeProperty(ContextMap.Builder propertiesBuilder, RenderTypeGroup renderTypeGroup) {
-        if (!renderTypeGroup.isEmpty()) {
-            propertiesBuilder.withParameter(NeoForgeModelProperties.RENDER_TYPE, renderTypeGroup);
         }
     }
 

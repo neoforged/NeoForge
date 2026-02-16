@@ -33,8 +33,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     final CustomLoaderBuilder customLoader;
     final RootTransformsBuilder rootTransforms;
     @Nullable
-    final Identifier renderType;
-    @Nullable
     final Boolean ambientOcclusion;
     final UnbakedModel.@Nullable GuiLight guiLight;
 
@@ -44,7 +42,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         this.elements = List.copyOf(builder.elements);
         this.customLoader = builder.customLoader;
         this.rootTransforms = builder.rootTransforms;
-        this.renderType = builder.renderType;
         this.ambientOcclusion = builder.ambientOcclusion;
         this.guiLight = builder.guiLight;
     }
@@ -59,10 +56,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
 
         if (this.guiLight != null) {
             root.addProperty("gui_light", this.guiLight.getSerializedName());
-        }
-
-        if (this.renderType != null) {
-            root.addProperty("render_type", this.renderType.toString());
         }
 
         if (!this.transforms.isEmpty()) {
