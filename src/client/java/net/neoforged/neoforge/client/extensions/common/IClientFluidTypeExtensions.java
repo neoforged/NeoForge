@@ -172,8 +172,7 @@ public interface IClientFluidTypeExtensions {
      * @param darkenWorldAmount the amount to darken the world by
      * @param fluidFogColor     the current RGBA color of the fog
      */
-    default void modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {
-    }
+    default void modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {}
 
     /**
      * Modifies how the fog is currently being rendered when the camera is
