@@ -165,20 +165,20 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
         return !this.isEmpty() ? this.components.isPatchEmpty() : true;
     }
 
-    public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
-        this(fluid, amount, PatchedDataComponentMap.fromPatch(fluid.components(), patch));
-    }
-
     public FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
         this(fluid.builtInRegistryHolder(), amount, patch);
+    }
+
+    public FluidStack(Fluid fluid, int amount) {
+        this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount) {
         this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
-    public FluidStack(Fluid fluid, int amount) {
-        this(fluid, amount, DataComponentPatch.EMPTY);
+    public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
+        this(fluid, amount, PatchedDataComponentMap.fromPatch(fluid.components(), patch));
     }
 
     private FluidStack(Holder<Fluid> fluid, int amount, PatchedDataComponentMap components) {
