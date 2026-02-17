@@ -50,7 +50,7 @@
      @Override
      protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
          if (!this.isInWater()) {
--            this.updateInWaterStateAndDoWaterCurrentPushing();
+-            this.updateFluidInteraction();
 +            this.updateInWaterStateAndDoWaterCurrentPushing(false);
          }
  

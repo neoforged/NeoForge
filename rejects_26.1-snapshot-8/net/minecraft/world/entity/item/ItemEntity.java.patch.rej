@@ -1,0 +1,10 @@
+++++ REJECTED HUNK: 2
+@@ -66,6 +70,7 @@
+         this.setPos(x, y, z);
+         this.setDeltaMovement(deltaX, deltaY, deltaZ);
+         this.setItem(itemStack);
++        this.lifespan = (itemStack.getItem() == null ? ItemEntity.LIFETIME : itemStack.getEntityLifespan(level));
+     }
+ 
+     @Override
+++++ END HUNK

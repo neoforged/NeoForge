@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/grower/TreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/TreeGrower.java
-@@ -129,6 +_,9 @@
+@@ -131,6 +_,9 @@
                  .lookupOrThrow(Registries.CONFIGURED_FEATURE)
                  .get(megaFeatureKey)
                  .orElse(null);
@@ -10,7 +10,7 @@
              if (featureHolder != null) {
                  for (int dx = 0; dx >= -1; dx--) {
                      for (int dz = 0; dz >= -1; dz--) {
-@@ -159,6 +_,9 @@
+@@ -161,6 +_,9 @@
              return false;
          } else {
              Holder<ConfiguredFeature<?, ?>> featureHolder = level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);

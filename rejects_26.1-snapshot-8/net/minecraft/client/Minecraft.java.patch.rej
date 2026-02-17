@@ -1,0 +1,17 @@
+++++ REJECTED HUNK: 21
+@@ -1294,9 +1322,13 @@
+         this.window.setErrorSection("Post render");
+         this.frames++;
+         boolean previouslyPaused = this.pause;
+-        this.pause = this.hasSingleplayerServer()
++        boolean pause = this.hasSingleplayerServer()
+             && (this.screen != null && this.screen.isPauseScreen() || this.overlay != null && this.overlay.isPauseScreen())
+             && !this.singleplayerServer.isPublished();
++        if (pause != this.pause && !net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePre(pause)) {
++            this.pause = pause;
++            net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePost(pause);
++        }
+         if (!previouslyPaused && this.pause) {
+             this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
+         }
+++++ END HUNK

@@ -1,0 +1,15 @@
+++++ REJECTED HUNK: 1
+@@ -455,6 +455,12 @@
+                 for (int dz = -1; dz <= 1; dz++) {
+                     if (dx != 0 || dz != 0) {
+                         PathType pathType = context.getPathTypeFromState(x + dx, y + dy, z + dz);
++                        BlockState blockState = context.level().getBlockState(context.currentEvalPos());
++                        PathType adjBlockPathType = blockState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
++                        if (adjBlockPathType != null) return adjBlockPathType;
++                        net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
++                        PathType adjFluidPathType = fluidState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
++                        if (adjFluidPathType != null) return adjFluidPathType;
+                         if (pathType == PathType.DAMAGE_OTHER) {
+                             return PathType.DANGER_OTHER;
+                         }
+++++ END HUNK

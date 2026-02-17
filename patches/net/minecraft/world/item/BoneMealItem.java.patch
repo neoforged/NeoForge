@@ -9,7 +9,7 @@
              if (!level.isClientSide()) {
                  boneMealStack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH);
                  level.levelEvent(1505, pos, 15);
-@@ -60,8 +_,17 @@
+@@ -61,8 +_,17 @@
          }
      }
  

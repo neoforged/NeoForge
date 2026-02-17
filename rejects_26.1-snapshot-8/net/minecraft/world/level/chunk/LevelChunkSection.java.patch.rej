@@ -1,6 +1,5 @@
---- a/net/minecraft/world/level/chunk/LevelChunkSection.java
-+++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
-@@ -70,7 +_,7 @@
+++++ REJECTED HUNK: 1
+@@ -70,7 +70,7 @@
  
          FluidState previousFluid = previous.getFluidState();
          FluidState fluid = state.getFluidState();
@@ -9,7 +8,10 @@
              this.nonEmptyBlockCount--;
              if (previous.isRandomlyTicking()) {
                  this.tickingBlockCount--;
-@@ -81,7 +_,7 @@
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -81,7 +81,7 @@
              this.tickingFluidCount--;
          }
  
@@ -18,7 +20,10 @@
              this.nonEmptyBlockCount++;
              if (state.isRandomlyTicking()) {
                  this.tickingBlockCount++;
-@@ -124,7 +_,7 @@
+++++ END HUNK
+
+++++ REJECTED HUNK: 3
+@@ -124,7 +124,7 @@
  
              public void accept(BlockState state, int count) {
                  FluidState fluid = state.getFluidState();
@@ -27,3 +32,4 @@
                      this.nonEmptyBlockCount += count;
                      if (state.isRandomlyTicking()) {
                          this.tickingBlockCount += count;
+++++ END HUNK
