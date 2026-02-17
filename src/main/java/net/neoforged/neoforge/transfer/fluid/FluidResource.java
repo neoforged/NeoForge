@@ -73,7 +73,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
         return new FluidResource(stack.copyWithAmount(FluidType.BUCKET_VOLUME));
     }
 
-    /// Creates an FluidResource using the default or copy of the passed in fluid stack. Note the count is lost.
+    /// Creates a FluidResource using the default or copy of the passed in fluid stack. Note the amount is lost.
     ///
     /// @param template stack to copy with a size of 1
     /// @return If null was given, an empty resource is returned.

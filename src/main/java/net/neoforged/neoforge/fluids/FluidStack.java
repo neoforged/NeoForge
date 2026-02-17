@@ -287,7 +287,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
         }
     }
 
-    /// Compares an fluidstack with an [FluidStackTemplate] as per [#matches(FluidStack, FluidStack)].
+    /// Compares a fluidstack with a [FluidStackTemplate] as per [#matches(FluidStack, FluidStack)].
     public static boolean matches(FluidStack a, @Nullable FluidStackTemplate b) {
         if (b == null) {
             return a.isEmpty();
@@ -323,7 +323,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
         return b == null ? a.isEmpty() : a.is(b.fluid());
     }
 
-    /// Compares the fluid and components of this stack against an [FluidStackTemplate].
+    /// Compares the fluid and components of this stack against a [FluidStackTemplate].
     ///
     /// @return True if either this stack is empty and the template is null, or they reference the same fluid and have equivalent component patches.
     public static boolean isSameFluidSameComponents(FluidStack a, @Nullable FluidStackTemplate b) {
