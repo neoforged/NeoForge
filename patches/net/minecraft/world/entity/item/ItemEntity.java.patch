@@ -11,6 +11,22 @@
  
      public ItemEntity(EntityType<? extends ItemEntity> type, Level level) {
          super(type, level);
+@@ -62,6 +_,7 @@
+         this.setPos(x, y, z);
+         this.setItem(itemStack);
+         this.setDeltaMovement(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
++        this.lifespan = (itemStack.getItem() == null ? LIFETIME : itemStack.getEntityLifespan(level));
+     }
+ 
+     public ItemEntity(Level level, double x, double y, double z, ItemStack itemStack, double deltaX, double deltaY, double deltaZ) {
+@@ -69,6 +_,7 @@
+         this.setPos(x, y, z);
+         this.setItem(itemStack);
+         this.setDeltaMovement(deltaX, deltaY, deltaZ);
++        this.lifespan = (itemStack.getItem() == null ? LIFETIME : itemStack.getEntityLifespan(level));
+     }
+ 
+     @Override
 @@ -106,6 +_,7 @@
  
      @Override
