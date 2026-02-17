@@ -43,7 +43,7 @@ public sealed interface ClockAdjustment {
 
         @Override
         public void apply(ServerClockManager clockManager, Holder<WorldClock> clock) {
-            clockManager.skipToTimeMarker(clock, marker);
+            clockManager.moveToTimeMarker(clock, marker);
         }
     }
 }
