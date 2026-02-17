@@ -51,6 +51,14 @@ public record FluidStackTemplate(Holder<Fluid> fluid, int amount, DataComponentP
         this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
+    public static FluidStackTemplate fromNonEmptyStack(FluidStack stack) {
+        if (stack.isEmpty()) {
+            throw new IllegalStateException("Stack must be non-empty");
+        }
+
+        return new FluidStackTemplate(stack.typeHolder(), stack.getAmount(), stack.getComponentsPatch());
+    }
+
     public FluidStackTemplate withAmount(int amount) {
         return this.amount == amount ? this : new FluidStackTemplate(fluid, amount, components);
     }
@@ -77,14 +85,6 @@ public record FluidStackTemplate(Holder<Fluid> fluid, int amount, DataComponentP
     @Override
     public @Nullable <T> T get(DataComponentType<? extends T> type) {
         return components.get(fluid.components(), type);
-    }
-
-    public static FluidStackTemplate fromNonEmptyStack(FluidStack stack) {
-        if (stack.isEmpty()) {
-            throw new IllegalStateException("Stack must be non-empty");
-        }
-
-        return new FluidStackTemplate(stack.typeHolder(), stack.getAmount(), stack.getComponentsPatch());
     }
 
     public static Codec<FluidStackTemplate> fixedAmountCodec(int amount) {
