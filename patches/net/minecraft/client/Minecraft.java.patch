@@ -201,6 +201,21 @@
          } finally {
              Util.timeSource = System::nanoTime;
              if (!this.hasDelayedCrash()) {
+@@ -1278,9 +_,13 @@
+ 
+         this.window.setErrorSection("Post render");
+         boolean previouslyPaused = this.pause;
+-        this.pause = this.hasSingleplayerServer()
++        boolean pause = this.hasSingleplayerServer()
+             && (this.screen != null && this.screen.isPauseScreen() || this.overlay != null && this.overlay.isPauseScreen())
+             && !this.singleplayerServer.isPublished();
++        if (pause != this.pause && !net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePre(pause)) {
++            this.pause = pause;
++            net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePost(pause);
++        }
+         if (!previouslyPaused && this.pause) {
+             this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
+         }
 @@ -1312,7 +_,9 @@
              .clearColorAndDepthTextures(mainRenderTarget.getColorTexture(), 0, mainRenderTarget.getDepthTexture(), 1.0);
          profiler.popPush("gameRenderer");
