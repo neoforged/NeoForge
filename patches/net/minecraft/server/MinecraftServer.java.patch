@@ -21,7 +21,18 @@
              this.tickFrame = TracyClient.createDiscontinuousFrame("Server Tick");
              this.notificationManager = new NotificationManager();
              this.serverActivityMonitor = new ServerActivityMonitor(this.notificationManager, 30);
-@@ -443,6 +_,7 @@
+@@ -436,13 +_,17 @@
+             new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new VillageSiege(), new WanderingTraderSpawner(this.savedDataStorage)
+         );
+         LevelStem overworldData = dimensions.getValue(LevelStem.OVERWORLD);
++        // NeoForge: Get seed override and use it to construct overworld level if present
++        java.util.OptionalLong overworldSeedOverride = overworldData.seedOverride();
++        long overworldBiomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(overworldSeedOverride).map(BiomeManager::obfuscateSeed).orElse(biomeZoomSeed);
+         ServerLevel overworld = new ServerLevel(
+-            this, this.executor, this.storageSource, levelData, Level.OVERWORLD, overworldData, isDebug, biomeZoomSeed, overworldCustomSpawners, true
++            this, this.executor, this.storageSource, levelData, Level.OVERWORLD, overworldData, isDebug, overworldBiomeZoomSeed, overworldCustomSpawners, true, overworldSeedOverride
+         );
+         this.levels.put(Level.OVERWORLD, overworld);
          this.scoreboard.load(this.savedDataStorage.computeIfAbsent(ScoreboardSaveData.TYPE).getData());
          this.commandStorage = new CommandStorage(this.savedDataStorage);
          this.stopwatches = this.savedDataStorage.computeIfAbsent(Stopwatches.TYPE);
@@ -29,8 +40,16 @@
          if (!levelData.isInitialized()) {
              try {
                  setInitialSpawn(overworld, levelData, worldOptions.generateBonusChest(), isDebug, this.levelLoadListener);
-@@ -477,6 +_,7 @@
-                     this, this.executor, this.storageSource, derivedLevelData, dimension, entry.getValue(), isDebug, biomeZoomSeed, ImmutableList.of(), false
+@@ -473,10 +_,14 @@
+             if (name != LevelStem.OVERWORLD) {
+                 ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, name.identifier());
+                 DerivedLevelData derivedLevelData = new DerivedLevelData(this.worldData, levelData);
++                // NeoForge: Get seed override and use it to construct level if present
++                java.util.OptionalLong dimensionSeedOverride = entry.getValue().seedOverride();
++                long dimensionBiomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(dimensionSeedOverride).map(BiomeManager::obfuscateSeed).orElse(biomeZoomSeed);
+                 level = new ServerLevel(
+-                    this, this.executor, this.storageSource, derivedLevelData, dimension, entry.getValue(), isDebug, biomeZoomSeed, ImmutableList.of(), false
++                    this, this.executor, this.storageSource, derivedLevelData, dimension, entry.getValue(), isDebug, dimensionBiomeZoomSeed, ImmutableList.of(), false, dimensionSeedOverride
                  );
                  this.levels.put(dimension, level);
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(name)));
