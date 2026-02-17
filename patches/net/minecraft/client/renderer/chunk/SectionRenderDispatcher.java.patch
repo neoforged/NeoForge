@@ -48,3 +48,12 @@
              }
  
              @Override
+@@ -557,7 +_,7 @@
+                         SectionCompiler.Results results;
+                         try (Zone ignored = Profiler.get().zone("Compile Section")) {
+                             results = SectionRenderDispatcher.this.sectionCompiler
+-                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers);
++                                .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers, this.additionalRenderers);
+                         }
+ 
+                         TranslucencyPointOfView translucencyPointOfView = TranslucencyPointOfView.of(cameraPos, sectionNode);
