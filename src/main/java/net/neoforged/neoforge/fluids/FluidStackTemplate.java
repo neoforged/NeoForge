@@ -15,10 +15,16 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
+/// {@link Fluid} variant of {@link ItemStackTemplate}.
+///
+/// The main difference is that fluid templates are required to have an {@code amount}, while item templates default to {@code 1}.
+///
+/// Most methods in this class are adopted from {@link ItemStackTemplate}.
 public record FluidStackTemplate(Holder<Fluid> fluid, int amount, DataComponentPatch components) implements FluidInstance {
     public static final MapCodec<FluidStackTemplate> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             FLUID_HOLDER_CODEC.fieldOf(FIELD_ID).forGetter(FluidStackTemplate::fluid),
