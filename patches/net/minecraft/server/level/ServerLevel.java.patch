@@ -15,30 +15,12 @@
  
      public ServerLevel(
          MinecraftServer server,
-@@ -233,10 +_,28 @@
-         List<CustomSpawner> customSpawners,
+@@ -234,9 +_,10 @@
          boolean tickTime
      ) {
-+        this(server, executor, levelStorage, levelData, dimension, levelStem, isDebug, biomeZoomSeed, customSpawners, tickTime, java.util.OptionalLong.empty());
-+    }
-+
-+    // NeoForge: Add a constructor overload which accepts a seed override
-+    public ServerLevel(
-+            MinecraftServer server,
-+            Executor executor,
-+            LevelStorageSource.LevelStorageAccess levelStorage,
-+            ServerLevelData levelData,
-+            ResourceKey<Level> dimension,
-+            LevelStem levelStem,
-+            boolean isDebug,
-+            long biomeZoomSeed,
-+            List<CustomSpawner> customSpawners,
-+            boolean tickTime,
-+            java.util.OptionalLong seedOverride
-+    ) {
          super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
 +        // NeoForge: set seed override asap because things like the chunk cache constructor check level.getSeed()
-+        this.seedOverride = seedOverride;
++        this.seedOverride = levelStem.seedOverride();
          this.tickTime = tickTime;
          this.server = server;
 -        this.customSpawners = customSpawners;

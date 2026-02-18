@@ -5,10 +5,10 @@
  import net.minecraft.world.level.chunk.ChunkGenerator;
  
 -public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator) {
-+public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator, java.util.OptionalLong seedOverride) { // NeoForge: add seed_override field to dimension jsons
++public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator, java.util.OptionalLong seedOverride) { // NeoForge: add neoforge:seed_override field to dimension jsons
      public static final Codec<LevelStem> CODEC = RecordCodecBuilder.create(
          i -> i.group(DimensionType.CODEC.fieldOf("type").forGetter(LevelStem::type), ChunkGenerator.CODEC.fieldOf("generator").forGetter(LevelStem::generator))
-+                // NeoForge: patch the seed_override field into the codec
++                // NeoForge: patch the neoforge:seed_override field into the codec
 +                .and(net.minecraft.util.ExtraCodecs.asOptionalLong(Codec.LONG.optionalFieldOf("neoforge:seed_override")).forGetter(LevelStem::seedOverride))
              .apply(i, i.stable(LevelStem::new))
      );
