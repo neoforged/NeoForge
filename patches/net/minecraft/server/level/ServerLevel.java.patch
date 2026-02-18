@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -215,11 +_,13 @@
+@@ -215,11 +_,17 @@
      private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
      private @Nullable EnderDragonFight dragonFight;
@@ -12,6 +12,10 @@
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
 +    /// NeoForge: If present, this level uses its own seed instead of the server's global seed
 +    private final java.util.OptionalLong seedOverride;
++    /// {@return java.util.OptionalLong containing the seed override specified in the {@link LevelStem} this level was constructed from}
++    public java.util.OptionalLong getSeedOverride() {
++        return this.seedOverride;
++    }
  
      public ServerLevel(
          MinecraftServer server,
@@ -251,7 +255,7 @@
      public long getSeed() {
 -        return this.server.getWorldGenSettings().options().seed();
 +        // NeoForge: use seed override if present, otherwise default to vanilla global seed
-+        return this.seedOverride.orElseGet(() -> this.server.getWorldGenSettings().options().seed());
++        return this.getSeedOverride().orElseGet(() -> this.server.getWorldGenSettings().options().seed());
      }
  
      public @Nullable EnderDragonFight getDragonFight() {
