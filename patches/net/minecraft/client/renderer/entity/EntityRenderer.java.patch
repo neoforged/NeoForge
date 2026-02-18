@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -128,6 +_,8 @@
-         S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, int offset
+@@ -129,6 +_,8 @@
      ) {
+         poseStack.pushPose();
          if (state.scoreText != null) {
 +            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(state, state.scoreText, this, poseStack, submitNodeCollector, camera, state.partialTick);
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
              submitNodeCollector.submitNameTag(
                  poseStack, state.nameTagAttachment, offset, state.scoreText, !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera
              );
-@@ -135,6 +_,8 @@
+@@ -136,6 +_,8 @@
          }
  
          if (state.nameTag != null) {
@@ -18,7 +18,7 @@
              submitNodeCollector.submitNameTag(
                  poseStack, state.nameTagAttachment, offset, state.nameTag, !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera
              );
-@@ -159,6 +_,7 @@
+@@ -162,6 +_,7 @@
          S state = this.createRenderState();
          this.extractRenderState(entity, state, partialTicks);
          this.finalizeRenderState(entity, state);
@@ -26,7 +26,7 @@
          return state;
      }
  
-@@ -168,6 +_,7 @@
+@@ -171,6 +_,7 @@
          state.y = Mth.lerp((double)partialTicks, entity.yOld, entity.getY());
          state.z = Mth.lerp((double)partialTicks, entity.zOld, entity.getZ());
          state.isInvisible = entity.isInvisible();
@@ -34,7 +34,7 @@
          state.ageInTicks = entity.tickCount + partialTicks;
          state.boundingBoxWidth = entity.getBbWidth();
          state.boundingBoxHeight = entity.getBbHeight();
-@@ -186,9 +_,11 @@
+@@ -189,9 +_,11 @@
  
          if (this.entityRenderDispatcher.camera != null) {
              state.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(entity);
