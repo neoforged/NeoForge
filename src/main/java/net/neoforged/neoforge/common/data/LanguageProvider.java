@@ -24,7 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -83,12 +83,12 @@ public abstract class LanguageProvider implements DataProvider {
         add(key.getDescriptionId(), name);
     }
 
-    public void addItemStack(Supplier<ItemStack> key, String name) {
+    public void addItemStack(Supplier<ItemStackTemplate> key, String name) {
         add(key.get(), name);
     }
 
-    public void add(ItemStack key, String name) {
-        add(key.getItem().getDescriptionId(), name);
+    public void add(ItemStackTemplate key, String name) {
+        add(key.typeHolder().value().getDescriptionId(), name);
     }
 
     public void addEffect(Supplier<? extends MobEffect> key, String name) {
