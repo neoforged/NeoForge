@@ -51,7 +51,7 @@
      protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
          if (!this.isInWater()) {
 -            this.updateFluidInteraction();
-+            this.updateInWaterStateAndDoWaterCurrentPushing(false);
++            this.updateFluidInteraction(); // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
          }
  
          if (this.level() instanceof ServerLevel level && onGround && this.fallDistance > 0.0) {
