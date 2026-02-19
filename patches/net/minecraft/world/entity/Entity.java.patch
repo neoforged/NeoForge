@@ -359,7 +359,7 @@
 +    }
 +
 +    // Neo: New logic for determining entity-fluid interactions. Replaces the vanilla logic that used fluids/fluid tags.
-+    protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
++    protected it.unimi.dsi.fastutil.objects.Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
 +    private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
 +
 +    protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
@@ -395,7 +395,7 @@
 +        if (this.forgeFluidTypeHeight.isEmpty()) {
 +            return net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
 +        }
-+        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
++        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getDoubleValue)).map(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
 +    }
 +
 +    // Neo: Hookup Attachment data setting
