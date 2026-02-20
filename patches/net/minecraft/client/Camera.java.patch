@@ -50,18 +50,18 @@
          return fov;
      }
  
-@@ -248,7 +_,10 @@
-                 .subtract(minecart.position())
-                 .subtract(this.entity.getVehicleAttachmentPoint(minecart))
-                 .add(new Vec3(0.0, Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight), 0.0));
+@@ -251,7 +_,10 @@
+             this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
+             this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
+         } else {
 -            this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
 +            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
 +                    this, partialTicks, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0)
 +            );
 +            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
-             this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
-         } else {
-             this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
+             this.setPosition(
+                 Mth.lerp((double)partialTicks, this.entity.xo, this.entity.getX()),
+                 Mth.lerp((double)partialTicks, this.entity.yo, this.entity.getY()) + Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight),
 @@ -262,7 +_,7 @@
          this.detached = !this.minecraft.options.getCameraType().isFirstPerson();
          if (this.detached) {
