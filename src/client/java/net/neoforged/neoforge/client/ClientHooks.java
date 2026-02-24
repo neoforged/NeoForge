@@ -89,6 +89,7 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
@@ -809,11 +810,12 @@ public class ClientHooks {
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
             Function<ChunkSectionLayer, VertexConsumer> getOrCreateBuilder,
             RenderSectionRegion region,
+            ModelBlockRenderer blockRenderer,
             BlockPos sectionOrigin) {
         if (additionalRenderers.isEmpty()) {
             return;
         }
-        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, sectionOrigin);
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, blockRenderer, sectionOrigin);
         for (final var renderer : additionalRenderers) {
             renderer.render(context);
         }

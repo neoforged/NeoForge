@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -105,18 +106,24 @@ public class AddSectionGeometryEvent extends Event {
     public static final class SectionRenderingContext {
         private final Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer;
         private final BlockAndTintGetter region;
+        private final ModelBlockRenderer blockRenderer;
         private final PoseStack poseStack;
 
         /**
          * @param getOrCreateLayer a function that, given a "chunk render type", returns the corresponding buffer and
          *                         adds it to the section if it is not already present.
          * @param region           a view of the section and some surrounding blocks
+         * @param blockRenderer    the block renderer to use for rendering block models
          * @param sectionOrigin    the origin of the chunk section being rendered
          */
         public SectionRenderingContext(
-                Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, BlockPos sectionOrigin) {
+                Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer,
+                BlockAndTintGetter region,
+                ModelBlockRenderer blockRenderer,
+                BlockPos sectionOrigin) {
             this.getOrCreateLayer = getOrCreateLayer;
             this.region = region;
+            this.blockRenderer = blockRenderer;
             this.poseStack = new PoseStack();
             this.poseStack.translate(sectionOrigin.getX(), sectionOrigin.getY(), sectionOrigin.getZ());
         }
@@ -135,6 +142,10 @@ public class AddSectionGeometryEvent extends Event {
         /// Returns the [PoseStack] to use, initially set to the chunk origin at unit scaling and no rotation.
         public PoseStack getPoseStack() {
             return poseStack;
+        }
+
+        public ModelBlockRenderer getBlockRenderer() {
+            return blockRenderer;
         }
 
         /**

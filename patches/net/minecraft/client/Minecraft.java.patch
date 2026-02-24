@@ -433,3 +433,14 @@
          systemReport.setDetail("GL debug messages", () -> {
              GpuDevice device = RenderSystem.tryGetDevice();
              if (device == null) {
+@@ -2858,6 +_,10 @@
+         }
+ 
+         return defaultTickTargetMillis;
++    }
++
++    public BlockModelResolver getBlockModelResolver() {
++        return this.blockModelResolver;
+     }
+ 
+     public ItemModelResolver getItemModelResolver() {

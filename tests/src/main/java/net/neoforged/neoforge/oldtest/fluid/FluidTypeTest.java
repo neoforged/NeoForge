@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
@@ -24,7 +24,6 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -136,8 +135,9 @@ public class FluidTypeTest {
         }
 
         private void clientSetup(FMLClientSetupEvent event) {
-            Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
-                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, ChunkSectionLayer.TRANSLUCENT));
+            // FIXME 26.1: Need an event to register fluid chunk layers
+            //Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
+            //        .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, ChunkSectionLayer.TRANSLUCENT));
         }
 
         private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
@@ -205,7 +205,7 @@ public class FluidTypeTest {
                         };
                     }
                     // Replace vanilla fluid rendering
-                    Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    Minecraft.getInstance().getBlockRenderer().getLiquidRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
                     return true;
                 }
             }, TEST_FLUID_TYPE.value());
