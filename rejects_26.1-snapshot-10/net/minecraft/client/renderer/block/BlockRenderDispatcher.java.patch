@@ -1,0 +1,44 @@
+++++ REJECTED HUNK: 1
+@@ -53,7 +53,7 @@
+             BlockStateModel model = this.blockModelShaper.getBlockModel(state);
+             this.singleThreadRandom.setSeed(state.getSeed(pos));
+             this.singleThreadPartList.clear();
+-            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
++            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
+             this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, output, true, OverlayTexture.NO_OVERLAY);
+         }
+     }
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -73,6 +73,7 @@
+ 
+     public void renderLiquid(BlockPos pos, BlockAndTintGetter level, VertexConsumer builder, BlockState blockState, FluidState fluidState) {
+         try {
++            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, level, pos, builder, blockState)) return;
+             Objects.requireNonNull(this.liquidBlockRenderer).tesselate(level, pos, builder, blockState, fluidState);
+         } catch (Throwable var9) {
+             CrashReport report = CrashReport.forThrowable(var9, "Tesselating liquid in world");
+++++ END HUNK
+
+++++ REJECTED HUNK: 3
+@@ -90,12 +91,17 @@
+         return this.blockModelShaper.getBlockModel(state);
+     }
+ 
++    @Deprecated // Neo: Level and pos parameters
+     public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords) {
++        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO);
++    }
++
++    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos) {
+         RenderShape shape = state.getRenderShape();
+         if (shape != RenderShape.INVISIBLE) {
+             BlockStateModel model = this.getBlockModel(state);
+             int tintColor = this.blockColors.getColor(state, null, null, 0);
+-            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords);
++            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords, level, pos, state);
+         }
+     }
+ 
+++++ END HUNK

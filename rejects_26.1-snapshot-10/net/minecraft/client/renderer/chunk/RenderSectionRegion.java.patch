@@ -1,0 +1,24 @@
+++++ REJECTED HUNK: 1
+@@ -23,13 +23,21 @@
+     private final int minSectionZ;
+     private final SectionCopy[] sections;
+     private final Level level;
++    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot;
+ 
++    /** @deprecated Neo: use {@link #RenderSectionRegion(Level, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
++    @Deprecated
+     RenderSectionRegion(Level level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
++        this(level, minSectionX, minSectionY, minSectionZ, sections, net.neoforged.neoforge.model.data.ModelDataManager.EMPTY_SNAPSHOT);
++    }
++
++    RenderSectionRegion(Level level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
+         this.level = level;
+         this.minSectionX = minSectionX;
+         this.minSectionY = minSectionY;
+         this.minSectionZ = minSectionZ;
+         this.sections = sections;
++        this.modelDataSnapshot = modelDataSnapshot;
+     }
+ 
+     @Override
+++++ END HUNK
