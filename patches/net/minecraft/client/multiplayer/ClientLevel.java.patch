@@ -203,7 +203,7 @@
 +    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
 +        // TODO 1.21.11: Make this extensible / use our dimension special effects replacement.
 +        var cardinalLightType = this.dimensionType().cardinalLightType();
-+        boolean constantAmbientLight = cardinalLightType == DimensionType.CardinalLightType.NETHER;
++        boolean constantAmbientLight = cardinalLightType == CardinalLighting.Type.NETHER;
 +
 +        if (!shade)
 +            return constantAmbientLight ? 0.9F : 1.0F;
