@@ -111,14 +111,14 @@ public class AddSectionGeometryEvent extends Event {
          * @param getOrCreateLayer a function that, given a "chunk render type", returns the corresponding buffer and
          *                         adds it to the section if it is not already present.
          * @param region           a view of the section and some surrounding blocks
-         * @param poseStack        the transformations to use, currently set to the chunk origin at unit scaling and no
-         *                         rotation.
+         * @param sectionOrigin    the origin of the chunk section being rendered
          */
         public SectionRenderingContext(
-                Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
+                Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, BlockPos sectionOrigin) {
             this.getOrCreateLayer = getOrCreateLayer;
             this.region = region;
-            this.poseStack = poseStack;
+            this.poseStack = new PoseStack();
+            this.poseStack.translate(sectionOrigin.getX(), sectionOrigin.getY(), sectionOrigin.getZ());
         }
 
         /**
@@ -132,6 +132,7 @@ public class AddSectionGeometryEvent extends Event {
             return getOrCreateLayer.apply(layer);
         }
 
+        /// Returns the [PoseStack] to use, initially set to the chunk origin at unit scaling and no rotation.
         public PoseStack getPoseStack() {
             return poseStack;
         }

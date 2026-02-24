@@ -26,9 +26,6 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/client/renderer/block/BlockAndTintGetter": [
-    "net/neoforged/neoforge/client/extensions/IBlockAndTintGetterExtension"
-  ],
   "net/minecraft/client/renderer/block/model/BlockModelPart": [
     "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
   ],

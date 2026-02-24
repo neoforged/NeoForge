@@ -1,11 +1,24 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -80,4 +_,8 @@
-     public void onResourceManagerReload(ResourceManager resourceManager) {
-         this.liquidBlockRenderer = new LiquidBlockRenderer(this.sprites);
+@@ -40,14 +_,20 @@
+         this.sprites = sprites;
      }
-+
-+    public LiquidBlockRenderer getLiquidBlockRenderer() {
-+        return Objects.requireNonNull(this.liquidBlockRenderer);
+ 
++    /// @deprecated Neo: use [#renderBreakingTexture(BlockAndTintGetter, BlockState, BlockPos, PoseStack, MultiBufferSource, int)] instead
++    @Deprecated
+     public void renderBreakingTexture(BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int progress) {
++        renderBreakingTexture(BlockAndTintGetter.EMPTY, state, pos, poseStack, bufferSource, progress);
 +    }
- }
++
++    public void renderBreakingTexture(BlockAndTintGetter level, BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int progress) {
+         if (state.getRenderShape() == RenderShape.MODEL) {
+             PoseStack.Pose pose = poseStack.last();
+             VertexConsumer buffer = new SheetedDecalTextureGenerator(bufferSource.getBuffer(ModelBakery.DESTROY_TYPES.get(progress)), pose, 1.0F);
+             BlockStateModel model = this.modelManager.getBlockModelSet().get(state);
+             this.singleThreadRandom.setSeed(state.getSeed(pos));
+             this.singleThreadPartList.clear();
+-            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
++            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
+             QuadInstance instance = new QuadInstance();
+ 
+             for (BlockModelPart part : this.singleThreadPartList) {

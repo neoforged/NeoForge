@@ -809,11 +809,11 @@ public class ClientHooks {
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
             Function<ChunkSectionLayer, VertexConsumer> getOrCreateBuilder,
             RenderSectionRegion region,
-            PoseStack transformation) {
+            BlockPos sectionOrigin) {
         if (additionalRenderers.isEmpty()) {
             return;
         }
-        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, transformation);
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, sectionOrigin);
         for (final var renderer : additionalRenderers) {
             renderer.render(context);
         }

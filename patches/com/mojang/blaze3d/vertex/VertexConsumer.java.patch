@@ -1,11 +1,20 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
+@@ -57,7 +_,7 @@
+         for (int vertex = 0; vertex < 4; vertex++) {
+             Vector3fc pos = quad.position(vertex);
+             long packedUv = quad.packedUV(vertex);
+-            int vertexColor = instance.getColor(vertex);
++            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex)); // Neo: apply baked color from the quad
+             int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
+             float u = UVPair.unpackU(packedUv);
+             float v = UVPair.unpackV(packedUv);
 @@ -74,11 +_,12 @@
          for (int vertex = 0; vertex < 4; vertex++) {
              Vector3fc position = quad.position(vertex);
              long packedUv = quad.packedUV(vertex);
 -            int vertexColor = instance.getColor(vertex);
-+            int vertexColor = brightness.scaleColor(vertex, net.minecraft.util.ARGB.multiply(color, quad.bakedColors().color(vertex))); // Neo: apply baked color from the quad
++            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex)); // Neo: apply baked color from the quad
              int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
              Vector3f pos = matrix.transformPosition(position, new Vector3f());
              float u = UVPair.unpackU(packedUv);

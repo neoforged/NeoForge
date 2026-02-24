@@ -11,11 +11,19 @@
          SectionCompiler.Results results = new SectionCompiler.Results();
          BlockPos minPos = sectionPos.origin();
          BlockPos maxPos = minPos.offset(15, 15, 15);
+@@ -93,6 +_,7 @@
+                     if (!fluidState.isEmpty()) {
+                         ChunkSectionLayer layer = this.liquidRenderer.getRenderLayer(fluidState);
+                         BufferBuilder builder = this.getOrBeginLayer(startedLayers, builders, layer);
++                        if (!net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, region, pos, builder, blockState))
+                         this.liquidRenderer.tesselate(region, pos, builder, blockState, fluidState);
+                     }
+ 
 @@ -118,6 +_,7 @@
              }
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, poseStack);
++        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, minPos);
          for (Entry<ChunkSectionLayer, BufferBuilder> entry : startedLayers.entrySet()) {
              ChunkSectionLayer layer = entry.getKey();
              MeshData mesh = entry.getValue().build();

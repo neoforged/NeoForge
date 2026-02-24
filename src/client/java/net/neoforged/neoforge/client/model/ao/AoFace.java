@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.BlockModelLighter;
 import net.minecraft.core.Direction;
 
 /**
@@ -56,9 +56,9 @@ enum AoFace {
      * They sum to 1.
      *
      * <p>The intent is to match vanilla's interpolation for partial quads,
-     * which it performs in {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate}
-     * using the vert weights in {@link ModelBlockRenderer.AdjacencyInfo},
-     * followed by remapping using {@link ModelBlockRenderer.AmbientVertexRemap}.
+     * which it performs in {@link BlockModelLighter#prepareQuadAmbientOcclusion}
+     * using the vert weights in {@link BlockModelLighter.AdjacencyInfo},
+     * followed by remapping using {@link BlockModelLighter.AmbientVertexRemap}.
      * Using the ambient vertex remap makes the lighting dependent on correct vertex ordering,
      * and we don't want that.
      */

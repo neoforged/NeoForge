@@ -236,6 +236,15 @@
                  }
              }
          }
+@@ -939,7 +_,7 @@
+             poseStack.pushPose();
+             BlockPos pos = state.blockPos;
+             poseStack.translate(pos.getX() - camX, pos.getY() - camY, pos.getZ() - camZ);
+-            this.minecraft.getBlockRenderer().renderBreakingTexture(state.blockState, pos, poseStack, bufferSource, state.progress);
++            this.minecraft.getBlockRenderer().renderBreakingTexture(state, state.blockState, pos, poseStack, bufferSource, state.progress);
+             poseStack.popPose();
+         }
+     }
 @@ -951,19 +_,23 @@
                  BlockPos pos = blockHitResult.getBlockPos();
                  BlockState state = this.level.getBlockState(pos);
