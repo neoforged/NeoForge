@@ -1,9 +1,35 @@
 --- a/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
-@@ -90,6 +_,21 @@
-         return this.level.getHeight();
+@@ -25,8 +_,15 @@
+     private final ClientLevel level;
+     private final CardinalLighting cardinalLighting;
+     private final LevelLightEngine lightEngine;
++    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot;
+ 
++    /** @deprecated Neo: use {@link #RenderSectionRegion(ClientLevel, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
++    @Deprecated
+     RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
++        this(level, minSectionX, minSectionY, minSectionZ, sections, net.neoforged.neoforge.model.data.ModelDataManager.EMPTY_SNAPSHOT);
++    }
++
++    RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
+         this.level = level;
+         this.minSectionX = minSectionX;
+         this.minSectionY = minSectionY;
+@@ -34,6 +_,7 @@
+         this.sections = sections;
+         this.cardinalLighting = level.cardinalLighting();
+         this.lightEngine = level.getLightEngine();
++        this.modelDataSnapshot = modelDataSnapshot;
      }
  
+     @Override
+@@ -88,6 +_,21 @@
+     @Override
+     public int getHeight() {
+         return this.level.getHeight();
++    }
++
 +    @Override
 +    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
 +        return this.level.getShade(normalX, normalY, normalZ, shade);
@@ -17,8 +43,6 @@
 +    @Override
 +    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(net.minecraft.world.level.ChunkPos pos) {
 +        return this.getSection(pos.x(), this.minSectionY, pos.z()).wrapped.getAuxLightManager(pos);
-+    }
-+
-     public static int index(int minSectionX, int minSectionY, int minSectionZ, int sectionX, int sectionY, int sectionZ) {
-         return sectionX - minSectionX + (sectionY - minSectionY) * 3 + (sectionZ - minSectionZ) * 3 * 3;
      }
+ 
+     public static int index(int minSectionX, int minSectionY, int minSectionZ, int sectionX, int sectionY, int sectionZ) {
