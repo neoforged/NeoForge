@@ -1,5 +1,70 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
+@@ -46,6 +_,7 @@
+         this.waterStill = sprites.get(ModelBakery.WATER_STILL);
+         this.waterFlowing = sprites.get(ModelBakery.WATER_FLOW);
+         this.waterOverlay = sprites.get(ModelBakery.WATER_OVERLAY);
++        net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
+         Transparency waterTransparency = this.waterStill.transparency().or(this.waterFlowing.transparency());
+         Transparency lavaTransparency = this.lavaStill.transparency().or(this.lavaFlowing.transparency());
+         this.layerByFluid = Map.of(
+@@ -64,6 +_,10 @@
+         return neighborFluidState.getType().isSame(fluidState.getType());
+     }
+ 
++    private static boolean isNeighborStateHidingOverlay(FluidState selfState, BlockState otherState, Direction neighborFace) {
++        return otherState.shouldHideAdjacentFluidFace(neighborFace, selfState);
++    }
++
+     private static boolean isFaceOccludedByState(Direction direction, float height, BlockState state) {
+         VoxelShape occluder = state.getFaceOcclusionShape(direction.getOpposite());
+         if (occluder == Shapes.empty()) {
+@@ -85,10 +_,16 @@
+         return isFaceOccludedByState(direction.getOpposite(), 1.0F, state);
+     }
+ 
++    /** @deprecated Neo: use overload that accepts BlockState */
++    @Deprecated
+     public static boolean shouldRenderFace(FluidState fluidState, BlockState blockState, Direction direction, FluidState neighborFluidState) {
+         return !isNeighborSameFluid(fluidState, neighborFluidState) && !isFaceOccludedBySelf(blockState, direction);
+     }
+ 
++    public static boolean shouldRenderFace(FluidState fluidState, BlockState selfState, Direction direction, BlockState otherState) {
++        return !isNeighborStateHidingOverlay(fluidState, otherState, direction.getOpposite()) && !isFaceOccludedBySelf(selfState, direction);
++    }
++
+     public ChunkSectionLayer getRenderLayer(FluidState state) {
+         return this.layerByFluid.getOrDefault(state.getType(), ChunkSectionLayer.SOLID);
+     }
+@@ -106,18 +_,18 @@
+         FluidState fluidStateWest = blockStateWest.getFluidState();
+         BlockState blockStateEast = level.getBlockState(pos.relative(Direction.EAST));
+         FluidState fluidStateEast = blockStateEast.getFluidState();
+-        boolean renderUp = !isNeighborSameFluid(fluidState, fluidStateUp);
+-        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, fluidStateDown)
+-            && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
+-        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, fluidStateNorth);
+-        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, fluidStateSouth);
+-        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, fluidStateWest);
+-        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, fluidStateEast);
++        boolean renderUp = !isNeighborStateHidingOverlay(fluidState, blockStateUp, Direction.UP);
++        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, blockStateDown)
++                && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
++        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, blockStateNorth);
++        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, blockStateSouth);
++        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, blockStateWest);
++        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, blockStateEast);
+         if (renderUp || renderDown || renderEast || renderWest || renderNorth || renderSouth) {
+             boolean isLava = fluidState.is(FluidTags.LAVA);
+-            TextureAtlasSprite stillSprite = isLava ? this.lavaStill : this.waterStill;
+-            TextureAtlasSprite flowingSprite = isLava ? this.lavaFlowing : this.waterFlowing;
+-            int color = isLava ? -1 : BiomeColors.getAverageWaterColor(level, pos);
++            TextureAtlasSprite[] fluidSprites = net.neoforged.neoforge.client.textures.FluidSpriteCache.getFluidSprites(level, pos, fluidState);
++            TextureAtlasSprite stillSprite = fluidSprites[0]; // Neo: Custom still sprite
++            TextureAtlasSprite flowingSprite = fluidSprites[1]; // Neo: Custom flowing sprite
+             CardinalLighting cardinalLighting = level.cardinalLighting();
+             Fluid type = fluidState.getType();
+             float heightSelf = this.getHeight(level, type, pos, blockState, fluidState);
 @@ -273,10 +_,9 @@
                  if (renderCondition && !isFaceOccludedByNeighbor(faceDir, Math.max(hh0, hh1), level.getBlockState(pos.relative(faceDir)))) {
                      BlockPos tPos = pos.relative(faceDir);
