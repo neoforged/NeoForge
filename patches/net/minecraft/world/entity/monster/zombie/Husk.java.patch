@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/Husk.java
 +++ b/net/minecraft/world/entity/monster/zombie/Husk.java
-@@ -75,6 +_,7 @@
+@@ -79,6 +_,7 @@
  
      @Override
      protected void doUnderWaterConversion(ServerLevel level) {

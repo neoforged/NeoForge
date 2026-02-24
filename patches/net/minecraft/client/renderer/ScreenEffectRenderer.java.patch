@@ -6,7 +6,7 @@
              if (!player.noPhysics) {
 -                BlockState blockState = getViewBlockingState(player);
 -                if (blockState != null) {
--                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
+-                    renderTex(this.minecraft.getModelManager().getBlockModelSet().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
 +                org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
 +                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);

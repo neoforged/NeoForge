@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
 +++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
-@@ -33,7 +_,8 @@
+@@ -34,7 +_,8 @@
              }
          }
  

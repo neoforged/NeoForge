@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
-@@ -261,7 +_,7 @@
+@@ -262,7 +_,7 @@
  
          for (RecipeBookTabButton tabButton : this.tabButtons) {
              ExtendedRecipeBookCategory category = tabButton.getCategory();

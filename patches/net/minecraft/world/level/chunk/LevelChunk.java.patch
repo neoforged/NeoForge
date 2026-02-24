@@ -95,7 +95,7 @@
                  }
              });
          }
-@@ -673,6 +_,7 @@
+@@ -675,6 +_,7 @@
      }
  
      public void clearAllBlockEntities() {
@@ -103,7 +103,7 @@
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(ticker -> ticker.rebind(NULL_TICKER));
-@@ -680,6 +_,7 @@
+@@ -682,6 +_,7 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
@@ -111,7 +111,7 @@
          this.blockEntities.values().forEach(blockEntity -> {
              if (this.level instanceof ServerLevel serverLevel) {
                  this.addGameEventListener(blockEntity, serverLevel);
-@@ -726,6 +_,19 @@
+@@ -728,6 +_,19 @@
          return new LevelChunk.BoundTickingBlockEntity<>(blockEntity, ticker);
      }
  
@@ -131,7 +131,7 @@
      private class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -745,6 +_,7 @@
+@@ -747,6 +_,7 @@
                  if (LevelChunk.this.isTicking(pos)) {
                      try {
                          ProfilerFiller profiler = Profiler.get();
@@ -139,7 +139,7 @@
                          profiler.push(this::getType);
                          BlockState blockState = LevelChunk.this.getBlockState(pos);
                          if (this.blockEntity.getType().isValid(blockState)) {
-@@ -766,7 +_,14 @@
+@@ -768,7 +_,14 @@
                          CrashReport report = CrashReport.forThrowable(var5, "Ticking block entity");
                          CrashReportCategory category = report.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(category);

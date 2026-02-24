@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/color/block/BlockColors.java
 +++ b/net/minecraft/client/color/block/BlockColors.java
-@@ -30,7 +_,8 @@
+@@ -31,7 +_,8 @@
      private static final int DEFAULT = -1;
      public static final int LILY_PAD_IN_WORLD = -14647248;
      public static final int LILY_PAD_DEFAULT = -9321636;
@@ -10,7 +10,7 @@
      private final Map<Block, Set<Property<?>>> coloringStates = Maps.newHashMap();
  
      public static BlockColors createDefault() {
-@@ -88,11 +_,12 @@
+@@ -89,11 +_,12 @@
          }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
          colors.addColoringState(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
          colors.register((state, level, pos, tintIndex) -> level != null && pos != null ? -14647248 : -9321636, Blocks.LILY_PAD);
@@ -24,7 +24,7 @@
          if (blockColor != null) {
              return blockColor.getColor(state, null, null, 0);
          } else {
-@@ -102,13 +_,15 @@
+@@ -103,13 +_,15 @@
      }
  
      public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex) {

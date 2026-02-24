@@ -281,7 +281,7 @@
          return this.fluidInteraction.getFluidHeight(type);
      }
  
-@@ -3720,6 +_,10 @@
+@@ -3724,6 +_,10 @@
                  }
              }
          }
@@ -292,7 +292,7 @@
      }
  
      public void checkDespawn() {
-@@ -3860,6 +_,130 @@
+@@ -3864,6 +_,130 @@
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
          return true;
