@@ -123,8 +123,7 @@ public class ClientEventTests {
                                 testBlockAt,
                                 Blocks.DIAMOND_BLOCK.defaultBlockState(),
                                 Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState()),
-                                0
-                        );
+                                0);
                         poseStack.popPose();
                     });
                 }

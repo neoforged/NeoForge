@@ -20,7 +20,7 @@
                  Vec3 offset = blockState.getOffset(pos);
 -                if (this.ambientOcclusion && blockState.getLightEmission() == 0 && this.parts.getFirst().useAmbientOcclusion()) {
 +                boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-+                boolean useAO = ambientOcclusion && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
++                boolean useAO = this.ambientOcclusion && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
 +                    case TRUE -> true;
 +                    case DEFAULT -> blockState.getLightEmission(level, pos) == 0;
 +                    case FALSE -> false;
