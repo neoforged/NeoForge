@@ -1,13 +1,16 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-@@ -46,6 +_,7 @@
+@@ -46,8 +_,10 @@
          this.waterStill = sprites.get(ModelBakery.WATER_STILL);
          this.waterFlowing = sprites.get(ModelBakery.WATER_FLOW);
          this.waterOverlay = sprites.get(ModelBakery.WATER_OVERLAY);
 +        net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
          Transparency waterTransparency = this.waterStill.transparency().or(this.waterFlowing.transparency());
          Transparency lavaTransparency = this.lavaStill.transparency().or(this.lavaFlowing.transparency());
++        // TODO 26.1: integrate modded fluids
          this.layerByFluid = Map.of(
+             Fluids.WATER,
+             ChunkSectionLayer.byTransparency(waterTransparency),
 @@ -64,6 +_,10 @@
          return neighborFluidState.getType().isSame(fluidState.getType());
      }
@@ -36,20 +39,19 @@
      public ChunkSectionLayer getRenderLayer(FluidState state) {
          return this.layerByFluid.getOrDefault(state.getType(), ChunkSectionLayer.SOLID);
      }
-@@ -106,18 +_,18 @@
+@@ -106,18 +_,19 @@
          FluidState fluidStateWest = blockStateWest.getFluidState();
          BlockState blockStateEast = level.getBlockState(pos.relative(Direction.EAST));
          FluidState fluidStateEast = blockStateEast.getFluidState();
 -        boolean renderUp = !isNeighborSameFluid(fluidState, fluidStateUp);
 -        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, fluidStateDown)
--            && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
++        boolean renderUp = !isNeighborStateHidingOverlay(fluidState, blockStateUp, Direction.UP);
++        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, blockStateDown)
+             && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
 -        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, fluidStateNorth);
 -        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, fluidStateSouth);
 -        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, fluidStateWest);
 -        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, fluidStateEast);
-+        boolean renderUp = !isNeighborStateHidingOverlay(fluidState, blockStateUp, Direction.UP);
-+        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, blockStateDown)
-+                && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
 +        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, blockStateNorth);
 +        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, blockStateSouth);
 +        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, blockStateWest);
@@ -62,6 +64,7 @@
 +            TextureAtlasSprite[] fluidSprites = net.neoforged.neoforge.client.textures.FluidSpriteCache.getFluidSprites(level, pos, fluidState);
 +            TextureAtlasSprite stillSprite = fluidSprites[0]; // Neo: Custom still sprite
 +            TextureAtlasSprite flowingSprite = fluidSprites[1]; // Neo: Custom flowing sprite
++            int color = net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, level, pos);
              CardinalLighting cardinalLighting = level.cardinalLighting();
              Fluid type = fluidState.getType();
              float heightSelf = this.getHeight(level, type, pos, blockState, fluidState);
@@ -79,30 +82,3 @@
                          }
                      }
  
-@@ -336,6 +_,26 @@
-     private float getHeight(BlockAndTintGetter level, Fluid fluidType, BlockPos pos) {
-         BlockState state = level.getBlockState(pos);
-         return this.getHeight(level, fluidType, pos, state, state.getFluidState());
-+    }
-+
-+    private void vertex(
-+            VertexConsumer builder,
-+            float x,
-+            float y,
-+            float z,
-+            float red,
-+            float green,
-+            float blue,
-+            float alpha,
-+            float u,
-+            float v,
-+            int light
-+    ) {
-+        builder.addVertex(x, y, z)
-+                .setColor(red, green, blue, alpha)
-+                .setUv(u, v)
-+                .setLight(light)
-+                .setNormal(0.0F, 1.0F, 0.0F);
-     }
- 
-     private float getHeight(BlockAndTintGetter level, Fluid fluidType, BlockPos pos, BlockState state, FluidState fluidState) {
