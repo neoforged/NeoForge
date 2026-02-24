@@ -4,11 +4,11 @@
  
  @OnlyIn(Dist.CLIENT)
  public interface BlockStateModel extends net.neoforged.neoforge.client.extensions.BlockStateModelExtension {
-+    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)}. */
++    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)}. */
 +    @Deprecated
      void collectParts(RandomSource random, List<BlockModelPart> output);
  
-+    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource)}. */
++    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource)}. */
 +    @Deprecated
      default List<BlockModelPart> collectParts(RandomSource random) {
          List<BlockModelPart> parts = new ObjectArrayList<>();
@@ -16,11 +16,11 @@
          return parts;
      }
  
-+    /** @deprecated Neo: Use {@link #particleMaterial(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)}. */
++    /** @deprecated Neo: Use {@link #particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)}. */
 +    @Deprecated
      Material.Baked particleMaterial();
  
-+    /// @deprecated Neo: Use [#hasTranslucency(net.minecraft.world.level.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState)] instead
++    /// @deprecated Neo: Use [#hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState)] instead
 +    @Deprecated
      boolean hasTranslucency();
  

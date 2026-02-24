@@ -26,6 +26,9 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
+  "net/minecraft/client/renderer/block/BlockAndTintGetter": [
+    "net/neoforged/neoforge/client/extensions/IBlockAndTintGetterExtension"
+  ],
   "net/minecraft/client/renderer/block/model/BlockModelPart": [
     "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
   ],
@@ -188,9 +191,6 @@
   ],
   "net/minecraft/world/level/BaseSpawner": [
     "net/neoforged/neoforge/common/extensions/IOwnedSpawner"
-  ],
-  "net/minecraft/world/level/BlockAndTintGetter": [
-    "net/neoforged/neoforge/client/extensions/IBlockAndTintGetterExtension"
   ],
   "net/minecraft/world/level/BlockGetter": [
     "net/neoforged/neoforge/common/extensions/IBlockGetterExtension"
