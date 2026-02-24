@@ -1,15 +1,3 @@
-++++ REJECTED HUNK: 1
-@@ -59,7 +59,7 @@
-             MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
-             BlockState blockState = movingBlockRenderState.blockState;
-             BlockStateModel model = blockRenderDispatcher.getBlockModel(blockState);
--            if (model.hasTranslucency() == translucent) {
-+            if (model.hasTranslucency(movingBlockRenderState.level, movingBlockRenderState.blockPos, blockState) == translucent) {
-                 List<BlockModelPart> parts = model.collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
-                 PoseStack poseStack = new PoseStack();
-                 poseStack.mulPose(submit.pose());
-++++ END HUNK
-
 ++++ REJECTED HUNK: 2
 @@ -90,13 +90,13 @@
      ) {
@@ -26,6 +14,6 @@
 -                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords());
 +                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
                  }
- 
+
                  this.poseStack.popPose();
 ++++ END HUNK

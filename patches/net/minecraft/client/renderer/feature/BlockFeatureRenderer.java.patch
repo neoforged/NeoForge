@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
++++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
+@@ -65,7 +_,7 @@
+             MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
+             BlockState blockState = movingBlockRenderState.blockState;
+             BlockStateModel model = blockRenderDispatcher.getBlockModel(blockState);
+-            if (model.hasTranslucency() == translucent) {
++            if (model.hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, blockState) == translucent) {
+                 poseStack.setIdentity();
+                 poseStack.mulPose(submit.pose());
+                 BlockQuadOutput blockOutput = ModelBlockRenderer.forceOpaque(cutoutLeaves, blockState) ? solidOutput : output;
