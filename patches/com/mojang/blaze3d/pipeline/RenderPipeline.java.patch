@@ -1,5 +1,104 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
+@@ -32,7 +_,10 @@
+     private final VertexFormat.Mode vertexFormatMode;
+     private final int sortKey;
+     private static int sortKeySeed;
++    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
+ 
++    /** @deprecated Neo: use {@link #RenderPipeline(Identifier, Identifier, Identifier, ShaderDefines, List, List, ColorTargetState, DepthStencilState, PolygonMode, boolean, VertexFormat, VertexFormat.Mode, int, Optional)} instead */
++    @Deprecated
+     protected RenderPipeline(
+         Identifier location,
+         Identifier vertexShader,
+@@ -48,6 +_,25 @@
+         VertexFormat.Mode vertexFormatMode,
+         int sortKey
+     ) {
++        this(location, vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, sortKey, Optional.empty());
++    }
++
++    protected RenderPipeline(
++        Identifier location,
++        Identifier vertexShader,
++        Identifier fragmentShader,
++        ShaderDefines shaderDefines,
++        List<String> samplers,
++        List<RenderPipeline.UniformDescription> uniforms,
++        ColorTargetState colorTargetState,
++        @Nullable DepthStencilState depthStencilState,
++        PolygonMode polygonMode,
++        boolean cull,
++        VertexFormat vertexFormat,
++        VertexFormat.Mode vertexFormatMode,
++        int sortKey,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
++    ) {
+         this.location = location;
+         this.vertexShader = vertexShader;
+         this.fragmentShader = fragmentShader;
+@@ -61,6 +_,7 @@
+         this.vertexFormat = vertexFormat;
+         this.vertexFormatMode = vertexFormatMode;
+         this.sortKey = sortKey;
++        this.stencilTest = stencilTest;
+     }
+ 
+     public int getSortKey() {
+@@ -128,6 +_,45 @@
+         return this.depthStencilState != null;
+     }
+ 
++    public Optional<net.neoforged.neoforge.client.stencil.StencilTest> getStencilTest() {
++        return stencilTest;
++    }
++
++    /**
++     * Neo: Create a {@link RenderPipeline.Builder} from this {@link RenderPipeline} to adjust its configuration and
++     * build a new, modified {@link RenderPipeline} from it
++     */
++    public RenderPipeline.Builder toBuilder() {
++        RenderPipeline.Builder builder = new RenderPipeline.Builder();
++        builder.location = Optional.of(this.location);
++        builder.fragmentShader = Optional.of(this.fragmentShader);
++        builder.vertexShader = Optional.of(this.vertexShader);
++        if (!this.shaderDefines.isEmpty()) {
++            ShaderDefines.Builder defBuilder = ShaderDefines.builder();
++            for (Entry<String, String> entry : this.shaderDefines.values().entrySet()) {
++                defBuilder.define(entry.getKey(), entry.getValue());
++            }
++            for (String flag : this.shaderDefines.flags()) {
++                defBuilder.define(flag);
++            }
++            builder.definesBuilder = Optional.of(defBuilder);
++        }
++        if (!this.samplers.isEmpty()) {
++            builder.samplers = Optional.of(new ArrayList<>(this.samplers));
++        }
++        if (!this.uniforms.isEmpty()) {
++            builder.uniforms = Optional.of(new ArrayList<>(this.uniforms));
++        }
++        builder.depthStencilState = Optional.ofNullable(this.depthStencilState);
++        builder.polygonMode = Optional.of(this.polygonMode);
++        builder.cull = Optional.of(this.cull);
++        builder.colorTargetState = Optional.of(this.colorTargetState);
++        builder.vertexFormat = Optional.of(this.vertexFormat);
++        builder.vertexFormatMode = Optional.of(this.vertexFormatMode);
++        builder.stencilTest = this.stencilTest;
++        return builder;
++    }
++
+     public static RenderPipeline.Builder builder(RenderPipeline.Snippet... snippets) {
+         RenderPipeline.Builder builder = new RenderPipeline.Builder();
+ 
+@@ -153,6 +_,7 @@
+         private Optional<ColorTargetState> colorTargetState = Optional.empty();
+         private Optional<VertexFormat> vertexFormat = Optional.empty();
+         private Optional<VertexFormat.Mode> vertexFormatMode = Optional.empty();
++        private Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest = Optional.empty();
+ 
+         private Builder() {
+         }
 @@ -280,6 +_,16 @@
              return this;
          }
@@ -17,14 +116,62 @@
          private void withSnippet(RenderPipeline.Snippet snippet) {
              if (snippet.vertexShader.isPresent()) {
                  this.vertexShader = snippet.vertexShader;
-@@ -341,6 +_,10 @@
- 
+@@ -342,6 +_,10 @@
              if (snippet.polygonMode.isPresent()) {
                  this.polygonMode = snippet.polygonMode;
-+            }
+             }
 +
 +            if (snippet.stencilTest.isPresent()) {
 +                this.stencilTest = snippet.stencilTest;
-             }
++            }
          }
  
+         public RenderPipeline.Snippet buildSnippet() {
+@@ -356,7 +_,8 @@
+                 this.polygonMode,
+                 this.cull,
+                 this.vertexFormat,
+-                this.vertexFormatMode
++                this.vertexFormatMode,
++                this.stencilTest
+             );
+         }
+ 
+@@ -385,7 +_,8 @@
+                     this.cull.orElse(true),
+                     this.vertexFormat.get(),
+                     this.vertexFormatMode.get(),
+-                    nextPipelineSortKey++
++                    nextPipelineSortKey++,
++                    this.stencilTest
+                 );
+             }
+         }
+@@ -403,8 +_,26 @@
+         Optional<PolygonMode> polygonMode,
+         Optional<Boolean> cull,
+         Optional<VertexFormat> vertexFormat,
+-        Optional<VertexFormat.Mode> vertexFormatMode
++        Optional<VertexFormat.Mode> vertexFormatMode,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
+     ) {
++        /** @deprecated Neo: use {@link #Snippet(Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional)} instead */
++        @Deprecated
++        public Snippet(
++                Optional<Identifier> vertexShader,
++                Optional<Identifier> fragmentShader,
++                Optional<ShaderDefines> shaderDefines,
++                Optional<List<String>> samplers,
++                Optional<List<RenderPipeline.UniformDescription>> uniforms,
++                Optional<ColorTargetState> colorTargetState,
++                Optional<DepthStencilState> depthStencilState,
++                Optional<PolygonMode> polygonMode,
++                Optional<Boolean> cull,
++                Optional<VertexFormat> vertexFormat,
++                Optional<VertexFormat.Mode> vertexFormatMode
++        ) {
++            this(vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, Optional.empty());
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

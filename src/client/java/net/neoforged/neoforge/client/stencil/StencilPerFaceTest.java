@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.stencil;
 
+import com.mojang.blaze3d.platform.CompareOp;
+
 /**
  * Describes the stencil test and writing state for the front or back face.
  *
@@ -17,4 +19,4 @@ public record StencilPerFaceTest(
         StencilOperation fail,
         StencilOperation depthFail,
         StencilOperation pass,
-        StencilFunction compare) {}
+        CompareOp compare) {}

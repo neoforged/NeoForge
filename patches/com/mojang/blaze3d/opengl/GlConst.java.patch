@@ -29,23 +29,10 @@
          };
      }
  
-@@ -312,5 +_,31 @@
+@@ -312,5 +_,18 @@
          } else {
              return 35044;
          }
-+    }
-+
-+    public static int toGl(net.neoforged.neoforge.client.stencil.StencilFunction func) {
-+        return switch (func) {
-+            case NEVER -> org.lwjgl.opengl.GL32.GL_NEVER;
-+            case ALWAYS -> org.lwjgl.opengl.GL32.GL_ALWAYS;
-+            case LESS -> org.lwjgl.opengl.GL32.GL_LESS;
-+            case LEQUAL -> org.lwjgl.opengl.GL32.GL_LEQUAL;
-+            case EQUAL -> org.lwjgl.opengl.GL32.GL_EQUAL;
-+            case GEQUAL -> org.lwjgl.opengl.GL32.GL_GEQUAL;
-+            case GREATER -> org.lwjgl.opengl.GL32.GL_GREATER;
-+            case NOTEQUAL -> org.lwjgl.opengl.GL32.GL_NOTEQUAL;
-+        };
 +    }
 +
 +    public static int toGl(net.neoforged.neoforge.client.stencil.StencilOperation op) {
