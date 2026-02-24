@@ -71,7 +71,7 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
 
     /**
      * Allows registration of custom {@link ColorResolver} implementations to be used with
-     * {@link net.minecraft.world.level.BlockAndTintGetter#getBlockTint(BlockPos, ColorResolver)}.
+     * {@link net.minecraft.client.renderer.block.BlockAndTintGetter#getBlockTint(BlockPos, ColorResolver)}.
      */
     public static class ColorResolvers extends RegisterColorHandlersEvent {
         private final ImmutableList.Builder<ColorResolver> builder;
