@@ -9,13 +9,14 @@
          this.ambientOcclusion = ambientOcclusion;
          this.cull = cull;
          this.blockColors = blockColors;
-@@ -47,11 +_,17 @@
+@@ -47,11 +_,18 @@
          BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
      ) {
          this.random.setSeed(seed);
 -        model.collectParts(this.random, this.parts);
 +        model.collectParts(level, pos, blockState, this.random, this.parts);
          if (!this.parts.isEmpty()) {
++            this.lighter.reset();
              try {
                  Vec3 offset = blockState.getOffset(pos);
 -                if (this.ambientOcclusion && blockState.getLightEmission() == 0 && this.parts.getFirst().useAmbientOcclusion()) {
@@ -61,7 +62,7 @@
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -86,7 +_,20 @@
+@@ -86,7 +_,21 @@
                          }
  
                          if (shouldRenderFace) {
@@ -78,6 +79,7 @@
 +                                if (!quad.hasAmbientOcclusion()) {
 +                                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++                                    continue;
 +                                }
                                  this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
                                  this.putQuadWithTint(output, x, y, z, level, state, pos, quad);

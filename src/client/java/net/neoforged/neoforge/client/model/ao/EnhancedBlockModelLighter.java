@@ -68,6 +68,10 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
         var cache = AO_OBJECT_CACHE.get();
         this.calculator = cache.calculator;
         this.weights = cache.weights;
+    }
+
+    @Override
+    public void reset() {
         // Reset AO Face cache
         this.calculator.startBlock(this.cache);
     }
@@ -118,23 +122,26 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
         // Since we make changes compared to vanilla's AO, many quads will trigger the warning.
         if (COMPARE_WITH_VANILLA) {
             // This is a debug option, so allocations are fine
-            QuadInstance emulated = new QuadInstance();
-            emulated.copyFrom(outputInstance);
+            QuadInstance vanilla = new QuadInstance();
 
-            super.prepareQuadAmbientOcclusion(level, state, pos, quad, outputInstance);
+            super.prepareQuadAmbientOcclusion(level, state, pos, quad, vanilla);
 
             for (int vertex = 0; vertex < 4; ++vertex) {
-                if (!Mth.equal(emulated.getColor(vertex), outputInstance.getColor(vertex)) || emulated.getLightCoords(vertex) != outputInstance.getLightCoords(vertex)) {
+                if (!Mth.equal(vanilla.getColor(vertex), outputInstance.getColor(vertex)) || vanilla.getLightCoords(vertex) != outputInstance.getLightCoords(vertex)) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
                             + "Vanilla: lightmap = {}, brightness = {}\n"
                             + "Emulated: lightmap = {}, brightness = {}\n",
-                            vertex, direction, state.getBlock(), pos, outputInstance.getLightCoords(vertex), outputInstance.getColor(vertex), emulated.getLightCoords(vertex), emulated.getColor(vertex));
+                            vertex,
+                            direction,
+                            state.getBlock(),
+                            pos,
+                            Integer.toHexString(vanilla.getLightCoords(vertex)),
+                            Integer.toHexString(vanilla.getColor(vertex)),
+                            Integer.toHexString(outputInstance.getLightCoords(vertex)),
+                            Integer.toHexString(outputInstance.getColor(vertex)));
                     break;
                 }
             }
-
-            // Revert to our AO
-            outputInstance.copyFrom(emulated);
         }
     }
 
