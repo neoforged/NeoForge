@@ -29,10 +29,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public abstract class ItemAccessResourceHandler<T extends Resource> implements ResourceHandler<T> {
     protected final ItemAccess itemAccess;
     protected final int size;
+    protected final boolean supportsPartial;
 
-    protected ItemAccessResourceHandler(ItemAccess itemAccess, int size) {
+    protected ItemAccessResourceHandler(ItemAccess itemAccess, int size, boolean supportsPartial) {
         this.itemAccess = itemAccess;
         this.size = size;
+        this.supportsPartial = supportsPartial;
     }
 
     /**
@@ -60,6 +62,7 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
      *           that will be done by the calling code based on the results of this function.
      */
     // TODO: we could allow returning null when the resource/amount should be deleted, to allow for "consumable" implementations with minimal effort
+    //  Alternatively, we could make EMPTY be the consumed result, and return the current resource as the "no-action" result
     protected abstract ItemResource update(ItemResource accessResource, int index, T newResource, int newAmount);
 
     /**
@@ -115,34 +118,47 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
         return 0;
     }
 
-    // TODO: support "all or nothing" resource handlers better by optionally changing how insert and extract round
-
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
+        var capacity = getCapacity(index, resource);
+        if (!supportsPartial && amount < capacity) return 0;
+
         int accessAmount = itemAccess.getAmount();
-        if (accessAmount == 0) {
-            return 0;
-        }
-        int amountPerItem = amount / accessAmount;
+        if (accessAmount == 0) return 0;
 
-        ItemResource accessResource = itemAccess.getResource();
+        if (!isValid(index, resource)) return 0;
+
+        int capacityPerItem = getCapacity(index, resource);
+        ItemResource accessResource = this.itemAccess.getResource();
+
         int currentAmountPerItem = getAmountFrom(accessResource, index);
+        if (currentAmountPerItem != 0 && !resource.equals(getResourceFrom(accessResource, index))) return 0;
 
-        if ((currentAmountPerItem == 0 || resource.equals(getResourceFrom(accessResource, index))) && isValid(index, resource)) {
-            int insertedPerItem = Math.min(amountPerItem, getCapacity(index, resource) - currentAmountPerItem);
-
+        //Try filling containers fully first.
+        int numberToInsert = amount / capacityPerItem;
+        if (numberToInsert > 0) {
+            //non-partial inserting
+            int insertedPerItem = Math.min(capacityPerItem, capacityPerItem - currentAmountPerItem);
             if (insertedPerItem > 0) {
                 ItemResource filledResource = update(accessResource, index, resource, insertedPerItem + currentAmountPerItem);
-
-                if (!filledResource.isEmpty()) {
-                    return insertedPerItem * itemAccess.exchange(filledResource, accessAmount, transaction);
-                }
+                if (!filledResource.isEmpty())
+                    return insertedPerItem * itemAccess.exchange(filledResource, numberToInsert, transaction);
             }
         }
+        //If non-partial filling failed, then try partial filling if allowed
+        if (!supportsPartial) return 0;
 
+        int amountPerItem = amount / accessAmount;
+        int insertedItem = Math.min(amountPerItem, capacityPerItem - currentAmountPerItem);
+        if (insertedItem == 0) return 0;
+
+        ItemResource filledResource = update(accessResource, index, resource, insertedItem + currentAmountPerItem);
+        if (!filledResource.isEmpty()) {
+            return insertedItem * this.itemAccess.exchange(filledResource, accessAmount, transaction);
+        }
         return 0;
     }
 
@@ -151,27 +167,37 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
         Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-        int accessAmount = itemAccess.getAmount();
-        if (accessAmount == 0) {
-            return 0;
-        }
+        var capacity = getCapacity(index, resource);
+        if (!supportsPartial && amount < capacity) return 0;
 
-        ItemResource accessResource = itemAccess.getResource();
-        T currentResource = getResourceFrom(accessResource, index);
+        int accessAmount = this.itemAccess.getAmount();
+        if (accessAmount == 0) return 0;
 
-        if (resource.equals(currentResource)) {
-            int currentAmountPerItem = getAmountFrom(accessResource, index);
-            int extractedPerItem = Math.min(amount / accessAmount, currentAmountPerItem);
+        ItemResource accessResource = this.itemAccess.getResource();
+        if (!resource.equals(getResourceFrom(accessResource, index))) return 0;
 
+        int currentAmountPerItem = getAmountFrom(accessResource, index);
+
+        int capacityPerItem = getCapacity(index, resource);
+        int numberToDrain = amount / capacityPerItem;
+        if (numberToDrain > 0) {
+            //non-partial extracting
+            int extractedPerItem = Math.min(capacityPerItem, currentAmountPerItem);
             if (extractedPerItem > 0) {
                 ItemResource emptiedResource = update(accessResource, index, resource, currentAmountPerItem - extractedPerItem);
-
-                if (!emptiedResource.isEmpty()) {
-                    return extractedPerItem * itemAccess.exchange(emptiedResource, accessAmount, transaction);
-                }
+                if (!emptiedResource.isEmpty())
+                    return extractedPerItem * itemAccess.exchange(emptiedResource, numberToDrain, transaction);
             }
         }
 
-        return 0;
+        if (!supportsPartial) return 0;
+
+        int extractPerItem = Math.min(amount / accessAmount, currentAmountPerItem);
+        if (extractPerItem <= 0) return 0;
+
+        ItemResource emptiedResource = update(accessResource, index, resource, currentAmountPerItem - extractPerItem);
+        if (emptiedResource.isEmpty()) return 0;
+
+        return extractPerItem * this.itemAccess.exchange(emptiedResource, accessAmount, transaction);
     }
 }

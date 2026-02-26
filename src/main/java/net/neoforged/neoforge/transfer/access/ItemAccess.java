@@ -208,20 +208,31 @@ public interface ItemAccess {
     @ApiStatus.NonExtendable
     default int exchange(ItemResource newResource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(newResource, amount);
-        var currentResource = getResource();
+        ItemResource currentResource = getResource();
         TransferPreconditions.checkNonEmpty(currentResource);
-
+        int inserted = 0;
         try (Transaction subTransaction = Transaction.open(transaction)) {
             int extracted = extract(currentResource, amount, subTransaction);
             if (extracted > 0) {
-                var inserted = insert(newResource, extracted, subTransaction);
+                inserted = insert(newResource, extracted, subTransaction);
                 if (inserted == extracted) {
                     subTransaction.commit();
                     return extracted;
                 }
             }
         }
+        if (inserted == 0) return 0;
+        // A scenario where this could happen is filling a stack of empty buckets with water.
+        // The inserted here would be 1, whereas the extracted would have resulted in 16.
+        // This fallback transaction serves to handle those cases and use the simulated insertion value as the extraction amount
 
+        try (Transaction fallback = Transaction.open(transaction)) {
+            int extracted = extract(currentResource, inserted, fallback);
+            if (extracted > 0 && extracted == insert(newResource, extracted, fallback)) {
+                fallback.commit();
+                return extracted;
+            }
+        }
         return 0;
     }
 }

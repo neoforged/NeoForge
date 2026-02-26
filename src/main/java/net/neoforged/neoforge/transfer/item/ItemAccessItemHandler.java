@@ -29,7 +29,11 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
     protected final DataComponentType<ItemContainerContents> component;
 
     public ItemAccessItemHandler(ItemAccess itemAccess, DataComponentType<ItemContainerContents> component, int size) {
-        super(itemAccess, size);
+        this(itemAccess, component, size, true);
+    }
+
+    public ItemAccessItemHandler(ItemAccess itemAccess, DataComponentType<ItemContainerContents> component, int size, boolean supportsPartial) {
+        super(itemAccess, size, supportsPartial);
         // Store the current item, such that if the item changes later we don't return any stored content from it.
         this.validItem = itemAccess.getResource().getItem();
         this.component = component;
@@ -74,6 +78,8 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
         }
     }
 
+    //TODO likely needs more validation that non-partial filling works for items given the backing list implementation.
+    //   See ItemAccessFluidHandler for an example
     @Override
     protected ItemResource update(ItemResource accessResource, int index, ItemResource newResource, int newAmount) {
         var contents = getContents(accessResource);

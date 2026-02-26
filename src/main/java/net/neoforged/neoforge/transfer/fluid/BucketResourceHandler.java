@@ -20,7 +20,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  */
 public final class BucketResourceHandler extends ItemAccessResourceHandler<FluidResource> {
     public BucketResourceHandler(ItemAccess itemAccess) {
-        super(itemAccess, 1);
+        super(itemAccess, 1, false);
     }
 
     @Override
@@ -44,12 +44,10 @@ public final class BucketResourceHandler extends ItemAccessResourceHandler<Fluid
     protected ItemResource update(ItemResource accessResource, int index, FluidResource newResource, int newAmount) {
         if (newAmount == 0) {
             return ItemResource.of(Items.BUCKET);
-        } else if (newAmount != FluidType.BUCKET_VOLUME) {
-            return ItemResource.EMPTY;
-        } else {
-            var newStack = newResource.toStack(newAmount);
-            return ItemResource.of(newStack.getFluidType().getBucket(newStack));
+        } else if (newAmount == FluidType.BUCKET_VOLUME) {
+            return ItemResource.of(newResource.getFluidType().getBucket(newResource.toStack(newAmount)));
         }
+        return ItemResource.EMPTY;
     }
 
     @Override

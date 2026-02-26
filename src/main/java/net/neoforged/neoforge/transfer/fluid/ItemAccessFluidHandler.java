@@ -25,7 +25,11 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
     protected int capacity;
 
     public ItemAccessFluidHandler(ItemAccess itemAccess, DataComponentType<SimpleFluidContent> component, int capacity) {
-        super(itemAccess, 1);
+        this(itemAccess, component, capacity, true);
+    }
+
+    public ItemAccessFluidHandler(ItemAccess itemAccess, DataComponentType<SimpleFluidContent> component, int capacity, boolean supportsPartial) {
+        super(itemAccess, 1, supportsPartial);
         // Store the current item, such that if the item changes later we don't return any stored content from it.
         this.validItem = itemAccess.getResource().getItem();
         this.component = component;
@@ -52,7 +56,11 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
 
     @Override
     protected ItemResource update(ItemResource accessResource, int index, FluidResource newResource, int newAmount) {
-        return accessResource.with(component, SimpleFluidContent.copyOf(newResource.toStack(newAmount)));
+        if (newAmount == 0)
+            return accessResource.with(component, SimpleFluidContent.EMPTY);
+        if (supportsPartial || newAmount == capacity)
+            return accessResource.with(component, SimpleFluidContent.copyOf(newResource, newAmount));
+        return ItemResource.EMPTY;
     }
 
     @Override

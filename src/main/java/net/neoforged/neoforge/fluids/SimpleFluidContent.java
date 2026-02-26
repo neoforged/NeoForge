@@ -16,6 +16,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 /**
  * Stock data component class to hold a {@link FluidStack}.
@@ -37,6 +38,10 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     public static SimpleFluidContent copyOf(FluidStack fluidStack) {
         return fluidStack.isEmpty() ? EMPTY : new SimpleFluidContent(fluidStack.copy());
+    }
+
+    public static SimpleFluidContent copyOf(FluidResource resource, int amount) {
+        return resource.isEmpty() ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
     }
 
     public FluidStack copy() {
