@@ -30,7 +30,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -127,15 +126,8 @@ public class FluidTypeTest {
 
     private static class FluidTypeTestClient {
         private FluidTypeTestClient(IEventBus modEventBus) {
-            modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(this::registerBlockColors);
             modEventBus.addListener(this::registerClientExtensions);
-        }
-
-        private void clientSetup(FMLClientSetupEvent event) {
-            // FIXME 26.1: Need an event to register fluid chunk layers
-            //Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
-            //        .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, ChunkSectionLayer.TRANSLUCENT));
         }
 
         private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
