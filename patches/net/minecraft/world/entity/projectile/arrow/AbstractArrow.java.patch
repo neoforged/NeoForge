@@ -1,15 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
-@@ -185,7 +_,8 @@
-             this.shakeTime--;
-         }
- 
--        if (this.isInWaterOrRain()) {
-+        // Neo: Allow custom fluids to extinguish flaming arrows
-+        if (this.isInWaterOrRain() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
-             this.clearFire();
-         }
- 
 @@ -278,11 +_,15 @@
  
              if (entitiesHit.isEmpty()) {

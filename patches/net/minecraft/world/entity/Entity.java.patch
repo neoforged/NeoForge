@@ -77,23 +77,7 @@
      }
  
      private boolean shouldPlayAmethystStepSound(BlockState affectingState) {
-@@ -1510,7 +_,7 @@
-     }
- 
-     public boolean isInShallowWater() {
--        return this.isInWater() && !this.isUnderWater();
-+        return this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
-     }
- 
-     public boolean isInClouds() {
-@@ -1606,12 +_,13 @@
-     }
- 
-     public boolean canSpawnSprintParticle() {
--        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
-+        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.isInFluidType();
-     }
- 
+@@ -1612,6 +_,7 @@
      protected void spawnSprintParticle() {
          BlockPos pos = this.getOnPosLegacy();
          BlockState blockState = this.level().getBlockState(pos);
@@ -101,7 +85,7 @@
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();
-@@ -1626,16 +_,19 @@
+@@ -1626,7 +_,7 @@
              }
  
              this.level()
@@ -110,19 +94,6 @@
          }
      }
  
-+    @Deprecated // Forge: Use isEyeInFluidType instead
-     public boolean isEyeInFluid(TagKey<Fluid> type) {
-+        if (type == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (type == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-         return this.fluidInteraction.isEyeInFluid(type);
-     }
- 
-     public boolean isInLava() {
--        return !this.firstTick && this.fluidInteraction.isInFluid(FluidTags.LAVA);
-+        return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
-     }
- 
-     public void moveRelative(float speed, Vec3 input) {
 @@ -2011,6 +_,11 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
@@ -205,15 +176,6 @@
      protected boolean couldAcceptPassenger() {
          return true;
      }
-@@ -2632,7 +_,7 @@
-     }
- 
-     public boolean isVisuallyCrawling() {
--        return this.isVisuallySwimming() && !this.isInWater();
-+        return this.isVisuallySwimming() && !this.isInWater() && !this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType));
-     }
- 
-     public void setSwimming(boolean swimming) {
 @@ -2748,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
@@ -270,17 +232,6 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3569,7 +_,10 @@
-         return !this.level().hasChunksAt(x0, z0, x1, z1);
-     }
- 
-+    @Deprecated // Forge: Use getFluidTypeHeight instead
-     public double getFluidHeight(TagKey<Fluid> type) {
-+        if (type == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (type == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-         return this.fluidInteraction.getFluidHeight(type);
-     }
- 
 @@ -3724,6 +_,10 @@
                  }
              }
@@ -292,7 +243,7 @@
      }
  
      public void checkDespawn() {
-@@ -3864,6 +_,130 @@
+@@ -3864,6 +_,90 @@
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
          return true;
@@ -356,46 +307,6 @@
 +    @Override
 +    public void revive() {
 +        this.unsetRemoved();
-+    }
-+
-+    // Neo: New logic for determining entity-fluid interactions. Replaces the vanilla logic that used fluids/fluid tags.
-+    protected it.unimi.dsi.fastutil.objects.Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
-+    private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
-+
-+    protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
-+        this.forgeFluidTypeHeight.put(type, height);
-+    }
-+
-+    @Override
-+    public final double getFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type) {
-+        return this.forgeFluidTypeHeight.getDouble(type);
-+    }
-+
-+    @Override
-+    public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
-+        if (this.forgeFluidTypeHeight.isEmpty()) {
-+            return false;
-+        }
-+        return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
-+                  : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
-+    }
-+
-+    @Override
-+    public final boolean isInFluidType() {
-+        return this.forgeFluidTypeHeight.size() > 0;
-+    }
-+
-+    @Override
-+    public final net.neoforged.neoforge.fluids.FluidType getEyeInFluidType() {
-+        return forgeFluidTypeOnEyes;
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
-+        if (this.forgeFluidTypeHeight.isEmpty()) {
-+            return net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
-+        }
-+        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getDoubleValue)).map(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
 +    }
 +
 +    // Neo: Hookup Attachment data setting

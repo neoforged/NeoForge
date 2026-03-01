@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -59,19 +_,22 @@
+@@ -59,19 +_,21 @@
          Player player = this.minecraft.player;
          if (this.minecraft.options.getCameraType().isFirstPerson() && !isSleeping) {
              if (!player.noPhysics) {
@@ -18,7 +18,6 @@
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, bufferSource))
                      renderWater(this.minecraft, poseStack, this.bufferSource);
                  }
-+                else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, poseStack, this.bufferSource);
  
                  if (this.minecraft.player.isOnFire()) {
                      TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
