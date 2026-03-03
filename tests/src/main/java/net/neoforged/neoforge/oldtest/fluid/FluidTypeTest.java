@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.fluid;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.List;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
@@ -51,8 +52,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * A test case used to define and test fluid type integration into fluids.

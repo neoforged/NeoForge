@@ -10,7 +10,6 @@ import com.mojang.math.Transformation;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Function;
-
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.ModelBaker;

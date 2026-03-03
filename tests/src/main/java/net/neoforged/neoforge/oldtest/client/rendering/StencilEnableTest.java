@@ -194,8 +194,7 @@ public class StencilEnableTest {
             int y1,
             float scale,
             @Nullable ScreenRectangle bounds,
-            @Nullable ScreenRectangle scissorArea) implements PictureInPictureRenderState
-    {
+            @Nullable ScreenRectangle scissorArea) implements PictureInPictureRenderState {
         public StenciledItemPictureInPictureRenderState(
                 TrackingItemStackRenderState maskRenderState,
                 TrackingItemStackRenderState maskedRenderState,

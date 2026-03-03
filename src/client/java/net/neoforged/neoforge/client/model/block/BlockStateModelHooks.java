@@ -53,7 +53,7 @@ public class BlockStateModelHooks {
                 BLOCK_MODEL_DEFINITION_IDS.codec(Identifier.CODEC),
                 CustomBlockModelDefinition::codec,
                 Function.identity(),
-                        BlockStateModelDispatcher.VANILLA_CODEC).xmap(
+                BlockStateModelDispatcher.VANILLA_CODEC).xmap(
                         BlockStateModelHooks::packDefinition,
                         BlockStateModelHooks::unpackDefinition)
                 .codec();
