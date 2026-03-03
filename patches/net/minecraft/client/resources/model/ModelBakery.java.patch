@@ -42,6 +42,15 @@
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(MaterialBaker materials, Executor taskExecutor) {
+@@ -109,7 +_,7 @@
+                     return clientInfo.model()
+                         .bake(
+                             new ItemModel.BakingContext(
+-                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper()
++                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper(), this.pendingAnimations
+                             ),
+                             IDENTITY
+                         );
 @@ -120,6 +_,8 @@
              },
              taskExecutor
@@ -68,6 +77,35 @@
              )
          );
      }
+@@ -144,7 +_,19 @@
+         Map<BlockState, BlockStateModel> blockStateModels,
+         Map<Identifier, ItemModel> itemStackModels,
+         Map<Identifier, ClientItem.Properties> itemProperties
++        , net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels standaloneModels
+     ) {
++        /// @deprecated Neo: use [#BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)] instead
++        @Deprecated
++        public BakingResult(
++                ModelBakery.MissingModels missingModels,
++                Map<BlockState, BlockStateModel> blockStateModels,
++                Map<Identifier, ItemModel> itemStackModels,
++                Map<Identifier, ClientItem.Properties> itemProperties
++        ) {
++            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
++        }
++
+         public BlockStateModel getBlockStateModel(BlockState blockState) {
+             return this.blockStateModels.getOrDefault(blockState, this.missingModels.block);
+         }
+@@ -154,6 +_,8 @@
+     private static class InternerImpl implements ModelBaker.Interner {
+         private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
+         private final Interner<BakedQuad.SpriteInfo> spriteInfos = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedNormals> normals = Interners.newStrongInterner();
++        private final Interner<net.neoforged.neoforge.client.model.quad.BakedColors> colors = Interners.newStrongInterner();
+ 
+         @Override
+         public Vector3fc vector(Vector3fc v) {
 @@ -163,6 +_,16 @@
          @Override
          public BakedQuad.SpriteInfo spriteInfo(BakedQuad.SpriteInfo sprite) {

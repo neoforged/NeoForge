@@ -28,7 +28,7 @@ public interface CustomCloudsRenderer {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, Matrix4f modelViewMatrix) {
+    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4f modelViewMatrix) {
         return false;
     }
 }

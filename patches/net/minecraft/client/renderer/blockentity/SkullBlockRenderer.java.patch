@@ -9,3 +9,19 @@
          }
      }
  
+@@ -158,5 +_,15 @@
+         return new Transformation(
+             new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-RotationSegment.convertToDegrees(segment))).scale(-1.0F, -1.0F, 1.0F)
+         );
++    }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
++        SkullBlock.Type type = ((AbstractSkullBlock) blockEntity.getBlockState().getBlock()).getType();
++        if (type == SkullBlock.Types.DRAGON) {
++            net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++            return new net.minecraft.world.phys.AABB(pos.getX() - .75, pos.getY() - .35, pos.getZ() - .75, pos.getX() + 1.75, pos.getY() + 1.0, pos.getZ() + 1.75);
++        }
++        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
+     }
+ }

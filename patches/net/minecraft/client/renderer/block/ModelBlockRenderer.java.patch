@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
+@@ -39,7 +_,7 @@
+     private final IntList computedTintValues = new IntArrayList();
+ 
+     public ModelBlockRenderer(boolean ambientOcclusion, boolean cull, BlockColors blockColors) {
+-        this.lighter = new BlockModelLighter();
++        this.lighter = net.neoforged.neoforge.client.model.ao.EnhancedBlockModelLighter.newInstance();
+         this.ambientOcclusion = ambientOcclusion;
+         this.cull = cull;
+         this.blockColors = blockColors;
 @@ -53,11 +_,18 @@
          BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
      ) {

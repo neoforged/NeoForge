@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
@@ -16,7 +15,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public interface BlockStateModelExtension {
@@ -74,16 +72,6 @@ public interface BlockStateModelExtension {
      */
     default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
         self().collectParts(random, parts);
-    }
-
-    /**
-     * Helper to collects the parts of the model into a new list.
-     */
-    @ApiStatus.NonExtendable
-    default List<BlockModelPart> collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
-        List<BlockModelPart> parts = new ObjectArrayList<>();
-        this.collectParts(level, pos, state, random, parts);
-        return parts;
     }
 
     /**

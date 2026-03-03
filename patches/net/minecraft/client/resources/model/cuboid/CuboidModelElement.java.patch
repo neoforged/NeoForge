@@ -1,0 +1,38 @@
+--- a/net/minecraft/client/resources/model/cuboid/CuboidModelElement.java
++++ b/net/minecraft/client/resources/model/cuboid/CuboidModelElement.java
+@@ -21,12 +_,24 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public record CuboidModelElement(
+-    Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces, @Nullable CuboidRotation rotation, boolean shade, int lightEmission
++    Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces, @Nullable CuboidRotation rotation, boolean shade, int lightEmission, net.neoforged.neoforge.client.model.ExtraFaceData faceData
+ ) {
+     private static final boolean DEFAULT_RESCALE = false;
+     private static final float MIN_EXTENT = -16.0F;
+     private static final float MAX_EXTENT = 32.0F;
+ 
++    public CuboidModelElement {
++        faces.values().forEach(face -> face.parent().setValue(this));
++    }
++
++    public CuboidModelElement(Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces, @Nullable CuboidRotation rotation, boolean shade, int lightEmission) {
++        this(from, to, faces, rotation, shade, lightEmission, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
++    public CuboidModelElement(Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
++        this(from, to, faces, null, true, 0, faceData);
++    }
++
+     public CuboidModelElement(Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces) {
+         this(from, to, faces, null, true, 0);
+     }
+@@ -71,7 +_,8 @@
+                     }
+                 }
+ 
+-                return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission);
++                var faceData = net.neoforged.neoforge.client.model.ExtraFaceData.read(object.get("neoforge_data"), net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++                return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission, faceData);
+             }
+         }
+ 

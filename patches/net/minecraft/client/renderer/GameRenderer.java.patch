@@ -13,12 +13,12 @@
 -                new GuiProfilerChartRenderer(bufferSource)
 -            )
 +            net.neoforged.neoforge.client.ClientHooks.gatherPictureInPictureRenderers(List.of(
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiEntityRenderState.class, buffers -> new GuiEntityRenderer(buffers, minecraft.getEntityRenderDispatcher())),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiSkinRenderState.class, GuiSkinRenderer::new),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiBookModelRenderState.class, GuiBookModelRenderer::new),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiBannerResultRenderState.class, buffers -> new GuiBannerResultRenderer(buffers, atlasManager)),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiSignRenderState.class, buffers -> new GuiSignRenderer(buffers, atlasManager)),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState.class, buffers -> new GuiEntityRenderer(buffers, minecraft.getEntityRenderDispatcher())),
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiSkinRenderState.class, GuiSkinRenderer::new),
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBookModelRenderState.class, GuiBookModelRenderer::new),
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBannerResultRenderState.class, buffers -> new GuiBannerResultRenderer(buffers, atlasManager)),
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiSignRenderState.class, buffers -> new GuiSignRenderer(buffers, atlasManager)),
++                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
 +            ))
          );
          this.screenEffectRenderer = new ScreenEffectRenderer(minecraft, atlasManager, bufferSource);
@@ -31,13 +31,33 @@
                  this.clearPostEffect();
          }
      }
-@@ -328,6 +_,9 @@
-             if (hurt < 0.0F) {
+@@ -329,6 +_,9 @@
                  return;
              }
-+
+ 
 +            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
 +            if (cameraState.entityRenderState.preventFlinch) return;
- 
++
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
+             float rr = cameraState.entityRenderState.hurtDir;
+@@ -506,7 +_,8 @@
+             profiler.push("screen");
+ 
+             try {
+-                this.minecraft.screen.renderWithTooltipAndSubtitles(graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
++                // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
++                net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
+             } catch (Throwable var12) {
+                 CrashReport report = CrashReport.forThrowable(var12, "Rendering screen");
+                 CrashReportCategory category = report.addCategory("Screen render details");
+@@ -730,6 +_,9 @@
+                 !shouldCreateBossFog,
+                 this.gameRenderState.levelRenderState.chunkSectionsToRender
+             );
++        profiler.popPush("neoforge_render_after_level");
++        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, modelViewMatrix, levelRenderer.getRenderableSections()));
+         profiler.popPush("hand");
+         boolean isSleeping = cameraState.entityRenderState.isSleeping;
+         this.hudProjection

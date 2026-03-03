@@ -5,14 +5,14 @@
      }
  
 +    /**
-+     * @deprecated Neo: use {@link #render(Vec3, WeatherRenderState, net.minecraft.client.renderer.state.LevelRenderState)} instead
++     * @deprecated Neo: use {@link #render(Vec3, WeatherRenderState, net.minecraft.client.renderer.state.level.LevelRenderState)} instead
 +     */
 +    @Deprecated
      public void render(Vec3 cameraPos, WeatherRenderState renderState) {
 +        this.render(cameraPos, renderState, null);
 +    }
 +
-+    public void render(Vec3 cameraPos, WeatherRenderState renderState, net.minecraft.client.renderer.state.@org.jspecify.annotations.Nullable LevelRenderState levelRenderState) {
++    public void render(Vec3 cameraPos, WeatherRenderState renderState, net.minecraft.client.renderer.state.level.@org.jspecify.annotations.Nullable LevelRenderState levelRenderState) {
 +        if (levelRenderState != null && levelRenderState.customWeatherEffectRenderer != null && levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(levelRenderState, renderState, Minecraft.getInstance().renderBuffers().bufferSource(), cameraPos)) {
 +            return;
 +        }

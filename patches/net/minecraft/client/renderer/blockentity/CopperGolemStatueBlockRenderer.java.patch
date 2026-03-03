@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
+@@ -80,4 +_,10 @@
+     private static Transformation createModelTransformation(Direction entityDirection) {
+         return new Transformation(new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-entityDirection.getOpposite().toYRot())));
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(CopperGolemStatueBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1.5, pos.getZ() + 1);
++    }
+ }
