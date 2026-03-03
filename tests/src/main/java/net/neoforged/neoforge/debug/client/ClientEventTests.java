@@ -13,6 +13,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockQuadOutput;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -175,6 +176,7 @@ public class ClientEventTests {
             } catch (IllegalArgumentException ignored) {}
         });
         test.whenEnabled(listeners -> {
+            BlockDisplayContext blockDisplayContext = BlockDisplayContext.create();
             listeners.forge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
                 int numRender = event.getRenderState().getRenderDataOrDefault(numRenderAttachmentKey, -1);
                 if (numRender == -1) {
@@ -196,7 +198,7 @@ public class ClientEventTests {
                     poseStack.mulPose(Axis.XP.rotation(xRotation));
 
                     BlockModelRenderState renderState = new BlockModelRenderState();
-                    Minecraft.getInstance().getBlockModelResolver().update(renderState, Blocks.CALCITE.defaultBlockState());
+                    Minecraft.getInstance().getBlockModelResolver().update(renderState, Blocks.CALCITE.defaultBlockState(), blockDisplayContext);
                     renderState.submit(poseStack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                     poseStack.popPose();
@@ -210,6 +212,7 @@ public class ClientEventTests {
     @TestHolder(description = { "Tests if rendering custom geometry on visible chunks works", "When the message \"gold block\" is sent in chat, gold blocks should render at the origin of every visible section with blocks" })
     static void renderLevelStageWithSectionData(final DynamicTest test) {
         test.whenEnabled(listeners -> {
+            BlockDisplayContext blockDisplayContext = BlockDisplayContext.create();
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
                     NeoForge.EVENT_BUS.addListener((final SubmitCustomGeometryEvent event) -> {
@@ -228,7 +231,7 @@ public class ClientEventTests {
                                     section.getRenderOrigin().getZ() - camera.z);
 
                             BlockModelRenderState renderState = new BlockModelRenderState();
-                            Minecraft.getInstance().getBlockModelResolver().update(renderState, state);
+                            Minecraft.getInstance().getBlockModelResolver().update(renderState, state, blockDisplayContext);
                             renderState.submit(stack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                             stack.popPose();
 

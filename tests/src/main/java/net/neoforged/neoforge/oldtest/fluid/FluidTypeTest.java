@@ -8,6 +8,7 @@ package net.neoforged.neoforge.oldtest.fluid;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.fog.FogData;
@@ -50,6 +51,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * A test case used to define and test fluid type integration into fluids.
@@ -130,13 +133,19 @@ public class FluidTypeTest {
             modEventBus.addListener(this::registerClientExtensions);
         }
 
-        private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-            event.register((state, getter, pos, index) -> {
-                if (getter != null && pos != null) {
-                    FluidState fluidState = getter.getFluidState(pos);
-                    return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, getter, pos);
-                } else return 0xAF7FFFD4;
-            }, TEST_FLUID_BLOCK.get());
+        private void registerBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
+            event.register(List.of(new BlockTintSource() {
+                @Override
+                public int color(BlockState state) {
+                    return 0xAF7FFFD4;
+                }
+
+                @Override
+                public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+                    FluidState fluidState = level.getFluidState(pos);
+                    return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, level, pos);
+                }
+            }), TEST_FLUID_BLOCK.get());
         }
 
         private void registerClientExtensions(RegisterClientExtensionsEvent event) {

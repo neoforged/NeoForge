@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,22 +14,22 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
-import net.minecraft.world.level.levelgen.feature.stateproviders.RuleBasedBlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.stateproviders.RuleBasedStateProvider;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(LevelReader, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
+ * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(WorldGenLevel, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
  * works properly, using a custom grass block that should revert to its custom dirt form after a tree grows on
  * top of it instead of turning to dirt.
  */
@@ -50,12 +51,15 @@ public class OnTreeGrowBlockTest {
         @Override
         public boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
             // Respect vanilla behavior for trees that want custom dirt blocks
-            if (config.belowTrunkProvider.rules().stream().map(RuleBasedBlockStateProvider.Rule::ifTrue).anyMatch(pred -> pred.test(level, pos))) {
-                return false;
-            } else {
-                placeFunction.accept(pos, TEST_DIRT.value().defaultBlockState());
-                return true;
+            if (config.belowTrunkProvider instanceof RuleBasedStateProvider provider) {
+                List<RuleBasedStateProvider.Rule> rules = ObfuscationReflectionHelper.getPrivateValue(RuleBasedStateProvider.class, provider, "rules");
+                if (rules.stream().map(RuleBasedStateProvider.Rule::ifTrue).anyMatch(pred -> pred.test(level, pos))) {
+                    return false;
+                }
             }
+
+            placeFunction.accept(pos, TEST_DIRT.value().defaultBlockState());
+            return true;
         }
     }, props -> props.mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f));
     public static final Holder<Block> TEST_DIRT = BLOCKS.registerBlock("test_dirt", props -> new Block(props) {

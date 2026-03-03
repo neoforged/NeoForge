@@ -6,11 +6,13 @@
 package net.neoforged.testframework.registration;
 
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -20,7 +22,7 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.Material;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -141,7 +143,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         //Capture the color into a local tint source, which has a unit mapcodec for serialization
         final ConstantItemTintSourceBuilder source = new ConstantItemTintSourceBuilder(color);
 
-        helper.eventListeners().accept((final RegisterColorHandlersEvent.Block event) -> event.register((state, level, pos, tintIndex) -> color, value()));
+        helper.eventListeners().accept((final RegisterColorHandlersEvent.BlockTintSources event) -> event.register(List.of(BlockTintSources.constant(color)), value()));
         helper.eventListeners().accept((final RegisterColorHandlersEvent.ItemTintSources event) -> {
             if (hasItem) {
                 event.register(key.identifier(), source.type());
