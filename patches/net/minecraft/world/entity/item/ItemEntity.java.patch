@@ -35,16 +35,6 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -118,6 +_,9 @@
-             this.yo = this.getY();
-             this.zo = this.getZ();
-             Vec3 oldMovement = this.getDeltaMovement();
-+            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > 0.1F) fluidType.setItemMovement(this);
-+            else
-             if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
-                 this.setUnderwaterMovement();
-             } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
 @@ -140,7 +_,8 @@
                  this.applyEffectsFromBlocks();
                  float friction = 0.98F;

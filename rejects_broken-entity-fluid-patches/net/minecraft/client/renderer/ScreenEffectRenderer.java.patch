@@ -1,0 +1,6 @@
+                     renderWater(this.minecraft, poseStack, this.bufferSource);
+                 }
++                else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, poseStack, this.bufferSource);
+
+                 if (this.minecraft.player.isOnFire()) {
+                     TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);

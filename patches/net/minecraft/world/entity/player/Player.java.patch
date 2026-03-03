@@ -54,15 +54,6 @@
      }
  
      @Override
-@@ -299,7 +_,7 @@
-     }
- 
-     protected boolean updateIsUnderwater() {
--        this.wasUnderwater = this.isEyeInFluid(FluidTags.WATER);
-+        this.wasUnderwater = this.getEyeInFluidType() != null && this.getEyeInFluidType().canSwim(this);
-         return this.wasUnderwater;
-     }
- 
 @@ -338,6 +_,10 @@
      }
  
