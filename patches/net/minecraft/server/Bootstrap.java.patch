@@ -1,7 +1,7 @@
 --- a/net/minecraft/server/Bootstrap.java
 +++ b/net/minecraft/server/Bootstrap.java
 @@ -56,6 +_,8 @@
-                     CauldronInteraction.bootStrap();
+                     CauldronInteractions.bootStrap();
                      BuiltInRegistries.bootStrap();
                      CreativeModeTabs.validate();
 +                    net.neoforged.neoforge.registries.GameData.vanillaSnapshot();

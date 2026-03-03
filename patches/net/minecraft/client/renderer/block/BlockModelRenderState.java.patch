@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/renderer/block/BlockModelRenderState.java
++++ b/net/minecraft/client/renderer/block/BlockModelRenderState.java
+@@ -32,7 +_,8 @@
+ 
+     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor) {
+         if (this.model != null) {
+-            RenderType renderType = this.model.hasTranslucency() ? Sheets.translucentBlockSheet() : Sheets.cutoutBlockSheet();
++            var state = this.block != null ? this.block.defaultBlockState() : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
++            RenderType renderType = this.model.hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, state) ? Sheets.translucentBlockSheet() : Sheets.cutoutBlockSheet();
+             submitNodeCollector.submitBlockModel(poseStack, renderType, this.model, this.tintLayers, lightCoords, overlayCoords, outlineColor);
+         }
+ 

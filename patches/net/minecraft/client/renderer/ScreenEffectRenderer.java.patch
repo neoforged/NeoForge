@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -59,19 +_,22 @@
+@@ -59,19 +_,21 @@
          Player player = this.minecraft.player;
          if (this.minecraft.options.getCameraType().isFirstPerson() && !isSleeping) {
              if (!player.noPhysics) {
 -                BlockState blockState = getViewBlockingState(player);
 -                if (blockState != null) {
--                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
+-                    renderTex(this.minecraft.getModelManager().getBlockModelSet().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
 +                org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
-+                    renderTex(this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
++                    renderTex(this.minecraft.getModelManager().getBlockModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
                  }
              }
  
@@ -18,7 +18,6 @@
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, bufferSource))
                      renderWater(this.minecraft, poseStack, this.bufferSource);
                  }
-+                else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, poseStack, this.bufferSource);
  
                  if (this.minecraft.player.isOnFire()) {
                      TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);

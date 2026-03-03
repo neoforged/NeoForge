@@ -189,9 +189,6 @@
   "net/minecraft/world/level/BaseSpawner": [
     "net/neoforged/neoforge/common/extensions/IOwnedSpawner"
   ],
-  "net/minecraft/world/level/BlockAndTintGetter": [
-    "net/neoforged/neoforge/common/extensions/IBlockAndTintGetterExtension"
-  ],
   "net/minecraft/world/level/BlockGetter": [
     "net/neoforged/neoforge/common/extensions/IBlockGetterExtension"
   ],

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -32,7 +33,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.pipeline.PipelineModifier;
 import net.neoforged.neoforge.client.pipeline.RegisterPipelineModifiersEvent;
-import net.neoforged.neoforge.client.stencil.StencilFunction;
 import net.neoforged.neoforge.client.stencil.StencilOperation;
 import net.neoforged.neoforge.client.stencil.StencilPerFaceTest;
 import net.neoforged.neoforge.client.stencil.StencilTest;
@@ -78,7 +78,7 @@ public class StencilEnableTest {
                                     StencilOperation.KEEP,
                                     StencilOperation.KEEP,
                                     StencilOperation.REPLACE,
-                                    StencilFunction.ALWAYS),
+                                    CompareOp.ALWAYS_PASS),
                             0xFF,
                             0xFF,
                             1))
@@ -90,7 +90,7 @@ public class StencilEnableTest {
                                     StencilOperation.KEEP,
                                     StencilOperation.KEEP,
                                     StencilOperation.KEEP,
-                                    StencilFunction.NOTEQUAL),
+                                    CompareOp.NOT_EQUAL),
                             0xFF,
                             0,
                             1))

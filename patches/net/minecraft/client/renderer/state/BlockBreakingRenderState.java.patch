@@ -1,0 +1,9 @@
+--- a/net/minecraft/client/renderer/state/BlockBreakingRenderState.java
++++ b/net/minecraft/client/renderer/state/BlockBreakingRenderState.java
+@@ -17,5 +_,6 @@
+         this.blockState = level.getBlockState(pos);
+         this.progress = progress;
+         this.biome = level.getBiome(pos);
++        this.modelData = level.getModelData(pos);
+     }
+ }

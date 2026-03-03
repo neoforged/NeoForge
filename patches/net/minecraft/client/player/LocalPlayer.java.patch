@@ -33,15 +33,6 @@
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -928,7 +_,7 @@
-     }
- 
-     private boolean shouldStopSwimSprinting() {
--        return !this.isSprintingPossible(true) || !this.isInWater() || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
-+        return !this.isSprintingPossible(true) || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
-     }
- 
-     public Portal.Transition getActivePortalLocalTransition() {
 @@ -973,6 +_,10 @@
      @Override
      public void rideTick() {

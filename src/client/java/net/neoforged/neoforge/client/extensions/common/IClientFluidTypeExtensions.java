@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
+import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -12,12 +13,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -34,7 +38,17 @@ import org.jspecify.annotations.Nullable;
  * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
 public interface IClientFluidTypeExtensions {
-    IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {};
+    IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {
+        @Override
+        public Identifier getStillTexture() {
+            return MissingTextureAtlasSprite.getLocation();
+        }
+
+        @Override
+        public Identifier getFlowingTexture() {
+            return MissingTextureAtlasSprite.getLocation();
+        }
+    };
 
     static IClientFluidTypeExtensions of(FluidState state) {
         return of(state.getFluidType());
@@ -74,10 +88,7 @@ public interface IClientFluidTypeExtensions {
      *
      * @return the reference of the texture to apply to a source fluid
      */
-    // TODO: Make abstract in 1.22, implement missing on default
-    default Identifier getStillTexture() {
-        return MissingTextureAtlasSprite.getLocation();
-    }
+    Identifier getStillTexture();
 
     /**
      * Returns the reference of the texture to apply to a flowing fluid.
@@ -91,10 +102,7 @@ public interface IClientFluidTypeExtensions {
      *
      * @return the reference of the texture to apply to a flowing fluid
      */
-    // TODO: Make abstract in 1.22, implement missing on default
-    default Identifier getFlowingTexture() {
-        return MissingTextureAtlasSprite.getLocation();
-    }
+    Identifier getFlowingTexture();
 
     /**
      * Returns the reference of the texture to apply to a fluid directly touching
@@ -242,6 +250,7 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a fluid directly touching
      *         a non-opaque block
      */
+    @Nullable
     default Identifier getOverlayTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getOverlayTexture();
     }
@@ -324,8 +333,20 @@ public interface IClientFluidTypeExtensions {
      * @return the reference of the texture to apply to a fluid directly touching
      *         a non-opaque block
      */
+    @Nullable
     default Identifier getOverlayTexture(FluidStack stack) {
         return this.getOverlayTexture();
+    }
+
+    /// Determine the [ChunkSectionLayer] the provided fluid should render in as part of a chunk mesh.
+    ///
+    /// @param fluid      The fluid for which the render layer is being determined
+    /// @param blockAtlas The block texture atlas to use for sprite lookups
+    default ChunkSectionLayer computeRenderLayer(Fluid fluid, TextureAtlas blockAtlas) {
+        TextureAtlasSprite stillSprite = blockAtlas.getSprite(getStillTexture());
+        TextureAtlasSprite flowingSprite = blockAtlas.getSprite(getFlowingTexture());
+        Transparency transparency = stillSprite.transparency().or(flowingSprite.transparency());
+        return ChunkSectionLayer.byTransparency(transparency);
     }
 
     /**

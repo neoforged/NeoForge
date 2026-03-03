@@ -30,4 +30,4 @@
 +
          float rainLevel = level.getRainLevel(1.0F);
          if (!(rainLevel <= 0.0F)) {
-             RandomSource random = RandomSource.create(ticks * 312987231L);
+             RandomSource random = RandomSource.createThreadLocalInstance(ticks * 312987231L);

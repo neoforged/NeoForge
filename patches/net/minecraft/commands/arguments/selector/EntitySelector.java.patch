@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelector.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelector.java
-@@ -102,7 +_,7 @@
+@@ -117,7 +_,7 @@
      }
  
      private void checkPermissions(CommandSourceStack sender) throws CommandSyntaxException {

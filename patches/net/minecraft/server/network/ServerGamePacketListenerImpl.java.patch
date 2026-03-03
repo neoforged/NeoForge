@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -490,18 +_,21 @@
+@@ -492,18 +_,21 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
@@ -22,7 +22,7 @@
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
-@@ -515,6 +_,23 @@
+@@ -517,6 +_,23 @@
          }
      }
  
@@ -46,7 +46,7 @@
      private boolean noBlocksAround(Entity entity) {
          return entity.level()
              .getBlockStates(entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -698,7 +_,7 @@
+@@ -700,7 +_,7 @@
              if (level.isLoaded(pos)) {
                  BlockState blockState = level.getBlockState(pos);
                  boolean includeData = this.player.hasInfiniteMaterials() && packet.includeData();
@@ -55,7 +55,7 @@
                  if (!itemStack.isEmpty()) {
                      if (includeData) {
                          addBlockDataToItem(blockState, level, pos, itemStack);
-@@ -1151,7 +_,7 @@
+@@ -1157,7 +_,7 @@
                                          && !playerStandsOnSomething
                                          && !this.player.isSpectator()
                                          && !this.server.allowFlight()
@@ -64,7 +64,7 @@
                                          && !this.player.hasEffect(MobEffects.LEVITATION)
                                          && !isFallFlying
                                          && !isAutoSpinAttack
-@@ -1280,9 +_,10 @@
+@@ -1286,9 +_,10 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -78,7 +78,7 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1306,7 +_,7 @@
+@@ -1312,7 +_,7 @@
                  case ABORT_DESTROY_BLOCK:
                  case STOP_DESTROY_BLOCK:
                      this.player.gameMode.handleBlockBreakAction(pos, action, packet.getDirection(), this.player.level().getMaxY(), packet.getSequence());
@@ -87,7 +87,7 @@
                      return;
                  default:
                      throw new IllegalArgumentException("Invalid player action");
-@@ -1328,7 +_,7 @@
+@@ -1334,7 +_,7 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
@@ -96,7 +96,7 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
-@@ -1480,8 +_,9 @@
+@@ -1502,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
@@ -107,7 +107,7 @@
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -1812,7 +_,11 @@
+@@ -1834,7 +_,11 @@
                      ItemStack tool = this.player.getItemInHand(hand);
                      if (tool.isItemEnabled(level.enabledFeatures())) {
                          ItemStack usedItemStack = tool.copy();
@@ -120,7 +120,7 @@
                              ItemStack awardedForStack = success.wasItemInteraction() ? usedItemStack : ItemStack.EMPTY;
                              CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(this.player, awardedForStack, target);
                              if (success.swingSource() == InteractionResult.SwingSource.SERVER) {
-@@ -2033,14 +_,16 @@
+@@ -2055,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -138,7 +138,7 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2116,7 +_,7 @@
+@@ -2138,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -147,7 +147,7 @@
                  );
          }
      }
-@@ -2151,6 +_,7 @@
+@@ -2173,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {

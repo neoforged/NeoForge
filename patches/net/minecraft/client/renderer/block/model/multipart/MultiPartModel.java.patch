@@ -18,7 +18,7 @@
 -        }
 +    // Neo: Implement our overloads (here and below) so child models can have custom logic
 +    @Override
-+    public void collectParts(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> output) {
++    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> output) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
@@ -33,7 +33,7 @@
 +
 +    @Override
 +    @Nullable
-+    public Object createGeometryKey(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random) {
++    public Object createGeometryKey(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
@@ -59,12 +59,12 @@
 +    private record GeometryKey(List<Object> subKeys, MultiPartModel multiPart) {}
 +
 +    @Override
-+    public Material.Baked particleMaterial(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++    public Material.Baked particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
 +        return this.shared.selectors.getFirst().model.particleMaterial(level, pos, state);
 +    }
 +
 +    @Override
-+    public boolean hasTranslucency(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state) {
++    public boolean hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }

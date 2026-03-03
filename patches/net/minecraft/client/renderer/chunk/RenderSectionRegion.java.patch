@@ -1,36 +1,33 @@
 --- a/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
-@@ -23,13 +_,21 @@
-     private final int minSectionZ;
-     private final SectionCopy[] sections;
-     private final Level level;
+@@ -25,8 +_,15 @@
+     private final ClientLevel level;
+     private final CardinalLighting cardinalLighting;
+     private final LevelLightEngine lightEngine;
 +    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot;
  
-+    /** @deprecated Neo: use {@link #RenderSectionRegion(Level, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
++    /** @deprecated Neo: use {@link #RenderSectionRegion(ClientLevel, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
 +    @Deprecated
-     RenderSectionRegion(Level level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
+     RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
 +        this(level, minSectionX, minSectionY, minSectionZ, sections, net.neoforged.neoforge.model.data.ModelDataManager.EMPTY_SNAPSHOT);
 +    }
 +
-+    RenderSectionRegion(Level level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
++    RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
          this.level = level;
          this.minSectionX = minSectionX;
          this.minSectionY = minSectionY;
-         this.minSectionZ = minSectionZ;
+@@ -34,6 +_,7 @@
          this.sections = sections;
+         this.cardinalLighting = level.cardinalLighting();
+         this.lightEngine = level.getLightEngine();
 +        this.modelDataSnapshot = modelDataSnapshot;
      }
  
      @Override
-@@ -84,6 +_,21 @@
+@@ -88,6 +_,16 @@
      @Override
      public int getHeight() {
          return this.level.getHeight();
-+    }
-+
-+    @Override
-+    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
-+        return this.level.getShade(normalX, normalY, normalZ, shade);
 +    }
 +
 +    @Override

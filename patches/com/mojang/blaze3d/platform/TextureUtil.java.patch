@@ -11,10 +11,10 @@
          long bufferLength = 0L;
  
          for (int i = 0; i <= maxMipLevel; i++) {
-@@ -84,6 +_,7 @@
-                             int luminance = ARGB.as8BitChannel(depth);
-                             return ARGB.color(luminance, luminance, luminance);
+@@ -80,6 +_,7 @@
                          };
+                         case RGBA8 -> byteOffset -> data.getInt(byteOffset);
+                         case DEPTH32 -> byteOffset -> ARGB.gray(data.getFloat(byteOffset));
 +                        case DEPTH24_STENCIL8, DEPTH32_STENCIL8 -> _ -> -1;
                      };
                      int offsetx = 0;

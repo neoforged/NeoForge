@@ -7,7 +7,7 @@
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, graphics, mouseX, mouseY, a));
          graphics.nextStratum();
          this.render(graphics, mouseX, mouseY, a);
-         graphics.renderDeferredElements();
+         graphics.renderDeferredElements(mouseX, mouseY, a);
 @@ -194,7 +_,7 @@
      }
  

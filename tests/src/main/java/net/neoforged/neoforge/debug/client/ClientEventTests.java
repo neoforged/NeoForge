@@ -11,9 +11,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BakedQuadOutput;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockQuadOutput;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -24,7 +23,6 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -36,19 +34,17 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.hoglin.HoglinBase;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -114,20 +110,20 @@ public class ClientEventTests {
                                 testBlockAt.getX() - sectionOrigin.getX(),
                                 testBlockAt.getY() - sectionOrigin.getY(),
                                 testBlockAt.getZ() - sectionOrigin.getZ());
-                        var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
-                                .collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, Blocks.DIAMOND_BLOCK.defaultBlockState(), new SingleThreadedRandomSource(0));
-                        BakedQuadOutput quadOutput = (pose, quad, brightness, color, lightmapCoord, overlayCoords) -> {
+                        BlockQuadOutput quadOutput = (x, y, z, quad, instance) -> {
                             VertexConsumer builder = context.getOrCreateChunkBuffer(quad.spriteInfo().layer());
-                            builder.putBulkData(pose, quad, brightness, color, lightmapCoord, overlayCoords);
+                            builder.putBlockBakedQuad(x, y, z, quad, instance);
                         };
-                        Minecraft.getInstance().getBlockRenderer().renderBatched(
-                                Blocks.DIAMOND_BLOCK.defaultBlockState(),
-                                testBlockAt,
-                                context.getRegion(),
-                                poseStack,
+                        context.getBlockRenderer().tesselateBlock(
                                 quadOutput,
-                                false,
-                                parts);
+                                SectionPos.sectionRelative(testBlockAt.getX()),
+                                SectionPos.sectionRelative(testBlockAt.getY()),
+                                SectionPos.sectionRelative(testBlockAt.getZ()),
+                                context.getRegion(),
+                                testBlockAt,
+                                Blocks.DIAMOND_BLOCK.defaultBlockState(),
+                                Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState()),
+                                0);
                         poseStack.popPose();
                     });
                 }
@@ -198,12 +194,11 @@ public class ClientEventTests {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
                     poseStack.mulPose(Axis.XP.rotation(xRotation));
-                    event.getSubmitNodeCollector().submitBlock(
-                            poseStack,
-                            Blocks.CALCITE.defaultBlockState(),
-                            event.getRenderState().lightCoords,
-                            OverlayTexture.NO_OVERLAY,
-                            -1);
+
+                    BlockModelRenderState renderState = new BlockModelRenderState();
+                    Minecraft.getInstance().getBlockModelResolver().update(renderState, Blocks.CALCITE.defaultBlockState());
+                    renderState.submit(poseStack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+
                     poseStack.popPose();
                 }
                 poseStack.popPose();
@@ -217,8 +212,7 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
-                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterOpaqueBlocks event) -> {
-                        var randomSource = new SingleThreadedRandomSource(0);
+                    NeoForge.EVENT_BUS.addListener((final SubmitCustomGeometryEvent event) -> {
                         var state = Blocks.GOLD_BLOCK.defaultBlockState();
                         var stack = event.getPoseStack();
                         var camera = event.getLevelRenderState().cameraRenderState.pos;
@@ -233,20 +227,9 @@ public class ClientEventTests {
                                     section.getRenderOrigin().getY() - camera.y,
                                     section.getRenderOrigin().getZ() - camera.z);
 
-                            var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
-                            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-                            BakedQuadOutput quadOutput = (pose, quad, brightness, color, lightmapCoord, overlayCoords) -> {
-                                VertexConsumer builder = bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(quad.spriteInfo().layer()));
-                                builder.putBulkData(pose, quad, brightness, color, lightmapCoord, overlayCoords);
-                            };
-                            Minecraft.getInstance().getBlockRenderer().renderBatched(
-                                    state,
-                                    section.getRenderOrigin(),
-                                    EmptyBlockAndTintGetter.INSTANCE,
-                                    stack,
-                                    quadOutput,
-                                    false,
-                                    parts);
+                            BlockModelRenderState renderState = new BlockModelRenderState();
+                            Minecraft.getInstance().getBlockModelResolver().update(renderState, state);
+                            renderState.submit(stack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                             stack.popPose();
 
                             test.pass();

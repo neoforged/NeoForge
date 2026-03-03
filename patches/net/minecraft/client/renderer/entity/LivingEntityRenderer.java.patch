@@ -25,12 +25,3 @@
                  return false;
              }
          }
-@@ -285,7 +_,7 @@
- 
-         state.isFullyFrozen = entity.isFullyFrozen();
-         state.isBaby = entity.isBaby();
--        state.isInWater = entity.isInWater();
-+        state.isInWater = entity.isInWater() || entity.isInFluidType((fluidType, height) -> entity.canSwimInFluidType(fluidType));
-         state.isAutoSpinAttack = entity.isAutoSpinAttack();
-         state.ticksSinceKineticHitFeedback = entity.getTicksSinceLastKineticHitFeedback(partialTicks);
-         state.hasRedOverlay = entity.hurtTime > 0 || entity.deathTime > 0;

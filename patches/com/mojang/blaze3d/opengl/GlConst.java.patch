@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -251,6 +_,8 @@
+@@ -254,6 +_,8 @@
              case RED8 -> 33321;
              case RED8I -> 33329;
              case DEPTH32 -> 33191;
@@ -9,7 +9,7 @@
          };
      }
  
-@@ -260,6 +_,10 @@
+@@ -263,6 +_,10 @@
              case RED8 -> 6403;
              case RED8I -> 6403;
              case DEPTH32 -> 6402;
@@ -20,7 +20,7 @@
          };
      }
  
-@@ -269,6 +_,8 @@
+@@ -272,6 +_,8 @@
              case RED8 -> 5121;
              case RED8I -> 5121;
              case DEPTH32 -> 5126;
@@ -29,23 +29,10 @@
          };
      }
  
-@@ -309,5 +_,31 @@
+@@ -312,5 +_,18 @@
          } else {
              return 35044;
          }
-+    }
-+
-+    public static int toGl(net.neoforged.neoforge.client.stencil.StencilFunction func) {
-+        return switch (func) {
-+            case NEVER -> org.lwjgl.opengl.GL32.GL_NEVER;
-+            case ALWAYS -> org.lwjgl.opengl.GL32.GL_ALWAYS;
-+            case LESS -> org.lwjgl.opengl.GL32.GL_LESS;
-+            case LEQUAL -> org.lwjgl.opengl.GL32.GL_LEQUAL;
-+            case EQUAL -> org.lwjgl.opengl.GL32.GL_EQUAL;
-+            case GEQUAL -> org.lwjgl.opengl.GL32.GL_GEQUAL;
-+            case GREATER -> org.lwjgl.opengl.GL32.GL_GREATER;
-+            case NOTEQUAL -> org.lwjgl.opengl.GL32.GL_NOTEQUAL;
-+        };
 +    }
 +
 +    public static int toGl(net.neoforged.neoforge.client.stencil.StencilOperation op) {

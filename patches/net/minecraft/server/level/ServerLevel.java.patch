@@ -56,7 +56,7 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
              if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
--                this.server.clockManager().skipToTimeMarker(defaultClock.get(), ClockTimeMarkers.WAKE_UP_FROM_SLEEP);
+-                this.server.clockManager().moveToTimeMarker(defaultClock.get(), ClockTimeMarkers.WAKE_UP_FROM_SLEEP);
 +                // Neo: Allow mods to control how the clock is adjusted after sleep
 +                var adjustment = net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, new net.neoforged.neoforge.common.util.ClockAdjustment.Marker(ClockTimeMarkers.WAKE_UP_FROM_SLEEP));
 +                if (adjustment != null) {
@@ -249,17 +249,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1637,7 +_,8 @@
- 
-     @Override
-     public long getSeed() {
--        return this.server.getWorldGenSettings().options().seed();
-+        // NeoForge: use seed override if present, otherwise default to vanilla global seed
-+        return this.getSeedOverride().orElseGet(() -> this.server.getWorldGenSettings().options().seed());
-     }
- 
-     public @Nullable EnderDragonFight getDragonFight() {
-@@ -1903,8 +_,8 @@
+@@ -1898,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -270,7 +260,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -1924,25 +_,62 @@
+@@ -1919,25 +_,62 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String message = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

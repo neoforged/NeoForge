@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
 @@ -68,6 +_,9 @@
-     private SpecialBlockModelRenderer specialBlockModelRenderer = SpecialBlockModelRenderer.EMPTY;
      private ModelBakery.MissingModels missingModels;
+     private @Nullable BlockStateModelSet blockModelSet;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
 +    private net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels bakedStandaloneModels;
@@ -10,7 +10,7 @@
  
      public ModelManager(BlockColors blockColors, AtlasManager atlasManager, PlayerSkinRenderCache playerSkinRenderCache) {
          this.blockColors = blockColors;
-@@ -81,7 +_,14 @@
+@@ -76,7 +_,14 @@
      }
  
      public ItemModel getItemModel(Identifier id) {
@@ -26,7 +26,7 @@
      }
  
      public ClientItem.Properties getItemProperties(Identifier id) {
-@@ -101,17 +_,20 @@
+@@ -96,17 +_,20 @@
      ) {
          ResourceManager manager = currentReload.resourceManager();
          CompletableFuture<EntityModelSet> entityModelSet = CompletableFuture.supplyAsync(EntityModelSet::vanilla, taskExecutor);
@@ -50,7 +50,7 @@
          CompletableFuture<Object2IntMap<BlockState>> modelGroups = blockStateModels.thenApplyAsync(
              models -> buildModelGroups(this.blockColors, models), taskExecutor
          );
-@@ -127,7 +_,8 @@
+@@ -122,7 +_,8 @@
                  itemStackModels,
                  entityModelSet,
                  specialBlockModelRenderer,
@@ -60,7 +60,7 @@
              )
              .thenComposeAsync(
                  unused -> {
-@@ -150,8 +_,11 @@
+@@ -145,8 +_,11 @@
                          blockStateModels.join().models(),
                          itemStackModels.join().contents(),
                          resolvedModels.models(),
@@ -73,7 +73,7 @@
                      return loadModels(
                          blockAtlasSprites, itemAtlasSprites, bakery, groups, entityModelSet.join(), specialBlockModelRenderer.join(), taskExecutor
                      );
-@@ -166,7 +_,7 @@
+@@ -161,7 +_,7 @@
          return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> MODEL_LISTER.listMatchingResources(manager), executor)
              .thenCompose(
                  resources -> {
@@ -82,7 +82,7 @@
  
                      for (Entry<Identifier, Resource> resource : resources.entrySet()) {
                          result.add(CompletableFuture.supplyAsync(() -> {
-@@ -175,7 +_,7 @@
+@@ -170,7 +_,7 @@
                              try {
                                  Pair t$;
                                  try (Reader reader = resource.getValue().openAsReader()) {
@@ -91,7 +91,7 @@
                                  }
  
                                  return t$;
-@@ -192,15 +_,26 @@
+@@ -187,15 +_,26 @@
              );
      }
  
@@ -118,7 +118,7 @@
              var5 = new ModelManager.ResolvedModels(result.missingModel(), result.resolve());
          }
  
-@@ -268,6 +_,9 @@
+@@ -263,6 +_,9 @@
                                  references.stream().sorted().map(reference -> "    " + reference).collect(Collectors.joining("\n"))
                              )
                          );
@@ -128,17 +128,17 @@
                      Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                          bakingResult.blockStateModels(), bakingResult.missingModels().block()
                      );
-@@ -310,6 +_,9 @@
+@@ -305,6 +_,9 @@
          this.itemProperties = bakedModels.itemProperties();
          this.modelGroups = preparations.modelGroups;
          this.missingModels = bakedModels.missingModels();
 +        this.bakedStandaloneModels = bakedModels.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, bakedModels, this.modelBakery.get());
 +        this.reportedMissingItemModels = new java.util.HashSet<>();
-         this.blockModelShaper.replaceCache(preparations.modelCache);
+         this.blockModelSet = new BlockStateModelSet(preparations.modelCache, this.missingModels.block());
          this.specialBlockModelRenderer = preparations.specialBlockModelRenderer;
          this.entityModelSet = preparations.entityModelSet;
-@@ -339,6 +_,15 @@
+@@ -334,6 +_,15 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;

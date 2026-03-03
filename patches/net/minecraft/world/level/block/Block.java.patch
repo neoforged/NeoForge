@@ -44,30 +44,30 @@
 @@ -369,22 +_,28 @@
  
      public static void dropResources(BlockState state, Level level, BlockPos pos) {
-         if (level instanceof ServerLevel) {
+         if (level instanceof ServerLevel serverLevel) {
 +            beginCapturingDrops();
-             getDrops(state, (ServerLevel)level, pos, null).forEach(stack -> popResource(level, pos, stack));
--            state.spawnAfterBreak((ServerLevel)level, pos, ItemStack.EMPTY, true);
+             getDrops(state, serverLevel, pos, null).forEach(stack -> popResource(level, pos, stack));
+-            state.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
 +            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel)level, pos, state, null, captured, null, ItemStack.EMPTY);
          }
      }
  
      public static void dropResources(BlockState state, LevelAccessor level, BlockPos pos, @Nullable BlockEntity blockEntity) {
-         if (level instanceof ServerLevel) {
+         if (level instanceof ServerLevel serverLevel) {
 +            beginCapturingDrops();
-             getDrops(state, (ServerLevel)level, pos, blockEntity).forEach(stack -> popResource((ServerLevel)level, pos, stack));
--            state.spawnAfterBreak((ServerLevel)level, pos, ItemStack.EMPTY, true);
+             getDrops(state, serverLevel, pos, blockEntity).forEach(stack -> popResource(serverLevel, pos, stack));
+-            state.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
 +            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel)level, pos, state, blockEntity, captured, null, ItemStack.EMPTY);
          }
      }
  
      public static void dropResources(BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity breaker, ItemStack tool) {
-         if (level instanceof ServerLevel) {
+         if (level instanceof ServerLevel serverLevel) {
 +            beginCapturingDrops();
-             getDrops(state, (ServerLevel)level, pos, blockEntity, breaker, tool).forEach(stack -> popResource(level, pos, stack));
--            state.spawnAfterBreak((ServerLevel)level, pos, tool, true);
+             getDrops(state, serverLevel, pos, blockEntity, breaker, tool).forEach(stack -> popResource(level, pos, stack));
+-            state.spawnAfterBreak(serverLevel, pos, tool, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
 +            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel)level, pos, state, blockEntity, captured, breaker, tool);
          }

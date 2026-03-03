@@ -1,18 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -875,9 +_,10 @@
-             }
-         },
-         new OptionInstance.LazyEnum<>(
-+            // FORGE: fix incorrect string comparison - PR #8767
-             () -> Stream.concat(Stream.of(""), Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().stream()).toList(),
-             device -> Minecraft.getInstance().isRunning()
--                    && device != ""
-+                    && (device == null || !device.isEmpty())
-                     && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(device)
-                 ? Optional.empty()
-                 : Optional.of(device),
-@@ -1006,7 +_,7 @@
+@@ -1010,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack entry : packRepository.getSelectedPacks()) {
@@ -21,7 +9,7 @@
                  this.resourcePacks.add(entry.getId());
                  if (!entry.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(entry.getId());
-@@ -1377,6 +_,7 @@
+@@ -1381,6 +_,7 @@
      }
  
      public Options(Minecraft minecraft, File workingDirectory) {
@@ -29,7 +17,7 @@
          this.minecraft = minecraft;
          this.optionsFile = new File(workingDirectory, "options.txt");
          boolean largeDistances = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1400,6 +_,7 @@
+@@ -1404,6 +_,7 @@
              value -> this.setGraphicsPresetToCustom()
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
@@ -37,7 +25,7 @@
          this.load();
      }
  
-@@ -1529,10 +_,15 @@
+@@ -1533,10 +_,15 @@
          access.process("musicFrequency", this.musicFrequency);
  
          for (KeyMapping keyMapping : this.keyMappings) {
@@ -55,7 +43,7 @@
              }
          }
  
-@@ -1828,6 +_,23 @@
+@@ -1832,6 +_,23 @@
          }
  
          repository.setSelected(selected);

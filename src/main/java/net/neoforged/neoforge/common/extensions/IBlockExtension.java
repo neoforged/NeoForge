@@ -32,7 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -612,7 +612,7 @@ public interface IBlockExtension {
      */
     @Nullable
     default PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-        return state.getBlock() == Blocks.LAVA ? PathType.LAVA : state.isBurning(level, pos) ? PathType.DAMAGE_FIRE : null;
+        return state.getBlock() == Blocks.LAVA ? PathType.LAVA : state.isBurning(level, pos) ? PathType.FIRE : null;
     }
 
     /**
@@ -630,8 +630,8 @@ public interface IBlockExtension {
      */
     @Nullable
     default PathType getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
-        if (state.is(Blocks.SWEET_BERRY_BUSH)) return PathType.DANGER_OTHER;
-        else if (WalkNodeEvaluator.isBurningBlock(state)) return PathType.DANGER_FIRE;
+        if (state.is(Blocks.SWEET_BERRY_BUSH)) return PathType.DAMAGING_IN_NEIGHBOR;
+        else if (WalkNodeEvaluator.isBurningBlock(state)) return PathType.FIRE_IN_NEIGHBOR;
         else return null;
     }
 
@@ -794,7 +794,7 @@ public interface IBlockExtension {
      * @param fluidState The state of the fluid
      * @return Whether the fluid overlay texture should be used
      */
-    default boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
+    default boolean shouldDisplayFluidOverlay(BlockState state, BlockAndLightGetter level, BlockPos pos, FluidState fluidState) {
         return state.getBlock() instanceof HalfTransparentBlock || state.getBlock() instanceof LeavesBlock;
     }
 
@@ -1012,9 +1012,9 @@ public interface IBlockExtension {
      * @param queryState The state of the block that is querying the appearance, or {@code null} if not applicable
      * @param queryPos   The position of the block that is querying the appearance, or {@code null} if not applicable
      * @return The appearance of this block on the given side. By default, the current state
-     * @see IBlockStateExtension#getAppearance(BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @see IBlockStateExtension#getAppearance(BlockAndLightGetter, BlockPos, Direction, BlockState, BlockPos)
      */
-    default BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
+    default BlockState getAppearance(BlockState state, BlockAndLightGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
         return state;
     }
 

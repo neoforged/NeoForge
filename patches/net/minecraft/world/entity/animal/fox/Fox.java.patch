@@ -47,12 +47,3 @@
                  BlockState state = Fox.this.level().getBlockState(this.blockPos);
                  if (state.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(state);
-@@ -1011,7 +_,7 @@
- 
-         @Override
-         public boolean canUse() {
--            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25 || Fox.this.isInLava();
-+            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25D || Fox.this.isInLava() || Fox.this.isInFluidType((fluidType, height) -> Fox.this.canSwimInFluidType(fluidType) && height > 0.25D);
-         }
-     }
- 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
 +++ b/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
-@@ -58,6 +_,10 @@
+@@ -62,6 +_,10 @@
      protected static void placeBelowTrunkBlock(
          WorldGenLevel level, BiConsumer<BlockPos, BlockState> trunkSetter, RandomSource random, BlockPos pos, TreeConfiguration config
      ) {

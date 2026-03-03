@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/BlockModelGenerators.java
 +++ b/net/minecraft/client/data/models/BlockModelGenerators.java
-@@ -4599,4 +_,16 @@
+@@ -4600,4 +_,16 @@
              return this;
          }
      }

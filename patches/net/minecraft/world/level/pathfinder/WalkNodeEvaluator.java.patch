@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
-@@ -455,6 +_,12 @@
+@@ -469,6 +_,12 @@
                  for (int dz = -1; dz <= 1; dz++) {
                      if (dx != 0 || dz != 0) {
                          PathType pathType = context.getPathTypeFromState(x + dx, y + dy, z + dz);
@@ -10,10 +10,10 @@
 +                        net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
 +                        PathType adjFluidPathType = fluidState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
 +                        if (adjFluidPathType != null) return adjFluidPathType;
-                         if (pathType == PathType.DAMAGE_OTHER) {
-                             return PathType.DANGER_OTHER;
+                         if (pathType == PathType.DAMAGING) {
+                             return PathType.DAMAGING_IN_NEIGHBOR;
                          }
-@@ -480,6 +_,8 @@
+@@ -494,6 +_,8 @@
  
      protected static PathType getPathTypeFromState(BlockGetter level, BlockPos pos) {
          BlockState blockState = level.getBlockState(pos);
@@ -22,7 +22,7 @@
          Block block = blockState.getBlock();
          if (blockState.isAir()) {
              return PathType.OPEN;
-@@ -495,6 +_,8 @@
+@@ -509,6 +_,8 @@
              return PathType.COCOA;
          } else if (!blockState.is(Blocks.WITHER_ROSE) && !blockState.is(Blocks.POINTED_DRIPSTONE)) {
              FluidState fluidState = blockState.getFluidState();
@@ -31,7 +31,7 @@
              if (fluidState.is(FluidTags.LAVA)) {
                  return PathType.LAVA;
              } else if (isBurningBlock(blockState)) {
-@@ -515,6 +_,8 @@
+@@ -529,6 +_,8 @@
                  if (!blockState.isPathfindable(PathComputationType.LAND)) {
                      return PathType.BLOCKED;
                  } else {

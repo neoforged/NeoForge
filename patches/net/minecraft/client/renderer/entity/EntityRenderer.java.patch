@@ -1,15 +1,24 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -122,6 +_,8 @@
+@@ -129,6 +_,8 @@
+     ) {
+         poseStack.pushPose();
+         if (state.scoreText != null) {
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(state, state.scoreText, this, poseStack, submitNodeCollector, camera, state.partialTick);
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
+             submitNodeCollector.submitNameTag(
+                 poseStack, state.nameTagAttachment, offset, state.scoreText, !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera
+             );
+@@ -136,6 +_,8 @@
+         }
  
-     protected void submitNameTag(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
          if (state.nameTag != null) {
 +            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(state, state.nameTag, this, poseStack, submitNodeCollector, camera, state.partialTick);
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
              submitNodeCollector.submitNameTag(
-                 poseStack, state.nameTagAttachment, 0, state.nameTag, !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera
+                 poseStack, state.nameTagAttachment, offset, state.nameTag, !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera
              );
-@@ -146,6 +_,7 @@
+@@ -162,6 +_,7 @@
          S state = this.createRenderState();
          this.extractRenderState(entity, state, partialTicks);
          this.finalizeRenderState(entity, state);
@@ -17,7 +26,7 @@
          return state;
      }
  
-@@ -155,6 +_,7 @@
+@@ -171,6 +_,7 @@
          state.y = Mth.lerp((double)partialTicks, entity.yOld, entity.getY());
          state.z = Mth.lerp((double)partialTicks, entity.zOld, entity.getZ());
          state.isInvisible = entity.isInvisible();
@@ -25,7 +34,7 @@
          state.ageInTicks = entity.tickCount + partialTicks;
          state.boundingBoxWidth = entity.getBbWidth();
          state.boundingBoxHeight = entity.getBbHeight();
-@@ -173,9 +_,11 @@
+@@ -189,9 +_,11 @@
  
          if (this.entityRenderDispatcher.camera != null) {
              state.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(entity);

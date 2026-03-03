@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -81,11 +_,20 @@
+@@ -83,11 +_,20 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos belowPos = pos.below();
          BlockState below = level.getBlockState(belowPos);

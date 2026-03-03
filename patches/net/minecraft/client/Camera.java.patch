@@ -8,9 +8,9 @@
      private final Quaternionf rotation = new Quaternionf();
      private boolean detached;
      private float eyeHeight;
-@@ -131,6 +_,9 @@
-             cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - partialTicks;
-             cameraState.entityRenderState.deathTime = livingEntity.deathTime + partialTicks;
+@@ -135,6 +_,9 @@
+             cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - cameraEntityPartialTicks;
+             cameraState.entityRenderState.deathTime = livingEntity.deathTime + cameraEntityPartialTicks;
              cameraState.entityRenderState.hurtDuration = livingEntity.hurtDuration;
 +            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
 +            var lastDamage = livingEntity.getLastDamageSource();
@@ -18,7 +18,7 @@
          } else {
              cameraState.entityRenderState.isLiving = false;
              cameraState.entityRenderState.isSleeping = false;
-@@ -212,15 +_,21 @@
+@@ -216,15 +_,21 @@
              return 90.0F;
          } else {
              float fov = this.minecraft.options.fov().get().intValue() * Mth.lerp(partialTicks, this.oldFovModifier, this.fovModifier);
@@ -42,7 +42,7 @@
          if (this.entity instanceof LivingEntity cameraEntity && cameraEntity.isDeadOrDying()) {
              float duration = Math.min(cameraEntity.deathTime + partialTicks, 20.0F);
              fov /= (1.0F - 500.0F / (duration + 500.0F)) * 2.0F + 1.0F;
-@@ -232,6 +_,7 @@
+@@ -236,6 +_,7 @@
              fov *= Mth.lerp(effectScale, 1.0F, 0.85714287F);
          }
  
@@ -50,19 +50,19 @@
          return fov;
      }
  
-@@ -244,7 +_,10 @@
-                 .subtract(minecart.position())
-                 .subtract(this.entity.getVehicleAttachmentPoint(minecart))
-                 .add(new Vec3(0.0, Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight), 0.0));
+@@ -251,7 +_,10 @@
+             this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
+             this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
+         } else {
 -            this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
 +            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
 +                    this, partialTicks, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0)
 +            );
 +            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
-             this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
-         } else {
-             this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
-@@ -258,7 +_,7 @@
+             this.setPosition(
+                 Mth.lerp((double)partialTicks, this.entity.xo, this.entity.getX()),
+                 Mth.lerp((double)partialTicks, this.entity.yo, this.entity.getY()) + Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight),
+@@ -262,7 +_,7 @@
          this.detached = !this.minecraft.options.getCameraType().isFirstPerson();
          if (this.detached) {
              if (this.minecraft.options.getCameraType().isMirrored()) {
@@ -71,7 +71,7 @@
              }
  
              float cameraDistance = 4.0F;
-@@ -275,7 +_,7 @@
+@@ -279,7 +_,7 @@
                  mountDistance = (float)mount.getAttributeValue(Attributes.CAMERA_DISTANCE);
              }
  
@@ -80,7 +80,7 @@
          } else if (this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isSleeping()) {
              Direction bedOrientation = ((LivingEntity)this.entity).getBedOrientation();
              this.setRotation(bedOrientation != null ? bedOrientation.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -325,10 +_,17 @@
+@@ -329,10 +_,17 @@
          this.setPosition(new Vec3(this.position.x + offset.x, this.position.y + offset.y, this.position.z + offset.z));
      }
  
@@ -99,7 +99,7 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -488,6 +_,17 @@
+@@ -492,6 +_,17 @@
  
      public void disablePanoramicMode() {
          this.isPanoramicMode = false;

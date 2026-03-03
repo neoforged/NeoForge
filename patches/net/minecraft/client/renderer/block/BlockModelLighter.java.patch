@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/block/BlockModelLighter.java
++++ b/net/minecraft/client/renderer/block/BlockModelLighter.java
+@@ -32,6 +_,8 @@
+         this.cache = CACHE.get();
+     }
+ 
++    public void reset() { }
++
+     public int getLightCoords(BlockState state, BlockAndTintGetter level, BlockPos relativePos) {
+         return this.cache.getLightCoords(state, level, relativePos);
+     }

@@ -1,0 +1,72 @@
+     public boolean isInShallowWater() {
+-        return this.isInWater() && !this.isUnderWater();
++        return this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
+     }
+
+     public boolean canSpawnSprintParticle() {
+-        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
++        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.isInFluidType();
+     }
+
++    @Deprecated // Forge: Use isEyeInFluidType instead
+     public boolean isEyeInFluid(TagKey<Fluid> type) {
++        if (type == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (type == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidInteraction.isEyeInFluid(type);
+     }
+
+     public boolean isInLava() {
+-        return !this.firstTick && this.fluidInteraction.isInFluid(FluidTags.LAVA);
++        return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
+     }
+
+     public boolean isVisuallyCrawling() {
+-        return this.isVisuallySwimming() && !this.isInWater();
++        return this.isVisuallySwimming() && !this.isInWater() && !this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType));
+     }
+
++    @Deprecated // Forge: Use getFluidTypeHeight instead
+     public double getFluidHeight(TagKey<Fluid> type) {
++        if (type == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (type == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidInteraction.getFluidHeight(type);
+     }
+
++    // Neo: New logic for determining entity-fluid interactions. Replaces the vanilla logic that used fluids/fluid tags.
++    protected it.unimi.dsi.fastutil.objects.Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
++    private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
++
++    protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
++        this.forgeFluidTypeHeight.put(type, height);
++    }
++
++    @Override
++    public final double getFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.forgeFluidTypeHeight.getDouble(type);
++    }
++
++    @Override
++    public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return false;
++        }
++        return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
++                  : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
++    }
++
++    @Override
++    public final boolean isInFluidType() {
++        return this.forgeFluidTypeHeight.size() > 0;
++    }
++
++    @Override
++    public final net.neoforged.neoforge.fluids.FluidType getEyeInFluidType() {
++        return forgeFluidTypeOnEyes;
++    }
++
++    @Override
++    public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
++        }
++        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getDoubleValue)).map(it.unimi.dsi.fastutil.objects.Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);

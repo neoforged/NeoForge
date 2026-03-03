@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -61,6 +_,7 @@
+@@ -60,6 +_,7 @@
      private long focusedTime = Util.getMillis();
      private int textX;
      private int textY;
@@ -8,7 +8,7 @@
  
      public EditBox(Font font, int width, int height, Component narration) {
          this(font, 0, 0, width, height, narration);
-@@ -95,6 +_,8 @@
+@@ -94,6 +_,8 @@
      }
  
      public void setValue(String value) {
@@ -17,7 +17,7 @@
          if (value.length() > this.maxLength) {
              this.value = value.substring(0, this.maxLength);
          } else {
-@@ -128,6 +_,14 @@
+@@ -127,6 +_,14 @@
          this.updateTextPosition();
      }
  
@@ -32,7 +32,7 @@
      public void insertText(String input) {
          int start = Math.min(this.cursorPos, this.highlightPos);
          int end = Math.max(this.cursorPos, this.highlightPos);
-@@ -144,6 +_,7 @@
+@@ -143,6 +_,7 @@
                  insertionLength = maxInsertionLength;
              }
  
@@ -40,7 +40,7 @@
              this.value = new StringBuilder(this.value).replace(start, end, text).toString();
              this.setCursorPosition(start + insertionLength);
              this.setHighlightPos(this.cursorPos);
-@@ -604,6 +_,10 @@
+@@ -616,6 +_,10 @@
      public void setHint(Component hint) {
          boolean hasNoStyle = hint.getStyle().equals(Style.EMPTY);
          this.hint = (Component)(hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint);

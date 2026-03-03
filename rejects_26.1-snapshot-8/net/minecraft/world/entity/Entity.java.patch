@@ -1,0 +1,213 @@
+++++ REJECTED HUNK: 3
+@@ -245,8 +247,10 @@
+     public int tickCount;
+     private int remainingFireTicks;
+     protected boolean wasTouchingWater;
++    @Deprecated // Neo: Use forgeFluidTypeHeight instead
+     protected final Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
+     protected boolean wasEyeInWater;
++    @Deprecated // Neo: Use forgeFluidTypeOnEyes instead
+     private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
+     public int invulnerableTime;
+     protected boolean firstTick = true;
+++++ END HUNK
+
+++++ REJECTED HUNK: 9
+@@ -1528,26 +1533,34 @@
+ 
+     public void updateSwimming() {
+         if (this.isSwimming()) {
+-            this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
++            this.setSwimming(this.isSprinting() && (this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) && !this.isPassenger());
+         } else {
+             this.setSwimming(
+-                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
++                this.isSprinting() && this.canStartSwimming() && !this.isPassenger()
+             );
+         }
+     }
+ 
+     protected boolean updateInWaterStateAndDoFluidPushing() {
+         this.fluidHeight.clear();
++        this.forgeFluidTypeHeight.clear();
+         this.updateInWaterStateAndDoWaterCurrentPushing();
+-        double lavaFlowScale = this.level.environmentAttributes().getDimensionValue(EnvironmentAttributes.FAST_LAVA) ? 0.007 : 0.0023333333333333335;
+-        boolean isInLava = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, lavaFlowScale);
+-        return this.isInWater() || isInLava;
++        if (this.isInFluidType() && !(this.getVehicle() instanceof AbstractBoat)) {
++            this.fallDistance *= this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isAir() && !e.getKey().isVanilla()).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
++            if (this.isInFluidType((fluidType, height) -> !fluidType.isAir() && !fluidType.isVanilla() && this.canFluidExtinguish(fluidType))) this.clearFire();
++        }
++        return this.isInFluidType();
+     }
+ 
++    @Deprecated // Forge: Use updateInWaterStateAndDoWaterCurrentPushing with bool param instead
+     void updateInWaterStateAndDoWaterCurrentPushing() {
++        this.updateInWaterStateAndDoWaterCurrentPushing(true);
++    }
++
++    void updateInWaterStateAndDoWaterCurrentPushing(boolean performFluidPushing) {
+         if (this.getVehicle() instanceof AbstractBoat boat && !boat.isUnderWater()) {
+             this.wasTouchingWater = false;
+-        } else if (this.updateFluidHeightAndDoFluidPushing(FluidTags.WATER, 0.014)) {
++        } else if (this.updateFluidHeightAndDoCanPushEntityFluidPushing(performFluidPushing)) {
+             if (!this.wasTouchingWater && !this.firstTick) {
+                 this.doWaterSplashEffect();
+             }
+++++ END HUNK
+
+++++ REJECTED HUNK: 10
+@@ -1562,6 +1575,7 @@
+     private void updateFluidOnEyes() {
+         this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
+         this.fluidOnEyes.clear();
++        this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
+         double eyeY = this.getEyeY();
+         if (!(
+             this.getVehicle() instanceof AbstractBoat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= eyeY && boat.getBoundingBox().minY <= eyeY
+++++ END HUNK
+
+++++ REJECTED HUNK: 11
+@@ -1570,7 +1584,7 @@
+             FluidState fluidState = this.level().getFluidState(pos);
+             double blockFluidHeight = pos.getY() + fluidState.getHeight(this.level(), pos);
+             if (blockFluidHeight > eyeY) {
+-                fluidState.tags().forEach(this.fluidOnEyes::add);
++                this.forgeFluidTypeOnEyes = fluidState.getFluidType();
+             }
+         }
+     }
+++++ END HUNK
+
+++++ REJECTED HUNK: 29
+@@ -3560,9 +3600,36 @@
+         return Mth.lerp(partial, this.yRotO, this.yRot);
+     }
+ 
++    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
+     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> type, double flowScale) {
++        this.updateFluidHeightAndDoFluidPushing(true);
++        if(type == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (type == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        else return false;
++    }
++
++    public boolean updateFluidHeightAndDoCanPushEntityFluidPushing(boolean performFluidPushing) {
++        if (performFluidPushing) {
++            this.forgeFluidTypeHeight.clear();
++        }
++        this.updateFluidHeightAndDoFluidPushing(performFluidPushing);
++
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return false;
++        }
++
++        for (net.neoforged.neoforge.fluids.FluidType fluidType : this.forgeFluidTypeHeight.keySet()) {
++            if (fluidType.getIsWaterLike()) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    public void updateFluidHeightAndDoFluidPushing(boolean doFluidPushing) {
+         if (this.touchingUnloadedChunk()) {
+-            return false;
++            return;
+         } else {
+             AABB box = this.getBoundingBox().deflate(0.001);
+             int x0 = Mth.floor(box.minX);
+++++ END HUNK
+
+++++ REJECTED HUNK: 30
+@@ -3577,25 +3644,37 @@
+             Vec3 current = Vec3.ZERO;
+             int numberOfCurrents = 0;
+             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
++            class InterimCalculation {
++                double fluidHeight = 0.0D;
++                Vec3 flowVector = Vec3.ZERO;
++                int blockCount = 0;
++            }
++            it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, InterimCalculation> interimCalcs = null;
+ 
+             for (int x = x0; x < x1; x++) {
+                 for (int y = y0; y < y1; y++) {
+                     for (int z = z0; z < z1; z++) {
+                         pos.set(x, y, z);
+                         FluidState fluidState = this.level().getFluidState(pos);
+-                        if (fluidState.is(type)) {
++                        net.neoforged.neoforge.fluids.FluidType fluidType = fluidState.getFluidType();
++                        if (!fluidType.isAir()) {
+                             double blockFluidHeight = y + fluidState.getHeight(this.level(), pos);
+                             if (blockFluidHeight >= box.minY) {
+                                 inFluid = true;
+-                                fluidHeight = Math.max(blockFluidHeight - box.minY, fluidHeight);
+-                                if (pushedByFluid) {
++                                if (interimCalcs == null) {
++                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
++                                }
++                                InterimCalculation interim = interimCalcs.computeIfAbsent(fluidType, t -> new InterimCalculation());
++                                interim.fluidHeight = Math.max(blockFluidHeight - box.minY, interim.fluidHeight);
++                                if (this.isPushedByFluid(fluidType)) {
+                                     Vec3 flow = fluidState.getFlow(this.level(), pos);
+-                                    if (fluidHeight < 0.4) {
+-                                        flow = flow.scale(fluidHeight);
++                                    if (interim.fluidHeight < 0.4) {
++                                        flow = flow.scale(interim.fluidHeight);
+                                     }
+ 
+-                                    current = current.add(flow);
+-                                    numberOfCurrents++;
++                                    interim.flowVector = interim.flowVector.add(flow);
++                                    interim.blockCount++;
++
+                                 }
+                             }
+                         }
+++++ END HUNK
+
+++++ REJECTED HUNK: 31
+@@ -3603,27 +3682,30 @@
+                 }
+             }
+ 
+-            if (current.length() > 0.0) {
+-                if (numberOfCurrents > 0) {
+-                    current = current.scale(1.0 / numberOfCurrents);
++            if(interimCalcs != null) {
++            interimCalcs.forEach((fluidType, interim) -> {
++            if (doFluidPushing && interim.flowVector.length() > 0.0D) {
++                if (interim.blockCount > 0) {
++                    interim.flowVector = interim.flowVector.scale(1.0D / (double)interim.blockCount);
+                 }
+ 
+                 if (!(this instanceof Player)) {
+-                    current = current.normalize();
++                    interim.flowVector = interim.flowVector.normalize();
+                 }
+ 
+                 Vec3 oldMovement = this.getDeltaMovement();
+-                current = current.scale(flowScale);
++                interim.flowVector = interim.flowVector.scale(this.getFluidMotionScale(fluidType));
+                 double min = 0.003;
+-                if (Math.abs(oldMovement.x) < 0.003 && Math.abs(oldMovement.z) < 0.003 && current.length() < 0.0045000000000000005) {
+-                    current = current.normalize().scale(0.0045000000000000005);
++                if (Math.abs(oldMovement.x) < 0.003D && Math.abs(oldMovement.z) < 0.003D && interim.flowVector.length() < 0.0045000000000000005D) {
++                    interim.flowVector = interim.flowVector.normalize().scale(0.0045000000000000005D);
+                 }
+ 
+-                this.setDeltaMovement(this.getDeltaMovement().add(current));
++                this.setDeltaMovement(this.getDeltaMovement().add(interim.flowVector));
+             }
+ 
+-            this.fluidHeight.put(type, fluidHeight);
+-            return inFluid;
++            this.setFluidTypeHeight(fluidType, interim.fluidHeight);
++            });
++            }
+         }
+     }
+ 
+++++ END HUNK

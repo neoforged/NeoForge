@@ -6,12 +6,10 @@
 package net.neoforged.neoforge.oldtest.fluid;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.core.BlockPos;
@@ -24,7 +22,6 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +30,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -130,14 +126,8 @@ public class FluidTypeTest {
 
     private static class FluidTypeTestClient {
         private FluidTypeTestClient(IEventBus modEventBus) {
-            modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(this::registerBlockColors);
             modEventBus.addListener(this::registerClientExtensions);
-        }
-
-        private void clientSetup(FMLClientSetupEvent event) {
-            Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
-                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, ChunkSectionLayer.TRANSLUCENT));
         }
 
         private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
@@ -205,7 +195,7 @@ public class FluidTypeTest {
                         };
                     }
                     // Replace vanilla fluid rendering
-                    Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    Minecraft.getInstance().getBlockRenderer().getLiquidRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
                     return true;
                 }
             }, TEST_FLUID_TYPE.value());

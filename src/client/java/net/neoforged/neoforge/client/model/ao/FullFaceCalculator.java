@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockModelLighter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -17,11 +18,11 @@ import net.minecraft.world.level.block.state.BlockState;
  * There are 24 possible configurations for each block, depending on: the direction,
  * whether the quad wants to be shaded, and whether the sample is taken outside the block.
  *
- * <p>The {@link EnhancedAoRenderStorage} then works by combining the results of multiple configurations,
+ * <p>The {@link EnhancedBlockModelLighter} then works by combining the results of multiple configurations,
  * using various interpolation schemes depending on the quad.
  *
  * <p>The logic is mostly contained in {@link #calculateFaceUncached},
- * and derives from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate},
+ * and derives from vanilla's {@link BlockModelLighter#prepareQuadAmbientOcclusion},
  * with a few fixes applied:
  * <ul>
  * <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
@@ -38,7 +39,7 @@ class FullFaceCalculator {
     private static final boolean DISABLE_LIGHTMAP_BLENDING_FIX = Boolean.getBoolean("neoforge.ao.disableLightmapBlendingFix");
 
     final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
-    private ModelBlockRenderer.Cache cache;
+    private BlockModelLighter.Cache cache;
 
     private final AoCalculatedFace[] aoFaces = new AoCalculatedFace[24];
     {
@@ -48,7 +49,7 @@ class FullFaceCalculator {
     }
     private int calculatedAoFaces = 0;
 
-    void startBlock(ModelBlockRenderer.Cache cache) {
+    void startBlock(BlockModelLighter.Cache cache) {
         this.calculatedAoFaces = 0;
         this.cache = cache;
     }
@@ -81,7 +82,7 @@ class FullFaceCalculator {
      */
     private void calculateFaceUncached(AoCalculatedFace out, BlockAndTintGetter level, BlockState renderedState, BlockPos renderedPos, Direction direction, boolean shade, boolean sampleOutside) {
         BlockPos samplePos = sampleOutside ? renderedPos.relative(direction) : renderedPos;
-        ModelBlockRenderer.AdjacencyInfo adjacencyInfo = ModelBlockRenderer.AdjacencyInfo.fromFacing(direction);
+        BlockModelLighter.AdjacencyInfo adjacencyInfo = BlockModelLighter.AdjacencyInfo.fromFacing(direction);
         BlockPos.MutableBlockPos scratchPos = this.scratchPos;
 
         // Sample light and brightness for each side of the face
@@ -186,7 +187,8 @@ class FullFaceCalculator {
         boolean insideClear = !insideState.isViewBlocking(level, samplePos) || insideState.getLightBlock() == 0;
 
         // Wrap up
-        float levelBrightness = level.getShade(direction, shade);
+        CardinalLighting cardinalLighting = level.cardinalLighting();
+        float levelBrightness = shade ? cardinalLighting.byFace(direction) : cardinalLighting.up();
 
         out.brightness0 = ((sideBrightness3 + sideBrightness0 + cornerBrightness1 + insideBrightness) * 0.25F) * levelBrightness;
         out.brightness1 = ((sideBrightness2 + sideBrightness0 + cornerBrightness0 + insideBrightness) * 0.25F) * levelBrightness;

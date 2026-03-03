@@ -14,18 +14,19 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidInstance;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
@@ -55,7 +56,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
      * Stream codec for a fluid resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::typeHolder,
+            FluidInstance.FLUID_HOLDER_STREAM_CODEC, FluidResource::typeHolder,
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
 
@@ -70,6 +71,24 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
             return of(stack.getFluid());
         }
         return new FluidResource(stack.copyWithAmount(FluidType.BUCKET_VOLUME));
+    }
+
+    /// Creates a FluidResource using the default or copy of the passed in fluid stack. Note the amount is lost.
+    ///
+    /// @param template stack to copy with a size of 1
+    /// @return If null was given, an empty resource is returned.
+    ///         If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
+    public static FluidResource of(@Nullable FluidStackTemplate template) {
+        if (template == null) {
+            return EMPTY;
+        }
+        if (template.components().isEmpty()) {
+            return of(template.fluid());
+        }
+
+        var stack = template.create();
+        stack.setAmount(FluidType.BUCKET_VOLUME);
+        return new FluidResource(stack);
     }
 
     /**
@@ -253,6 +272,13 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
      */
     public boolean matches(FluidStack stack) {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
+    }
+
+    /// {@return true if this resource matches the fluid and components of the passed template}
+    ///
+    /// @param template the fluid stack template to check
+    public boolean matches(@Nullable FluidStackTemplate template) {
+        return FluidStack.isSameFluidSameComponents(innerStack, template);
     }
 
     /**

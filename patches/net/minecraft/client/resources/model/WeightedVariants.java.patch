@@ -9,23 +9,23 @@
 -        this.list.getRandomOrThrow(random).collectParts(random, output);
 +    // Neo: Implement our overload so child models can have custom logic
 +    @Override
-+    public void collectParts(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random, List<BlockModelPart> output) {
++    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random, List<BlockModelPart> output) {
 +        this.list.getRandomOrThrow(random).collectParts(level, pos, state, random, output);
 +    }
 +
 +    @Override
 +    @org.jspecify.annotations.Nullable
-+    public Object createGeometryKey(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random) {
++    public Object createGeometryKey(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random) {
 +        return this.list.getRandomOrThrow(random).createGeometryKey(level, pos, state, random);
 +    }
 +
 +    @Override
-+    public Material.Baked particleMaterial(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++    public Material.Baked particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
 +        return this.list.unwrap().getFirst().value().particleMaterial(level, pos, state);
 +    }
 +
 +    @Override
-+    public boolean hasTranslucency(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++    public boolean hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
 +        for (Weighted<BlockStateModel> model : this.list.unwrap()) {
 +            if (model.value().hasTranslucency(level, pos, state)) {
 +                return true;

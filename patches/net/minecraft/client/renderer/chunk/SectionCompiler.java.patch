@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
-@@ -43,6 +_,10 @@
+@@ -58,6 +_,10 @@
      }
  
      public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders) {
@@ -11,30 +11,19 @@
          SectionCompiler.Results results = new SectionCompiler.Results();
          BlockPos minPos = sectionPos.origin();
          BlockPos maxPos = minPos.offset(15, 15, 15);
-@@ -58,7 +_,8 @@
-             BufferBuilder builderx = this.getOrBeginLayer(startedLayers, builders, ChunkSectionLayer.SOLID);
-             builderx.putBulkData(pose, quad, brightness, color, lightmapCoord, overlayCoords);
-         };
--        RandomSource random = RandomSource.create();
-+        // Neo: use a SingleThreadedRandomSource to avoid overhead of atomics
-+        RandomSource random = new net.minecraft.world.level.levelgen.SingleThreadedRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed());
-         List<BlockModelPart> parts = new ObjectArrayList<>();
+@@ -93,6 +_,7 @@
+                     if (!fluidState.isEmpty()) {
+                         ChunkSectionLayer layer = this.liquidRenderer.getRenderLayer(fluidState);
+                         BufferBuilder builder = this.getOrBeginLayer(startedLayers, builders, layer);
++                        if (!net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, region, pos, builder, blockState))
+                         this.liquidRenderer.tesselate(region, pos, builder, blockState, fluidState);
+                     }
  
-         for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
-@@ -84,7 +_,7 @@
-             if (blockState.getRenderShape() == RenderShape.MODEL) {
-                 boolean forceOpaque = ItemBlockRenderTypes.forceOpaque(blockState);
-                 random.setSeed(blockState.getSeed(pos));
--                this.blockRenderer.getBlockModel(blockState).collectParts(random, parts);
-+                this.blockRenderer.getBlockModel(blockState).collectParts(region, pos, blockState, random, parts);
-                 poseStack.pushPose();
-                 poseStack.translate(
-                     (float)SectionPos.sectionRelative(pos.getX()), (float)SectionPos.sectionRelative(pos.getY()), (float)SectionPos.sectionRelative(pos.getZ())
-@@ -95,6 +_,7 @@
+@@ -118,6 +_,7 @@
              }
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, poseStack);
++        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, blockRenderer, minPos);
          for (Entry<ChunkSectionLayer, BufferBuilder> entry : startedLayers.entrySet()) {
              ChunkSectionLayer layer = entry.getKey();
              MeshData mesh = entry.getValue().build();

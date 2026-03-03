@@ -388,7 +388,7 @@
          graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
          graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
          graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
-@@ -1180,7 +_,7 @@
+@@ -1176,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !selected.is(this.lastToolHighlight.getItem())
@@ -397,7 +397,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1455,12 +_,27 @@
+@@ -1451,12 +_,27 @@
                  type = NORMAL;
              }
  

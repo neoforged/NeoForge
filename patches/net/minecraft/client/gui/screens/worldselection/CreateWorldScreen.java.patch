@@ -8,7 +8,7 @@
          WorldDataConfiguration dataConfig = SharedConstants.IS_RUNNING_IN_IDE
              ? new WorldDataConfiguration(new DataPackConfig(List.of("vanilla", "tests"), List.of()), FeatureFlags.DEFAULT_FLAGS)
              : WorldDataConfiguration.DEFAULT;
-@@ -332,6 +_,10 @@
+@@ -331,6 +_,10 @@
              SystemToast.onPackCopyFailure(this.minecraft, worldFolder);
              return false;
          } else {
@@ -19,7 +19,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(newWorldAccess.get(), context.dataPackResources(), finalLayers, worldDataAndGenSettings, gameRules);
-@@ -502,7 +_,7 @@
+@@ -501,7 +_,7 @@
                                          if (retry) {
                                              onAbort.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +28,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -616,6 +_,7 @@
+@@ -615,6 +_,7 @@
          if (dataPackDir != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(dataPackDir, this.packValidator);

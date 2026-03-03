@@ -5,16 +5,17 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
-import com.mojang.blaze3d.vertex.QuadBrightness;
-import com.mojang.blaze3d.vertex.QuadLightmapCoords;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockModelLighter;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
@@ -31,44 +32,12 @@ import org.slf4j.Logger;
  *
  * <p>Compared to vanilla, we also remove any assumption about vertex order in the quad.
  */
-public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusionRenderStorage {
-    public static ModelBlockRenderer.AmbientOcclusionRenderStorage newInstance() {
+public class EnhancedBlockModelLighter extends BlockModelLighter {
+    public static BlockModelLighter newInstance() {
         if (NeoForgeClientConfig.INSTANCE.enhancedLighting.getAsBoolean()) {
-            return new EnhancedAoRenderStorage();
+            return new EnhancedBlockModelLighter();
         } else {
-            return new ModelBlockRenderer.AmbientOcclusionRenderStorage();
-        }
-    }
-
-    /**
-     * "Enhanced" flat shading logic.
-     */
-    public static void applyFlatQuadBrightness(BlockAndTintGetter level, BakedQuad quad, ModelBlockRenderer.CommonRenderStorage storage) {
-        if (NeoForgeClientConfig.INSTANCE.enhancedLighting.getAsBoolean()) {
-            int quadNormal = -1;
-
-            for (int vertex = 0; vertex < 4; ++vertex) {
-                // Handle each vertex separately to apply vertex normals.
-
-                int normal = quad.bakedNormals().normal(vertex);
-                // The ignored byte is padding and may be filled with user data
-                if (BakedNormals.isUnspecified(normal)) {
-                    // No normal! Try to use the quad normal.
-                    if (quadNormal == -1) {
-                        quadNormal = BakedNormals.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
-                    }
-                    normal = quadNormal;
-                }
-
-                storage.brightness.set(vertex, level.getShade(
-                        BakedNormals.unpackX(normal),
-                        BakedNormals.unpackY(normal),
-                        BakedNormals.unpackZ(normal),
-                        quad.shade()));
-            }
-        } else {
-            float f = level.getShade(quad.direction(), quad.shade());
-            storage.brightness.setAll(f);
+            return new BlockModelLighter();
         }
     }
 
@@ -80,7 +49,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /**
-     * Cache these objects so that they don't need to be reallocated for every {@link EnhancedAoRenderStorage}.
+     * Cache these objects so that they don't need to be reallocated for every {@link EnhancedBlockModelLighter}.
      */
     private record AoObjectCache(FullFaceCalculator calculator, float[] weights) {}
 
@@ -95,39 +64,35 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     // Avoid repeated allocations of this array
     private final float[] weights;
 
-    private BakedQuad currentQuad;
-
-    public EnhancedAoRenderStorage() {
+    public EnhancedBlockModelLighter() {
         var cache = AO_OBJECT_CACHE.get();
         this.calculator = cache.calculator;
         this.weights = cache.weights;
+    }
+
+    @Override
+    public void reset() {
         // Reset AO Face cache
         this.calculator.startBlock(this.cache);
     }
 
     @Override
-    public void captureQuad(BakedQuad quad) {
-        this.currentQuad = quad;
-    }
-
-    @Override
-    public void calculate(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
-        if (this.currentQuad == null) {
-            throw new IllegalStateException("Make sure to pass the quad via captureQuad before calling calculate.");
-        }
+    public void prepareQuadAmbientOcclusion(BlockAndTintGetter level, BlockState state, BlockPos pos, BakedQuad quad, QuadInstance outputInstance) {
+        this.prepareQuadShape(level, state, pos, quad, true);
 
         // Enhanced calculation
         // Vanilla uses ==. We could add an epsilon to use the cheaper axis-aligned logic for almost axis-aligned faces.
+        Direction direction = quad.direction();
         boolean isAxisAligned = switch (direction) {
-            case DOWN, UP -> faceShape[ModelBlockRenderer.SizeInfo.DOWN.index] == faceShape[ModelBlockRenderer.SizeInfo.UP.index];
-            case NORTH, SOUTH -> faceShape[ModelBlockRenderer.SizeInfo.NORTH.index] == faceShape[ModelBlockRenderer.SizeInfo.SOUTH.index];
-            case WEST, EAST -> faceShape[ModelBlockRenderer.SizeInfo.WEST.index] == faceShape[ModelBlockRenderer.SizeInfo.EAST.index];
+            case DOWN, UP -> faceShape[SizeInfo.DOWN.index] == faceShape[SizeInfo.UP.index];
+            case NORTH, SOUTH -> faceShape[SizeInfo.NORTH.index] == faceShape[SizeInfo.SOUTH.index];
+            case WEST, EAST -> faceShape[SizeInfo.WEST.index] == faceShape[SizeInfo.EAST.index];
         };
 
         if (isAxisAligned) {
-            calculateAxisAligned(level, state, pos, direction, shade);
+            calculateAxisAligned(level, state, pos, direction, quad, outputInstance);
         } else {
-            calculateIrregular(level, state, pos, shade);
+            calculateIrregular(level, state, pos, quad, outputInstance);
         }
     }
 
@@ -137,49 +102,45 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * <p>This is similar to vanilla in how we select whether to use the inside or outside light.
      * However, we still use our own interpolation logic which does not make any assumption about vertex winding order.
      */
-    private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
+    private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, BakedQuad quad, QuadInstance outputInstance) {
         // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
         // This is already stored in the faceCubic field.
-        var fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, this.faceCubic);
+        var fullFace = this.calculator.calculateFace(level, state, pos, direction, quad.shade(), this.faceCubic);
 
         // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
         // This will work regardless of the vertex order or position
         AoFace aoFace = AoFace.fromDirection(direction);
         float[] weights = this.weights;
         for (int vertex = 0; vertex < 4; ++vertex) {
-            Vector3fc vertPos = this.currentQuad.position(vertex);
+            Vector3fc vertPos = quad.position(vertex);
             aoFace.computeCornerWeights(weights, vertPos.x(), vertPos.y(), vertPos.z());
-            brightness.set(vertex, interpolateBrightness(fullFace, weights));
-            lightmap.set(vertex, interpolateLightmap(fullFace, weights));
+            outputInstance.setColor(vertex, ARGB.gray(interpolateBrightness(fullFace, weights)));
+            outputInstance.setLightCoords(vertex, interpolateLightmap(fullFace, weights));
         }
 
         // Debug option to compare emulated vanilla AO with actual vanilla AO.
         // Since we make changes compared to vanilla's AO, many quads will trigger the warning.
         if (COMPARE_WITH_VANILLA) {
             // This is a debug option, so allocations are fine
-            QuadBrightness.Mutable emulatedBrightness = new QuadBrightness.Mutable();
-            QuadLightmapCoords.Mutable emulatedLightmap = new QuadLightmapCoords.Mutable();
-            for (int vertex = 0; vertex < 4; vertex++) {
-                emulatedBrightness.set(vertex, brightness.get(vertex));
-                emulatedLightmap.set(vertex, lightmap.get(vertex));
-            }
+            QuadInstance vanilla = new QuadInstance();
 
-            super.calculate(level, state, pos, direction, shade);
+            super.prepareQuadAmbientOcclusion(level, state, pos, quad, vanilla);
 
             for (int vertex = 0; vertex < 4; ++vertex) {
-                if (!Mth.equal(emulatedBrightness.get(vertex), brightness.get(vertex)) || emulatedLightmap.get(vertex) != lightmap.get(vertex)) {
+                if (!Mth.equal(vanilla.getColor(vertex), outputInstance.getColor(vertex)) || vanilla.getLightCoords(vertex) != outputInstance.getLightCoords(vertex)) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
                             + "Vanilla: lightmap = {}, brightness = {}\n"
                             + "Emulated: lightmap = {}, brightness = {}\n",
-                            vertex, direction, state.getBlock(), pos, lightmap.get(vertex), brightness.get(vertex), emulatedLightmap.get(vertex), emulatedBrightness.get(vertex));
+                            vertex,
+                            direction,
+                            state.getBlock(),
+                            pos,
+                            Integer.toHexString(vanilla.getLightCoords(vertex)),
+                            Integer.toHexString(vanilla.getColor(vertex)),
+                            Integer.toHexString(outputInstance.getLightCoords(vertex)),
+                            Integer.toHexString(outputInstance.getColor(vertex)));
                     break;
                 }
-            }
-
-            // Revert to our AO
-            for (int vertex = 0; vertex < 4; vertex++) {
-                brightness.set(vertex, emulatedBrightness.get(vertex));
-                lightmap.set(vertex, emulatedLightmap.get(vertex));
             }
         }
     }
@@ -192,18 +153,19 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * Computes AO for a general quad.
      * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
-    private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, boolean shade) {
+    private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, BakedQuad quad, QuadInstance outputInstance) {
+        boolean shade = quad.shade();
         int quadNormal = -1;
 
         for (int vertex = 0; vertex < 4; ++vertex) {
             // Handle each vertex separately to apply vertex normals.
 
-            int normal = currentQuad.bakedNormals().normal(vertex);
+            int normal = quad.bakedNormals().normal(vertex);
             // The ignored byte is padding and may be filled with user data
             if (BakedNormals.isUnspecified(normal)) {
                 // No normal! Try to use the quad normal.
                 if (quadNormal == -1) {
-                    quadNormal = BakedNormals.computeQuadNormal(currentQuad.position0(), currentQuad.position1(), currentQuad.position2(), currentQuad.position3());
+                    quadNormal = BakedNormals.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
                 }
                 normal = quadNormal;
             }
@@ -229,7 +191,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
                 // Compute full face
                 AoFace aoFace = AoFace.fromDirection(direction);
-                Vector3fc vertPos = this.currentQuad.position(vertex);
+                Vector3fc vertPos = quad.position(vertex);
                 float depth = aoFace.computeDepth(vertPos.x(), vertPos.y(), vertPos.z());
                 // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
                 boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
@@ -254,8 +216,61 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
             // Do an average between the max and the weighted average.
             // Using only the weighted average looks a bit too dark.
-            brightness.set(vertex, Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F));
-            lightmap.set(vertex, lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT));
+            outputInstance.setColor(vertex, ARGB.gray(Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F)));
+            outputInstance.setLightCoords(vertex, lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT));
+        }
+    }
+
+    @Override
+    public void prepareQuadFlat(BlockAndTintGetter level, BlockState state, BlockPos pos, int lightCoords, BakedQuad quad, QuadInstance outputInstance) {
+        if (!quad.shade()) {
+            super.prepareQuadFlat(level, state, pos, lightCoords, quad, outputInstance);
+            return;
+        }
+
+        if (lightCoords == -1) {
+            this.prepareQuadShape(level, state, pos, quad, false);
+            BlockPos lightPos = this.faceCubic ? this.scratchPos.setWithOffset(pos, quad.direction()) : pos;
+            outputInstance.setLightCoords(this.cache.getLightCoords(state, level, lightPos));
+        } else {
+            outputInstance.setLightCoords(lightCoords);
+        }
+
+        CardinalLighting cardinalLighting = level.cardinalLighting();
+        int quadNormal = -1;
+        for (int vertex = 0; vertex < 4; ++vertex) {
+            // Handle each vertex separately to apply vertex normals.
+
+            int normal = quad.bakedNormals().normal(vertex);
+            // The ignored byte is padding and may be filled with user data
+            if (BakedNormals.isUnspecified(normal)) {
+                // No normal! Try to use the quad normal.
+                if (quadNormal == -1) {
+                    quadNormal = BakedNormals.computeQuadNormal(quad.position0(), quad.position1(), quad.position2(), quad.position3());
+                }
+                normal = quadNormal;
+            }
+
+            float weightedBrightness = 0F;
+            for (int axis = 0; axis < 3; ++axis) {
+                float normalComponent = BakedNormals.unpackComponent(normal, axis);
+                if (normalComponent == 0) {
+                    continue;
+                }
+
+                // Choose AO face based on normal sign
+                Direction direction = switch (axis) {
+                    case 0 -> normalComponent > 0 ? Direction.EAST : Direction.WEST;
+                    case 1 -> normalComponent > 0 ? Direction.UP : Direction.DOWN;
+                    case 2 -> normalComponent > 0 ? Direction.SOUTH : Direction.NORTH;
+                    default -> throw new AssertionError();
+                };
+
+                // Blend proportionally to the square of the normal component
+                float axisWeight = normalComponent * normalComponent;
+                weightedBrightness += cardinalLighting.byFace(direction) * axisWeight;
+            }
+            outputInstance.setColor(vertex, ARGB.gray(Math.min(weightedBrightness, 1F)));
         }
     }
 

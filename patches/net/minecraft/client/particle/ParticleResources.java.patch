@@ -9,7 +9,7 @@
      private @Nullable Runnable onReload;
  
      public ParticleResources() {
-@@ -173,14 +_,18 @@
+@@ -175,14 +_,18 @@
          this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
      }
  
@@ -30,7 +30,7 @@
      }
  
      @Override
-@@ -276,7 +_,7 @@
+@@ -278,7 +_,7 @@
          }
      }
  

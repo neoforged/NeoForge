@@ -1,48 +1,24 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -53,7 +_,7 @@
-             BlockStateModel model = this.blockModelShaper.getBlockModel(state);
+@@ -40,14 +_,20 @@
+         this.sprites = sprites;
+     }
+ 
++    /// @deprecated Neo: use [#renderBreakingTexture(BlockAndTintGetter, BlockState, BlockPos, PoseStack, MultiBufferSource, int)] instead
++    @Deprecated
+     public void renderBreakingTexture(BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int progress) {
++        renderBreakingTexture(BlockAndTintGetter.EMPTY, state, pos, poseStack, bufferSource, progress);
++    }
++
++    public void renderBreakingTexture(BlockAndTintGetter level, BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int progress) {
+         if (state.getRenderShape() == RenderShape.MODEL) {
+             PoseStack.Pose pose = poseStack.last();
+             VertexConsumer buffer = new SheetedDecalTextureGenerator(bufferSource.getBuffer(ModelBakery.DESTROY_TYPES.get(progress)), pose, 1.0F);
+             BlockStateModel model = this.modelManager.getBlockModelSet().get(state);
              this.singleThreadRandom.setSeed(state.getSeed(pos));
              this.singleThreadPartList.clear();
 -            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
 +            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
-             this.modelRenderer.tesselateBlock(level, this.singleThreadPartList, state, pos, poseStack, output, true, OverlayTexture.NO_OVERLAY);
-         }
-     }
-@@ -73,6 +_,7 @@
+             QuadInstance instance = new QuadInstance();
  
-     public void renderLiquid(BlockPos pos, BlockAndTintGetter level, VertexConsumer builder, BlockState blockState, FluidState fluidState) {
-         try {
-+            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, level, pos, builder, blockState)) return;
-             Objects.requireNonNull(this.liquidBlockRenderer).tesselate(level, pos, builder, blockState, fluidState);
-         } catch (Throwable var9) {
-             CrashReport report = CrashReport.forThrowable(var9, "Tesselating liquid in world");
-@@ -90,12 +_,17 @@
-         return this.blockModelShaper.getBlockModel(state);
-     }
- 
-+    @Deprecated // Neo: Level and pos parameters
-     public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords) {
-+        renderSingleBlock(state, poseStack, bufferSource, lightCoords, overlayCoords, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO);
-+    }
-+
-+    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords, BlockAndTintGetter level, BlockPos pos) {
-         RenderShape shape = state.getRenderShape();
-         if (shape != RenderShape.INVISIBLE) {
-             BlockStateModel model = this.getBlockModel(state);
-             int tintColor = this.blockColors.getColor(state, null, null, 0);
--            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords);
-+            ModelBlockRenderer.renderModel(poseStack.last(), createQuadOutput(bufferSource), model, tintColor, lightCoords, overlayCoords, level, pos, state);
-         }
-     }
- 
-@@ -109,5 +_,9 @@
-     @Override
-     public void onResourceManagerReload(ResourceManager resourceManager) {
-         this.liquidBlockRenderer = new LiquidBlockRenderer(this.sprites);
-+    }
-+
-+    public LiquidBlockRenderer getLiquidBlockRenderer() {
-+        return Objects.requireNonNull(this.liquidBlockRenderer);
-     }
- }
+             for (BlockModelPart part : this.singleThreadPartList) {

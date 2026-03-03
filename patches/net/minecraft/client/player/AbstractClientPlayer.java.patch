@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/AbstractClientPlayer.java
 +++ b/net/minecraft/client/player/AbstractClientPlayer.java
-@@ -133,7 +_,7 @@
+@@ -113,7 +_,7 @@
              }
          }
  

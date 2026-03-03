@@ -51,7 +51,7 @@
                  } catch (Throwable var14) {
                      CrashReport report = CrashReport.forThrowable(var14, "Rendering screen");
                      CrashReportCategory category = report.addCategory("Screen render details");
-@@ -710,6 +_,9 @@
+@@ -711,6 +_,9 @@
                  !shouldCreateBossFog,
                  chunkSectionsToRender
              );

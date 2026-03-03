@@ -1,51 +1,39 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
-@@ -50,7 +_,12 @@
-         int overlayCoords
-     ) {
-         if (!parts.isEmpty()) {
--            boolean useAO = Minecraft.useAmbientOcclusion() && blockState.getLightEmission() == 0 && parts.getFirst().useAmbientOcclusion();
-+            boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-+            boolean useAO = Minecraft.useAmbientOcclusion() && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
-+                case TRUE -> true;
-+                case DEFAULT -> blockState.getLightEmission(level, pos) == 0;
-+                case FALSE -> false;
-+            });
-             poseStack.translate(blockState.getOffset(pos));
+@@ -33,7 +_,7 @@
+     private int tintCacheValue;
  
+     public ModelBlockRenderer(boolean ambientOcclusion, boolean cull, BlockColors blockColors) {
+-        this.lighter = new BlockModelLighter();
++        this.lighter = net.neoforged.neoforge.client.model.ao.EnhancedBlockModelLighter.newInstance();
+         this.ambientOcclusion = ambientOcclusion;
+         this.cull = cull;
+         this.blockColors = blockColors;
+@@ -47,11 +_,18 @@
+         BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
+     ) {
+         this.random.setSeed(seed);
+-        model.collectParts(this.random, this.parts);
++        model.collectParts(level, pos, blockState, this.random, this.parts);
+         if (!this.parts.isEmpty()) {
++            this.lighter.reset();
              try {
-@@ -69,6 +_,8 @@
-         }
-     }
- 
-+    /** @deprecated Neo: use {@link #shouldRenderFace(BlockAndTintGetter, BlockPos, BlockState, boolean, Direction, BlockPos)} instead */
-+    @Deprecated
-     private static boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, boolean cullEnabled, Direction direction, BlockPos neighborPos) {
-         if (!cullEnabled) {
-             return true;
-@@ -78,6 +_,15 @@
-         }
-     }
- 
-+    protected static boolean shouldRenderFace(BlockAndTintGetter level, BlockPos pos, BlockState state, boolean cullEnabled, Direction direction, BlockPos neighborPos) {
-+        if (!cullEnabled) {
-+            return true;
-+        } else {
-+            BlockState blockstate = level.getBlockState(neighborPos);
-+            return Block.shouldRenderFace(level, pos, state, blockstate, direction);
-+        }
-+    }
-+
-     public void tesselateWithAO(
-         BlockAndTintGetter level,
-         List<BlockModelPart> parts,
-@@ -88,11 +_,24 @@
-         boolean cull,
-         int overlayCoords
+                 Vec3 offset = blockState.getOffset(pos);
+-                if (this.ambientOcclusion && blockState.getLightEmission() == 0 && this.parts.getFirst().useAmbientOcclusion()) {
++                boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
++                boolean useAO = this.ambientOcclusion && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
++                    case TRUE -> true;
++                    case DEFAULT -> blockState.getLightEmission(level, pos) == 0;
++                    case FALSE -> false;
++                });
++                if (useAO) {
+                     this.tesselateAmbientOcclusion(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
+                 } else {
+                     this.tesselateFlat(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
+@@ -66,10 +_,22 @@
+     private void tesselateAmbientOcclusion(
+         BlockQuadOutput output, float x, float y, float z, List<BlockModelPart> parts, BlockAndTintGetter level, BlockState state, BlockPos pos
      ) {
--        ModelBlockRenderer.AmbientOcclusionRenderStorage scratch = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
-+        // Neo: Inject enhanced AO pipeline
-+        ModelBlockRenderer.AmbientOcclusionRenderStorage scratch = net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.newInstance();
 +        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
 +        int lightEmission = -1;
          int cacheValid = 0;
@@ -65,118 +53,80 @@
              for (Direction direction : DIRECTIONS) {
                  int cacheMask = 1 << direction.ordinal();
                  boolean validCacheForDirection = (cacheValid & cacheMask) == 1;
-@@ -101,7 +_,7 @@
+@@ -78,7 +_,7 @@
                      List<BakedQuad> culledQuads = part.getQuads(direction);
                      if (!culledQuads.isEmpty()) {
                          if (!validCacheForDirection) {
--                            shouldRenderFace = shouldRenderFace(level, state, cull, direction, scratch.scratchPos.setWithOffset(pos, direction));
-+                            shouldRenderFace = shouldRenderFace(level, pos, state, cull, direction, scratch.scratchPos.setWithOffset(pos, direction));
+-                            shouldRenderFace = this.shouldRenderFace(level, state, direction, this.scratchPos.setWithOffset(pos, direction));
++                            shouldRenderFace = this.shouldRenderFace(level, pos, state, direction, this.scratchPos.setWithOffset(pos, direction));
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -109,6 +_,12 @@
+@@ -86,7 +_,21 @@
                          }
  
                          if (shouldRenderFace) {
++                            BlockPos relativePos = this.scratchPos.setWithOffset(pos, direction);
 +                            if (!ao) {
-+                                int light = scratch.cache.getLightCoords(state, level, scratch.scratchPos.setWithOffset(pos, direction));
-+                                this.renderModelFaceFlat(
-+                                        level, state, pos, light, overlayCoords, false, poseStack, output, culledQuads, scratch
-+                                );
++                                int lightCoords = this.lighter.getLightCoords(state, level, relativePos);
++
++                                for (BakedQuad quad : culledQuads) {
++                                    this.lighter.prepareQuadFlat(level, state, pos, lightCoords, quad, this.quadInstance);
++                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++                                }
 +                            } else
-                             this.renderModelFaceAO(level, state, pos, poseStack, output, culledQuads, scratch, overlayCoords);
-                         }
-                     }
-@@ -117,6 +_,11 @@
- 
-             List<BakedQuad> unculledQuads = part.getQuads(null);
-             if (!unculledQuads.isEmpty()) {
-+                if (!ao) {
-+                    this.renderModelFaceFlat(
-+                            level, state, pos, -1, overlayCoords, true, poseStack, output, unculledQuads, scratch
-+                    );
-+                } else
-                 this.renderModelFaceAO(level, state, pos, poseStack, output, unculledQuads, scratch, overlayCoords);
+                             for (BakedQuad quad : culledQuads) {
++                                if (!quad.hasAmbientOcclusion()) {
++                                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
++                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++                                    continue;
++                                }
+                                 this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
+                                 this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
+                             }
+@@ -95,7 +_,18 @@
+                 }
              }
-         }
-@@ -146,7 +_,7 @@
+ 
++            if (!ao) {
++                for (BakedQuad quad : part.getQuads(null)) {
++                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
++                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++                }
++            } else
+             for (BakedQuad quad : part.getQuads(null)) {
++                if (!quad.hasAmbientOcclusion()) {
++                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
++                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++                    continue;
++                }
+                 this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
+                 this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
+             }
+@@ -118,7 +_,7 @@
                      if (!culledQuads.isEmpty()) {
-                         BlockPos relativePos = scratch.scratchPos.setWithOffset(pos, direction);
+                         BlockPos relativePos = this.scratchPos.setWithOffset(pos, direction);
                          if (!validCacheForDirection) {
--                            shouldRenderFace = shouldRenderFace(level, state, cull, direction, relativePos);
-+                            shouldRenderFace = shouldRenderFace(level, pos, state, cull, direction, relativePos);
+-                            shouldRenderFace = this.shouldRenderFace(level, state, direction, relativePos);
++                            shouldRenderFace = this.shouldRenderFace(level, pos, state, direction, relativePos);
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -179,7 +_,12 @@
-         int overlayCoords
-     ) {
-         for (BakedQuad quad : quads) {
-+            if (!quad.hasAmbientOcclusion()) {
-+                renderModelQuadFlat(level, state, pos, -1, overlayCoords, true, poseStack, output, quad, storage);
-+                continue;
-+            }
-             calculateShape(level, state, pos, quad, storage);
-+            storage.captureQuad(quad);
-             storage.calculate(level, state, pos, quad.direction(), quad.shade());
-             this.putQuadData(level, state, pos, output, poseStack.last(), quad, storage, overlayCoords);
-         }
-@@ -278,23 +_,45 @@
-         ModelBlockRenderer.CommonRenderStorage shapeState
-     ) {
-         for (BakedQuad quad : quads) {
-+            renderModelQuadFlat(level, state, pos, lightCoords, overlayCoords, checkLight, poseStack, output, quad, shapeState);
-+        }
-+    }
-+
-+    private void renderModelQuadFlat(
-+            BlockAndTintGetter level,
-+            BlockState state,
-+            BlockPos pos,
-+            int lightCoords,
-+            int overlayCoords,
-+            boolean checkLight,
-+            PoseStack poseStack,
-+            BakedQuadOutput output,
-+            BakedQuad quad,
-+            ModelBlockRenderer.CommonRenderStorage shapeState
-+    ) {
-+        {
-             if (checkLight) {
-                 calculateShape(level, state, pos, quad, shapeState);
-                 BlockPos lightPos = (BlockPos)(shapeState.faceCubic ? shapeState.scratchPos.setWithOffset(pos, quad.direction()) : pos);
-                 lightCoords = shapeState.cache.getLightCoords(state, level, lightPos);
-             }
- 
--            float directionalBrightness = level.getShade(quad.direction(), quad.shade());
--            shapeState.brightness.setAll(directionalBrightness);
-+            net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.applyFlatQuadBrightness(level, quad, shapeState);
-             shapeState.lightmap.setAll(lightCoords);
-             this.putQuadData(level, state, pos, output, poseStack.last(), quad, shapeState, overlayCoords);
+@@ -144,6 +_,17 @@
          }
      }
  
-+    /// @deprecated Neo: use [#renderModel(PoseStack.Pose, BakedQuadOutput, BlockStateModel, int, int, int, net.minecraft.world.level.BlockAndTintGetter, BlockPos, BlockState)] instead
-+    @Deprecated
-     public static void renderModel(PoseStack.Pose pose, BakedQuadOutput output, BlockStateModel model, int tintColor, int lightCoords, int overlayCoords) {
-+        renderModel(pose, output, model, tintColor, lightCoords, overlayCoords, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
++    private boolean shouldRenderFace(BlockAndTintGetter level, BlockPos pos, BlockState state, Direction direction, BlockPos neighborPos) {
++        if (!this.cull) {
++            return true;
++        } else {
++            BlockState neighborState = level.getBlockState(neighborPos);
++            return Block.shouldRenderFace(level, pos, state, neighborState, direction);
++        }
 +    }
 +
-+    public static void renderModel(PoseStack.Pose pose, BakedQuadOutput output, BlockStateModel model, int tintColor, int lightCoords, int overlayCoords, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, BlockState state) {
-         QuadLightmapCoords wrappedLightmapCoords = QuadLightmapCoords.create(lightCoords);
- 
--        for (BlockModelPart part : model.collectParts(RandomSource.create(42L))) {
-+        for (BlockModelPart part : model.collectParts(level, pos, state, RandomSource.create(42L))) {
-             for (Direction direction : DIRECTIONS) {
-                 renderQuadList(pose, output, tintColor, part.getQuads(direction), wrappedLightmapCoords, overlayCoords);
-             }
-@@ -636,6 +_,9 @@
- 
-         public AmbientOcclusionRenderStorage() {
-         }
-+
-+        // Neo: Call this before calling calculate if the render storage is an EnhancedAoRenderStorage!
-+        public void captureQuad(BakedQuad quad) {}
- 
-         public void calculate(BlockAndTintGetter level, BlockState state, BlockPos centerPosition, Direction direction, boolean shade) {
-             BlockPos basePosition = this.faceCubic ? centerPosition.relative(direction) : centerPosition;
++    /** @deprecated Neo: use {@link #shouldRenderFace(BlockAndTintGetter, BlockPos, BlockState, Direction, BlockPos)} instead */
++    @Deprecated
+     private boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos) {
+         if (!this.cull) {
+             return true;

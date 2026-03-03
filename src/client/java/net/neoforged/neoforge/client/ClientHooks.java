@@ -89,6 +89,7 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
@@ -108,6 +109,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
@@ -135,6 +137,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
@@ -809,11 +812,12 @@ public class ClientHooks {
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
             Function<ChunkSectionLayer, VertexConsumer> getOrCreateBuilder,
             RenderSectionRegion region,
-            PoseStack transformation) {
+            ModelBlockRenderer blockRenderer,
+            BlockPos sectionOrigin) {
         if (additionalRenderers.isEmpty()) {
             return;
         }
-        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, transformation);
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, blockRenderer, sectionOrigin);
         for (final var renderer : additionalRenderers) {
             renderer.render(context);
         }
@@ -1063,5 +1067,14 @@ public class ClientHooks {
             // default, accept all whose namespace or path match
             return SharedSuggestionProvider.matchesSubStr(searchText, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(searchText, id.getPath());
         }
+    }
+
+    @ApiStatus.Internal
+    public static Map<Fluid, ChunkSectionLayer> appendModdedFluidRenderLayers(TextureAtlas blockAtlas, Map<Fluid, ChunkSectionLayer> vanillaLayers) {
+        Map<Fluid, ChunkSectionLayer> layersByFluid = new HashMap<>(vanillaLayers);
+        for (Fluid fluid : BuiltInRegistries.FLUID) {
+            layersByFluid.computeIfAbsent(fluid, key -> IClientFluidTypeExtensions.of(key).computeRenderLayer(key, blockAtlas));
+        }
+        return Map.copyOf(layersByFluid);
     }
 }

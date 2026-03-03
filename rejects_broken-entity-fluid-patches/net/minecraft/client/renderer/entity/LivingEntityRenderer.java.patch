@@ -1,0 +1,2 @@
+-        state.isInWater = entity.isInWater();
++        state.isInWater = entity.isInWater() || entity.isInFluidType((fluidType, height) -> entity.canSwimInFluidType(fluidType));

@@ -1,28 +1,20 @@
 --- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
 +++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
-@@ -59,7 +_,7 @@
+@@ -65,7 +_,7 @@
              MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
              BlockState blockState = movingBlockRenderState.blockState;
              BlockStateModel model = blockRenderDispatcher.getBlockModel(blockState);
 -            if (model.hasTranslucency() == translucent) {
-+            if (model.hasTranslucency(movingBlockRenderState.level, movingBlockRenderState.blockPos, blockState) == translucent) {
-                 List<BlockModelPart> parts = model.collectParts(RandomSource.create(blockState.getSeed(movingBlockRenderState.randomSeedPos)));
-                 PoseStack poseStack = new PoseStack();
++            if (model.hasTranslucency(movingBlockRenderState, movingBlockRenderState.blockPos, blockState) == translucent) {
+                 poseStack.setIdentity();
                  poseStack.mulPose(submit.pose());
-@@ -90,13 +_,13 @@
-     ) {
-         for (SubmitNodeStorage.BlockSubmit submit : nodeCollection.getBlockSubmits()) {
-             BlockStateModel model = blockRenderDispatcher.getBlockModel(submit.state());
--            if (model.hasTranslucency() == translucent) {
-+            if (model.hasTranslucency(net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO, submit.state()) == translucent) {
-                 this.poseStack.pushPose();
-                 this.poseStack.last().set(submit.pose());
--                blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, bufferSource, submit.lightCoords(), submit.overlayCoords());
-+                blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, bufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
-                 if (submit.outlineColor() != 0) {
-                     outlineBufferSource.setColor(submit.outlineColor());
--                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords());
-+                    blockRenderDispatcher.renderSingleBlock(submit.state(), this.poseStack, outlineBufferSource, submit.lightCoords(), submit.overlayCoords(), net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
-                 }
+                 BlockQuadOutput blockOutput = ModelBlockRenderer.forceOpaque(cutoutLeaves, blockState) ? solidOutput : output;
+@@ -118,7 +_,7 @@
+                 quadInstance.setOverlayCoords(submit.overlayCoords());
+                 this.random.setSeed(42L);
  
-                 this.poseStack.popPose();
+-                for (BlockModelPart part : submit.model().collectParts(this.random)) {
++                for (BlockModelPart part : submit.model().collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), this.random)) {
+                     putPartQuads(part, submit.pose(), quadInstance, submit.tintLayers(), buffer, outlineBuffer);
+                 }
+             }

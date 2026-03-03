@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -140,7 +_,10 @@
+@@ -139,7 +_,10 @@
                  this.handleChatInput(this.input.getValue(), true);
                  if (this.closeOnSubmit) {
                      this.exitReason = ChatScreen.ExitReason.DONE;
