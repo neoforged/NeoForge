@@ -62,7 +62,7 @@
 @@ -214,6 +_,11 @@
      }
  
-     private static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
+     public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
 +        recalculateWinding(positions, uvs, direction, null, null);
 +    }
 +

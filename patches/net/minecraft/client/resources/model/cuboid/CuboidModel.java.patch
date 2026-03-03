@@ -10,7 +10,7 @@
 +    java.util.Map<String, Boolean> partVisibility
  ) implements UnbakedModel {
      @VisibleForTesting
-     static final Gson GSON = new GsonBuilder()
+     public static final Gson GSON = new GsonBuilder()
 +        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())
          .registerTypeAdapter(CuboidModel.class, new CuboidModel.Deserializer())
          .registerTypeAdapter(CuboidModelElement.class, new CuboidModelElement.Deserializer())

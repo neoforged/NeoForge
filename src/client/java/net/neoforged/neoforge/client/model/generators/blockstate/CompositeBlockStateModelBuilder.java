@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.model.generators.blockstate;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.VariantMutator;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 

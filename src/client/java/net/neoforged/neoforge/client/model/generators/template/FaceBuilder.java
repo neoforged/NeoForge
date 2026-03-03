@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.model.generators.template;
 import com.google.common.base.Preconditions;
 import com.mojang.math.Quadrant;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -20,7 +20,7 @@ public final class FaceBuilder {
     private int tintindex = -1;
     @Nullable
     private TextureSlot texture = null;
-    private BlockElementFace.@Nullable UVs uvs;
+    private CuboidFace.@Nullable UVs uvs;
     private Quadrant rotation = Quadrant.R0;
     private int color = 0xFFFFFFFF;
     private int lightEmission = 0;
@@ -59,7 +59,7 @@ public final class FaceBuilder {
      * Sets the texture uv mapping for this face.
      */
     public FaceBuilder uvs(float u1, float v1, float u2, float v2) {
-        this.uvs = new BlockElementFace.UVs(u1, v1, u2, v2);
+        this.uvs = new CuboidFace.UVs(u1, v1, u2, v2);
         return this;
     }
 
@@ -109,11 +109,11 @@ public final class FaceBuilder {
         return this;
     }
 
-    BlockElementFace build() {
+    CuboidFace build() {
         if (this.texture == null) {
             throw new IllegalStateException("A model face must have a texture");
         }
-        return new BlockElementFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.lightEmission, this.hasAmbientOcclusion), new MutableObject<>());
+        return new CuboidFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.lightEmission, this.hasAmbientOcclusion), new MutableObject<>());
     }
 
     FaceBuilder copy() {

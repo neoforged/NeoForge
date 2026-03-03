@@ -59,9 +59,6 @@
   "net/minecraft/client/resources/model/cuboid/UnbakedCuboidGeometry": [
     "net/neoforged/neoforge/client/model/ExtendedUnbakedGeometry"
   ],
-  "net/minecraft/client/resources/model/geometry/QuadCollection$Builder": [
-    "net/neoforged/neoforge/client/extensions/QuadCollectionBuilderExtension"
-  ],
   "net/minecraft/client/resources/model/geometry/UnbakedGeometry": [
     "net/neoforged/neoforge/client/extensions/UnbakedGeometryExtension"
   ],

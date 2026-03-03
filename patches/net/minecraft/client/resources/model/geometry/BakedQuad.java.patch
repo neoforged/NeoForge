@@ -6,7 +6,7 @@
  
 +/// @param hasAmbientOcclusion `false` to force-disable AO for this quad
 +///                            or `true` to use the behavior dictated by
-+///                            [net.neoforged.neoforge.client.extensions.BlockModelPartExtension#ambientOcclusion].
++///                            [net.neoforged.neoforge.client.extensions.BlockStateModelPartExtension#ambientOcclusion].
 +@OnlyIn(Dist.CLIENT)
  @OnlyIn(Dist.CLIENT)
  public record BakedQuad(

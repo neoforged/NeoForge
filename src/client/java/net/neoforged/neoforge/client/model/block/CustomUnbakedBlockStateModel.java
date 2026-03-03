@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 
 /**

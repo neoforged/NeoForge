@@ -151,24 +151,24 @@
 +    }
 +
 +    /**
-+     * Neo: Submit a custom {@link net.minecraft.client.gui.render.state.GuiElementRenderState} for rendering
++     * Neo: Submit a custom {@link net.minecraft.client.renderer.state.gui.GuiElementRenderState} for rendering
 +     */
-+    public void submitGuiElementRenderState(net.minecraft.client.gui.render.state.GuiElementRenderState renderState) {
++    public void submitGuiElementRenderState(net.minecraft.client.renderer.state.gui.GuiElementRenderState renderState) {
 +        this.guiRenderState.submitGuiElement(renderState);
 +    }
 +
 +    /**
-+     * Neo: Submit a custom {@link net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState} for rendering
++     * Neo: Submit a custom {@link net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState} for rendering
 +     *
 +     * @see net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent
 +     */
-+    public void submitPictureInPictureRenderState(net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState renderState) {
++    public void submitPictureInPictureRenderState(net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState renderState) {
 +        this.guiRenderState.submitPicturesInPictureState(renderState);
 +    }
 +
 +    /**
-+     * Neo: Returns the top-most scissor rectangle, if present, for use with custom {@link net.minecraft.client.gui.render.state.GuiElementRenderState}s
-+     * and {@link net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState}s
++     * Neo: Returns the top-most scissor rectangle, if present, for use with custom {@link net.minecraft.client.renderer.state.gui.GuiElementRenderState}s
++     * and {@link net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState}s
 +     */
 +    @Nullable
 +    public ScreenRectangle peekScissorStack() {
