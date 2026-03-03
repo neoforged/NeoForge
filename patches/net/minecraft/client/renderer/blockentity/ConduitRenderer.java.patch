@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
-@@ -170,4 +_,10 @@
+@@ -172,4 +_,10 @@
              poseStack.popPose();
          }
      }

@@ -15,7 +15,7 @@
 +    public static boolean hasDifferentLightProperties(net.minecraft.world.level.BlockGetter level, BlockPos pos, BlockState oldState, BlockState newState) {
          return newState == oldState
              ? false
-             : newState.getLightBlock() != oldState.getLightBlock()
+             : newState.getLightDampening() != oldState.getLightDampening()
 -                || newState.getLightEmission() != oldState.getLightEmission()
 +                || newState.getLightEmission(level, pos) != oldState.getLightEmission(level, pos)
                  || newState.useShapeForLightOcclusion()

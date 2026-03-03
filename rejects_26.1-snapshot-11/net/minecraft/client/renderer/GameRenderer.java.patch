@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/renderer/GameRenderer.java
++++ b/net/minecraft/client/renderer/GameRenderer.java
+@@ -473,7 +477,8 @@
+                 }
+             } else if (resourcesLoaded && this.minecraft.screen != null) {
+                 try {
+-                    this.minecraft.screen.renderWithTooltipAndSubtitles(graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
++                    // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
++                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
+                 } catch (Throwable var14) {
+                     CrashReport report = CrashReport.forThrowable(var14, "Rendering screen");
+                     CrashReportCategory category = report.addCategory("Screen render details");
+@@ -711,6 +716,9 @@
+                 !shouldCreateBossFog,
+                 chunkSectionsToRender
+             );
++        profiler.popPush("neoforge_render_after_level");
++        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, modelViewMatrix, levelRenderer.getRenderableSections()));
+         profiler.popPush("hand");
+         boolean isSleeping = cameraState.entityRenderState.isSleeping;
+         this.hudProjection.setupPerspective(0.05F, 100.0F, cameraState.hudFov, this.minecraft.getWindow().getWidth(), this.minecraft.getWindow().getHeight());

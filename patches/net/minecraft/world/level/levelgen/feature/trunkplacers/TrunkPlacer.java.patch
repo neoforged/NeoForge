@@ -8,6 +8,6 @@
 +            return;
 +        }
 +
-         BlockState blockBelowTrunk = config.belowTrunkProvider.getState(level, random, pos);
+         BlockState blockBelowTrunk = config.belowTrunkProvider.getOptionalState(level, random, pos);
          if (blockBelowTrunk != null) {
              trunkSetter.accept(pos, blockBelowTrunk);

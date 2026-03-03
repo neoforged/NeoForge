@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
++++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
+@@ -33,7 +33,7 @@
+     private int tintCacheValue;
+ 
+     public ModelBlockRenderer(boolean ambientOcclusion, boolean cull, BlockColors blockColors) {
+-        this.lighter = new BlockModelLighter();
++        this.lighter = net.neoforged.neoforge.client.model.ao.EnhancedBlockModelLighter.newInstance();
+         this.ambientOcclusion = ambientOcclusion;
+         this.cull = cull;
+         this.blockColors = blockColors;

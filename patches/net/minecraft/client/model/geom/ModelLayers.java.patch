@@ -15,7 +15,7 @@
 +        return new ModelLayerLocation(location.withPrefix("sign/wall/"), "main");
      }
  
-     public static ModelLayerLocation createHangingSignModelName(WoodType type, HangingSignRenderer.AttachmentType attachmentType) {
+     public static ModelLayerLocation createHangingSignModelName(WoodType type, HangingSignBlock.Attachment attachmentType) {
 -        return createLocation("hanging_sign/" + type.name() + "/" + attachmentType.getSerializedName(), "main");
 +        Identifier location = Identifier.parse(type.name());
 +        return new ModelLayerLocation(location.withPrefix("hanging_sign/").withSuffix("/" + attachmentType.getSerializedName()), "main");

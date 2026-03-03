@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -157,6 +_,7 @@
+@@ -155,6 +_,7 @@
      @Override
      public void tick() {
          if (this.fadeOutStart == -1L && this.reload.isDone() && this.isReadyToFadeOut()) {
@@ -8,7 +8,7 @@
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());
-@@ -164,7 +_,6 @@
+@@ -162,7 +_,6 @@
                  this.onFinish.accept(Optional.of(var2));
              }
  

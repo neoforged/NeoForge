@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelDiscovery.java
 +++ b/net/minecraft/client/resources/model/ModelDiscovery.java
-@@ -55,7 +_,13 @@
+@@ -60,7 +_,13 @@
      }
  
      private ModelDiscovery.ModelWrapper getOrCreateModel(Identifier id) {
@@ -15,7 +15,7 @@
      }
  
      private ModelDiscovery.ModelWrapper createAndQueueWrapper(Identifier id, UnbakedModel rawModel) {
-@@ -64,6 +_,8 @@
+@@ -69,6 +_,8 @@
          if (!isRoot) {
              this.parentDiscoveryQueue.add(result);
          }
@@ -24,7 +24,7 @@
  
          return result;
      }
-@@ -143,16 +_,18 @@
+@@ -148,16 +_,18 @@
          private static final ModelDiscovery.Slot<TextureSlots> KEY_TEXTURE_SLOTS = slot(4);
          private static final ModelDiscovery.Slot<Material.Baked> KEY_PARTICLE_SPRITE = slot(5);
          private static final ModelDiscovery.Slot<QuadCollection> KEY_DEFAULT_GEOMETRY = slot(6);
@@ -46,7 +46,7 @@
              return new ModelDiscovery.Slot<>(index);
          }
  
-@@ -224,15 +_,20 @@
+@@ -229,15 +_,20 @@
  
          private QuadCollection bakeDefaultState(TextureSlots textureSlots, ModelBaker baker, ModelState state) {
              QuadCollection result = this.getSlot(KEY_DEFAULT_GEOMETRY);

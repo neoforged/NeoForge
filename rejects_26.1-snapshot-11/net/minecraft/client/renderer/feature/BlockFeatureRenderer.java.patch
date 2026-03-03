@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
++++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
+@@ -118,7 +118,7 @@
+                 quadInstance.setOverlayCoords(submit.overlayCoords());
+                 this.random.setSeed(42L);
+ 
+-                for (BlockModelPart part : submit.model().collectParts(this.random)) {
++                for (BlockModelPart part : submit.model().collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), this.random)) {
+                     putPartQuads(part, submit.pose(), quadInstance, submit.tintLayers(), buffer, outlineBuffer);
+                 }
+             }

@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
+@@ -257,4 +257,11 @@
+         this.standingFlagModel.setupAnim(0.0F);
+         this.standingFlagModel.root().getExtentsForGui(poseStack, output);
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(BannerBlockEntity blockEntity) {
++        BlockPos pos = blockEntity.getBlockPos();
++        boolean standing = blockEntity.getBlockState().getBlock() instanceof BannerBlock;
++        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos, standing ? pos.above() : pos.below());
++    }
+ }

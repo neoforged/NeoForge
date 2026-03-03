@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -140,7 +_,7 @@
+@@ -142,7 +_,7 @@
      private final @Nullable EndFlashState endFlashState;
      private final Minecraft minecraft = Minecraft.getInstance();
      private final List<AbstractClientPlayer> players = Lists.newArrayList();
@@ -9,7 +9,7 @@
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private int skyFlashTime;
      private final Object2ObjectArrayMap<ColorResolver, BlockTintCache> tintCaches = Util.make(new Object2ObjectArrayMap<>(3), cache -> {
-@@ -148,6 +_,7 @@
+@@ -150,6 +_,7 @@
          cache.put(BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.WATER_COLOR_RESOLVER)));
@@ -17,7 +17,7 @@
      });
      private final ClientChunkCache chunkSource;
      private final Deque<Runnable> lightUpdateQueue = Queues.newArrayDeque();
-@@ -159,6 +_,7 @@
+@@ -161,6 +_,7 @@
      private final EnvironmentAttributeSystem environmentAttributes;
      private final int seaLevel;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
@@ -25,7 +25,7 @@
  
      public void handleBlockChangedAck(int sequence) {
          if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -204,10 +_,15 @@
+@@ -206,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -41,7 +41,7 @@
              }
  
              return success;
-@@ -241,6 +_,7 @@
+@@ -243,6 +_,7 @@
          this.serverSimulationDistance = serverSimulationDistance;
          this.environmentAttributes = this.addEnvironmentAttributeLayers(EnvironmentAttributeSystem.builder()).build();
          this.updateSkyBrightness();
@@ -49,7 +49,7 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-@@ -350,7 +_,11 @@
+@@ -352,7 +_,11 @@
          entity.setOldPosAndRot();
          entity.tickCount++;
          Profiler.get().push(entity.typeHolder()::getRegisteredName);
@@ -62,7 +62,7 @@
          Profiler.get().pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -401,8 +_,10 @@
+@@ -412,8 +_,10 @@
      }
  
      public void addEntity(Entity entity) {
@@ -73,7 +73,7 @@
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -549,6 +_,13 @@
+@@ -560,6 +_,13 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -87,7 +87,7 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -558,6 +_,12 @@
+@@ -569,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -100,7 +100,7 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -767,7 +_,7 @@
+@@ -778,7 +_,7 @@
          return this.players;
      }
  
@@ -109,7 +109,7 @@
          return this.dragonParts;
      }
  
-@@ -863,7 +_,7 @@
+@@ -874,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos pos, BlockState blockState) {
@@ -118,7 +118,7 @@
              VoxelShape shape = blockState.getShape(this, pos);
              double density = 0.25;
              shape.forAllBoxes(
-@@ -889,7 +_,7 @@
+@@ -900,7 +_,7 @@
                                      .add(
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
@@ -127,7 +127,7 @@
                                      );
                              }
                          }
-@@ -899,9 +_,16 @@
+@@ -910,9 +_,16 @@
          }
      }
  
@@ -145,7 +145,7 @@
              int x = pos.getX();
              int y = pos.getY();
              int z = pos.getZ();
-@@ -934,7 +_,7 @@
+@@ -945,7 +_,7 @@
                  xp = x + shape.maxX + 0.1F;
              }
  
@@ -154,7 +154,7 @@
          }
      }
  
-@@ -1053,6 +_,7 @@
+@@ -1066,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty difficulty) {
@@ -162,7 +162,7 @@
              this.difficulty = difficulty;
          }
  
-@@ -1099,6 +_,9 @@
+@@ -1112,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -172,7 +172,7 @@
              }
          }
  
-@@ -1112,10 +_,26 @@
+@@ -1125,10 +_,26 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:

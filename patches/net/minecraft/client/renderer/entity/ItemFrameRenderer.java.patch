@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
-@@ -75,6 +_,7 @@
+@@ -77,6 +_,7 @@
              poseStack.translate(0.0F, 0.0F, 0.4375F);
          }
  
@@ -8,7 +8,7 @@
          if (state.mapId != null) {
              int rotation = state.rotation % 4 * 2;
              poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 360.0F / 8.0F));
-@@ -91,6 +_,7 @@
+@@ -93,6 +_,7 @@
              poseStack.scale(0.5F, 0.5F, 0.5F);
              state.item.submit(poseStack, submitNodeCollector, lightVal, OverlayTexture.NO_OVERLAY, state.outlineColor);
          }
@@ -16,7 +16,7 @@
  
          poseStack.popPose();
      }
-@@ -132,7 +_,7 @@
+@@ -128,7 +_,7 @@
          if (!itemStack.isEmpty()) {
              MapId framedMapId = entity.getFramedMapId(itemStack);
              if (framedMapId != null) {

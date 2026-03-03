@@ -1,0 +1,110 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
+@@ -461,6 +460,9 @@
+         }
+ 
+         Util.timeSource = RenderSystem.initBackendSystem();
++
++        // Neo: Enable GL debug labels and synchronous GL debug output via FML config
++        boolean enableGlDebug = net.neoforged.fml.loading.FMLConfig.getBoolConfigValue(net.neoforged.fml.loading.FMLConfig.ConfigValue.DEBUG_OPENGL);
+         GpuBackend[] backends = new GpuBackend[]{new GlBackend()};
+         this.window = new Window(
+             this,
+@@ -469,7 +471,7 @@
+             this.createTitle(),
+             backends,
+             (id, type) -> this.getShaderManager().getShader(id, type),
+-            new GpuDebugOptions(this.options.glDebugVerbosity, SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS, gameConfig.game.renderDebugLabels)
++            new GpuDebugOptions(this.options.glDebugVerbosity, SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS || enableGlDebug, gameConfig.game.renderDebugLabels || enableGlDebug)
+         );
+         this.setWindowActive(true);
+         this.window.setWindowCloseCallback(new Runnable() {
+@@ -495,14 +497,16 @@
+             LOGGER.error("Couldn't set icon", (Throwable)var19);
+         }
+ 
++        // FORGE: Move mouse and keyboard handler setup further below
+         this.mouseHandler = new MouseHandler(this);
+-        this.mouseHandler.setup(this.window);
+         this.keyboardHandler = new KeyboardHandler(this);
+-        this.keyboardHandler.setup(this.window);
+         this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
+         LOGGER.info("Using optional rendering extensions: {}", String.join(", ", RenderSystem.getDevice().getEnabledExtensions()));
+-        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
++        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
+         this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
++        net.neoforged.neoforge.client.loading.ClientModLoader.finish(this.resourcePackRepository, this.resourceManager);
++        //Move client bootstrap to after mod loading so that events can be fired for it.
++        ClientBootstrap.bootstrap();
+         this.resourcePackRepository.reload();
+         this.options.loadSelectedResourcePacks(this.resourcePackRepository);
+         this.languageManager = new LanguageManager(this.options.languageCode, languageData -> {
+@@ -541,6 +545,7 @@
+         RenderSystem.setupDefaultState();
+         this.window.setErrorSection("Post startup");
+         this.blockColors = BlockColors.createDefault();
++        net.neoforged.neoforge.client.model.UnbakedModelParser.init();
+         this.modelManager = new ModelManager(this.blockColors, this.atlasManager, this.playerSkinRenderCache);
+         this.resourceManager.registerReloadListener(this.modelManager);
+         EquipmentAssetManager equipmentAssets = new EquipmentAssetManager();
+@@ -596,6 +601,7 @@
+         this.resourceManager.registerReloadListener(this.particleResources);
+         this.particleEngine = new ParticleEngine(this.level, this.particleResources);
+         this.particleResources.onReload(this.particleEngine::clearParticles);
++        net.neoforged.neoforge.client.ClientHooks.onRegisterParticleProviders(this.particleResources);
+         this.waypointStyles = new WaypointStyleManager();
+         this.resourceManager.registerReloadListener(this.waypointStyles);
+         this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.renderBuffers, this.blockRenderer);
+@@ -612,6 +618,9 @@
+         this.gpuWarnlistManager = new GpuWarnlistManager();
+         this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
+         this.resourceManager.registerReloadListener(this.regionalCompliancies);
++        // NEO: Moved keyboard and mouse handler setup below ingame gui creation to prevent NPEs in them.
++        this.mouseHandler.setup(this.window);
++        this.keyboardHandler.setup(this.window);
+         this.gui = new Gui(this);
+         RealmsClient realmsClient = RealmsClient.getOrCreate(this);
+         this.realmsDataFetcher = new RealmsDataFetcher(realmsClient);
+@@ -645,6 +654,7 @@
+             }
+         }
+ 
++        net.neoforged.neoforge.client.ClientHooks.initClientHooks(this, this.resourceManager);
+         this.window.updateVsync(this.options.enableVsync().get());
+         this.window.updateRawMouseInput(this.options.rawMouseInput().get());
+         this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
+@@ -670,8 +680,8 @@
+             .createReload(Util.backgroundExecutor().forName("resourceLoad"), this, RESOURCE_RELOAD_INITIAL_TASK, packs);
+         GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
+         Minecraft.GameLoadCookie loadCookie = new Minecraft.GameLoadCookie(realmsClient, gameConfig.quickPlay);
+-        this.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
+-            if (SharedConstants.IS_RUNNING_IN_IDE) {
++        this.setOverlay(net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
++            if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
+                 this.selfTest();
+             }
+ 
+@@ -1319,7 +1351,9 @@
+             .clearColorAndDepthTextures(mainRenderTarget.getColorTexture(), 0, mainRenderTarget.getDepthTexture(), 1.0);
+         profiler.popPush("gameRenderer");
+         if (!this.noRender) {
++            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePre(this.deltaTracker);
+             this.gameRenderer.render(this.deltaTracker, renderLevel);
++            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(this.deltaTracker);
+         }
+ 
+         profiler.popPush("blit");
+@@ -1414,10 +1448,13 @@
+         this.window.setGuiScale(guiScale);
+         if (this.screen != null) {
+             this.screen.resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++            net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
+         }
+ 
+         RenderTarget mainRenderTarget = this.getMainRenderTarget();
++        if (mainRenderTarget != null)
+         mainRenderTarget.resize(this.window.getWidth(), this.window.getHeight());
++        if (this.gameRenderer != null)
+         this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
+         this.mouseHandler.setIgnoreFirstMove();
+     }

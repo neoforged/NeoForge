@@ -1,0 +1,24 @@
+++++ Target missing
+--- a/net/minecraft/client/renderer/block/model/SingleVariant.java
++++ b/net/minecraft/client/renderer/block/model/SingleVariant.java
+@@ -27,13 +27,19 @@
+     }
+ 
+     @Override
++    public Object createGeometryKey(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random) {
++        return this;
++    }
++
++    @Override
+     public boolean hasTranslucency() {
+         return this.model.hasTranslucency();
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+     public record Unbaked(Variant variant) implements BlockStateModel.Unbaked {
+-        public static final Codec<SingleVariant.Unbaked> CODEC = Variant.CODEC.xmap(SingleVariant.Unbaked::new, SingleVariant.Unbaked::variant);
++        public static final com.mojang.serialization.MapCodec<SingleVariant.Unbaked> MAP_CODEC = Variant.MAP_CODEC.xmap(SingleVariant.Unbaked::new, SingleVariant.Unbaked::variant);
++        public static final Codec<SingleVariant.Unbaked> CODEC = MAP_CODEC.codec();
+ 
+         @Override
+         public BlockStateModel bake(ModelBaker modelBakery) {

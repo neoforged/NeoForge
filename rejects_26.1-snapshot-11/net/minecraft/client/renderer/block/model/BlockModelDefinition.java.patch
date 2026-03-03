@@ -1,0 +1,42 @@
+++++ Target missing
+--- a/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
++++ b/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
+@@ -27,9 +27,10 @@
+ @OnlyIn(Dist.CLIENT)
+ public record BlockModelDefinition(
+     Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart
++    , Optional<net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition> customDefinition
+ ) {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public static final Codec<BlockModelDefinition> CODEC = RecordCodecBuilder.<BlockModelDefinition>create(
++    public static final com.mojang.serialization.MapCodec<BlockModelDefinition> VANILLA_CODEC = RecordCodecBuilder.<BlockModelDefinition>mapCodec(
+             i -> i.group(
+                     BlockModelDefinition.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockModelDefinition::simpleModels),
+                     BlockModelDefinition.MultiPartDefinition.CODEC.optionalFieldOf("multipart").forGetter(BlockModelDefinition::multiPart)
+@@ -41,8 +42,26 @@
+                 ? DataResult.error(() -> "Neither 'variants' nor 'multipart' found")
+                 : DataResult.success(o)
+         );
++    public static final Codec<BlockModelDefinition> CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeDefinitionCodec();
++
++    public BlockModelDefinition(Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart) {
++        this(simpleModels, multiPart, Optional.empty());
++    }
++
++    // Neo: convenience constructor for datagen of custom definitions
++    public BlockModelDefinition(net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition customDefinition) {
++        this(Optional.empty(), Optional.empty(), Optional.of(customDefinition));
++    }
+ 
+     public Map<BlockState, BlockStateModel.UnbakedRoot> instantiate(StateDefinition<Block, BlockState> stateDefinition, Supplier<String> source) {
++        if (this.customDefinition.isPresent()) {
++            return this.customDefinition.get().instantiate(stateDefinition, source);
++        }
++        return this.instantiateVanilla(stateDefinition, source);
++    }
++
++    // Neo: split off original implementation as a separate method to allow custom definitions to instantiate the original definition and post-process the result
++    public Map<BlockState, BlockStateModel.UnbakedRoot> instantiateVanilla(StateDefinition<Block, BlockState> stateDefinition, Supplier<String> source) {
+         Map<BlockState, BlockStateModel.UnbakedRoot> matchedStates = new IdentityHashMap<>();
+         this.simpleModels.ifPresent(s -> s.instantiate(stateDefinition, source, (state, model) -> {
+             BlockStateModel.UnbakedRoot previousValue = matchedStates.put(state, model);

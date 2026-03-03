@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
+@@ -190,4 +190,13 @@
+         state.isTextFilteringEnabled = Minecraft.getInstance().isTextFilteringEnabled();
+         state.drawOutline = isOutlineVisible(blockEntity.getBlockPos());
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SignBlockEntity blockEntity) {
++        if (blockEntity.getBlockState().getBlock() instanceof net.minecraft.world.level.block.StandingSignBlock) {
++            BlockPos pos = blockEntity.getBlockPos();
++            return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.125, pos.getZ() + 1.0);
++        }
++        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
++    }
+ }

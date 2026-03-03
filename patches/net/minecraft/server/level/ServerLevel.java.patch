@@ -29,7 +29,7 @@
      }
  
      @Deprecated
-@@ -346,7 +_,11 @@
+@@ -354,7 +_,11 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
              if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
@@ -42,7 +42,7 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -384,7 +_,7 @@
+@@ -392,7 +_,7 @@
  
          this.handlingTick = false;
          profiler.pop();
@@ -51,7 +51,7 @@
          if (isActive) {
              this.resetEmptyTime();
          }
-@@ -421,7 +_,9 @@
+@@ -429,7 +_,9 @@
                                      }
  
                                      profiler.push("tick");
@@ -62,7 +62,7 @@
                                      profiler.pop();
                                  }
                              }
-@@ -561,6 +_,7 @@
+@@ -569,6 +_,7 @@
          BlockPos topPos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
          BlockPos belowPos = topPos.below();
          Biome biome = this.getBiome(topPos).value();
@@ -70,7 +70,7 @@
          if (biome.shouldFreeze(this, belowPos)) {
              this.setBlockAndUpdate(belowPos, Blocks.ICE.defaultBlockState());
          }
-@@ -763,15 +_,19 @@
+@@ -771,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -94,7 +94,7 @@
          }
      }
  
-@@ -809,7 +_,11 @@
+@@ -817,7 +_,11 @@
          entity.tickCount++;
          profiler.push(entity.typeHolder()::getRegisteredName);
          profiler.incrementCounter("tickNonPassenger");
@@ -107,7 +107,7 @@
          profiler.pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -872,6 +_,7 @@
+@@ -880,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -115,7 +115,7 @@
          }
      }
  
-@@ -961,6 +_,7 @@
+@@ -969,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer player) {
@@ -123,7 +123,7 @@
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -968,7 +_,8 @@
+@@ -976,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)existing, Entity.RemovalReason.DISCARDED);
          }
  
@@ -133,7 +133,7 @@
      }
  
      private boolean addEntity(Entity entity) {
-@@ -976,7 +_,12 @@
+@@ -984,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", entity.typeHolder().getRegisteredName());
              return false;
          } else {
@@ -147,7 +147,7 @@
          }
      }
  
-@@ -1017,6 +_,12 @@
+@@ -1025,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -160,7 +160,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1034,6 +_,12 @@
+@@ -1042,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -173,7 +173,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1092,6 +_,7 @@
+@@ -1100,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
@@ -181,7 +181,7 @@
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
-@@ -1130,6 +_,7 @@
+@@ -1138,6 +_,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos pos, Block sourceBlock) {
@@ -189,7 +189,7 @@
          this.updateNeighborsAt(pos, sourceBlock, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1140,6 +_,10 @@
+@@ -1148,6 +_,10 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
@@ -200,7 +200,7 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
-@@ -1186,7 +_,7 @@
+@@ -1194,7 +_,7 @@
          Explosion.BlockInteraction blockInteraction = switch (interactionType) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
@@ -209,7 +209,7 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-@@ -1194,6 +_,7 @@
+@@ -1202,6 +_,7 @@
          };
          Vec3 center = new Vec3(x, y, z);
          ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
@@ -217,7 +217,7 @@
          int blockCount = explosion.explode();
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
-@@ -1371,7 +_,7 @@
+@@ -1379,7 +_,7 @@
      }
  
      @Override
@@ -226,7 +226,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1898,8 +_,8 @@
+@@ -1906,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -237,7 +237,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -1919,25 +_,62 @@
+@@ -1927,25 +_,62 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String message = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

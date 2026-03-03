@@ -1,0 +1,16 @@
+++++ Target missing
+--- a/net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry.java
++++ b/net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry.java
+@@ -15,7 +15,11 @@
+ @OnlyIn(Dist.CLIENT)
+ public record SimpleUnbakedGeometry(List<BlockElement> elements) implements UnbakedGeometry, net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry {
+     @Override
+-    public QuadCollection bake(TextureSlots textures, ModelBaker modelBaker, ModelState modelState, ModelDebugName name) {
++    public QuadCollection bake(TextureSlots textures, ModelBaker modelBaker, ModelState modelState, ModelDebugName name, net.minecraft.util.context.ContextMap additionalProperties) {
++        var transform = additionalProperties.getOptional(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM);
++        if (transform != null) {
++            modelState = net.neoforged.neoforge.client.model.UnbakedElementsHelper.composeRootTransformIntoModelState(modelState, transform);
++        }
+         return bake(this.elements, textures, modelBaker, modelState, name);
+     }
+ 
