@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.renderer.block.BuiltInBlockModels;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
@@ -23,8 +29,23 @@ public final class RegisterBlockModelsEvent extends Event implements IModBusEven
         this.builder = builder;
     }
 
+    /// Register the given [BlockModel.Unbaked] for the given [Block]
+    public void register(BlockModel.Unbaked specialModel, Block block) {
+        this.builder.put(specialModel, block);
+    }
+
+    /// Register [BlockModel.Unbaked]s created by the given [BuiltInBlockModels.ModelFactory] for the given [Block]
+    public void register(BuiltInBlockModels.ModelFactory factory, Block block) {
+        this.builder.put(factory, block);
+    }
+
+    /// Register [BlockModel.Unbaked]s created by the given [BuiltInBlockModels.ModelFactory] for the two given [Block]s
+    public void register(BuiltInBlockModels.ModelFactory factory, Block blockOne, Block blockTwo) {
+        this.builder.put(factory, blockOne, blockTwo);
+    }
+
     /// Returns the [BuiltInBlockModels.Builder] to register the [BlockModel.Unbaked]s to
     public BuiltInBlockModels.Builder getBuilder() {
-        return builder;
+        return this.builder;
     }
 }
