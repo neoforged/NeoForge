@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
-@@ -42,18 +_,60 @@
+@@ -42,18 +_,64 @@
          return this.shared.hasTranslucency;
      }
  
@@ -22,7 +22,9 @@
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
++
 +        long seed = random.nextLong();
++
 +        for (BlockStateModel model : this.models) {
 +            random.setSeed(seed);
 +            model.collectParts(level, pos, state, random, output);
@@ -35,7 +37,9 @@
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
++
 +        long seed = random.nextLong();
++
 +        if (this.models.size() == 1) {
 +            random.setSeed(seed);
 +            return this.models.getFirst().createGeometryKey(level, pos, state, random);

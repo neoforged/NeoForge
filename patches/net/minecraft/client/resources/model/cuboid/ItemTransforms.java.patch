@@ -10,15 +10,15 @@
  ) {
 +    @Deprecated
 +    public ItemTransforms(
-+            ItemTransform thirdPersonLeftHand,
-+            ItemTransform thirdPersonRightHand,
-+            ItemTransform firstPersonLeftHand,
-+            ItemTransform firstPersonRightHand,
-+            ItemTransform head,
-+            ItemTransform gui,
-+            ItemTransform ground,
-+            ItemTransform fixed,
-+            ItemTransform fixedFromBottom
++        ItemTransform thirdPersonLeftHand,
++        ItemTransform thirdPersonRightHand,
++        ItemTransform firstPersonLeftHand,
++        ItemTransform firstPersonRightHand,
++        ItemTransform head,
++        ItemTransform gui,
++        ItemTransform ground,
++        ItemTransform fixed,
++        ItemTransform fixedFromBottom
 +    ) {
 +        this(thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom, com.google.common.collect.ImmutableMap.of());
 +    }
