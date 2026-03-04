@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/block/BuiltInBlockModels.java
++++ b/net/minecraft/client/renderer/block/BuiltInBlockModels.java
+@@ -388,6 +_,7 @@
+     public static Map<BlockState, BlockModel.Unbaked> createBlockModels(BlockColors blockColors) {
+         BuiltInBlockModels.Builder builder = new BuiltInBlockModels.Builder(blockColors);
+         addDefaults(builder);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RegisterBlockModelsEvent(builder));
+         return builder.build();
+     }
+ 

@@ -137,6 +137,10 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
         return target -> target.getName().equals(name);
     }
 
+    public <T extends Named> SerializablePredicate<T> nameStartsWith(String name) {
+        return target -> target.getName().startsWith(name);
+    }
+
     public SerializablePredicate<ClassInfo> classesWithSuperclass(String superClass) {
         return target -> target.hasSuperclass(superClass);
     }
@@ -161,6 +165,10 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
 
     public <T extends Named> SerializablePredicate<T> not(SerializablePredicate<T> pred) {
         return target -> !pred.test(target);
+    }
+
+    public <T extends Named> SerializablePredicate<T> or(SerializablePredicate<T> predOne, SerializablePredicate<T> predTwo) {
+        return target -> predOne.test(target) || predTwo.test(target);
     }
 
     public record AtGroup(String name, Modifier modifier, SerializablePredicate<ClassInfo> classMatch,

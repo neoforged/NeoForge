@@ -256,6 +256,13 @@ generateAccessTransformers {
             classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
             fieldsOfType(named('net/minecraft/resources/Identifier'))
     )
+
+    // Make all BuiltInBlockModels factory methods public
+    methodGroup(
+            'BuiltInBlockModels factory methods', PUBLIC,
+            named('net/minecraft/client/renderer/block/BuiltInBlockModels'),
+            or(or(nameStartsWith('create'), nameStartsWith('special')), named('combineSpecialAndBlockModels'))
+    )
 }
 
 tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
