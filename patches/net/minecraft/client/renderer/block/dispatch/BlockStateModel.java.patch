@@ -8,7 +8,7 @@
 +    @Deprecated
      void collectParts(RandomSource random, List<BlockStateModelPart> output);
  
-+    /// @deprecated Neo: Use [#particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource)].
++    /// @deprecated Neo: Use [#particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)].
 +    @Deprecated
      Material.Baked particleMaterial();
  
