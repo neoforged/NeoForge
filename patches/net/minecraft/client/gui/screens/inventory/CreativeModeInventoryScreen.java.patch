@@ -112,7 +112,7 @@
      protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
          if (selectedTab.showTitle()) {
 -            graphics.text(this.font, selectedTab.getDisplayName(), 8, 6, -12566464, false);
-+            graphics.drawString(this.font, selectedTab.getDisplayName(), 8, 6, selectedTab.getLabelColor(), false);
++            graphics.text(this.font, selectedTab.getDisplayName(), 8, 6, selectedTab.getLabelColor(), false);
          }
      }
  
@@ -168,7 +168,7 @@
 +        if (this.pages.size() != 1) {
 +            Component page = Component.literal(String.format("%d / %d", this.pages.indexOf(this.currentPage) + 1, this.pages.size()));
 +            // TODO 1.21.6: This previously bumped Z by 300, investigate if this needs nextStratum
-+            graphics.drawString(font, page.getVisualOrderText(), leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, -1);
++            graphics.text(font, page.getVisualOrderText(), leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, -1);
 +        }
 +
 +        for (CreativeModeTab creativemodetab : currentPage.getVisibleTabs()) {
@@ -197,6 +197,15 @@
 +                if (!tab.hasSearchBar() && tab.contains(itemStack)) {
                      linesToDisplay.add(i++, tab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
                  }
+             }
+@@ -735,7 +_,7 @@
+     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+         super.extractBackground(graphics, mouseX, mouseY, a);
+ 
+-        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
++        for (CreativeModeTab tab : currentPage.getVisibleTabs()) {
+             if (tab != selectedTab) {
+                 this.extractTabButton(graphics, mouseX, mouseY, tab);
              }
 @@ -766,10 +_,11 @@
          int yscr = this.topPos + 18;

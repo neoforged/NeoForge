@@ -33,6 +33,70 @@
      }
  
      public void resetTitleTimes() {
+@@ -202,28 +_,47 @@
+ 
+     public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+         if (!(this.minecraft.screen instanceof LevelLoadingScreen)) {
+-            if (!this.minecraft.options.hideGui) {
+-                this.extractCameraOverlays(graphics, deltaTracker);
+-                this.extractCrosshair(graphics, deltaTracker);
+-                graphics.nextStratum();
+-                this.extractHotbarAndDecorations(graphics, deltaTracker);
+-                this.extractEffects(graphics, deltaTracker);
+-                this.extractBossOverlay(graphics, deltaTracker);
+-            }
++            leftHeight = 39;
++            rightHeight = 39;
++            updateContextualBarRenderer();
++            layerManager.render(graphics, deltaTracker);
++        }
++    }
+ 
+-            this.extractSleepOverlay(graphics, deltaTracker);
++    private void registerVanillaLayers() {
++        java.util.function.BooleanSupplier guiVisible = () -> !this.minecraft.options.hideGui;
++        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean();
++        layerManager.add(CAMERA_OVERLAYS, this::extractCameraOverlays, guiVisible);
++        layerManager.add(CROSSHAIR, this::extractCrosshair, guiVisible);
++        layerManager.add(AFTER_CAMERA_DECORATIONS, (guiGraphics, deltaTracker) -> guiGraphics.nextStratum(), guiVisible);
++        // TODO: Split this up again into its pieces
++        layerManager.add(HOTBAR, this::extractHotbar, guiVisible);
++        layerManager.add(PLAYER_HEALTH, (guiGraphics, partialTick) -> extractHealthLevel(guiGraphics), survivalVisible);
++        layerManager.add(ARMOR_LEVEL, (guiGraphics, partialTick) -> extractArmorLevel(guiGraphics), survivalVisible);
++        layerManager.add(FOOD_LEVEL, (guiGraphics, partialTick) -> extractFoodLevel(guiGraphics), survivalVisible);
++        layerManager.add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> extractVehicleHealth(guiGraphics), guiVisible);
++        layerManager.add(AIR_LEVEL, (guiGraphics, partialTick) -> extractAirLevel(guiGraphics), survivalVisible);
++        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::extractContextualInfoBarBackground, guiVisible);
++        layerManager.add(EXPERIENCE_LEVEL, this::extractExperienceLevel, guiVisible);
++        layerManager.add(CONTEXTUAL_INFO_BAR, this::extractContextualInfoBar, guiVisible);
++        layerManager.add(SELECTED_ITEM_NAME, this::maybeExtractSelectedItemName, guiVisible);
++        layerManager.add(SPECTATOR_TOOLTIP, this::maybeExtractSpectatorTooltip, guiVisible);
++        layerManager.add(EFFECTS, this::extractEffects, guiVisible);
++        layerManager.add(BOSS_OVERLAY, this::extractBossOverlay, guiVisible);
++        layerManager.add(SLEEP_OVERLAY, this::extractSleepOverlay);
++        layerManager.add(DEMO_OVERLAY, this::extractDemoOverlay, guiVisible);
++        layerManager.add(SCOREBOARD_SIDEBAR, this::extractScoreboardSidebar, guiVisible);
++        layerManager.add(OVERLAY_MESSAGE, this::extractOverlayMessage, guiVisible);
++        layerManager.add(TITLE, this::extractTitle, guiVisible);
++        layerManager.add(CHAT, this::extractChat, guiVisible);
++        layerManager.add(TAB_LIST, this::extractTabList, guiVisible);
++        layerManager.add(SUBTITLE_OVERLAY, (graphics, _) -> {
+             if (!this.minecraft.options.hideGui) {
+-                this.extractDemoOverlay(graphics, deltaTracker);
+-                this.extractScoreboardSidebar(graphics, deltaTracker);
+-                this.extractOverlayMessage(graphics, deltaTracker);
+-                this.extractTitle(graphics, deltaTracker);
+-                this.extractChat(graphics, deltaTracker);
+-                this.extractTabList(graphics, deltaTracker);
+                 this.extractSubtitleOverlay(graphics, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
+             } else if (this.minecraft.screen != null && this.minecraft.screen.isInGameUi()) {
+                 this.extractSubtitleOverlay(graphics, true);
+             }
+-        }
++        });
+     }
+ 
+     private void extractBossOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 @@ -267,8 +_,12 @@
                  for (EquipmentSlot slot : EquipmentSlot.values()) {
                      ItemStack item = player.getItemBySlot(slot);
@@ -41,7 +105,7 @@
 -                        this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
 +                    if (equippable != null && equippable.slot() == slot) {
 +                        if (equippable.cameraOverlay().isPresent()) {
-+                            this.renderTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
++                            this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
 +                        }
 +
 +                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, this.minecraft.player, graphics, deltaTracker);
@@ -104,7 +168,7 @@
  
 -    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderHotbar(GuiGraphics graphics, DeltaTracker deltaTracker) {
++    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.extractHotbar(graphics);
          } else {
@@ -127,34 +191,34 @@
 +    }
  
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderContextualInfoBarBackground(GuiGraphics graphics, DeltaTracker deltaTracker)
++    private void extractContextualInfoBarBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker)
 +    {
          this.contextualInfoBar.getValue().extractBackground(graphics, deltaTracker);
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderExperienceLevel(GuiGraphics graphics, DeltaTracker deltaTracker) {
++    private void extractExperienceLevel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.hasExperience() && this.minecraft.player.experienceLevel > 0) {
              ContextualBarRenderer.extractExperienceLevel(graphics, this.minecraft.font, this.minecraft.player.experienceLevel);
          }
 +    }
  
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderContextualInfoBar(GuiGraphics graphics, DeltaTracker deltaTracker) {
++    private void extractContextualInfoBar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.contextualInfoBar.getValue().extractRenderState(graphics, deltaTracker);
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void maybeRenderSelectedItemName(GuiGraphics graphics, DeltaTracker deltaTracker) {
++    private void maybeExtractSelectedItemName(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
 -            this.extractSelectedItemName(graphics);
 -        } else if (this.minecraft.player.isSpectator()) {
-+            this.renderSelectedItemName(graphics, Math.max(this.leftHeight, this.rightHeight));
++            this.extractSelectedItemName(graphics, Math.max(this.leftHeight, this.rightHeight));
 +        }
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void maybeRenderSpectatorTooltip(GuiGraphics graphics, DeltaTracker deltaTracker) {
++    private void maybeExtractSpectatorTooltip(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +        // Neo: Note this is originally mutually exclusive with the condition in maybeRenderSelectedItemName
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
              this.spectatorGui.extractAction(graphics);
@@ -164,10 +228,10 @@
      }
  
      private void extractSelectedItemName(GuiGraphicsExtractor graphics) {
-+        renderSelectedItemName(graphics, 0);
++        extractSelectedItemName(graphics, 0);
 +    }
 +
-+    private void renderSelectedItemName(GuiGraphics graphics, int yShift) {
++    private void extractSelectedItemName(GuiGraphicsExtractor graphics, int yShift) {
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
 -            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().color());
 +            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
@@ -191,10 +255,10 @@
 -                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
-+                    graphics.drawStringWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
++                    graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
 +                } else {
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
-+                    graphics.drawStringWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
++                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
 +                }
              }
          }
@@ -205,13 +269,13 @@
  
 +    @Deprecated // Neo: Split up into different layers
      private void extractPlayerHealth(GuiGraphicsExtractor graphics) {
-+        renderHealthLevel(graphics);
-+        renderArmorLevel(graphics);
-+        renderFoodLevel(graphics);
-+        renderAirLevel(graphics);
++        extractHealthLevel(graphics);
++        extractArmorLevel(graphics);
++        extractFoodLevel(graphics);
++        extractAirLevel(graphics);
 +    }
 +
-+    private void renderHealthLevel(GuiGraphics graphics) {
++    private void extractHealthLevel(GuiGraphicsExtractor graphics) {
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
@@ -243,12 +307,12 @@
 +        }
 +    }
 +
-+    private void renderArmorLevel(GuiGraphics graphics) {
++    private void extractArmorLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int l = graphics.guiWidth() / 2 - 91;
 +            Profiler.get().push("armor");
-+            renderArmor(graphics, player, graphics.guiHeight() - leftHeight + 10, 1, 0, l);
++            extractArmor(graphics, player, graphics.guiHeight() - leftHeight + 10, 1, 0, l);
 +            Profiler.get().pop();
 +            if (player.getArmorValue() > 0) {
 +                leftHeight += 10;
@@ -256,7 +320,7 @@
 +        }
 +    }
 +
-+    private void renderFoodLevel(GuiGraphics graphics) {
++    private void extractFoodLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
              LivingEntity vehicleWithHearts = this.getPlayerVehicleWithHealth();
@@ -276,13 +340,13 @@
  
 -            Profiler.get().popPush("air");
 -            this.extractAirBubbles(graphics, player, vehicleHearts, yLineAir, xRight);
-+    private void renderAirLevel(GuiGraphics graphics) {
++    private void extractAirLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int xRight = graphics.guiWidth() / 2 + 91;
 +            int yLineAir = graphics.guiHeight() - rightHeight;
 +            Profiler.get().push("air");
-+            this.renderAirBubbles(graphics, player, 10, yLineAir, xRight);
++            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
              Profiler.get().pop();
          }
      }
