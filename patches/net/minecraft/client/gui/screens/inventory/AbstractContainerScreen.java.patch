@@ -23,7 +23,7 @@
          graphics.item(carried, x, y);
 -        graphics.itemDecorations(this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
 +        var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(carried).getFont(carried, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
-+        graphics.renderItemDecorations(font != null ? font : this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
++        graphics.itemDecorations(font != null ? font : this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
      }
  
      protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
@@ -35,7 +35,7 @@
 +        }
 +    }
 +
-+    protected void renderSlotContents(GuiGraphics graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
++    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
 +        {
 +            int x = slot.x; int y = slot.y;
              int seed = slot.x + slot.y * this.imageWidth;
@@ -47,7 +47,7 @@
  
 -            graphics.itemDecorations(this.font, itemStack, x, y, itemCount);
 +            var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemStack).getFont(itemStack, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
-+            graphics.renderItemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
++            graphics.itemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
          }
      }
  

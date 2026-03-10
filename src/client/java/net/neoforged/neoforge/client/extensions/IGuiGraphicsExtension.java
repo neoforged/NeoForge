@@ -7,17 +7,17 @@ package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 /**
- * Extension interface for {@link GuiGraphics}.
+ * Extension interface for {@link GuiGraphicsExtractor}.
  */
 public interface IGuiGraphicsExtension {
-    private GuiGraphics self() {
-        return (GuiGraphics) this;
+    private GuiGraphicsExtractor self() {
+        return (GuiGraphicsExtractor) this;
     }
 
     int DEFAULT_BACKGROUND_COLOR = 0xF0100010;
@@ -41,7 +41,7 @@ public interface IGuiGraphicsExtension {
         int maxWidth = maxX - minX;
         int textWidth = font.width(text.getVisualOrderText());
         if (textWidth <= maxWidth) {
-            self().drawString(font, text, minX, y, -1);
+            self().text(font, text, minX, y, -1);
         } else {
             textCollector.acceptScrollingWithDefaultCenter(text, minX, maxX, y - 1, y + font.lineHeight);
         }

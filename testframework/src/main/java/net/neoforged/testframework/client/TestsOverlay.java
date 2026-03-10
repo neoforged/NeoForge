@@ -19,7 +19,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -46,7 +46,7 @@ public final class TestsOverlay implements GuiLayer {
     }
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
@@ -60,7 +60,7 @@ public final class TestsOverlay implements GuiLayer {
 
         final CommitBasedList<Runnable> renderingQueue = new CommitBasedList<>(new ArrayList<>());
         final Component title = Component.literal("Tests overlay for ").append(Component.literal(impl.id().toString()).withStyle(ChatFormatting.AQUA));
-        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, 0xffffffff)));
+        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> graphics.text(font, title, x$, y$, 0xffffffff)));
         y += font.lineHeight + 5;
         maxX += font.width(title);
 
@@ -176,17 +176,17 @@ public final class TestsOverlay implements GuiLayer {
             Test.Result.NOT_PROCESSED, Identifier.fromNamespaceAndPath("testframework", "test_not_processed")));
 
     // TODO - maybe "group" together tests in the same group?
-    private XY renderTest(Font font, Test test, GuiGraphics graphics, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
+    private XY renderTest(Font font, Test test, GuiGraphicsExtractor graphics, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
         final Test.Status status = impl.tests().getStatus(test.id());
         final FormattedCharSequence bullet = Component.literal("- ").withStyle(ChatFormatting.BLACK).getVisualOrderText();
-        rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, bullet, x$, y$ - 1, colour)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.text(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
         rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);
-        rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, colour)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.text(font, title, x$, y$, colour)));
 
         final List<Component> extras = new ArrayList<>();
         if (Minecraft.getInstance().hasShiftDown()) extras.addAll(test.visuals().description());
@@ -203,7 +203,7 @@ public final class TestsOverlay implements GuiLayer {
                     .iterator();
             while (charSequences.hasNext()) {
                 final FormattedCharSequence extra = charSequences.next();
-                rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, extra, x$, y$, 0xffffffff)));
+                rendering.add(withXY(x, y, (x$, y$) -> graphics.text(font, extra, x$, y$, 0xffffffff)));
                 y += font.lineHeight;
                 maxX = Math.max(maxX, x + font.width(extra));
             }

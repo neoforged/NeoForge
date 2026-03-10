@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -26,20 +26,20 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Post
  */
 public abstract class RenderGuiLayerEvent extends Event {
-    private final GuiGraphics guiGraphics;
+    private final GuiGraphicsExtractor guiGraphics;
     private final DeltaTracker partialTick;
     private final Identifier name;
     private final GuiLayer layer;
 
     @ApiStatus.Internal
-    protected RenderGuiLayerEvent(GuiGraphics guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
+    protected RenderGuiLayerEvent(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
         this.name = name;
         this.layer = layer;
     }
 
-    public GuiGraphics getGuiGraphics() {
+    public GuiGraphicsExtractor getGuiGraphics() {
         return guiGraphics;
     }
 
@@ -69,7 +69,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Pre extends RenderGuiLayerEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
+        public Pre(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }
@@ -84,7 +84,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Post extends RenderGuiLayerEvent {
         @ApiStatus.Internal
-        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
+        public Post(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, Identifier name, GuiLayer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }

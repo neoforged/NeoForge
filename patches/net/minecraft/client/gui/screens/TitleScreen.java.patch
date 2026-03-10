@@ -43,10 +43,10 @@
 -        graphics.text(this.font, versionString, 2, this.height - 10, ARGB.white(widgetFade));
 +        int brandingColor = ARGB.color(widgetFade, -1);
 +        net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
-+                graphics.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
++                graphics.text(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
 +        );
 +        net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
-+                graphics.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
++                graphics.text(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
 +        );
          if (this.realmsNotificationsEnabled() && widgetFade >= 1.0F) {
              this.realmsNotificationsScreen.extractRenderState(graphics, mouseX, mouseY, a);

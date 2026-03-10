@@ -44,7 +44,7 @@
 +        renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, null);
 +    }
 +    private void renderText(
-+        GuiGraphics graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
++        GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
 +    ) {
          int textX = x0 + 32;
          int textY = y0 + 7;

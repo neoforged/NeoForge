@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -23,11 +23,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class CustomizeGuiOverlayEvent extends Event {
     private final Window window;
-    private final GuiGraphics guiGraphics;
+    private final GuiGraphicsExtractor guiGraphics;
     private final DeltaTracker partialTick;
 
     @ApiStatus.Internal
-    protected CustomizeGuiOverlayEvent(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick) {
+    protected CustomizeGuiOverlayEvent(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
         this.window = window;
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
@@ -37,7 +37,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         return window;
     }
 
-    public GuiGraphics getGuiGraphics() {
+    public GuiGraphicsExtractor getGuiGraphics() {
         return guiGraphics;
     }
 
@@ -61,7 +61,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int increment;
 
         @ApiStatus.Internal
-        public BossEventProgress(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, LerpingBossEvent bossEvent, int x, int y, int increment) {
+        public BossEventProgress(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, LerpingBossEvent bossEvent, int x, int y, int increment) {
             super(window, guiGraphics, partialTick);
             this.bossEvent = bossEvent;
             this.x = x;
@@ -120,7 +120,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int posY;
 
         @ApiStatus.Internal
-        public Chat(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, int posX, int posY) {
+        public Chat(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, int posX, int posY) {
             super(window, guiGraphics, partialTick);
             this.setPosX(posX);
             this.setPosY(posY);

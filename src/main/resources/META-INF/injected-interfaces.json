@@ -20,7 +20,7 @@
   "net/minecraft/client/gui/Font": [
     "net/neoforged/neoforge/client/extensions/IFontExtension"
   ],
-  "net/minecraft/client/gui/GuiGraphics": [
+  "net/minecraft/client/gui/GuiGraphicsExtractor": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
   "net/minecraft/client/renderer/block/dispatch/BlockStateModel": [

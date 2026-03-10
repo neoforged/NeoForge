@@ -41,7 +41,7 @@
 +        if (maxPages != 0) {
 +            net.minecraft.network.chat.Component page = Component.literal(String.format("%d / %d", tabPage + 1, maxPages + 1));
 +            int width = this.font.width(page);
-+            graphics.drawString(this.font, page.getVisualOrderText(), xo + (252 / 2) - (width / 2), yo - 44, -1);
++            graphics.text(this.font, page.getVisualOrderText(), xo + (252 / 2) - (width / 2), yo - 44, -1);
 +        }
          graphics.nextStratum();
          this.extractInside(graphics, xo, yo);

@@ -33,7 +33,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -932,7 +932,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+        public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             setUndoButtonstate(undoManager.canUndo()); // in render()? Really? --- Yes! This is how vanilla does it.
             setResetButtonstate(isAnyNondefault());
             super.render(graphics, mouseX, mouseY, a);
@@ -1230,7 +1230,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+        public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             doneButton.active = spec.test(cfgList);
             super.render(graphics, mouseX, mouseY, a);
         }
@@ -1352,7 +1352,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
 
             @Override
-            protected void renderWidget(final GuiGraphics pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
+            protected void renderWidget(final GuiGraphicsExtractor pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
                 checkButtons();
                 label.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 if (!isFirst) {
