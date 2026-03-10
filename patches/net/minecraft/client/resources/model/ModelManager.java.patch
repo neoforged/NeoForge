@@ -152,6 +152,15 @@
      ) {
          final Multimap<String, Identifier> missingSprites = Multimaps.synchronizedMultimap(HashMultimap.create());
          final Multimap<String, String> missingReferences = Multimaps.synchronizedMultimap(HashMultimap.create());
+@@ -261,7 +_,7 @@
+         };
+         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);
+         CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
+-            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
++            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
+         );
+         return bakedStateResults.thenCombine(
+             bakedModelsFuture,
 @@ -283,6 +_,9 @@
                              references.stream().sorted().map(reference -> "    " + reference).collect(Collectors.joining("\n"))
                          )
