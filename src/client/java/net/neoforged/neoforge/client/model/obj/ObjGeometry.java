@@ -477,8 +477,8 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
                 return;
             Material.Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
             Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite().transparency();
-            BakedQuad.SpriteInfo spriteInfo = baker.interner().spriteInfo(BakedQuad.SpriteInfo.of(texture, transparency));
             int tintIndex = mat.diffuseTintIndex;
+            BakedQuad.MaterialInfo spriteInfo = baker.interner().materialInfo(BakedQuad.MaterialInfo.of(texture, transparency, tintIndex, true, 0, true));
             Vector4f colorTint = mat.diffuseColor;
 
             var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
