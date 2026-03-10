@@ -258,7 +258,7 @@
                          float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
 -                        blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
 +
-+                        var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), damageBlocked, !blocksAttacks.bypassedBy().map(source::is).orElse(false));
++                        var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
 +                        if (!ev.getBlocked()) return 0.0F;
 +
 +                        damageBlocked = ev.getBlockedDamage();
