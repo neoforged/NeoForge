@@ -1482,6 +1482,7 @@ public class CommonHooks {
 
         // Mark common interned classes as valid
         markComponentClassAsValid(ResourceKey.class);
+        markComponentClassAsValid(HolderSet.Named.class);
     }
 
     /**
