@@ -31,7 +31,7 @@
 +                        // TODO 26.1: It's debatable whether this should advance in a dimension with no clock BUT in Vanilla it does!
 +                        this.awardStat(Stats.TIME_SINCE_REST);
 +                    } else {
-+                        var speed = level().clockManager().getSpeed(defaultClock.get());
++                        var speed = level().clockManager().getRate(defaultClock.get());
 +                        var fullTicks = (int) speed;
 +                        partialTimeSinceRestTick += speed;
 +                        if (partialTimeSinceRestTick >= 1) {

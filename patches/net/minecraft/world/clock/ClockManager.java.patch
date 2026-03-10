@@ -5,10 +5,10 @@
  public interface ClockManager {
      long getTotalTicks(Holder<WorldClock> definition);
 +
-+    default float getFractionalTick(Holder<WorldClock> definition) {
++    default float getPartialTick(Holder<WorldClock> definition) {
 +        return 0;
 +    }
 +
-+    default void setSpeed(Holder<WorldClock> definition, float speed) {
++    default void setRate(Holder<WorldClock> definition, float rate) {
 +    }
  }

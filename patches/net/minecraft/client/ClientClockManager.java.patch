@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/ClientClockManager.java
++++ b/net/minecraft/client/ClientClockManager.java
+@@ -46,6 +_,11 @@
+         return this.getInstance(definition).totalTicks;
+     }
+ 
++    @Override
++    public float getPartialTick(Holder<WorldClock> definition) {
++        return this.getInstance(definition).partialTick;
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     private static class ClockInstance {
+         private long totalTicks;
