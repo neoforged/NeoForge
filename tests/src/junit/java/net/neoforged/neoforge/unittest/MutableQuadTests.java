@@ -140,11 +140,8 @@ public class MutableQuadTests {
                 (long) refVertices.get(1)[2],
                 (long) refVertices.get(2)[2],
                 (long) refVertices.get(3)[2],
-                0,
                 side,
-                new BakedQuad.SpriteInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION)),
-                true,
-                0);
+                new BakedQuad.MaterialInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION), 0, true, 0, true));
 
         var mutableQuad = new MutableQuad();
         mutableQuad.setSpriteInfo(makeMockSpriteInfo());
@@ -212,12 +209,12 @@ public class MutableQuadTests {
             assertEquals(mutableQuad.color(i), refQuad.bakedColors().color(i), "color[" + i + "]");
         }
 
-        assertEquals(mutableQuad.tintIndex(), refQuad.tintIndex());
+        assertEquals(mutableQuad.tintIndex(), refQuad.materialInfo().tintIndex());
         assertEquals(mutableQuad.direction(), refQuad.direction());
-        assertEquals(mutableQuad.spriteInfo(), refQuad.spriteInfo());
-        assertEquals(mutableQuad.shade(), refQuad.shade());
-        assertEquals(mutableQuad.lightEmission(), refQuad.lightEmission());
-        assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.hasAmbientOcclusion());
+        assertEquals(mutableQuad.sprite(), refQuad.materialInfo().sprite());
+        assertEquals(mutableQuad.shade(), refQuad.materialInfo().shade());
+        assertEquals(mutableQuad.lightEmission(), refQuad.materialInfo().lightEmission());
+        assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.materialInfo().ambientOcclusion());
     }
 
     /**
@@ -389,12 +386,12 @@ public class MutableQuadTests {
         }));
     }
 
-    private static BakedQuad.SpriteInfo makeMockSpriteInfo() {
-        return new BakedQuad.SpriteInfo(new MockSprite(), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID));
+    private static BakedQuad.MaterialInfo makeMockSpriteInfo() {
+        return new BakedQuad.MaterialInfo(new MockSprite(), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID), 0, true, 0, true);
     }
 
-    private static BakedQuad.SpriteInfo makeMockSpriteInfo(int x, int y) {
-        return new BakedQuad.SpriteInfo(new MockSprite(x, y), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID));
+    private static BakedQuad.MaterialInfo makeMockSpriteInfo(int x, int y) {
+        return new BakedQuad.MaterialInfo(new MockSprite(x, y), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID), 0, true, 0, true);
     }
 
     static class MockSprite extends TextureAtlasSprite {
@@ -471,7 +468,7 @@ public class MutableQuadTests {
         }
 
         @Override
-        public BakedQuad.SpriteInfo spriteInfo(BakedQuad.SpriteInfo sprite) {
+        public BakedQuad.MaterialInfo materialInfo(BakedQuad.MaterialInfo sprite) {
             return sprite;
         }
     }

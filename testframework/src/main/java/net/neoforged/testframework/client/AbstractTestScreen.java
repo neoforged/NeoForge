@@ -89,9 +89,9 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
-            super.renderWidget(graphics, pMouseX, pMouseY, pPartialTick);
-            renderTooltips(graphics, pMouseX, pMouseY);
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            super.extractWidgetRenderState(graphics, mouseX, mouseY, a);
+            renderTooltips(graphics, mouseX, mouseY);
         }
 
         private void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
@@ -173,7 +173,7 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void renderContent(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 final Test.Status status = framework.tests().getStatus(test.id());
 
                 final int alpha = 0x73000000;
@@ -245,7 +245,7 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void renderContent(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 if (isTitle) {
                     graphics.centeredText(font, getTitle(), getContentXMiddle(), getContentY(), 0xffffffff);
                 } else {
@@ -253,7 +253,7 @@ public abstract class AbstractTestScreen extends Screen {
                     this.browseButton.setX(getX() + getWidth() - 53);
                     this.browseButton.setY(getY() - 1);
                     // TODO 1.21.6: nextStratum instead? Was increasing z by 100 before.
-                    browseButton.render(graphics, pMouseX, pMouseY, pPartialTick);
+                    browseButton.extractRenderState(graphics, mouseX, mouseY, a);
                 }
             }
 

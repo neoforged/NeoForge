@@ -79,20 +79,20 @@ public class TestScreen extends AbstractTestScreen {
 
         addRenderableWidget(Button.builder(Component.literal("Disable"), pButton -> groupableList.getSelected().enable(false)).bounds(searchTextField.getX() - 43, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canDisable();
             }
         }));
         addRenderableWidget(Button.builder(Component.literal("Enable"), pButton -> groupableList.getSelected().enable(true)).bounds(searchTextField.getX() + searchTextField.getWidth() + 3, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canEnable();
             }
         }));
     }
 
     @Override
-    public void render(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         if (showAsGroup.getValue()) {
             filterMode.visible = false;
             filterMode.active = false;
@@ -101,10 +101,10 @@ public class TestScreen extends AbstractTestScreen {
             filterMode.active = true;
         }
 
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        searchTextField.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+        searchTextField.extractRenderState(graphics, mouseX, mouseY, a);
 
-        pPoseStack.centeredText(font, getTitle(), this.width / 2, 7, 0xffffffff);
+        graphics.centeredText(font, getTitle(), this.width / 2, 7, 0xffffffff);
     }
 
     public static <T> void updateSearchTextFieldSuggestion(EditBox editBox, String value, List<T> entries, Function<T, String> nameProvider) {
