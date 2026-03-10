@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
 @@ -107,6 +_,7 @@
-     public final void renderWithTooltipAndSubtitles(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+     public final void extractRenderStateWithTooltipAndSubtitles(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
          graphics.nextStratum();
-         this.renderBackground(graphics, mouseX, mouseY, a);
+         this.extractBackground(graphics, mouseX, mouseY, a);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, graphics, mouseX, mouseY, a));
          graphics.nextStratum();
-         this.render(graphics, mouseX, mouseY, a);
-         graphics.renderDeferredElements(mouseX, mouseY, a);
+         this.extractRenderState(graphics, mouseX, mouseY, a);
+         graphics.extractDeferredElements(mouseX, mouseY, a);
 @@ -194,7 +_,7 @@
      }
  
@@ -50,7 +50,7 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
-@@ -467,6 +_,10 @@
+@@ -469,6 +_,10 @@
      public void onFilesDrop(List<Path> files) {
      }
  
@@ -61,7 +61,7 @@
      private void scheduleNarration(long delay, boolean ignoreSuppression) {
          this.nextNarrationTime = Util.getMillis() + delay;
          if (ignoreSuppression) {
-@@ -614,6 +_,14 @@
+@@ -616,6 +_,14 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;

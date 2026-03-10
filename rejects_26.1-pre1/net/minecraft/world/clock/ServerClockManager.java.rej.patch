@@ -1,0 +1,43 @@
+--- a/net/minecraft/world/clock/ServerClockManager.java
++++ b/net/minecraft/world/clock/ServerClockManager.java
+@@ -133,26 +170,37 @@
+     private static class ClockInstance {
+         private final Map<ResourceKey<ClockTimeMarker>, ClockTimeMarker> timeMarkers = new Reference2ObjectOpenHashMap<>();
+         private long totalTicks;
++        private float fractionalTick;
++        private float speed = 1;
+         private boolean paused;
+ 
++        // Neo: Replaced with ExtendedClockState
+         public void loadFrom(ClockState state) {
+             this.totalTicks = state.totalTicks();
++            this.fractionalTick = state.fractionalTick();
++            this.speed = state.speed();
+             this.paused = state.paused();
+         }
+ 
+         public void tick() {
+             if (!this.paused) {
+-                this.totalTicks++;
++                // advances the fractional daytime, returns the integer part of it
++                float timeStep = fractionalTick + speed;
++                long result = (long)timeStep;
++                this.fractionalTick = (timeStep - result);
++                this.totalTicks += result;
+             }
+         }
+ 
++        // Neo: Replaced with ExtendedClockState
+         public ClockState packState() {
+-            return new ClockState(this.totalTicks, this.paused);
++            return new ClockState(this.totalTicks, this.paused, this.fractionalTick, this.speed);
+         }
+ 
++        // Neo: Replaced with ExtendedClockState
+         public ClockState packNetworkState(MinecraftServer server) {
+             boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
+-            return new ClockState(this.totalTicks, this.paused || !advanceTime);
++            return new ClockState(this.totalTicks, this.paused || !advanceTime, this.fractionalTick, this.speed);
+         }
+     }
+ }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/BlocksAttacks.java
 +++ b/net/minecraft/world/item/component/BlocksAttacks.java
-@@ -111,14 +_,22 @@
+@@ -110,14 +_,22 @@
      }
  
      public void hurtBlockingItem(Level level, ItemStack item, LivingEntity user, InteractionHand hand, float damage) {

@@ -26,7 +26,7 @@
                              if (this.minecraft.screen == null) {
                                  InputConstants.Key key = InputConstants.getKey(event);
                                  KeyMapping.set(key, false);
-@@ -597,6 +_,7 @@
+@@ -593,6 +_,7 @@
                      }
                  }
              }
@@ -34,7 +34,7 @@
          }
      }
  
-@@ -605,7 +_,9 @@
+@@ -601,7 +_,9 @@
              Screen screen = this.minecraft.screen;
              if (screen != null && this.minecraft.getOverlay() == null) {
                  try {

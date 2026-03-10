@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
++++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
+@@ -93,6 +97,7 @@
+                     if (!fluidState.isEmpty()) {
+                         ChunkSectionLayer layer = this.liquidRenderer.getRenderLayer(fluidState);
+                         BufferBuilder builder = this.getOrBeginLayer(startedLayers, builders, layer);
++                        if (!net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, region, pos, builder, blockState))
+                         this.liquidRenderer.tesselate(region, pos, builder, blockState, fluidState);
+                     }
+ 

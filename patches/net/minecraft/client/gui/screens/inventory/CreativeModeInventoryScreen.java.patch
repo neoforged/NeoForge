@@ -109,9 +109,9 @@
                  this.menu.items.addAll(tree.search(searchTerm.toLowerCase(Locale.ROOT)));
 @@ -484,7 +_,7 @@
      @Override
-     protected void renderLabels(GuiGraphics graphics, int xm, int ym) {
+     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
          if (selectedTab.showTitle()) {
--            graphics.drawString(this.font, selectedTab.getDisplayName(), 8, 6, -12566464, false);
+-            graphics.text(this.font, selectedTab.getDisplayName(), 8, 6, -12566464, false);
 +            graphics.drawString(this.font, selectedTab.getDisplayName(), 8, 6, selectedTab.getLabelColor(), false);
          }
      }
@@ -160,8 +160,8 @@
              this.refreshSearchResults();
          } else {
 @@ -679,8 +_,14 @@
-         this.effects.render(graphics, mouseX, mouseY);
-         super.render(graphics, mouseX, mouseY, a);
+         this.effects.extractRenderState(graphics, mouseX, mouseY);
+         super.extractRenderState(graphics, mouseX, mouseY, a);
  
 -        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
 -            if (this.checkTabHovering(graphics, tab, mouseX, mouseY)) {
@@ -198,16 +198,7 @@
                      linesToDisplay.add(i++, tab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
                  }
              }
-@@ -733,7 +_,7 @@
- 
-     @Override
-     protected void renderBg(GuiGraphics graphics, float a, int xm, int ym) {
--        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
-+        for (CreativeModeTab tab : currentPage.getVisibleTabs()) {
-             if (tab != selectedTab) {
-                 this.renderTabButton(graphics, xm, ym, tab);
-             }
-@@ -760,10 +_,11 @@
+@@ -766,10 +_,11 @@
          int yscr = this.topPos + 18;
          int yscr2 = yscr + 112;
          if (selectedTab.canScroll()) {
@@ -218,10 +209,10 @@
          }
  
 +        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page
-         this.renderTabButton(graphics, xm, ym, selectedTab);
+         this.extractTabButton(graphics, mouseX, mouseY, selectedTab);
          if (selectedTab.getType() == CreativeModeTab.Type.INVENTORY) {
-             InventoryScreen.renderEntityInInventoryFollowsMouse(
-@@ -773,7 +_,7 @@
+             InventoryScreen.extractEntityInInventoryFollowsMouse(
+@@ -779,7 +_,7 @@
      }
  
      private int getTabX(CreativeModeTab tab) {
@@ -230,7 +221,7 @@
          int spacing = 27;
          int x = 27 * pos;
          if (tab.isAlignedRight()) {
-@@ -785,7 +_,7 @@
+@@ -791,7 +_,7 @@
  
      private int getTabY(CreativeModeTab tab) {
          int y = 0;
@@ -239,9 +230,9 @@
              y -= 32;
          } else {
              y += this.imageHeight;
-@@ -813,8 +_,8 @@
+@@ -819,8 +_,8 @@
  
-     protected void renderTabButton(GuiGraphics graphics, int mouseX, int mouseY, CreativeModeTab tab) {
+     protected void extractTabButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CreativeModeTab tab) {
          boolean selected = tab == selectedTab;
 -        boolean isTop = tab.row() == CreativeModeTab.Row.TOP;
 -        int pos = tab.column();
@@ -250,7 +241,7 @@
          int x = this.leftPos + this.getTabX(tab);
          int y = this.topPos - (isTop ? 28 : -(this.imageHeight - 4));
          Identifier[] sprites;
-@@ -828,6 +_,7 @@
+@@ -834,6 +_,7 @@
              graphics.requestCursor(CursorTypes.POINTING_HAND);
          }
  
@@ -258,7 +249,7 @@
          graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprites[Mth.clamp(pos, 0, sprites.length)], x, y, 26, 32);
          int iconX = x + 13 - 8;
          int iconY = y + 16 - 8 + (isTop ? 1 : -1);
-@@ -864,6 +_,14 @@
+@@ -870,6 +_,14 @@
          }
      }
  
@@ -273,7 +264,7 @@
      @OnlyIn(Dist.CLIENT)
      private static class CustomCreativeSlot extends Slot {
          public CustomCreativeSlot(Container container, int slot, int x, int y) {
-@@ -1044,6 +_,22 @@
+@@ -1050,6 +_,22 @@
          @Override
          public boolean mayPickup(Player player) {
              return this.target.mayPickup(player);

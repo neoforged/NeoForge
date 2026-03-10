@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -40,14 +_,20 @@
+@@ -40,14 +40,20 @@
          this.sprites = sprites;
      }
  

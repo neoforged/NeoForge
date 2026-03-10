@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LoadedBlockModels.java
 +++ b/net/minecraft/client/renderer/block/LoadedBlockModels.java
-@@ -35,14 +_,22 @@
+@@ -36,14 +_,22 @@
          this.playerSkinRenderCache = playerSkinRenderCache;
      }
  

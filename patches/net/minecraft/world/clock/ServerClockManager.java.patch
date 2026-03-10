@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -59,6 +_,9 @@
+@@ -60,6 +_,9 @@
      }
  
      public void tick() {
@@ -10,7 +10,7 @@
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
          if (advanceTime) {
              this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
-@@ -107,11 +_,45 @@
+@@ -116,9 +_,43 @@
          this.setDirty();
      }
  
@@ -25,8 +25,8 @@
      @Override
      public long getTotalTicks(Holder<WorldClock> definition) {
          return this.getInstance(definition).totalTicks;
-     }
- 
++    }
++
 +    @Override
 +    public float getFractionalTick(Holder<WorldClock> definition) {
 +        return this.getInstance(definition).fractionalTick;
@@ -51,49 +51,6 @@
 +        if (speed > 0 && getInstance(definition).speed != speed) {
 +            modifyClock(definition, instance -> instance.speed = speed);
 +        }
-+    }
-+
+     }
+ 
      public ClientboundSetTimePacket createFullSyncPacket() {
-         return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packNetworkState(this.server)));
-     }
-@@ -133,26 +_,37 @@
-     private static class ClockInstance {
-         private final Map<ResourceKey<ClockTimeMarker>, ClockTimeMarker> timeMarkers = new Reference2ObjectOpenHashMap<>();
-         private long totalTicks;
-+        private float fractionalTick;
-+        private float speed = 1;
-         private boolean paused;
- 
-+        // Neo: Replaced with ExtendedClockState
-         public void loadFrom(ClockState state) {
-             this.totalTicks = state.totalTicks();
-+            this.fractionalTick = state.fractionalTick();
-+            this.speed = state.speed();
-             this.paused = state.paused();
-         }
- 
-         public void tick() {
-             if (!this.paused) {
--                this.totalTicks++;
-+                // advances the fractional daytime, returns the integer part of it
-+                float timeStep = fractionalTick + speed;
-+                long result = (long)timeStep;
-+                this.fractionalTick = (timeStep - result);
-+                this.totalTicks += result;
-             }
-         }
- 
-+        // Neo: Replaced with ExtendedClockState
-         public ClockState packState() {
--            return new ClockState(this.totalTicks, this.paused);
-+            return new ClockState(this.totalTicks, this.paused, this.fractionalTick, this.speed);
-         }
- 
-+        // Neo: Replaced with ExtendedClockState
-         public ClockState packNetworkState(MinecraftServer server) {
-             boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
--            return new ClockState(this.totalTicks, this.paused || !advanceTime);
-+            return new ClockState(this.totalTicks, this.paused || !advanceTime, this.fractionalTick, this.speed);
-         }
-     }
- }

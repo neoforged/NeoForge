@@ -111,21 +111,7 @@
      }
  
      @Override
-@@ -1822,8 +_,11 @@
-         });
-         pendingTags.forEach(Registry.PendingTags::apply);
-         this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
--        List<ItemStack> searchItems = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
--        this.searchTrees.updateCreativeTags(searchItems);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, ignoreSharedTags));
-+        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
-+            List<ItemStack> stacks = List.copyOf(tab.getDisplayItems());
-+            this.searchTrees.updateCreativeTags(stacks, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
-+        });
-     }
- 
-     @Override
-@@ -2638,6 +_,8 @@
+@@ -2639,6 +_,8 @@
      }
  
      public void sendChat(String content) {
@@ -134,7 +120,7 @@
          Instant timeStamp = Instant.now();
          long salt = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2646,6 +_,7 @@
+@@ -2647,6 +_,7 @@
      }
  
      public void sendCommand(String command) {
@@ -142,7 +128,7 @@
          SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
          if (signableCommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(command));
-@@ -2662,6 +_,8 @@
+@@ -2663,6 +_,8 @@
      }
  
      public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
@@ -151,7 +137,7 @@
          switch (this.verifyCommand(command)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(command));
-@@ -2830,6 +_,10 @@
+@@ -2831,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

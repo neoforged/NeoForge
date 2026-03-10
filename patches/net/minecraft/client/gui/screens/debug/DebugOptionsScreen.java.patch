@@ -12,10 +12,10 @@
                  this.name = name;
              } else {
 @@ -252,8 +_,11 @@
-         public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float a) {
+         public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
              int x = this.getContentX();
              int y = this.getContentY();
--            graphics.drawString(DebugOptionsScreen.this.minecraft.font, this.name, x, y + 5, this.isAllowed ? -1 : -8355712);
+-            graphics.text(DebugOptionsScreen.this.minecraft.font, this.name, x, y + 5, this.isAllowed ? -1 : -8355712);
 +            // Neo: Moved 'k' up for 'maxX' calculation for scrolling string render
              int buttonsStartX = x + this.getContentWidth() - this.never.getWidth() - this.overlay.getWidth() - this.always.getWidth();
 +            // Neo: Scroll entry names that go out of bounds

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/blockentity/ChestRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/ChestRenderer.java
+@@ -90,7 +92,7 @@
+         float open = state.open;
+         open = 1.0F - open;
+         open = 1.0F - open * open * open;
+-        SpriteId spriteId = Sheets.chooseSprite(state.material, state.type);
++        SpriteId spriteId = state.customSprite != null ? state.customSprite : Sheets.chooseSprite(state.material, state.type);
+         RenderType renderType = spriteId.renderType(RenderTypes::entityCutoutCull);
+         TextureAtlasSprite sprite = this.sprites.get(spriteId);
+ 

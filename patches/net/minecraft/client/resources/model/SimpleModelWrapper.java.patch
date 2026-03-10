@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/SimpleModelWrapper.java
 +++ b/net/minecraft/client/resources/model/SimpleModelWrapper.java
-@@ -26,6 +_,11 @@
+@@ -25,6 +_,11 @@
  
      public static BlockStateModelPart bake(ModelBaker modelBakery, Identifier location, ModelState state) {
          ResolvedModel model = modelBakery.getModel(location);
@@ -12,7 +12,7 @@
          TextureSlots textureSlots = model.getTopTextureSlots();
          boolean hasAmbientOcclusion = model.getTopAmbientOcclusion();
          Material.Baked particleMaterial = model.resolveParticleMaterial(textureSlots, modelBakery);
-@@ -47,7 +_,7 @@
+@@ -43,7 +_,7 @@
          }
  
          if (forbiddenSprites != null) {
@@ -20,4 +20,4 @@
 +            LOGGER.warn("Rejecting block model {}, since it contains sprites from outside of supported atlas: {}", model.debugName(), forbiddenSprites);
              return modelBakery.missingBlockModelPart();
          } else {
-             return new SimpleModelWrapper(geometry, hasAmbientOcclusion, particleMaterial, hasTranslucency);
+             return new SimpleModelWrapper(geometry, hasAmbientOcclusion, particleMaterial);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/special/SpecialModelRenderer.java
 +++ b/net/minecraft/client/renderer/special/SpecialModelRenderer.java
-@@ -38,6 +_,13 @@
+@@ -36,6 +_,13 @@
          SpriteGetter sprites();
  
          PlayerSkinRenderCache playerSkinRenderCache();

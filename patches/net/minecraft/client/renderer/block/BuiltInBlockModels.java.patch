@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BuiltInBlockModels.java
 +++ b/net/minecraft/client/renderer/block/BuiltInBlockModels.java
-@@ -180,18 +_,30 @@
+@@ -193,18 +_,30 @@
      }
  
      public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Types type) {
@@ -31,7 +31,7 @@
          builder.put(createMobHead(type), ground);
          builder.put(createMobWallHead(type), wall);
      }
-@@ -388,6 +_,7 @@
+@@ -404,6 +_,7 @@
      public static Map<BlockState, BlockModel.Unbaked> createBlockModels(BlockColors blockColors) {
          BuiltInBlockModels.Builder builder = new BuiltInBlockModels.Builder(blockColors);
          addDefaults(builder);

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
 +++ b/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
-@@ -32,9 +_,15 @@
-         return this.model.hasTranslucency();
+@@ -34,9 +_,15 @@
+         return this.model.materialFlags();
      }
  
 +    @Override

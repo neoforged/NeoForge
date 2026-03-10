@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
 +++ b/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
-@@ -43,9 +_,31 @@
-         return this.hasTranslucency;
+@@ -47,9 +_,31 @@
+         return this.materialFlags;
      }
  
 -    @Override

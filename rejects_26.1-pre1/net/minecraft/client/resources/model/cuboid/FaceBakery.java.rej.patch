@@ -1,0 +1,52 @@
+--- a/net/minecraft/client/resources/model/cuboid/FaceBakery.java
++++ b/net/minecraft/client/resources/model/cuboid/FaceBakery.java
+@@ -70,9 +70,11 @@
+         Transparency transparency = computeMaterialTransparency(material, uvs);
+         ModelBaker.Interner interner = modelBaker.interner();
+         BakedQuad.SpriteInfo spriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(material, transparency));
+-        return bakeQuad(interner, from, to, uvs, face.rotation(), face.tintIndex(), spriteInfo, facing, modelState, elementRotation, shade, lightEmission);
++        return bakeQuad(interner, from, to, uvs, face.rotation(), face.tintIndex(), spriteInfo, facing, modelState, elementRotation, shade, lightEmission, face.faceData());
+     }
+ 
++    /** @deprecated Neo: use {@link #bakeQuad(ModelBaker.Interner, Vector3fc, Vector3fc, CuboidFace.UVs, Quadrant, int, BakedQuad.SpriteInfo, Direction, ModelState, CuboidRotation, boolean, int, net.neoforged.neoforge.client.model.ExtraFaceData)} instead */
++    @Deprecated
+     public static BakedQuad bakeQuad(
+         ModelBaker.Interner interner,
+         Vector3fc from,
+@@ -87,6 +89,24 @@
+         boolean shade,
+         int lightEmission
+     ) {
++        return bakeQuad(interner, from, to, uvs, uvRotation,tintIndex, spriteInfo, facing, modelState, elementRotation, shade, lightEmission, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
++    public static BakedQuad bakeQuad(
++            ModelBaker.Interner interner,
++            Vector3fc from,
++            Vector3fc to,
++            CuboidFace.UVs uvs,
++            Quadrant uvRotation,
++            int tintIndex,
++            BakedQuad.SpriteInfo spriteInfo,
++            Direction facing,
++            ModelState modelState,
++            @Nullable CuboidRotation elementRotation,
++            boolean shade,
++            int lightEmission,
++            net.neoforged.neoforge.client.model.ExtraFaceData faceData
++    ) {
+         Matrix4fc uvTransform = modelState.inverseFaceTransformation(facing);
+         Vector3fc[] vertexPositions = new Vector3fc[4];
+         long[] vertexPackedUvs = new long[4];
+@@ -128,7 +150,10 @@
+             Objects.requireNonNullElse(finalDirection, Direction.UP),
+             spriteInfo,
+             shade,
+-            lightEmission
++            Math.max(lightEmission, faceData.lightEmission()),
++            interner.normals(net.neoforged.neoforge.client.model.quad.BakedNormals.of(net.neoforged.neoforge.client.model.quad.BakedNormals.computeQuadNormal(vertexPositions[0], vertexPositions[1], vertexPositions[2], vertexPositions[3]))),
++            interner.colors(net.neoforged.neoforge.client.model.quad.BakedColors.of(faceData.color())),
++            faceData.ambientOcclusion()
+         );
+     }
+ 

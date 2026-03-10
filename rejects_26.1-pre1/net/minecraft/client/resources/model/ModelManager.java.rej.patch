@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/resources/model/ModelManager.java
++++ b/net/minecraft/client/resources/model/ModelManager.java
+@@ -252,7 +295,7 @@
+             }
+         }, taskExecutor);
+         CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
+-            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
++            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
+         );
+         return bakedStateResults.thenCombine(
+             bakedModelsFuture,

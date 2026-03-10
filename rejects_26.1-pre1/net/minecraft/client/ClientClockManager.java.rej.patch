@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/ClientClockManager.java
 +++ b/net/minecraft/client/ClientClockManager.java
-@@ -24,7 +_,11 @@
+@@ -24,7 +24,11 @@
  
          for (ClientClockManager.ClockInstance instance : this.clocks.values()) {
              if (!instance.paused) {
@@ -13,7 +13,7 @@
              }
          }
      }
-@@ -35,6 +_,9 @@
+@@ -35,6 +39,9 @@
              ClientClockManager.ClockInstance clock = this.getInstance((Holder<WorldClock>)definition);
              clock.totalTicks = state.totalTicks();
              clock.paused = state.paused();
@@ -23,7 +23,7 @@
          });
      }
  
-@@ -47,5 +_,7 @@
+@@ -47,5 +54,7 @@
      private static class ClockInstance {
          private long totalTicks;
          private boolean paused;

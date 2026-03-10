@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
 +++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
-@@ -69,7 +_,7 @@
+@@ -81,7 +_,7 @@
              MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
              BlockState blockState = movingBlockRenderState.blockState;
-             BlockStateModel model = blockRenderDispatcher.getBlockModel(blockState);
--            if (model.hasTranslucency() == translucent) {
+             BlockStateModel model = blockStateModelSet.get(blockState);
+-            if (model.hasMaterialFlag(1) == translucent) {
 +            if (model.hasTranslucency(movingBlockRenderState, movingBlockRenderState.blockPos, blockState) == translucent) {
                  poseStack.setIdentity();
                  poseStack.mulPose(submit.pose());

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
-@@ -154,4 +_,13 @@
+@@ -150,4 +_,13 @@
          state.drawOutline = isOutlineVisible(blockEntity.getBlockPos());
          state.woodType = SignBlock.getWoodType(blockEntity.getBlockState().getBlock());
      }
