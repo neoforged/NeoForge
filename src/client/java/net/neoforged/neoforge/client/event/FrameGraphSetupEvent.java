@@ -18,7 +18,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 /**
  * Fired when the {@linkplain FrameGraphBuilder frame graph} is set up at the start of level rendering, right before
@@ -35,7 +35,7 @@ public final class FrameGraphSetupEvent extends Event {
     private final RenderTargetDescriptor renderTargetDescriptor;
     private final Frustum frustum;
     private final CameraRenderState cameraState;
-    private final Matrix4f modelViewMatrix;
+    private final Matrix4fc modelViewMatrix;
     private final DeltaTracker deltaTracker;
     private final ProfilerFiller profiler;
     private boolean enableOutline;
@@ -46,7 +46,7 @@ public final class FrameGraphSetupEvent extends Event {
             LevelTargetBundle targets,
             RenderTargetDescriptor renderTargetDescriptor,
             CameraRenderState cameraState,
-            Matrix4f modelViewMatrix,
+            Matrix4fc modelViewMatrix,
             DeltaTracker deltaTracker,
             ProfilerFiller profiler) {
         this.builder = builder;
@@ -97,7 +97,7 @@ public final class FrameGraphSetupEvent extends Event {
     /**
      * {@return the model view matrix}
      */
-    public Matrix4f getModelViewMatrix() {
+    public Matrix4fc getModelViewMatrix() {
         return modelViewMatrix;
     }
 

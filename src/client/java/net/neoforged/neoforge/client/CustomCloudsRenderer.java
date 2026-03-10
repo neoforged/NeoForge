@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 /**
  * A custom cloud renderer that can be registered using {@link RegisterCustomEnvironmentEffectRendererEvent#registerCloudRenderer)}
@@ -28,7 +28,7 @@ public interface CustomCloudsRenderer {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4f modelViewMatrix) {
+    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4fc modelViewMatrix) {
         return false;
     }
 }

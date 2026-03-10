@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
-@@ -44,18 +_,64 @@
+@@ -44,18 +_,63 @@
          return this.shared.materialFlags;
      }
  
@@ -64,16 +64,15 @@
 +    }
 +
 +    @Override
-+    public boolean hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state) {
++    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
++        int flags = 0;
 +        for (BlockStateModel model : this.models) {
-+            if (model.hasTranslucency(level, pos, state)) {
-+                return true;
-+            }
++            flags |= model.materialFlags(level, pos, state);
 +        }
-+        return false;
++        return flags;
      }
  
      @OnlyIn(Dist.CLIENT)

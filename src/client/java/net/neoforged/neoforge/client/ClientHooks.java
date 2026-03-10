@@ -209,7 +209,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
@@ -941,7 +941,7 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4f modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4fc modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, cameraState, modelViewMatrix, deltaTracker, profiler));
     }
 

@@ -23,12 +23,12 @@ import org.jspecify.annotations.Nullable;
 public class CompositeBlockModel implements DynamicBlockStateModel {
     private final List<BlockStateModel> models;
     private final Material.Baked particleMaterial;
-    private final boolean hasTranslucency;
+    private final int flags;
 
     public CompositeBlockModel(List<BlockStateModel> models) {
         this.models = models;
         this.particleMaterial = models.getFirst().particleMaterial();
-        this.hasTranslucency = models.stream().anyMatch(BlockStateModel::hasTranslucency);
+        this.flags = models.stream().<Integer>reduce(0, (acc, model) -> acc | model.materialFlags(), (a, b) -> a | b);
     }
 
     @Override
@@ -76,18 +76,17 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
     }
 
     @Override
-    public boolean hasTranslucency() {
-        return hasTranslucency;
+    public int materialFlags() {
+        return flags;
     }
 
     @Override
-    public boolean hasTranslucency(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        int flags = 0;
         for (BlockStateModel model : models) {
-            if (model.hasTranslucency(level, pos, state)) {
-                return true;
-            }
+            flags |= model.materialFlags(level, pos, state);
         }
-        return false;
+        return flags;
     }
 
     public record Unbaked(List<BlockStateModel.Unbaked> models) implements CustomUnbakedBlockStateModel {

@@ -5,7 +5,7 @@
              BlockState blockState = movingBlockRenderState.blockState;
              BlockStateModel model = blockStateModelSet.get(blockState);
 -            if (model.hasMaterialFlag(1) == translucent) {
-+            if (model.hasTranslucency(movingBlockRenderState, movingBlockRenderState.blockPos, blockState) == translucent) {
++            if (model.hasMaterialFlag(movingBlockRenderState, movingBlockRenderState.blockPos, blockState, BakedQuad.FLAG_TRANSLUCENT) == translucent) {
                  poseStack.setIdentity();
                  poseStack.mulPose(submit.pose());
                  BlockQuadOutput blockOutput = ModelBlockRenderer.forceOpaque(cutoutLeaves, blockState) ? solidOutput : output;
