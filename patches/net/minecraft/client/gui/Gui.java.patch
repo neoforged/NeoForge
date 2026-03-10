@@ -396,3 +396,22 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
+@@ -1452,7 +_,18 @@
+                 type = NORMAL;
+             }
+ 
++            type = net.neoforged.neoforge.client.ClientHooks.firePlayerHeartTypeEvent(player, type);
++
+             return type;
+         }
++
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(Gui.HeartType.class);
++        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void initModdedOverlays() {
++        this.layerManager.initModdedLayers();
+     }
+ }
