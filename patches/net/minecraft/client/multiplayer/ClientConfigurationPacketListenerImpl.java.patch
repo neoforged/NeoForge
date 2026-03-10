@@ -22,6 +22,15 @@
      }
  
      @Override
+@@ -164,7 +_,7 @@
+ 
+         this.connection
+             .setupInboundProtocol(
+-                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries)),
++                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, this.connectionType)),
+                 new ClientPacketListener(
+                     this.minecraft,
+                     this.connection,
 @@ -182,13 +_,21 @@
                          this.customReportDetails,
                          this.serverLinks(),
