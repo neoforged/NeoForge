@@ -22,7 +22,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int MouseX, int MouseY, float PartialTick) {
-        renderTransparentBackground(graphics);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int MouseX, int MouseY, float PartialTick) {
+        extractTransparentBackground(graphics);
     }
 }

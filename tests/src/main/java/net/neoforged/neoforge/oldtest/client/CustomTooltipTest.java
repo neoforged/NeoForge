@@ -81,7 +81,7 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void renderImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+        public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
             graphics.fill(x, y, x + 10, y + 10, tooltip.color);
         }
     }
@@ -152,9 +152,9 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-            this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-            super.render(graphics, mouseX, mouseY, partialTicks);
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            this.extractBackground(graphics, mouseX, mouseY, partialTicks);
+            super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
             graphics.text(font, "* must have Stack, # must have custom font", 0, 0, 0xFFFFFF);
         }
 
@@ -192,8 +192,8 @@ public class CustomTooltipTest {
                 addRenderableWidget(new Button.Builder(Component.literal(test.getKey()), button -> {})
                         .bounds(x, y, 100, 20).build(b -> new Button.Plain(b) {
                             @Override
-                            public void renderContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-                                super.renderContents(graphics, mouseX, mouseY, partialTick);
+                            public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+                                super.extractContents(graphics, mouseX, mouseY, partialTick);
 
                                 boolean showTooltip = this.isHovered || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
                                 if (showTooltip)

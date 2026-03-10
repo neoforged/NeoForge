@@ -86,8 +86,8 @@ public class GuiTests {
         }
 
         @Override
-        public void renderBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-            super.renderBackground(graphics, mouseX, mouseY, partialTicks);
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            super.extractBackground(graphics, mouseX, mouseY, partialTicks);
             graphics.text(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
         }
 

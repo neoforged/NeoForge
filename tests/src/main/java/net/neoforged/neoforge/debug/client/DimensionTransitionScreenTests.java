@@ -64,13 +64,13 @@ public class DimensionTransitionScreenTests {
         }
 
         @Override
-        public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            this.extractBackground(graphics, mouseX, mouseY, partialTick);
             graphics.centeredText(this.font, this.message, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         }
 
         @Override
-        public void renderBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
         }
     }

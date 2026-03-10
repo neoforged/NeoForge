@@ -67,7 +67,7 @@ public class ContainerTypeTest {
         }
 
         @Override
-        protected void renderBg(GuiGraphicsExtractor graphics, float partialTick, int mouseX, int mouseY) {
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             graphics.text(this.font, getMenu().text, mouseX, mouseY, -1);
         }
     }
