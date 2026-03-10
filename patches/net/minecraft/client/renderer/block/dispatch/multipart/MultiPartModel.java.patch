@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
-@@ -44,18 +_,63 @@
+@@ -44,18 +_,64 @@
          return this.shared.materialFlags;
      }
  
@@ -64,7 +64,8 @@
 +    }
 +
 +    @Override
-+    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++    @BakedQuad.MaterialFlags
++    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }

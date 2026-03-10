@@ -65,7 +65,6 @@ public class DimensionTransitionScreenTests {
 
         @Override
         public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            this.extractBackground(graphics, mouseX, mouseY, partialTick);
             graphics.centeredText(this.font, this.message, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         }
 

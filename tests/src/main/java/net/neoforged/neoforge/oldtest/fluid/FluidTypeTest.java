@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.core.BlockPos;
@@ -20,6 +21,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -192,18 +194,19 @@ public class FluidTypeTest {
                 }
 
                 @Override
-                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
+                public boolean renderFluid(FluidRenderer fluidRenderer, FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, FluidRenderer.Output output, BlockState blockState) {
+                    FluidRenderer.Output wrappedOutput = output;
                     // Flip RGB to BGR *only* for fluid blocks rendered at Y 100
                     if (pos.getY() == 100) {
-                        vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
+                        wrappedOutput = layer -> new VertexConsumerWrapper(output.getBuilder(layer)) {
                             @Override
-                            public VertexConsumer setColor(int r, int g, int b, int a) {
-                                return super.setColor(b, g, r, a);
+                            public VertexConsumer setColor(int color) {
+                                return super.setColor(ARGB.blue(color), ARGB.green(color), ARGB.red(color), ARGB.alpha(color));
                             }
                         };
                     }
                     // Replace vanilla fluid rendering
-                    Minecraft.getInstance().getBlockRenderer().getLiquidRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    fluidRenderer.tesselate(getter, pos, wrappedOutput, blockState, fluidState);
                     return true;
                 }
             }, TEST_FLUID_TYPE.value());

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
 +++ b/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
-@@ -47,9 +_,30 @@
+@@ -47,9 +_,31 @@
          return this.materialFlags;
      }
  
@@ -25,6 +25,7 @@
 +    }
 +
 +    @Override
++    @BakedQuad.MaterialFlags
 +    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
 +        int flags = 0;
 +        for (Weighted<BlockStateModel> model : this.list.unwrap()) {

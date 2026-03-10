@@ -179,7 +179,7 @@ public class MegaModelTest {
                         }
                     }
                 }
-                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial(), part.hasTranslucency()));
+                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial()));
             }
         }
     }

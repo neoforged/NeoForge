@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import com.mojang.blaze3d.platform.Transparency;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -77,7 +78,7 @@ public class MutableQuadTests {
                 right * WORLD_SCALE,
                 top * WORLD_SCALE,
                 depth * WORLD_SCALE);
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
@@ -89,7 +90,7 @@ public class MutableQuadTests {
 
         var mutableQuad = new MutableQuad();
         mutableQuad.setCubeFaceFromSpriteCoords(side, 0, 0, 1, 1, 0);
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
@@ -144,7 +145,7 @@ public class MutableQuadTests {
                 new BakedQuad.MaterialInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION), 0, true, 0, true));
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFaceFromSpriteCoords(side, left * f, bottom * f, right * f, top * f, depth * f);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuad, mutableQuad);
@@ -159,7 +160,7 @@ public class MutableQuadTests {
         var to = new Vector3f(REFERENCE_BLOCK_MAX).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from, to);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -174,7 +175,7 @@ public class MutableQuadTests {
         var to = new Vector3f(REFERENCE_BLOCK_MAX).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from.x, from.y, from.z, to.x, to.y, to.z);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -191,7 +192,7 @@ public class MutableQuadTests {
         var to = new Vector3f(max).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from.x, from.y, from.z, to.x, to.y, to.z);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -224,9 +225,9 @@ public class MutableQuadTests {
     @Test
     void testSetSpriteAndMoveUv() {
         var refQuad = buildReferenceQuads().get(Direction.NORTH);
-        var oldSprite = makeMockSpriteInfo(192, 192);
+        var oldSprite = makeMockMaterial(192, 192);
         var mutableQuad = new MutableQuad().setFrom(refQuad);
-        mutableQuad.setSpriteInfo(oldSprite);
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
 
         // Move to some position within the old sprite
         float[] localUv = {
@@ -244,8 +245,8 @@ public class MutableQuadTests {
         }
 
         // Now change the sprite and also move the UV
-        var newSprite = makeMockSpriteInfo(32, 32);
-        mutableQuad.setSpriteInfoAndMoveUv(newSprite);
+        var newSprite = makeMockMaterial(32, 32);
+        mutableQuad.setSpriteAndMoveUv(newSprite, Transparency.NONE);
 
         for (int i = 0; i < 4; i++) {
             float localU = localUv[i * 2];
@@ -295,12 +296,12 @@ public class MutableQuadTests {
     @Test
     void testTransform() {
         // Apply a really simple transform to a quad on the south face
-        var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSpriteInfo(makeMockSpriteInfo()).toBakedQuad();
+        var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSprite(makeMockMaterial(), Transparency.NONE).toBakedQuad();
         var quat = new Quaternionf().fromAxisAngleDeg(Direction.EAST.getUnitVec3f(), 180);
         var rotation = new Matrix4f().rotateAround(quat, 0.5f, 0.5f, 0.5f, new Matrix4f());
 
         // It should be equivalent to a cube face on the opposite side, incl. normal vectors
-        var expectedQuad = new MutableQuad().setCubeFace(Direction.NORTH, 0, 0, 0, 1, 1, 1).setSpriteInfo(makeMockSpriteInfo()).toBakedQuad();
+        var expectedQuad = new MutableQuad().setCubeFace(Direction.NORTH, 0, 0, 0, 1, 1, 1).setSprite(makeMockMaterial(), Transparency.NONE).toBakedQuad();
 
         var transformedQuad = new MutableQuad().setFrom(refQuad).transform(rotation).setDirection(Direction.NORTH).recalculateWinding();
         assertQuadsEquals(expectedQuad, transformedQuad);
@@ -386,12 +387,12 @@ public class MutableQuadTests {
         }));
     }
 
-    private static BakedQuad.MaterialInfo makeMockSpriteInfo() {
-        return new BakedQuad.MaterialInfo(new MockSprite(), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID), 0, true, 0, true);
+    private static Material.Baked makeMockMaterial() {
+        return new Material.Baked(new MockSprite(), false);
     }
 
-    private static BakedQuad.MaterialInfo makeMockSpriteInfo(int x, int y) {
-        return new BakedQuad.MaterialInfo(new MockSprite(x, y), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID), 0, true, 0, true);
+    private static Material.Baked makeMockMaterial(int x, int y) {
+        return new Material.Baked(new MockSprite(x, y), false);
     }
 
     static class MockSprite extends TextureAtlasSprite {

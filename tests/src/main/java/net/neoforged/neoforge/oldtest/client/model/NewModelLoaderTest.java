@@ -22,7 +22,6 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.resources.model.cuboid.CuboidModel;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.TextureSlots;
@@ -163,7 +162,7 @@ public class NewModelLoaderTest {
             var quadBaker = new QuadBakingVertexConsumer();
 
             quadBaker.setDirection(Direction.UP);
-            quadBaker.setSpriteInfo(baker.interner().spriteInfo(BakedQuad.SpriteInfo.of(material, texture.transparency())));
+            quadBaker.setSprite(material, texture.transparency());
 
             quadBaker.addVertex(0, 1, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(0), texture.getV(0)).setOverlay(0).setNormal(0, 0, 0);
             quadBaker.addVertex(0, 0, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(0), texture.getV(16)).setOverlay(0).setNormal(0, 0, 0);

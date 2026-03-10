@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.model.quad;
 
 import java.util.Arrays;
-
 import com.mojang.blaze3d.platform.Transparency;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.FaceInfo;

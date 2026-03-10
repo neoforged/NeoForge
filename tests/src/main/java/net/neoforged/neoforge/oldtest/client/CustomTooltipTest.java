@@ -153,7 +153,6 @@ public class CustomTooltipTest {
 
         @Override
         public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-            this.extractBackground(graphics, mouseX, mouseY, partialTicks);
             super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
             graphics.text(font, "* must have Stack, # must have custom font", 0, 0, 0xFFFFFF);
         }

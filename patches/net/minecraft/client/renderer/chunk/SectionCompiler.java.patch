@@ -15,7 +15,7 @@
  
                      FluidState fluidState = blockState.getFluidState();
                      if (!fluidState.isEmpty()) {
-+                        if (!net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, region, pos, fluidOutput, blockState))
++                        if (!net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidRenderer, fluidState, region, pos, fluidOutput, blockState))
                          fluidRenderer.tesselate(region, pos, fluidOutput, blockState, fluidState);
                      }
  

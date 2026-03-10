@@ -357,15 +357,16 @@ public interface IClientFluidTypeExtensions {
      * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
      * here needs to be performant.
      *
-     * @param fluidState the state of the fluid
-     * @param getter     the getter the fluid can be obtained from
-     * @param pos        the position of the fluid
-     * @param output     the {@link FluidRenderer.Output} to get vertex consumers from
-     * @param blockState the blockstate at the position of the fluid
+     * @param fluidRenderer the vanilla fluid renderer
+     * @param fluidState    the state of the fluid
+     * @param getter        the getter the fluid can be obtained from
+     * @param pos           the position of the fluid
+     * @param output        the {@link FluidRenderer.Output} to get vertex consumers from
+     * @param blockState    the blockstate at the position of the fluid
      * @return true if vanilla fluid rendering should be skipped
      */
     // TODO 26.1: consider moving this to a separate interface and attaching it to the FluidModel
-    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, FluidRenderer.Output output, BlockState blockState) {
+    default boolean renderFluid(FluidRenderer fluidRenderer, FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, FluidRenderer.Output output, BlockState blockState) {
         return false;
     }
 }
