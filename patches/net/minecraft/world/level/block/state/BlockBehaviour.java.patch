@@ -129,3 +129,12 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
+@@ -975,7 +_,7 @@
+         private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, entityType) -> state.isFaceSturdy(
+                 level, pos, Direction.UP
+             )
+-            && state.getLightEmission() < 14;
++            && state.getLightEmission(level, pos) < 14;
+         private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
+         private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.blocksMotion() && state.isCollisionShapeFullBlock(level, pos);
+         private BlockBehaviour.StatePredicate isViewBlocking = this.isSuffocating;
