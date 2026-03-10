@@ -7,13 +7,13 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
@@ -360,11 +360,12 @@ public interface IClientFluidTypeExtensions {
      * @param fluidState     the state of the fluid
      * @param getter         the getter the fluid can be obtained from
      * @param pos            the position of the fluid
-     * @param vertexConsumer the vertex consumer to emit quads to
+     * @param output         the {@link FluidRenderer.Output} to get vertex consumers from
      * @param blockState     the blockstate at the position of the fluid
      * @return true if vanilla fluid rendering should be skipped
      */
-    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
+    // TODO 26.1: consider moving this to a separate interface and attaching it to the FluidModel
+    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, FluidRenderer.Output output, BlockState blockState) {
         return false;
     }
 }
