@@ -284,7 +284,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return builder.build();
     }
 
-    private Pair<BakedQuad, Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, BakedQuad.SpriteInfo texture, Transformation transform) {
+    private Pair<BakedQuad, Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, BakedQuad.MaterialInfo texture, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -305,16 +305,26 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
 
         var quadBaker = new QuadBakingVertexConsumer();
 
-        quadBaker.setSpriteInfo(texture);
-        quadBaker.setTintIndex(tintIndex);
-
+        boolean shade;
+        int light;
         if (emissiveAmbient) {
             int fakeLight = (int) ((ambientColor.x() + ambientColor.y() + ambientColor.z()) * 15 / 3.0f);
-            quadBaker.setLightEmission(fakeLight);
-            quadBaker.setShade(fakeLight == 0 && shadeQuads);
+            light = fakeLight;
+            shade = (fakeLight == 0 && shadeQuads);
         } else {
-            quadBaker.setShade(shadeQuads);
+            light = texture.lightEmission();
+            shade = shadeQuads;
         }
+
+        quadBaker.setSpriteInfo(new BakedQuad.MaterialInfo(
+            texture.sprite(),
+            texture.layer(),
+            texture.itemRenderType(),
+            tintIndex,
+            shade,
+            light,
+            texture.ambientOcclusion()
+        ));
 
         boolean hasTransform = !transform.isIdentity();
         // The incoming transform is referenced on the center of the block, but our coords are referenced on the corner

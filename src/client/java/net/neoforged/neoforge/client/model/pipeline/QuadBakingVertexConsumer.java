@@ -33,12 +33,8 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     private int vertexIndex = 0;
     private boolean building = false;
 
-    private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    private BakedQuad.@Nullable SpriteInfo spriteInfo = null;
-    private boolean shade;
-    private int lightEmission;
-    private boolean hasAmbientOcclusion;
+    private BakedQuad.@Nullable MaterialInfo spriteInfo = null;
 
     public QuadBakingVertexConsumer() {
         clear();
@@ -100,28 +96,12 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         return this;
     }
 
-    public void setTintIndex(int tintIndex) {
-        this.tintIndex = tintIndex;
-    }
-
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
-    public void setSpriteInfo(BakedQuad.SpriteInfo sprite) {
+    public void setSpriteInfo(BakedQuad.MaterialInfo sprite) {
         this.spriteInfo = sprite;
-    }
-
-    public void setShade(boolean shade) {
-        this.shade = shade;
-    }
-
-    public void setLightEmission(int lightEmission) {
-        this.lightEmission = lightEmission;
-    }
-
-    public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-        this.hasAmbientOcclusion = hasAmbientOcclusion;
     }
 
     public BakedQuad bakeQuad() {
@@ -141,14 +121,10 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
                 uvs[1],
                 uvs[2],
                 uvs[3],
-                tintIndex,
                 direction,
                 spriteInfo,
-                shade,
-                lightEmission,
                 BakedNormals.of(normals[0], normals[1], normals[2], normals[3]),
-                BakedColors.of(colors[0], colors[1], colors[2], colors[3]),
-                hasAmbientOcclusion);
+                BakedColors.of(colors[0], colors[1], colors[2], colors[3]));
         clear();
         return quad;
     }
@@ -162,6 +138,5 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
         spriteInfo = null;
-        lightEmission = 0;
     }
 }
