@@ -37,6 +37,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
+// FIXME 26.1: clean up texture, render layer and tint handling in favor of FluidModel
 public interface IClientFluidTypeExtensions {
     IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {
         @Override
