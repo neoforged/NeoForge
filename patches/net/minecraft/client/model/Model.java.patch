@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/Model.java
 +++ b/net/minecraft/client/model/Model.java
-@@ -23,6 +23,10 @@
+@@ -23,6 +_,10 @@
          this.allParts = root.getAllParts();
      }
  
@@ -8,6 +8,6 @@
 +        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
 +    }
 +
-     public final RenderType renderType(Identifier texture) {
-         return this.renderType.apply(texture);
+     public final Function<Identifier, RenderType> renderType() {
+         return this.renderType;
      }
