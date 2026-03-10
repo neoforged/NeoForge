@@ -29,7 +29,7 @@ public abstract class GameRuleEntry extends AbstractGameRulesScreen.RuleEntry {
         super(tooltip);
 
         this.font = font;
-        this.label = font.split(label, 175);
+        this.label = font.split(label, 170);
     }
 
     @Override

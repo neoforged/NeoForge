@@ -98,8 +98,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.centeredText(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xFFAAAAAA);
         this.message.visitLines(TextAlignment.CENTER, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2, font.lineHeight, guiGraphics.textRenderer());
     }
@@ -259,11 +259,11 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+            super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
             Style style = getComponentStyleAt(mouseX, mouseY);
             if (style != null && style.getHoverEvent() != null) {
-                guiGraphics.renderComponentHoverEffect(font, style, mouseX, mouseY);
+                guiGraphics.componentHoverEffect(font, style, mouseX, mouseY);
             }
         }
 

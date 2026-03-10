@@ -68,7 +68,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         }
 
         @Override
-        public void renderContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+        public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
             Component name = Component.literal(stripControlCodes(container.getModInfo().getDisplayName()));
             Component version = Component.literal(stripControlCodes(MavenVersionTranslator.artifactVersionToString(container.getModInfo().getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(container.getModInfo());

@@ -84,11 +84,11 @@ public class LoadingErrorScreen extends ErrorScreen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-        this.entryList.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
+        this.entryList.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         drawMultiLineCenteredString(guiGraphics, font, this.modLoadErrors.isEmpty() ? warningHeader : errorHeader, this.width / 2, 10);
-        this.renderables.forEach(button -> button.render(guiGraphics, mouseX, mouseY, partialTick));
+        this.renderables.forEach(button -> button.extractRenderState(guiGraphics, mouseX, mouseY, partialTick));
     }
 
     private void drawMultiLineCenteredString(GuiGraphicsExtractor guiGraphics, Font fr, Component str, int x, int y) {
@@ -143,7 +143,7 @@ public class LoadingErrorScreen extends ErrorScreen {
             }
 
             @Override
-            public void renderContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+            public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
                 Font font = Minecraft.getInstance().font;
                 final List<FormattedCharSequence> strings = font.split(message, LoadingEntryList.this.width - 20);
                 int left = getContentX();

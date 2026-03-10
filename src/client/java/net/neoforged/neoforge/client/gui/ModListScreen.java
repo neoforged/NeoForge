@@ -204,7 +204,7 @@ public class ModListScreen extends Screen {
 
             final Style component = findTextLine(mouseX, mouseY);
             if (component != null) {
-                guiGraphics.renderComponentHoverEffect(ModListScreen.this.font, component, mouseX, mouseY);
+                guiGraphics.componentHoverEffect(ModListScreen.this.font, component, mouseX, mouseY);
             }
         }
 
@@ -353,8 +353,8 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
         guiGraphics.text(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFFFF, false);

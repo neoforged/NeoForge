@@ -44,10 +44,10 @@ public class GenericGameRuleEntry<T> extends GameRuleEntry {
     }
 
     @Override
-    public void renderContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+    public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
         renderLabel(graphics, getContentY(), getContentX());
         input.setX(getContentRight() - 45);
         input.setY(getContentY());
-        input.render(graphics, mouseX, mouseY, a);
+        input.extractRenderState(graphics, mouseX, mouseY, a);
     }
 }

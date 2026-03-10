@@ -71,7 +71,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         if (fadeouttimer >= 1.0F) {
             if (this.minecraft.screen != null) {
-                this.minecraft.screen.render(graphics, 0, 0, partialTick);
+                this.minecraft.screen.extractRenderState(graphics, 0, 0, partialTick);
             }
         }
 

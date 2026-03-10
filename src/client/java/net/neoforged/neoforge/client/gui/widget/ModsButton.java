@@ -31,8 +31,8 @@ public class ModsButton extends Button.Plain {
     }
 
     @Override
-    protected void renderContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderContents(guiGraphics, mouseX, mouseY, partialTick);
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractContents(guiGraphics, mouseX, mouseY, partialTick);
 
         if (!hasCheckedForUpdates) {
             showNotification = ClientModLoader.checkForUpdates();
