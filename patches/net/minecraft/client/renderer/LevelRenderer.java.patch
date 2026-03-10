@@ -89,6 +89,15 @@
                  profiler.pop();
                  this.checkPoseStack(poseStack);
                  if (translucentTarget != null) {
+@@ -708,6 +_,8 @@
+                 this.featureRenderDispatcher.renderTranslucentFeatures();
+                 bufferSource.endBatch();
+                 crumblingBufferSource.endBatch();
++                profiler.popPush("neoforge_render_after_translucent_features");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
+                 profiler.pop();
+                 this.renderBuffers.outlineBufferSource().endOutlineBatch();
+                 if (renderOutline) {
 @@ -721,6 +_,8 @@
                  this.checkPoseStack(poseStack);
                  profiler.push("translucentTerrain");
@@ -108,7 +117,7 @@
          );
      }
  
-+    /// @deprecated Neo: use [#addCloudsPass(FrameGraphBuilder, CloudStatus, Vec3, long, float, int, float, int, Matrix4f)] instead
++    /// @deprecated Neo: use [#addCloudsPass(FrameGraphBuilder, CloudStatus, Vec3, long, float, int, float, int, Matrix4fc)] instead
 +    @Deprecated
      private void addCloudsPass(
          FrameGraphBuilder frame,
@@ -130,7 +139,7 @@
 +        int cloudColor,
 +        float cloudHeight,
 +        int cloudRange,
-+        Matrix4f modelViewMatrix
++        Matrix4fc modelViewMatrix
 +    ) {
          FramePass pass = frame.addPass("clouds");
          if (this.targets.clouds != null) {
@@ -148,14 +157,14 @@
      }
  
 +    /**
-+     * @deprecated Neo: use {@link #addWeatherPass(FrameGraphBuilder, GpuBufferSlice, Matrix4f)} instead
++     * @deprecated Neo: use {@link #addWeatherPass(FrameGraphBuilder, GpuBufferSlice, Matrix4fc)} instead
 +     */
 +    @Deprecated
      private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog) {
 +        addWeatherPass(frame, fog, RenderSystem.getModelViewMatrix());
 +    }
 +
-+    private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog, Matrix4f modelViewMatrix) {
++    private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog, Matrix4fc modelViewMatrix) {
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          FramePass pass = frame.addPass("weather");
          if (this.targets.weather != null) {
@@ -239,13 +248,12 @@
                  }
              }
          }
-@@ -962,20 +_,24 @@
-                 BlockPos pos = blockHitResult.getBlockPos();
+@@ -963,19 +_,23 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
--                    BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
-                     boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(1);
-+                    boolean isBlockTranslucent = this.minecraft.getBlockRenderer().getBlockModel(state).hasTranslucency(this.level, pos, state);
+                     BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
+-                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(1);
++                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(this.level, pos, state, 1);
                      boolean highContrast = this.minecraft.options.highContrastBlockOutline().get();
                      CollisionContext context = CollisionContext.of(camera.entity());
 +                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, pos, state, blockHitResult, context, isBlockTranslucent, highContrast, camera, levelRenderState);
@@ -286,14 +294,14 @@
      }
  
 +    /**
-+     * @deprecated Neo: use {@link #addSkyPass(FrameGraphBuilder, CameraRenderState, GpuBufferSlice, Matrix4f)} instead
++     * @deprecated Neo: use {@link #addSkyPass(FrameGraphBuilder, CameraRenderState, GpuBufferSlice, Matrix4fc)} instead
 +     */
 +    @Deprecated
      private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog) {
 +        this.addSkyPass(frame, cameraState, skyFog, RenderSystem.getModelViewMatrix());
 +    }
 +
-+    private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog, Matrix4f modelViewMatrix) {
++    private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog, Matrix4fc modelViewMatrix) {
          FogType fogType = cameraState.fogType;
          if (fogType != FogType.POWDER_SNOW && fogType != FogType.LAVA && !cameraState.entityRenderState.doesMobEffectBlockSky) {
              SkyRenderState state = this.levelRenderState.skyRenderState;
