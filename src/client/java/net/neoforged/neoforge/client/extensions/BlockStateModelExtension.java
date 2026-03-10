@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public interface BlockStateModelExtension {
@@ -100,6 +101,7 @@ public interface BlockStateModelExtension {
     /// @param pos   the position of the block being rendered
     /// @param state the state of the block being rendered
     /// @param flag  the material flag to check
+    @ApiStatus.NonExtendable
     default boolean hasMaterialFlag(BlockAndTintGetter level, BlockPos pos, BlockState state, @BakedQuad.MaterialFlags int flag) {
         return (self().materialFlags(level, pos, state) & flag) != 0;
     }

@@ -46,15 +46,11 @@ public final class QuadTransforms {
                 quad.packedUV1(),
                 quad.packedUV2(),
                 quad.packedUV3(),
-                quad.tintIndex(),
                 // TODO: the direction is currently not being transformed, but probably should be
                 quad.direction(),
-                quad.spriteInfo(),
-                quad.shade(),
-                quad.lightEmission(),
+                quad.materialInfo(),
                 updatedNormals,
-                quad.bakedColors(),
-                quad.hasAmbientOcclusion());
+                quad.bakedColors());
     }
 
     private static Vector3fc transformPosition(Vector4f temp, Vector3fc pos, Transformation transformation) {

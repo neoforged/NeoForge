@@ -9,6 +9,7 @@ import java.util.List;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -51,12 +52,15 @@ public abstract class DelegateBlockStateModel implements BlockStateModel {
     }
 
     @Override
+    @Deprecated
+    @BakedQuad.MaterialFlags
     public int materialFlags() {
         return this.delegate.materialFlags();
     }
 
     @Override
+    @BakedQuad.MaterialFlags
     public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return delegate.materialFlags(level, pos, state);
+        return this.delegate.materialFlags(level, pos, state);
     }
 }

@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.CloudRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderManager;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -69,8 +68,6 @@ public class VanillaClientListeners {
     public static final Identifier MODELS = key(ModelManager.class);
 
     public static final Identifier EQUIPMENT_ASSETS = key(EquipmentAssetManager.class);
-
-    public static final Identifier BLOCK_RENDERER = key(BlockRenderDispatcher.class);
 
     public static final Identifier ENTITY_RENDERER = key(EntityRenderDispatcher.class);
 

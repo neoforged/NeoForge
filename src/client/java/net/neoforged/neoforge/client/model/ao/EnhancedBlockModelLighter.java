@@ -105,7 +105,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
     private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, BakedQuad quad, QuadInstance outputInstance) {
         // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
         // This is already stored in the faceCubic field.
-        var fullFace = this.calculator.calculateFace(level, state, pos, direction, quad.shade(), this.faceCubic);
+        var fullFace = this.calculator.calculateFace(level, state, pos, direction, quad.materialInfo().shade(), this.faceCubic);
 
         // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
         // This will work regardless of the vertex order or position
@@ -154,7 +154,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
      * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
     private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, BakedQuad quad, QuadInstance outputInstance) {
-        boolean shade = quad.shade();
+        boolean shade = quad.materialInfo().shade();
         int quadNormal = -1;
 
         for (int vertex = 0; vertex < 4; ++vertex) {
@@ -223,7 +223,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
 
     @Override
     public void prepareQuadFlat(BlockAndTintGetter level, BlockState state, BlockPos pos, int lightCoords, BakedQuad quad, QuadInstance outputInstance) {
-        if (!quad.shade()) {
+        if (!quad.materialInfo().shade()) {
             super.prepareQuadFlat(level, state, pos, lightCoords, quad, outputInstance);
             return;
         }

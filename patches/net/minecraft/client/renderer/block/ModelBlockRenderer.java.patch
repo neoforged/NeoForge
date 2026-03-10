@@ -76,7 +76,7 @@
 +                                }
 +                            } else
                              for (BakedQuad quad : culledQuads) {
-+                                if (!quad.hasAmbientOcclusion()) {
++                                if (!quad.materialInfo().ambientOcclusion()) {
 +                                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
 +                                    continue;
@@ -95,7 +95,7 @@
 +                }
 +            } else
              for (BakedQuad quad : part.getQuads(null)) {
-+                if (!quad.hasAmbientOcclusion()) {
++                if (!quad.materialInfo().ambientOcclusion()) {
 +                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
 +                    continue;

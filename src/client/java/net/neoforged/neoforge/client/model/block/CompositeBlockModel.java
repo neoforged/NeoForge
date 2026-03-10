@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -23,12 +24,17 @@ import org.jspecify.annotations.Nullable;
 public class CompositeBlockModel implements DynamicBlockStateModel {
     private final List<BlockStateModel> models;
     private final Material.Baked particleMaterial;
-    private final int flags;
+    @BakedQuad.MaterialFlags
+    private final int materialFlags;
 
     public CompositeBlockModel(List<BlockStateModel> models) {
         this.models = models;
         this.particleMaterial = models.getFirst().particleMaterial();
-        this.flags = models.stream().<Integer>reduce(0, (acc, model) -> acc | model.materialFlags(), (a, b) -> a | b);
+        int flags = 0;
+        for (BlockStateModel model : models) {
+            flags |= model.materialFlags();
+        }
+        this.materialFlags = flags;
     }
 
     @Override
@@ -76,11 +82,13 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
     }
 
     @Override
+    @BakedQuad.MaterialFlags
     public int materialFlags() {
-        return flags;
+        return materialFlags;
     }
 
     @Override
+    @BakedQuad.MaterialFlags
     public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         int flags = 0;
         for (BlockStateModel model : models) {
