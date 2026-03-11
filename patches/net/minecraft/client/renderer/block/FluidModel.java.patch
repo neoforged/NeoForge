@@ -1,0 +1,59 @@
+--- a/net/minecraft/client/renderer/block/FluidModel.java
++++ b/net/minecraft/client/renderer/block/FluidModel.java
+@@ -16,10 +_,45 @@
+     Material.Baked stillMaterial,
+     Material.Baked flowingMaterial,
+     Material.@Nullable Baked overlayMaterial,
+-    @Nullable BlockTintSource tintSource
++    net.neoforged.neoforge.client.fluid.@Nullable FluidTintSource fluidTintSource,
++    net.neoforged.neoforge.client.fluid.@Nullable CustomFluidRenderer customRenderer
+ ) {
++    public FluidModel(ChunkSectionLayer layer, Material.Baked stillMaterial, Material.Baked flowingMaterial, Material.@Nullable Baked overlayMaterial, net.neoforged.neoforge.client.fluid.@Nullable FluidTintSource fluidTintSource) {
++        this(layer, stillMaterial, flowingMaterial, overlayMaterial, fluidTintSource, null);
++    }
++
++    /// @deprecated Neo: use [#FluidModel(ChunkSectionLayer, Material.Baked, Material.Baked, Material.Baked, net.neoforged.neoforge.client.fluid.FluidTintSource)] instead
++    @Deprecated
++    public FluidModel(ChunkSectionLayer layer, Material.Baked stillMaterial, Material.Baked flowingMaterial, Material.@Nullable Baked overlayMaterial, @Nullable BlockTintSource tintSource) {
++        this(layer, stillMaterial, flowingMaterial, overlayMaterial, net.neoforged.neoforge.client.fluid.FluidTintSources.of(tintSource));
++    }
++
++    /// @deprecated Neo: use [#fluidTintSource()] instead
++    @Nullable
++    @Deprecated
++    public BlockTintSource tintSource() {
++        return this.fluidTintSource;
++    }
++
+     @OnlyIn(Dist.CLIENT)
+-    public record Unbaked(Material stillMaterial, Material flowingMaterial, @Nullable Material overlayMaterial, @Nullable BlockTintSource tintSource) {
++    public record Unbaked(Material stillMaterial, Material flowingMaterial, @Nullable Material overlayMaterial, net.neoforged.neoforge.client.fluid.@Nullable FluidTintSource fluidTintSource, net.neoforged.neoforge.client.fluid.@Nullable CustomFluidRenderer customRenderer) {
++        public Unbaked(Material stillMaterial, Material flowingMaterial, @Nullable Material overlayMaterial, net.neoforged.neoforge.client.fluid.@Nullable FluidTintSource fluidTintSource) {
++            this(stillMaterial, flowingMaterial, overlayMaterial, fluidTintSource, null);
++        }
++
++        /// @deprecated Neo: use [#Unbaked(Material, Material, Material, net.neoforged.neoforge.client.fluid.FluidTintSource)] instead
++        @Deprecated
++        public Unbaked(Material stillMaterial, Material flowingMaterial, @Nullable Material overlayMaterial, @Nullable BlockTintSource tintSource) {
++            this(stillMaterial, flowingMaterial, overlayMaterial, net.neoforged.neoforge.client.fluid.FluidTintSources.of(tintSource));
++        }
++
++        /// @deprecated Neo: use [#fluidTintSource()] instead
++        @Nullable
++        @Deprecated
++        public BlockTintSource tintSource() {
++            return this.fluidTintSource;
++        }
++
+         public FluidModel bake(MaterialBaker materials, ModelDebugName modelName) {
+             Material.Baked stillMaterial = materials.get(this.stillMaterial, modelName);
+             Material.Baked flowingMaterial = materials.get(this.flowingMaterial, modelName);
+@@ -29,7 +_,7 @@
+                 transparency = transparency.or(getTransparency(overlayMaterial));
+             }
+ 
+-            return new FluidModel(ChunkSectionLayer.byTransparency(transparency), stillMaterial, flowingMaterial, overlayMaterial, this.tintSource);
++            return new FluidModel(ChunkSectionLayer.byTransparency(transparency), stillMaterial, flowingMaterial, overlayMaterial, this.fluidTintSource, this.customRenderer);
+         }
+ 
+         private static Transparency getTransparency(Material.Baked material) {

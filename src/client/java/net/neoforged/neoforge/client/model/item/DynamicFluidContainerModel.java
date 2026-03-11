@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.item.CompositeModel;
@@ -46,7 +48,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.ComposedModelState;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
@@ -91,15 +92,18 @@ public class DynamicFluidContainerModel implements ItemModel {
     private ItemModel bakeModelForFluid(Fluid fluid) {
         ModelBaker baker = bakingContext.blockModelBaker();
         MaterialBaker materials = baker.materials();
+        FluidModel fluidModel = Minecraft.getInstance()
+                .getModelManager()
+                .getFluidStateModelSet()
+                .get(fluid.defaultFluidState());
 
         Material particleLocation = unbakedModel.textures.particle.orElse(null);
         Material baseLocation = unbakedModel.textures.base.orElse(null);
         Material fluidMaskLocation = unbakedModel.textures.fluid.orElse(null);
         Material coverLocation = unbakedModel.textures.cover.orElse(null);
-        Material fluidLocation = new Material(IClientFluidTypeExtensions.of(fluid).getStillTexture());
 
         Material.Baked baseSprite = baseLocation != null ? materials.get(baseLocation, DEBUG_NAME) : null;
-        Material.Baked fluidSprite = fluid != Fluids.EMPTY ? materials.get(fluidLocation, DEBUG_NAME) : null;
+        Material.Baked fluidSprite = fluid != Fluids.EMPTY ? fluidModel.stillMaterial() : null;
         Material.Baked coverSprite = (coverLocation != null && (!unbakedModel.coverIsMask || baseLocation != null)) ? materials.get(coverLocation, DEBUG_NAME) : null;
 
         Material.Baked particleSprite = particleLocation != null ? materials.get(particleLocation, DEBUG_NAME) : null;
