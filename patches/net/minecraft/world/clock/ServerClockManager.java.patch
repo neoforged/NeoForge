@@ -32,3 +32,26 @@
      public void setRate(Holder<WorldClock> clock, float rate) {
          this.modifyClock(clock, instance -> instance.rate = rate);
      }
+@@ -121,9 +_,22 @@
+         }
+     }
+ 
++    /**
++     * Returns the current ratio between game ticks and clock ticks. This value cannot be 0 or negative.
++     * The default is 1.
++     */
++    public float getRate(Holder<WorldClock> definition) {
++        return getInstance(definition).rate;
++    }
++
+     @Override
+     public long getTotalTicks(Holder<WorldClock> definition) {
+         return this.getInstance(definition).totalTicks;
++    }
++
++    @Override
++    public float getPartialTick(Holder<WorldClock> definition) {
++        return this.getInstance(definition).partialTick;
+     }
+ 
+     public ClientboundSetTimePacket createFullSyncPacket() {
