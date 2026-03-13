@@ -1,5 +1,20 @@
 --- a/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
 +++ b/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
+@@ -48,6 +_,14 @@
+                 BlockPos pos = BlockPos.of(next.getLongKey());
+                 stateIterator.remove();
+                 clientLevel.syncBlockState(pos, serverVerifiedState.blockState, this.lastTeleportSequence < sequence ? serverVerifiedState.playerPos : null);
++                // Neo: Restore the BlockEntity if one was present before the break was cancelled.
++                // Fixes MC-36093 and permits correct server-side only cancellation of block changes.
++                if (serverVerifiedState.snapshot != null && serverVerifiedState.blockState == serverVerifiedState.snapshot.getState()) {
++                    if (serverVerifiedState.snapshot.restoreBlockEntity(clientLevel, pos)) {
++                        // Attempt a re-render if BE data was loaded, since some blocks may depend on it.
++                        clientLevel.sendBlockUpdated(pos, serverVerifiedState.blockState, serverVerifiedState.blockState, 3);
++                    }
++                }
+             }
+         }
+     }
 @@ -75,8 +_,20 @@
          return this.isPredicting;
      }
