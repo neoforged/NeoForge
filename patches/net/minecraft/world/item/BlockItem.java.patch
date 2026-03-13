@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -77,9 +_,9 @@
+@@ -76,9 +_,9 @@
                          }
                      }
  
@@ -12,7 +12,7 @@
                      );
                      level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, placedState));
                      itemStack.consume(1, player);
-@@ -89,8 +_,14 @@
+@@ -88,8 +_,14 @@
          }
      }
  

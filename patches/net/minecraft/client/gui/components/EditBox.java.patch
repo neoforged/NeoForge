@@ -40,7 +40,7 @@
              this.value = new StringBuilder(this.value).replace(start, end, text).toString();
              this.setCursorPosition(start + insertionLength);
              this.setHighlightPos(this.cursorPos);
-@@ -616,6 +_,10 @@
+@@ -622,6 +_,10 @@
      public void setHint(Component hint) {
          boolean hasNoStyle = hint.getStyle().equals(Style.EMPTY);
          this.hint = (Component)(hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint);

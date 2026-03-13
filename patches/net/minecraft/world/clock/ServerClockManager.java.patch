@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -60,6 +_,9 @@
+@@ -61,6 +_,9 @@
      }
  
      public void tick() {
@@ -10,7 +10,7 @@
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
          if (advanceTime) {
              this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
-@@ -104,6 +_,21 @@
+@@ -105,6 +_,21 @@
          this.modifyClock(clock, instance -> instance.paused = paused);
      }
  
@@ -32,26 +32,3 @@
      public void setRate(Holder<WorldClock> clock, float rate) {
          this.modifyClock(clock, instance -> instance.rate = rate);
      }
-@@ -116,9 +_,22 @@
-         this.setDirty();
-     }
- 
-+    /**
-+     * Returns the current ratio between game ticks and clock ticks. This value cannot be 0 or negative.
-+     * The default is 1.
-+     */
-+    public float getRate(Holder<WorldClock> definition) {
-+        return getInstance(definition).rate;
-+    }
-+
-     @Override
-     public long getTotalTicks(Holder<WorldClock> definition) {
-         return this.getInstance(definition).totalTicks;
-+    }
-+
-+    @Override
-+    public float getPartialTick(Holder<WorldClock> definition) {
-+        return this.getInstance(definition).partialTick;
-     }
- 
-     public ClientboundSetTimePacket createFullSyncPacket() {

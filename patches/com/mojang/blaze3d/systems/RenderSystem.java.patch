@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -73,6 +_,7 @@
+@@ -74,6 +_,7 @@
      private static @Nullable DynamicUniforms dynamicUniforms;
      private static final ScissorState scissorStateForRenderTypeDraws = new ScissorState();
      private static final SamplerCache samplerCache = new SamplerCache();
@@ -8,7 +8,7 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
-@@ -378,4 +_,38 @@
+@@ -379,4 +_,38 @@
      @OnlyIn(Dist.CLIENT)
      record GpuAsyncTask(Runnable callback, GpuFence fence) {
      }

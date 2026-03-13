@@ -35,7 +35,7 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -140,7 +_,8 @@
+@@ -142,7 +_,8 @@
                  this.applyEffectsFromBlocks();
                  float friction = 0.98F;
                  if (this.onGround()) {
@@ -45,7 +45,7 @@
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply(friction, 0.98, friction));
-@@ -172,7 +_,15 @@
+@@ -174,7 +_,15 @@
                  }
              }
  
@@ -62,7 +62,7 @@
                  this.discard();
              }
          }
-@@ -282,7 +_,7 @@
+@@ -284,7 +_,7 @@
              this.health = (int)(this.health - damage);
              this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
              if (this.health <= 0) {
@@ -71,7 +71,7 @@
                  this.discard();
              }
  
-@@ -300,6 +_,7 @@
+@@ -302,6 +_,7 @@
          output.putShort("Health", (short)this.health);
          output.putShort("Age", (short)this.age);
          output.putShort("PickupDelay", (short)this.pickupDelay);
@@ -79,7 +79,7 @@
          EntityReference.store(this.thrower, output, "Thrower");
          output.storeNullable("Owner", UUIDUtil.CODEC, this.target);
          if (!this.getItem().isEmpty()) {
-@@ -312,6 +_,7 @@
+@@ -314,6 +_,7 @@
          this.health = input.getShortOr("Health", (short)5);
          this.age = input.getShortOr("Age", (short)0);
          this.pickupDelay = input.getShortOr("PickupDelay", (short)0);
@@ -87,7 +87,7 @@
          this.target = input.read("Owner", UUIDUtil.CODEC).orElse(null);
          this.thrower = EntityReference.read(input, "Thrower");
          this.setItem(input.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY));
-@@ -326,7 +_,22 @@
+@@ -328,7 +_,22 @@
              ItemStack itemStack = this.getItem();
              Item item = itemStack.getItem();
              int orgCount = itemStack.getCount();
@@ -111,7 +111,7 @@
                  player.take(this, orgCount);
                  if (itemStack.isEmpty()) {
                      this.discard();
-@@ -372,6 +_,15 @@
+@@ -374,6 +_,15 @@
          this.target = target;
      }
  
@@ -127,7 +127,7 @@
      public void setThrower(Entity thrower) {
          this.thrower = EntityReference.of(thrower);
      }
-@@ -410,7 +_,7 @@
+@@ -412,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();

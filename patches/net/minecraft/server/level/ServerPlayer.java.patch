@@ -274,7 +274,7 @@
          if (!this.gameMode.changeGameModeForPlayer(mode)) {
              return false;
          } else {
-@@ -1918,6 +_,7 @@
+@@ -1922,6 +_,7 @@
      public void setCamera(@Nullable Entity newCamera) {
          Entity oldCamera = this.getCamera();
          this.camera = (Entity)(newCamera == null ? this : newCamera);
@@ -282,7 +282,7 @@
          if (oldCamera != this.camera) {
              if (this.camera.level() instanceof ServerLevel level) {
                  this.teleportTo(level, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1944,7 +_,11 @@
+@@ -1948,7 +_,11 @@
      }
  
      public @Nullable Component getTabListDisplayName() {
@@ -295,7 +295,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1978,6 +_,7 @@
+@@ -1982,6 +_,7 @@
      }
  
      public void setRespawnPosition(ServerPlayer.@Nullable RespawnConfig respawnConfig, boolean showMessage) {
@@ -303,7 +303,7 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2015,6 +_,75 @@
+@@ -2019,6 +_,75 @@
          return entity;
      }
  
@@ -379,7 +379,7 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -2029,6 +_,7 @@
+@@ -2033,6 +_,7 @@
      }
  
      private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
@@ -387,7 +387,7 @@
          GameType forcedGameType = this.server.getForcedGameType();
          if (forcedGameType != null) {
              return forcedGameType;
-@@ -2065,6 +_,8 @@
+@@ -2069,6 +_,8 @@
  
      public void drop(boolean all) {
          Inventory inventory = this.getInventory();
@@ -396,7 +396,7 @@
          ItemStack removed = inventory.removeFromSelected(all);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())
-@@ -2073,7 +_,7 @@
+@@ -2077,7 +_,7 @@
              this.stopUsingItem();
          }
  
