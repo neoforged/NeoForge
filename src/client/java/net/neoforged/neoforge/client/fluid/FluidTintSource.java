@@ -22,4 +22,14 @@ public interface FluidTintSource extends BlockTintSource {
     default int colorAsStack(FluidStack stack) {
         return this.color(stack.getFluid().defaultFluidState());
     }
+
+    @Override
+    default int color(BlockState state) {
+        return this.color(state.getFluidState());
+    }
+
+    @Override
+    default int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+        return this.colorInWorld(state.getFluidState(), state, level, pos);
+    }
 }
