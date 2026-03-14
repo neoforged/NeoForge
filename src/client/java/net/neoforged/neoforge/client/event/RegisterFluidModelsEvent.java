@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.world.level.material.Fluid;
@@ -31,8 +32,18 @@ public final class RegisterFluidModelsEvent extends Event implements IModBusEven
     }
 
     /// Register the given [FluidModel.Unbaked] for the given [Fluid]
+    public void register(FluidModel.Unbaked model, Supplier<Fluid> fluid) {
+        this.register(model, fluid.get());
+    }
+
+    /// Register the given [FluidModel.Unbaked] for the given [Fluid]
     public void register(FluidModel.Unbaked model, Fluid fluid) {
         this.register(fluid, model.bake(materials, fluid::toString));
+    }
+
+    /// Register the given [FluidModel.Unbaked] for the two given [Fluid]s
+    public void register(FluidModel.Unbaked model, Supplier<Fluid> stillFluid, Supplier<Fluid> flowingFluid) {
+        this.register(model, stillFluid.get(), flowingFluid.get());
     }
 
     /// Register the given [FluidModel.Unbaked] for the two given [Fluid]s
