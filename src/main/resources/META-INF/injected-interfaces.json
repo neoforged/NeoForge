@@ -2,9 +2,6 @@
   "com/mojang/blaze3d/opengl/GlDevice": [
     "net/neoforged/neoforge/client/extensions/blaze3d/GlDeviceExtension"
   ],
-  "com/mojang/blaze3d/vertex/PoseStack": [
-    "net/neoforged/neoforge/client/extensions/IPoseStackExtension"
-  ],
   "com/mojang/blaze3d/vertex/VertexConsumer": [
     "net/neoforged/neoforge/client/extensions/IVertexConsumerExtension"
   ],
@@ -26,10 +23,19 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/client/renderer/block/model/BlockModelPart": [
-    "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
+  "net/minecraft/client/renderer/block/dispatch/BlockStateModel": [
+    "net/neoforged/neoforge/client/extensions/BlockStateModelExtension"
   ],
-  "net/minecraft/client/renderer/block/model/multipart/MultiPartModel": [
+  "net/minecraft/client/renderer/block/dispatch/BlockStateModelPart": [
+    "net/neoforged/neoforge/client/extensions/BlockStateModelPartExtension"
+  ],
+  "net/minecraft/client/renderer/block/dispatch/ModelState": [
+    "net/neoforged/neoforge/client/extensions/ModelStateExtension"
+  ],
+  "net/minecraft/client/renderer/block/dispatch/WeightedVariants": [
+    "net/neoforged/neoforge/client/model/DynamicBlockStateModel"
+  ],
+  "net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel": [
     "net/neoforged/neoforge/client/model/DynamicBlockStateModel"
   ],
   "net/minecraft/client/renderer/blockentity/BlockEntityRenderer": [
@@ -38,32 +44,23 @@
   "net/minecraft/client/renderer/texture/atlas/SpriteSource": [
     "net/neoforged/neoforge/client/extensions/SpriteSourceExtension"
   ],
-  "net/minecraft/client/resources/model/BakedModel": [
-    "net/neoforged/neoforge/client/extensions/IBakedModelExtension"
-  ],
   "net/minecraft/client/resources/model/ModelBaker": [
     "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
   ],
   "net/minecraft/client/resources/model/ModelBaker$Interner": [
     "net/neoforged/neoforge/client/extensions/ModelBakerInternerExtension"
   ],
-  "net/minecraft/client/resources/model/ModelState": [
-    "net/neoforged/neoforge/client/extensions/ModelStateExtension"
-  ],
-  "net/minecraft/client/resources/model/QuadCollection$Builder": [
-    "net/neoforged/neoforge/client/extensions/QuadCollectionBuilderExtension"
-  ],
   "net/minecraft/client/resources/model/ResolvedModel": [
     "net/neoforged/neoforge/client/extensions/ResolvedModelExtension"
-  ],
-  "net/minecraft/client/resources/model/UnbakedGeometry": [
-    "net/neoforged/neoforge/client/extensions/UnbakedGeometryExtension"
   ],
   "net/minecraft/client/resources/model/UnbakedModel": [
     "net/neoforged/neoforge/client/extensions/UnbakedModelExtension"
   ],
-  "net/minecraft/client/resources/model/WeightedVariants": [
-    "net/neoforged/neoforge/client/model/DynamicBlockStateModel"
+  "net/minecraft/client/resources/model/cuboid/UnbakedCuboidGeometry": [
+    "net/neoforged/neoforge/client/model/ExtendedUnbakedGeometry"
+  ],
+  "net/minecraft/client/resources/model/geometry/UnbakedGeometry": [
+    "net/neoforged/neoforge/client/extensions/UnbakedGeometryExtension"
   ],
   "net/minecraft/commands/CommandSourceStack": [
     "net/neoforged/neoforge/common/extensions/ICommandSourceStackExtension"
@@ -263,12 +260,6 @@
   ],
   "net/minecraft/client/data/models/model/TexturedModel$Provider": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"
-  ],
-  "net/minecraft/client/renderer/block/model/BlockStateModel": [
-    "net/neoforged/neoforge/client/extensions/BlockStateModelExtension"
-  ],
-  "net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry": [
-    "net/neoforged/neoforge/client/model/ExtendedUnbakedGeometry"
   ],
   "net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection": [
     "net/neoforged/neoforge/client/IRenderableSection"

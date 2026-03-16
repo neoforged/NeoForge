@@ -1,28 +1,16 @@
 --- a/net/minecraft/client/renderer/special/SpecialModelRenderer.java
 +++ b/net/minecraft/client/renderer/special/SpecialModelRenderer.java
-@@ -39,9 +_,24 @@
+@@ -38,6 +_,13 @@
+         SpriteGetter sprites();
  
          PlayerSkinRenderCache playerSkinRenderCache();
- 
++
 +        /**
 +         * Provides access to the data-driven keyframe animations being loaded by the {@code AnimationLoader}
 +         */
 +        default net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations() {
 +            return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY;
 +        }
-+
-         @OnlyIn(Dist.CLIENT)
--        public record Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache)
-+        public record Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations)
-             implements SpecialModelRenderer.BakingContext {
-+
-+            /**
-+             * @deprecated Neo: use {@link #Simple(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
-+             */
-+            @Deprecated
-+            public Simple(EntityModelSet entityModelSet, SpriteGetter sprites, PlayerSkinRenderCache playerSkinRenderCache) {
-+                this(entityModelSet, sprites, playerSkinRenderCache, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
-+            }
-         }
      }
  
+     @OnlyIn(Dist.CLIENT)

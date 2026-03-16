@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client.model.block;
 import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.client.renderer.block.model.BlockModelDefinition;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -25,7 +25,7 @@ public interface CustomBlockModelDefinition {
      * @param sourceSupplier A {@link Supplier} providing the source file and source pack name for debugging
      * @return a map of {@link BlockState}s to {@link BlockStateModel.UnbakedRoot}s for all states of the provided state definition
      *
-     * @see BlockModelDefinition#instantiateVanilla(StateDefinition, Supplier)
+     * @see BlockStateModelDispatcher#instantiateVanilla(StateDefinition, Supplier)
      */
     Map<BlockState, BlockStateModel.UnbakedRoot> instantiate(StateDefinition<Block, BlockState> states, Supplier<String> sourceSupplier);
 

@@ -12,13 +12,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Holds extra data that may be injected into a face.<p>
- * Used by {@link ItemLayerModel}, {@link BlockElement} and {@link BlockElementFace}
+ * Used by {@link ItemLayerModel}, {@link CuboidModelElement} and {@link CuboidFace}
  * 
  * @param color            Color in ARGB format
  * @param lightEmission    Light emission for the face or element from 0-15 (inclusive)
@@ -48,6 +49,7 @@ public record ExtraFaceData(int color, int lightEmission, boolean ambientOcclusi
      * @throws JsonParseException
      */
     @Nullable
+    @Contract("_,!null->!null")
     public static ExtraFaceData read(@Nullable JsonElement obj, @Nullable ExtraFaceData fallback) throws JsonParseException {
         if (obj == null) {
             return fallback;

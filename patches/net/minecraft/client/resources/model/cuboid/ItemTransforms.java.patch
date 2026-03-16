@@ -1,5 +1,5 @@
---- a/net/minecraft/client/renderer/block/model/ItemTransforms.java
-+++ b/net/minecraft/client/renderer/block/model/ItemTransforms.java
+--- a/net/minecraft/client/resources/model/cuboid/ItemTransforms.java
++++ b/net/minecraft/client/resources/model/cuboid/ItemTransforms.java
 @@ -20,8 +_,24 @@
      ItemTransform gui,
      ItemTransform ground,

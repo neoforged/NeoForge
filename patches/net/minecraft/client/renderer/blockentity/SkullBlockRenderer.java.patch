@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -60,7 +_,7 @@
+@@ -67,7 +_,7 @@
                  case PIGLIN -> new PiglinHeadModel(modelSet.bakeLayer(ModelLayers.PIGLIN_HEAD));
              });
          } else {
@@ -9,10 +9,10 @@
          }
      }
  
-@@ -153,5 +_,15 @@
- 
-     public static RenderType getPlayerSkinRenderType(Identifier texture) {
-         return RenderTypes.entityTranslucent(texture);
+@@ -158,5 +_,15 @@
+         return new Transformation(
+             new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-RotationSegment.convertToDegrees(segment))).scale(-1.0F, -1.0F, 1.0F)
+         );
 +    }
 +
 +    @Override

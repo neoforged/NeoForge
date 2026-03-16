@@ -1,0 +1,41 @@
+--- a/net/minecraft/client/renderer/block/BuiltInBlockModels.java
++++ b/net/minecraft/client/renderer/block/BuiltInBlockModels.java
+@@ -180,18 +_,30 @@
+     }
+ 
+     public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Types type) {
++        return createMobHead((SkullBlock.Type) type);
++    }
++
++    public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Type type) {
+         return specialModelWithPropertyDispatch(
+             SkullBlock.ROTATION, rotation -> special(new SkullSpecialRenderer.Unbaked(type), SkullBlockRenderer.TRANSFORMATIONS.freeTransformations(rotation))
+         );
+     }
+ 
+     public static BuiltInBlockModels.SpecialModelFactory createMobWallHead(SkullBlock.Types type) {
++        return createMobWallHead((SkullBlock.Type) type);
++    }
++
++    public static BuiltInBlockModels.SpecialModelFactory createMobWallHead(SkullBlock.Type type) {
+         return specialModelWithPropertyDispatch(
+             WallSkullBlock.FACING, facing -> special(new SkullSpecialRenderer.Unbaked(type), SkullBlockRenderer.TRANSFORMATIONS.wallTransformation(facing))
+         );
+     }
+ 
+     public static void createMobHeads(BuiltInBlockModels.Builder builder, SkullBlock.Types type, Block ground, Block wall) {
++        createMobHeads(builder, (SkullBlock.Type) type, ground, wall);
++    }
++
++    public static void createMobHeads(BuiltInBlockModels.Builder builder, SkullBlock.Type type, Block ground, Block wall) {
+         builder.put(createMobHead(type), ground);
+         builder.put(createMobWallHead(type), wall);
+     }
+@@ -388,6 +_,7 @@
+     public static Map<BlockState, BlockModel.Unbaked> createBlockModels(BlockColors blockColors) {
+         BuiltInBlockModels.Builder builder = new BuiltInBlockModels.Builder(blockColors);
+         addDefaults(builder);
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterBlockModelsEvent(builder));
+         return builder.build();
+     }
+ 

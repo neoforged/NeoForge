@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client;
 
-import net.minecraft.client.renderer.state.LevelRenderState;
-import net.minecraft.client.renderer.state.SkyRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.client.renderer.state.level.SkyRenderState;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import org.joml.Matrix4f;

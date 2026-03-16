@@ -1,5 +1,5 @@
---- a/net/minecraft/client/renderer/state/BlockOutlineRenderState.java
-+++ b/net/minecraft/client/renderer/state/BlockOutlineRenderState.java
+--- a/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
++++ b/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
 @@ -14,9 +_,28 @@
      VoxelShape shape,
      @Nullable VoxelShape collisionShape,

@@ -1,0 +1,38 @@
+--- a/net/minecraft/client/resources/model/cuboid/CuboidFace.java
++++ b/net/minecraft/client/resources/model/cuboid/CuboidFace.java
+@@ -15,9 +_,24 @@
+ import org.jspecify.annotations.Nullable;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record CuboidFace(@Nullable Direction cullForDirection, int tintIndex, String texture, CuboidFace.@Nullable UVs uvs, Quadrant rotation) {
++public record CuboidFace(@Nullable Direction cullForDirection, int tintIndex, String texture, CuboidFace.@Nullable UVs uvs, Quadrant rotation, net.neoforged.neoforge.client.model.@Nullable ExtraFaceData faceData, org.apache.commons.lang3.mutable.MutableObject<CuboidModelElement> parent) {
+     public static final int NO_TINT = -1;
+ 
++    public CuboidFace(@Nullable Direction cullForDirection, int tintIndex, String texture, CuboidFace.@Nullable UVs uvs, Quadrant rotation) {
++        this(cullForDirection, tintIndex, texture, uvs, rotation, null, new org.apache.commons.lang3.mutable.MutableObject<>());
++    }
++
++    @Override
++    public net.neoforged.neoforge.client.model.ExtraFaceData faceData() {
++        if (this.faceData != null) {
++            return this.faceData;
++        } else if (this.parent.getValue() != null) {
++            return this.parent.getValue().faceData();
++        } else {
++            return net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT;
++        }
++    }
++
+     public static float getU(CuboidFace.UVs uvs, Quadrant rotation, int vertex) {
+         return uvs.getVertexU(rotation.rotateVertexIndex(vertex)) / 16.0F;
+     }
+@@ -38,7 +_,8 @@
+             String texture = getTexture(object);
+             CuboidFace.UVs uvs = getUVs(object);
+             Quadrant rotation = getRotation(object);
+-            return new CuboidFace(cullDirection, tintIndex, texture, uvs, rotation);
++            var faceData = net.neoforged.neoforge.client.model.ExtraFaceData.read(object.get("neoforge_data"), null);
++            return new CuboidFace(cullDirection, tintIndex, texture, uvs, rotation, faceData, new org.apache.commons.lang3.mutable.MutableObject<>());
+         }
+ 
+         private static int getTintIndex(JsonObject object) {

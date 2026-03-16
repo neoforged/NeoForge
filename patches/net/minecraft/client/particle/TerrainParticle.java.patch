@@ -1,15 +1,6 @@
 --- a/net/minecraft/client/particle/TerrainParticle.java
 +++ b/net/minecraft/client/particle/TerrainParticle.java
-@@ -29,7 +_,7 @@
-         this.rCol = 0.6F;
-         this.gCol = 0.6F;
-         this.bCol = 0.6F;
--        if (!blockState.is(Blocks.GRASS_BLOCK)) {
-+        if (net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).areBreakingParticlesTinted(blockState, level, pos)) {
-             int col = Minecraft.getInstance().getBlockColors().getColor(blockState, level, pos, 0);
-             this.rCol *= (col >> 16 & 0xFF) / 255.0F;
-             this.gCol *= (col >> 8 & 0xFF) / 255.0F;
-@@ -72,8 +_,14 @@
+@@ -74,8 +_,14 @@
      ) {
          BlockState state = options.getState();
          return !state.isAir() && !state.is(Blocks.MOVING_PISTON) && state.shouldSpawnTerrainParticles()
@@ -20,7 +11,7 @@
 +
 +    public TerrainParticle updateSprite(BlockState state, BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
 +        if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
-+            this.setSprite(Minecraft.getInstance().getModelManager().getBlockModelSet().getParticleMaterial(state, level, pos).sprite());
++            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
 +        return this;
      }
  

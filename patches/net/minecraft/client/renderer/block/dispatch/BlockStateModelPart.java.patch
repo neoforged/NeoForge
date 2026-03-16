@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/block/dispatch/BlockStateModelPart.java
++++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModelPart.java
+@@ -14,6 +_,8 @@
+ public interface BlockStateModelPart extends net.neoforged.neoforge.client.extensions.BlockStateModelPartExtension {
+     List<BakedQuad> getQuads(@Nullable Direction direction);
+ 
++    /** @deprecated Neo: Use {@link #ambientOcclusion()} instead. */
++    @Deprecated
+     boolean useAmbientOcclusion();
+ 
+     Material.Baked particleMaterial();

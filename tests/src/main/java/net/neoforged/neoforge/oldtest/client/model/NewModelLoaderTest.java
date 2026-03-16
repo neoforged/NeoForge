@@ -16,16 +16,16 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.Material;
-import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.cuboid.CuboidModel;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -141,7 +141,7 @@ public class NewModelLoaderTest {
     static class TestLoader implements UnbakedModelLoader<TestModel> {
         @Override
         public TestModel read(JsonObject jsonObject, JsonDeserializationContext ctx) throws JsonParseException {
-            return new TestModel(ctx.deserialize(jsonObject, BlockModel.class));
+            return new TestModel(ctx.deserialize(jsonObject, CuboidModel.class));
         }
     }
 

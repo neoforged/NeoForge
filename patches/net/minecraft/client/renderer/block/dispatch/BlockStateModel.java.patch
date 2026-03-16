@@ -1,22 +1,14 @@
---- a/net/minecraft/client/renderer/block/model/BlockStateModel.java
-+++ b/net/minecraft/client/renderer/block/model/BlockStateModel.java
-@@ -22,16 +_,24 @@
+--- a/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
++++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
+@@ -21,10 +_,16 @@
  
  @OnlyIn(Dist.CLIENT)
  public interface BlockStateModel extends net.neoforged.neoforge.client.extensions.BlockStateModelExtension {
-+    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)}. */
++    /// @deprecated Neo: Use [#collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)].
 +    @Deprecated
-     void collectParts(RandomSource random, List<BlockModelPart> output);
+     void collectParts(RandomSource random, List<BlockStateModelPart> output);
  
-+    /** @deprecated Neo: Use {@link #collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource)}. */
-+    @Deprecated
-     default List<BlockModelPart> collectParts(RandomSource random) {
-         List<BlockModelPart> parts = new ObjectArrayList<>();
-         this.collectParts(random, parts);
-         return parts;
-     }
- 
-+    /** @deprecated Neo: Use {@link #particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)}. */
++    /// @deprecated Neo: Use [#particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)].
 +    @Deprecated
      Material.Baked particleMaterial();
  
@@ -25,7 +17,7 @@
      boolean hasTranslucency();
  
      @OnlyIn(Dist.CLIENT)
-@@ -73,30 +_,41 @@
+@@ -66,30 +_,41 @@
              i -> i.group(Variant.MAP_CODEC.forGetter(Weighted::value), ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Weighted::weight))
                  .apply(i, Weighted::new)
          );

@@ -1,15 +1,15 @@
---- a/net/minecraft/client/resources/model/WeightedVariants.java
-+++ b/net/minecraft/client/resources/model/WeightedVariants.java
+--- a/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
++++ b/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
 @@ -43,9 +_,31 @@
          return this.hasTranslucency;
      }
  
 -    @Override
--    public void collectParts(RandomSource random, List<BlockModelPart> output) {
+-    public void collectParts(RandomSource random, List<BlockStateModelPart> output) {
 -        this.list.getRandomOrThrow(random).collectParts(random, output);
 +    // Neo: Implement our overload so child models can have custom logic
 +    @Override
-+    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random, List<BlockModelPart> output) {
++    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random, List<BlockStateModelPart> output) {
 +        this.list.getRandomOrThrow(random).collectParts(level, pos, state, random, output);
 +    }
 +

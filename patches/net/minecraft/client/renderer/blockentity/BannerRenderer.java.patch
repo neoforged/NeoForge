@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -257,4 +_,11 @@
-         this.standingFlagModel.setupAnim(0.0F);
-         this.standingFlagModel.root().getExtentsForGui(poseStack, output);
+@@ -275,4 +_,11 @@
+     private static Transformation createWallTransformation(Direction direction) {
+         return modelTransformation(direction.toYRot());
      }
 +
 +    @Override

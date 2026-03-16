@@ -11,8 +11,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 

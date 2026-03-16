@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client;
 
 import net.minecraft.client.CloudStatus;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
@@ -28,7 +28,7 @@ public interface CustomCloudsRenderer {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, Matrix4f modelViewMatrix) {
+    default boolean renderClouds(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4f modelViewMatrix) {
         return false;
     }
 }

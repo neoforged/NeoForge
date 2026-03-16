@@ -1,18 +1,18 @@
---- a/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
-+++ b/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
-@@ -24,6 +_,11 @@
+--- a/net/minecraft/client/resources/model/SimpleModelWrapper.java
++++ b/net/minecraft/client/resources/model/SimpleModelWrapper.java
+@@ -26,6 +_,11 @@
  
-     public static BlockModelPart bake(ModelBaker modelBakery, Identifier location, ModelState state) {
+     public static BlockStateModelPart bake(ModelBaker modelBakery, Identifier location, ModelState state) {
          ResolvedModel model = modelBakery.getModel(location);
 +        return bake(modelBakery, model, state);
 +    }
 +
 +    // Neo: split off to allow baking an existing ResolvedModel into a BlockModelPart
-+    public static BlockModelPart bake(ModelBaker modelBakery, ResolvedModel model, ModelState state) {
++    public static BlockStateModelPart bake(ModelBaker modelBakery, ResolvedModel model, ModelState state) {
          TextureSlots textureSlots = model.getTopTextureSlots();
          boolean hasAmbientOcclusion = model.getTopAmbientOcclusion();
          Material.Baked particleMaterial = model.resolveParticleMaterial(textureSlots, modelBakery);
-@@ -45,7 +_,7 @@
+@@ -47,7 +_,7 @@
          }
  
          if (forbiddenSprites != null) {

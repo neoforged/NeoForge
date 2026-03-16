@@ -1,8 +1,8 @@
---- a/net/minecraft/client/resources/model/UnbakedGeometry.java
-+++ b/net/minecraft/client/resources/model/UnbakedGeometry.java
-@@ -9,5 +_,9 @@
+--- a/net/minecraft/client/resources/model/geometry/UnbakedGeometry.java
++++ b/net/minecraft/client/resources/model/geometry/UnbakedGeometry.java
+@@ -12,5 +_,9 @@
  public interface UnbakedGeometry extends net.neoforged.neoforge.client.extensions.UnbakedGeometryExtension {
-     UnbakedGeometry EMPTY = (textureSlots, modelBaker, modelState, name) -> QuadCollection.EMPTY;
+     UnbakedGeometry EMPTY = (var0, var1, var2, var3) -> QuadCollection.EMPTY;
  
 +    /**
 +     * @deprecated Neo: Use {@link #bake(TextureSlots, ModelBaker, ModelState, ModelDebugName, net.minecraft.util.context.ContextMap)}.

@@ -7,8 +7,9 @@ package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.color.block.BlockColor;
+import java.util.List;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>These events are fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
- * @see RegisterColorHandlersEvent.Block
+ * @see BlockTintSources
  * @see RegisterColorHandlersEvent.ItemTintSources
  * @see RegisterColorHandlersEvent.ColorResolvers
  */
@@ -41,31 +42,31 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Block extends RegisterColorHandlersEvent {
+    public static class BlockTintSources extends RegisterColorHandlersEvent {
         private final BlockColors blockColors;
 
         @ApiStatus.Internal
-        public Block(BlockColors blockColors) {
+        public BlockTintSources(BlockColors blockColors) {
             this.blockColors = blockColors;
         }
 
         /**
          * {@return the block colors registry}
          *
-         * @see BlockColors#register(BlockColor, net.minecraft.world.level.block.Block...)
+         * @see BlockColors#register(List, net.minecraft.world.level.block.Block...)
          */
         public BlockColors getBlockColors() {
             return blockColors;
         }
 
         /**
-         * Registers a {@link BlockColor} instance for a set of blocks.
+         * Registers a list of {@link BlockTintSource}s for a set of blocks.
          *
-         * @param blockColor The color provider
-         * @param blocks     The blocks
+         * @param tintSources The color provider
+         * @param blocks      The blocks
          */
-        public void register(BlockColor blockColor, net.minecraft.world.level.block.Block... blocks) {
-            blockColors.register(blockColor, blocks);
+        public void register(List<BlockTintSource> tintSources, net.minecraft.world.level.block.Block... blocks) {
+            blockColors.register(tintSources, blocks);
         }
     }
 

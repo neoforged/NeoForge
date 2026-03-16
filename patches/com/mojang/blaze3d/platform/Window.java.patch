@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -108,6 +_,16 @@
-             debugOptions
-         );
-         this.handle = windowAndDevice.window();
+@@ -91,6 +_,16 @@
+         this.windowedWidth = this.width = Math.max(displayData.width(), 1);
+         this.windowedHeight = this.height = Math.max(displayData.height(), 1);
+         this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.getMonitor() : 0L);
 +        // Neo: If the window was taken over from EarlyLoadingScreen, inherit a potentially resized window size
 +        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
 +        if (earlyLoadingScreen != null) {
@@ -14,10 +14,22 @@
 +            this.width = this.windowedWidth = Math.max(width[0], 1);
 +            this.height = this.windowedHeight = Math.max(height[0], 1);
 +        }
-         RenderSystem.initRenderer(windowAndDevice.device());
+         this.backend = backend;
          if (initialMonitor != null) {
              VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -237,8 +_,10 @@
+@@ -120,6 +_,11 @@
+         long windowHandle;
+         try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
+             backend.setWindowHints();
++            var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
++            if (earlyLoadingScreen != null) {
++                windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
++                GLFW.glfwSetWindowTitle(windowHandle, title);
++            } else
+             windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
+             if (windowHandle == 0L) {
+                 backend.handleWindowCreationErrors(glfwErrors.firstError());
+@@ -225,8 +_,10 @@
      }
  
      public void defaultErrorCallback(int errorCode, long description) {

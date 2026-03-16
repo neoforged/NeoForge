@@ -49,7 +49,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -95,16 +94,16 @@ import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -169,7 +168,6 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
@@ -300,10 +298,6 @@ public class ClientHooks {
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
         ModLoader.postEvent(new TextureAtlasStitchedEvent(atlas));
-    }
-
-    public static void onBlockColorsInit(BlockColors blockColors) {
-        ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
     }
 
     /** Copies humanoid model properties from the original model to another, used for armor models */

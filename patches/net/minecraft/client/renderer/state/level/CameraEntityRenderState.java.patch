@@ -1,5 +1,5 @@
---- a/net/minecraft/client/renderer/state/CameraEntityRenderState.java
-+++ b/net/minecraft/client/renderer/state/CameraEntityRenderState.java
+--- a/net/minecraft/client/renderer/state/level/CameraEntityRenderState.java
++++ b/net/minecraft/client/renderer/state/level/CameraEntityRenderState.java
 @@ -16,4 +_,6 @@
      public float hurtDir;
      public float backwardsInterpolatedWalkDistance;

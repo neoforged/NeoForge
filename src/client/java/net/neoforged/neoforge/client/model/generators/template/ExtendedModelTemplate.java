@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.BlockElementRotation;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.Material;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.CuboidRotation;
+import net.minecraft.client.resources.model.cuboid.FaceBakery;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -93,11 +93,11 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                     JsonObject rotation = new JsonObject();
                     rotation.add("origin", serializeVector3f(part.rotation().origin()));
                     switch (part.rotation().value()) {
-                        case BlockElementRotation.SingleAxisRotation(Direction.Axis axis, float angle) -> {
+                        case CuboidRotation.SingleAxisRotation(Direction.Axis axis, float angle) -> {
                             rotation.addProperty("axis", axis.getSerializedName());
                             rotation.addProperty("angle", angle);
                         }
-                        case BlockElementRotation.EulerXYZRotation(float x, float y, float z) -> {
+                        case CuboidRotation.EulerXYZRotation(float x, float y, float z) -> {
                             rotation.addProperty("x", x);
                             rotation.addProperty("y", y);
                             rotation.addProperty("z", z);
@@ -124,12 +124,12 @@ public final class ExtendedModelTemplate extends ModelTemplate {
 
                 JsonObject faces = new JsonObject();
                 for (Direction dir : Direction.values()) {
-                    BlockElementFace face = part.faces().get(dir);
+                    CuboidFace face = part.faces().get(dir);
                     if (face == null) continue;
 
                     JsonObject faceObj = new JsonObject();
                     faceObj.addProperty("texture", serializeLocOrKey(face.texture()));
-                    BlockElementFace.UVs uvs = face.uvs();
+                    CuboidFace.UVs uvs = face.uvs();
                     if (uvs != null && !uvs.equals(FaceBakery.defaultFaceUV(part.from(), part.to(), dir))) {
                         JsonArray uvArr = new JsonArray();
                         uvArr.add(uvs.minU());

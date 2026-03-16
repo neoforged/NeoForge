@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -63,7 +_,11 @@
+@@ -69,7 +_,11 @@
      private final Map<Identifier, ClientItem> clientInfos;
      private final Map<Identifier, ResolvedModel> resolvedModels;
      private final ResolvedModel missingModel;
@@ -12,7 +12,7 @@
      public ModelBakery(
          EntityModelSet entityModelSet,
          SpriteGetter sprites,
-@@ -73,6 +_,20 @@
+@@ -79,6 +_,20 @@
          Map<Identifier, ResolvedModel> resolvedModels,
          ResolvedModel missingModel
      ) {
@@ -33,7 +33,7 @@
          this.entityModelSet = entityModelSet;
          this.sprites = sprites;
          this.playerSkinRenderCache = playerSkinRenderCache;
-@@ -80,6 +_,8 @@
+@@ -86,6 +_,8 @@
          this.clientInfos = clientInfos;
          this.resolvedModels = resolvedModels;
          this.missingModel = missingModel;
@@ -42,16 +42,16 @@
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(MaterialBaker materials, Executor taskExecutor) {
-@@ -103,7 +_,7 @@
+@@ -109,7 +_,7 @@
                      return clientInfo.model()
                          .bake(
                              new ItemModel.BakingContext(
 -                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper()
 +                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper(), this.pendingAnimations
-                             )
+                             ),
+                             IDENTITY
                          );
-                 } catch (Exception var6x) {
-@@ -113,6 +_,8 @@
+@@ -120,6 +_,8 @@
              },
              taskExecutor
          );
@@ -60,7 +60,7 @@
          Map<Identifier, ClientItem.Properties> itemStackModelProperties = new HashMap<>(this.clientInfos.size());
          this.clientInfos.forEach((id, clientInfo) -> {
              ClientItem.Properties properties = clientInfo.properties();
-@@ -120,13 +_,15 @@
+@@ -127,13 +_,15 @@
                  itemStackModelProperties.put(id, properties);
              }
          });
@@ -77,15 +77,13 @@
              )
          );
      }
-@@ -137,13 +_,28 @@
+@@ -144,7 +_,19 @@
          Map<BlockState, BlockStateModel> blockStateModels,
          Map<Identifier, ItemModel> itemStackModels,
          Map<Identifier, ClientItem.Properties> itemProperties
 +        , net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels standaloneModels
      ) {
-+        /**
-+         * @deprecated Neo: use {@link #BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)} instead
-+         */
++        /// @deprecated Neo: use [#BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)] instead
 +        @Deprecated
 +        public BakingResult(
 +                ModelBakery.MissingModels missingModels,
@@ -95,9 +93,11 @@
 +        ) {
 +            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
 +        }
-     }
- 
-     @OnlyIn(Dist.CLIENT)
++
+         public BlockStateModel getBlockStateModel(BlockState blockState) {
+             return this.blockStateModels.getOrDefault(blockState, this.missingModels.block);
+         }
+@@ -154,6 +_,8 @@
      private static class InternerImpl implements ModelBaker.Interner {
          private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
          private final Interner<BakedQuad.SpriteInfo> spriteInfos = Interners.newStrongInterner();
@@ -106,7 +106,7 @@
  
          @Override
          public Vector3fc vector(Vector3fc v) {
-@@ -153,6 +_,16 @@
+@@ -163,6 +_,16 @@
          @Override
          public BakedQuad.SpriteInfo spriteInfo(BakedQuad.SpriteInfo sprite) {
              return this.spriteInfos.intern(sprite);

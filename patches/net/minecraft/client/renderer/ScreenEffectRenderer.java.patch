@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -59,19 +_,21 @@
+@@ -60,19 +_,21 @@
          Player player = this.minecraft.player;
-         if (this.minecraft.options.getCameraType().isFirstPerson() && !isSleeping) {
+         if (isFirstPerson && !isSleeping) {
              if (!player.noPhysics) {
 -                BlockState blockState = getViewBlockingState(player);
 -                if (blockState != null) {
--                    renderTex(this.minecraft.getModelManager().getBlockModelSet().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
+-                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
 +                org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
-+                    renderTex(this.minecraft.getModelManager().getBlockModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
++                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
                  }
              }
  
@@ -25,7 +25,7 @@
                      renderFire(poseStack, this.bufferSource, fireSprite);
                  }
              }
-@@ -120,6 +_,10 @@
+@@ -122,6 +_,10 @@
      }
  
      private static @Nullable BlockState getViewBlockingState(Player player) {
@@ -36,7 +36,7 @@
          BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
          for (int i = 0; i < 8; i++) {
-@@ -129,7 +_,7 @@
+@@ -131,7 +_,7 @@
              testPos.set(xo, yo, zo);
              BlockState blockState = player.level().getBlockState(testPos);
              if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos)) {
@@ -45,7 +45,7 @@
              }
          }
  
-@@ -157,6 +_,10 @@
+@@ -159,6 +_,10 @@
      }
  
      private static void renderWater(Minecraft minecraft, PoseStack poseStack, MultiBufferSource bufferSource) {
@@ -56,7 +56,7 @@
          BlockPos pos = BlockPos.containing(minecraft.player.getX(), minecraft.player.getEyeY(), minecraft.player.getZ());
          float br = Lightmap.getBrightness(minecraft.player.level().dimensionType(), minecraft.player.level().getMaxLocalRawBrightness(pos));
          int color = ARGB.colorFromFloat(0.1F, br, br, br);
-@@ -169,7 +_,7 @@
+@@ -171,7 +_,7 @@
          float uo = -minecraft.player.getYRot() / 64.0F;
          float vo = minecraft.player.getXRot() / 64.0F;
          Matrix4f pose = poseStack.last().pose();

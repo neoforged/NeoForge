@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -99,7 +_,8 @@
+@@ -104,7 +_,8 @@
      private final MultiBufferSource.BufferSource bufferSource;
      private final SubmitNodeCollector submitNodeCollector;
      private final FeatureRenderDispatcher featureRenderDispatcher;
@@ -9,8 +9,8 @@
 +    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
      private @Nullable GuiItemAtlas itemAtlas;
      private int cachedGuiScale;
-     private @Nullable ScreenRectangle previousScissorArea = null;
-@@ -112,19 +_,13 @@
+     private final CubeMap cubeMap = new CubeMap(Identifier.withDefaultNamespace("textures/gui/title/background/panorama"));
+@@ -118,19 +_,13 @@
          MultiBufferSource.BufferSource bufferSource,
          SubmitNodeCollector submitNodeCollector,
          FeatureRenderDispatcher featureRenderDispatcher,
@@ -32,7 +32,7 @@
      }
  
      public void endFrame() {
-@@ -146,6 +_,7 @@
+@@ -161,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -40,10 +40,10 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -353,14 +_,31 @@
+@@ -368,14 +_,31 @@
  
      private void preparePictureInPicture() {
-         int guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+         int guiScale = Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.guiScale;
 -        this.renderState.forEachPictureInPicture(pictureInPictureState -> this.preparePictureInPictureState(pictureInPictureState, guiScale));
 +        this.pictureInPictureRenderStatesScratch.clear();
 +        this.renderState.forEachPictureInPicture(state -> {
@@ -75,7 +75,7 @@
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
-@@ -568,7 +_,7 @@
+@@ -587,7 +_,7 @@
              this.itemAtlas = null;
          }
  

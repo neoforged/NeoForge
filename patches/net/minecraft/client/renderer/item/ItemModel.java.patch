@@ -1,25 +1,24 @@
 --- a/net/minecraft/client/renderer/item/ItemModel.java
 +++ b/net/minecraft/client/renderer/item/ItemModel.java
-@@ -36,7 +_,22 @@
+@@ -37,7 +_,21 @@
          PlayerSkinRenderCache playerSkinRenderCache,
-         ItemModel missingItemModel,
+         MissingItemModel missingItemModel,
          @Nullable RegistryContextSwapper contextSwapper
 +        , net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
      ) implements SpecialModelRenderer.BakingContext {
-+        /**
-+         * @deprecated Neo: use {@link #BakingContext(ModelBaker, EntityModelSet, SpriteGetter, PlayerSkinRenderCache, ItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)} instead
-+         */
++        /// @deprecated Neo: use [#BakingContext(ModelBaker, EntityModelSet, SpriteGetter, PlayerSkinRenderCache, MissingItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
 +        @Deprecated
 +        public BakingContext(
 +                ModelBaker blockModelBaker,
 +                EntityModelSet entityModelSet,
 +                SpriteGetter sprites,
 +                PlayerSkinRenderCache playerSkinRenderCache,
-+                ItemModel missingItemModel,
++                MissingItemModel missingItemModel,
 +                @Nullable RegistryContextSwapper contextSwapper
 +        ) {
 +            this(blockModelBaker, entityModelSet, sprites, playerSkinRenderCache, missingItemModel, contextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +        }
-     }
- 
-     @OnlyIn(Dist.CLIENT)
++
+         public MissingItemModel missingItemModel(Matrix4fc transformation) {
+             return this.missingItemModel.withTransform(transformation);
+         }

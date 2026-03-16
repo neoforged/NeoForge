@@ -1,29 +1,29 @@
---- a/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
-+++ b/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
+--- a/net/minecraft/client/renderer/block/dispatch/BlockStateModelDispatcher.java
++++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModelDispatcher.java
 @@ -27,9 +_,10 @@
  @OnlyIn(Dist.CLIENT)
- public record BlockModelDefinition(
-     Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart
+ public record BlockStateModelDispatcher(
+     Optional<BlockStateModelDispatcher.SimpleModelSelectors> simpleModels, Optional<BlockStateModelDispatcher.MultiPartDefinition> multiPart
 +    , Optional<net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition> customDefinition
  ) {
      private static final Logger LOGGER = LogUtils.getLogger();
--    public static final Codec<BlockModelDefinition> CODEC = RecordCodecBuilder.<BlockModelDefinition>create(
-+    public static final com.mojang.serialization.MapCodec<BlockModelDefinition> VANILLA_CODEC = RecordCodecBuilder.<BlockModelDefinition>mapCodec(
+-    public static final Codec<BlockStateModelDispatcher> CODEC = RecordCodecBuilder.<BlockStateModelDispatcher>create(
++    public static final com.mojang.serialization.MapCodec<BlockStateModelDispatcher> VANILLA_CODEC = RecordCodecBuilder.<BlockStateModelDispatcher>mapCodec(
              i -> i.group(
-                     BlockModelDefinition.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockModelDefinition::simpleModels),
-                     BlockModelDefinition.MultiPartDefinition.CODEC.optionalFieldOf("multipart").forGetter(BlockModelDefinition::multiPart)
+                     BlockStateModelDispatcher.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockStateModelDispatcher::simpleModels),
+                     BlockStateModelDispatcher.MultiPartDefinition.CODEC.optionalFieldOf("multipart").forGetter(BlockStateModelDispatcher::multiPart)
 @@ -41,8 +_,26 @@
                  ? DataResult.error(() -> "Neither 'variants' nor 'multipart' found")
                  : DataResult.success(o)
          );
-+    public static final Codec<BlockModelDefinition> CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeDefinitionCodec();
++    public static final Codec<BlockStateModelDispatcher> CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeDefinitionCodec();
 +
-+    public BlockModelDefinition(Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart) {
++    public BlockStateModelDispatcher(Optional<BlockStateModelDispatcher.SimpleModelSelectors> simpleModels, Optional<BlockStateModelDispatcher.MultiPartDefinition> multiPart) {
 +        this(simpleModels, multiPart, Optional.empty());
 +    }
 +
 +    // Neo: convenience constructor for datagen of custom definitions
-+    public BlockModelDefinition(net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition customDefinition) {
++    public BlockStateModelDispatcher(net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition customDefinition) {
 +        this(Optional.empty(), Optional.empty(), Optional.of(customDefinition));
 +    }
  

@@ -224,7 +224,7 @@
              this.spectatorGui.renderAction(graphics);
          }
      }
-@@ -610,16 +_,21 @@
+@@ -610,15 +_,20 @@
      }
  
      private void renderSelectedItemName(GuiGraphics graphics) {
@@ -232,7 +232,6 @@
 +    }
 +
 +    private void renderSelectedItemName(GuiGraphics graphics, int yShift) {
-         Profiler.get().push("selectedItemName");
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
 -            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().color());
 +            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
@@ -249,7 +248,7 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  y += 14;
              }
-@@ -630,7 +_,13 @@
+@@ -629,7 +_,13 @@
              }
  
              if (alpha > 0) {
@@ -263,8 +262,8 @@
 +                }
              }
          }
- 
-@@ -749,7 +_,15 @@
+     }
+@@ -746,7 +_,15 @@
          return (int)Math.ceil(hearts / 10.0);
      }
  
@@ -280,7 +279,7 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
-@@ -773,33 +_,62 @@
+@@ -770,33 +_,62 @@
              this.random.setSeed(this.tickCount * 312871);
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
@@ -351,7 +350,7 @@
              Profiler.get().pop();
          }
      }
-@@ -912,6 +_,8 @@
+@@ -909,6 +_,8 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }
              }
@@ -360,7 +359,7 @@
          }
      }
  
-@@ -979,7 +_,7 @@
+@@ -976,7 +_,7 @@
              if (hearts != 0) {
                  int currentHealth = (int)Math.ceil(vehicleWithHearts.getHealth());
                  Profiler.get().popPush("mountHealth");
@@ -369,7 +368,7 @@
                  int xRight = graphics.guiWidth() / 2 + 91;
                  int yo = yLine1;
  
-@@ -1000,6 +_,7 @@
+@@ -997,6 +_,7 @@
                      }
  
                      yo -= 10;
@@ -377,7 +376,7 @@
                  }
              }
          }
-@@ -1031,7 +_,9 @@
+@@ -1028,7 +_,9 @@
          int top = (graphics.guiHeight() - height) / 2;
          int right = left + width;
          int bottom = top + height;
@@ -388,7 +387,7 @@
          graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
          graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
          graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
-@@ -1176,7 +_,7 @@
+@@ -1177,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !selected.is(this.lastToolHighlight.getItem())
@@ -397,7 +396,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1451,12 +_,27 @@
+@@ -1452,12 +_,27 @@
                  type = NORMAL;
              }
  

@@ -17,22 +17,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.client.model.geom.builders.UVPair;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.Material;
-import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.MaterialBaker;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.cuboid.CuboidModel;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
+import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
@@ -377,7 +377,7 @@ public class MutableQuadTests {
         blockModelJson = blockModelJson.replace("$x1", String.valueOf(to.x()));
         blockModelJson = blockModelJson.replace("$y1", String.valueOf(to.y()));
         blockModelJson = blockModelJson.replace("$z1", String.valueOf(to.z()));
-        var blockModel = BlockModel.GSON.fromJson(blockModelJson, BlockModel.class);
+        var blockModel = CuboidModel.GSON.fromJson(blockModelJson, CuboidModel.class);
 
         var baked = blockModel.geometry().bake(TextureSlots.EMPTY, new MockModelBaker(), BlockModelRotation.IDENTITY, () -> "");
         return Arrays.stream(Direction.values()).collect(Collectors.toMap(d -> d, d -> {
@@ -426,7 +426,7 @@ public class MutableQuadTests {
         }
 
         @Override
-        public BlockModelPart missingBlockModelPart() {
+        public BlockStateModelPart missingBlockModelPart() {
             throw new UnsupportedOperationException();
         }
 

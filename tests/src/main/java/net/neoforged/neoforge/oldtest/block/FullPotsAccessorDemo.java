@@ -6,17 +6,18 @@
 package net.neoforged.neoforge.oldtest.block;
 
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
-import net.minecraft.client.renderer.block.model.SingleVariant;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.SingleVariant;
 import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -256,7 +257,7 @@ public class FullPotsAccessorDemo {
             }
 
             @Override
-            public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+            public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
                 super.collectParts(level, pos, state, random, parts);
 
                 Block plant = level.getModelData(pos).get(DioriteFlowerPotBlockEntity.PLANT_PROPERTY);
@@ -265,11 +266,13 @@ public class FullPotsAccessorDemo {
                 }
             }
 
-            private static void collectPlantParts(Block plant, BlockAndTintGetter level, BlockPos pos, RandomSource random, List<BlockModelPart> parts) {
+            private static void collectPlantParts(Block plant, BlockAndTintGetter level, BlockPos pos, RandomSource random, List<BlockStateModelPart> parts) {
                 BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().getOrDefault(BuiltInRegistries.BLOCK.getKey(plant), () -> Blocks.AIR).get().defaultBlockState();
                 BlockStateModel potModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(potState);
 
-                for (BlockModelPart part : potModel.collectParts(level, pos, potState, random)) {
+                List<BlockStateModelPart> srcParts = new ObjectArrayList<>();
+                potModel.collectParts(level, pos, potState, random, srcParts);
+                for (BlockStateModelPart part : srcParts) {
                     QuadCollection.Builder builder = new QuadCollection.Builder();
                     for (Direction side : DIRECTIONS) {
                         for (BakedQuad quad : part.getQuads(side)) {

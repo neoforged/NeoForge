@@ -9,11 +9,12 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Implements functionality similar to Vanillas {@link net.minecraft.client.renderer.block.model.VariantMutator},
+ * Implements functionality similar to Vanillas {@link VariantMutator},
  * but generalized to unbaked blockstate models in general.
  * <p>
  * This is used in conjunction with {@link net.minecraft.client.data.models.blockstates.PropertyDispatch#modifyUnbaked} and

@@ -1,11 +1,11 @@
---- a/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
-+++ b/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
+--- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
++++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
 @@ -42,18 +_,64 @@
          return this.shared.hasTranslucency;
      }
  
 -    @Override
--    public void collectParts(RandomSource random, List<BlockModelPart> output) {
+-    public void collectParts(RandomSource random, List<BlockStateModelPart> output) {
 -        if (this.models == null) {
 -            this.models = this.shared.selectModels(this.blockState);
 -        }
@@ -18,7 +18,7 @@
 -        }
 +    // Neo: Implement our overloads (here and below) so child models can have custom logic
 +    @Override
-+    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> output) {
++    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> output) {
 +        if (this.models == null) {
 +            this.models = this.shared.selectModels(this.blockState);
 +        }
@@ -77,11 +77,3 @@
      }
  
      @OnlyIn(Dist.CLIENT)
-@@ -103,7 +_,6 @@
-                     selectedModels.set(i);
-                 }
-             }
--
-             return this.subsets.computeIfAbsent(selectedModels, selected -> {
-                 Builder<BlockStateModel> result = ImmutableList.builder();
- 

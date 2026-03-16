@@ -14,11 +14,11 @@
          if (state.getRenderShape() == RenderShape.MODEL) {
              PoseStack.Pose pose = poseStack.last();
              VertexConsumer buffer = new SheetedDecalTextureGenerator(bufferSource.getBuffer(ModelBakery.DESTROY_TYPES.get(progress)), pose, 1.0F);
-             BlockStateModel model = this.modelManager.getBlockModelSet().get(state);
+             BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state);
              this.singleThreadRandom.setSeed(state.getSeed(pos));
              this.singleThreadPartList.clear();
 -            model.collectParts(this.singleThreadRandom, this.singleThreadPartList);
 +            model.collectParts(level, pos, state, this.singleThreadRandom, this.singleThreadPartList);
              QuadInstance instance = new QuadInstance();
  
-             for (BlockModelPart part : this.singleThreadPartList) {
+             for (BlockStateModelPart part : this.singleThreadPartList) {

@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
 +++ b/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
-@@ -10,6 +_,7 @@
+@@ -11,6 +_,7 @@
      public float open;
-     public float angle;
+     public Direction facing = Direction.SOUTH;
      public ChestRenderState.ChestMaterialType material = ChestRenderState.ChestMaterialType.REGULAR;
-+    public net.minecraft.client.resources.model.@org.jspecify.annotations.Nullable SpriteId customSprite;
++    public net.minecraft.client.resources.model.sprite.@org.jspecify.annotations.Nullable SpriteId customSprite;
  
      @OnlyIn(Dist.CLIENT)
      public static enum ChestMaterialType {

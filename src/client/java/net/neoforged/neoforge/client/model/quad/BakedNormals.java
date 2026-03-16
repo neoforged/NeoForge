@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.model.quad;
 
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

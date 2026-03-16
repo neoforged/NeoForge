@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.model;
 
 import java.util.List;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
@@ -22,11 +22,11 @@ import net.neoforged.neoforge.client.extensions.BlockStateModelExtension;
 public interface DynamicBlockStateModel extends BlockStateModel {
     @Override
     @Deprecated
-    default void collectParts(RandomSource random, List<BlockModelPart> parts) {
+    default void collectParts(RandomSource random, List<BlockStateModelPart> parts) {
         collectParts(BlockAndTintGetter.EMPTY, BlockPos.ZERO, Blocks.AIR.defaultBlockState(), random, parts);
     }
 
     // Force this to be overriden otherwise this introduces a default cycle between the two overloads.
     @Override
-    void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts);
+    void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts);
 }

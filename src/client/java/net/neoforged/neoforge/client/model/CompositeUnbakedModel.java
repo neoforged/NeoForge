@@ -14,8 +14,8 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Either;
 import java.util.Map;
 import net.minecraft.client.renderer.item.CompositeModel;
-import net.minecraft.client.resources.model.UnbakedGeometry;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.geometry.UnbakedGeometry;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 

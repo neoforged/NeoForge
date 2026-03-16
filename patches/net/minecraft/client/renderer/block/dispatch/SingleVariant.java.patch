@@ -1,18 +1,14 @@
---- a/net/minecraft/client/renderer/block/model/SingleVariant.java
-+++ b/net/minecraft/client/renderer/block/model/SingleVariant.java
-@@ -27,13 +_,19 @@
+--- a/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
++++ b/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
+@@ -32,9 +_,15 @@
+         return this.model.hasTranslucency();
      }
  
-     @Override
++    @Override
 +    public Object createGeometryKey(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state, RandomSource random) {
 +        return this;
 +    }
 +
-+    @Override
-     public boolean hasTranslucency() {
-         return this.model.hasTranslucency();
-     }
- 
      @OnlyIn(Dist.CLIENT)
      public record Unbaked(Variant variant) implements BlockStateModel.Unbaked {
 -        public static final Codec<SingleVariant.Unbaked> CODEC = Variant.CODEC.xmap(SingleVariant.Unbaked::new, SingleVariant.Unbaked::variant);

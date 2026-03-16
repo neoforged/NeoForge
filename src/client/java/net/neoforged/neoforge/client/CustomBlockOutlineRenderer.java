@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.state.BlockOutlineRenderState;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
 
 /**

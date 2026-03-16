@@ -15,8 +15,8 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.cuboid.CuboidModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.fml.ModLoader;
@@ -40,7 +40,7 @@ public class UnbakedModelParser {
     }
 
     public static UnbakedModel parse(Reader reader) {
-        return GsonHelper.fromJson(BlockModel.GSON, reader, UnbakedModel.class);
+        return GsonHelper.fromJson(CuboidModel.GSON, reader, UnbakedModel.class);
     }
 
     @ApiStatus.Internal
@@ -73,7 +73,7 @@ public class UnbakedModelParser {
                     }
                 }
 
-                return jsonDeserializationContext.deserialize(jsonObject, BlockModel.class);
+                return jsonDeserializationContext.deserialize(jsonObject, CuboidModel.class);
             }
         }
     }

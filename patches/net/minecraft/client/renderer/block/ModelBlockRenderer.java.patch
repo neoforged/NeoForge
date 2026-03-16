@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
-@@ -33,7 +_,7 @@
-     private int tintCacheValue;
+@@ -39,7 +_,7 @@
+     private final IntList computedTintValues = new IntArrayList();
  
      public ModelBlockRenderer(boolean ambientOcclusion, boolean cull, BlockColors blockColors) {
 -        this.lighter = new BlockModelLighter();
@@ -9,7 +9,7 @@
          this.ambientOcclusion = ambientOcclusion;
          this.cull = cull;
          this.blockColors = blockColors;
-@@ -47,11 +_,18 @@
+@@ -53,11 +_,18 @@
          BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
      ) {
          this.random.setSeed(seed);
@@ -30,16 +30,16 @@
                      this.tesselateAmbientOcclusion(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
                  } else {
                      this.tesselateFlat(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
-@@ -66,10 +_,22 @@
+@@ -93,10 +_,22 @@
      private void tesselateAmbientOcclusion(
-         BlockQuadOutput output, float x, float y, float z, List<BlockModelPart> parts, BlockAndTintGetter level, BlockState state, BlockPos pos
+         BlockQuadOutput output, float x, float y, float z, List<BlockStateModelPart> parts, BlockAndTintGetter level, BlockState state, BlockPos pos
      ) {
 +        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
 +        int lightEmission = -1;
          int cacheValid = 0;
          int shouldRenderFaceCache = 0;
  
-         for (BlockModelPart part : parts) {
+         for (BlockStateModelPart part : parts) {
 +            boolean ao = !perPartAO || switch (part.ambientOcclusion()) {
 +                case TRUE -> true;
 +                case DEFAULT -> {
@@ -53,7 +53,7 @@
              for (Direction direction : DIRECTIONS) {
                  int cacheMask = 1 << direction.ordinal();
                  boolean validCacheForDirection = (cacheValid & cacheMask) == 1;
-@@ -78,7 +_,7 @@
+@@ -105,7 +_,7 @@
                      List<BakedQuad> culledQuads = part.getQuads(direction);
                      if (!culledQuads.isEmpty()) {
                          if (!validCacheForDirection) {
@@ -62,7 +62,7 @@
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -86,7 +_,21 @@
+@@ -113,7 +_,21 @@
                          }
  
                          if (shouldRenderFace) {
@@ -84,7 +84,7 @@
                                  this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
                                  this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
                              }
-@@ -95,7 +_,18 @@
+@@ -122,7 +_,18 @@
                  }
              }
  
@@ -103,7 +103,7 @@
                  this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
                  this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
              }
-@@ -118,7 +_,7 @@
+@@ -145,7 +_,7 @@
                      if (!culledQuads.isEmpty()) {
                          BlockPos relativePos = this.scratchPos.setWithOffset(pos, direction);
                          if (!validCacheForDirection) {
@@ -112,7 +112,7 @@
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -144,6 +_,17 @@
+@@ -171,6 +_,17 @@
          }
      }
  

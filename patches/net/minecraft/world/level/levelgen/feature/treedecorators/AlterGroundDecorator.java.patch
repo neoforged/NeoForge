@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 +++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
-@@ -26,19 +_,20 @@
+@@ -24,19 +_,20 @@
      public void place(TreeDecorator.Context context) {
          List<BlockPos> blockPositions = TreeFeature.getLowestTrunkOrRootOfTree(context);
          if (!blockPositions.isEmpty()) {
-+            var eventProvider = net.neoforged.neoforge.event.EventHooks.alterGround(context, blockPositions, this.provider::getState);
++            var eventProvider = net.neoforged.neoforge.event.EventHooks.alterGround(context, blockPositions, this.provider::getOptionalState);
              int minY = blockPositions.getFirst().getY();
              blockPositions.stream().filter(pos -> pos.getY() == minY).forEach(pos -> {
 -                this.placeCircle(context, pos.west().north());
@@ -26,11 +26,11 @@
                      }
                  }
              });
-@@ -46,19 +_,27 @@
+@@ -44,19 +_,27 @@
      }
  
      private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
-+        placeCircle(context, pos, this.provider::getState);
++        placeCircle(context, pos, this.provider::getOptionalState);
 +    }
 +
 +    private void placeCircle(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
@@ -45,13 +45,13 @@
      }
  
      private void placeBlockAt(TreeDecorator.Context context, BlockPos pos) {
-+        placeBlockAt(context, pos, this.provider::getState);
++        placeBlockAt(context, pos, this.provider::getOptionalState);
 +    }
 +
 +    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
          for (int dy = 2; dy >= -3; dy--) {
              BlockPos cursor = pos.above(dy);
--            BlockState replaceWith = this.provider.getState(context.level(), context.random(), cursor);
+-            BlockState replaceWith = this.provider.getOptionalState(context.level(), context.random(), cursor);
 +            BlockState replaceWith = eventProvider.getState(context.level(), context.random(), cursor);
              if (replaceWith != null) {
                  context.setBlock(cursor, replaceWith);

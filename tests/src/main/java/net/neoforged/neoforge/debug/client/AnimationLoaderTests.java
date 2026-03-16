@@ -32,6 +32,7 @@ import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import org.joml.Matrix4fc;
 
 @ForEachTest(side = Dist.CLIENT, groups = "client.animation")
 public class AnimationLoaderTests {
@@ -111,7 +112,7 @@ public class AnimationLoaderTests {
         }
 
         @Override
-        public ItemModel bake(ItemModel.BakingContext context) {
+        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
             AnimationLoader.PendingAnimations pendingAnimations = context.pendingAnimations();
             if (pendingAnimations.get(TestEntityModel.ANIM_LOC) == null) {
                 this.test.fail("Test animation not present in PendingAnimations");

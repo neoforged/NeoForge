@@ -1,5 +1,5 @@
---- a/net/minecraft/client/renderer/block/model/ItemTransform.java
-+++ b/net/minecraft/client/renderer/block/model/ItemTransform.java
+--- a/net/minecraft/client/resources/model/cuboid/ItemTransform.java
++++ b/net/minecraft/client/resources/model/cuboid/ItemTransform.java
 @@ -17,9 +_,13 @@
  import org.joml.Vector3fc;
  

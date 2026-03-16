@@ -5,18 +5,16 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.Material;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public interface BlockStateModelExtension {
@@ -72,18 +70,8 @@ public interface BlockStateModelExtension {
      * @param random a random source for random model variations
      * @param parts  the list that should receive all parts to be rendered
      */
-    default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+    default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         self().collectParts(random, parts);
-    }
-
-    /**
-     * Helper to collects the parts of the model into a new list.
-     */
-    @ApiStatus.NonExtendable
-    default List<BlockModelPart> collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
-        List<BlockModelPart> parts = new ObjectArrayList<>();
-        this.collectParts(level, pos, state, random, parts);
-        return parts;
     }
 
     /**

@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.util.TriState;
 
-public interface BlockModelPartExtension {
+public interface BlockStateModelPartExtension {
     /**
      * Controls the AO behavior for all quads of this model. The default behavior is to use AO unless the block emits light,
      * {@link TriState#TRUE} and {@link TriState#FALSE} force AO to be enabled and disabled respectively, regardless of
@@ -24,7 +24,7 @@ public interface BlockModelPartExtension {
         return self().useAmbientOcclusion() ? TriState.DEFAULT : TriState.FALSE;
     }
 
-    private BlockModelPart self() {
-        return (BlockModelPart) this;
+    private BlockStateModelPart self() {
+        return (BlockStateModelPart) this;
     }
 }

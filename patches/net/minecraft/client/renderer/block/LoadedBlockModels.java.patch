@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/block/LoadedBlockModels.java
++++ b/net/minecraft/client/renderer/block/LoadedBlockModels.java
+@@ -35,14 +_,22 @@
+         this.playerSkinRenderCache = playerSkinRenderCache;
+     }
+ 
++    /// @deprecated Neo: use [#bake(Function, BlockStateModel, Executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
++    @Deprecated
+     public CompletableFuture<Map<BlockState, BlockModel>> bake(
+         Function<BlockState, BlockStateModel> bakedBlockStateModels, BlockStateModel missingModel, Executor executor
+     ) {
++        return bake(bakedBlockStateModels, missingModel, executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++    }
++
++    public CompletableFuture<Map<BlockState, BlockModel>> bake(
++        Function<BlockState, BlockStateModel> bakedBlockStateModels, BlockStateModel missingModel, Executor executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++    ) {
+         return CompletableFuture.supplyAsync(
+             () -> {
+                 BlockModel wrappedMissingModel = new BlockStateModelWrapper(missingModel, List.of(), IDENTITY);
+                 BlockModel.BakingContext context = new BlockModel.BakingContext(
+-                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel
++                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel, pendingAnimations
+                 );
+                 Builder<BlockState, BlockModel> result = ImmutableMap.builder();
+                 this.unbakedModels.forEach((blockState, unbakedModel) -> result.put(blockState, unbakedModel.bake(context, IDENTITY)));

@@ -1,64 +1,22 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -27,22 +_,47 @@
-     @Nullable Boolean ambientOcclusion,
-     @Nullable ItemTransforms transforms,
-     TextureSlots.Data textureSlots,
--    @Nullable Identifier parent
-+    @Nullable Identifier parent,
-+    com.mojang.math.@Nullable Transformation rootTransform,
-+    java.util.Map<String, Boolean> partVisibility
- ) implements UnbakedModel {
-     @VisibleForTesting
-     public static final Gson GSON = new GsonBuilder()
-+        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())
-         .registerTypeAdapter(BlockModel.class, new BlockModel.Deserializer())
-         .registerTypeAdapter(BlockElement.class, new BlockElement.Deserializer())
-         .registerTypeAdapter(BlockElementFace.class, new BlockElementFace.Deserializer())
-         .registerTypeAdapter(ItemTransform.class, new ItemTransform.Deserializer())
-         .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
-+        .registerTypeAdapter(com.mojang.math.Transformation.class, new net.neoforged.neoforge.common.util.TransformationHelper.Deserializer())
-         .create();
- 
-+    /**
-+     * @deprecated Neo: use {@link net.neoforged.neoforge.client.model.UnbakedModelParser#parse(Reader)} instead
-+     */
-+    @Deprecated
-     public static BlockModel fromStream(Reader reader) {
-         return GsonHelper.fromJson(GSON, reader, BlockModel.class);
+@@ -23,7 +_,19 @@
+         PlayerSkinRenderCache playerSkinRenderCache,
+         Function<BlockState, BlockStateModel> modelGetter,
+         BlockModel missingBlockModel
++        , net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
+     ) implements SpecialModelRenderer.BakingContext {
++        /// @deprecated Neo: use [#BakingContext(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, Function, BlockModel, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
++        @Deprecated
++        public BakingContext(
++                EntityModelSet entityModelSet,
++                SpriteGetter sprites,
++                PlayerSkinRenderCache playerSkinRenderCache,
++                Function<BlockState, BlockStateModel> modelGetter,
++                BlockModel missingBlockModel
++        ) {
++            this(entityModelSet, sprites, playerSkinRenderCache, modelGetter, missingBlockModel, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++        }
      }
  
      @OnlyIn(Dist.CLIENT)
-+    public BlockModel(
-+            @Nullable UnbakedGeometry geometry,
-+            UnbakedModel.@Nullable GuiLight guiLight,
-+            @Nullable Boolean ambientOcclusion,
-+            @Nullable ItemTransforms transforms,
-+            TextureSlots.Data textureSlots,
-+            @Nullable Identifier parent
-+    ) {
-+        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of());
-+    }
-+
-+    @Override
-+    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
-+        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.rootTransform);
-+        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.partVisibility);
-+    }
-+
-     public static class Deserializer implements JsonDeserializer<BlockModel> {
-         public BlockModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-             JsonObject object = json.getAsJsonObject();
-@@ -62,7 +_,11 @@
-             }
- 
-             Identifier parentLocation = parentName.isEmpty() ? null : Identifier.parse(parentName);
--            return new BlockModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation);
-+
-+            var rootTransform = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRootTransform(object, context);
-+            var partVisibility = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializePartVisibility(object);
-+
-+            return new BlockModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, partVisibility);
-         }
- 
-         private TextureSlots.Data getTextureMap(JsonObject object) {

@@ -17,23 +17,23 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.block.model.Material;
-import net.minecraft.client.renderer.item.BlockModelWrapper;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.item.CompositeModel;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.MaterialBaker;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
@@ -48,6 +48,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.model.ComposedModelState;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -71,12 +72,14 @@ public class DynamicFluidContainerModel implements ItemModel {
 
     private final Unbaked unbakedModel;
     private final BakingContext bakingContext;
+    private final Matrix4fc transformation;
     private final ItemTransforms itemTransforms;
     private final Map<Fluid, ItemModel> cache = new IdentityHashMap<>(); // contains all the baked models since they'll never change
 
-    private DynamicFluidContainerModel(Unbaked unbakedModel, BakingContext bakingContext) {
+    private DynamicFluidContainerModel(Unbaked unbakedModel, BakingContext bakingContext, Matrix4fc transformation) {
         this.unbakedModel = unbakedModel;
         this.bakingContext = bakingContext;
+        this.transformation = transformation;
         // Source ItemTransforms from the base item model
         var baseItemModel = bakingContext.blockModelBaker().getModel(Identifier.withDefaultNamespace("item/generated"));
         this.itemTransforms = baseItemModel.getTopTransforms();
@@ -114,7 +117,7 @@ public class DynamicFluidContainerModel implements ItemModel {
         if (baseLocation != null) {
             // Base texture
             List<BakedQuad> quads = baker.compute(new ItemModelGenerator.ItemLayerKey(baseSprite, state, 0)).getAll();
-            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties));
+            subModels.add(new CuboidItemModelWrapper(List.of(), quads, renderProperties, transformation));
         }
 
         if (fluidMaskLocation != null && fluidSprite != null) {
@@ -129,7 +132,7 @@ public class DynamicFluidContainerModel implements ItemModel {
                 quads.replaceAll(quad -> setMaxEmissivity(quad, baker.interner()));
             }
 
-            subModels.add(new BlockModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties));
+            subModels.add(new CuboidItemModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, transformation));
         }
 
         if (coverSprite != null) {
@@ -137,7 +140,7 @@ public class DynamicFluidContainerModel implements ItemModel {
             // Cover/overlay
             ModelState transformedState = new ComposedModelState(state, COVER_TRANSFORM);
             List<BakedQuad> quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, coverSprite, sprite, transformedState); // Use cover as mask
-            subModels.add(new BlockModelWrapper(List.of(), quads, renderProperties));
+            subModels.add(new CuboidItemModelWrapper(List.of(), quads, renderProperties, transformation));
         }
 
         return new CompositeModel(subModels);
@@ -223,8 +226,8 @@ public class DynamicFluidContainerModel implements ItemModel {
         }
 
         @Override
-        public ItemModel bake(BakingContext bakingContext) {
-            return new DynamicFluidContainerModel(this, bakingContext);
+        public ItemModel bake(BakingContext bakingContext, Matrix4fc transformation) {
+            return new DynamicFluidContainerModel(this, bakingContext, transformation);
         }
 
         @Override

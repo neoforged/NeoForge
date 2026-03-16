@@ -5,11 +5,15 @@
 
 package net.neoforged.neoforge.oldtest.client;
 
+import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -50,8 +54,18 @@ public class CustomColorResolverTest {
         }
 
         @SubscribeEvent
-        static void registerBlockColor(RegisterColorHandlersEvent.Block event) {
-            event.register(((state, btGetter, pos, tintIndex) -> btGetter == null || pos == null ? 0 : btGetter.getBlockTint(pos, COLOR_RESOLVER)), BLOCK.get());
+        static void registerBlockColor(RegisterColorHandlersEvent.BlockTintSources event) {
+            event.register(List.of(new BlockTintSource() {
+                @Override
+                public int color(BlockState state) {
+                    return -1;
+                }
+
+                @Override
+                public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+                    return level.getBlockTint(pos, COLOR_RESOLVER);
+                }
+            }), BLOCK.get());
         }
     }
 }

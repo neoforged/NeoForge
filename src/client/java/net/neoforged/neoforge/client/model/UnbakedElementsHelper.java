@@ -10,16 +10,16 @@ import com.mojang.math.Transformation;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Function;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.Material;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
+import net.minecraft.client.resources.model.cuboid.FaceBakery;
+import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import org.joml.Vector3f;
 
@@ -88,8 +88,8 @@ public final class UnbakedElementsHelper {
                     Vector3f from = new Vector3f(16 * xStart / (float) width, 16 - 16 * yEnd / (float) height, 7.5F);
                     Vector3f to = new Vector3f(16 * x / (float) width, 16 - 16 * y / (float) height, 8.5F);
                     // Create UVs
-                    BlockElementFace.UVs northUvs = FaceBakery.defaultFaceUV(from, to, Direction.NORTH);
-                    BlockElementFace.UVs southUvs = FaceBakery.defaultFaceUV(from, to, Direction.SOUTH);
+                    CuboidFace.UVs northUvs = FaceBakery.defaultFaceUV(from, to, Direction.NORTH);
+                    CuboidFace.UVs southUvs = FaceBakery.defaultFaceUV(from, to, Direction.SOUTH);
                     // Create quads
                     builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, northUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.SOUTH, modelState, null, true, 0, faceData));
                     builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, southUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.NORTH, modelState, null, true, 0, faceData));
@@ -103,10 +103,10 @@ public final class UnbakedElementsHelper {
     }
 
     /**
-     * Bakes a list of {@linkplain BlockElement block elements} and feeds the baked quads to a {@linkplain QuadCollection.Builder quad collection builder}.
+     * Bakes a list of {@linkplain CuboidModelElement block elements} and feeds the baked quads to a {@linkplain QuadCollection.Builder quad collection builder}.
      */
-    public static void bakeElements(ModelBaker baker, QuadCollection.Builder builder, List<BlockElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
-        for (BlockElement element : elements) {
+    public static void bakeElements(ModelBaker baker, QuadCollection.Builder builder, List<CuboidModelElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
+        for (CuboidModelElement element : elements) {
             element.faces().forEach((side, face) -> {
                 Material.Baked material = materialGetter.apply(face.texture());
                 BakedQuad quad = FaceBakery.bakeQuad(
@@ -129,9 +129,9 @@ public final class UnbakedElementsHelper {
     }
 
     /**
-     * Bakes a list of {@linkplain BlockElement block elements} and returns the list of baked quads.
+     * Bakes a list of {@linkplain CuboidModelElement block elements} and returns the list of baked quads.
      */
-    public static List<BakedQuad> bakeElements(ModelBaker baker, List<BlockElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
+    public static List<BakedQuad> bakeElements(ModelBaker baker, List<CuboidModelElement> elements, Function<String, Material.Baked> materialGetter, ModelState modelState) {
         if (elements.isEmpty())
             return List.of();
         var builder = new QuadCollection.Builder();

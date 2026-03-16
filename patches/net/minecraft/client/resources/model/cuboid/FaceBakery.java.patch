@@ -1,6 +1,6 @@
---- a/net/minecraft/client/renderer/block/model/FaceBakery.java
-+++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -68,9 +_,11 @@
+--- a/net/minecraft/client/resources/model/cuboid/FaceBakery.java
++++ b/net/minecraft/client/resources/model/cuboid/FaceBakery.java
+@@ -70,9 +_,11 @@
          Transparency transparency = computeMaterialTransparency(material, uvs);
          ModelBaker.Interner interner = modelBaker.interner();
          BakedQuad.SpriteInfo spriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(material, transparency));
@@ -8,12 +8,12 @@
 +        return bakeQuad(interner, from, to, uvs, face.rotation(), face.tintIndex(), spriteInfo, facing, modelState, elementRotation, shade, lightEmission, face.faceData());
      }
  
-+    /** @deprecated Neo: use {@link #bakeQuad(ModelBaker.Interner, Vector3fc, Vector3fc, BlockElementFace.UVs, Quadrant, int, BakedQuad.SpriteInfo, Direction, ModelState, BlockElementRotation, boolean, int, net.neoforged.neoforge.client.model.ExtraFaceData)} instead */
++    /** @deprecated Neo: use {@link #bakeQuad(ModelBaker.Interner, Vector3fc, Vector3fc, CuboidFace.UVs, Quadrant, int, BakedQuad.SpriteInfo, Direction, ModelState, CuboidRotation, boolean, int, net.neoforged.neoforge.client.model.ExtraFaceData)} instead */
 +    @Deprecated
      public static BakedQuad bakeQuad(
          ModelBaker.Interner interner,
          Vector3fc from,
-@@ -85,6 +_,24 @@
+@@ -87,6 +_,24 @@
          boolean shade,
          int lightEmission
      ) {
@@ -24,13 +24,13 @@
 +            ModelBaker.Interner interner,
 +            Vector3fc from,
 +            Vector3fc to,
-+            BlockElementFace.UVs uvs,
++            CuboidFace.UVs uvs,
 +            Quadrant uvRotation,
 +            int tintIndex,
 +            BakedQuad.SpriteInfo spriteInfo,
 +            Direction facing,
 +            ModelState modelState,
-+            @Nullable BlockElementRotation elementRotation,
++            @Nullable CuboidRotation elementRotation,
 +            boolean shade,
 +            int lightEmission,
 +            net.neoforged.neoforge.client.model.ExtraFaceData faceData
@@ -38,7 +38,7 @@
          Matrix4fc uvTransform = modelState.inverseFaceTransformation(facing);
          Vector3fc[] vertexPositions = new Vector3fc[4];
          long[] vertexPackedUvs = new long[4];
-@@ -110,6 +_,8 @@
+@@ -112,6 +_,8 @@
  
          Direction finalDirection = calculateFacing(vertexPositions);
          if (elementRotation == null && finalDirection != null) {
@@ -47,7 +47,7 @@
              recalculateWinding(vertexPositions, vertexPackedUvs, finalDirection);
          }
  
-@@ -126,7 +_,10 @@
+@@ -128,7 +_,10 @@
              Objects.requireNonNullElse(finalDirection, Direction.UP),
              spriteInfo,
              shade,
@@ -59,7 +59,7 @@
          );
      }
  
-@@ -212,6 +_,11 @@
+@@ -214,6 +_,11 @@
      }
  
      public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
@@ -71,7 +71,7 @@
          float minX = 999.0F;
          float minY = 999.0F;
          float minZ = 999.0F;
-@@ -264,6 +_,12 @@
+@@ -266,6 +_,12 @@
              if (vertexToSwap != vertex) {
                  swap(positions, vertexToSwap, vertex);
                  swap(uvs, vertexToSwap, vertex);
@@ -84,7 +84,7 @@
              }
          }
      }
-@@ -287,6 +_,13 @@
+@@ -289,6 +_,13 @@
  
      private static void swap(long[] array, int indexA, int indexB) {
          long tmp = array[indexA];

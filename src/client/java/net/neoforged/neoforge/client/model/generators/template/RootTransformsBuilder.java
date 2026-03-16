@@ -192,10 +192,10 @@ public class RootTransformsBuilder {
      */
     public RootTransformsBuilder transform(Transformation transformation) {
         Preconditions.checkNotNull(transformation, "Transformation must not be null");
-        this.translation = transformation.getTranslation();
-        this.leftRotation = transformation.getLeftRotation();
-        this.rightRotation = transformation.getRightRotation();
-        this.scale = transformation.getScale();
+        this.translation = transformation.translation();
+        this.leftRotation = transformation.leftRotation();
+        this.rightRotation = transformation.rightRotation();
+        this.scale = transformation.scale();
         return this;
     }
 

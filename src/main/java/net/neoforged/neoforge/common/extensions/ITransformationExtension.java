@@ -23,10 +23,10 @@ public interface ITransformationExtension {
     /**
      * {@return whether this transformation is the identity transformation}
      *
-     * @see Transformation#identity()
+     * @see Transformation#IDENTITY
      */
     default boolean isIdentity() {
-        return self().equals(Transformation.identity());
+        return self().equals(Transformation.IDENTITY);
     }
 
     /**
@@ -89,7 +89,7 @@ public interface ITransformationExtension {
      */
     default Transformation applyOrigin(Vector3f origin) {
         Transformation transform = self();
-        if (transform.isIdentity()) return Transformation.identity();
+        if (transform.isIdentity()) return Transformation.IDENTITY;
 
         Matrix4f ret = new Matrix4f(transform.getMatrix());
         Matrix4f tmp = new Matrix4f().translation(origin.x(), origin.y(), origin.z());

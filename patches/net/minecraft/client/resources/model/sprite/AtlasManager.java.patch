@@ -1,5 +1,5 @@
---- a/net/minecraft/client/resources/model/AtlasManager.java
-+++ b/net/minecraft/client/resources/model/AtlasManager.java
+--- a/net/minecraft/client/resources/model/sprite/AtlasManager.java
++++ b/net/minecraft/client/resources/model/sprite/AtlasManager.java
 @@ -53,6 +_,7 @@
      private int maxMipmapLevels;
  
