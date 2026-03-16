@@ -34,7 +34,7 @@ public final class NeoForgeRpcMethods {
                 .build());
         helper.register(rl("registries"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistries)
-                .response("registries", NeoForgeSchemas.REGISTRY_SCHEMA_WITHOUT_ENTRIES.asArray())
+                .response("registries", Schema.STRING_SCHEMA.asArray())
                 .description("List all registries on the server")
                 .build());
         helper.register(rl("registry"), IncomingRpcMethod
@@ -58,11 +58,11 @@ public final class NeoForgeRpcMethods {
                 .toList();
     }
 
-    private static List<RegistryInfo> listRegistries(MinecraftApi api) {
+    private static List<String> listRegistries(MinecraftApi api) {
         return api.getServer()
                 .registryAccess()
                 .listRegistries()
-                .map(RegistryInfo::withoutEntries)
+                .map(r -> r.key().identifier().toString())
                 .toList();
     }
 
