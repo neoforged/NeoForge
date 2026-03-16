@@ -16,9 +16,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 public final class NeoForgeSchemas {
     private NeoForgeSchemas() {}
 
-    static final SchemaComponent<RegistryInfo> REGISTRY_SCHEMA_WITHOUT_ENTRIES = new SchemaComponent<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry_without_entries"), Schema.record(RegistryInfo.CODEC_WITHOUT_ENTRIES)
-            .withField("registryName", Schema.STRING_SCHEMA)
-            .withField("size", Schema.INT_SCHEMA));
     static final SchemaComponent<RegistryInfo> REGISTRY_SCHEMA = new SchemaComponent<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "registry"), Schema.record(RegistryInfo.CODEC)
             .withField("registryName", Schema.STRING_SCHEMA)
             .withField("size", Schema.INT_SCHEMA)
@@ -31,7 +28,6 @@ public final class NeoForgeSchemas {
 
     public static void registerSchemas(RegisterRpcSchemaEvent event) {
         event.register(MOD_SCHEMA);
-        event.register(REGISTRY_SCHEMA_WITHOUT_ENTRIES);
         event.register(REGISTRY_SCHEMA);
     }
 }
