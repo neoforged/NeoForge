@@ -6,11 +6,12 @@
 package net.neoforged.neoforge.client.color.item;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jspecify.annotations.Nullable;
@@ -28,7 +29,12 @@ public final class FluidContentsTint implements ItemTintSource {
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
         var fluid = FluidUtil.getFirstStackContained(stack);
-        return IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid);
+        FluidTintSource tintSource = Minecraft.getInstance()
+                .getModelManager()
+                .getFluidStateModelSet()
+                .get(fluid.getFluid().defaultFluidState())
+                .fluidTintSource();
+        return tintSource != null ? tintSource.colorAsStack(fluid) : -1;
     }
 
     @Override
