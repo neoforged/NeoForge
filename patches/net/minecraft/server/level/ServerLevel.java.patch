@@ -249,6 +249,16 @@
          return this.dragonParts.values();
      }
  
+@@ -1640,7 +_,8 @@
+ 
+     @Override
+     public long getSeed() {
+-        return this.server.getWorldGenSettings().options().seed();
++        // NeoForge: use seed override if present, otherwise default to vanilla global seed
++        return this.getSeedOverride().orElseGet(() -> this.server.getWorldGenSettings().options().seed());
+     }
+ 
+     public @Nullable EnderDragonFight getDragonFight() {
 @@ -1906,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
