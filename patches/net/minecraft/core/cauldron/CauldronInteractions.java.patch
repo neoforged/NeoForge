@@ -1,0 +1,10 @@
+--- a/net/minecraft/core/cauldron/CauldronInteractions.java
++++ b/net/minecraft/core/cauldron/CauldronInteractions.java
+@@ -168,6 +_,7 @@
+             )
+         );
+         addDefaultInteractions(POWDER_SNOW);
++        net.neoforged.neoforge.common.CommonHooks.registerCauldronInteractions(ID_MAPPER);
+     }
+ 
+     static void addDefaultInteractions(CauldronInteraction.Dispatcher interactionMap) {

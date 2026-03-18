@@ -1781,7 +1781,7 @@ public class CommonHooks {
 
     @ApiStatus.Internal
     public static void registerCauldronInteractions(ExtraCodecs.LateBoundIdMapper<String, CauldronInteraction.Dispatcher> idMapper) {
-        NeoForge.EVENT_BUS.post(new RegisterCauldronInteractionEvent.Dispatcher(idMapper));
-        NeoForge.EVENT_BUS.post(new RegisterCauldronInteractionEvent.Interaction(idMapper));
+        ModLoader.postEvent(new RegisterCauldronInteractionEvent.Dispatcher(idMapper));
+        ModLoader.postEvent(new RegisterCauldronInteractionEvent.Interaction(idMapper));
     }
 }

@@ -275,6 +275,12 @@ generateAccessTransformers {
             named('net/minecraft/core/cauldron/CauldronInteraction$Dispatcher'),
             named('put')
     )
+
+    methodGroup(
+            'CauldronInteractions helpers', PUBLIC,
+            named('net/minecraft/core/cauldron/CauldronInteractions'),
+            and(methodsReturning('net/minecraft/world/InteractionResult'), not(nameStartsWith('lambda')))
+    )
 }
 
 tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
