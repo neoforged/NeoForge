@@ -1,19 +1,20 @@
 --- a/net/minecraft/core/cauldron/CauldronInteractions.java
 +++ b/net/minecraft/core/cauldron/CauldronInteractions.java
-@@ -38,6 +_,8 @@
+@@ -38,10 +_,17 @@
      public static final CauldronInteraction.Dispatcher LAVA = newDispatcher("lava");
      public static final CauldronInteraction.Dispatcher POWDER_SNOW = newDispatcher("powder_snow");
  
-+    // Neo: Use RegisterCauldronInteractionEvent.Dispatcher instead
++    /// @deprecated Neo: Use [net.neoforged.neoforge.event.RegisterCauldronInteractionEvent.Dispatcher] instead
 +    @Deprecated
      private static CauldronInteraction.Dispatcher newDispatcher(String name) {
          CauldronInteraction.Dispatcher result = new CauldronInteraction.Dispatcher();
          ID_MAPPER.put(name, result);
-@@ -168,6 +_,7 @@
-             )
-         );
-         addDefaultInteractions(POWDER_SNOW);
+         return result;
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void registerCustomInteractions() {
 +        net.neoforged.neoforge.common.CommonHooks.registerCauldronInteractions(ID_MAPPER);
      }
  
-     static void addDefaultInteractions(CauldronInteraction.Dispatcher interactionMap) {
+     public static void bootStrap() {
