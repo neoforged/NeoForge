@@ -54,6 +54,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
@@ -84,6 +85,7 @@ import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
@@ -177,6 +179,7 @@ import net.neoforged.neoforge.event.GrindstoneEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.ModMismatchEvent;
+import net.neoforged.neoforge.event.RegisterCauldronInteractionEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
@@ -1774,5 +1777,11 @@ public class CommonHooks {
         } else {
             LOGGER.warn(message);
         }
+    }
+
+    @ApiStatus.Internal
+    public static void registerCauldronInteractions(ExtraCodecs.LateBoundIdMapper<String, CauldronInteraction.Dispatcher> idMapper) {
+        NeoForge.EVENT_BUS.post(new RegisterCauldronInteractionEvent.Dispatcher(idMapper));
+        NeoForge.EVENT_BUS.post(new RegisterCauldronInteractionEvent.Interaction(idMapper));
     }
 }
