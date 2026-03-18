@@ -1,0 +1,55 @@
+--- a/net/minecraft/client/renderer/block/BlockModelRenderState.java
++++ b/net/minecraft/client/renderer/block/BlockModelRenderState.java
+@@ -29,8 +_,10 @@
+     private @Nullable Matrix4fc specialRendererTransformation;
+     private @Nullable IntList tintLayers;
+     private @Nullable RandomSource randomSource;
++    private boolean hasTranslucency;
+ 
+     public void clear() {
++        this.hasTranslucency = false;
+         this.modelParts = null;
+         this.transformation = null;
+         this.renderType = null;
+@@ -57,6 +_,7 @@
+     public List<BlockStateModelPart> setupModel(Matrix4fc transformation, boolean hasTranslucency) {
+         this.transformation = identityToNull(transformation);
+         this.renderType = hasTranslucency ? Sheets.translucentBlockSheet() : Sheets.cutoutBlockSheet();
++        this.hasTranslucency = hasTranslucency;
+         if (this.modelParts == null) {
+             this.modelParts = new ObjectArrayList<>();
+         } else {
+@@ -68,6 +_,33 @@
+ 
+     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor) {
+         this.submitModel(this.renderType, poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
++        this.submitSpecialRenderer(poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
++    }
++
++    /// Neo: submit this render state with full support for per-quad render types
++    ///
++    /// @param poseStack           The transformations to apply to the model
++    /// @param submitNodeCollector The collector to submit this render state to
++    /// @param lightCoords         The packed light coordinates to render the model with
++    /// @param overlayCoords       The overlay texture coordinates to render the model with
++    /// @param outlineColor        The outline color to render the model with, or `0` to render no outline
++    public void submitMultiLayer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor) {
++        if (this.modelParts != null && !this.modelParts.isEmpty()) {
++            List<BlockStateModelPart> modelPartsCopy = new ObjectArrayList<>(this.modelParts);
++            int[] tints = this.tintLayers != null ? this.tintLayers.toArray(EMPTY_TINTS) : EMPTY_TINTS;
++            if (this.transformation != null) {
++                poseStack.pushPose();
++                poseStack.mulPose(this.transformation);
++                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, hasTranslucency, tints, lightCoords, overlayCoords, outlineColor);
++                poseStack.popPose();
++            } else {
++                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, hasTranslucency, tints, lightCoords, overlayCoords, outlineColor);
++            }
++        }
++        this.submitSpecialRenderer(poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
++    }
++
++    private void submitSpecialRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor) {
+         if (this.specialRenderer != null) {
+             if (this.specialRendererTransformation != null) {
+                 poseStack.pushPose();

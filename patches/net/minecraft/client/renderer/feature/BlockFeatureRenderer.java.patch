@@ -1,5 +1,21 @@
 --- a/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
 +++ b/net/minecraft/client/renderer/feature/BlockFeatureRenderer.java
+@@ -47,6 +_,7 @@
+     ) {
+         this.renderMovingBlockSubmits(nodeCollection, bufferSource, blockStateModelSet, optionsState, false);
+         this.renderBlockModelSubmits(nodeCollection, bufferSource, outlineBufferSource, false);
++        net.neoforged.neoforge.client.submit.ExtendedBlockFeatureRenderer.renderMultiLayerBlockModelSubmits(nodeCollection, bufferSource, outlineBufferSource, this.quadInstance, false);
+     }
+ 
+     public void renderTranslucent(
+@@ -59,6 +_,7 @@
+     ) {
+         this.renderMovingBlockSubmits(nodeCollection, bufferSource, blockStateModelSet, optionsState, true);
+         this.renderBlockModelSubmits(nodeCollection, bufferSource, outlineBufferSource, true);
++        net.neoforged.neoforge.client.submit.ExtendedBlockFeatureRenderer.renderMultiLayerBlockModelSubmits(nodeCollection, bufferSource, outlineBufferSource, this.quadInstance, true);
+         this.renderBreakingBlockModelSubmits(nodeCollection, crumblingBufferSource);
+     }
+ 
 @@ -81,7 +_,7 @@
              MovingBlockRenderState movingBlockRenderState = submit.movingBlockRenderState();
              BlockState blockState = movingBlockRenderState.blockState;

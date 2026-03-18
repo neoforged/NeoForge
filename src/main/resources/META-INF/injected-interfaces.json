@@ -23,6 +23,12 @@
   "net/minecraft/client/gui/GuiGraphicsExtractor": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
+  "net/minecraft/client/renderer/OrderedSubmitNodeCollector": [
+    "net/neoforged/neoforge/client/extensions/OrderedSubmitNodeCollectorExtension"
+  ],
+  "net/minecraft/client/renderer/SubmitNodeStorage": [
+    "net/neoforged/neoforge/client/extensions/SubmitNodeStorageExtension"
+  ],
   "net/minecraft/client/renderer/block/dispatch/BlockStateModel": [
     "net/neoforged/neoforge/client/extensions/BlockStateModelExtension"
   ],
