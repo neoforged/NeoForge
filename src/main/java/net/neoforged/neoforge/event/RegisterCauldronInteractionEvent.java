@@ -33,8 +33,8 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
             super(idMapper);
         }
 
-        public synchronized void register(Identifier id) {
-            idMapper.put(id.toString(), new CauldronInteraction.Dispatcher());
+        public synchronized void register(Identifier id, CauldronInteraction.Dispatcher dispatcher) {
+            idMapper.put(id.toString(), dispatcher);
         }
     }
 
