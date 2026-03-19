@@ -40,7 +40,7 @@
 -            this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
 +            this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
              this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
-+            net.neoforged.neoforge.client.loading.ClientModLoader.finish(this.resourcePackRepository, this.resourceManager);
++            net.neoforged.neoforge.client.loading.ClientModLoader.setupModResourcePacks(this.resourcePackRepository);
 +            //Move client bootstrap to after mod loading so that events can be fired for it.
 +            ClientBootstrap.bootstrap();
              this.resourcePackRepository.reload();
@@ -80,13 +80,19 @@
              this.window.updateVsync(this.options.enableVsync().get());
              this.window.updateRawMouseInput(this.options.rawMouseInput().get());
              this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
-@@ -690,8 +_,8 @@
-                 .createReload(Util.backgroundExecutor().forName("resourceLoad"), this, RESOURCE_RELOAD_INITIAL_TASK, packs);
+@@ -683,6 +_,7 @@
+             TitleScreen.registerTextures(this.textureManager);
+             LoadingOverlay.registerTextures(this.textureManager);
+             this.gameRenderer.registerPanoramaTextures(this.textureManager);
++            net.neoforged.neoforge.client.loading.ClientModLoader.finish();
+             this.setScreen(new GenericMessageScreen(Component.translatable("gui.loadingMinecraft")));
+             List<PackResources> packs = this.resourcePackRepository.openAllSelected();
+             this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, packs);
+@@ -691,7 +_,7 @@
              GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
              Minecraft.GameLoadCookie loadCookie = new Minecraft.GameLoadCookie(realmsClient, gameConfig.quickPlay);
--            this.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
+             this.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
 -                if (SharedConstants.IS_RUNNING_IN_IDE) {
-+            this.setOverlay(net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
 +                if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
                      this.selfTest();
                  }

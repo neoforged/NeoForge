@@ -1,28 +1,5 @@
 --- a/com/mojang/blaze3d/opengl/GlTexture.java
 +++ b/com/mojang/blaze3d/opengl/GlTexture.java
-@@ -17,15 +_,21 @@
-     private @Nullable Int2IntMap fboCache;
-     protected boolean closed;
-     private int views;
-+    protected final boolean external; // If true, the raw OpenGL texture is not managed by this GpuTexture
- 
-     protected GlTexture(@GpuTexture.Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id) {
-+        this(usage, label, format, width, height, depthOrLayers, mipLevels, id, false);
-+    }
-+
-+    protected GlTexture(@GpuTexture.Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, boolean external) {
-         super(usage, label, format, width, height, depthOrLayers, mipLevels);
-         this.id = id;
-+        this.external = external;
-     }
- 
-     @Override
-     public void close() {
--        if (!this.closed) {
-+        if (!this.closed && !this.external) {
-             this.closed = true;
-             if (this.views == 0) {
-                 this.destroyImmediately();
 @@ -53,10 +_,11 @@
  
      public int getFbo(DirectStateAccess dsa, @Nullable GpuTexture depth) {
