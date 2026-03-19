@@ -109,13 +109,11 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         var neoFormVersion = getMcAndNeoFormVersion().get();
         data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/client.lzma"));
 
-        var patchedClientCoordinate = new MavenIdentifier("net.neoforged", "minecraft-client-patched", getNeoForgeVersion().get(), "", "jar");
-        var patchedServerCoordinate = new MavenIdentifier("net.neoforged", "minecraft-server-patched", getNeoForgeVersion().get(), "", "jar");
-        data.put("PATCHED", new LauncherDataEntry(patchedClientCoordinate, patchedServerCoordinate));
+        var serverCoordinate = new MavenIdentifier("net.minecraft", "server", getMinecraftVersion().get(), "", "jar");
+        data.put("ORIGINAL_SERVER", new LauncherDataEntry(serverCoordinate, serverCoordinate));
         data.put("MCP_VERSION", new LauncherDataEntry(String.format("'%s'", neoFormVersion), String.format("'%s'", neoFormVersion)));
 
         var processors = new ArrayList<ProcessorEntry>();
-        BiConsumer<InstallerProcessor, List<String>> commonProcessor = (processor, args) -> addProcessor(processors, null, processor, args);
         BiConsumer<InstallerProcessor, List<String>> serverProcessor = (processor, args) -> addProcessor(processors, List.of("server"), processor, args);
 
         serverProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
@@ -126,7 +124,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--from", "data/win_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/win_args.txt".formatted(getNeoForgeVersion().get()),
                         "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get())));
 
-        commonProcessor.accept(
+        serverProcessor.accept(
                 InstallerProcessor.INSTALLERTOOLS,
                 List.of(
                         "--task",
@@ -135,11 +133,9 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--input",
                         "{MINECRAFT_JAR}",
                         "--output",
-                        "{PATCHED}",
+                        "{ORIGINAL_SERVER}",
                         "--extract-libraries-to",
-                        "{ROOT}/libraries/",
-                        "--apply-patches",
-                        "{BINPATCH}"));
+                        "{ROOT}/libraries/"));
 
         getLogger().info("Collecting libraries for Installer Profile");
         // Remove potential duplicates.

@@ -23,6 +23,7 @@ import net.neoforged.neodev.installer.CreateLauncherProfile;
 import net.neoforged.neodev.installer.IdentifiedFile;
 import net.neoforged.neodev.installer.InstallerProcessor;
 import net.neoforged.neodev.utils.DependencyUtils;
+import net.neoforged.neodev.utils.MavenIdentifier;
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts;
 import net.neoforged.nfrtgradle.DownloadAssets;
 import net.neoforged.nfrtgradle.NeoFormRuntimePlugin;
@@ -323,6 +324,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setMinecraftLibraries(configurations.minecraftClientClasspath);
             task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
+            task.getUniversalJar().set(universalJar.flatMap(Jar::getArchiveFile));
         });
 
         // Installer profile = the .json file used by the NeoForge installer.
@@ -355,21 +357,39 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(";", configurations.launcherProfileClasspath);
+            task.addLibraries(configurations.launcherProfileClasspath);
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
+            task.getPathSeparator().set(";");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(":", configurations.launcherProfileClasspath);
+            task.addLibraries(configurations.launcherProfileClasspath);
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
+            task.getPathSeparator().set(":");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
         for (var taskProvider : List.of(createWindowsServerArgsFile, createUnixServerArgsFile)) {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
-                task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
                 task.getMinecraftVersion().set(minecraftVersion);
-                task.getNeoForgeVersion().set(neoForgeVersion);
-                task.getRawNeoFormVersion().set(rawNeoFormVersion);
+                task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }
@@ -473,6 +493,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 configurations,
                 downloadAssets,
                 installerJar,
+                universalJar,
                 minecraftVersion,
                 neoForgeVersion,
                 createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
@@ -538,7 +559,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(binpatcherConfig);
 
-            task.getBaseClientJar().set(clientBaseJar);
+            task.getBaseClientJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar));
             task.getModifiedClientJar().set(clientModifiedJar);
             task.getBaseServerJar().set(serverBaseJar);
             task.getModifiedServerJar().set(serverModifiedJar);
@@ -547,6 +568,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getModifiedJoinedJar().set(clientModifiedJar);
             task.getInclude().add("**/*.class");
             task.getInclude().add("META-INF/neoforge.mods.toml");
+            task.getInclude().add("META-INF/MANIFEST.MF");
+            task.getInclude().add("META-INF/*.SF");
 
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("patches.lzma")));
         });
@@ -707,6 +730,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             NeoDevConfigurations configurations,
             TaskProvider<? extends DownloadAssets> downloadAssets,
             TaskProvider<? extends AbstractArchiveTask> installer,
+            TaskProvider<Jar> universalJar,
             Provider<String> minecraftVersion,
             Provider<String> neoForgeVersion,
             Provider<RegularFile> originalClientJar) {
@@ -722,6 +746,15 @@ public class NeoDevPlugin implements Plugin<Project> {
         Consumer<RunProductionClient> configureRunProductionClient = task -> {
             task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.neoFormClasspath));
             task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.launcherProfileClasspath));
+            task.getLibraryFiles().add(
+                    neoForgeVersion.zip(universalJar.map(AbstractArchiveTask::getArchiveFile), (version, file) -> {
+                        final IdentifiedFile f = project.getObjects().newInstance(IdentifiedFile.class);
+                        f.getIdentifier().set(
+                                MavenIdentifier.parse("net.neoforged:neoforge:%s:universal".formatted(version)));
+                        f.getFile().set(file);
+                        return f;
+                    }));
+
             task.getAssetPropertiesFile().set(downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile));
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
