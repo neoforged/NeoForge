@@ -130,3 +130,18 @@
      private boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos) {
          if (!this.cull) {
              return true;
+@@ -204,6 +_,14 @@
+         if (!this.tintSourcesInitialized) {
+             this.configureTintCache(state);
+             this.tintSourcesInitialized = true;
++            if (this.tintSources.isEmpty()) {
++                var extensions = net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state);
++                if (extensions.collectDynamicTintValues(state, level, pos, this.computedTintValues)) {
++                    for (int i = 0; i < this.computedTintValues.size(); i++) {
++                        this.tintSources.add(null);
++                    }
++                }
++            }
+         }
+ 
+         if (tintIndex >= this.tintSources.size()) {
