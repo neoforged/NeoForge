@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -91,6 +_,16 @@
+@@ -92,6 +_,16 @@
          this.windowedWidth = this.width = allowedWindowMinSize(displayData.width());
          this.windowedHeight = this.height = allowedWindowMinSize(displayData.height());
          this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.getMonitor() : 0L);
@@ -17,7 +17,7 @@
          this.backend = backend;
          if (initialMonitor != null) {
              VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -120,6 +_,11 @@
+@@ -121,6 +_,11 @@
          long windowHandle;
          try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
              backend.setWindowHints();
@@ -29,7 +29,7 @@
              windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
              if (windowHandle == 0L) {
                  backend.handleWindowCreationErrors(glfwErrors.firstError());
-@@ -225,8 +_,10 @@
+@@ -226,8 +_,10 @@
      }
  
      public void defaultErrorCallback(int errorCode, long description) {

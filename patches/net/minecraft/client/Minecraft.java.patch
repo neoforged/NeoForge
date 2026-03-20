@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -432,7 +_,6 @@
+@@ -431,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
          LOGGER.info("Setting user: {}", this.user.getName());
@@ -8,7 +8,7 @@
          this.demo = gameConfig.game.demo;
          this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;
          this.allowsChat = !gameConfig.game.disableChat;
-@@ -466,6 +_,8 @@
+@@ -465,6 +_,8 @@
          StringBuilder errorMsgBuilder = new StringBuilder("No supported graphics backend was found.");
          Window windowCandidate = null;
          GpuDevice device = null;
@@ -17,7 +17,7 @@
  
          for (GpuBackend backend : backends) {
              try {
-@@ -475,7 +_,7 @@
+@@ -473,7 +_,7 @@
                      .createDevice(
                          windowCandidate.handle(),
                          (id, type) -> this.getShaderManager().getShader(id, type),
@@ -26,7 +26,7 @@
                      );
                  RenderSystem.initRenderer(device);
                  break;
-@@ -519,14 +_,16 @@
+@@ -517,14 +_,16 @@
                  LOGGER.error("Couldn't set icon", (Throwable)var22);
              }
  
@@ -46,7 +46,7 @@
              this.resourcePackRepository.reload();
              this.options.loadSelectedResourcePacks(this.resourcePackRepository);
              this.languageManager = new LanguageManager(this.options.languageCode, languageData -> {
-@@ -565,6 +_,7 @@
+@@ -563,6 +_,7 @@
              RenderSystem.setupDefaultState();
              this.window.setErrorSection("Post startup");
              this.blockColors = BlockColors.createDefault();
@@ -54,7 +54,7 @@
              this.modelManager = new ModelManager(this.blockColors, this.atlasManager, this.playerSkinRenderCache);
              this.resourceManager.registerReloadListener(this.modelManager);
              EquipmentAssetManager equipmentAssets = new EquipmentAssetManager();
-@@ -615,6 +_,7 @@
+@@ -613,6 +_,7 @@
              this.resourceManager.registerReloadListener(this.particleResources);
              this.particleEngine = new ParticleEngine(this.level, this.particleResources);
              this.particleResources.onReload(this.particleEngine::clearParticles);
@@ -62,7 +62,7 @@
              this.waypointStyles = new WaypointStyleManager();
              this.resourceManager.registerReloadListener(this.waypointStyles);
              this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.renderBuffers, this.modelManager);
-@@ -631,6 +_,9 @@
+@@ -629,6 +_,9 @@
              this.gpuWarnlistManager = new GpuWarnlistManager();
              this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
              this.resourceManager.registerReloadListener(this.regionalCompliancies);
@@ -72,7 +72,7 @@
              this.gui = new Gui(this);
              RealmsClient realmsClient = RealmsClient.getOrCreate(this);
              this.realmsDataFetcher = new RealmsDataFetcher(realmsClient);
-@@ -663,6 +_,7 @@
+@@ -661,6 +_,7 @@
                  }
              }
  
@@ -80,7 +80,7 @@
              this.window.updateVsync(this.options.enableVsync().get());
              this.window.updateRawMouseInput(this.options.rawMouseInput().get());
              this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
-@@ -688,8 +_,8 @@
+@@ -686,8 +_,8 @@
                  .createReload(Util.backgroundExecutor().forName("resourceLoad"), this, RESOURCE_RELOAD_INITIAL_TASK, packs);
              GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
              Minecraft.GameLoadCookie loadCookie = new Minecraft.GameLoadCookie(realmsClient, gameConfig.quickPlay);
@@ -91,7 +91,7 @@
                      this.selfTest();
                  }
  
-@@ -725,6 +_,7 @@
+@@ -723,6 +_,7 @@
      }
  
      private void onResourceLoadFinished(Minecraft.@Nullable GameLoadCookie loadCookie) {
@@ -99,7 +99,7 @@
          if (!this.gameLoadFinished) {
              this.gameLoadFinished = true;
              this.onGameLoadFinished(loadCookie);
-@@ -761,6 +_,8 @@
+@@ -759,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }
  
@@ -108,7 +108,7 @@
          return nextStep;
      }
  
-@@ -813,7 +_,7 @@
+@@ -811,7 +_,7 @@
      private String createTitle() {
          StringBuilder builder = new StringBuilder("Minecraft");
          if (checkModStatus().shouldReportAsModified()) {
@@ -117,7 +117,7 @@
          }
  
          builder.append(" ");
-@@ -849,7 +_,7 @@
+@@ -847,7 +_,7 @@
      }
  
      private void rollbackResourcePacks(Throwable t, Minecraft.@Nullable GameLoadCookie loadCookie) {
@@ -126,7 +126,7 @@
              this.clearResourcePacksOnError(t, null, loadCookie);
          } else {
              Util.throwAsRuntime(t);
-@@ -905,6 +_,8 @@
+@@ -903,6 +_,8 @@
          DiscontinuousFrame tickFrame = TracyClient.createDiscontinuousFrame("Client Tick");
  
          try {
@@ -135,7 +135,7 @@
              boolean oomRecovery = false;
  
              while (this.running) {
-@@ -975,7 +_,7 @@
+@@ -973,7 +_,7 @@
          CrashReport finalReport = this.fillReport(partialReport);
          int exitCode = saveReportAndShutdownSoundManager(this, this.gameDirectory, finalReport);
          this.emergencySave();
@@ -144,7 +144,7 @@
      }
  
      public static int saveReport(File gameDirectory, CrashReport crash) {
-@@ -1007,7 +_,7 @@
+@@ -1005,7 +_,7 @@
  
      public static void crash(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash) {
          int exitCode = saveReportAndShutdownSoundManager(minecraft, gameDirectory, crash);
@@ -153,7 +153,7 @@
      }
  
      private static int saveReportAndShutdownSoundManager(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash) {
-@@ -1126,9 +_,7 @@
+@@ -1124,9 +_,7 @@
              LOGGER.error("setScreen called from non-game thread");
          }
  
@@ -164,7 +164,7 @@
              this.setLastInputType(InputType.NONE);
          }
  
-@@ -1150,6 +_,19 @@
+@@ -1148,6 +_,19 @@
              }
          }
  
@@ -184,7 +184,7 @@
          this.screen = screen;
          if (this.screen != null) {
              this.screen.added();
-@@ -1178,6 +_,7 @@
+@@ -1176,6 +_,7 @@
  
      public void destroy() {
          try {
@@ -192,7 +192,7 @@
              LOGGER.info("Stopping!");
  
              try {
-@@ -1199,6 +_,7 @@
+@@ -1197,6 +_,7 @@
              }
  
              this.close();
@@ -200,7 +200,7 @@
          } finally {
              Util.timeSource = System::nanoTime;
              if (!this.hasDelayedCrash()) {
-@@ -1302,9 +_,13 @@
+@@ -1300,9 +_,13 @@
  
          this.window.setErrorSection("Post render");
          boolean previouslyPaused = this.pause;
@@ -215,7 +215,7 @@
          if (!previouslyPaused && this.pause) {
              this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
          }
-@@ -1344,7 +_,9 @@
+@@ -1342,7 +_,9 @@
          profiler.popPush("gpuAsync");
          RenderSystem.executePendingTasks();
          profiler.pop();
@@ -225,7 +225,7 @@
          profiler.push("present");
          if (!this.gameRenderer.getGameRenderState().windowRenderState.isMinimized) {
              this.mainRenderTarget.blitToScreen();
-@@ -1448,6 +_,7 @@
+@@ -1446,6 +_,7 @@
          this.window.setGuiScale(guiScale);
          if (this.screen != null) {
              this.screen.resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -233,7 +233,7 @@
          }
  
          this.mouseHandler.setIgnoreFirstMove();
-@@ -1599,6 +_,7 @@
+@@ -1597,6 +_,7 @@
      }
  
      public void stop() {
@@ -241,7 +241,7 @@
          this.running = false;
      }
  
-@@ -1630,8 +_,16 @@
+@@ -1628,8 +_,16 @@
                      BlockPos pos = blockHit.getBlockPos();
                      if (!this.level.getBlockState(pos).isAir()) {
                          Direction direction = blockHit.getDirection();
@@ -260,7 +260,7 @@
                              this.player.swing(InteractionHand.MAIN_HAND);
                          }
                      }
-@@ -1668,9 +_,16 @@
+@@ -1666,9 +_,16 @@
                  return false;
              } else {
                  boolean endAttack = false;
@@ -277,7 +277,7 @@
                      this.player.swing(InteractionHand.MAIN_HAND);
                      return true;
                  } else {
-@@ -1697,8 +_,10 @@
+@@ -1695,8 +_,10 @@
                              }
  
                              this.player.resetAttackStrengthTicker();
@@ -288,7 +288,7 @@
                      this.player.swing(InteractionHand.MAIN_HAND);
                      return endAttack;
                  }
-@@ -1715,6 +_,11 @@
+@@ -1713,6 +_,11 @@
                  }
  
                  for (InteractionHand hand : InteractionHand.values()) {
@@ -300,7 +300,7 @@
                      ItemStack heldItem = this.player.getItemInHand(hand);
                      if (!heldItem.isItemEnabled(this.level.enabledFeatures())) {
                          return;
-@@ -1731,7 +_,7 @@
+@@ -1729,7 +_,7 @@
  
                                  if (this.player.isWithinEntityInteractionRange(entity, 0.0)
                                      && this.gameMode.interact(this.player, entity, entityHit, hand) instanceof InteractionResult.Success success) {
@@ -309,7 +309,7 @@
                                          this.player.swing(hand);
                                      }
  
-@@ -1743,7 +_,7 @@
+@@ -1741,7 +_,7 @@
                                  int oldCount = heldItem.getCount();
                                  InteractionResult useResult = this.gameMode.useItemOn(this.player, hand, blockHit);
                                  if (useResult instanceof InteractionResult.Success success) {
@@ -318,7 +318,7 @@
                                          this.player.swing(hand);
                                          if (!heldItem.isEmpty() && (heldItem.getCount() != oldCount || this.player.hasInfiniteMaterials())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(hand);
-@@ -1759,8 +_,11 @@
+@@ -1757,8 +_,11 @@
                          }
                      }
  
@@ -331,7 +331,7 @@
                              this.player.swing(hand);
                          }
  
-@@ -1778,6 +_,10 @@
+@@ -1776,6 +_,10 @@
  
      public void tick() {
          this.clientTickCount++;
@@ -342,7 +342,7 @@
          if (this.level != null && !this.pause) {
              this.level.tickRateManager().tick();
          }
-@@ -1869,6 +_,7 @@
+@@ -1867,6 +_,7 @@
  
                  this.tutorial.tick();
  
@@ -350,7 +350,7 @@
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable var6) {
-@@ -1882,6 +_,7 @@
+@@ -1880,6 +_,7 @@
  
                      throw new ReportedException(report);
                  }
@@ -358,7 +358,7 @@
              }
  
              profiler.popPush("animateTick");
-@@ -1906,6 +_,10 @@
+@@ -1904,6 +_,10 @@
          profiler.popPush("keyboard");
          this.keyboardHandler.tick();
          profiler.pop();
@@ -369,7 +369,7 @@
      }
  
      private boolean isLevelRunningNormally() {
-@@ -2136,6 +_,7 @@
+@@ -2134,6 +_,7 @@
      }
  
      public void setLevel(ClientLevel level) {
@@ -377,7 +377,7 @@
          this.level = level;
          this.updateLevelInEngines(level);
      }
-@@ -2197,13 +_,16 @@
+@@ -2195,13 +_,16 @@
          IntegratedServer server = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -394,7 +394,7 @@
              }
  
              this.level = null;
-@@ -2227,6 +_,7 @@
+@@ -2225,6 +_,7 @@
          } finally {
              this.clientLevelTeardownInProgress = false;
          }
@@ -402,7 +402,7 @@
      }
  
      public void clearDownloadedResourcePacks() {
-@@ -2370,6 +_,7 @@
+@@ -2368,6 +_,7 @@
  
      private void pickBlockOrEntity() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
@@ -410,7 +410,7 @@
              boolean includeData = this.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockHitResult:
-@@ -2436,7 +_,14 @@
+@@ -2434,7 +_,14 @@
          systemReport.setDetail("Backend API", RenderSystem::getApiDescription);
          systemReport.setDetail("Window size", () -> minecraft != null ? minecraft.window.getWidth() + "x" + minecraft.window.getHeight() : "<not initialized>");
          systemReport.setDetail("GFLW Platform", Window::getPlatform);
@@ -426,7 +426,7 @@
          systemReport.setDetail("GL debug messages", () -> {
              GpuDevice device = RenderSystem.tryGetDevice();
              if (device == null) {
-@@ -2903,6 +_,10 @@
+@@ -2896,6 +_,10 @@
          }
  
          return defaultTickTargetMillis;
