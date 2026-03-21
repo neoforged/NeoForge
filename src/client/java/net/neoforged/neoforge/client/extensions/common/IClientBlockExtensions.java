@@ -146,8 +146,5 @@ public interface IClientBlockExtensions {
     /// @param level      The level in which the block is being rendered
     /// @param pos        The position at which the block is being rendered
     /// @param tintValues The list to append the tint values to
-    /// @return true to enable the dynamic tint values to be used
-    default boolean collectDynamicTintValues(BlockState state, BlockAndTintGetter level, BlockPos pos, IntList tintValues) {
-        return false;
-    }
+    default void collectDynamicTintValues(BlockState state, BlockAndTintGetter level, BlockPos pos, IntList tintValues) {}
 }
