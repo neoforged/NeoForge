@@ -138,6 +138,9 @@ public interface IClientBlockExtensions {
 
     /// Collect tint values for blocks with a dynamic tint layer count.
     ///
+    /// Tint values must be appended to the provided list such that their index in the list matches the tint index
+    /// specified by the quad(s) that should be affected by them.
+    ///
     /// Intended to be used by blocks which imitate other blocks and pull their tint values from the imitated block.
     /// This method is only called when [BlockColors#getTintSources(BlockState)] returns an empty list for the block
     /// these extensions are associated to.
