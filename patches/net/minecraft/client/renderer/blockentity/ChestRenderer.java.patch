@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ChestRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ChestRenderer.java
-@@ -82,6 +_,8 @@
+@@ -80,6 +_,8 @@
          if (state.type != ChestType.SINGLE) {
              state.lightCoords = combineResult.apply(new BrightnessCombiner<>()).applyAsInt(state.lightCoords);
          }
@@ -9,16 +9,16 @@
      }
  
      public void submit(ChestRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-@@ -90,7 +_,7 @@
+@@ -88,7 +_,7 @@
          float open = state.open;
          open = 1.0F - open;
          open = 1.0F - open * open * open;
 -        SpriteId spriteId = Sheets.chooseSprite(state.material, state.type);
 +        SpriteId spriteId = state.customSprite != null ? state.customSprite : Sheets.chooseSprite(state.material, state.type);
-         RenderType renderType = spriteId.renderType(RenderTypes::entityCutoutCull);
-         TextureAtlasSprite sprite = this.sprites.get(spriteId);
- 
-@@ -126,5 +_,20 @@
+         ChestModel model = this.models.select(state.type);
+         submitNodeCollector.submitModel(
+             model, open, poseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, spriteId, this.sprites, 0, state.breakProgress
+@@ -119,5 +_,20 @@
  
      private static Transformation createModelTransformation(Direction facing) {
          return new Transformation(new Matrix4f().rotationAround(Axis.YP.rotationDegrees(-facing.toYRot()), 0.5F, 0.0F, 0.5F));

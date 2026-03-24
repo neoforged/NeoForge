@@ -240,6 +240,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
         add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
         add(Tags.Items.FOODS_COOKIE, "Cookies");
+        add(Tags.Items.FOODS_DOUGH, "Doughs");
         add(Tags.Items.FOODS_EDIBLE_WHEN_PLACED, "Edible When Placed");
         add(Tags.Items.FOODS_FOOD_POISONING, "Food Poisoning Foods");
         add(Tags.Items.FOODS_FRUIT, "Fruits");

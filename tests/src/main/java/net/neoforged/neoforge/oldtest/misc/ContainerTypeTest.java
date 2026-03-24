@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -67,8 +67,8 @@ public class ContainerTypeTest {
         }
 
         @Override
-        protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-            graphics.drawString(this.font, getMenu().text, mouseX, mouseY, -1);
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            graphics.text(this.font, getMenu().text, mouseX, mouseY, -1);
         }
     }
 

@@ -101,11 +101,12 @@
              if (!missingDefinitions.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + missingDefinitions);
              }
-@@ -96,6 +_,16 @@
+@@ -96,6 +_,17 @@
      private static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
 +        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems;
++        private final Map<Identifier, ClientItem> idItemInfos = new HashMap<>();
 +
 +        public ItemInfoCollector(Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems) {
 +            this.knownItems = knownItems;
@@ -118,7 +119,20 @@
  
          @Override
          public void accept(Item item, ItemModel.Unbaked model, ClientItem.Properties properties) {
-@@ -115,7 +_,7 @@
+@@ -110,12 +_,20 @@
+         }
+ 
+         @Override
++        public void register(Identifier identifier, ClientItem clientItem) {
++            ClientItem existing = this.idItemInfos.putIfAbsent(identifier, clientItem);
++            if (existing != null) {
++                throw new IllegalStateException("Duplicate item model definition for " + identifier);
++            }
++        }
++
++        @Override
+         public void copy(Item donor, Item acceptor) {
+             this.copies.put(acceptor, donor);
          }
  
          public void finalizeAndValidate() {
@@ -140,3 +154,14 @@
                  .toList();
              if (!missingDefinitions.isEmpty()) {
                  throw new IllegalStateException("Missing item model definitions for: " + missingDefinitions);
+@@ -142,7 +_,9 @@
+         }
+ 
+         public CompletableFuture<?> save(CachedOutput cache, PackOutput.PathProvider pathProvider) {
+-            return DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos);
++            return CompletableFuture.allOf(
++                    DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos),
++                    DataProvider.saveAll(cache, ClientItem.CODEC, pathProvider::json, this.idItemInfos));
+         }
+     }
+ 

@@ -22,7 +22,7 @@
          if (!this.player.isWithinBlockInteractionRange(pos, 1.0)) {
              this.debugLogging(pos, false, sequence, "too far");
          } else if (pos.getY() > maxY) {
-@@ -186,6 +_,7 @@
+@@ -192,6 +_,7 @@
                          blockState,
                          item -> this.player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND)
                      );
@@ -30,7 +30,7 @@
                      blockState.attack(this.level, pos, this.player);
                      progress = blockState.getDestroyProgress(this.player, this.player.level(), pos);
                  }
-@@ -253,7 +_,8 @@
+@@ -259,7 +_,8 @@
  
      public boolean destroyBlock(BlockPos pos) {
          BlockState state = this.level.getBlockState(pos);
@@ -40,7 +40,7 @@
              return false;
          } else {
              BlockEntity blockEntity = this.level.getBlockEntity(pos);
-@@ -265,30 +_,46 @@
+@@ -271,30 +_,46 @@
                  return false;
              } else {
                  BlockState adjustedState = block.playerWillDestroy(this.level, pos, state, this.player);
@@ -96,7 +96,7 @@
      }
  
      public InteractionResult useItem(ServerPlayer player, Level level, ItemStack itemStack, InteractionHand hand) {
-@@ -297,6 +_,8 @@
+@@ -303,6 +_,8 @@
          } else if (player.getCooldowns().isOnCooldown(itemStack)) {
              return InteractionResult.PASS;
          } else {
@@ -105,7 +105,7 @@
              int oldCount = itemStack.getCount();
              int oldDamage = itemStack.getDamageValue();
              InteractionResult result = itemStack.use(level, player, hand);
-@@ -337,7 +_,10 @@
+@@ -343,7 +_,10 @@
          BlockState state = level.getBlockState(pos);
          if (!state.getBlock().isEnabled(level.enabledFeatures())) {
              return InteractionResult.FAIL;
@@ -117,7 +117,7 @@
              MenuProvider menuProvider = state.getMenuProvider(level, pos);
              if (menuProvider != null) {
                  player.openMenu(menuProvider);
-@@ -346,10 +_,15 @@
+@@ -352,10 +_,15 @@
                  return InteractionResult.PASS;
              }
          } else {
@@ -135,7 +135,7 @@
                  InteractionResult itemUse = state.useItemOn(player.getItemInHand(hand), level, player, hand, hitResult);
                  if (itemUse.consumesAction()) {
                      CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, pos, usedItemStack);
-@@ -365,8 +_,8 @@
+@@ -371,8 +_,8 @@
                  }
              }
  

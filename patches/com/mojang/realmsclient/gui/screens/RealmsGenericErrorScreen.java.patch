@@ -13,6 +13,6 @@
 +    }
 +
 +    @Override
-     public void render(GuiGraphics graphics, int xm, int ym, float a) {
-         super.render(graphics, xm, ym, a);
-         graphics.drawCenteredString(this.font, this.title, this.width / 2, 80, -1);
+     public void extractRenderState(GuiGraphicsExtractor graphics, int xm, int ym, float a) {
+         super.extractRenderState(graphics, xm, ym, a);
+         graphics.centeredText(this.font, this.title, this.width / 2, 80, -1);

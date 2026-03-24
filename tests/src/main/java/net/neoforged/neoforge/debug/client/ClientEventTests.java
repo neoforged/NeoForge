@@ -112,7 +112,7 @@ public class ClientEventTests {
                                 testBlockAt.getY() - sectionOrigin.getY(),
                                 testBlockAt.getZ() - sectionOrigin.getZ());
                         BlockQuadOutput quadOutput = (x, y, z, quad, instance) -> {
-                            VertexConsumer builder = context.getOrCreateChunkBuffer(quad.spriteInfo().layer());
+                            VertexConsumer builder = context.getOrCreateChunkBuffer(quad.materialInfo().layer());
                             builder.putBlockBakedQuad(x, y, z, quad, instance);
                         };
                         context.getBlockRenderer().tesselateBlock(
@@ -123,7 +123,7 @@ public class ClientEventTests {
                                 context.getRegion(),
                                 testBlockAt,
                                 Blocks.DIAMOND_BLOCK.defaultBlockState(),
-                                Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState()),
+                                Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(Blocks.DIAMOND_BLOCK.defaultBlockState()),
                                 0);
                         poseStack.popPose();
                     });

@@ -5,11 +5,19 @@
 
 package net.neoforged.neoforge.client.model.pipeline;
 
+import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import net.neoforged.neoforge.client.model.quad.BakedColors;
@@ -35,10 +43,15 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
 
     private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    private BakedQuad.@Nullable SpriteInfo spriteInfo = null;
+    @Nullable
+    private TextureAtlasSprite sprite;
+    @Nullable
+    private ChunkSectionLayer chunkLayer;
+    @Nullable
+    private RenderType itemRenderType;
     private boolean shade;
     private int lightEmission;
-    private boolean hasAmbientOcclusion;
+    private boolean ambientOcclusion;
 
     public QuadBakingVertexConsumer() {
         clear();
@@ -108,8 +121,21 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.direction = direction;
     }
 
-    public void setSpriteInfo(BakedQuad.SpriteInfo sprite) {
-        this.spriteInfo = sprite;
+    @SuppressWarnings("deprecation")
+    public void setSprite(Material.Baked material, Transparency transparency) {
+        RenderType itemRenderType;
+        if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            itemRenderType = transparency.hasTranslucent() ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockItemSheet();
+        } else {
+            itemRenderType = transparency.hasTranslucent() ? Sheets.translucentItemSheet() : Sheets.cutoutItemSheet();
+        }
+        setSprite(material.sprite(), ChunkSectionLayer.byTransparency(transparency), itemRenderType);
+    }
+
+    public void setSprite(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType) {
+        this.sprite = sprite;
+        this.chunkLayer = chunkLayer;
+        this.itemRenderType = itemRenderType;
     }
 
     public void setShade(boolean shade) {
@@ -120,18 +146,36 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.lightEmission = lightEmission;
     }
 
-    public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-        this.hasAmbientOcclusion = hasAmbientOcclusion;
+    public void setAmbientOcclusion(boolean ambientOcclusion) {
+        this.ambientOcclusion = ambientOcclusion;
     }
 
     public BakedQuad bakeQuad() {
+        return bakeQuad(null);
+    }
+
+    public BakedQuad bakeQuad(ModelBaker.@Nullable Interner interner) {
         if (!building || ++vertexIndex != 4) {
             throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
         }
-        if (spriteInfo == null) {
-            throw new IllegalStateException("No BakedQuad.SpriteInfo set");
+        if (sprite == null) {
+            throw new IllegalStateException("No sprite set");
+        }
+        if (chunkLayer == null) {
+            throw new IllegalStateException("No ChunkSectionLayer set");
+        }
+        if (itemRenderType == null) {
+            throw new IllegalStateException("No item RenderType set");
         }
 
+        BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, tintIndex, shade, lightEmission, ambientOcclusion);
+        BakedNormals bakedNormals = BakedNormals.of(normals[0], normals[1], normals[2], normals[3]);
+        BakedColors bakedColors = BakedColors.of(colors[0], colors[1], colors[2], colors[3]);
+        if (interner != null) {
+            materialInfo = interner.materialInfo(materialInfo);
+            bakedNormals = interner.normals(bakedNormals);
+            bakedColors = interner.colors(bakedColors);
+        }
         BakedQuad quad = new BakedQuad(
                 positions[0],
                 positions[1],
@@ -141,14 +185,10 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
                 uvs[1],
                 uvs[2],
                 uvs[3],
-                tintIndex,
                 direction,
-                spriteInfo,
-                shade,
-                lightEmission,
-                BakedNormals.of(normals[0], normals[1], normals[2], normals[3]),
-                BakedColors.of(colors[0], colors[1], colors[2], colors[3]),
-                hasAmbientOcclusion);
+                materialInfo,
+                bakedNormals,
+                bakedColors);
         clear();
         return quad;
     }
@@ -156,12 +196,16 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     private void clear() {
         vertexIndex = 0;
         building = false;
-        Arrays.setAll(positions, $ -> new Vector3f());
+        Arrays.setAll(positions, _ -> new Vector3f());
         Arrays.fill(uvs, 0L);
         Arrays.fill(normals, 0);
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
-        spriteInfo = null;
+        sprite = null;
+        chunkLayer = null;
+        itemRenderType = null;
+        shade = true;
         lightEmission = 0;
+        ambientOcclusion = true;
     }
 }

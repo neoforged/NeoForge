@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.client.extensions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.LightCoordsUtil;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import net.neoforged.neoforge.client.model.quad.MutableQuad;
 import org.joml.Matrix3f;
@@ -37,30 +37,18 @@ public interface IVertexConsumerExtension {
     }
 
     /**
-     * Same as {@link #putBulkData(PoseStack.Pose, MutableQuad, float[], float, float, float, float, int[], int)},
-     * but does not shade the color (assumes brightness = 1), and uses the same {@code lightCoords} for all four vertices.
+     * Same as {@link VertexConsumer#putBakedQuad(PoseStack.Pose, BakedQuad, QuadInstance)}, but sources the data from a {@link MutableQuad}.
      */
-    default void putBulkData(PoseStack.Pose pose, net.neoforged.neoforge.client.model.quad.MutableQuad quad, float r, float g, float b, float a, int lightCoords, int overlayCoords) {
-        this.putBulkData(
-                pose, quad, new float[] { 1.0F, 1.0F, 1.0F, 1.0F }, r, g, b, a, new int[] { lightCoords, lightCoords, lightCoords, lightCoords }, overlayCoords);
-    }
-
-    /**
-     * Same as {@link VertexConsumer#putBulkData(PoseStack.Pose, BakedQuad, float[], float, float, float, float, int[], int)},
-     * but sources the data from a {@link MutableQuad}.
-     */
-    default void putBulkData(
-            PoseStack.Pose pose, net.neoforged.neoforge.client.model.quad.MutableQuad quad, float[] brightness, float r, float g, float b, float a, int[] lightmapCoord, int overlayCoords) {
+    default void putMutableQuad(PoseStack.Pose pose, MutableQuad quad, QuadInstance instance) {
+        Vector3fc normalVec = quad.direction().getUnitVec3f();
         Matrix4f matrix = pose.pose();
-        Vector3f faceNormal = pose.transformNormal(quad.direction().getUnitVec3f(), new Vector3f());
+        Vector3f faceNormal = pose.transformNormal(normalVec, new Vector3f());
         int lightEmission = quad.lightEmission();
 
         for (int vertex = 0; vertex < 4; vertex++) {
             long packedUv = quad.packedUv(vertex);
-            float brightnessForVertex = brightness[vertex];
-            int color = ARGB.colorFromFloat(a, brightnessForVertex * r, brightnessForVertex * g, brightnessForVertex * b);
-            color = ARGB.multiply(color, quad.color(vertex)); // Neo: apply baked color from the quad
-            int light = LightCoordsUtil.lightCoordsWithEmission(lightmapCoord[vertex], lightEmission);
+            int vertexColor = ARGB.multiply(instance.getColor(vertex), quad.color(vertex));
+            int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
             Vector3f pos = matrix.transformPosition(quad.x(vertex), quad.y(vertex), quad.z(vertex), new Vector3f());
             float u = UVPair.unpackU(packedUv);
             float v = UVPair.unpackV(packedUv);
@@ -71,7 +59,7 @@ public interface IVertexConsumerExtension {
             } else {
                 normal = faceNormal;
             }
-            self().addVertex(pos.x(), pos.y(), pos.z(), color, u, v, overlayCoords, light, normal.x(), normal.y(), normal.z());
+            self().addVertex(pos.x(), pos.y(), pos.z(), vertexColor, u, v, instance.overlayCoords(), light, normal.x(), normal.y(), normal.z());
         }
     }
 

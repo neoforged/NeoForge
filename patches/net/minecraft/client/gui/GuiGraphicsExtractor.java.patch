@@ -1,23 +1,22 @@
---- a/net/minecraft/client/gui/GuiGraphics.java
-+++ b/net/minecraft/client/gui/GuiGraphics.java
+--- a/net/minecraft/client/gui/GuiGraphicsExtractor.java
++++ b/net/minecraft/client/gui/GuiGraphicsExtractor.java
 @@ -103,6 +_,7 @@
      private @Nullable Style hoveredTextStyle;
      private @Nullable Style clickableTextStyle;
      private @Nullable Renderable preeditOverlay;
 +    private ItemStack tooltipStack = ItemStack.EMPTY;
  
-     private GuiGraphics(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {
+     private GuiGraphicsExtractor(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {
          this.minecraft = minecraft;
-@@ -879,6 +_,8 @@
-             this.renderItemCooldown(itemStack, x, y);
-             this.renderItemCount(font, itemStack, x, y, countText);
+@@ -877,6 +_,7 @@
+             this.itemCooldown(itemStack, x, y);
+             this.itemCount(font, itemStack, x, y, countText);
              this.pose.popMatrix();
-+            // TODO 1.21.2: This probably belongs in one of the sub-methods.
 +            net.neoforged.neoforge.client.ItemDecoratorHandler.of(itemStack).render(this, font, itemStack, x, y);
          }
      }
  
-@@ -891,9 +_,21 @@
+@@ -1021,9 +_,21 @@
      }
  
      public void setTooltipForNextFrame(Font font, ItemStack itemStack, int xo, int yo) {
@@ -39,7 +38,7 @@
      }
  
      public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo) {
-@@ -901,11 +_,7 @@
+@@ -1031,11 +_,7 @@
      }
  
      public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo, @Nullable Identifier style) {
@@ -52,15 +51,7 @@
          this.setTooltipForNextFrameInternal(font, components, xo, yo, DefaultTooltipPositioner.INSTANCE, style, false);
      }
  
-@@ -920,7 +_,6 @@
-         @Nullable Identifier style
-     ) {
-         List<ClientTooltipComponent> components = tooltip.stream().map(ClientTooltipComponent::create).collect(Collectors.toList());
--        component.ifPresent(tooltipComponent -> components.add(components.isEmpty() ? 0 : 1, ClientTooltipComponent.create(tooltipComponent)));
-         this.setTooltipForNextFrameInternal(font, components, xo, yo, positioner, style, replaceExisting);
-     }
- 
-@@ -933,13 +_,14 @@
+@@ -1063,13 +_,14 @@
      }
  
      public void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo) {
@@ -77,15 +68,15 @@
              xo,
              yo,
              DefaultTooltipPositioner.INSTANCE,
-@@ -948,6 +_,28 @@
+@@ -1078,6 +_,28 @@
          );
      }
  
-+    public void setComponentTooltipForNextFrame(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack) {
++    public void setComponentTooltipForNextFrame(Font font, List<? extends FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack) {
 +        setComponentTooltipForNextFrame(font, tooltips, mouseX, mouseY, stack, null);
 +    }
 +
-+    public void setComponentTooltipForNextFrame(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack, @Nullable Identifier backgroundTexture) {
++    public void setComponentTooltipForNextFrame(Font font, List<? extends FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack, @Nullable Identifier backgroundTexture) {
 +        this.tooltipStack = stack;
 +        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(stack, tooltips, mouseX, guiWidth(), guiHeight(), font);
 +        this.setTooltipForNextFrameInternal(font, components, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, backgroundTexture, false);
@@ -106,24 +97,22 @@
      public void setTooltipForNextFrame(Font font, List<? extends FormattedCharSequence> lines, int xo, int yo) {
          this.setTooltipForNextFrame(font, lines, xo, yo, null);
      }
-@@ -971,7 +_,8 @@
+@@ -1101,12 +_,24 @@
      ) {
          if (!lines.isEmpty()) {
              if (this.deferredTooltip == null || replaceExisting) {
--                this.deferredTooltip = () -> this.renderTooltip(font, lines, xo, yo, positioner, style);
+-                this.deferredTooltip = () -> this.tooltip(font, lines, xo, yo, positioner, style);
 +                ItemStack capturedTooltipStack = this.tooltipStack;
-+                this.deferredTooltip = () -> this.renderTooltip(font, lines, xo, yo, positioner, style, capturedTooltipStack);
++                this.deferredTooltip = () -> this.tooltip(font, lines, xo, yo, positioner, style, capturedTooltipStack);
              }
          }
      }
-@@ -981,6 +_,17 @@
-     }
  
-     public void renderTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style) {
-+        renderTooltip(font, lines, xo, yo, positioner, style, ItemStack.EMPTY);
+     public void tooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style) {
++        this.tooltip(font, lines, xo, yo, positioner, style, ItemStack.EMPTY);
 +    }
 +
-+    public void renderTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, ItemStack tooltipStack) {
++    public void tooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, ItemStack tooltipStack) {
 +        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, xo, yo, guiWidth(), guiHeight(), lines, font, positioner);
 +        if (preEvent.isCanceled()) return;
 +
@@ -134,27 +123,27 @@
          int textWidth = 0;
          int tempHeight = lines.size() == 1 ? -2 : 0;
  
-@@ -999,7 +_,8 @@
+@@ -1125,7 +_,8 @@
          int x = positionedTooltip.x();
          int y = positionedTooltip.y();
          this.pose.pushMatrix();
--        TooltipRenderUtil.renderTooltipBackground(this, x, y, textWidth, tempHeight, style);
+-        TooltipRenderUtil.extractTooltipBackground(this, x, y, textWidth, tempHeight, style);
 +        var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(this.tooltipStack, this, x, y, preEvent.getFont(), lines, style);
-+        TooltipRenderUtil.renderTooltipBackground(this, x, y, textWidth, tempHeight, textureEvent.getTexture());
++        TooltipRenderUtil.extractTooltipBackground(this, x, y, textWidth, tempHeight, textureEvent.getTexture());
          int localY = y;
  
          for (int i = 0; i < lines.size(); i++) {
-@@ -1196,6 +_,31 @@
- 
-     public void submitProfilerChartRenderState(List<ResultField> chartData, int x0, int y0, int x1, int y1) {
-         this.guiRenderState.submitPicturesInPictureState(new GuiProfilerChartRenderState(chartData, x0, y0, x1, y1, this.scissorStack.peek()));
+@@ -1188,6 +_,31 @@
+                 default:
+             }
+         }
 +    }
 +
 +    /**
 +     * Neo: Submit a custom {@link net.minecraft.client.renderer.state.gui.GuiElementRenderState} for rendering
 +     */
 +    public void submitGuiElementRenderState(net.minecraft.client.renderer.state.gui.GuiElementRenderState renderState) {
-+        this.guiRenderState.submitGuiElement(renderState);
++        this.guiRenderState.addGuiElement(renderState);
 +    }
 +
 +    /**
@@ -163,7 +152,7 @@
 +     * @see net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent
 +     */
 +    public void submitPictureInPictureRenderState(net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState renderState) {
-+        this.guiRenderState.submitPicturesInPictureState(renderState);
++        this.guiRenderState.addPicturesInPictureState(renderState);
 +    }
 +
 +    /**

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -164,14 +_,14 @@
+@@ -165,14 +_,14 @@
              bufferSource,
              this.submitNodeStorage,
              this.featureRenderDispatcher,
@@ -23,7 +23,7 @@
          );
          this.screenEffectRenderer = new ScreenEffectRenderer(minecraft, atlasManager, bufferSource);
      }
-@@ -229,6 +_,7 @@
+@@ -230,6 +_,7 @@
                  break;
              case null:
              default:
@@ -31,7 +31,7 @@
                  this.clearPostEffect();
          }
      }
-@@ -329,6 +_,9 @@
+@@ -330,6 +_,9 @@
                  return;
              }
  
@@ -41,17 +41,17 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
-@@ -506,7 +_,8 @@
+@@ -507,7 +_,8 @@
              profiler.push("screen");
  
              try {
--                this.minecraft.screen.renderWithTooltipAndSubtitles(graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
+-                this.minecraft.screen.extractRenderStateWithTooltipAndSubtitles(graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
 +                // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
 +                net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
              } catch (Throwable var12) {
                  CrashReport report = CrashReport.forThrowable(var12, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -730,6 +_,9 @@
+@@ -731,6 +_,9 @@
                  !shouldCreateBossFog,
                  this.gameRenderState.levelRenderState.chunkSectionsToRender
              );

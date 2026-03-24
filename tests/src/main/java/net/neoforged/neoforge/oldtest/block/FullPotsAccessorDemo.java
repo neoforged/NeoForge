@@ -268,7 +268,7 @@ public class FullPotsAccessorDemo {
 
             private static void collectPlantParts(Block plant, BlockAndTintGetter level, BlockPos pos, RandomSource random, List<BlockStateModelPart> parts) {
                 BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().getOrDefault(BuiltInRegistries.BLOCK.getKey(plant), () -> Blocks.AIR).get().defaultBlockState();
-                BlockStateModel potModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(potState);
+                BlockStateModel potModel = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(potState);
 
                 List<BlockStateModelPart> srcParts = new ObjectArrayList<>();
                 potModel.collectParts(level, pos, potState, random, srcParts);
@@ -276,7 +276,7 @@ public class FullPotsAccessorDemo {
                     QuadCollection.Builder builder = new QuadCollection.Builder();
                     for (Direction side : DIRECTIONS) {
                         for (BakedQuad quad : part.getQuads(side)) {
-                            Identifier texture = quad.spriteInfo().sprite().contents().name();
+                            Identifier texture = quad.materialInfo().sprite().contents().name();
                             if (!texture.equals(POT_TEXTURE) && !texture.equals(DIRT_TEXTURE)) {
                                 if (side == null) {
                                     builder.addUnculledFace(quad);
@@ -286,7 +286,7 @@ public class FullPotsAccessorDemo {
                             }
                         }
                     }
-                    parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial(), part.hasTranslucency()));
+                    parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial()));
                 }
             }
         }

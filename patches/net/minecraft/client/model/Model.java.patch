@@ -8,6 +8,6 @@
 +        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
 +    }
 +
-     public final RenderType renderType(Identifier texture) {
-         return this.renderType.apply(texture);
+     public final Function<Identifier, RenderType> renderType() {
+         return this.renderType;
      }

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -81,7 +81,7 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void renderImage(Font font, int x, int y, int width, int height, GuiGraphics graphics) {
+        public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
             graphics.fill(x, y, x + 10, y + 10, tooltip.color);
         }
     }
@@ -152,10 +152,9 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-            super.render(graphics, mouseX, mouseY, partialTicks);
-            graphics.drawString(font, "* must have Stack, # must have custom font", 0, 0, 0xFFFFFF);
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+            graphics.text(font, "* must have Stack, # must have custom font", 0, 0, 0xFFFFFF);
         }
 
         @Override
@@ -192,8 +191,8 @@ public class CustomTooltipTest {
                 addRenderableWidget(new Button.Builder(Component.literal(test.getKey()), button -> {})
                         .bounds(x, y, 100, 20).build(b -> new Button.Plain(b) {
                             @Override
-                            public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-                                super.renderContents(graphics, mouseX, mouseY, partialTick);
+                            public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+                                super.extractContents(graphics, mouseX, mouseY, partialTick);
 
                                 boolean showTooltip = this.isHovered || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
                                 if (showTooltip)
@@ -212,70 +211,70 @@ public class CustomTooltipTest {
             return Component.literal("test").withStyle(s -> s.withFont(new FontDescription.Resource(testFont ? Minecraft.UNIFORM_FONT : Minecraft.DEFAULT_FONT)));
         }
 
-        private void test1(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test1(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, this.testStack, mouseX, mouseY);
         }
 
         // renderTooltip with List<Component> and all combinations of ItemStack/Font
-        private void test2(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test2(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
         }
 
-        private void test3(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test3(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
         }
 
-        private void test4(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test4(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
         }
 
-        private void test5(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test5(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
         }
 
         // renderTooltip with just Component
-        private void test6(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test6(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, this.getTestComponent(false), mouseX, mouseY);
         }
 
         // renderComponentTooltip with all combinations of ItemStack/Font
-        private void test7(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test7(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
         }
 
-        private void test8(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test8(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
 
-        private void test9(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test9(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
 
-        private void test10(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test10(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
         }
 
         // renderTooltip with list of FormattedCharSequence
-        private void test11(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test11(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false).getVisualOrderText()), mouseX, mouseY);
         }
 
         // renderTooltip with list of FormattedCharSequence and Font
-        private void test12(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test12(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
         }
 
         // legacy ToolTip methods
-        private void test13(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test13(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
         }
 
-        private void test14(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void test14(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
     }
 
     private interface TooltipTest {
-        void render(GuiGraphics graphics, int mouseX, int mouseY);
+        void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
     }
 }

@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
@@ -48,12 +48,12 @@ public abstract class ContainerScreenEvent extends Event {
      * @see Background
      */
     public static abstract class Render extends ContainerScreenEvent {
-        private final GuiGraphics guiGraphics;
+        private final GuiGraphicsExtractor guiGraphics;
         private final int mouseX;
         private final int mouseY;
 
         @ApiStatus.Internal
-        protected Render(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        protected Render(AbstractContainerScreen<?> guiContainer, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
             super(guiContainer);
             this.guiGraphics = guiGraphics;
             this.mouseX = mouseX;
@@ -63,7 +63,7 @@ public abstract class ContainerScreenEvent extends Event {
         /**
          * {@return the gui graphics used for rendering}
          */
-        public GuiGraphics getGuiGraphics() {
+        public GuiGraphicsExtractor getGuiGraphics() {
             return guiGraphics;
         }
 
@@ -97,7 +97,7 @@ public abstract class ContainerScreenEvent extends Event {
          */
         public static class Foreground extends Render {
             @ApiStatus.Internal
-            public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+            public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
                 super(guiContainer, guiGraphics, mouseX, mouseY);
             }
         }

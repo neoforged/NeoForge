@@ -284,7 +284,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return builder.build();
     }
 
-    private Pair<BakedQuad, Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, BakedQuad.SpriteInfo texture, Transformation transform) {
+    private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -305,7 +305,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
 
         var quadBaker = new QuadBakingVertexConsumer();
 
-        quadBaker.setSpriteInfo(texture);
+        quadBaker.setSprite(material, transparency);
         quadBaker.setTintIndex(tintIndex);
 
         if (emissiveAmbient) {
@@ -343,8 +343,8 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             quadBaker.addVertex(position.x(), position.y(), position.z());
             quadBaker.setColor(tintedColor.x(), tintedColor.y(), tintedColor.z(), tintedColor.w());
             quadBaker.setUv(
-                    texture.sprite().getU(texCoord.x),
-                    texture.sprite().getV((flipV ? 1 - texCoord.y : texCoord.y)));
+                    material.sprite().getU(texCoord.x),
+                    material.sprite().getV((flipV ? 1 - texCoord.y : texCoord.y)));
             quadBaker.setNormal(normal.x(), normal.y(), normal.z());
             if (i == 0) {
                 quadBaker.setDirection(Direction.getApproximateNearest(normal.x(), normal.y(), normal.z()));
@@ -400,7 +400,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             }
         }
 
-        return Pair.of(quadBaker.bakeQuad(), cull);
+        return Pair.of(quadBaker.bakeQuad(baker.interner()), cull);
     }
 
     public class ModelObject {
@@ -467,14 +467,13 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
                 return;
             Material.Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
             Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite().transparency();
-            BakedQuad.SpriteInfo spriteInfo = baker.interner().spriteInfo(BakedQuad.SpriteInfo.of(texture, transparency));
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;
 
             var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
             var transform = rootTransform.isIdentity() ? state.transformation() : state.transformation().compose(rootTransform);
             for (int[][] face : faces) {
-                Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, spriteInfo, transform);
+                Pair<BakedQuad, Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
                 if (quad.getRight() == null)
                     builder.addUnculledFace(quad.getLeft());
                 else

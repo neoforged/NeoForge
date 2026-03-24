@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/culling/Frustum.java
 +++ b/net/minecraft/client/renderer/culling/Frustum.java
-@@ -82,6 +_,8 @@
+@@ -83,6 +_,8 @@
      }
  
      public boolean isVisible(AABB bb) {

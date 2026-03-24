@@ -4,7 +4,7 @@ import net.neoforged.neodev.CheckSplitSources
 
 plugins {
     id 'net.neoforged.gradleutils' version '5.1.0'
-    id 'dev.lukebemish.immaculate' version '0.1.6' apply false
+    id 'dev.lukebemish.immaculate' version '0.1.16' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
     id 'neoforge.versioning'

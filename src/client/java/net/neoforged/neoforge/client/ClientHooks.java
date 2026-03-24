@@ -51,7 +51,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
@@ -88,6 +88,7 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
@@ -103,6 +104,7 @@ import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
@@ -138,6 +140,7 @@ import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
@@ -168,6 +171,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
@@ -209,7 +213,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
@@ -364,17 +368,17 @@ public class ClientHooks {
         return event.getDistance();
     }
 
-    public static void renderMainMenu(TitleScreen gui, GuiGraphics guiGraphics, Font font, int width, int height, int alpha) {
+    public static void renderMainMenu(TitleScreen gui, GuiGraphicsExtractor guiGraphics, Font font, int width, int height, int alpha) {
         switch (NeoForgeVersion.getBuildType()) {
             case NeoForgeBuildType.PULL_REQUEST -> {
-                guiGraphics.drawCenteredString(font, Component.translatable("loadwarning.neoforge.prbuild"), width / 2, 4 + (font.lineHeight + 1) / 2, ARGB.color(alpha, 0xFFFFFF));
+                guiGraphics.centeredText(font, Component.translatable("loadwarning.neoforge.prbuild"), width / 2, 4 + (font.lineHeight + 1) / 2, ARGB.color(alpha, 0xFFFFFF));
             }
             case NeoForgeBuildType.BETA -> {
                 // Render a warning at the top of the screen
                 Component line = Component.translatable("neoforge.update.beta.1", ChatFormatting.RED.toString(), ChatFormatting.RESET.toString()).withStyle(ChatFormatting.RED);
-                guiGraphics.drawCenteredString(font, line, width / 2, 4 + (0 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
+                guiGraphics.centeredText(font, line, width / 2, 4 + (0 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
                 line = Component.translatable("neoforge.update.beta.2");
-                guiGraphics.drawCenteredString(font, line, width / 2, 4 + (1 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
+                guiGraphics.centeredText(font, line, width / 2, 4 + (1 * (font.lineHeight + 1)), ARGB.color(alpha, 0xFFFFFF));
             }
         }
 
@@ -401,7 +405,7 @@ public class ClientHooks {
         return e.getMusic();
     }
 
-    public static void drawScreen(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public static void drawScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiLayers.forEach(layer -> {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
             drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
@@ -410,9 +414,9 @@ public class ClientHooks {
         drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    private static void drawScreenInternal(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    private static void drawScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
-            screen.renderWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
+            screen.extractRenderStateWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
         NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 
@@ -480,7 +484,7 @@ public class ClientHooks {
         return from.getItem().shouldCauseReequipAnimation(from, to, changed);
     }
 
-    public static CustomizeGuiOverlayEvent.BossEventProgress onCustomizeBossEventProgress(GuiGraphics guiGraphics, Window window, LerpingBossEvent bossInfo, int x, int y, int increment) {
+    public static CustomizeGuiOverlayEvent.BossEventProgress onCustomizeBossEventProgress(GuiGraphicsExtractor guiGraphics, Window window, LerpingBossEvent bossInfo, int x, int y, int increment) {
         CustomizeGuiOverlayEvent.BossEventProgress evt = new CustomizeGuiOverlayEvent.BossEventProgress(window, guiGraphics,
                 Minecraft.getInstance().getDeltaTracker(), bossInfo, x, y, increment);
         NeoForge.EVENT_BUS.post(evt);
@@ -696,13 +700,13 @@ public class ClientHooks {
         return stackFont == null ? fallbackFont : stackFont;
     }
 
-    public static RenderTooltipEvent.Pre onRenderTooltipPre(ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, List<ClientTooltipComponent> components, Font fallbackFont, ClientTooltipPositioner positioner) {
+    public static RenderTooltipEvent.Pre onRenderTooltipPre(ItemStack stack, GuiGraphicsExtractor graphics, int x, int y, int screenWidth, int screenHeight, List<ClientTooltipComponent> components, Font fallbackFont, ClientTooltipPositioner positioner) {
         var preEvent = new RenderTooltipEvent.Pre(stack, graphics, x, y, screenWidth, screenHeight, getTooltipFont(stack, fallbackFont), components, positioner);
         NeoForge.EVENT_BUS.post(preEvent);
         return preEvent;
     }
 
-    public static RenderTooltipEvent.Texture onRenderTooltipTexture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
+    public static RenderTooltipEvent.Texture onRenderTooltipTexture(ItemStack stack, GuiGraphicsExtractor graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
         return NeoForge.EVENT_BUS.post(new RenderTooltipEvent.Texture(stack, graphics, x, y, font, components, texture));
     }
 
@@ -916,7 +920,7 @@ public class ClientHooks {
     /**
      * Fires the {@link GatherEffectScreenTooltipsEvent} and returns the resulting tooltip lines.
      * <p>
-     * Called from {@link EffectsInInventory#renderEffects} just before {@link GuiGraphics#renderTooltip(Font, List, Optional, int, int)} is called.
+     * Called from {@link EffectsInInventory#renderText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int, MobEffectInstance)} just before {@link GuiGraphicsExtractor#setTooltipForNextFrame(Font, List, Optional, int, int)} is called.
      *
      * @param screen     The screen rendering the tooltip.
      * @param effectInst The effect instance whose tooltip is being rendered.
@@ -941,7 +945,7 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4f modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4fc modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, cameraState, modelViewMatrix, deltaTracker, profiler));
     }
 
@@ -1063,12 +1067,14 @@ public class ClientHooks {
         }
     }
 
-    @ApiStatus.Internal
-    public static Map<Fluid, ChunkSectionLayer> appendModdedFluidRenderLayers(TextureAtlas blockAtlas, Map<Fluid, ChunkSectionLayer> vanillaLayers) {
-        Map<Fluid, ChunkSectionLayer> layersByFluid = new HashMap<>(vanillaLayers);
+    public static Map<Fluid, FluidModel> gatherFluidModels(Map<Fluid, FluidModel> models, MaterialBaker materials) {
+        models = new HashMap<>(models);
+        ModLoader.postEvent(new RegisterFluidModelsEvent(models, materials));
         for (Fluid fluid : BuiltInRegistries.FLUID) {
-            layersByFluid.computeIfAbsent(fluid, key -> IClientFluidTypeExtensions.of(key).computeRenderLayer(key, blockAtlas));
+            if (fluid != Fluids.EMPTY && !models.containsKey(fluid)) {
+                LOGGER.warn("Missing FluidModel for fluid '{}'", fluid);
+            }
         }
-        return Map.copyOf(layersByFluid);
+        return Map.copyOf(models);
     }
 }

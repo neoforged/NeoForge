@@ -13,7 +13,7 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -29,7 +29,7 @@ import net.neoforged.neoforge.client.extensions.blaze3d.GlDeviceExtension;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
- * game loading cycle. We completely replace the {@link #render(GuiGraphics, int, int, float)} call from the parent
+ * game loading cycle. We completely replace the {@link #render(GuiGraphicsExtractor, int, int, float)} call from the parent
  * with one of our own, that allows us to blend our early loading screen into the main window, in the same manner as
  * the Mojang screen. It also allows us to see and tick appropriately as the later stages of the loading system run.
  * <p>
@@ -56,7 +56,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     }
 
     @Override
-    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
+    public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getMillis();
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
         this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
@@ -71,7 +71,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         if (fadeouttimer >= 1.0F) {
             if (this.minecraft.screen != null) {
-                this.minecraft.screen.render(graphics, 0, 0, partialTick);
+                this.minecraft.screen.extractRenderState(graphics, 0, 0, partialTick);
             }
         }
 

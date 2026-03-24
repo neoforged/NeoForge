@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -58,7 +58,7 @@ public interface IClientMobEffectExtensions {
      * @param blitOffset  The blit offset
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderInventoryIcon(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
+    default boolean renderInventoryIcon(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int x, int y, int blitOffset) {
         return false;
     }
 
@@ -73,7 +73,7 @@ public interface IClientMobEffectExtensions {
      * @param blitOffset  The blit offset
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderInventoryText(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
+    default boolean renderInventoryText(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int x, int y, int blitOffset) {
         return false;
     }
 
@@ -90,7 +90,7 @@ public interface IClientMobEffectExtensions {
      * @param alpha       The alpha value. Blinks when the effect is about to run out
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderGuiIcon(MobEffectInstance instance, Gui gui, GuiGraphics guiGraphics, int x, int y, float z, float alpha) {
+    default boolean renderGuiIcon(MobEffectInstance instance, Gui gui, GuiGraphicsExtractor guiGraphics, int x, int y, float z, float alpha) {
         return false;
     }
 }

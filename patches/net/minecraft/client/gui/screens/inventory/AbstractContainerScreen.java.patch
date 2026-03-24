@@ -8,7 +8,7 @@
          graphics.pose().popMatrix();
      }
  
-@@ -206,7 +_,7 @@
+@@ -200,7 +_,7 @@
              ItemStack item = this.hoveredSlot.getItem();
              if (this.menu.getCarried().isEmpty() || this.showTooltipWithItemInHand(item)) {
                  graphics.setTooltipForNextFrame(
@@ -17,17 +17,17 @@
                  );
              }
          }
-@@ -222,7 +_,8 @@
+@@ -216,7 +_,8 @@
  
-     private void renderFloatingItem(GuiGraphics graphics, ItemStack carried, int x, int y, @Nullable String itemCount) {
-         graphics.renderItem(carried, x, y);
--        graphics.renderItemDecorations(this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
+     private void extractFloatingItem(GuiGraphicsExtractor graphics, ItemStack carried, int x, int y, @Nullable String itemCount) {
+         graphics.item(carried, x, y);
+-        graphics.itemDecorations(this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
 +        var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(carried).getFont(carried, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
-+        graphics.renderItemDecorations(font != null ? font : this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
++        graphics.itemDecorations(font != null ? font : this.font, carried, x, y - (this.draggingItem.isEmpty() ? 0 : 8), itemCount);
      }
  
-     protected void renderLabels(GuiGraphics graphics, int xm, int ym) {
-@@ -277,6 +_,13 @@
+     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+@@ -269,6 +_,13 @@
                  graphics.fill(x, y, x + 16, y + 16, -2130706433);
              }
  
@@ -35,23 +35,23 @@
 +        }
 +    }
 +
-+    protected void renderSlotContents(GuiGraphics graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
++    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
 +        {
 +            int x = slot.x; int y = slot.y;
              int seed = slot.x + slot.y * this.imageWidth;
              if (slot.isFake()) {
-                 graphics.renderFakeItem(itemStack, x, y, seed);
-@@ -284,7 +_,8 @@
-                 graphics.renderItem(itemStack, x, y, seed);
+                 graphics.fakeItem(itemStack, x, y, seed);
+@@ -276,7 +_,8 @@
+                 graphics.item(itemStack, x, y, seed);
              }
  
--            graphics.renderItemDecorations(this.font, itemStack, x, y, itemCount);
+-            graphics.itemDecorations(this.font, itemStack, x, y, itemCount);
 +            var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemStack).getFont(itemStack, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
-+            graphics.renderItemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
++            graphics.itemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
          }
      }
  
-@@ -324,7 +_,8 @@
+@@ -316,7 +_,8 @@
          if (super.mouseClicked(event, doubleClick)) {
              return true;
          } else {
@@ -61,7 +61,7 @@
              Slot slot = this.getHoveredSlot(event.x(), event.y());
              this.doubleclick = this.lastClickSlot == slot && doubleClick;
              this.skipNextRelease = false;
-@@ -334,6 +_,7 @@
+@@ -326,6 +_,7 @@
                  int xo = this.leftPos;
                  int yo = this.topPos;
                  boolean clickedOutside = this.hasClickedOutside(event.x(), event.y(), xo, yo);
@@ -69,7 +69,7 @@
                  int slotId = -1;
                  if (slot != null) {
                      slotId = slot.index;
-@@ -359,7 +_,7 @@
+@@ -351,7 +_,7 @@
                          }
                      } else if (!this.isQuickCrafting) {
                          if (this.menu.getCarried().isEmpty()) {
@@ -78,7 +78,7 @@
                                  this.slotClicked(slot, slotId, event.button(), ContainerInput.CLONE);
                              } else {
                                  boolean quickKey = slotId != -999 && event.hasShiftDown();
-@@ -383,7 +_,7 @@
+@@ -375,7 +_,7 @@
                                  this.quickCraftingType = 0;
                              } else if (event.button() == 1) {
                                  this.quickCraftingType = 1;
@@ -87,7 +87,7 @@
                                  this.quickCraftingType = 2;
                              }
                          }
-@@ -453,10 +_,13 @@
+@@ -445,10 +_,13 @@
  
      @Override
      public boolean mouseReleased(MouseButtonEvent event) {
@@ -101,7 +101,7 @@
          int slotId = -1;
          if (slot != null) {
              slotId = slot.index;
-@@ -473,7 +_,7 @@
+@@ -465,7 +_,7 @@
                          if (target != null
                              && target.mayPickup(this.minecraft.player)
                              && target.hasItem()
@@ -110,7 +110,7 @@
                              && AbstractContainerMenu.canItemQuickReplace(target, this.lastQuickMoved, true)) {
                              this.slotClicked(target, target.index, event.button(), ContainerInput.QUICK_MOVE);
                          }
-@@ -532,7 +_,7 @@
+@@ -524,7 +_,7 @@
              } else if (this.isQuickCrafting && !this.quickCraftSlots.isEmpty()) {
                  this.quickCraftToSlots();
              } else if (!this.menu.getCarried().isEmpty()) {
@@ -119,7 +119,7 @@
                      this.slotClicked(slot, slotId, event.button(), ContainerInput.CLONE);
                  } else {
                      boolean quickKey = slotId != -999 && event.hasShiftDown();
-@@ -601,34 +_,40 @@
+@@ -593,34 +_,40 @@
  
      @Override
      public boolean keyPressed(KeyEvent event) {
@@ -167,7 +167,7 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -690,6 +_,18 @@
+@@ -682,6 +_,18 @@
      @Override
      public T getMenu() {
          return this.menu;

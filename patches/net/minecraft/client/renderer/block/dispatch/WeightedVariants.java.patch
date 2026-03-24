@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
 +++ b/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
-@@ -43,9 +_,31 @@
-         return this.hasTranslucency;
+@@ -47,9 +_,31 @@
+         return this.materialFlags;
      }
  
 -    @Override
@@ -25,13 +25,13 @@
 +    }
 +
 +    @Override
-+    public boolean hasTranslucency(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++    @BakedQuad.MaterialFlags
++    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++        int flags = 0;
 +        for (Weighted<BlockStateModel> model : this.list.unwrap()) {
-+            if (model.value().hasTranslucency(level, pos, state)) {
-+                return true;
-+            }
++            flags |= model.value().materialFlags(level, pos, state);
 +        }
-+        return false;
++        return flags;
      }
  
      @OnlyIn(Dist.CLIENT)

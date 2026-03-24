@@ -29,25 +29,25 @@
              );
          }
 @@ -297,6 +_,7 @@
-         this.renderPanorama(graphics, a);
-         super.render(graphics, mouseX, mouseY, a);
-         this.logoRenderer.renderLogo(graphics, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : widgetFade);
+         this.extractPanorama(graphics, a);
+         super.extractRenderState(graphics, mouseX, mouseY, a);
+         this.logoRenderer.extractRenderState(graphics, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : widgetFade);
 +        net.neoforged.neoforge.client.ClientHooks.renderMainMenu(this, graphics, this.font, this.width, this.height, ARGB.as8BitChannel(widgetFade));
          if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
-             this.splash.render(graphics, this.width, this.font, widgetFade);
+             this.splash.extractRenderState(graphics, this.width, this.font, widgetFade);
          }
 @@ -310,7 +_,13 @@
              versionString = versionString + I18n.get("menu.modded");
          }
  
--        graphics.drawString(this.font, versionString, 2, this.height - 10, ARGB.white(widgetFade));
+-        graphics.text(this.font, versionString, 2, this.height - 10, ARGB.white(widgetFade));
 +        int brandingColor = ARGB.color(widgetFade, -1);
 +        net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
-+                graphics.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
++                graphics.text(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
 +        );
 +        net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
-+                graphics.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
++                graphics.text(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
 +        );
          if (this.realmsNotificationsEnabled() && widgetFade >= 1.0F) {
-             this.realmsNotificationsScreen.render(graphics, mouseX, mouseY, a);
+             this.realmsNotificationsScreen.extractRenderState(graphics, mouseX, mouseY, a);
          }

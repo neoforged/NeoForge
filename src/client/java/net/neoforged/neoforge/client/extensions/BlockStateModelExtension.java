@@ -9,12 +9,14 @@ import java.util.List;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public interface BlockStateModelExtension {
@@ -83,12 +85,24 @@ public interface BlockStateModelExtension {
         return self().particleMaterial();
     }
 
-    /// Returns whether this model contains any translucent quads.
+    /// Returns the material flags of this model.
     ///
     /// @param level a level to query block entity data or other world state
     /// @param pos   the position of the block being rendered
     /// @param state the state of the block being rendered
-    default boolean hasTranslucency(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return self().hasTranslucency();
+    @BakedQuad.MaterialFlags
+    default int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return self().materialFlags();
+    }
+
+    /// Returns whether this model has the provided material flag.
+    ///
+    /// @param level a level to query block entity data or other world state
+    /// @param pos   the position of the block being rendered
+    /// @param state the state of the block being rendered
+    /// @param flag  the material flag to check
+    @ApiStatus.NonExtendable
+    default boolean hasMaterialFlag(BlockAndTintGetter level, BlockPos pos, BlockState state, @BakedQuad.MaterialFlags int flag) {
+        return (self().materialFlags(level, pos, state) & flag) != 0;
     }
 }

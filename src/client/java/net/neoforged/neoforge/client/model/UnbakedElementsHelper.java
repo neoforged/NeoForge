@@ -10,6 +10,7 @@ import com.mojang.math.Transformation;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.ModelBaker;
@@ -29,7 +30,7 @@ public final class UnbakedElementsHelper {
     /**
      * @see #bakeItemMaskQuads(ModelBaker, int, Material.Baked, Material.Baked, ModelState, ExtraFaceData)
      */
-    public static List<BakedQuad> bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState) {
+    public static QuadCollection bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState) {
         return bakeItemMaskQuads(baker, layerIndex, maskMaterial, outputMaterial, modelState, ExtraFaceData.DEFAULT);
     }
 
@@ -38,14 +39,23 @@ public final class UnbakedElementsHelper {
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the mask texture uses.
      */
-    public static List<BakedQuad> bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData) {
+    public static QuadCollection bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData) {
+        return bakeItemMaskQuads(baker, layerIndex, maskMaterial, outputMaterial, modelState, faceData, UnaryOperator.identity());
+    }
+
+    /**
+     * Bakes quads in the shape of the specified mask texture with the specified output texture applied to them.
+     * <p>
+     * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the mask texture uses.
+     */
+    public static QuadCollection bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData, UnaryOperator<BakedQuad.MaterialInfo> materialModifier) {
         QuadCollection.Builder builder = new QuadCollection.Builder();
         ModelBaker.Interner interner = baker.interner();
-        BakedQuad.SpriteInfo maskSpriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(maskMaterial, outputMaterial.sprite().transparency()));
-        BakedQuad.SpriteInfo outSpriteInfo = interner.spriteInfo(BakedQuad.SpriteInfo.of(outputMaterial, outputMaterial.sprite().transparency()));
+        BakedQuad.MaterialInfo maskMaterialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(maskMaterial, maskMaterial.sprite().transparency(), layerIndex, true, 0, true));
+        BakedQuad.MaterialInfo outMaterialInfo = interner.materialInfo(materialModifier.apply(BakedQuad.MaterialInfo.of(outputMaterial, outputMaterial.sprite().transparency(), layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion())));
 
         // TODO 26.1: why are the side faces included at all?
-        ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskSpriteInfo, layerIndex);
+        ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskMaterialInfo);
 
         SpriteContents spriteContents = maskMaterial.sprite().contents();
         int width = spriteContents.width();
@@ -91,15 +101,15 @@ public final class UnbakedElementsHelper {
                     CuboidFace.UVs northUvs = FaceBakery.defaultFaceUV(from, to, Direction.NORTH);
                     CuboidFace.UVs southUvs = FaceBakery.defaultFaceUV(from, to, Direction.SOUTH);
                     // Create quads
-                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, northUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.SOUTH, modelState, null, true, 0, faceData));
-                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, southUvs, Quadrant.R0, layerIndex, outSpriteInfo, Direction.NORTH, modelState, null, true, 0, faceData));
+                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, northUvs, Quadrant.R0, outMaterialInfo, Direction.SOUTH, modelState, null, faceData));
+                    builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, southUvs, Quadrant.R0, outMaterialInfo, Direction.NORTH, modelState, null, faceData));
 
                     // Reset xStart
                     xStart = -1;
                 }
             }
         }
-        return builder.build().getAll();
+        return builder.build();
     }
 
     /**

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
@@ -89,12 +89,12 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
-            super.renderWidget(graphics, pMouseX, pMouseY, pPartialTick);
-            renderTooltips(graphics, pMouseX, pMouseY);
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            super.extractWidgetRenderState(graphics, mouseX, mouseY, a);
+            renderTooltips(graphics, mouseX, mouseY);
         }
 
-        private void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
+        private void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
             if (this.isMouseOver(mouseX, mouseY)) {
                 Entry entry = this.getEntryAtPosition(mouseX, mouseY);
                 if (entry != null) {
@@ -162,7 +162,7 @@ public abstract class AbstractTestScreen extends Screen {
                 return false;
             }
 
-            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {}
+            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {}
         }
 
         protected final class TestEntry extends Entry {
@@ -173,7 +173,7 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void renderContent(GuiGraphics graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 final Test.Status status = framework.tests().getStatus(test.id());
 
                 final int alpha = 0x73000000;
@@ -183,11 +183,11 @@ public abstract class AbstractTestScreen extends Screen {
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, getContentX(), getContentY(), 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
 
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
-                graphics.drawString(font, title, getContentX() + 11, getContentY(), renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+                graphics.text(font, title, getContentX() + 11, getContentY(), renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
             }
 
             @Override
-            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
                 final List<FormattedCharSequence> tooltip = new ArrayList<>();
                 if (!isEnabled()) {
                     tooltip.add(Component.literal("DISABLED").withStyle(ChatFormatting.GRAY).getVisualOrderText());
@@ -245,20 +245,20 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void renderContent(GuiGraphics graphics, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 if (isTitle) {
-                    graphics.drawCenteredString(font, getTitle(), getContentXMiddle(), getContentY(), 0xffffffff);
+                    graphics.centeredText(font, getTitle(), getContentXMiddle(), getContentY(), 0xffffffff);
                 } else {
-                    graphics.drawString(font, getTitle(), getX() + 11, getContentY(), 0xffffffff);
+                    graphics.text(font, getTitle(), getX() + 11, getContentY(), 0xffffffff);
                     this.browseButton.setX(getX() + getWidth() - 53);
                     this.browseButton.setY(getY() - 1);
                     // TODO 1.21.6: nextStratum instead? Was increasing z by 100 before.
-                    browseButton.render(graphics, pMouseX, pMouseY, pPartialTick);
+                    browseButton.extractRenderState(graphics, mouseX, mouseY, a);
                 }
             }
 
             @Override
-            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
                 if (isTitle) return;
                 final List<Test> all = group.resolveAll();
                 final int enabledCount = (int) all.stream().filter(it -> framework.tests().isEnabled(it.id())).count();

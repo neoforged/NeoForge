@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
-@@ -80,4 +_,10 @@
+@@ -86,4 +_,10 @@
      private static Transformation createModelTransformation(Direction entityDirection) {
          return new Transformation(new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-entityDirection.getOpposite().toYRot())));
      }

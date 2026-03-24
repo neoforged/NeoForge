@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -159,11 +_,11 @@
+@@ -146,11 +_,11 @@
      }
  
      private static SpriteId createSignSprite(WoodType type) {
@@ -14,11 +14,10 @@
      }
  
      public static SpriteId getSignSprite(WoodType type) {
-@@ -212,6 +_,23 @@
-             case SINGLE:
-             default:
-                 return single;
-+        }
+@@ -184,5 +_,22 @@
+             case COPPER_WEATHERED -> (SpriteId)CHEST_COPPER_WEATHERED.select(type);
+             case COPPER_OXIDIZED -> (SpriteId)CHEST_COPPER_OXIDIZED.select(type);
+         };
 +    }
 +
 +    /**
@@ -32,9 +31,9 @@
 +    static {
 +        if (!net.neoforged.fml.ModLoader.hasErrors() && !net.neoforged.neoforge.internal.CommonModLoader.areRegistriesLoaded()) {
 +            com.mojang.logging.LogUtils.getLogger().error(
-+                      "net.minecraft.client.renderer.Sheets loaded too early, modded registry-based materials may not work correctly",
-+                      new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")
++                    "net.minecraft.client.renderer.Sheets loaded too early, modded registry-based materials may not work correctly",
++                    new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")
 +            );
-         }
++        }
      }
  }

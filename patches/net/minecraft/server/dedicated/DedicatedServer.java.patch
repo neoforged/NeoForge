@@ -30,9 +30,9 @@
              if (properties.announcePlayerAchievements != null) {
                  this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
              }
-@@ -317,6 +_,12 @@
-             }
+@@ -318,6 +_,12 @@
  
+             this.saveEverything(false, true, true);
              this.notificationManager().serverStarted();
 +            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
 +                this.dediLanPinger = new net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
@@ -43,7 +43,7 @@
              return true;
          }
      }
-@@ -462,6 +_,11 @@
+@@ -463,6 +_,11 @@
              this.queryThreadGs4.stop();
          }
  
@@ -55,7 +55,7 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -751,7 +_,12 @@
+@@ -752,7 +_,12 @@
      @Override
      protected void stopServer() {
          this.notificationManager().serverShuttingDown();

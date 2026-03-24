@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 /**
  * A custom skybox renderer that can be registered using {@link RegisterCustomEnvironmentEffectRendererEvent#registerSkyboxRenderer}
@@ -27,7 +27,7 @@ public interface CustomSkyboxRenderer {
      *
      * @return true to prevent vanilla sky rendering
      */
-    default boolean renderSky(LevelRenderState levelRenderState, SkyRenderState skyRenderState, Matrix4f modelViewMatrix, Runnable setupFog) {
+    default boolean renderSky(LevelRenderState levelRenderState, SkyRenderState skyRenderState, Matrix4fc modelViewMatrix, Runnable setupFog) {
         return false;
     }
 }

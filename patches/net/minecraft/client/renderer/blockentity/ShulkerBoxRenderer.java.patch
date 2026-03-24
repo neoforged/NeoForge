@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -144,6 +_,12 @@
+@@ -133,6 +_,12 @@
          this.model.root().getExtentsForGui(poseStack, output);
      }
  

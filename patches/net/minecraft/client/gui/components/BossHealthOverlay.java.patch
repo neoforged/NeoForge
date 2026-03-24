@@ -6,12 +6,12 @@
                  int xLeft = screenWidth / 2 - 91;
 +                var customizeEvent = net.neoforged.neoforge.client.ClientHooks.onCustomizeBossEventProgress(graphics, this.minecraft.getWindow(), event, xLeft, yOffset, 10 + this.minecraft.font.lineHeight);
 +                if (!customizeEvent.isCanceled()) {
-                 this.drawBar(graphics, xLeft, yOffset, event);
+                 this.extractBar(graphics, xLeft, yOffset, event);
                  Component msg = event.getName();
                  int width = this.minecraft.font.width(msg);
 @@ -75,6 +_,8 @@
                  int y = yOffset - 9;
-                 graphics.drawString(this.minecraft.font, msg, x, y, -1);
+                 graphics.text(this.minecraft.font, msg, x, y, -1);
                  yOffset += 10 + 9;
 +                }
 +                yOffset += customizeEvent.getIncrement();

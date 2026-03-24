@@ -35,7 +35,7 @@
      }
  
      private static boolean canGrow(BlockState rootState, BlockState aboveState) {
-@@ -563,7 +_,9 @@
+@@ -564,7 +_,9 @@
          if (fluidAbove.isSame(Fluids.EMPTY)) {
              return level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
          } else {

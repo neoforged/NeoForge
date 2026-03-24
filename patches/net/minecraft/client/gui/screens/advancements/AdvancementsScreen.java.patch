@@ -35,28 +35,28 @@
                      break;
                  }
 @@ -131,6 +_,11 @@
-         super.render(graphics, mouseX, mouseY, a);
+         super.extractRenderState(graphics, mouseX, mouseY, a);
          int xo = (this.width - 252) / 2;
          int yo = (this.height - 140) / 2;
 +        if (maxPages != 0) {
 +            net.minecraft.network.chat.Component page = Component.literal(String.format("%d / %d", tabPage + 1, maxPages + 1));
 +            int width = this.font.width(page);
-+            graphics.drawString(this.font, page.getVisualOrderText(), xo + (252 / 2) - (width / 2), yo - 44, -1);
++            graphics.text(this.font, page.getVisualOrderText(), xo + (252 / 2) - (width / 2), yo - 44, -1);
 +        }
          graphics.nextStratum();
-         this.renderInside(graphics, xo, yo);
+         this.extractInside(graphics, xo, yo);
          graphics.nextStratum();
 @@ -196,10 +_,12 @@
          graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_LOCATION, xo, yo, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
              for (AdvancementTab tab : this.tabs.values()) {
 +                if (tab.getPage() == tabPage)
-                 tab.drawTab(graphics, xo, yo, mouseX, mouseY, tab == this.selectedTab);
+                 tab.extractTab(graphics, xo, yo, mouseX, mouseY, tab == this.selectedTab);
              }
  
              for (AdvancementTab tab : this.tabs.values()) {
 +                if (tab.getPage() == tabPage)
-                 tab.drawIcon(graphics, xo, yo);
+                 tab.extractIcon(graphics, xo, yo);
              }
          }
 @@ -218,7 +_,7 @@

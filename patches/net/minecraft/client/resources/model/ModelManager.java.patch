@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -73,6 +_,9 @@
-     private @Nullable BlockStateModelSet blockStateModelSet;
+@@ -77,6 +_,9 @@
      private @Nullable BlockModelSet blockModelSet;
+     private @Nullable FluidStateModelSet fluidStateModelSet;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
 +    private net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels bakedStandaloneModels;
@@ -10,7 +10,7 @@
  
      public ModelManager(BlockColors blockColors, AtlasManager atlasManager, PlayerSkinRenderCache playerSkinRenderCache) {
          this.blockColors = blockColors;
-@@ -81,7 +_,14 @@
+@@ -85,7 +_,14 @@
      }
  
      public ItemModel getItemModel(Identifier id) {
@@ -26,7 +26,7 @@
      }
  
      public ClientItem.Properties getItemProperties(Identifier id) {
-@@ -111,8 +_,10 @@
+@@ -119,8 +_,10 @@
              () -> BuiltInBlockModels.createBlockModels(this.blockColors), taskExecutor
          );
          CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemStackModels = ClientItemInfoLoader.scheduleLoad(manager, taskExecutor);
@@ -39,7 +39,7 @@
          CompletableFuture<Object2IntMap<BlockState>> modelGroups = blockStateModels.thenApplyAsync(
              models -> buildModelGroups(this.blockColors, models), taskExecutor
          );
-@@ -121,6 +_,7 @@
+@@ -129,6 +_,7 @@
          CompletableFuture<SpriteLoader.Preparations> pendingItemAtlasSprites = pendingStitches.get(AtlasIds.ITEMS);
          CompletableFuture<LoadedBlockModels> blockModels = CompletableFuture.allOf(blockModelContents, entityModelSet)
              .thenApplyAsync(var3 -> new LoadedBlockModels(blockModelContents.join(), entityModelSet.join(), this.atlasManager, this.playerSkinRenderCache));
@@ -47,7 +47,7 @@
          return CompletableFuture.allOf(
                  pendingBlockAtlasSprites,
                  pendingItemAtlasSprites,
-@@ -130,7 +_,8 @@
+@@ -138,7 +_,8 @@
                  itemStackModels,
                  entityModelSet,
                  blockModels,
@@ -57,7 +57,7 @@
              )
              .thenComposeAsync(
                  var11x -> {
-@@ -154,8 +_,11 @@
+@@ -162,8 +_,11 @@
                          itemStackModels.join().contents(),
                          resolvedModels.models(),
                          resolvedModels.missing()
@@ -70,7 +70,7 @@
                  },
                  taskExecutor
              )
-@@ -167,7 +_,7 @@
+@@ -175,7 +_,7 @@
          return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> MODEL_LISTER.listMatchingResources(manager), executor)
              .thenCompose(
                  resources -> {
@@ -79,7 +79,7 @@
  
                      for (Entry<Identifier, Resource> resource : resources.entrySet()) {
                          result.add(CompletableFuture.supplyAsync(() -> {
-@@ -176,7 +_,7 @@
+@@ -184,7 +_,7 @@
                              try {
                                  Pair t$;
                                  try (Reader reader = resource.getValue().openAsReader()) {
@@ -88,7 +88,7 @@
                                  }
  
                                  return t$;
-@@ -193,29 +_,55 @@
+@@ -201,29 +_,55 @@
              );
      }
  
@@ -152,16 +152,16 @@
      ) {
          final Multimap<String, Identifier> missingSprites = Multimaps.synchronizedMultimap(HashMultimap.create());
          final Multimap<String, String> missingReferences = Multimaps.synchronizedMultimap(HashMultimap.create());
-@@ -252,7 +_,7 @@
-             }
-         }, taskExecutor);
+@@ -261,7 +_,7 @@
+         };
+         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);
          CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
 -            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
 +            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
          );
          return bakedStateResults.thenCombine(
              bakedModelsFuture,
-@@ -273,6 +_,9 @@
+@@ -283,6 +_,9 @@
                              references.stream().sorted().map(reference -> "    " + reference).collect(Collectors.joining("\n"))
                          )
                      );
@@ -171,9 +171,9 @@
                  Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                      bakingResult.blockStateModels(), bakingResult.missingModels().block()
                  );
-@@ -318,6 +_,9 @@
-         this.blockStateModelSet = new BlockStateModelSet(preparations.blockStateModels, this.missingModels.block());
+@@ -331,6 +_,9 @@
          this.blockModelSet = new BlockModelSet(this.blockStateModelSet, preparations.blockModels, this.blockColors);
+         this.fluidStateModelSet = new FluidStateModelSet(preparations.fluidModels, this.missingModels.fluid());
          this.entityModelSet = preparations.entityModelSet;
 +        this.bakedStandaloneModels = bakedModels.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, bakedModels, this.modelBakery.get());
@@ -181,7 +181,7 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -340,6 +_,15 @@
+@@ -353,6 +_,15 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;

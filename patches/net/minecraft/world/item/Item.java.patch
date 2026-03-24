@@ -113,7 +113,7 @@
  
          public Item.Properties food(FoodProperties foodProperties) {
              return this.food(foodProperties, Consumables.DEFAULT_FOOD);
-@@ -651,7 +_,11 @@
+@@ -660,7 +_,11 @@
          }
  
          public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
@@ -126,7 +126,7 @@
              return this;
          }
  
-@@ -700,6 +_,14 @@
+@@ -709,6 +_,14 @@
  
          boolean isPeaceful();
  
@@ -141,7 +141,7 @@
          static Item.TooltipContext of(@Nullable Level level) {
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -720,6 +_,11 @@
+@@ -729,6 +_,11 @@
                  @Override
                  public boolean isPeaceful() {
                      return level.getDifficulty() == Difficulty.PEACEFUL;

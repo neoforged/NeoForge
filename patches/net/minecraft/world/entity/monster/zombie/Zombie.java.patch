@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
-@@ -237,6 +_,7 @@
+@@ -238,6 +_,7 @@
      }
  
      protected void doUnderWaterConversion(ServerLevel level) {
@@ -8,7 +8,7 @@
          this.convertToZombieType(level, EntityType.DROWNED);
          if (!this.isSilent()) {
              level.levelEvent(null, 1040, this.blockPosition(), 0);
-@@ -247,9 +_,10 @@
+@@ -248,9 +_,10 @@
          this.convertTo(
              zombieType,
              ConversionParams.single(this, true, true),
@@ -22,7 +22,7 @@
          );
      }
  
-@@ -266,6 +_,7 @@
+@@ -267,6 +_,7 @@
                  zombie.setGossips(villager.getGossips().copy());
                  zombie.setTradeOffers(villager.getOffers().copy());
                  zombie.setVillagerXp(villager.getVillagerXp());
@@ -30,7 +30,7 @@
                  if (!this.isSilent()) {
                      level.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -423,7 +_,7 @@
+@@ -424,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel level, LivingEntity entity, DamageSource source) {
          boolean perished = super.killedEntity(level, entity, source);

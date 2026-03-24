@@ -1,14 +1,14 @@
 --- a/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
-@@ -233,7 +_,11 @@
-             graphics.renderItemDecorations(this.font, costA, sellItem1X, decorHeight);
+@@ -234,7 +_,11 @@
+             graphics.itemDecorations(this.font, costA, sellItem1X, decorHeight);
          } else {
-             graphics.renderItemDecorations(this.font, baseCostA, sellItem1X, decorHeight, baseCostA.getCount() == 1 ? "1" : null);
--            graphics.renderItemDecorations(this.font, costA, sellItem1X + 14, decorHeight, costA.getCount() == 1 ? "1" : null);
+             graphics.itemDecorations(this.font, baseCostA, sellItem1X, decorHeight, baseCostA.getCount() == 1 ? "1" : null);
+-            graphics.itemDecorations(this.font, costA, sellItem1X + 14, decorHeight, costA.getCount() == 1 ? "1" : null);
 +            // Neo: Fixes MCForge#8806: forced item decorations (e.g., ItemStack#isBarVisible() returns true) were rendered for discount count text
-+            // Code for count rendering taken from GuiGraphics#renderItemCount
++            // Code for count rendering taken from GuiGraphicsExtractor#renderItemCount
 +            String count = costA.getCount() == 1 ? "1" : String.valueOf(costA.getCount());
-+            graphics.drawString(font, count, sellItem1X + 14 + 19 - 2 - font.width(count), decorHeight + 6 + 3, 0xFFFFFFFF, true);
++            graphics.text(font, count, sellItem1X + 14 + 19 - 2 - font.width(count), decorHeight + 6 + 3, 0xFFFFFFFF, true);
 +
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DISCOUNT_STRIKETHRUOGH_SPRITE, sellItem1X + 7, decorHeight + 12, 9, 2);
          }

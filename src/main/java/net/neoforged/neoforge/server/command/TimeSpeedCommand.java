@@ -40,7 +40,7 @@ class TimeSpeedCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        final float speed = clockManager.getSpeed(defaultClock);
+        final float speed = clockManager.getRate(defaultClock);
         if (speed == 1) {
             source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.default", levelName(source)), true);
         } else {
@@ -76,7 +76,7 @@ class TimeSpeedCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        clockManager.setSpeed(defaultClock, speed);
+        clockManager.setRate(defaultClock, speed);
         source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set", levelName(source), speed, minutes(speed)), true);
         return Command.SINGLE_SUCCESS;
     }
@@ -96,7 +96,7 @@ class TimeSpeedCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        clockManager.setSpeed(defaultClock, 1);
+        clockManager.setRate(defaultClock, 1);
         source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set.default", levelName(source)), true);
         return Command.SINGLE_SUCCESS;
     }

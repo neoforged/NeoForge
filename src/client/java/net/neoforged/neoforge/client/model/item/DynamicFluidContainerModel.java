@@ -15,8 +15,11 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.item.CompositeModel;
@@ -32,6 +35,7 @@ import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -44,8 +48,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.ComposedModelState;
+import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.joml.Matrix4fc;
@@ -88,15 +92,18 @@ public class DynamicFluidContainerModel implements ItemModel {
     private ItemModel bakeModelForFluid(Fluid fluid) {
         ModelBaker baker = bakingContext.blockModelBaker();
         MaterialBaker materials = baker.materials();
+        FluidModel fluidModel = Minecraft.getInstance()
+                .getModelManager()
+                .getFluidStateModelSet()
+                .get(fluid.defaultFluidState());
 
         Material particleLocation = unbakedModel.textures.particle.orElse(null);
         Material baseLocation = unbakedModel.textures.base.orElse(null);
         Material fluidMaskLocation = unbakedModel.textures.fluid.orElse(null);
         Material coverLocation = unbakedModel.textures.cover.orElse(null);
-        Material fluidLocation = new Material(IClientFluidTypeExtensions.of(fluid).getStillTexture());
 
         Material.Baked baseSprite = baseLocation != null ? materials.get(baseLocation, DEBUG_NAME) : null;
-        Material.Baked fluidSprite = fluid != Fluids.EMPTY ? materials.get(fluidLocation, DEBUG_NAME) : null;
+        Material.Baked fluidSprite = fluid != Fluids.EMPTY ? fluidModel.stillMaterial() : null;
         Material.Baked coverSprite = (coverLocation != null && (!unbakedModel.coverIsMask || baseLocation != null)) ? materials.get(coverLocation, DEBUG_NAME) : null;
 
         Material.Baked particleSprite = particleLocation != null ? materials.get(particleLocation, DEBUG_NAME) : null;
@@ -116,7 +123,7 @@ public class DynamicFluidContainerModel implements ItemModel {
 
         if (baseLocation != null) {
             // Base texture
-            List<BakedQuad> quads = baker.compute(new ItemModelGenerator.ItemLayerKey(baseSprite, state, 0)).getAll();
+            QuadCollection quads = baker.compute(new ItemModelGenerator.ItemLayerKey(baseSprite, state, 0));
             subModels.add(new CuboidItemModelWrapper(List.of(), quads, renderProperties, transformation));
         }
 
@@ -124,13 +131,9 @@ public class DynamicFluidContainerModel implements ItemModel {
             Material.Baked templateSprite = materials.get(fluidMaskLocation, DEBUG_NAME);
             // Fluid layer
             ModelState transformedState = new ComposedModelState(state, FLUID_TRANSFORM);
-            List<BakedQuad> quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, templateSprite, fluidSprite, transformedState); // Use template as mask
-
             boolean emissive = unbakedModel.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
-            if (emissive) {
-                quads = new ArrayList<>(quads);
-                quads.replaceAll(quad -> setMaxEmissivity(quad, baker.interner()));
-            }
+            UnaryOperator<BakedQuad.MaterialInfo> materialModifier = emissive ? DynamicFluidContainerModel::setMaxEmissivity : UnaryOperator.identity();
+            QuadCollection quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, templateSprite, fluidSprite, transformedState, ExtraFaceData.DEFAULT, materialModifier); // Use template as mask
 
             subModels.add(new CuboidItemModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, transformation));
         }
@@ -139,44 +142,34 @@ public class DynamicFluidContainerModel implements ItemModel {
             Material.Baked sprite = unbakedModel.coverIsMask ? baseSprite : coverSprite;
             // Cover/overlay
             ModelState transformedState = new ComposedModelState(state, COVER_TRANSFORM);
-            List<BakedQuad> quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, coverSprite, sprite, transformedState); // Use cover as mask
+            QuadCollection quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, coverSprite, sprite, transformedState); // Use cover as mask
             subModels.add(new CuboidItemModelWrapper(List.of(), quads, renderProperties, transformation));
         }
 
         return new CompositeModel(subModels);
     }
 
-    private static BakedQuad setMaxEmissivity(BakedQuad quad, ModelBaker.Interner interner) {
-        BakedQuad.SpriteInfo spriteInfo = quad.spriteInfo();
+    private static BakedQuad.MaterialInfo setMaxEmissivity(BakedQuad.MaterialInfo materialInfo) {
         RenderType itemRenderType;
-        if (spriteInfo.itemRenderType() == Sheets.cutoutBlockItemSheet()) {
+        if (materialInfo.itemRenderType() == Sheets.cutoutBlockItemSheet()) {
             itemRenderType = RENDER_TYPE_CUTOUT_UNLIT_BLOCK;
-        } else if (spriteInfo.itemRenderType() == Sheets.cutoutItemSheet()) {
+        } else if (materialInfo.itemRenderType() == Sheets.cutoutItemSheet()) {
             itemRenderType = RENDER_TYPE_CUTOUT_UNLIT_ITEM;
-        } else if (spriteInfo.itemRenderType() == Sheets.translucentBlockItemSheet()) {
+        } else if (materialInfo.itemRenderType() == Sheets.translucentBlockItemSheet()) {
             itemRenderType = RENDER_TYPE_TRANSLUCENT_UNLIT_BLOCK;
-        } else if (spriteInfo.itemRenderType() == Sheets.translucentItemSheet()) {
+        } else if (materialInfo.itemRenderType() == Sheets.translucentItemSheet()) {
             itemRenderType = RENDER_TYPE_TRANSLUCENT_UNLIT_ITEM;
         } else {
-            itemRenderType = spriteInfo.itemRenderType();
+            itemRenderType = materialInfo.itemRenderType();
         }
-        return new BakedQuad(
-                quad.position0(),
-                quad.position1(),
-                quad.position2(),
-                quad.position3(),
-                quad.packedUV0(),
-                quad.packedUV1(),
-                quad.packedUV2(),
-                quad.packedUV3(),
-                quad.tintIndex(),
-                quad.direction(),
-                interner.spriteInfo(new BakedQuad.SpriteInfo(spriteInfo.sprite(), spriteInfo.layer(), itemRenderType)),
-                quad.shade(),
+        return new BakedQuad.MaterialInfo(
+                materialInfo.sprite(),
+                materialInfo.layer(),
+                itemRenderType,
+                materialInfo.tintIndex(),
+                materialInfo.shade(),
                 Level.MAX_BRIGHTNESS,
-                quad.bakedNormals(),
-                quad.bakedColors(),
-                quad.hasAmbientOcclusion());
+                materialInfo.ambientOcclusion());
     }
 
     @Override

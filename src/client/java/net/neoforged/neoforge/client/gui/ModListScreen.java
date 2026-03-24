@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -187,7 +187,7 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
+        protected void drawPanel(GuiGraphicsExtractor guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
             if (logoPath != null) {
                 // Draw the logo image inscribed in a rectangle with width entryWidth (minus some padding) and height 50
                 int headerHeight = 50;
@@ -197,14 +197,14 @@ public class ModListScreen extends Screen {
 
             for (FormattedCharSequence line : lines) {
                 if (line != null) {
-                    guiGraphics.drawString(ModListScreen.this.font, line, left + PADDING, relativeY, 0xFFFFFFFF);
+                    guiGraphics.text(ModListScreen.this.font, line, left + PADDING, relativeY, 0xFFFFFFFF);
                 }
                 relativeY += font.lineHeight;
             }
 
             final Style component = findTextLine(mouseX, mouseY);
             if (component != null) {
-                guiGraphics.renderComponentHoverEffect(ModListScreen.this.font, component, mouseX, mouseY);
+                guiGraphics.componentHoverEffect(ModListScreen.this.font, component, mouseX, mouseY);
             }
         }
 
@@ -353,11 +353,11 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
-        guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFFFF, false);
+        guiGraphics.text(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFFFF, false);
     }
 
     public Minecraft getMinecraftInstance() {

@@ -198,7 +198,7 @@
      }
  
 -    public abstract Collection<EnderDragonPart> dragonParts();
-+    public abstract Collection<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts();
++    public abstract Collection<? extends net.neoforged.neoforge.entity.PartEntity<?>> dragonParts();
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {

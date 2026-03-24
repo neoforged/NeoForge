@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -69,7 +_,11 @@
+@@ -67,7 +_,11 @@
      private final Map<Identifier, ClientItem> clientInfos;
      private final Map<Identifier, ResolvedModel> resolvedModels;
      private final ResolvedModel missingModel;
@@ -12,7 +12,7 @@
      public ModelBakery(
          EntityModelSet entityModelSet,
          SpriteGetter sprites,
-@@ -79,6 +_,20 @@
+@@ -77,6 +_,20 @@
          Map<Identifier, ResolvedModel> resolvedModels,
          ResolvedModel missingModel
      ) {
@@ -33,7 +33,7 @@
          this.entityModelSet = entityModelSet;
          this.sprites = sprites;
          this.playerSkinRenderCache = playerSkinRenderCache;
-@@ -86,6 +_,8 @@
+@@ -84,6 +_,8 @@
          this.clientInfos = clientInfos;
          this.resolvedModels = resolvedModels;
          this.missingModel = missingModel;
@@ -42,7 +42,7 @@
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(MaterialBaker materials, Executor taskExecutor) {
-@@ -109,7 +_,7 @@
+@@ -107,7 +_,7 @@
                      return clientInfo.model()
                          .bake(
                              new ItemModel.BakingContext(
@@ -51,7 +51,7 @@
                              ),
                              IDENTITY
                          );
-@@ -120,6 +_,8 @@
+@@ -118,6 +_,8 @@
              },
              taskExecutor
          );
@@ -60,7 +60,7 @@
          Map<Identifier, ClientItem.Properties> itemStackModelProperties = new HashMap<>(this.clientInfos.size());
          this.clientInfos.forEach((id, clientInfo) -> {
              ClientItem.Properties properties = clientInfo.properties();
-@@ -127,13 +_,15 @@
+@@ -125,13 +_,15 @@
                  itemStackModelProperties.put(id, properties);
              }
          });
@@ -77,7 +77,7 @@
              )
          );
      }
-@@ -144,7 +_,19 @@
+@@ -142,7 +_,19 @@
          Map<BlockState, BlockStateModel> blockStateModels,
          Map<Identifier, ItemModel> itemStackModels,
          Map<Identifier, ClientItem.Properties> itemProperties
@@ -97,19 +97,19 @@
          public BlockStateModel getBlockStateModel(BlockState blockState) {
              return this.blockStateModels.getOrDefault(blockState, this.missingModels.block);
          }
-@@ -154,6 +_,8 @@
+@@ -152,6 +_,8 @@
      private static class InternerImpl implements ModelBaker.Interner {
          private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
-         private final Interner<BakedQuad.SpriteInfo> spriteInfos = Interners.newStrongInterner();
+         private final Interner<BakedQuad.MaterialInfo> materialInfos = Interners.newStrongInterner();
 +        private final Interner<net.neoforged.neoforge.client.model.quad.BakedNormals> normals = Interners.newStrongInterner();
 +        private final Interner<net.neoforged.neoforge.client.model.quad.BakedColors> colors = Interners.newStrongInterner();
  
          @Override
          public Vector3fc vector(Vector3fc v) {
-@@ -163,6 +_,16 @@
+@@ -161,6 +_,16 @@
          @Override
-         public BakedQuad.SpriteInfo spriteInfo(BakedQuad.SpriteInfo sprite) {
-             return this.spriteInfos.intern(sprite);
+         public BakedQuad.MaterialInfo materialInfo(BakedQuad.MaterialInfo material) {
+             return this.materialInfos.intern(material);
 +        }
 +
 +        @Override

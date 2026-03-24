@@ -1,33 +1,14 @@
 --- a/net/minecraft/client/ClientClockManager.java
 +++ b/net/minecraft/client/ClientClockManager.java
-@@ -24,7 +_,11 @@
- 
-         for (ClientClockManager.ClockInstance instance : this.clocks.values()) {
-             if (!instance.paused) {
--                instance.totalTicks += gameTimeDelta;
-+                // Neo: support variable-speed clocks
-+                float timeStep = instance.fractionalTick + gameTimeDelta * instance.speed;
-+                long result = (long)timeStep;
-+                instance.fractionalTick = (timeStep - result);
-+                instance.totalTicks += result;
-             }
-         }
-     }
-@@ -35,6 +_,9 @@
-             ClientClockManager.ClockInstance clock = this.getInstance((Holder<WorldClock>)definition);
-             clock.totalTicks = state.totalTicks();
-             clock.paused = state.paused();
-+            // Neo: Handle extended state sent by server
-+            clock.fractionalTick = state.fractionalTick();
-+            clock.speed = state.speed();
-         });
+@@ -46,6 +_,11 @@
+         return this.getInstance(definition).totalTicks;
      }
  
-@@ -47,5 +_,7 @@
++    @Override
++    public float getPartialTick(Holder<WorldClock> definition) {
++        return this.getInstance(definition).partialTick;
++    }
++
+     @OnlyIn(Dist.CLIENT)
      private static class ClockInstance {
          private long totalTicks;
-         private boolean paused;
-+        private float speed = 1;
-+        private float fractionalTick = 0;
-     }
- }

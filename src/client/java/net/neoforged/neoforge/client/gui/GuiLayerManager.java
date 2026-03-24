@@ -11,7 +11,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -38,7 +38,7 @@ public class GuiLayerManager {
         return this;
     }
 
-    public GuiLayerManager add(Identifier name, Consumer<GuiGraphics> layer, BooleanSupplier shouldRender) {
+    public GuiLayerManager add(Identifier name, Consumer<GuiGraphicsExtractor> layer, BooleanSupplier shouldRender) {
         add(name, (guiGraphics, deltaTracker) -> layer.accept(guiGraphics), shouldRender);
         return this;
     }
@@ -60,7 +60,7 @@ public class GuiLayerManager {
         return this;
     }
 
-    public void render(GuiGraphics guiGraphics, DeltaTracker partialTick) {
+    public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
         if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics, partialTick)).isCanceled()) {
             return;
         }
@@ -70,7 +70,7 @@ public class GuiLayerManager {
         NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
     }
 
-    private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
+    private void renderInner(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
         for (var layer : this.layers) {
             if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
                 layer.layer().render(guiGraphics, partialTick);

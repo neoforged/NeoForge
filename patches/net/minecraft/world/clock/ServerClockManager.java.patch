@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -59,6 +_,9 @@
+@@ -61,6 +_,9 @@
      }
  
      public void tick() {
@@ -10,28 +10,10 @@
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
          if (advanceTime) {
              this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
-@@ -107,11 +_,45 @@
-         this.setDirty();
+@@ -105,6 +_,21 @@
+         this.modifyClock(clock, instance -> instance.paused = paused);
      }
  
-+    /**
-+     * Returns the current ratio between game ticks and clock ticks. This value cannot be 0 or negative.
-+     * The default is 1.
-+     */
-+    public float getSpeed(Holder<WorldClock> definition) {
-+        return getInstance(definition).speed;
-+    }
-+
-     @Override
-     public long getTotalTicks(Holder<WorldClock> definition) {
-         return this.getInstance(definition).totalTicks;
-     }
- 
-+    @Override
-+    public float getFractionalTick(Holder<WorldClock> definition) {
-+        return this.getInstance(definition).fractionalTick;
-+    }
-+
 +    /**
 +     * This allows mods to set the rate at which a specific clock advances relative to game time.
 +     * <p>
@@ -47,53 +29,29 @@
 +     * experience a time jump once per second.
 +     */
 +    @Override
-+    public void setSpeed(Holder<WorldClock> definition, float speed) {
-+        if (speed > 0 && getInstance(definition).speed != speed) {
-+            modifyClock(definition, instance -> instance.speed = speed);
-+        }
+     public void setRate(Holder<WorldClock> clock, float rate) {
+         this.modifyClock(clock, instance -> instance.rate = rate);
+     }
+@@ -121,9 +_,22 @@
+         }
+     }
+ 
++    /**
++     * Returns the current ratio between game ticks and clock ticks. This value cannot be 0 or negative.
++     * The default is 1.
++     */
++    public float getRate(Holder<WorldClock> definition) {
++        return getInstance(definition).rate;
 +    }
 +
+     @Override
+     public long getTotalTicks(Holder<WorldClock> definition) {
+         return this.getInstance(definition).totalTicks;
++    }
++
++    @Override
++    public float getPartialTick(Holder<WorldClock> definition) {
++        return this.getInstance(definition).partialTick;
+     }
+ 
      public ClientboundSetTimePacket createFullSyncPacket() {
-         return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packNetworkState(this.server)));
-     }
-@@ -133,26 +_,37 @@
-     private static class ClockInstance {
-         private final Map<ResourceKey<ClockTimeMarker>, ClockTimeMarker> timeMarkers = new Reference2ObjectOpenHashMap<>();
-         private long totalTicks;
-+        private float fractionalTick;
-+        private float speed = 1;
-         private boolean paused;
- 
-+        // Neo: Replaced with ExtendedClockState
-         public void loadFrom(ClockState state) {
-             this.totalTicks = state.totalTicks();
-+            this.fractionalTick = state.fractionalTick();
-+            this.speed = state.speed();
-             this.paused = state.paused();
-         }
- 
-         public void tick() {
-             if (!this.paused) {
--                this.totalTicks++;
-+                // advances the fractional daytime, returns the integer part of it
-+                float timeStep = fractionalTick + speed;
-+                long result = (long)timeStep;
-+                this.fractionalTick = (timeStep - result);
-+                this.totalTicks += result;
-             }
-         }
- 
-+        // Neo: Replaced with ExtendedClockState
-         public ClockState packState() {
--            return new ClockState(this.totalTicks, this.paused);
-+            return new ClockState(this.totalTicks, this.paused, this.fractionalTick, this.speed);
-         }
- 
-+        // Neo: Replaced with ExtendedClockState
-         public ClockState packNetworkState(MinecraftServer server) {
-             boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
--            return new ClockState(this.totalTicks, this.paused || !advanceTime);
-+            return new ClockState(this.totalTicks, this.paused || !advanceTime, this.fractionalTick, this.speed);
-         }
-     }
- }

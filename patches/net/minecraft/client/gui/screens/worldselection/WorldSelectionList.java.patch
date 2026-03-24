@@ -10,7 +10,7 @@
      private static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
 @@ -515,6 +_,7 @@
              this.infoText.setPosition(textX, this.getContentY() + 9 + 9 + 3);
-             this.infoText.render(graphics, mouseX, mouseY, a);
+             this.infoText.extractRenderState(graphics, mouseX, mouseY, a);
              graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
 +            renderExperimentalWarning(graphics, mouseX, mouseY, hovered);
              if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && (this.minecraft.options.touchscreen().get() || hovered)) {
@@ -23,7 +23,7 @@
 +        }
 +
 +        // FORGE: Patch in experimental warning icon for worlds in the world selection screen
-+        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered) {
++        private void renderExperimentalWarning(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = this.getContentX() + this.getContentWidth();
 +                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);

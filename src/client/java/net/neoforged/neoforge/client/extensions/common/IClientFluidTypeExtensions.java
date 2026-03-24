@@ -5,29 +5,18 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
@@ -38,17 +27,7 @@ import org.jspecify.annotations.Nullable;
  * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
 public interface IClientFluidTypeExtensions {
-    IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {
-        @Override
-        public Identifier getStillTexture() {
-            return MissingTextureAtlasSprite.getLocation();
-        }
-
-        @Override
-        public Identifier getFlowingTexture() {
-            return MissingTextureAtlasSprite.getLocation();
-        }
-    };
+    IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {};
 
     static IClientFluidTypeExtensions of(FluidState state) {
         return of(state.getFluidType());
@@ -61,81 +40,6 @@ public interface IClientFluidTypeExtensions {
     static IClientFluidTypeExtensions of(FluidType type) {
         return ClientExtensionsManager.FLUID_TYPE_EXTENSIONS.getOrDefault(type, DEFAULT);
     }
-
-    /* Default Accessors */
-
-    /**
-     * Returns the tint applied to the fluid's textures.
-     *
-     * <p>The result represents a 32-bit integer where each 8-bits represent
-     * the alpha, red, green, and blue channel respectively.
-     *
-     * @return the tint applied to the fluid's textures in ARGB format
-     */
-    default int getTintColor() {
-        return 0xFFFFFFFF;
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a source fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_still} will point to
-     * {@code assets/minecraft/textures/block/water_still.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @return the reference of the texture to apply to a source fluid
-     */
-    Identifier getStillTexture();
-
-    /**
-     * Returns the reference of the texture to apply to a flowing fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_flow} will point to
-     * {@code assets/minecraft/textures/block/water_flow.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @return the reference of the texture to apply to a flowing fluid
-     */
-    Identifier getFlowingTexture();
-
-    /**
-     * Returns the reference of the texture to apply to a fluid directly touching
-     * a non-opaque block other than air. If no reference is specified, either
-     * {@code #getStillTexture} or {@code #getFlowingTexture} will be applied
-     * instead.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_overlay} will point to
-     * {@code assets/minecraft/textures/block/water_overlay.png}).
-     *
-     * @return the reference of the texture to apply to a fluid directly touching
-     *         a non-opaque block
-     */
-    @Nullable
-    default Identifier getOverlayTexture() {
-        return null;
-    }
-
-    // Add entries to assets/minecraft/atlases/blocks.json if your texture location is not already covered by the default atlas search locations.
-    // /**
-    //  * Returns a stream of textures applied to a fluid.
-    //  *
-    //  * <p>This is used by the {@link net.minecraft.client.resources.model.ModelBakery} to load in all textures that
-    //  * can be applied on reload.
-    //  *
-    //  * @return a stream of textures applied to a fluid
-    //  */
-    // default Stream<Identifier> getTextures()
-    // {
-    //     return Stream.of(this.getStillTexture(), this.getFlowingTexture(), this.getOverlayTexture())
-    //                  .filter(Objects::nonNull);
-    // }
 
     /**
      * Returns the location of the texture to apply to the camera when it is
@@ -193,177 +97,4 @@ public interface IClientFluidTypeExtensions {
      * @param fogData        the parameters to use for rendering the fog, this object can be modified.
      */
     default void modifyFogRender(Camera camera, @Nullable FogEnvironment environment, float renderDistance, float partialTick, FogData fogData) {}
-
-    /* Level-Based Accessors */
-
-    /**
-     * Returns the reference of the texture to apply to a source fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_still} will point to
-     * {@code assets/minecraft/textures/block/water_still.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @param state  the state of the fluid
-     * @param getter the getter the fluid can be obtained from
-     * @param pos    the position of the fluid
-     * @return the reference of the texture to apply to a source fluid
-     */
-    default Identifier getStillTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return this.getStillTexture();
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a flowing fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_flow} will point to
-     * {@code assets/minecraft/textures/block/water_flow.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @param state  the state of the fluid
-     * @param getter the getter the fluid can be obtained from
-     * @param pos    the position of the fluid
-     * @return the reference of the texture to apply to a flowing fluid
-     */
-    default Identifier getFlowingTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return this.getFlowingTexture();
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a fluid directly touching
-     * a non-opaque block other than air. If no reference is specified, either
-     * {@code #getStillTexture} or {@code #getFlowingTexture} will be applied
-     * instead.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_overlay} will point to
-     * {@code assets/minecraft/textures/block/water_overlay.png}).
-     *
-     * @param state  the state of the fluid
-     * @param getter the getter the fluid can be obtained from
-     * @param pos    the position of the fluid
-     * @return the reference of the texture to apply to a fluid directly touching
-     *         a non-opaque block
-     */
-    @Nullable
-    default Identifier getOverlayTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return this.getOverlayTexture();
-    }
-
-    /**
-     * Returns the tint applied to the fluid's textures.
-     *
-     * <p>The result represents a 32-bit integer where each 8-bits represent
-     * the alpha, red, green, and blue channel respectively.
-     *
-     * @param state  the state of the fluid
-     * @param getter the getter the fluid can be obtained from
-     * @param pos    the position of the fluid
-     * @return the tint applied to the fluid's textures in ARGB format
-     */
-    default int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return this.getTintColor();
-    }
-
-    /* Stack-Based Accessors */
-
-    /**
-     * Returns the tint applied to the fluid's textures.
-     *
-     * <p>The result represents a 32-bit integer where each 8-bits represent
-     * the alpha, red, green, and blue channel respectively.
-     *
-     * @param stack the stack the fluid is in
-     * @return the tint applied to the fluid's textures in ARGB format
-     */
-    default int getTintColor(FluidStack stack) {
-        return this.getTintColor();
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a source fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_still} will point to
-     * {@code assets/minecraft/textures/block/water_still.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @param stack the stack the fluid is in
-     * @return the reference of the texture to apply to a source fluid
-     */
-    default Identifier getStillTexture(FluidStack stack) {
-        return this.getStillTexture();
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a flowing fluid.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_flow} will point to
-     * {@code assets/minecraft/textures/block/water_flow.png}).
-     *
-     * <p>Important: This method should only return {@code null} for {@link Fluids#EMPTY}.
-     * All other implementations must define this property.
-     *
-     * @param stack the stack the fluid is in
-     * @return the reference of the texture to apply to a flowing fluid
-     */
-    default Identifier getFlowingTexture(FluidStack stack) {
-        return this.getFlowingTexture();
-    }
-
-    /**
-     * Returns the reference of the texture to apply to a fluid directly touching
-     * a non-opaque block other than air. If no reference is specified, either
-     * {@code #getStillTexture} or {@code #getFlowingTexture} will be applied
-     * instead.
-     *
-     * <p>This should return a reference to the texture and not the actual
-     * texture itself (e.g. {@code minecraft:block/water_overlay} will point to
-     * {@code assets/minecraft/textures/block/water_overlay.png}).
-     *
-     * @param stack the stack the fluid is in
-     * @return the reference of the texture to apply to a fluid directly touching
-     *         a non-opaque block
-     */
-    @Nullable
-    default Identifier getOverlayTexture(FluidStack stack) {
-        return this.getOverlayTexture();
-    }
-
-    /// Determine the [ChunkSectionLayer] the provided fluid should render in as part of a chunk mesh.
-    ///
-    /// @param fluid      The fluid for which the render layer is being determined
-    /// @param blockAtlas The block texture atlas to use for sprite lookups
-    default ChunkSectionLayer computeRenderLayer(Fluid fluid, TextureAtlas blockAtlas) {
-        TextureAtlasSprite stillSprite = blockAtlas.getSprite(getStillTexture());
-        TextureAtlasSprite flowingSprite = blockAtlas.getSprite(getFlowingTexture());
-        Transparency transparency = stillSprite.transparency().or(flowingSprite.transparency());
-        return ChunkSectionLayer.byTransparency(transparency);
-    }
-
-    /**
-     * Called to allow rendering custom quads for a fluid during chunk meshing. You may replace the fluid
-     * rendering entirely, or return false to allow vanilla's fluid rendering to also run.
-     *
-     * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
-     * here needs to be performant.
-     *
-     * @param fluidState     the state of the fluid
-     * @param getter         the getter the fluid can be obtained from
-     * @param pos            the position of the fluid
-     * @param vertexConsumer the vertex consumer to emit quads to
-     * @param blockState     the blockstate at the position of the fluid
-     * @return true if vanilla fluid rendering should be skipped
-     */
-    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
-        return false;
-    }
 }

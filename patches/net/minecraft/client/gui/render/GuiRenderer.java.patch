@@ -40,6 +40,17 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
+@@ -290,7 +_,9 @@
+         RenderPipeline pipeline = elementState.pipeline();
+         TextureSetup textureSetup = elementState.textureSetup();
+         ScreenRectangle scissorArea = elementState.scissorArea();
+-        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)) {
++        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)
++                || pipeline.getVertexFormatMode().connectedPrimitives // Neo: flush elements with connected primitives individually
++        ) {
+             if (this.bufferBuilder != null) {
+                 this.recordMesh(this.bufferBuilder, this.previousPipeline, this.previousTextureSetup, this.previousScissorArea);
+             }
 @@ -368,14 +_,31 @@
  
      private void preparePictureInPicture() {
@@ -75,6 +86,21 @@
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
+@@ -548,6 +_,14 @@
+             renderPass.bindTexture("Sampler2", draw.textureSetup.texure2(), draw.textureSetup.sampler2());
+         }
+ 
++        // Neo: support non-quad vertex format modes
++        VertexFormat.Mode formatMode = pipeline.getVertexFormatMode();
++        if (formatMode != VertexFormat.Mode.QUADS) {
++            RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(formatMode);
++            indexBuffer = autoStorageIndexBuffer.getBuffer(draw.indexCount);
++            indexType = autoStorageIndexBuffer.type();
++        }
++
+         renderPass.setIndexBuffer(indexBuffer, indexType);
+         renderPass.drawIndexed(draw.baseVertex, 0, draw.indexCount, 1);
+     }
 @@ -587,7 +_,7 @@
              this.itemAtlas = null;
          }

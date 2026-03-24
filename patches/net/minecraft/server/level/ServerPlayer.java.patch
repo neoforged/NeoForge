@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -321,6 +_,10 @@
+@@ -322,6 +_,10 @@
          }
  
          private void broadcastDataValue(AbstractContainerMenu container, int id, int value) {
@@ -11,7 +11,7 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(container.containerId, id, value));
          }
  
-@@ -378,6 +_,8 @@
+@@ -379,6 +_,8 @@
      private Set<DebugSubscription<?>> requestedDebugSubscriptions = Set.of();
      private int containerCounter;
      public boolean wonGame;
@@ -20,7 +20,7 @@
  
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
-@@ -675,7 +_,26 @@
+@@ -676,7 +_,26 @@
                  }
  
                  if (!this.isSleeping()) {
@@ -31,7 +31,7 @@
 +                        // TODO 26.1: It's debatable whether this should advance in a dimension with no clock BUT in Vanilla it does!
 +                        this.awardStat(Stats.TIME_SINCE_REST);
 +                    } else {
-+                        var speed = level().clockManager().getSpeed(defaultClock.get());
++                        var speed = level().clockManager().getRate(defaultClock.get());
 +                        var fullTicks = (int) speed;
 +                        partialTimeSinceRestTick += speed;
 +                        if (partialTimeSinceRestTick >= 1) {
@@ -48,7 +48,7 @@
                  }
              }
  
-@@ -730,6 +_,11 @@
+@@ -731,6 +_,11 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
@@ -60,7 +60,7 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -743,7 +_,7 @@
+@@ -744,7 +_,7 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack itemStack) {
          MapId mapId = itemStack.get(DataComponents.MAP_ID);
@@ -69,7 +69,7 @@
          if (data != null) {
              Packet<?> packet = data.getUpdatePacket(mapId, this);
              if (packet != null) {
-@@ -890,6 +_,7 @@
+@@ -891,6 +_,7 @@
      @Override
      public void die(DamageSource source) {
          this.gameEvent(GameEvent.ENTITY_DIE);
@@ -77,7 +77,7 @@
          boolean showDeathMessage = this.level().getGameRules().get(GameRules.SHOW_DEATH_MESSAGES);
          if (showDeathMessage) {
              Component deathMessage = this.getCombatTracker().getDeathMessage();
-@@ -1073,7 +_,7 @@
+@@ -1074,7 +_,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, level, pos, blockState.getValue(BedBlock.FACING), yaw)
                  .map(p -> ServerPlayer.RespawnPosAngle.of(p, pos, 0.0F));
          } else if (!forced) {
@@ -86,7 +86,7 @@
          } else {
              boolean freeBottom = block.isPossibleToRespawnInThis(blockState);
              BlockState topState = level.getBlockState(pos.above());
-@@ -1095,6 +_,7 @@
+@@ -1096,6 +_,7 @@
      }
  
      public @Nullable ServerPlayer teleport(TeleportTransition transition) {
@@ -94,7 +94,7 @@
          if (this.isRemoved()) {
              return null;
          } else {
-@@ -1122,7 +_,7 @@
+@@ -1123,7 +_,7 @@
                  PlayerList playerList = this.server.getPlayerList();
                  playerList.sendPlayerPermissionLevel(this);
                  oldLevel.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -103,7 +103,7 @@
                  ProfilerFiller profiler = Profiler.get();
                  profiler.push("moving");
                  if (lastDimension == Level.OVERWORLD && newLevel.dimension() == Level.NETHER) {
-@@ -1142,11 +_,15 @@
+@@ -1143,11 +_,15 @@
                  playerList.sendLevelInfo(this, newLevel);
                  playerList.sendAllPlayerInfo(this);
                  playerList.sendActivePlayerEffects(this);
@@ -119,7 +119,7 @@
                  return this;
              }
          }
-@@ -1188,8 +_,19 @@
+@@ -1189,8 +_,19 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos pos) {
@@ -140,7 +140,7 @@
              BedRule rule = this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
              boolean canSleep = rule.canSleep(this.level());
              boolean canSetSpawn = rule.canSetSpawn(this.level());
-@@ -1231,6 +_,23 @@
+@@ -1232,6 +_,23 @@
                          }
                      }
  
@@ -164,7 +164,7 @@
                      Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(pos).ifRight(unit -> {
                          this.awardStat(Stats.SLEEP_IN_BED);
                          CriteriaTriggers.SLEPT_IN_BED.trigger(this);
-@@ -1243,8 +_,6 @@
+@@ -1244,8 +_,6 @@
                      return result;
                  }
              }
@@ -173,7 +173,7 @@
          }
      }
  
-@@ -1255,6 +_,7 @@
+@@ -1256,6 +_,7 @@
      }
  
      private boolean bedInRange(BlockPos pos, Direction direction) {
@@ -181,7 +181,7 @@
          return this.isReachableBedBlock(pos) || this.isReachableBedBlock(pos.relative(direction.getOpposite()));
      }
  
-@@ -1338,11 +_,19 @@
+@@ -1339,11 +_,19 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider provider) {
@@ -201,7 +201,7 @@
              }
  
              this.nextContainerCounter();
-@@ -1354,9 +_,31 @@
+@@ -1355,9 +_,31 @@
  
                  return OptionalInt.empty();
              } else {
@@ -233,7 +233,7 @@
                  return OptionalInt.of(this.containerCounter);
              }
          }
-@@ -1378,6 +_,7 @@
+@@ -1379,6 +_,7 @@
          this.connection.send(new ClientboundMountScreenOpenPacket(this.containerCounter, inventoryColumns, horse.getId()));
          this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), container, horse, inventoryColumns);
          this.initMenu(this.containerMenu);
@@ -241,7 +241,7 @@
      }
  
      @Override
-@@ -1419,6 +_,7 @@
+@@ -1420,6 +_,7 @@
      public void doCloseContainer() {
          this.containerMenu.removed(this);
          this.inventoryMenu.transferState(this.containerMenu);
@@ -249,7 +249,7 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1636,6 +_,15 @@
+@@ -1637,6 +_,15 @@
          this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
          this.setLastDeathLocation(oldPlayer.getLastDeathLocation());
          this.waypointIcon().copyFrom(oldPlayer.waypointIcon());
@@ -265,7 +265,7 @@
      }
  
      private void transferInventoryXpAndScore(Player oldPlayer) {
-@@ -1738,6 +_,8 @@
+@@ -1739,6 +_,8 @@
  
      public boolean setGameMode(GameType mode) {
          boolean wasSpectator = this.isSpectator();
@@ -274,7 +274,7 @@
          if (!this.gameMode.changeGameModeForPlayer(mode)) {
              return false;
          } else {
-@@ -1917,6 +_,7 @@
+@@ -1922,6 +_,7 @@
      public void setCamera(@Nullable Entity newCamera) {
          Entity oldCamera = this.getCamera();
          this.camera = (Entity)(newCamera == null ? this : newCamera);
@@ -282,7 +282,7 @@
          if (oldCamera != this.camera) {
              if (this.camera.level() instanceof ServerLevel level) {
                  this.teleportTo(level, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1943,7 +_,11 @@
+@@ -1948,7 +_,11 @@
      }
  
      public @Nullable Component getTabListDisplayName() {
@@ -295,7 +295,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1977,6 +_,7 @@
+@@ -1982,6 +_,7 @@
      }
  
      public void setRespawnPosition(ServerPlayer.@Nullable RespawnConfig respawnConfig, boolean showMessage) {
@@ -303,7 +303,7 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2014,6 +_,75 @@
+@@ -2019,6 +_,75 @@
          return entity;
      }
  
@@ -379,7 +379,7 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -2028,6 +_,7 @@
+@@ -2033,6 +_,7 @@
      }
  
      private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
@@ -387,7 +387,7 @@
          GameType forcedGameType = this.server.getForcedGameType();
          if (forcedGameType != null) {
              return forcedGameType;
-@@ -2064,6 +_,8 @@
+@@ -2069,6 +_,8 @@
  
      public void drop(boolean all) {
          Inventory inventory = this.getInventory();
@@ -396,7 +396,7 @@
          ItemStack removed = inventory.removeFromSelected(all);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())
-@@ -2072,7 +_,7 @@
+@@ -2077,7 +_,7 @@
              this.stopUsingItem();
          }
  

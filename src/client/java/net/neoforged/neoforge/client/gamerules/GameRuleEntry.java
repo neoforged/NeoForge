@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.gamerules;
 import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -29,7 +29,7 @@ public abstract class GameRuleEntry extends AbstractGameRulesScreen.RuleEntry {
         super(tooltip);
 
         this.font = font;
-        this.label = font.split(label, 175);
+        this.label = font.split(label, 170);
     }
 
     @Override
@@ -42,12 +42,12 @@ public abstract class GameRuleEntry extends AbstractGameRulesScreen.RuleEntry {
         return children;
     }
 
-    protected void renderLabel(GuiGraphics graphics, int rowTop, int rowLeft) {
+    protected void renderLabel(GuiGraphicsExtractor graphics, int rowTop, int rowLeft) {
         if (label.size() == 1) {
-            graphics.drawString(font, label.getFirst(), rowLeft, rowTop + 5, -1);
+            graphics.text(font, label.getFirst(), rowLeft, rowTop + 5, -1);
         } else if (label.size() >= 2) {
-            graphics.drawString(font, label.getFirst(), rowLeft, rowTop, -1);
-            graphics.drawString(font, label.get(1), rowLeft, rowTop + 10, -1);
+            graphics.text(font, label.getFirst(), rowLeft, rowTop, -1);
+            graphics.text(font, label.get(1), rowLeft, rowTop + 10, -1);
         }
     }
 }

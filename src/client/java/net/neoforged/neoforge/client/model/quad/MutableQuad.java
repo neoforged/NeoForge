@@ -5,11 +5,18 @@
 
 package net.neoforged.neoforge.client.model.quad;
 
+import com.mojang.blaze3d.platform.Transparency;
 import java.util.Arrays;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.FaceInfo;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.cuboid.FaceBakery;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Contract;
@@ -30,7 +37,7 @@ import org.jspecify.annotations.Nullable;
  * <li>{@link #setCubeFace(Direction, Vector3fc, Vector3fc)} generates the positions of a 3D cube face by giving the cubes extent.</li>
  * <li>{@link #bakeUvsFromPosition(UVTransform)} generates the texture coordinates of the quad similar to how Vanilla block models do, with optional transformations.</li>
  * <li>{@link #recalculateWinding()} can reorder the vertices of the quad to match the vertex order expected by Vanilla ambient occlusion for axis-aligned quads.</li>
- * <li>{@link #setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
+ * <li>{@link #setSpriteAndMoveUv(Material.Baked, Transparency)} and {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
  * </ul>
  */
 public class MutableQuad {
@@ -44,12 +51,17 @@ public class MutableQuad {
     private final int[] normals = new int[4];
     private final int[] colors = new int[4];
 
-    private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
-    private BakedQuad.@Nullable SpriteInfo spriteInfo;
+    @Nullable
+    private TextureAtlasSprite sprite;
+    @Nullable
+    private ChunkSectionLayer chunkLayer;
+    @Nullable
+    private RenderType itemRenderType;
+    private int tintIndex = -1;
     private boolean shade = true;
     private int lightEmission;
-    private boolean hasAmbientOcclusion;
+    private boolean ambientOcclusion;
     /**
      * This is only used to reuse position vectors when possible.
      */
@@ -380,16 +392,16 @@ public class MutableQuad {
     }
 
     /**
-     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #spriteInfo() sprite} and the
+     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #sprite() sprite} and the
      * given UV coordinates within that sprite.
      */
     public MutableQuad setUvFromSprite(int vertexIndex, float u, float v) {
-        var sprite = requiredSpriteInfo().sprite();
+        TextureAtlasSprite sprite = requiredSprite();
         return setUv(vertexIndex, sprite.getU(u), sprite.getV(v));
     }
 
     /**
-     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #spriteInfo() sprite} and the
+     * Assigns UV coordinates to a vertex of the current quad based on its {@linkplain #sprite() sprite} and the
      * given UV coordinates within that sprite.
      */
     public MutableQuad setUvFromSprite(int vertexIndex, Vector2fc uv) {
@@ -400,7 +412,7 @@ public class MutableQuad {
      * Projects each vertex onto the cube face the quad is sourcing its block lighting from,
      * and derives the vertex UV that way.
      *
-     * <p>Requires {@link #spriteInfo()} to be set.
+     * <p>Requires {@link #sprite()} to be set.
      */
     public MutableQuad bakeUvsFromPosition() {
         return bakeUvsFromPosition(UVTransform.IDENTITY);
@@ -479,32 +491,94 @@ public class MutableQuad {
      * <p>Note that {@link BakedQuad} must have an associated sprite.
      */
     @Contract(pure = true)
-    public BakedQuad.@Nullable SpriteInfo spriteInfo() {
-        return spriteInfo;
+    @Nullable
+    public TextureAtlasSprite sprite() {
+        return sprite;
     }
 
     /**
-     * Same as {@link #spriteInfo()}, but throws an exception if no sprite is set on the quad yet.
+     * Same as {@link #sprite()}, but throws an exception if no sprite is set on the quad yet.
      *
      * @throws IllegalStateException If no sprite is set yet.
      */
     @Contract(pure = true)
-    public BakedQuad.SpriteInfo requiredSpriteInfo() {
-        if (spriteInfo == null) {
+    public TextureAtlasSprite requiredSprite() {
+        if (sprite == null) {
             throw new IllegalStateException("A sprite has to be set on this quad before UVs are manipulated");
         }
-        return spriteInfo;
+        return sprite;
+    }
+
+    /// {@return the chunk layer associated with the quad or null if no chunk layer has been set yet}
+    ///
+    /// Note that [BakedQuad] must have an associated chunk layer
+    @Contract(pure = true)
+    @Nullable
+    public ChunkSectionLayer chunkLayer() {
+        return chunkLayer;
+    }
+
+    /// Same as [#chunkLayer()], but throws an exception if no chunk layer is set on the quad yet.
+    ///
+    /// @throws IllegalStateException If no chunk layer is set yet
+    @Contract(pure = true)
+    public ChunkSectionLayer requiredChunkLayer() {
+        if (chunkLayer == null) {
+            throw new IllegalStateException("A ChunkSectionLayer has to be set on this quad before baking");
+        }
+        return chunkLayer;
+    }
+
+    /// {@return the item render type associated with the quad or null if no item render type has been set yet}
+    ///
+    /// Note that [BakedQuad] must have an associated item render type
+    @Contract(pure = true)
+    @Nullable
+    public RenderType itemRenderType() {
+        return itemRenderType;
+    }
+
+    /// Same as [#itemRenderType()], but throws an exception if no item render type is set on the quad yet.
+    ///
+    /// @throws IllegalStateException If no item render type is set yet
+    @Contract(pure = true)
+    public RenderType requiredItemRenderType() {
+        if (itemRenderType == null) {
+            throw new IllegalStateException("An item RenderType has to be set on this quad before baking");
+        }
+        return itemRenderType;
     }
 
     /**
      * Changes the texture atlas sprite used by this quad.
      *
      * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
-     * to be within this new sprite. Use {@link #setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo)} to change sprites and remap them,
-     * {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(Material.Baked, Transparency)}
+     * to change sprites and remap them, {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
      */
-    public MutableQuad setSpriteInfo(BakedQuad.SpriteInfo spriteInfo) {
-        this.spriteInfo = spriteInfo;
+    @SuppressWarnings("deprecation")
+    public MutableQuad setSprite(Material.Baked material, Transparency transparency) {
+        RenderType itemRenderType;
+        if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            itemRenderType = transparency.hasTranslucent() ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockItemSheet();
+        } else {
+            itemRenderType = transparency.hasTranslucent() ? Sheets.translucentItemSheet() : Sheets.cutoutItemSheet();
+        }
+        setSprite(material.sprite(), ChunkSectionLayer.byTransparency(transparency), itemRenderType);
+        return this;
+    }
+
+    /**
+     * Changes the texture atlas sprite used by this quad.
+     *
+     * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType)}
+     * to change sprites and remap them, {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
+     */
+    public MutableQuad setSprite(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType) {
+        this.sprite = sprite;
+        this.chunkLayer = chunkLayer;
+        this.itemRenderType = itemRenderType;
         return this;
     }
 
@@ -513,9 +587,21 @@ public class MutableQuad {
      *
      * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
      */
-    public MutableQuad setSpriteInfoAndMoveUv(BakedQuad.SpriteInfo spriteInfo) {
+    public MutableQuad setSpriteAndMoveUv(Material.Baked material, Transparency transparency) {
         transformUvsFromAtlasToSprite();
-        this.spriteInfo = spriteInfo;
+        setSprite(material, transparency);
+        transformUvsFromSpriteToAtlas();
+        return this;
+    }
+
+    /**
+     * Changes the sprite and remaps the UV to the new sprites position in the texture atlas.
+     *
+     * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
+     */
+    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType) {
+        transformUvsFromAtlasToSprite();
+        setSprite(sprite, chunkLayer, itemRenderType);
         transformUvsFromSpriteToAtlas();
         return this;
     }
@@ -745,11 +831,11 @@ public class MutableQuad {
 
     @Contract(pure = true)
     public boolean hasAmbientOcclusion() {
-        return hasAmbientOcclusion;
+        return ambientOcclusion;
     }
 
-    public MutableQuad setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-        this.hasAmbientOcclusion = hasAmbientOcclusion;
+    public MutableQuad setAmbientOcclusion(boolean ambientOcclusion) {
+        this.ambientOcclusion = ambientOcclusion;
         return this;
     }
 
@@ -761,12 +847,15 @@ public class MutableQuad {
             colors[i] = quad.bakedColors().color(i);
             uvs[i] = quad.packedUV(i);
         }
-        tintIndex = quad.tintIndex();
         direction = quad.direction();
-        spriteInfo = quad.spriteInfo();
-        shade = quad.shade();
-        lightEmission = quad.lightEmission();
-        hasAmbientOcclusion = quad.hasAmbientOcclusion();
+        BakedQuad.MaterialInfo materialInfo = quad.materialInfo();
+        sprite = materialInfo.sprite();
+        chunkLayer = materialInfo.layer();
+        itemRenderType = materialInfo.itemRenderType();
+        tintIndex = materialInfo.tintIndex();
+        shade = materialInfo.shade();
+        lightEmission = materialInfo.lightEmission();
+        ambientOcclusion = materialInfo.ambientOcclusion();
         return this;
     }
 
@@ -775,7 +864,7 @@ public class MutableQuad {
      * them to atlas-space.
      */
     private void transformUvsFromSpriteToAtlas() {
-        var sprite = requiredSpriteInfo().sprite();
+        TextureAtlasSprite sprite = requiredSprite();
         for (int i = 0; i < 4; i++) {
             long packedUv = packedUv(i);
             setUv(i, sprite.getU(UVPair.unpackU(packedUv)), sprite.getV(UVPair.unpackV(packedUv)));
@@ -787,11 +876,11 @@ public class MutableQuad {
      * them to sprite-space.
      */
     private void transformUvsFromAtlasToSprite() {
-        var sprite = requiredSpriteInfo().sprite();
-        var uOrigin = sprite.getU0();
-        var vOrigin = sprite.getV0();
-        var uWidth = sprite.getU1() - uOrigin;
-        var vWidth = sprite.getV1() - vOrigin;
+        TextureAtlasSprite sprite = requiredSprite();
+        float uOrigin = sprite.getU0();
+        float vOrigin = sprite.getV0();
+        float uWidth = sprite.getU1() - uOrigin;
+        float vWidth = sprite.getV1() - vOrigin;
 
         for (int i = 0; i < 4; i++) {
             long packedUv = packedUv(i);
@@ -803,12 +892,17 @@ public class MutableQuad {
 
     @Contract(pure = true)
     public BakedQuad toBakedQuad() {
+        TextureAtlasSprite sprite = requiredSprite();
+        ChunkSectionLayer chunkLayer = requiredChunkLayer();
+        RenderType itemRenderType = requiredItemRenderType();
+
         // Try to reuse objects from the last baked quad that we copied from to reduce allocations if
         // the quad was only partially transformed.
         Vector3fc pos0;
         Vector3fc pos1;
         Vector3fc pos2;
         Vector3fc pos3;
+        BakedQuad.MaterialInfo materialInfo;
         BakedNormals bakedNormals;
         BakedColors bakedColors;
         if (lastSourceQuad != null) {
@@ -816,6 +910,20 @@ public class MutableQuad {
             pos1 = reuseVector(lastSourceQuad, positions[1]);
             pos2 = reuseVector(lastSourceQuad, positions[2]);
             pos3 = reuseVector(lastSourceQuad, positions[3]);
+
+            BakedQuad.MaterialInfo srcInfo = lastSourceQuad.materialInfo();
+            boolean canReuseMaterialInfo = sprite == srcInfo.sprite() &&
+                    chunkLayer == srcInfo.layer() &&
+                    itemRenderType == srcInfo.itemRenderType() &&
+                    tintIndex == srcInfo.tintIndex() &&
+                    shade == srcInfo.shade() &&
+                    lightEmission == srcInfo.lightEmission() &&
+                    ambientOcclusion == srcInfo.ambientOcclusion();
+            if (canReuseMaterialInfo) {
+                materialInfo = srcInfo;
+            } else {
+                materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, tintIndex, shade, lightEmission, ambientOcclusion);
+            }
 
             // If the normals did not change, reuse the old object
             bakedNormals = lastSourceQuad.bakedNormals();
@@ -841,11 +949,11 @@ public class MutableQuad {
             pos1 = new Vector3f(positions[1]);
             pos2 = new Vector3f(positions[2]);
             pos3 = new Vector3f(positions[3]);
+            materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, tintIndex, shade, lightEmission, ambientOcclusion);
             bakedNormals = BakedNormals.of(normals[0], normals[1], normals[2], normals[3]);
             bakedColors = BakedColors.of(colors[0], colors[1], colors[2], colors[3]);
         }
 
-        var spriteInfo = requiredSpriteInfo();
         return new BakedQuad(
                 pos0,
                 pos1,
@@ -855,14 +963,10 @@ public class MutableQuad {
                 uvs[1],
                 uvs[2],
                 uvs[3],
-                tintIndex,
                 direction,
-                spriteInfo,
-                shade,
-                lightEmission,
+                materialInfo,
                 bakedNormals,
-                bakedColors,
-                hasAmbientOcclusion);
+                bakedColors);
     }
 
     /**
@@ -927,12 +1031,14 @@ public class MutableQuad {
         System.arraycopy(uvs, 0, dest.uvs, 0, uvs.length);
         System.arraycopy(normals, 0, dest.normals, 0, normals.length);
         System.arraycopy(colors, 0, dest.colors, 0, colors.length);
-        dest.tintIndex = tintIndex;
         dest.direction = direction;
-        dest.spriteInfo = spriteInfo;
+        dest.sprite = sprite;
+        dest.chunkLayer = chunkLayer;
+        dest.itemRenderType = itemRenderType;
+        dest.tintIndex = tintIndex;
         dest.shade = shade;
         dest.lightEmission = lightEmission;
-        dest.hasAmbientOcclusion = hasAmbientOcclusion;
+        dest.ambientOcclusion = ambientOcclusion;
         dest.lastSourceQuad = lastSourceQuad;
         return dest;
     }
@@ -945,11 +1051,13 @@ public class MutableQuad {
         Arrays.fill(normals, 0);
         Arrays.fill(colors, 0xFFFFFFFF);
         direction = Direction.DOWN;
-        spriteInfo = null;
+        sprite = null;
+        chunkLayer = null;
+        itemRenderType = null;
         tintIndex = -1;
         shade = true;
         lightEmission = 0;
-        hasAmbientOcclusion = false;
+        ambientOcclusion = false;
         lastSourceQuad = null;
 
         return this;

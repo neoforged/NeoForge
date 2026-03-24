@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -73,10 +_,13 @@
+@@ -74,10 +_,13 @@
          OptionSpec<Void> serverOption = parser.accepts("server", "Include server generators");
          OptionSpec<Void> devOption = parser.accepts("dev", "Include development tools");
          OptionSpec<Void> reportsOption = parser.accepts("reports", "Include data reports");
@@ -15,7 +15,7 @@
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
-@@ -85,11 +_,18 @@
+@@ -86,11 +_,18 @@
              boolean dev = allOptions || optionSet.has(devOption);
              boolean reports = allOptions || optionSet.has(reportsOption);
              Collection<Path> input = optionSet.valuesOf(inputOption).stream().map(x$0 -> Paths.get(x$0)).toList();

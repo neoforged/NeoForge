@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.Transparency;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class MutableQuadTests {
                 right * WORLD_SCALE,
                 top * WORLD_SCALE,
                 depth * WORLD_SCALE);
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
@@ -89,7 +90,7 @@ public class MutableQuadTests {
 
         var mutableQuad = new MutableQuad();
         mutableQuad.setCubeFaceFromSpriteCoords(side, 0, 0, 1, 1, 0);
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
     }
@@ -140,14 +141,11 @@ public class MutableQuadTests {
                 (long) refVertices.get(1)[2],
                 (long) refVertices.get(2)[2],
                 (long) refVertices.get(3)[2],
-                0,
                 side,
-                new BakedQuad.SpriteInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION)),
-                true,
-                0);
+                new BakedQuad.MaterialInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION), 0, true, 0, true));
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFaceFromSpriteCoords(side, left * f, bottom * f, right * f, top * f, depth * f);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuad, mutableQuad);
@@ -162,7 +160,7 @@ public class MutableQuadTests {
         var to = new Vector3f(REFERENCE_BLOCK_MAX).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from, to);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -177,7 +175,7 @@ public class MutableQuadTests {
         var to = new Vector3f(REFERENCE_BLOCK_MAX).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from.x, from.y, from.z, to.x, to.y, to.z);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -194,7 +192,7 @@ public class MutableQuadTests {
         var to = new Vector3f(max).mul(WORLD_SCALE);
 
         var mutableQuad = new MutableQuad();
-        mutableQuad.setSpriteInfo(makeMockSpriteInfo());
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
         mutableQuad.setCubeFace(side, from.x, from.y, from.z, to.x, to.y, to.z);
         mutableQuad.bakeUvsFromPosition();
         assertQuadsEquals(referenceQuads.get(side), mutableQuad);
@@ -212,12 +210,12 @@ public class MutableQuadTests {
             assertEquals(mutableQuad.color(i), refQuad.bakedColors().color(i), "color[" + i + "]");
         }
 
-        assertEquals(mutableQuad.tintIndex(), refQuad.tintIndex());
+        assertEquals(mutableQuad.tintIndex(), refQuad.materialInfo().tintIndex());
         assertEquals(mutableQuad.direction(), refQuad.direction());
-        assertEquals(mutableQuad.spriteInfo(), refQuad.spriteInfo());
-        assertEquals(mutableQuad.shade(), refQuad.shade());
-        assertEquals(mutableQuad.lightEmission(), refQuad.lightEmission());
-        assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.hasAmbientOcclusion());
+        assertEquals(mutableQuad.sprite(), refQuad.materialInfo().sprite());
+        assertEquals(mutableQuad.shade(), refQuad.materialInfo().shade());
+        assertEquals(mutableQuad.lightEmission(), refQuad.materialInfo().lightEmission());
+        assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.materialInfo().ambientOcclusion());
     }
 
     /**
@@ -227,9 +225,9 @@ public class MutableQuadTests {
     @Test
     void testSetSpriteAndMoveUv() {
         var refQuad = buildReferenceQuads().get(Direction.NORTH);
-        var oldSprite = makeMockSpriteInfo(192, 192);
+        var oldSprite = makeMockMaterial(192, 192);
         var mutableQuad = new MutableQuad().setFrom(refQuad);
-        mutableQuad.setSpriteInfo(oldSprite);
+        mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
 
         // Move to some position within the old sprite
         float[] localUv = {
@@ -247,8 +245,8 @@ public class MutableQuadTests {
         }
 
         // Now change the sprite and also move the UV
-        var newSprite = makeMockSpriteInfo(32, 32);
-        mutableQuad.setSpriteInfoAndMoveUv(newSprite);
+        var newSprite = makeMockMaterial(32, 32);
+        mutableQuad.setSpriteAndMoveUv(newSprite, Transparency.NONE);
 
         for (int i = 0; i < 4; i++) {
             float localU = localUv[i * 2];
@@ -298,12 +296,12 @@ public class MutableQuadTests {
     @Test
     void testTransform() {
         // Apply a really simple transform to a quad on the south face
-        var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSpriteInfo(makeMockSpriteInfo()).toBakedQuad();
+        var refQuad = new MutableQuad().setCubeFace(Direction.SOUTH, 0, 0, 0, 1, 1, 1).setSprite(makeMockMaterial(), Transparency.NONE).toBakedQuad();
         var quat = new Quaternionf().fromAxisAngleDeg(Direction.EAST.getUnitVec3f(), 180);
         var rotation = new Matrix4f().rotateAround(quat, 0.5f, 0.5f, 0.5f, new Matrix4f());
 
         // It should be equivalent to a cube face on the opposite side, incl. normal vectors
-        var expectedQuad = new MutableQuad().setCubeFace(Direction.NORTH, 0, 0, 0, 1, 1, 1).setSpriteInfo(makeMockSpriteInfo()).toBakedQuad();
+        var expectedQuad = new MutableQuad().setCubeFace(Direction.NORTH, 0, 0, 0, 1, 1, 1).setSprite(makeMockMaterial(), Transparency.NONE).toBakedQuad();
 
         var transformedQuad = new MutableQuad().setFrom(refQuad).transform(rotation).setDirection(Direction.NORTH).recalculateWinding();
         assertQuadsEquals(expectedQuad, transformedQuad);
@@ -389,12 +387,12 @@ public class MutableQuadTests {
         }));
     }
 
-    private static BakedQuad.SpriteInfo makeMockSpriteInfo() {
-        return new BakedQuad.SpriteInfo(new MockSprite(), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID));
+    private static Material.Baked makeMockMaterial() {
+        return new Material.Baked(new MockSprite(), false);
     }
 
-    private static BakedQuad.SpriteInfo makeMockSpriteInfo(int x, int y) {
-        return new BakedQuad.SpriteInfo(new MockSprite(x, y), ChunkSectionLayer.SOLID, RenderTypes.entitySolid(MockSprite.ID));
+    private static Material.Baked makeMockMaterial(int x, int y) {
+        return new Material.Baked(new MockSprite(x, y), false);
     }
 
     static class MockSprite extends TextureAtlasSprite {
@@ -471,7 +469,7 @@ public class MutableQuadTests {
         }
 
         @Override
-        public BakedQuad.SpriteInfo spriteInfo(BakedQuad.SpriteInfo sprite) {
+        public BakedQuad.MaterialInfo materialInfo(BakedQuad.MaterialInfo sprite) {
             return sprite;
         }
     }

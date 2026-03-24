@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -23,6 +_,16 @@
+@@ -24,6 +_,16 @@
      private final Pack.ResourcesSupplier resources;
      private final Pack.Metadata metadata;
      private final PackSelectionConfig selectionConfig;
@@ -17,7 +17,7 @@
  
      public static @Nullable Pack readMetaAndCreate(
          PackLocationInfo location, Pack.ResourcesSupplier resources, PackType packType, PackSelectionConfig selectionConfig
-@@ -33,6 +_,34 @@
+@@ -34,6 +_,34 @@
      }
  
      public Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig) {
@@ -52,7 +52,7 @@
          this.location = location;
          this.resources = resources;
          this.metadata = metadata;
-@@ -60,7 +_,14 @@
+@@ -64,7 +_,14 @@
                  PackCompatibility packCompatibility = PackCompatibility.forVersion(meta.supportedFormats(), currentPackVersion);
                  OverlayMetadataSection overlays = pack.getMetadataSection(OverlayMetadataSection.forPackType(type));
                  List<String> overlaySet = overlays != null ? overlays.overlaysForVersion(currentPackVersion) : List.of();
@@ -68,7 +68,7 @@
              }
  
              return var11;
-@@ -122,6 +_,38 @@
+@@ -126,6 +_,38 @@
          return this.location.source();
      }
  
@@ -107,7 +107,7 @@
      @Override
      public boolean equals(Object o) {
          if (this == o) {
-@@ -136,7 +_,12 @@
+@@ -140,7 +_,12 @@
          return this.location.hashCode();
      }
  

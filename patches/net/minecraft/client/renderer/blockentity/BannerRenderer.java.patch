@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -275,4 +_,11 @@
+@@ -253,4 +_,11 @@
      private static Transformation createWallTransformation(Direction direction) {
          return modelTransformation(direction.toYRot());
      }

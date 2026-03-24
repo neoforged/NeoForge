@@ -1,17 +1,17 @@
 --- a/net/minecraft/client/gui/components/AbstractButton.java
 +++ b/net/minecraft/client/gui/components/AbstractButton.java
 @@ -40,7 +_,13 @@
-     protected abstract void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float a);
+     protected abstract void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a);
  
-     protected void renderDefaultLabel(ActiveTextCollector output) {
--        this.renderScrollingStringOverContents(output, this.getMessage(), 2);
+     protected void extractDefaultLabel(ActiveTextCollector output) {
+-        this.extractScrollingStringOverContents(output, this.getMessage(), 2);
 +        // Neo: Apply forced foreground color if set
 +        var message = this.getMessage();
 +        if (getFGColor() != UNSET_FG_COLOR) {
 +            message = message.copy().withStyle(style -> style.withColor(getFGColor()));
 +        }
 +
-+        this.renderScrollingStringOverContents(output, message, 2);
++        this.extractScrollingStringOverContents(output, message, 2);
      }
  
-     protected final void renderDefaultSprite(GuiGraphics graphics) {
+     protected final void extractDefaultSprite(GuiGraphicsExtractor graphics) {

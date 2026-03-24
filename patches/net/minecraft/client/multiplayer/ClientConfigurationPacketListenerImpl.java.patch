@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -52,6 +_,9 @@
+@@ -56,6 +_,9 @@
      private @Nullable KnownPacksManager knownPacks;
      protected ChatComponent.@Nullable State chatState;
      private boolean seenCodeOfConduct;
@@ -10,7 +10,7 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft minecraft, Connection connection, CommonListenerCookie cookie) {
          super(minecraft, connection, cookie);
-@@ -91,6 +_,11 @@
+@@ -95,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket packet) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(packet.features());
@@ -22,8 +22,8 @@
      }
  
      @Override
-@@ -155,7 +_,7 @@
-         );
+@@ -164,7 +_,7 @@
+ 
          this.connection
              .setupInboundProtocol(
 -                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries)),
@@ -31,7 +31,7 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -173,13 +_,21 @@
+@@ -182,13 +_,21 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -55,7 +55,7 @@
                  {
                      Objects.requireNonNull(ClientConfigurationPacketListenerImpl.this);
                  }
-@@ -200,6 +_,53 @@
+@@ -214,6 +_,53 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();

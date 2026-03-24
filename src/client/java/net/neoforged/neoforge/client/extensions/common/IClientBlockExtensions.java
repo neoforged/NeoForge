@@ -5,7 +5,10 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -132,4 +135,19 @@ public interface IClientBlockExtensions {
         }
         return originalColor;
     }
+
+    /// Collect tint values for blocks with a dynamic tint layer count.
+    ///
+    /// Tint values must be appended to the provided list such that their index in the list matches the tint index
+    /// specified by the quad(s) that should be affected by them.
+    ///
+    /// Intended to be used by blocks which imitate other blocks and pull their tint values from the imitated block.
+    /// This method is only called when [BlockColors#getTintSources(BlockState)] returns an empty list for the block
+    /// these extensions are associated to.
+    ///
+    /// @param state      The block state whose tint values are being queried
+    /// @param level      The level in which the block is being rendered
+    /// @param pos        The position at which the block is being rendered
+    /// @param tintValues The list to append the tint values to
+    default void collectDynamicTintValues(BlockState state, BlockAndTintGetter level, BlockPos pos, IntList tintValues) {}
 }

@@ -70,11 +70,6 @@ immaculate {
             fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
             fileContents.replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
         }
-
-        // Bump the version of the google formatter to add Java 25 support.
-        steps.named { it == 'googleFixImports' }.configureEach {
-            it.version('1.33.0')
-        }
     }
 }
 

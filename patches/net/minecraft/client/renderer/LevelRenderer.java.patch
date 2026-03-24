@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -481,7 +_,7 @@
+@@ -485,7 +_,7 @@
          this.targets.main = frame.importExternal("main", this.minecraft.getMainRenderTarget());
          int screenWidth = this.minecraft.getMainRenderTarget().width;
          int screenHeight = this.minecraft.getMainRenderTarget().height;
@@ -9,7 +9,7 @@
          PostChain transparencyChain = this.getTransparencyChain();
          if (transparencyChain != null) {
              this.targets.translucent = frame.createInternal("translucent", screenSizeTargetDescriptor);
-@@ -495,6 +_,9 @@
+@@ -499,6 +_,9 @@
              this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
          }
  
@@ -19,7 +19,7 @@
          FramePass clearPass = frame.addPass("clear");
          this.targets.main = clearPass.readsAndWrites(this.targets.main);
          clearPass.executes(
-@@ -511,7 +_,7 @@
+@@ -515,7 +_,7 @@
              }
          );
          if (shouldRenderSky) {
@@ -28,7 +28,7 @@
          }
  
          this.addMainPass(frame, cullFrustum, modelViewMatrix, terrainFog, renderOutline, this.levelRenderState, deltaTracker, profiler, chunkSectionsToRender);
-@@ -530,11 +_,12 @@
+@@ -534,11 +_,12 @@
                  deltaPartialTick,
                  this.levelRenderState.cloudColor,
                  this.levelRenderState.cloudHeight,
@@ -43,7 +43,7 @@
          if (transparencyChain != null) {
              transparencyChain.addToFrame(frame, screenWidth, screenHeight, this.targets);
          }
-@@ -576,7 +_,7 @@
+@@ -581,7 +_,7 @@
          profiler.popPush("entities");
          this.extractVisibleEntities(camera, cullFrustum, deltaTracker, this.levelRenderState);
          profiler.popPush("blockEntities");
@@ -52,7 +52,7 @@
          profiler.popPush("blockOutline");
          this.extractBlockOutline(camera, this.levelRenderState);
          profiler.popPush("blockBreaking");
-@@ -605,6 +_,13 @@
+@@ -610,6 +_,13 @@
          profiler.popPush("debug");
          this.debugRenderer.emitGizmos(cullFrustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
          this.gameTestBlockHighlightRenderer.emitGizmos();
@@ -66,7 +66,7 @@
          profiler.pop();
          profiler.pop();
      }
-@@ -666,6 +_,8 @@
+@@ -671,6 +_,8 @@
                  }
  
                  chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.OPAQUE, this.chunkLayerSampler);
@@ -75,10 +75,10 @@
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (this.shouldShowEntityOutlines() && entityOutlineTarget != null) {
                      RenderTarget outlineTarget = entityOutlineTarget.get();
-@@ -681,9 +_,13 @@
-                 this.submitEntities(poseStack, levelRenderState, this.submitNodeStorage);
+@@ -687,9 +_,13 @@
                  this.submitBlockEntities(poseStack, levelRenderState, this.submitNodeStorage);
                  levelRenderState.particlesRenderState.submit(this.submitNodeStorage, levelRenderState.cameraRenderState);
+                 this.submitBlockDestroyAnimation(poseStack, this.submitNodeStorage, levelRenderState);
 +                profiler.popPush("neoforge_submit_custom");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent(levelRenderState, this.submitNodeStorage, poseStack, this.getRenderableSections()));
                  profiler.popPush("renderSolidFeatures");
@@ -89,16 +89,16 @@
                  profiler.pop();
                  this.checkPoseStack(poseStack);
                  if (translucentTarget != null) {
-@@ -701,6 +_,8 @@
-                 profiler.push("renderTranslucentFeatures");
+@@ -708,6 +_,8 @@
                  this.featureRenderDispatcher.renderTranslucentFeatures();
                  bufferSource.endBatch();
+                 crumblingBufferSource.endBatch();
 +                profiler.popPush("neoforge_render_after_translucent_features");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
-                 profiler.popPush("destroyProgress");
-                 this.renderBlockDestroyAnimation(poseStack, crumblingBufferSource, levelRenderState);
-                 crumblingBufferSource.endBatch();
-@@ -717,6 +_,8 @@
+                 profiler.pop();
+                 this.renderBuffers.outlineBufferSource().endOutlineBatch();
+                 if (renderOutline) {
+@@ -721,6 +_,8 @@
                  this.checkPoseStack(poseStack);
                  profiler.push("translucentTerrain");
                  chunkSectionsToRender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, this.chunkLayerSampler);
@@ -107,22 +107,23 @@
                  if (renderOutline) {
                      this.renderBlockOutline(bufferSource, poseStack, true, levelRenderState);
                  }
-@@ -727,10 +_,14 @@
+@@ -731,10 +_,15 @@
                  bufferSource.endBatch();
                  this.featureRenderDispatcher.clearSubmitNodes();
                  levelRenderState.particlesRenderState.reset();
 +                profiler.push("neoforge_render_after_translucent_particles");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, levelRenderState, poseStack, modelViewMatrix, this.getRenderableSections()));
++                profiler.pop();
              }
          );
      }
  
-+    /// @deprecated Neo: use [#addCloudsPass(FrameGraphBuilder, CloudStatus, Vec3, long, float, int, float, int, Matrix4f)] instead
++    /// @deprecated Neo: use [#addCloudsPass(FrameGraphBuilder, CloudStatus, Vec3, long, float, int, float, int, Matrix4fc)] instead
 +    @Deprecated
      private void addCloudsPass(
          FrameGraphBuilder frame,
          CloudStatus cloudStatus,
-@@ -741,6 +_,21 @@
+@@ -745,6 +_,21 @@
          float cloudHeight,
          int cloudRange
      ) {
@@ -139,12 +140,12 @@
 +        int cloudColor,
 +        float cloudHeight,
 +        int cloudRange,
-+        Matrix4f modelViewMatrix
++        Matrix4fc modelViewMatrix
 +    ) {
          FramePass pass = frame.addPass("clouds");
          if (this.targets.clouds != null) {
              this.targets.clouds = pass.readsAndWrites(this.targets.clouds);
-@@ -748,10 +_,22 @@
+@@ -752,10 +_,22 @@
              this.targets.main = pass.readsAndWrites(this.targets.main);
          }
  
@@ -157,18 +158,18 @@
      }
  
 +    /**
-+     * @deprecated Neo: use {@link #addWeatherPass(FrameGraphBuilder, GpuBufferSlice, Matrix4f)} instead
++     * @deprecated Neo: use {@link #addWeatherPass(FrameGraphBuilder, GpuBufferSlice, Matrix4fc)} instead
 +     */
 +    @Deprecated
      private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog) {
 +        addWeatherPass(frame, fog, RenderSystem.getModelViewMatrix());
 +    }
 +
-+    private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog, Matrix4f modelViewMatrix) {
++    private void addWeatherPass(FrameGraphBuilder frame, GpuBufferSlice fog, Matrix4fc modelViewMatrix) {
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          FramePass pass = frame.addPass("weather");
          if (this.targets.weather != null) {
-@@ -764,7 +_,10 @@
+@@ -768,7 +_,10 @@
              () -> {
                  RenderSystem.setShaderFog(fog);
                  CameraRenderState cameraState = this.levelRenderState.cameraRenderState;
@@ -180,7 +181,7 @@
                  this.worldBorderRenderer
                      .render(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
              }
-@@ -818,7 +_,7 @@
+@@ -822,7 +_,7 @@
                              || camera.isDetached()
                              || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping()
                      )
@@ -189,7 +190,7 @@
                      if (entity.tickCount == 0) {
                          entity.xOld = entity.getX();
                          entity.yOld = entity.getY();
-@@ -831,6 +_,9 @@
+@@ -835,6 +_,9 @@
                      if (state.appearsGlowing() && shouldShowEntityOutlines) {
                          output.haveGlowingEntities = true;
                      }
@@ -199,7 +200,7 @@
                  }
              }
          }
-@@ -853,12 +_,20 @@
+@@ -857,12 +_,20 @@
          }
      }
  
@@ -220,7 +221,7 @@
  
          for (SectionRenderDispatcher.RenderSection section : this.visibleSections) {
              List<BlockEntity> renderableBlockEntities = section.getSectionMesh().getRenderableBlockEntities();
-@@ -876,9 +_,12 @@
+@@ -880,9 +_,12 @@
                          breakProgress = null;
                      }
  
@@ -234,7 +235,7 @@
                      }
                  }
              }
-@@ -891,9 +_,12 @@
+@@ -895,9 +_,12 @@
              if (blockEntity.isRemoved()) {
                  iterator.remove();
              } else {
@@ -248,21 +249,12 @@
                  }
              }
          }
-@@ -943,7 +_,7 @@
-             poseStack.pushPose();
-             BlockPos pos = state.blockPos;
-             poseStack.translate(pos.getX() - camX, pos.getY() - camY, pos.getZ() - camZ);
--            this.minecraft.getBlockRenderer().renderBreakingTexture(state.blockState, pos, poseStack, bufferSource, state.progress);
-+            this.minecraft.getBlockRenderer().renderBreakingTexture(state, state.blockState, pos, poseStack, bufferSource, state.progress);
-             poseStack.popPose();
-         }
-     }
-@@ -955,19 +_,23 @@
-                 BlockPos pos = blockHitResult.getBlockPos();
+@@ -963,19 +_,23 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
--                    boolean isBlockTranslucent = this.minecraft.getBlockRenderer().getBlockModel(state).hasTranslucency();
-+                    boolean isBlockTranslucent = this.minecraft.getBlockRenderer().getBlockModel(state).hasTranslucency(this.level, pos, state);
+                     BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
+-                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(1);
++                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(this.level, pos, state, 1);
                      boolean highContrast = this.minecraft.options.highContrastBlockOutline().get();
                      CollisionContext context = CollisionContext.of(camera.entity());
 +                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, pos, state, blockHitResult, context, isBlockTranslucent, highContrast, camera, levelRenderState);
@@ -284,7 +276,7 @@
                      }
                  }
              }
-@@ -979,6 +_,13 @@
+@@ -987,6 +_,13 @@
      ) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;
          if (state != null) {
@@ -298,23 +290,23 @@
              if (state.isTranslucent() == onlyTranslucentBlocks) {
                  Vec3 cameraPos = levelRenderState.cameraRenderState.pos;
                  if (state.highContrast()) {
-@@ -1187,7 +_,15 @@
+@@ -1195,7 +_,15 @@
          }
      }
  
 +    /**
-+     * @deprecated Neo: use {@link #addSkyPass(FrameGraphBuilder, CameraRenderState, GpuBufferSlice, Matrix4f)} instead
++     * @deprecated Neo: use {@link #addSkyPass(FrameGraphBuilder, CameraRenderState, GpuBufferSlice, Matrix4fc)} instead
 +     */
 +    @Deprecated
      private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog) {
 +        this.addSkyPass(frame, cameraState, skyFog, RenderSystem.getModelViewMatrix());
 +    }
 +
-+    private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog, Matrix4f modelViewMatrix) {
++    private void addSkyPass(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog, Matrix4fc modelViewMatrix) {
          FogType fogType = cameraState.fogType;
          if (fogType != FogType.POWDER_SNOW && fogType != FogType.LAVA && !cameraState.entityRenderState.doesMobEffectBlockSky) {
              SkyRenderState state = this.levelRenderState.skyRenderState;
-@@ -1198,6 +_,7 @@
+@@ -1206,6 +_,7 @@
                      this.targets.main = pass.readsAndWrites(this.targets.main);
                      pass.executes(
                          () -> {
@@ -322,7 +314,7 @@
                              RenderSystem.setShaderFog(skyFog);
                              if (state.skybox == DimensionType.Skybox.END) {
                                  skyRenderer.renderEndSky();
-@@ -1216,6 +_,10 @@
+@@ -1224,6 +_,10 @@
                                      skyRenderer.renderDarkDisc();
                                  }
                              }
@@ -333,7 +325,7 @@
                          }
                      );
                  }
-@@ -1430,7 +_,7 @@
+@@ -1438,7 +_,7 @@
          } else {
              int packedBrightness = brightnessGetter.packedBrightness(level, pos);
              int block = LightCoordsUtil.block(packedBrightness);
@@ -342,7 +334,7 @@
              return block < blockSelfEmission ? LightCoordsUtil.withBlock(packedBrightness, blockSelfEmission) : packedBrightness;
          }
      }
-@@ -1478,6 +_,22 @@
+@@ -1486,6 +_,22 @@
  
      public CloudRenderer getCloudRenderer() {
          return this.cloudRenderer;

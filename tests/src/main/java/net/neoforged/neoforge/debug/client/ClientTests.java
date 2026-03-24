@@ -14,7 +14,7 @@ import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -166,7 +166,7 @@ public class ClientTests {
         test.framework().modEventBus().addListener((final RegisterClientExtensionsEvent event) -> {
             event.registerItem(new IClientItemExtensions() {
                 @Override
-                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
                     guiGraphics.blit(
                             RenderPipelines.GUI_TEXTURED,
                             Identifier.withDefaultNamespace("textures/block/stone.png"),

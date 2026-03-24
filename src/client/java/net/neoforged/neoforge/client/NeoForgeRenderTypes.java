@@ -12,6 +12,7 @@ import com.mojang.blaze3d.textures.GpuSampler;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -35,6 +36,9 @@ public enum NeoForgeRenderTypes {
     ITEM_UNSORTED_TRANSLUCENT(() -> getUnsortedTranslucent(TextureAtlas.LOCATION_ITEMS)),
     ITEM_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_ITEMS)),
     ITEM_UNSORTED_UNLIT_TRANSLUCENT(() -> getUnlitUnsortedTranslucent(TextureAtlas.LOCATION_ITEMS));
+
+    /// Solid equivalent to [Sheets#cutoutBlockSheet()] and [Sheets#translucentBlockSheet()]
+    public static final RenderType SOLID_BLOCK_SHEET = RenderTypes.entitySolid(TextureAtlas.LOCATION_BLOCKS);
 
     // TODO 1.21.11: Some render types previously enabled linear filtering, this intends to be equivalent, but was not checked. Also check the mipmap flag.
     private static final Supplier<GpuSampler> LINEAR_FILTERING_SAMPLER = () -> RenderSystem.getSamplerCache()

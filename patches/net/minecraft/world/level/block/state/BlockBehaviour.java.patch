@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -175,7 +_,7 @@
+@@ -174,7 +_,7 @@
          if (!state.isAir() && explosion.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = state.getBlock();
              boolean doDropExperienceHack = explosion.getIndirectSourceEntity() instanceof Player;
@@ -9,7 +9,7 @@
                  BlockEntity blockEntity = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
                  LootParams.Builder params = new LootParams.Builder(level)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-@@ -190,8 +_,7 @@
+@@ -189,8 +_,7 @@
                  state.getDrops(params).forEach(stack -> onHit.accept(stack, pos));
              }
  
@@ -19,7 +19,7 @@
          }
      }
  
-@@ -344,8 +_,8 @@
+@@ -343,8 +_,8 @@
          if (destroySpeed == -1.0F) {
              return 0.0F;
          } else {
@@ -30,7 +30,7 @@
          }
      }
  
-@@ -385,10 +_,13 @@
+@@ -384,10 +_,13 @@
          return this.isRandomlyTicking;
      }
  
@@ -44,7 +44,7 @@
      protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
          return new ItemStack(this.asItem());
      }
-@@ -405,6 +_,10 @@
+@@ -404,6 +_,10 @@
          return this.properties.destroyTime;
      }
  
@@ -55,7 +55,7 @@
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> implements TypedInstance<Block> {
          private static final Direction[] DIRECTIONS = Direction.values();
          private static final VoxelShape[] EMPTY_OCCLUSION_SHAPES = Util.make(new VoxelShape[DIRECTIONS.length], s -> Arrays.fill(s, Shapes.empty()));
-@@ -500,7 +_,12 @@
+@@ -499,7 +_,12 @@
                  this.occlusionShapesByFace = new VoxelShape[DIRECTIONS.length];
  
                  for (Direction direction : DIRECTIONS) {
@@ -69,7 +69,7 @@
                  }
              }
  
-@@ -556,14 +_,18 @@
+@@ -555,14 +_,18 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -89,7 +89,7 @@
          public boolean ignitedByLava() {
              return this.ignitedByLava;
          }
-@@ -574,9 +_,11 @@
+@@ -573,9 +_,11 @@
          }
  
          public MapColor getMapColor(BlockGetter level, BlockPos pos) {
@@ -102,7 +102,7 @@
          public BlockState rotate(Rotation rotation) {
              return this.getBlock().rotate(this.asState(), rotation);
          }
-@@ -630,6 +_,8 @@
+@@ -629,6 +_,8 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -111,7 +111,7 @@
              return this.pushReaction;
          }
  
-@@ -756,6 +_,9 @@
+@@ -755,6 +_,9 @@
          }
  
          public InteractionResult useItemOn(ItemStack itemStack, Level level, Player player, InteractionHand hand, BlockHitResult hitResult) {
@@ -121,7 +121,7 @@
              return this.getBlock().useItemOn(itemStack, this.asState(), level, hitResult.getBlockPos(), player, hand, hitResult);
          }
  
-@@ -843,6 +_,7 @@
+@@ -842,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), pos);
          }
  
@@ -129,12 +129,12 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -971,7 +_,7 @@
+@@ -975,7 +_,7 @@
          private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, entityType) -> state.isFaceSturdy(
                  level, pos, Direction.UP
              )
 -            && state.getLightEmission() < 14;
 +            && state.getLightEmission(level, pos) < 14;
-         private BlockBehaviour.StatePredicate isRedstoneConductor = (state, level, pos) -> state.isCollisionShapeFullBlock(level, pos);
+         private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
          private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.blocksMotion() && state.isCollisionShapeFullBlock(level, pos);
          private BlockBehaviour.StatePredicate isViewBlocking = this.isSuffocating;

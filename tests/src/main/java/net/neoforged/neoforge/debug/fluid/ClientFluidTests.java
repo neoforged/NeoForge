@@ -12,7 +12,7 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
-import net.minecraft.client.renderer.block.LiquidBlockRenderer;
+import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -96,7 +96,7 @@ public class ClientFluidTests {
                 .thenExecute(() -> helper.setBlock(waterPosition, Blocks.WATER.defaultBlockState()))
                 // Check that the north side of the water is not rendered
                 .thenExecute(() -> helper.assertFalse(
-                        LiquidBlockRenderer.shouldRenderFace(
+                        FluidRenderer.shouldRenderFace(
                                 helper.getBlockState(waterPosition).getFluidState(),
                                 helper.getBlockState(waterPosition),
                                 glassDirection,

@@ -1,0 +1,63 @@
+--- a/net/minecraft/client/renderer/block/FluidRenderer.java
++++ b/net/minecraft/client/renderer/block/FluidRenderer.java
+@@ -36,6 +_,10 @@
+         return neighborFluidState.getType().isSame(fluidState.getType());
+     }
+ 
++    private static boolean isNeighborStateHidingOverlay(FluidState selfState, BlockState otherState, Direction neighborFace) {
++        return otherState.shouldHideAdjacentFluidFace(neighborFace, selfState);
++    }
++
+     private static boolean isFaceOccludedByState(Direction direction, float height, BlockState state) {
+         VoxelShape occluder = state.getFaceOcclusionShape(direction.getOpposite());
+         if (occluder == Shapes.empty()) {
+@@ -57,10 +_,16 @@
+         return isFaceOccludedByState(direction.getOpposite(), 1.0F, state);
+     }
+ 
++    /// @deprecated Neo: use [#shouldRenderFace(FluidState, BlockState, Direction, BlockState)] instead
++    @Deprecated
+     public static boolean shouldRenderFace(FluidState fluidState, BlockState blockState, Direction direction, FluidState neighborFluidState) {
+         return !isNeighborSameFluid(fluidState, neighborFluidState) && !isFaceOccludedBySelf(blockState, direction);
+     }
+ 
++    public static boolean shouldRenderFace(FluidState fluidState, BlockState selfState, Direction direction, BlockState otherState) {
++        return !isNeighborStateHidingOverlay(fluidState, otherState, direction.getOpposite()) && !isFaceOccludedBySelf(selfState, direction);
++    }
++
+     public void tesselate(BlockAndTintGetter level, BlockPos pos, FluidRenderer.Output output, BlockState blockState, FluidState fluidState) {
+         BlockState blockStateDown = level.getBlockState(pos.relative(Direction.DOWN));
+         FluidState fluidStateDown = blockStateDown.getFluidState();
+@@ -75,16 +_,16 @@
+         BlockState blockStateEast = level.getBlockState(pos.relative(Direction.EAST));
+         FluidState fluidStateEast = blockStateEast.getFluidState();
+         boolean renderUp = !isNeighborSameFluid(fluidState, fluidStateUp);
+-        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, fluidStateDown)
++        boolean renderDown = shouldRenderFace(fluidState, blockState, Direction.DOWN, blockStateDown)
+             && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockStateDown);
+-        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, fluidStateNorth);
+-        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, fluidStateSouth);
+-        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, fluidStateWest);
+-        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, fluidStateEast);
++        boolean renderNorth = shouldRenderFace(fluidState, blockState, Direction.NORTH, blockStateNorth);
++        boolean renderSouth = shouldRenderFace(fluidState, blockState, Direction.SOUTH, blockStateSouth);
++        boolean renderWest = shouldRenderFace(fluidState, blockState, Direction.WEST, blockStateWest);
++        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, blockStateEast);
+         if (renderUp || renderDown || renderEast || renderWest || renderNorth || renderSouth) {
+             FluidModel model = this.fluidModels.get(fluidState);
+             VertexConsumer builder = output.getBuilder(model.layer());
+-            int tintColor = model.tintSource() != null ? model.tintSource().colorInWorld(blockState, level, pos) : -1;
++            int tintColor = model.fluidTintSource() != null ? model.fluidTintSource().colorInWorld(fluidState, blockState, level, pos) : -1;
+             CardinalLighting cardinalLighting = level.cardinalLighting();
+             Fluid type = fluidState.getType();
+             float heightSelf = this.getHeight(level, type, pos, blockState, fluidState);
+@@ -290,8 +_,7 @@
+                     TextureAtlasSprite sprite = model.flowingMaterial().sprite();
+                     boolean isOverlay = false;
+                     if (model.overlayMaterial() != null) {
+-                        Block relativeBlock = faceState.getBlock();
+-                        if (relativeBlock instanceof HalfTransparentBlock || relativeBlock instanceof LeavesBlock) {
++                        if (faceState.shouldDisplayFluidOverlay(level, pos.relative(faceDir), fluidState)) {
+                             sprite = model.overlayMaterial().sprite();
+                             isOverlay = true;
+                         }

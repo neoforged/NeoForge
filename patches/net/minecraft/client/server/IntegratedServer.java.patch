@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -98,10 +_,12 @@
+@@ -98,11 +_,13 @@
          LOGGER.info("Starting integrated minecraft server version {}", SharedConstants.getCurrentVersion().name());
          this.setUsesAuthentication(true);
          this.initializeKeyPair();
@@ -9,11 +9,12 @@
          GameProfile host = this.getSingleplayerProfile();
          String levelName = this.getWorldData().getLevelName();
          this.setMotd(host != null ? host.name() + " - " + levelName : levelName);
+         this.saveEverything(false, true, true);
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
          return true;
      }
  
-@@ -258,6 +_,7 @@
+@@ -259,6 +_,7 @@
  
      @Override
      public void halt(boolean wait) {

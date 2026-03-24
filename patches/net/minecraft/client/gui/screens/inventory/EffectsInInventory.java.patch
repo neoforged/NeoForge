@@ -17,7 +17,7 @@
              int yStep = 33;
              if (activeEffects.size() > 5) {
                  yStep = 132 / (activeEffects.size() - 1);
-@@ -63,11 +_,14 @@
+@@ -65,11 +_,14 @@
          Font font = this.screen.getFont();
  
          for (MobEffectInstance effect : sortedEffects) {
@@ -25,31 +25,31 @@
              boolean isAmbient = effect.isAmbient();
              Component effectText = this.getEffectName(effect);
              Component duration = MobEffectUtil.formatDuration(effect, 1.0F, this.minecraft.level.tickRateManager().tickrate());
-             int textureWidth = this.renderBackground(graphics, font, effectText, duration, x0, y0, isAmbient, maxWidth);
--            this.renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
+             int textureWidth = this.extractBackground(graphics, font, effectText, duration, x0, y0, isAmbient, maxWidth);
+-            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
 +            if (!renderer.renderInventoryText(effect, screen, graphics, x0, y0, 0))
 +            this.renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
 +            if (!renderer.renderInventoryIcon(effect, screen, graphics, x0 + 7, y0, 0))
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
-@@ -83,9 +_,15 @@
+@@ -85,9 +_,15 @@
          return textureWidth;
      }
  
 +    // Neo: Call the method that takes the effect instance for which the text is being rendered
-     private void renderText(
-         GuiGraphics graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY
+     private void extractText(
+         GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY
      ) {
 +        renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, null);
 +    }
 +    private void renderText(
-+        GuiGraphics graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
++        GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
 +    ) {
          int textX = x0 + 32;
          int textY = y0 + 7;
          int maxTextWidth = textureWidth - 32 - 7;
-@@ -100,8 +_,15 @@
+@@ -102,8 +_,15 @@
              isCompact = true;
          }
  
