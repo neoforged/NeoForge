@@ -34,7 +34,31 @@
      private void verifyColorTexture(GpuTexture p_416690_) {
          if (!p_416690_.getFormat().hasColorAspect()) {
              throw new IllegalStateException("Trying to clear a non-color texture as color");
-@@ -672,8 +_,19 @@
+@@ -667,13 +_,43 @@
+             } else if (p_410735_.getDepthOrLayers() > 1) {
+                 throw new UnsupportedOperationException("Textures with multiple depths or layers are not yet supported for copying");
+             } else {
++                var sourceFormat = p_410700_.getFormat();
++                var destFormat = p_410735_.getFormat();
++
++                if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
++                    if (sourceFormat != destFormat) {
++                        throw new IllegalArgumentException(
++                                "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
++                                        + sourceFormat + ", Destination: " + destFormat
++                        );
++                    }
++                }
++
++                if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
++                    throw new IllegalArgumentException(
++                            "Source and destination texture formats must have consistent color aspects. Source: "
++                                    + sourceFormat + ", Destination: " + destFormat
++                    );
++                }
++
+                 GlStateManager.clearGlErrors();
+                 GlStateManager._disableScissorTest();
                  boolean flag = p_410700_.getFormat().hasDepthAspect();
                  int i = ((GlTexture)p_410700_).glId();
                  int j = ((GlTexture)p_410735_).glId();

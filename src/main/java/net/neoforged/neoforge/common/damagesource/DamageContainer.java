@@ -47,7 +47,9 @@ public class DamageContainer {
         /** Damage reduced from active mob effects. */
         MOB_EFFECTS,
         /** Damage absorbed by absorption. */
-        ABSORPTION
+        ABSORPTION,
+        /** Damage reduced from innate entity resistances or immunities. */
+        INNATE_RESISTANCE
     }
 
     private final EnumMap<Reduction, List<IReductionFunction>> reductionFunctions = new EnumMap<>(Reduction.class);
@@ -95,7 +97,7 @@ public class DamageContainer {
      * Adds a callback modifier to the vanilla damage reductions. Each function will be performed in sequence
      * on the vanilla value at the time the {@link DamageContainer.Reduction} type is set by vanilla.
      * <ul>
-     * <li>only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
+     * <li>only the {@link LivingIncomingDamageEvent}
      * happens early enough in the sequence for this method to have any effect.</li>
      * <li>if the vanilla reduction is not triggered, the reduction function will not execute.</li>
      * </ul>
