@@ -110,6 +110,6 @@ public final class PoiStateSet implements Set<BlockState> {
     }
 
     void addCustomStates(Set<BlockState> states) {
-        this.backingSet.addAll(states);
+        this.ownElements.addAll(states);
     }
 }
