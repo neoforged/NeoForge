@@ -12,7 +12,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.BucketResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 @Mod(MilkFluidTest.MODID)
 public class MilkFluidTest {
@@ -26,10 +28,15 @@ public class MilkFluidTest {
         }
     }
 
-    private static void useMilk(PlayerInteractEvent event) {
+    private static void useMilk(PlayerInteractEvent.RightClickItem event) {
+        if (event.getEntity().level().isClientSide()) return;
         ItemStack stack = event.getItemStack();
         if (stack.getItem() == Items.MILK_BUCKET) {
-            FluidUtil.getFluidContained(stack).ifPresent((fluid) -> event.getEntity().sendOverlayMessage(Component.literal("Contains ").append(fluid.getHoverName())));
+            var handler = new BucketResourceHandler(ItemAccess.forStack(stack));
+            var fluidStack = FluidUtil.getStack(handler, 0);
+            if (!fluidStack.isEmpty()) {
+                event.getEntity().sendOverlayMessage(Component.literal("Contains ").append(fluidStack.getHoverName()));
+            }
         }
     }
 }
