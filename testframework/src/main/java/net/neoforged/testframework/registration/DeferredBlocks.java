@@ -61,14 +61,6 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
         return (DeferredBlockBuilder<B>) super.registerBlock(name, func);
     }
 
-    /**
-     * @deprecated Use {@link #registerBlockWithBEType(String, BiFunction, TriFunction, Supplier)} instead.
-     */
-    @Deprecated(since = "1.21.10", forRemoval = true)
-    public <B extends Block, E extends BlockEntity> DeferredBlockBuilder<B> registerBlockWithBEType(String name, BiFunction<BlockBehaviour.Properties, Supplier<BlockEntityType<E>>, ? extends B> func, TriFunction<BlockEntityType<?>, BlockPos, BlockState, E> beType, BlockBehaviour.Properties props) {
-        return registerBlockWithBEType(name, func, beType, () -> props);
-    }
-
     public <B extends Block, E extends BlockEntity> DeferredBlockBuilder<B> registerBlockWithBEType(String name, BiFunction<BlockBehaviour.Properties, Supplier<BlockEntityType<E>>, ? extends B> func, TriFunction<BlockEntityType<?>, BlockPos, BlockState, E> beType) {
         return registerBlockWithBEType(name, func, beType, UnaryOperator.identity());
     }
