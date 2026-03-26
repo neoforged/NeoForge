@@ -188,8 +188,6 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Nastavte toto na hodnotu true, aby ste skontrolovali ohraničujúci rámček kolízie celej entity pre rebríky namiesto len bloku, v ktorom sa nachádzajú. Spôsobuje viditeľné zmeny v mechanike hry, takže predvolené je základné správanie. Predvolená hodnota: false.",
   "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
   "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
-  "neoforge.configgui.logLegacyTagWarnings": "Staré Log Značky",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási módované značky, ktoré používajú menný priestor 'forge' keď bežia na integrovanom servery. Predvolené do DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nepreložené Konfiguračné Log Kľúče",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási konfiguračné hodnoty ktoré nemajú preklady keď ide klient v developerskom prostredí.",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "Nepreložené Logy Známok Vecí",
