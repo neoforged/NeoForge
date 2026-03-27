@@ -9,16 +9,16 @@
 +     */
 +    @Deprecated
      public StructureTemplate.@Nullable StructureBlockInfo processBlock(
-         LevelReader p_74416_,
-         BlockPos p_74417_,
+         LevelReader level,
+         BlockPos targetPosition,
 @@ -29,5 +_,27 @@
-         StructurePlaceSettings p_277497_
+         StructurePlaceSettings settings
      ) {
-         return p_278053_;
+         return processedBlockInfoList;
 +    }
 +
-+    public StructureTemplate.@Nullable StructureBlockInfo process(LevelReader p_74140_, BlockPos p_74141_, BlockPos p_74142_, StructureTemplate.StructureBlockInfo p_74143_, StructureTemplate.StructureBlockInfo p_74144_, StructurePlaceSettings p_74145_, @Nullable StructureTemplate template) {
-+        return processBlock(p_74140_, p_74141_, p_74142_, p_74143_, p_74144_, p_74145_);
++    public StructureTemplate.@Nullable StructureBlockInfo process(LevelReader level, BlockPos targetPosition, BlockPos referencePos, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo processedBlockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
++        return processBlock(level, targetPosition, referencePos, originalBlockInfo, processedBlockInfo, settings);
 +    }
 +    /**
 +     * FORGE: Add entity processing.

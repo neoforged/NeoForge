@@ -8,8 +8,8 @@ package net.neoforged.neoforge.oldtest.block;
 import java.util.Locale;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.object.skull.SkullModel;
+import net.minecraft.client.renderer.block.BuiltInBlockModels;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
-import net.minecraft.client.renderer.special.SkullSpecialRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +32,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterSpecialBlockModelRendererEvent;
+import net.neoforged.neoforge.client.event.RegisterBlockModelsEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -131,12 +131,12 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
-            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, Identifier.withDefaultNamespace("textures/entity/blaze.png"));
+            event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, Identifier.withDefaultNamespace("textures/entity/blaze/blaze.png"));
         }
 
         @SubscribeEvent
-        static void registerSpecialBlockRenderer(RegisterSpecialBlockModelRendererEvent event) {
-            event.register(BLAZE_HEAD.get(), new SkullSpecialRenderer.Unbaked(SkullType.BLAZE));
+        static void registerSpecialBlockRenderer(RegisterBlockModelsEvent event) {
+            BuiltInBlockModels.createMobHeads(event.getBuilder(), SkullType.BLAZE, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get());
         }
     }
 }

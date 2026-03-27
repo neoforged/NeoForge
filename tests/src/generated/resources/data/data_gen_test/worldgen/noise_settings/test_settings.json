@@ -77,24 +77,8 @@
     "lava": 0.0,
     "preliminary_surface_level": 0.0,
     "ridges": 0.0,
-    "temperature": {
-      "type": "minecraft:shifted_noise",
-      "noise": "minecraft:temperature",
-      "shift_x": "minecraft:shift_x",
-      "shift_y": 0.0,
-      "shift_z": "minecraft:shift_z",
-      "xz_scale": 0.25,
-      "y_scale": 0.0
-    },
-    "vegetation": {
-      "type": "minecraft:shifted_noise",
-      "noise": "minecraft:vegetation",
-      "shift_x": "minecraft:shift_x",
-      "shift_y": 0.0,
-      "shift_z": "minecraft:shift_z",
-      "xz_scale": 0.25,
-      "y_scale": 0.0
-    },
+    "temperature": 0.0,
+    "vegetation": 0.0,
     "vein_gap": 0.0,
     "vein_ridged": 0.0,
     "vein_toggle": 0.0

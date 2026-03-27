@@ -33,8 +33,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -931,10 +932,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int p_281550_, int p_282878_, float p_282465_) {
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             setUndoButtonstate(undoManager.canUndo()); // in render()? Really? --- Yes! This is how vanilla does it.
             setResetButtonstate(isAnyNondefault());
-            super.render(graphics, p_281550_, p_282878_, p_282465_);
+            super.extractRenderState(graphics, mouseX, mouseY, a);
         }
 
         @Override
@@ -1229,9 +1230,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int p_281550_, int p_282878_, float p_282465_) {
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             doneButton.active = spec.test(cfgList);
-            super.render(graphics, p_281550_, p_282878_, p_282465_);
+            super.extractRenderState(graphics, mouseX, mouseY, a);
         }
 
         protected void onChanged(final String key) {
@@ -1272,7 +1273,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             protected final boolean isLast;
 
             public ListLabelWidget(final int x, final int y, final int width, final int height, final Component labelText, final int idx) {
-                super(x, y, width, height, labelText);
+                super(x, y, width, height, labelText, AbstractScrollArea.defaultSettings(font.lineHeight));
                 this.idx = idx;
                 this.isFirst = idx == 0;
                 this.isLast = idx + 1 == cfgList.size();
@@ -1351,16 +1352,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
 
             @Override
-            protected void renderWidget(final GuiGraphics pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
+            protected void extractWidgetRenderState(final GuiGraphicsExtractor pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
                 checkButtons();
-                label.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                label.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 if (!isFirst) {
-                    upButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                    upButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 }
                 if (!isLast) {
-                    downButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                    downButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 }
-                delButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                delButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             }
 
             protected void checkButtons() {

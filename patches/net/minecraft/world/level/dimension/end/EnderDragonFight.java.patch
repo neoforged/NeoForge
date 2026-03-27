@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/dimension/end/EnderDragonFight.java
++++ b/net/minecraft/world/level/dimension/end/EnderDragonFight.java
+@@ -581,6 +_,14 @@
+         }
+     }
+ 
++    public void addPlayer(ServerPlayer player) {
++        this.dragonEvent.addPlayer(player);
++    }
++
++    public void removePlayer(ServerPlayer player) {
++        this.dragonEvent.removePlayer(player);
++    }
++
+     public @Nullable UUID dragonUUID() {
+         return this.dragonUUID;
+     }

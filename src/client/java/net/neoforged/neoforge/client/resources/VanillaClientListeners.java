@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.CloudRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderManager;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -24,9 +23,9 @@ import net.minecraft.client.resources.GrassColorReloadListener;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.client.resources.WaypointStyleManager;
 import net.minecraft.client.resources.language.LanguageManager;
-import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -69,8 +68,6 @@ public class VanillaClientListeners {
     public static final Identifier MODELS = key(ModelManager.class);
 
     public static final Identifier EQUIPMENT_ASSETS = key(EquipmentAssetManager.class);
-
-    public static final Identifier BLOCK_RENDERER = key(BlockRenderDispatcher.class);
 
     public static final Identifier ENTITY_RENDERER = key(EntityRenderDispatcher.class);
 

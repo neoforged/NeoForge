@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
-@@ -83,4 +_,10 @@
+@@ -73,4 +_,10 @@
          );
-         p_439439_.popPose();
+         poseStack.popPose();
      }
 +
 +    @Override

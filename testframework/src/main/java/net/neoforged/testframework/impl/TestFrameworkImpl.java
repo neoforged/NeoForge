@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -36,6 +38,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -109,7 +112,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
             tests.initialiseDefaultEnabledTests();
 
             try {
-                structures.setup(event.getServer().getStructureManager());
+                HolderLookup.RegistryLookup<Block> blockLookup = server.registryAccess()
+                        .lookupOrThrow(Registries.BLOCK)
+                        .filterFeatures(server.getWorldData().enabledFeatures());
+                structures.setup(server.getStructureManager(), server.getFixerUpper(), blockLookup);
             } catch (Throwable exception) {
                 throw new RuntimeException(exception);
             }
@@ -174,7 +180,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         }
 
         this.playerTestStoreType = new SavedDataType<>(
-                "tests/" + id().getNamespace() + "_" + id().getPath(),
+                id().withPrefix("tests/"),
                 PlayerTestStore::new, PlayerTestStore.FACTORY);
     }
 

@@ -1,35 +1,35 @@
 --- a/net/minecraft/world/level/storage/loot/LootPool.java
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
-@@ -34,7 +_,8 @@
-                 LootItemCondition.DIRECT_CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(p_297992_ -> p_297992_.conditions),
-                 LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p_297994_ -> p_297994_.functions),
-                 NumberProviders.CODEC.fieldOf("rolls").forGetter(p_297993_ -> p_297993_.rolls),
--                NumberProviders.CODEC.fieldOf("bonus_rolls").orElse(ConstantValue.exactly(0.0F)).forGetter(p_297997_ -> p_297997_.bonusRolls)
-+                NumberProviders.CODEC.fieldOf("bonus_rolls").orElse(ConstantValue.exactly(0.0F)).forGetter(p_297997_ -> p_297997_.bonusRolls),
+@@ -32,7 +_,8 @@
+                 LootItemCondition.DIRECT_CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(p -> p.conditions),
+                 LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p -> p.functions),
+                 NumberProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
+-                NumberProviders.CODEC.fieldOf("bonus_rolls").orElse(ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls)
++                NumberProviders.CODEC.fieldOf("bonus_rolls").orElse(ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls),
 +                Codec.STRING.optionalFieldOf("name").forGetter(pool -> java.util.Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
              )
-             .apply(p_344669_, LootPool::new)
+             .apply(i, LootPool::new)
      );
-@@ -51,7 +_,8 @@
-         List<LootItemCondition> p_299316_,
-         List<LootItemFunction> p_298954_,
-         NumberProvider p_165131_,
--        NumberProvider p_165132_
-+        NumberProvider p_165132_,
+@@ -49,7 +_,8 @@
+         List<LootItemCondition> conditions,
+         List<LootItemFunction> functions,
+         NumberProvider rolls,
+-        NumberProvider bonusRolls
++        NumberProvider bonusRolls,
 +        java.util.Optional<String> name
      ) {
-         this.entries = p_298764_;
-         this.conditions = p_299316_;
-@@ -60,6 +_,7 @@
-         this.compositeFunction = LootItemFunctions.compose(p_298954_);
-         this.rolls = p_165131_;
-         this.bonusRolls = p_165132_;
+         this.entries = entries;
+         this.conditions = conditions;
+@@ -58,6 +_,7 @@
+         this.compositeFunction = LootItemFunctions.compose(functions);
+         this.rolls = rolls;
+         this.bonusRolls = bonusRolls;
 +        this.name = name.orElse(null);
      }
  
-     private void addRandomItem(Consumer<ItemStack> p_79059_, LootContext p_79060_) {
-@@ -123,6 +_,57 @@
-         this.bonusRolls.validate(p_79052_.forChild(new ProblemReporter.FieldPathElement("bonus_rolls")));
+     private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
+@@ -113,6 +_,57 @@
+         Validatable.validate(output, "bonus_rolls", this.bonusRolls);
      }
  
 +    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
@@ -86,16 +86,16 @@
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
-@@ -133,6 +_,8 @@
+@@ -123,6 +_,8 @@
          private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
          private NumberProvider rolls = ConstantValue.exactly(1.0F);
          private NumberProvider bonusRolls = ConstantValue.exactly(0.0F);
 +        @org.jspecify.annotations.Nullable
 +        private String name;
  
-         public LootPool.Builder setRolls(NumberProvider p_165134_) {
-             this.rolls = p_165134_;
-@@ -163,8 +_,13 @@
+         public LootPool.Builder setRolls(NumberProvider rolls) {
+             this.rolls = rolls;
+@@ -153,8 +_,13 @@
              return this;
          }
  

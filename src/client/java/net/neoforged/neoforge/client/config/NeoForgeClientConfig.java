@@ -10,6 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.TagConventionLogWarningClient;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
@@ -26,6 +27,8 @@ public final class NeoForgeClientConfig {
     boolean enhancedLightingActive;
 
     public final ModConfigSpec.BooleanValue showLoadWarnings;
+
+    public final ModConfigSpec.EnumValue<TagConventionLogWarningClient.LogWarningMode> logUntranslatedItemTagWarnings;
 
     public final ModConfigSpec.BooleanValue logUntranslatedConfigurationWarnings;
 
@@ -51,6 +54,11 @@ public final class NeoForgeClientConfig {
                 .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
                 .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
                 .define("logUntranslatedConfigurationWarnings", true);
+
+        logUntranslatedItemTagWarnings = builder
+                .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
+                .translation("neoforge.configgui.logUntranslatedItemTagWarnings")
+                .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarningClient.LogWarningMode.SILENCED);
 
         reducedDepthStencilFormat = builder
                 .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.")

@@ -289,13 +289,13 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 }
 
                 @Override
-                public <T> Optional<? extends HolderLookup.RegistryLookup<T>> lookup(ResourceKey<? extends Registry<? extends T>> p_256285_) {
-                    return registries.lookup(p_256285_);
+                public <T> Optional<? extends HolderLookup.RegistryLookup<T>> lookup(ResourceKey<? extends Registry<? extends T>> key) {
+                    return registries.lookup(key);
                 }
 
                 @Override
-                public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> p_326817_) {
-                    return RegistryOps.create(p_326817_, new RegistryOps.RegistryInfoLookup() {
+                public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
+                    return RegistryOps.create(parent, new RegistryOps.RegistryInfoLookup() {
                         @Override
                         public <T> Optional<RegistryOps.RegistryInfo<T>> lookup(ResourceKey<? extends Registry<? extends T>> registry) {
                             var builtInRegistry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.identifier());
@@ -308,8 +308,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                                         }
 
                                         @Override
-                                        public boolean canSerializeIn(HolderOwner<T> p_255875_) {
-                                            return parent().canSerializeIn(p_255875_);
+                                        public boolean canSerializeIn(HolderOwner<T> context) {
+                                            return parent().canSerializeIn(context);
                                         }
 
                                         @Override
@@ -379,7 +379,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         }
 
         public boolean clearTypeIfMatches(EntityType<?> type) {
-            if (entityType.isPresent() && entityType.get().matches(type)) {
+            if (entityType.isPresent() && entityType.get().matches(type.builtInRegistryHolder())) {
                 entityType = Optional.empty();
                 return true;
             }

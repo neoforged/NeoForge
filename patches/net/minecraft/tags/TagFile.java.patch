@@ -1,19 +1,19 @@
 --- a/net/minecraft/tags/TagFile.java
 +++ b/net/minecraft/tags/TagFile.java
-@@ -5,11 +_,18 @@
- import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+@@ -4,11 +_,18 @@
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
  import java.util.List;
  
 -public record TagFile(List<TagEntry> entries, boolean replace) {
 +public record TagFile(List<TagEntry> entries, boolean replace, List<TagEntry> remove) {
      public static final Codec<TagFile> CODEC = RecordCodecBuilder.create(
-         p_215967_ -> p_215967_.group(
+         i -> i.group(
 -                TagEntry.CODEC.listOf().fieldOf("values").forGetter(TagFile::entries), Codec.BOOL.optionalFieldOf("replace", false).forGetter(TagFile::replace)
 +                TagEntry.CODEC.listOf().fieldOf("values").forGetter(TagFile::entries),
 +                Codec.BOOL.optionalFieldOf("replace", false).forGetter(TagFile::replace),
 +                TagEntry.CODEC.listOf().optionalFieldOf("remove", List.of()).forGetter(TagFile::remove)
              )
-             .apply(p_215967_, TagFile::new)
+             .apply(i, TagFile::new)
      );
 +
 +    // Neo: Preserve vanilla constructor

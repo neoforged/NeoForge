@@ -10,9 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -29,7 +27,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addTags(HolderLookup.Provider p_256380_) {
+    public void addTags(HolderLookup.Provider registries) {
         tag(Tags.Blocks.BARRELS).addTag(Tags.Blocks.BARRELS_WOODEN);
         tag(Tags.Blocks.BARRELS_WOODEN).add(Blocks.BARREL);
         tag(Tags.Blocks.BOOKSHELVES).add(Blocks.BOOKSHELF);
@@ -188,134 +186,6 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.INCORRECT_FOR_IRON_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
         tag(BlockTags.INCORRECT_FOR_GOLD_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
         tag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
-
-        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
-        // TODO: Remove backwards compat tag entries in 1.22
-        tagWithOptionalLegacy(Tags.Blocks.BARRELS);
-        tagWithOptionalLegacy(Tags.Blocks.BARRELS_WOODEN);
-        tagWithOptionalLegacy(Tags.Blocks.BOOKSHELVES);
-        tagWithOptionalLegacy(Tags.Blocks.CHESTS);
-        tagWithOptionalLegacy(Tags.Blocks.CHESTS_ENDER);
-        tagWithOptionalLegacy(Tags.Blocks.CHESTS_TRAPPED);
-        tagWithOptionalLegacy(Tags.Blocks.CHESTS_WOODEN);
-        tag(Tags.Blocks.COBBLESTONES).addOptionalTag(forge("cobblestone"));
-        tag(Tags.Blocks.COBBLESTONES_NORMAL).addOptionalTag(forge("cobblestone/normal"));
-        tag(Tags.Blocks.COBBLESTONES_INFESTED).addOptionalTag(forge("cobblestone/infested"));
-        tag(Tags.Blocks.COBBLESTONES_MOSSY).addOptionalTag(forge("cobblestone/mossy"));
-        tag(Tags.Blocks.COBBLESTONES_DEEPSLATE).addOptionalTag(forge("cobblestone/deepslate"));
-        tag(Tags.Blocks.DYED_BLACK)
-                .addOptionalTag(forge("glass/black"))
-                .addOptionalTag(forge("stained_glass/black"));
-        tag(Tags.Blocks.DYED_BLUE)
-                .addOptionalTag(forge("glass/blue"))
-                .addOptionalTag(forge("stained_glass/blue"));
-        tag(Tags.Blocks.DYED_BROWN)
-                .addOptionalTag(forge("glass/brown"))
-                .addOptionalTag(forge("stained_glass/brown"));
-        tag(Tags.Blocks.DYED_CYAN)
-                .addOptionalTag(forge("glass/cyan"))
-                .addOptionalTag(forge("stained_glass/cyan"));
-        tag(Tags.Blocks.DYED_GRAY)
-                .addOptionalTag(forge("glass/gray"))
-                .addOptionalTag(forge("stained_glass/gray"));
-        tag(Tags.Blocks.DYED_GREEN)
-                .addOptionalTag(forge("glass/green"))
-                .addOptionalTag(forge("stained_glass/green"));
-        tag(Tags.Blocks.DYED_LIGHT_BLUE)
-                .addOptionalTag(forge("glass/light_blue"))
-                .addOptionalTag(forge("stained_glass/light_blue"));
-        tag(Tags.Blocks.DYED_LIGHT_GRAY)
-                .addOptionalTag(forge("glass/light_gray"))
-                .addOptionalTag(forge("stained_glass/light_gray"));
-        tag(Tags.Blocks.DYED_LIME)
-                .addOptionalTag(forge("glass/lime"))
-                .addOptionalTag(forge("stained_glass/lime"));
-        tag(Tags.Blocks.DYED_MAGENTA)
-                .addOptionalTag(forge("glass/magenta"))
-                .addOptionalTag(forge("stained_glass/magenta"));
-        tag(Tags.Blocks.DYED_MAGENTA)
-                .addOptionalTag(forge("glass/magenta"))
-                .addOptionalTag(forge("stained_glass/magenta"));
-        tag(Tags.Blocks.DYED_ORANGE)
-                .addOptionalTag(forge("glass/orange"))
-                .addOptionalTag(forge("stained_glass/orange"));
-        tag(Tags.Blocks.DYED_PINK)
-                .addOptionalTag(forge("glass/pink"))
-                .addOptionalTag(forge("stained_glass/pink"));
-        tag(Tags.Blocks.DYED_PURPLE)
-                .addOptionalTag(forge("glass/purple"))
-                .addOptionalTag(forge("stained_glass/purple"));
-        tag(Tags.Blocks.DYED_RED)
-                .addOptionalTag(forge("glass/red"))
-                .addOptionalTag(forge("stained_glass/red"));
-        tag(Tags.Blocks.DYED_WHITE)
-                .addOptionalTag(forge("glass/white"))
-                .addOptionalTag(forge("stained_glass/white"));
-        tag(Tags.Blocks.DYED_YELLOW)
-                .addOptionalTag(forge("glass/yellow"))
-                .addOptionalTag(forge("stained_glass/yellow"));
-        tagWithOptionalLegacy(Tags.Blocks.END_STONES);
-        tagWithOptionalLegacy(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST);
-        tagWithOptionalLegacy(Tags.Blocks.FENCE_GATES);
-        tagWithOptionalLegacy(Tags.Blocks.FENCE_GATES_WOODEN);
-        tagWithOptionalLegacy(Tags.Blocks.FENCES);
-        tagWithOptionalLegacy(Tags.Blocks.FENCES_NETHER_BRICK);
-        tagWithOptionalLegacy(Tags.Blocks.FENCES_WOODEN);
-        tag(Tags.Blocks.GRAVELS).addOptionalTag(forge("gravel"));
-        tag(Tags.Blocks.GLASS_BLOCKS).addOptionalTag(forge("glass"));
-        tag(Tags.Blocks.GLASS_BLOCKS_COLORLESS).addOptionalTag(forge("glass_colorless"));
-        tag(Tags.Blocks.GLASS_BLOCKS_CHEAP).addOptionalTag(forge("glass_silica"));
-        tag(Tags.Blocks.GLASS_BLOCKS_TINTED).addOptionalTag(forge("glass_tinted"));
-        tag(Tags.Blocks.GLASS_PANES_COLORLESS).addOptionalTag(forge("glass_panes_colorless"));
-        tag(Tags.Blocks.NETHERRACKS).addOptionalTag(forge("netherrack"));
-        tag(Tags.Blocks.OBSIDIANS).addOptionalTag(forge("obsidian"));
-        tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE);
-        tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK);
-        tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_STONE);
-        tagWithOptionalLegacy(Tags.Blocks.ORE_RATES_DENSE);
-        tagWithOptionalLegacy(Tags.Blocks.ORE_RATES_SINGULAR);
-        tagWithOptionalLegacy(Tags.Blocks.ORE_RATES_SPARSE);
-        tagWithOptionalLegacy(Tags.Blocks.ORES);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_COAL);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_COPPER);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_DIAMOND);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_EMERALD);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_GOLD);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_IRON);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_LAPIS);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_QUARTZ);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_REDSTONE);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_NETHERITE_SCRAP);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_NETHERRACK);
-        tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_STONE);
-        tag(Tags.Blocks.STONES).addOptionalTag(forge("stone"));
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COAL);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COPPER);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_DIAMOND);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_EMERALD);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_GOLD);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_IRON);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_LAPIS);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_RAW_COPPER);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_REDSTONE);
-        tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_NETHERITE);
-        tag(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
-                .addOptionalTag(forge("relocation_not_supported"))
-                .addOptionalTag(forge("immovable"));
-        tag(Tags.Blocks.SANDSTONE_BLOCKS).addOptionalTag(forge("sandstone"));
-        tag(Tags.Blocks.SANDS).addOptionalTag(forge("sand"));
-        tag(Tags.Blocks.SANDS_COLORLESS).addOptionalTag(forge("sand/colorless"));
-        tag(Tags.Blocks.SANDS_RED).addOptionalTag(forge("sand/red"));
-    }
-
-    private TagAppender<Block, Block> tagWithOptionalLegacy(TagKey<Block> tag) {
-        TagAppender<Block, Block> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(forge(tag.location().getPath()));
-        return tagAppender;
     }
 
     private void addColored(TagKey<Block> group, String pattern) {
@@ -346,9 +216,5 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
-    }
-
-    private TagKey<Block> forge(String id) {
-        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("forge", id));
     }
 }

@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -167,7 +_,12 @@
-         return new ObjectArrayList<>(set);
+         return new ObjectArrayList<>(toBlowSet);
      }
  
 +    @Deprecated
@@ -11,33 +11,33 @@
 +
 +    private void hurtEntities(List<BlockPos> blocks) {
          if (!(this.radius < 1.0E-5F)) {
-             float f = this.radius * 2.0F;
-             int i = Mth.floor(this.center.x - f - 1.0);
+             float doubleRadius = this.radius * 2.0F;
+             int x0 = Mth.floor(this.center.x - doubleRadius - 1.0);
 @@ -177,7 +_,9 @@
-             int i1 = Mth.floor(this.center.z - f - 1.0);
-             int j1 = Mth.floor(this.center.z + f + 1.0);
+             int z0 = Mth.floor(this.center.z - doubleRadius - 1.0);
+             int z1 = Mth.floor(this.center.z + doubleRadius + 1.0);
  
--            for (Entity entity : this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1))) {
-+        List<Entity> list = this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1));
-+        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, blocks);
-+        for (Entity entity : list) {
+-            for (Entity entity : this.level.getEntities(this.source, new AABB(x0, y0, z0, x1, y1, z1))) {
++            List<Entity> list = this.level.getEntities(this.source, new AABB(x0, y0, z0, x1, y1, z1));
++            net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, blocks);
++            for (Entity entity : list) {
                  if (!entity.ignoreExplosion(this)) {
-                     double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / f;
-                     if (!(d0 > 1.0)) {
+                     double dist = Math.sqrt(entity.distanceToSqr(this.center)) / doubleRadius;
+                     if (!(dist > 1.0)) {
 @@ -195,6 +_,7 @@
                              : 0.0;
-                         double d2 = (1.0 - d0) * f2 * f1 * (1.0 - d1);
-                         Vec3 vec32 = vec31.scale(d2);
-+                        vec32 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec32, blocks);
-                         entity.push(vec32);
-                         if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
+                         double knockbackPower = (1.0 - dist) * exposure * knockbackMultiplier * (1.0 - knockbackResistance);
+                         Vec3 knockback = direction.scale(knockbackPower);
++                        knockback = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, knockback, blocks);
+                         entity.push(knockback);
+                         if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
                              projectile.setOwner(this.damageSource.getEntity());
-@@ -235,7 +_,7 @@
+@@ -233,7 +_,7 @@
      public int explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
-         List<BlockPos> list = this.calculateExplodedPositions();
+         List<BlockPos> toBlow = this.calculateExplodedPositions();
 -        this.hurtEntities();
-+        this.hurtEntities(list);
++        this.hurtEntities(toBlow);
          if (this.interactsWithBlocks()) {
-             ProfilerFiller profilerfiller = Profiler.get();
-             profilerfiller.push("explosion_blocks");
+             ProfilerFiller profiler = Profiler.get();
+             profiler.push("explosion_blocks");

@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.client.model;
 
-import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.QuadCollection;
-import net.minecraft.client.resources.model.UnbakedGeometry;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.geometry.UnbakedGeometry;
+import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.util.context.ContextMap;
 import net.neoforged.neoforge.client.extensions.UnbakedModelExtension;
 
@@ -21,8 +21,8 @@ import net.neoforged.neoforge.client.extensions.UnbakedModelExtension;
 @FunctionalInterface
 public interface ExtendedUnbakedGeometry extends UnbakedGeometry {
     @Override
-    default QuadCollection bake(TextureSlots p_405831_, ModelBaker p_405026_, ModelState p_405122_, ModelDebugName p_405635_) {
-        return bake(p_405831_, p_405026_, p_405122_, p_405635_, ContextMap.EMPTY);
+    default QuadCollection bake(TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName name) {
+        return bake(textureSlots, modelBaker, modelState, name, ContextMap.EMPTY);
     }
 
     // Re-abstract the extended version

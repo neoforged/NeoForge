@@ -3,9 +3,9 @@
 @@ -10,6 +_,7 @@
  
      @Override
-     public boolean mayPlace(ItemStack p_40207_) {
--        return p_40207_.getItem().canFitInsideContainerItems();
+     public boolean mayPlace(ItemStack itemStack) {
+-        return itemStack.getItem().canFitInsideContainerItems();
 +        // Neo: stack-aware placeability check
-+        return p_40207_.canFitInsideContainerItems();
++        return itemStack.canFitInsideContainerItems();
      }
  }

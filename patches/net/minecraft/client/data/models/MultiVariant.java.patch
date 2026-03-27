@@ -39,11 +39,11 @@
 +        return new MultiVariant(WeightedList.of(), WeightedList.of(customBlockStateModel));
      }
  
-     public MultiVariant with(VariantMutator p_409928_) {
+     public MultiVariant with(VariantMutator mutator) {
 +        if (!this.customBlockStateModels.isEmpty()) {
-+            return new MultiVariant(this.variants, this.customBlockStateModels.map(model -> model.with(p_409928_)));
++            return new MultiVariant(this.variants, this.customBlockStateModels.map(model -> model.with(mutator)));
 +        }
-         return new MultiVariant(this.variants.map(p_409928_));
+         return new MultiVariant(this.variants.map(mutator));
      }
  
 +    /**
@@ -67,6 +67,6 @@
 +            }
 +            return new WeightedVariants.Unbaked(this.customBlockStateModels.map(net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder::toUnbaked));
 +        }
-         List<Weighted<Variant>> list = this.variants.unwrap();
-         return (BlockStateModel.Unbaked)(list.size() == 1
-             ? new SingleVariant.Unbaked(list.getFirst().value())
+         List<Weighted<Variant>> entries = this.variants.unwrap();
+         return (BlockStateModel.Unbaked)(entries.size() == 1
+             ? new SingleVariant.Unbaked(entries.getFirst().value())

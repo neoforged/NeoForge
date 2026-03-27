@@ -29,10 +29,6 @@ class NeoDevConfigurations {
      */
     final Configuration neoFormData;
     /**
-     * Only the NeoForm mappings file.
-     */
-    final Configuration neoFormMappings;
-    /**
      * Only the NeoForm dependencies.
      * These are the dependencies required to run NeoForm-decompiled Minecraft.
      * Does not contain the dependencies to run the NeoForm process itself.
@@ -64,12 +60,6 @@ class NeoDevConfigurations {
     // Resolvable configurations.
     //
 
-    /**
-     * Resolved {@link #neoFormMappings}.
-     * This is used to add the parameter mappings file from NeoForm to the installer libraries.
-     * Only the mappings file is used, not the entire data file or the NeoForm tools, so it's not transitive.
-     */
-    final Configuration neoFormMappingsFiles;
     /**
      * Resolvable {@link #neoFormDependencies}.
      */
@@ -127,14 +117,12 @@ class NeoDevConfigurations {
         var configurations = project.getConfigurations();
 
         neoFormData = dependencyScope(configurations, "neoFormData");
-        neoFormMappings = dependencyScope(configurations, "neoFormMappings");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
         minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");
 
-        neoFormMappingsFiles = resolvable(configurations, "neoFormMappingsFiles");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
@@ -149,9 +137,6 @@ class NeoDevConfigurations {
         // runtimeClasspath is our reference for all MC dependency versions.
         // Make sure that any classpath we resolve is consistent with it.
         var runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-
-        neoFormMappingsFiles.setTransitive(false);
-        neoFormMappingsFiles.extendsFrom(neoFormMappings);
 
         neoFormClasspath.extendsFrom(neoFormDependencies);
 

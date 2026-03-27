@@ -18,33 +18,33 @@ public class ExtendedSequence extends GameTestSequence {
     }
 
     @Override
-    public ExtendedSequence thenWaitUntil(Runnable p_177553_) {
-        return (ExtendedSequence) super.thenWaitUntil(p_177553_);
+    public ExtendedSequence thenWaitUntil(Runnable assertion) {
+        return (ExtendedSequence) super.thenWaitUntil(assertion);
     }
 
     @Override
-    public ExtendedSequence thenWaitUntil(long p_177550_, Runnable p_177551_) {
-        return (ExtendedSequence) super.thenWaitUntil(p_177550_, p_177551_);
+    public ExtendedSequence thenWaitUntil(long expectedDelay, Runnable assertion) {
+        return (ExtendedSequence) super.thenWaitUntil(expectedDelay, assertion);
     }
 
     @Override
-    public ExtendedSequence thenIdle(int p_177545_) {
-        return (ExtendedSequence) super.thenIdle(p_177545_);
+    public ExtendedSequence thenIdle(int delta) {
+        return (ExtendedSequence) super.thenIdle(delta);
     }
 
     @Override
-    public ExtendedSequence thenExecute(Runnable p_177563_) {
-        return (ExtendedSequence) super.thenExecute(p_177563_);
+    public ExtendedSequence thenExecute(Runnable assertion) {
+        return (ExtendedSequence) super.thenExecute(assertion);
     }
 
     @Override
-    public ExtendedSequence thenExecuteAfter(int p_177547_, Runnable p_177548_) {
-        return (ExtendedSequence) super.thenExecuteAfter(p_177547_, p_177548_);
+    public ExtendedSequence thenExecuteAfter(int delta, Runnable after) {
+        return (ExtendedSequence) super.thenExecuteAfter(delta, after);
     }
 
     @Override
-    public ExtendedSequence thenExecuteFor(int p_177560_, Runnable p_177561_) {
-        return (ExtendedSequence) super.thenExecuteFor(p_177560_, p_177561_);
+    public ExtendedSequence thenExecuteFor(int delta, Runnable check) {
+        return (ExtendedSequence) super.thenExecuteFor(delta, check);
     }
 
     public <T> ParametrizedGameTestSequence<T> thenMap(Supplier<T> value) {

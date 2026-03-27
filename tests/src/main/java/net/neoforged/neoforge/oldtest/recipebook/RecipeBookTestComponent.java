@@ -32,8 +32,8 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
             new RecipeBookComponent.TabInfo(new ItemStack(Items.COMPASS), Optional.empty(), RecipeBookExtensionTest.SEARCH_CATEGORY),
             new RecipeBookComponent.TabInfo(Items.DIAMOND, RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT1.get()));
 
-    public RecipeBookTestComponent(RecipeBookTestMenu p_365070_) {
-        super(p_365070_, TABS);
+    public RecipeBookTestComponent(RecipeBookTestMenu menu) {
+        super(menu, TABS);
     }
 
     @Override
@@ -42,14 +42,14 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
     }
 
     @Override
-    protected boolean isCraftingSlot(Slot p_361241_) {
-        int i = p_361241_.index;
+    protected boolean isCraftingSlot(Slot slot) {
+        int i = slot.index;
         return i == RecipeBookTestMenu.RESULT_SLOT || (RecipeBookTestMenu.CRAFTING_START <= i && i <= RecipeBookTestMenu.CRAFTING_STOP);
     }
 
     @Override
-    protected void selectMatchingRecipes(RecipeCollection p_360862_, StackedItemContents p_363036_) {
-        p_360862_.selectRecipes(p_363036_, display -> true);
+    protected void selectMatchingRecipes(RecipeCollection collection, StackedItemContents stackedContents) {
+        collection.selectRecipes(stackedContents, display -> true);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
     }
 
     @Override
-    protected void fillGhostRecipe(GhostSlots p_380075_, RecipeDisplay display, ContextMap p_381016_) {
-        p_380075_.setResult(this.menu.resultSlot, p_381016_, display.result());
+    protected void fillGhostRecipe(GhostSlots ghostSlots, RecipeDisplay display, ContextMap context) {
+        ghostSlots.setResult(this.menu.resultSlot, context, display.result());
         if (display instanceof ShapedCraftingRecipeDisplay shapedcraftingrecipedisplay) {
             List<Slot> list1 = this.menu.getGridSlots();
             PlaceRecipeHelper.placeRecipe(
@@ -68,9 +68,9 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
                     shapedcraftingrecipedisplay.width(),
                     shapedcraftingrecipedisplay.height(),
                     shapedcraftingrecipedisplay.ingredients(),
-                    (p_380786_, p_380787_, p_380788_, p_380789_) -> {
-                        Slot slot = list1.get(p_380787_);
-                        p_380075_.setInput(slot, p_381016_, p_380786_);
+                    (ingredient, gridIndex, gridXPos, gridYPos) -> {
+                        Slot slot = list1.get(gridIndex);
+                        ghostSlots.setInput(slot, context, ingredient);
                     });
         }
     }

@@ -1,7 +1,7 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -41,4 +_,8 @@
-             ProtocolSwapHandler.handleOutboundTerminalPacket(p_130545_, p_130546_);
+@@ -46,4 +_,8 @@
+             ProtocolSwapHandler.handleOutboundTerminalPacket(ctx, packet);
          }
      }
 +

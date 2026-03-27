@@ -88,7 +88,7 @@ public class ForcedChunkManager {
 
         TicketStorage saveData = level.getDataStorage().computeIfAbsent(TicketStorage.TYPE);
         ChunkPos pos = new ChunkPos(chunkX, chunkZ);
-        long chunk = pos.toLong();
+        long chunk = pos.pack();
         TicketTracker<T> tickets = ticketGetter.apply(saveData);
         TicketOwner<T> ticketOwner = new TicketOwner<>(id, owner);
         if (add) {

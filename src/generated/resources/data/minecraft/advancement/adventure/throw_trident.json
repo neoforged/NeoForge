@@ -27,7 +27,6 @@
       "translate": "advancements.adventure.throw_trident.description"
     },
     "icon": {
-      "count": 1,
       "id": "minecraft:trident"
     },
     "title": {

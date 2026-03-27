@@ -38,26 +38,26 @@
 +    }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
 +        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHEARS_ACTIONS.contains(itemAbility);
 +    }
 +
      @Override
-     public InteractionResult useOn(UseOnContext p_186371_) {
-         Level level = p_186371_.getLevel();
-         BlockPos blockpos = p_186371_.getClickedPos();
-         BlockState blockstate = level.getBlockState(blockpos);
--        if (blockstate.getBlock() instanceof GrowingPlantHeadBlock growingplantheadblock && !growingplantheadblock.isMaxAge(blockstate)) {
-+        BlockState blockstate1 = blockstate.getToolModifiedState(p_186371_, net.neoforged.neoforge.common.ItemAbilities.SHEARS_TRIM, false);
-+        if (blockstate1 != null) {
-             Player player = p_186371_.getPlayer();
-             ItemStack itemstack = p_186371_.getItemInHand();
+     public InteractionResult useOn(UseOnContext context) {
+         Level level = context.getLevel();
+         BlockPos pos = context.getClickedPos();
+         BlockState state = level.getBlockState(pos);
+-        if (state.getBlock() instanceof GrowingPlantHeadBlock plantBlock && !plantBlock.isMaxAge(state)) {
++        BlockState newState = state.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHEARS_TRIM, false);
++        if (newState != null) {
+             Player player = context.getPlayer();
+             ItemStack itemInHand = context.getItemInHand();
              if (player instanceof ServerPlayer) {
-                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer)player, blockpos, itemstack);
+                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer)player, pos, itemInHand);
              }
  
--            level.playSound(player, blockpos, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
--            BlockState blockstate1 = growingplantheadblock.getMaxAgeState(blockstate);
-             level.setBlockAndUpdate(blockpos, blockstate1);
-             level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(p_186371_.getPlayer(), blockstate1));
+-            level.playSound(player, pos, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+-            BlockState newState = plantBlock.getMaxAgeState(state);
+             level.setBlockAndUpdate(pos, newState);
+             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(context.getPlayer(), newState));
              if (player != null) {

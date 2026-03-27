@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,8 +50,10 @@ import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.WorldDimensions;
+import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
+import net.minecraft.world.level.storage.LevelDataAndDimensions;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.neoforged.fml.loading.FMLLoader;
@@ -116,7 +119,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 LevelStorageSource storage = LevelStorageSource.createDefault(tempDir.resolve("world"));
                 LevelStorageSource.LevelStorageAccess storageAccess = storage.validateAndCreateAccess("main");
                 PackRepository packrepository = ServerPacksSource.createPackRepository(storageAccess);
-                final MinecraftServer server = MinecraftServer.spin(
+                JUnitServer server = MinecraftServer.spin(
                         thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository));
 
                 FMLLoader.getCurrent().addCloseCallback(() -> {
@@ -155,7 +158,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
             WorldDataConfiguration config = new WorldDataConfiguration(
                     new DataPackConfig(new ArrayList<>(resources.getAvailableIds()), List.of()), FeatureFlags.REGISTRY.allFlags());
             LevelSettings levelsettings = new LevelSettings(
-                    "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, config);
+                    "Test Level", GameType.CREATIVE, new LevelSettings.DifficultySettings(Difficulty.NORMAL, false, false), true, config);
             WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(resources, config, false, true);
             WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, LevelBasedPermissionSet.OWNER);
 
@@ -167,15 +170,17 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                                 worldloader$initconfig,
                                 ctx -> {
                                     Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
-                                    WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
+                                    WorldDimensions worldDimensions = ctx.datapackWorldgen()
                                             .lookupOrThrow(Registries.WORLD_PRESET)
                                             .getOrThrow(WorldPresets.FLAT)
                                             .value()
-                                            .createWorldDimensions()
-                                            .bake(registry);
+                                            .createWorldDimensions();
+                                    WorldDimensions.Complete worlddimensions$complete = worldDimensions.bake(registry);
+                                    LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings = new LevelDataAndDimensions.WorldDataAndGenSettings(
+                                            new PrimaryLevelData(levelsettings, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
+                                            new WorldGenSettings(WORLD_OPTIONS, worldDimensions));
                                     return new WorldLoader.DataLoadOutput<>(
-                                            new PrimaryLevelData(
-                                                    levelsettings, WORLD_OPTIONS, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
+                                            worldDataAndGenSettings,
                                             worlddimensions$complete.dimensionsRegistryAccess());
                                 },
                                 WorldStem::new,
@@ -201,7 +206,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 PackRepository pack,
                 WorldStem stem,
                 Path tempDir) {
-            super(thread, access, pack, stem, Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer());
+            super(thread, access, pack, stem, Optional.of(TEST_GAME_RULES), Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer(), true);
             this.tempDir = tempDir;
         }
 
@@ -227,7 +232,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         @Override
-        public boolean saveEverything(boolean p_195515_, boolean p_195516_, boolean p_195517_) {
+        public boolean saveEverything(boolean silent, boolean flush, boolean force) {
             // The server is ephemeral
             return false;
         }
@@ -305,7 +310,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         @Override
-        public boolean isSingleplayerOwner(NameAndId p_433457_) {
+        public boolean isSingleplayerOwner(NameAndId nameAndId) {
             return false;
         }
 

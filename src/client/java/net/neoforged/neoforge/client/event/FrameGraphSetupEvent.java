@@ -11,13 +11,14 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 /**
  * Fired when the {@linkplain FrameGraphBuilder frame graph} is set up at the start of level rendering, right before
@@ -33,9 +34,8 @@ public final class FrameGraphSetupEvent extends Event {
     private final LevelTargetBundle targets;
     private final RenderTargetDescriptor renderTargetDescriptor;
     private final Frustum frustum;
-    private final Camera camera;
-    private final Matrix4f modelViewMatrix;
-    private final Matrix4f projectionMatrix;
+    private final CameraRenderState cameraState;
+    private final Matrix4fc modelViewMatrix;
     private final DeltaTracker deltaTracker;
     private final ProfilerFiller profiler;
     private boolean enableOutline;
@@ -45,19 +45,16 @@ public final class FrameGraphSetupEvent extends Event {
             FrameGraphBuilder builder,
             LevelTargetBundle targets,
             RenderTargetDescriptor renderTargetDescriptor,
-            Frustum frustum,
-            Camera camera,
-            Matrix4f modelViewMatrix,
-            Matrix4f projectionMatrix,
+            CameraRenderState cameraState,
+            Matrix4fc modelViewMatrix,
             DeltaTracker deltaTracker,
             ProfilerFiller profiler) {
         this.builder = builder;
         this.targets = targets;
         this.renderTargetDescriptor = renderTargetDescriptor;
-        this.frustum = frustum;
-        this.camera = camera;
+        this.frustum = cameraState.cullFrustum;
+        this.cameraState = cameraState;
         this.modelViewMatrix = modelViewMatrix;
-        this.projectionMatrix = projectionMatrix;
         this.deltaTracker = deltaTracker;
         this.profiler = profiler;
     }
@@ -91,24 +88,17 @@ public final class FrameGraphSetupEvent extends Event {
     }
 
     /**
-     * {@return the active {@link Camera}}
+     * {@return the {@link CameraRenderState}} extracted from the active {@link Camera}
      */
-    public Camera getCamera() {
-        return camera;
+    public CameraRenderState getCameraState() {
+        return cameraState;
     }
 
     /**
      * {@return the model view matrix}
      */
-    public Matrix4f getModelViewMatrix() {
+    public Matrix4fc getModelViewMatrix() {
         return modelViewMatrix;
-    }
-
-    /**
-     * {@return the projection matrix}
-     */
-    public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
     }
 
     /**

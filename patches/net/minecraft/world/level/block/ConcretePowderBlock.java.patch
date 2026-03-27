@@ -1,49 +1,49 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -36,7 +_,7 @@
+@@ -35,7 +_,7 @@
  
      @Override
-     public void onLand(Level p_52068_, BlockPos p_52069_, BlockState p_52070_, BlockState p_52071_, FallingBlockEntity p_52072_) {
--        if (shouldSolidify(p_52068_, p_52069_, p_52071_)) {
-+        if (shouldSolidify(p_52068_, p_52069_, p_52070_, p_52071_.getFluidState())) { // Forge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
-             p_52068_.setBlock(p_52069_, this.concrete.defaultBlockState(), 3);
+     public void onLand(Level level, BlockPos pos, BlockState state, BlockState replacedBlock, FallingBlockEntity entity) {
+-        if (shouldSolidify(level, pos, replacedBlock)) {
++        if (shouldSolidify(level, pos, state, replacedBlock.getFluidState())) { // Forge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
+             level.setBlock(pos, this.concrete.defaultBlockState(), 3);
          }
      }
-@@ -49,20 +_,24 @@
-         return shouldSolidify(blockgetter, blockpos, blockstate) ? this.concrete.defaultBlockState() : super.getStateForPlacement(p_52063_);
+@@ -48,20 +_,24 @@
+         return shouldSolidify(level, pos, replacedBlock) ? this.concrete.defaultBlockState() : super.getStateForPlacement(context);
      }
  
-+    private static boolean shouldSolidify(BlockGetter p_52081_, BlockPos p_52082_, BlockState p_52083_, net.minecraft.world.level.material.FluidState fluidState) {
-+        return p_52083_.canBeHydrated(p_52081_, p_52082_, fluidState, p_52082_) || touchesLiquid(p_52081_, p_52082_, p_52083_);
++    private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock, net.minecraft.world.level.material.FluidState fluidState) {
++        return replacedBlock.canBeHydrated(level, pos, fluidState, pos) || touchesLiquid(level, pos, replacedBlock);
 +    }
 +
-     private static boolean shouldSolidify(BlockGetter p_52081_, BlockPos p_52082_, BlockState p_52083_) {
--        return canSolidify(p_52083_) || touchesLiquid(p_52081_, p_52082_);
-+        return shouldSolidify(p_52081_, p_52082_, p_52083_, p_52081_.getFluidState(p_52082_));
+     private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock) {
+-        return canSolidify(replacedBlock) || touchesLiquid(level, pos);
++        return shouldSolidify(level, pos, replacedBlock, level.getFluidState(pos));
      }
  
--    private static boolean touchesLiquid(BlockGetter p_52065_, BlockPos p_52066_) {
-+    private static boolean touchesLiquid(BlockGetter p_52065_, BlockPos p_52066_, BlockState state) {
-         boolean flag = false;
-         BlockPos.MutableBlockPos blockpos$mutableblockpos = p_52066_.mutable();
+-    private static boolean touchesLiquid(BlockGetter level, BlockPos pos) {
++    private static boolean touchesLiquid(BlockGetter level, BlockPos pos, BlockState state) {
+         boolean touchesLiquid = false;
+         BlockPos.MutableBlockPos testPos = pos.mutable();
  
          for (Direction direction : Direction.values()) {
-             BlockState blockstate = p_52065_.getBlockState(blockpos$mutableblockpos);
--            if (direction != Direction.DOWN || canSolidify(blockstate)) {
-+            if (direction != Direction.DOWN || state.canBeHydrated(p_52065_, p_52066_, blockstate.getFluidState(), blockpos$mutableblockpos)) {
-                 blockpos$mutableblockpos.setWithOffset(p_52066_, direction);
-                 blockstate = p_52065_.getBlockState(blockpos$mutableblockpos);
--                if (canSolidify(blockstate) && !blockstate.isFaceSturdy(p_52065_, p_52066_, direction.getOpposite())) {
-+                if (state.canBeHydrated(p_52065_, p_52066_, blockstate.getFluidState(), blockpos$mutableblockpos) && !blockstate.isFaceSturdy(p_52065_, p_52066_, direction.getOpposite())) {
-                     flag = true;
+             BlockState blockState = level.getBlockState(testPos);
+-            if (direction != Direction.DOWN || canSolidify(blockState)) {
++            if (direction != Direction.DOWN || state.canBeHydrated(level, pos, blockState.getFluidState(), testPos)) {
+                 testPos.setWithOffset(pos, direction);
+                 blockState = level.getBlockState(testPos);
+-                if (canSolidify(blockState) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
++                if (state.canBeHydrated(level, pos, blockState.getFluidState(), testPos) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
+                     touchesLiquid = true;
                      break;
                  }
-@@ -87,7 +_,7 @@
-         BlockState p_52076_,
-         RandomSource p_374119_
+@@ -86,7 +_,7 @@
+         BlockState neighbourState,
+         RandomSource random
      ) {
--        return touchesLiquid(p_374245_, p_52078_)
-+        return touchesLiquid(p_374245_, p_52078_, p_52074_)
+-        return touchesLiquid(level, pos)
++        return touchesLiquid(level, pos, state)
              ? this.concrete.defaultBlockState()
-             : super.updateShape(p_52074_, p_374245_, p_374286_, p_52078_, p_52075_, p_52079_, p_52076_, p_374119_);
+             : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
      }

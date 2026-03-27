@@ -3,34 +3,25 @@
 @@ -72,6 +_,7 @@
      }
  
-     public void submit(S p_433493_, PoseStack p_434615_, SubmitNodeCollector p_433768_, CameraRenderState p_450931_) {
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<T, S, M>(p_433493_, this, p_433493_.partialTick, p_434615_, p_433768_)).isCanceled()) return;
-         p_434615_.pushPose();
-         if (p_433493_.hasPose(Pose.SLEEPING)) {
-             Direction direction = p_433493_.bedOrientation;
-@@ -107,6 +_,7 @@
+     public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<T, S, M>(state, this, state.partialTick, poseStack, submitNodeCollector)).isCanceled()) return;
+         poseStack.pushPose();
+         if (state.hasPose(Pose.SLEEPING)) {
+             Direction bedOrientation = state.bedOrientation;
+@@ -109,6 +_,7 @@
  
-         p_434615_.popPose();
-         super.submit(p_433493_, p_434615_, p_433768_, p_450931_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Post<T, S, M>(p_433493_, this, p_433493_.partialTick, p_434615_, p_433768_));
+         poseStack.popPose();
+         super.submit(state, poseStack, submitNodeCollector, camera);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Post<T, S, M>(state, this, state.partialTick, poseStack, submitNodeCollector));
      }
  
-     protected boolean shouldRenderLayers(S p_364697_) {
-@@ -203,7 +_,7 @@
-     protected boolean shouldShowName(T p_363517_, double p_365448_) {
-         if (p_363517_.isDiscrete()) {
-             float f = 32.0F;
--            if (p_365448_ >= 1024.0) {
-+            if (!net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(p_363517_, p_365448_)) {
+     protected boolean shouldRenderLayers(S state) {
+@@ -205,7 +_,7 @@
+     protected boolean shouldShowName(T entity, double distanceToCameraSq) {
+         if (entity.isDiscrete()) {
+             float maxDist = 32.0F;
+-            if (distanceToCameraSq >= 1024.0) {
++            if (!net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(entity, distanceToCameraSq)) {
                  return false;
              }
          }
-@@ -283,7 +_,7 @@
- 
-         p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
-         p_360515_.isBaby = p_362733_.isBaby();
--        p_360515_.isInWater = p_362733_.isInWater();
-+        p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluidType((fluidType, height) -> p_362733_.canSwimInFluidType(fluidType));
-         p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
-         p_360515_.ticksSinceKineticHitFeedback = p_362733_.getTicksSinceLastKineticHitFeedback(p_361157_);
-         p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;

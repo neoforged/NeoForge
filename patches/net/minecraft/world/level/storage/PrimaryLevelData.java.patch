@@ -1,59 +1,55 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -70,6 +_,7 @@
+@@ -42,6 +_,7 @@
+     private final Set<String> knownServerBrands;
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
-     private final TimerQueue<MinecraftServer> scheduledEvents;
 +    private boolean confirmedExperimentalWarning = false;
  
      private PrimaryLevelData(
-         @Nullable CompoundTag p_277888_,
-@@ -162,7 +_,7 @@
-         Dynamic<T> p_78531_, LevelSettings p_78535_, PrimaryLevelData.SpecialWorldProperty p_250651_, WorldOptions p_251864_, Lifecycle p_78538_
+         @Nullable UUID singlePlayerUUID,
+@@ -90,7 +_,7 @@
      ) {
-         long i = p_78531_.get("Time").asLong(0L);
+         long gameTime = input.get("Time").asLong(0L);
+         LevelVersion levelVersion = LevelVersion.parse(input);
 -        return new PrimaryLevelData(
-+        PrimaryLevelData result = new PrimaryLevelData(
-             p_78531_.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
-             p_78531_.get("WasModded").asBoolean(false),
-             p_78531_.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
-@@ -184,7 +_,8 @@
-                 .asStream()
-                 .flatMap(p_338118_ -> p_338118_.asString().result().stream())
-                 .collect(Collectors.toCollection(Sets::newLinkedHashSet)),
--            p_78531_.get("removed_features").asStream().flatMap(p_338117_ -> p_338117_.asString().result().stream()).collect(Collectors.toSet()),
++        var result = new PrimaryLevelData(
+             input.get("singleplayer_uuid").flatMap(UUIDUtil.CODEC::parse).result().orElse(null),
+             input.get("WasModded").asBoolean(false),
+             input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
+@@ -98,11 +_,16 @@
+             levelVersion.levelDataVersion(),
+             input.get("initialized").asBoolean(true),
+             input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+-            input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toSet()),
 +            // Neo: Append removed modded feature flags
-+            updateRemovedFeatureFlags(p_78531_.get("removed_features").asStream().flatMap(p_338117_ -> p_338117_.asString().result().stream()), p_78531_.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
-             new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, p_78531_.get("ScheduledEvents").asStream()),
-             (CompoundTag)p_78531_.get("CustomBossEvents").orElseEmptyMap().getValue(),
-             p_78531_.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
-@@ -192,7 +_,11 @@
-             p_251864_,
-             p_250651_,
-             p_78538_
++            updateRemovedFeatureFlags(input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()), input.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
+             settings,
+             specialWorldProperty,
+             worldGenSettingsLifecycle
 -        );
-+        ).withConfirmedWarning(p_78538_ != Lifecycle.stable() && p_78531_.get("confirmedExperimentalSettings").asBoolean(false));
++        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false));
 +        // Neo:
-+        result.setDayTimeFraction(p_78531_.get("neoDayTimeFraction").asFloat(0f));
-+        result.setDayTimePerTick(p_78531_.get("neoDayTimePerTick").asFloat(-1f));
++        result.setDayTimeFraction(input.get("neoDayTimeFraction").asFloat(0f));
++        result.setDayTimePerTick(input.get("neoDayTimePerTick").asFloat(-1f));
 +        return result;
      }
  
      @Override
-@@ -257,6 +_,12 @@
-         p_78547_.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
-         p_78547_.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
-         p_78547_.storeNullable("WanderingTraderId", UUIDUtil.CODEC, this.wanderingTraderId);
+@@ -139,6 +_,12 @@
+         }
+ 
+         tag.store(WorldDataConfiguration.MAP_CODEC, this.settings.dataConfiguration());
 +
 +        // Neo:
-+        p_78547_.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
-+        p_78547_.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
-+        p_78547_.putFloat("neoDayTimeFraction", dayTimeFraction);
-+        p_78547_.putFloat("neoDayTimePerTick", dayTimePerTick);
++        tag.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
++        tag.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
++        tag.putFloat("neoDayTimeFraction", dayTimeFraction);
++        tag.putFloat("neoDayTimePerTick", dayTimePerTick);
      }
  
-     private static ListTag stringCollectionToTag(Set<String> p_277880_) {
-@@ -547,10 +_,58 @@
+     public static void writeLastPlayed(CompoundTag tag) {
+@@ -320,10 +_,58 @@
          return this.settings.copy();
      }
  

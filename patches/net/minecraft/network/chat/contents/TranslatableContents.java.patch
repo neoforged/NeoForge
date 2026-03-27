@@ -1,9 +1,9 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -78,6 +_,16 @@
-         this.key = p_265775_;
-         this.fallback = p_265204_;
-         this.args = p_265752_;
+@@ -76,6 +_,16 @@
+         this.key = key;
+         this.fallback = fallback;
+         this.args = args;
 +        // Neo: This is transitively called by some static initializers. To allow using Minecraft classes from tests
 +        // without fully initializing FML, we disable the validation if FML is not initialized.
 +        var loader = net.neoforged.fml.loading.FMLLoader.getCurrentOrNull();
@@ -17,22 +17,22 @@
      }
  
      @Override
-@@ -89,6 +_,13 @@
-         Language language = Language.getInstance();
-         if (language != this.decomposedWith) {
-             this.decomposedWith = language;
+@@ -87,6 +_,13 @@
+         Language currentLanguage = Language.getInstance();
+         if (currentLanguage != this.decomposedWith) {
+             this.decomposedWith = currentLanguage;
 +
-+            Component langComponent = language.getComponent(this.key);
++            Component langComponent = currentLanguage.getComponent(this.key);
 +            if (langComponent != null) {
 +                this.decomposedParts = ImmutableList.of(langComponent);
 +                return;
 +            }
 +
-             String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
+             String format = this.fallback != null ? currentLanguage.getOrDefault(this.key, this.fallback) : currentLanguage.getOrDefault(this.key);
  
              try {
-@@ -167,6 +_,12 @@
-     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
+@@ -165,6 +_,12 @@
+     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> output, Style currentStyle) {
          this.decompose();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
@@ -41,10 +41,10 @@
 +        }
 +
 +        try {
-         for (FormattedText formattedtext : this.decomposedParts) {
-             Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
-             if (optional.isPresent()) {
-@@ -175,12 +_,21 @@
+         for (FormattedText part : this.decomposedParts) {
+             Optional<T> result = part.visit(output, currentStyle);
+             if (result.isPresent()) {
+@@ -173,12 +_,21 @@
          }
  
          return Optional.empty();
@@ -54,7 +54,7 @@
      }
  
      @Override
-     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_237519_) {
+     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> output) {
          this.decompose();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
@@ -63,10 +63,10 @@
 +        }
 +
 +        try {
-         for (FormattedText formattedtext : this.decomposedParts) {
-             Optional<T> optional = formattedtext.visit(p_237519_);
-             if (optional.isPresent()) {
-@@ -189,6 +_,9 @@
+         for (FormattedText part : this.decomposedParts) {
+             Optional<T> result = part.visit(output);
+             if (result.isPresent()) {
+@@ -187,6 +_,9 @@
          }
  
          return Optional.empty();

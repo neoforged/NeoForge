@@ -3,30 +3,30 @@
 @@ -23,16 +_,18 @@
  import net.minecraft.world.level.ItemLike;
  
- public final class Ingredient implements StackedContents.IngredientInfo<Holder<Item>>, Predicate<ItemStack> {
+ public final class Ingredient implements Predicate<ItemStack>, StackedContents.IngredientInfo<Holder<Item>> {
 -    public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = ByteBufCodecs.holderSet(Registries.ITEM)
--        .map(Ingredient::new, p_360055_ -> p_360055_.values);
+-        .map(Ingredient::new, i -> i.values);
 -    public static final StreamCodec<RegistryFriendlyByteBuf, Optional<Ingredient>> OPTIONAL_CONTENTS_STREAM_CODEC = ByteBufCodecs.holderSet(Registries.ITEM)
 +    public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.streamCodec(ByteBufCodecs.holderSet(Registries.ITEM)
-+        .map(Ingredient::new, p_360055_ -> p_360055_.getValuesForSync()));
++        .map(Ingredient::new, i -> i.getValuesForSync()));
 +    public static final StreamCodec<RegistryFriendlyByteBuf, Optional<Ingredient>> OPTIONAL_CONTENTS_STREAM_CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.optionalStreamCodec(ByteBufCodecs.holderSet(Registries.ITEM)
          .map(
-             p_360058_ -> p_360058_.size() == 0 ? Optional.empty() : Optional.of(new Ingredient((HolderSet<Item>)p_360058_)),
--            p_360056_ -> p_360056_.map(p_360062_ -> p_360062_.values).orElse(HolderSet.direct())
+             ingredient -> ingredient.size() == 0 ? Optional.empty() : Optional.of(new Ingredient((HolderSet<Item>)ingredient)),
+-            ingredient -> ingredient.<HolderSet<Item>>map(i -> i.values).orElse(HolderSet.empty())
 -        );
-+            p_360056_ -> p_360056_.map(p_360062_ -> p_360062_.getValuesForSync()).orElse(HolderSet.direct())
++            ingredient -> ingredient.map(i -> i.getValuesForSync()).orElse(HolderSet.direct())
 +        ));
      public static final Codec<HolderSet<Item>> NON_AIR_HOLDER_SET_CODEC = HolderSetCodec.create(Registries.ITEM, Item.CODEC, false);
--    public static final Codec<Ingredient> CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values);
-+    public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.codec(ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values));
+-    public static final Codec<Ingredient> CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, i -> i.values);
++    public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.codec(ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, i -> i.values));
      private final HolderSet<Item> values;
 +    private net.neoforged.neoforge.common.crafting.@org.jspecify.annotations.Nullable ICustomIngredient customIngredient = null;
-+    private @org.jspecify.annotations.Nullable List<Holder<Item>> customIngredientValues;
++    private java.util.@org.jspecify.annotations.Nullable List<Holder<Item>> customIngredientValues;
  
-     private Ingredient(HolderSet<Item> p_365027_) {
-         p_365027_.unwrap().ifRight(p_360057_ -> {
+     private Ingredient(HolderSet<Item> values) {
+         values.unwrap().ifRight(directValues -> {
 @@ -45,30 +_,95 @@
-         this.values = p_365027_;
+         this.values = values;
      }
  
 +    public Ingredient(net.neoforged.neoforge.common.crafting.ICustomIngredient customIngredient) {
@@ -34,8 +34,8 @@
 +        this.customIngredient = customIngredient;
 +    }
 +
-     public static boolean testOptionalIngredient(Optional<Ingredient> p_362504_, ItemStack p_363604_) {
-         return p_362504_.<Boolean>map(p_360060_ -> p_360060_.test(p_363604_)).orElseGet(p_363604_::isEmpty);
+     public static boolean testOptionalIngredient(Optional<Ingredient> ingredient, ItemStack stack) {
+         return ingredient.<Boolean>map(value -> value.test(stack)).orElseGet(stack::isEmpty);
      }
  
      @Deprecated
@@ -53,24 +53,24 @@
          return this.values.size() == 0;
      }
  
-     public boolean test(ItemStack p_43914_) {
+     public boolean test(ItemStack input) {
 +        if (this.customIngredient != null) {
-+            return this.customIngredient.test(p_43914_);
++            return this.customIngredient.test(input);
 +        }
-         return p_43914_.is(this.values);
+         return input.is(this.values);
      }
  
-     public boolean acceptsItem(Holder<Item> p_389400_) {
+     public boolean acceptsItem(Holder<Item> item) {
 +        if (this.customIngredient != null) {
-+            return updateCustomIngredientValues().contains(p_389400_);
++            return updateCustomIngredientValues().contains(item);
 +        }
-         return this.values.contains(p_389400_);
+         return this.values.contains(item);
      }
  
      @Override
-     public boolean equals(Object p_301003_) {
--        return p_301003_ instanceof Ingredient ingredient ? Objects.equals(this.values, ingredient.values) : false;
-+        return p_301003_ instanceof Ingredient ingredient ? java.util.Objects.equals(this.customIngredient, ingredient.customIngredient) && Objects.equals(this.values, ingredient.values) : false;
+     public boolean equals(Object o) {
+-        return o instanceof Ingredient other ? Objects.equals(this.values, other.values) : false;
++        return o instanceof Ingredient ingredient ? java.util.Objects.equals(this.customIngredient, ingredient.customIngredient) && Objects.equals(this.values, ingredient.values) : false;
 +    }
 +
 +    @Override
@@ -114,14 +114,14 @@
 +        return this.customIngredient != null;
 +    }
 +
-+    private List<Holder<Item>> updateCustomIngredientValues() {
++    private java.util.List<Holder<Item>> updateCustomIngredientValues() {
 +        if (this.customIngredientValues == null) {
 +            this.customIngredientValues = this.customIngredient.items().toList();
 +        }
 +        return this.customIngredientValues;
      }
  
-     public static Ingredient of(ItemLike p_364285_) {
+     public static Ingredient of(ItemLike itemLike) {
 @@ -88,6 +_,9 @@
      }
  
@@ -131,4 +131,4 @@
 +        }
          return (SlotDisplay)this.values
              .unwrap()
-             .map(SlotDisplay.TagSlotDisplay::new, p_380837_ -> new SlotDisplay.Composite(p_380837_.stream().map(Ingredient::displayForSingleItem).toList()));
+             .map(SlotDisplay.TagSlotDisplay::new, l -> new SlotDisplay.Composite(l.stream().map(Ingredient::displayForSingleItem).toList()));

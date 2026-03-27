@@ -1,7 +1,7 @@
 --- a/net/minecraft/resources/Identifier.java
 +++ b/net/minecraft/resources/Identifier.java
-@@ -148,6 +_,12 @@
-         return i;
+@@ -141,6 +_,12 @@
+         return 31 * this.namespace.hashCode() + this.path.hashCode();
      }
  
 +    // Normal compare sorts by path first, this compares namespace first.
@@ -10,6 +10,6 @@
 +        return ret != 0 ? ret : this.path.compareTo(o.path);
 +    }
 +
-     public String toDebugFileName() {
-         return this.toString().replace('/', '_').replace(':', '_');
-     }
+     public int compareTo(Identifier o) {
+         int result = this.path.compareTo(o.path);
+         if (result == 0) {

@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/shaders/ShaderType.java
 +++ b/com/mojang/blaze3d/shaders/ShaderType.java
-@@ -9,6 +_,7 @@
+@@ -7,6 +_,7 @@
+ import org.jspecify.annotations.Nullable;
  
  @OnlyIn(Dist.CLIENT)
- @DontObfuscate
 +@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further shader types such as Compute, Task, and Mesh may be added")
  public enum ShaderType {
      VERTEX("vertex", ".vsh"),

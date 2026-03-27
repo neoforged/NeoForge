@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -146,13 +146,13 @@ public abstract class ScreenEvent extends Event {
      * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
-        private final GuiGraphics guiGraphics;
+        private final GuiGraphicsExtractor guiGraphics;
         private final int mouseX;
         private final int mouseY;
         private final float partialTick;
 
         @ApiStatus.Internal
-        protected Render(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        protected Render(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
             super(screen);
             this.guiGraphics = guiGraphics;
             this.mouseX = mouseX;
@@ -163,7 +163,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * {@return the gui graphics used for rendering}
          */
-        public GuiGraphics getGuiGraphics() {
+        public GuiGraphicsExtractor getGuiGraphics() {
             return guiGraphics;
         }
 
@@ -199,7 +199,7 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends Render implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            public Pre(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
@@ -217,7 +217,7 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Background extends ScreenEvent.Render {
             @ApiStatus.Internal
-            public Background(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            public Background(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
@@ -232,7 +232,7 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends Render {
             @ApiStatus.Internal
-            public Post(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            public Post(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
@@ -915,21 +915,6 @@ public abstract class ScreenEvent extends Event {
          */
         public int getCodePoint() {
             return this.charEvent.codepoint();
-        }
-
-        /**
-         * {@return a bit field representing the active modifier keys}
-         *
-         * @see InputConstants#MOD_CONTROL CTRL modifier key bit
-         * @see GLFW#GLFW_MOD_SHIFT SHIFT modifier key bit
-         * @see GLFW#GLFW_MOD_ALT ALT modifier key bit
-         * @see GLFW#GLFW_MOD_SUPER SUPER modifier key bit
-         * @see GLFW#GLFW_KEY_CAPS_LOCK CAPS LOCK modifier key bit
-         * @see GLFW#GLFW_KEY_NUM_LOCK NUM LOCK modifier key bit
-         * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
-         */
-        public int getModifiers() {
-            return this.charEvent.modifiers();
         }
 
         /**

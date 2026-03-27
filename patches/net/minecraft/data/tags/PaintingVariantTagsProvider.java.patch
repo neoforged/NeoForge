@@ -6,11 +6,11 @@
  public class PaintingVariantTagsProvider extends KeyTagProvider<PaintingVariant> {
 +    /** @deprecated Forge: Use the {@linkplain #PaintingVariantTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_) {
-         super(p_255750_, Registries.PAINTING_VARIANT, p_256184_);
+     public PaintingVariantTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.PAINTING_VARIANT, lookupProvider);
 +    }
-+    public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_, String modId) {
-+        super(p_255750_, Registries.PAINTING_VARIANT, p_256184_, modId);
++    public PaintingVariantTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.PAINTING_VARIANT, lookupProvider, modId);
      }
  
      @Override

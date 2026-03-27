@@ -1,31 +1,31 @@
 --- a/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
 @@ -34,7 +_,7 @@
-         BlockState blockstate = serverlevel.getBlockState(blockpos);
-         double d3;
-         if (blockstate.is(BlockTags.RAILS)) {
--            if (getRailShape(blockstate).isSlope()) {
-+            if (getRailShape(blockstate, serverlevel, blockpos).isSlope()) {
-                 d3 = 0.6;
+         BlockState blockFront = level.getBlockState(front);
+         double yOffset;
+         if (blockFront.is(BlockTags.RAILS)) {
+-            if (getRailShape(blockFront).isSlope()) {
++            if (getRailShape(blockFront, level,front).isSlope()) {
+                 yOffset = 0.6;
              } else {
-                 d3 = 0.1;
+                 yOffset = 0.1;
 @@ -49,7 +_,7 @@
-                 return this.defaultDispenseItemBehavior.dispense(p_374045_, p_374580_);
+                 return this.defaultDispenseItemBehavior.dispense(source, dispensed);
              }
  
--            if (direction != Direction.DOWN && getRailShape(blockstate1).isSlope()) {
-+            if (direction != Direction.DOWN && getRailShape(blockstate1, serverlevel, blockpos.below()).isSlope()) {
-                 d3 = -0.4;
+-            if (direction != Direction.DOWN && getRailShape(blockBelow).isSlope()) {
++            if (direction != Direction.DOWN && getRailShape(blockBelow, level, front.below()).isSlope()) {
+                 yOffset = -0.4;
              } else {
-                 d3 = -0.9;
+                 yOffset = -0.9;
 @@ -68,8 +_,8 @@
-         return p_374580_;
+         return dispensed;
      }
  
--    private static RailShape getRailShape(BlockState p_374571_) {
--        return p_374571_.getBlock() instanceof BaseRailBlock baserailblock ? p_374571_.getValue(baserailblock.getShapeProperty()) : RailShape.NORTH_SOUTH;
-+    private static RailShape getRailShape(BlockState p_374571_, ServerLevel level, BlockPos pos) {
-+        return p_374571_.getBlock() instanceof BaseRailBlock baserailblock ? baserailblock.getRailDirection(p_374571_, level, pos, null) : RailShape.NORTH_SOUTH;
+-    private static RailShape getRailShape(BlockState blockFront) {
+-        return blockFront.getBlock() instanceof BaseRailBlock railBlock ? blockFront.getValue(railBlock.getShapeProperty()) : RailShape.NORTH_SOUTH;
++    private static RailShape getRailShape(BlockState blockFront, ServerLevel level, BlockPos pos) {
++        return blockFront.getBlock() instanceof BaseRailBlock baserailblock ? baserailblock.getRailDirection(blockFront, level, pos, null) : RailShape.NORTH_SOUTH;
      }
  
      @Override

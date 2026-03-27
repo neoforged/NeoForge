@@ -11,6 +11,6 @@
 +        }
 +    }
 +
-     private void explode(ServerLevel p_376529_) {
-         p_376529_.broadcastEntityEvent(this, (byte)17);
+     private void explode(ServerLevel level) {
+         level.broadcastEntityEvent(this, (byte)17);
          this.gameEvent(GameEvent.EXPLODE, this.getOwner());

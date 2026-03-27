@@ -6,11 +6,11 @@
  public class BannerPatternTagsProvider extends KeyTagProvider<BannerPattern> {
 +    /** @deprecated Forge: Use the {@linkplain #BannerPatternTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_) {
-         super(p_256451_, Registries.BANNER_PATTERN, p_256420_);
+     public BannerPatternTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.BANNER_PATTERN, lookupProvider);
 +    }
-+    public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_, String modId) {
-+        super(p_256451_, Registries.BANNER_PATTERN, p_256420_, modId);
++    public BannerPatternTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.BANNER_PATTERN, lookupProvider, modId);
      }
  
      @Override

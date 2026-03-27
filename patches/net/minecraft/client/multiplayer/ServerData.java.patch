@@ -6,5 +6,5 @@
      private ServerData.State state = ServerData.State.INITIAL;
 +    public net.neoforged.neoforge.client.ExtendedServerListData neoForgeData = null;
  
-     public ServerData(String p_105375_, String p_105376_, ServerData.Type p_295587_) {
-         this.name = p_105375_;
+     public ServerData(String name, String ip, ServerData.Type type) {
+         this.name = name;

@@ -5,8 +5,8 @@
  
      protected void doFreezeConversion() {
 +        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.STRAY, (timer) -> this.conversionTime = timer)) return;
-         this.convertTo(EntityType.STRAY, ConversionParams.single(this, true, true), p_479949_ -> {
-+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_479949_);
+         this.convertTo(EntityType.STRAY, ConversionParams.single(this, true, true), stray -> {
++            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, stray);
              if (!this.isSilent()) {
                  this.level().levelEvent(null, 1048, this.blockPosition(), 0);
              }

@@ -1,20 +1,11 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -169,7 +_,7 @@
- 
-         for (int k = 0; k < 9; k++) {
-             int l = (this.selected + k) % 9;
--            if (!this.items.get(l).isEnchanted()) {
-+            if (!this.items.get(l).isNotReplaceableByPickAction(this.player, l)) {
-                 return l;
-             }
-         }
 @@ -290,6 +_,8 @@
-             } catch (Throwable throwable) {
-                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
-                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");
-+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(p_36042_.getItem())));
-+                crashreportcategory.setDetail("Item Class", () -> p_36042_.getItem().getClass().getName());
-                 crashreportcategory.setDetail("Item ID", Item.getId(p_36042_.getItem()));
-                 crashreportcategory.setDetail("Item data", p_36042_.getDamageValue());
-                 crashreportcategory.setDetail("Item name", () -> p_36042_.getHoverName().getString());
+             } catch (Throwable var6) {
+                 CrashReport report = CrashReport.forThrowable(var6, "Adding item to inventory");
+                 CrashReportCategory category = report.addCategory("Item being added");
++                category.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(itemStack.getItem())));
++                category.setDetail("Item Class", () -> itemStack.getItem().getClass().getName());
+                 category.setDetail("Item ID", Item.getId(itemStack.getItem()));
+                 category.setDetail("Item data", itemStack.getDamageValue());
+                 category.setDetail("Item name", () -> itemStack.getHoverName().getString());

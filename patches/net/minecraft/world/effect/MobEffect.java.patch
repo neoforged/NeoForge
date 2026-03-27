@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
 @@ -66,6 +_,16 @@
-         this.particleFactory = p_333515_ -> p_333716_;
+         this.particleFactory = ignored -> particleOptions;
      }
  
 +    /**
@@ -17,7 +17,7 @@
      public int getBlendInDurationTicks() {
          return this.blendInDurationTicks;
      }
-@@ -142,6 +_,18 @@
+@@ -137,6 +_,18 @@
          return this;
      }
  
@@ -33,10 +33,10 @@
 +        return this;
 +    }
 +
-     public MobEffect setBlendDuration(int p_316265_) {
-         return this.setBlendDuration(p_316265_, p_316265_, p_316265_);
+     public MobEffect setBlendDuration(int ticks) {
+         return this.setBlendDuration(ticks, ticks, ticks);
      }
-@@ -199,8 +_,16 @@
+@@ -194,8 +_,16 @@
          return this.requiredFeatures;
      }
  
@@ -47,10 +47,10 @@
 +            this(id, amount, operation, null);
 +        }
 +
-         public AttributeModifier create(int p_316614_) {
+         public AttributeModifier create(int amplifier) {
 +            if (curve != null) { // Neo: Use the custom attribute value curve if one is present
-+                return new AttributeModifier(this.id, this.curve.apply(p_316614_), this.operation);
++                return new AttributeModifier(this.id, this.curve.apply(amplifier), this.operation);
 +            }
-             return new AttributeModifier(this.id, this.amount * (p_316614_ + 1), this.operation);
+             return new AttributeModifier(this.id, this.amount * (amplifier + 1), this.operation);
          }
      }

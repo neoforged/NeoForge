@@ -148,7 +148,7 @@ public class BlockTests {
     static void customRespawnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var respawn = reg.blocks().register("respawn", key -> new Block(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, key))) {
             @Override
-            protected InteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
+            protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
                 if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.setRespawnPosition(new RespawnConfig(new LevelData.RespawnData(GlobalPos.of(world.dimension(), pos), 0, 0), false), true);
                 }
@@ -212,7 +212,7 @@ public class BlockTests {
 
         @Override
         protected void tick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource) {
-            BubbleColumnBlock.updateColumn(serverLevel, blockPos.above(), blockState);
+            BubbleColumnBlock.updateColumn(Blocks.BUBBLE_COLUMN, serverLevel, blockPos.above(), blockState);
         }
 
         @Override

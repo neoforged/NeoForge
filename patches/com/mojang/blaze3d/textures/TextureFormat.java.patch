@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -6,16 +_,20 @@
+@@ -4,11 +_,15 @@
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
- @DontObfuscate
 +@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Additional texture formats may be added")
  public enum TextureFormat {
      RGBA8(4),
@@ -17,14 +17,7 @@
  
      private final int pixelSize;
  
--    private TextureFormat(int p_404990_) {
--        this.pixelSize = p_404990_;
-+    private TextureFormat(int pixelSize) {
-+        this.pixelSize = pixelSize;
-     }
- 
-     public int pixelSize() {
-@@ -27,6 +_,10 @@
+@@ -25,6 +_,10 @@
      }
  
      public boolean hasDepthAspect() {

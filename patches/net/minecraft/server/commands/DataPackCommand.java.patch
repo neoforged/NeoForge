@@ -1,11 +1,11 @@
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
-@@ -285,7 +_,7 @@
-     private static int listEnabledPacks(CommandSourceStack p_136866_) {
-         PackRepository packrepository = p_136866_.getServer().getPackRepository();
-         packrepository.reload();
--        Collection<? extends Pack> collection = packrepository.getSelectedPacks();
-+        Collection<? extends Pack> collection = packrepository.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList();
-         if (collection.isEmpty()) {
-             p_136866_.sendSuccess(() -> Component.translatable("commands.datapack.list.enabled.none"), false);
+@@ -264,7 +_,7 @@
+     private static int listEnabledPacks(CommandSourceStack source) {
+         PackRepository repository = source.getServer().getPackRepository();
+         repository.reload();
+-        Collection<? extends Pack> selectedPacks = repository.getSelectedPacks();
++        Collection<? extends Pack> selectedPacks = repository.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList();;
+         if (selectedPacks.isEmpty()) {
+             source.sendSuccess(() -> Component.translatable("commands.datapack.list.enabled.none"), false);
          } else {

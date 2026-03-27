@@ -1,55 +1,55 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
 @@ -62,7 +_,7 @@
-             this.minecart.setOnRails($$4);
-             if ($$4) {
-                 this.moveAlongTrack(serverlevel);
--                if (blockstate.is(Blocks.ACTIVATOR_RAIL)) {
-+                if (blockstate.getBlock() instanceof PoweredRailBlock poweredRail && poweredRail.isActivatorRail()) {
-                     this.minecart
-                         .activateMinecart(serverlevel, blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockstate.getValue(PoweredRailBlock.POWERED));
+             this.minecart.setOnRails(onRails);
+             if (onRails) {
+                 this.moveAlongTrack(level);
+-                if (state.is(Blocks.ACTIVATOR_RAIL)) {
++                if (state.getBlock() instanceof PoweredRailBlock poweredRail && poweredRail.isActivatorRail()) {
+                     this.minecart.activateMinecart(level, var11.getX(), var11.getY(), var11.getZ(), state.getValue(PoweredRailBlock.POWERED));
                  }
-@@ -113,7 +_,7 @@
-         d1 = blockpos.getY();
-         boolean flag = false;
-         boolean flag1 = false;
--        if (blockstate.is(Blocks.POWERED_RAIL)) {
-+        if (blockstate.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail()) {
-             flag = blockstate.getValue(PoweredRailBlock.POWERED);
-             flag1 = !flag;
+             } else {
+@@ -112,7 +_,7 @@
+         y = pos.getY();
+         boolean powerTrack = false;
+         boolean haltTrack = false;
+-        if (state.is(Blocks.POWERED_RAIL)) {
++        if (state.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail()) {
+             powerTrack = state.getValue(PoweredRailBlock.POWERED);
+             haltTrack = !powerTrack;
          }
-@@ -124,7 +_,7 @@
+@@ -123,7 +_,7 @@
          }
  
-         Vec3 vec31 = this.getDeltaMovement();
--        RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
-+        RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), blockpos, this.minecart);;
-         switch (railshape) {
+         Vec3 movement = this.getDeltaMovement();
+-        RailShape shape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
++        RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), pos, this.minecart);;
+         switch (shape) {
              case ASCENDING_EAST:
-                 this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
-@@ -281,9 +_,10 @@
-             j--;
+                 this.setDeltaMovement(movement.add(-slideSpeed, 0.0, 0.0));
+@@ -279,9 +_,10 @@
+             yt--;
          }
  
--        BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
-+        BlockPos railPos = new BlockPos(i, j, k);
-+        BlockState blockstate = this.level().getBlockState(railPos);
-         if (BaseRailBlock.isRail(blockstate)) {
--            RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
-+            RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), railPos, this.minecart);
-             p_479361_ = j;
-             if (railshape.isSlope()) {
-                 p_479361_ = j + 1;
-@@ -319,9 +_,10 @@
-             j--;
+-        BlockState state = this.level().getBlockState(new BlockPos(xt, yt, zt));
++        var railPos = new BlockPos(xt, yt, zt);
++        BlockState state = this.level().getBlockState(railPos);
+         if (BaseRailBlock.isRail(state)) {
+-            RailShape shape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
++            RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), railPos, this.minecart);
+             y = yt;
+             if (shape.isSlope()) {
+                 y = yt + 1;
+@@ -317,9 +_,10 @@
+             yt--;
          }
  
--        BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
-+        BlockPos railPos = new BlockPos(i, j, k);
-+        BlockState blockstate = this.level().getBlockState(railPos);
-         if (BaseRailBlock.isRail(blockstate)) {
--            RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
-+            RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), railPos, this.minecart);
-             Pair<Vec3i, Vec3i> pair = AbstractMinecart.exits(railshape);
-             Vec3i vec3i = pair.getFirst();
-             Vec3i vec3i1 = pair.getSecond();
+-        BlockState state = this.level().getBlockState(new BlockPos(xt, yt, zt));
++        BlockPos railPos = new BlockPos(xt, yt, zt);
++        BlockState state = this.level().getBlockState(railPos);
+         if (BaseRailBlock.isRail(state)) {
+-            RailShape shape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
++            RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), railPos, this.minecart);
+             Pair<Vec3i, Vec3i> exits = AbstractMinecart.exits(shape);
+             Vec3i exit0 = exits.getFirst();
+             Vec3i exit1 = exits.getSecond();

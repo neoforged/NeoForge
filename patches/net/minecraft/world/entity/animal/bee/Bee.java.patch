@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/bee/Bee.java
 +++ b/net/minecraft/world/entity/animal/bee/Bee.java
-@@ -490,7 +_,7 @@
+@@ -480,7 +_,7 @@
          if (this.hivePos == null) {
              return null;
          } else {
@@ -9,12 +9,12 @@
          }
      }
  
-@@ -652,8 +_,18 @@
+@@ -646,8 +_,18 @@
      }
  
      @Override
 +    @Deprecated // FORGE: use jumpInFluid instead
-     protected void jumpInLiquid(TagKey<Fluid> p_481380_) {
+     protected void jumpInLiquid(TagKey<Fluid> type) {
 +        this.jumpInLiquidInternal();
 +    }
 +

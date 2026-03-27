@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
 +++ b/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
-@@ -18,7 +_,8 @@
+@@ -17,7 +_,8 @@
      private final int maxSteps;
      public static final MapCodec<EnvironmentScanPlacement> CODEC = RecordCodecBuilder.mapCodec(
-         p_191650_ -> p_191650_.group(
--                Direction.VERTICAL_CODEC.fieldOf("direction_of_search").forGetter(p_191672_ -> p_191672_.directionOfSearch),
+         i -> i.group(
+-                Direction.VERTICAL_CODEC.fieldOf("direction_of_search").forGetter(c -> c.directionOfSearch),
 +                // Neo: Allow any direction, not just vertical. The code already handles it fine.
-+                Direction.CODEC.fieldOf("direction_of_search").forGetter(p_191672_ -> p_191672_.directionOfSearch),
-                 BlockPredicate.CODEC.fieldOf("target_condition").forGetter(p_191670_ -> p_191670_.targetCondition),
-                 BlockPredicate.CODEC
-                     .optionalFieldOf("allowed_search_condition", BlockPredicate.alwaysTrue())
++                Direction.CODEC.fieldOf("direction_of_search").forGetter(c -> c.directionOfSearch),
+                 BlockPredicate.CODEC.fieldOf("target_condition").forGetter(c -> c.targetCondition),
+                 BlockPredicate.CODEC.optionalFieldOf("allowed_search_condition", BlockPredicate.alwaysTrue()).forGetter(c -> c.allowedSearchCondition),
+                 Codec.intRange(1, 32).fieldOf("max_steps").forGetter(c -> c.maxSteps)

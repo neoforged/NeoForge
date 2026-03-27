@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -116,6 +_,7 @@
-         return this.getType() == p_192918_;
+@@ -109,6 +_,7 @@
+         return this.getType().builtInRegistryHolder();
      }
  
 +    @Deprecated //Forge: Use more sensitive version

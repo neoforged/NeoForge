@@ -3,26 +3,26 @@
 @@ -88,12 +_,50 @@
  
      @Override
-     public void setItem(int p_256610_, ItemStack p_255789_) {
-+        setItem(p_256610_, p_255789_, false);
+     public void setItem(int slot, ItemStack itemStack) {
++        setItem(slot, itemStack, false);
 +    }
 +
 +    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
 +    @Override
-+    public void setItem(int p_256610_, ItemStack p_255789_, boolean insideTransaction) {
-         if (this.acceptsItemType(p_255789_)) {
-             this.getItems().set(p_256610_, p_255789_);
--            this.updateState(p_256610_);
++    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
+         if (this.acceptsItemType(itemStack)) {
+             this.getItems().set(slot, itemStack);
+-            this.updateState(slot);
 +            if (!insideTransaction) {
-+                this.updateState(p_256610_);
++                this.updateState(slot);
 +            }
-         } else if (p_255789_.isEmpty()) {
+         } else if (itemStack.isEmpty()) {
 +            if (insideTransaction) {
 +                // Skip the updateState call in removeItem
-+                this.getItems().set(p_256610_, p_255789_);
++                this.getItems().set(slot, itemStack);
 +                return;
 +            }
-             this.removeItem(p_256610_, this.getMaxStackSize());
+             this.removeItem(slot, this.getMaxStackSize());
          }
 +    }
 +

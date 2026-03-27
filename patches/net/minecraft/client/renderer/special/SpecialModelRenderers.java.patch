@@ -1,20 +1,10 @@
 --- a/net/minecraft/client/renderer/special/SpecialModelRenderers.java
 +++ b/net/minecraft/client/renderer/special/SpecialModelRenderers.java
-@@ -214,6 +_,8 @@
-         ID_MAPPER.put(Identifier.withDefaultNamespace("decorated_pot"), DecoratedPotSpecialRenderer.Unbaked.MAP_CODEC);
+@@ -29,5 +_,7 @@
          ID_MAPPER.put(Identifier.withDefaultNamespace("standing_sign"), StandingSignSpecialRenderer.Unbaked.MAP_CODEC);
          ID_MAPPER.put(Identifier.withDefaultNamespace("hanging_sign"), HangingSignSpecialRenderer.Unbaked.MAP_CODEC);
+         ID_MAPPER.put(Identifier.withDefaultNamespace("end_cube"), EndCubeSpecialRenderer.Unbaked.MAP_CODEC);
 +
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent(ID_MAPPER));
      }
- 
-     public static Map<Block, SpecialModelRenderer<?>> createBlockRenderers(SpecialModelRenderer.BakingContext p_435914_) {
-@@ -222,6 +_,8 @@
-             map.put(Blocks.CHEST, GIFT_CHEST);
-             map.put(Blocks.TRAPPED_CHEST, GIFT_CHEST);
-         }
-+
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterSpecialBlockModelRendererEvent(map));
- 
-         Builder<Block, SpecialModelRenderer<?>> builder = ImmutableMap.builder();
-         map.forEach((p_432308_, p_432309_) -> {
+ }

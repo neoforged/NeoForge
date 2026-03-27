@@ -144,17 +144,17 @@ public class EntityRendererEventsTest {
     }
 
     private static class MyEntity extends LivingEntity {
-        protected MyEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
-            super(p_20966_, p_20967_);
+        protected MyEntity(EntityType<? extends LivingEntity> type, Level level) {
+            super(type, level);
         }
 
         @Override
-        public ItemStack getItemBySlot(EquipmentSlot p_21127_) {
+        public ItemStack getItemBySlot(EquipmentSlot slot) {
             return ItemStack.EMPTY;
         }
 
         @Override
-        public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_) {}
+        public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {}
 
         @Override
         public HumanoidArm getMainArm() {

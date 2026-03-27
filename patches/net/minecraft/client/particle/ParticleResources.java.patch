@@ -9,28 +9,28 @@
      private @Nullable Runnable onReload;
  
      public ParticleResources() {
-@@ -173,14 +_,18 @@
+@@ -175,14 +_,18 @@
          this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_445584_, ParticleProvider<T> p_446772_) {
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_445584_), p_446772_);
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_445584_), p_446772_);
+     public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(type), provider);
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(type), provider);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_447257_, ParticleResources.SpriteParticleRegistration<T> p_446302_) {
-         ParticleResources.MutableSpriteSet particleresources$mutablespriteset = new ParticleResources.MutableSpriteSet();
-         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_447257_), particleresources$mutablespriteset);
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_447257_), p_446302_.create(particleresources$mutablespriteset));
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_447257_), p_446302_.create(particleresources$mutablespriteset));
+     public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleResources.SpriteParticleRegistration<T> provider) {
+         ParticleResources.MutableSpriteSet spriteSet = new ParticleResources.MutableSpriteSet();
+         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(type), spriteSet);
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(type), provider.create(spriteSet));
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(type), provider.create(spriteSet));
      }
  
      @Override
-@@ -273,7 +_,7 @@
+@@ -278,7 +_,7 @@
          }
      }
  

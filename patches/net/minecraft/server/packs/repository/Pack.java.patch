@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -23,6 +_,16 @@
+@@ -24,6 +_,16 @@
      private final Pack.ResourcesSupplier resources;
      private final Pack.Metadata metadata;
      private final PackSelectionConfig selectionConfig;
@@ -16,15 +16,15 @@
 +    ); // Neo: Pack source for child packs; should not be otherwise used
  
      public static @Nullable Pack readMetaAndCreate(
-         PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_
-@@ -33,6 +_,34 @@
+         PackLocationInfo location, Pack.ResourcesSupplier resources, PackType packType, PackSelectionConfig selectionConfig
+@@ -34,6 +_,34 @@
      }
  
-     public Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_) {
-+        this(p_326123_, p_249377_, p_326375_, p_326282_, List.of());
+     public Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig) {
++        this(location, resources, metadata, selectionConfig, List.of());
 +    }
 +
-+    private Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_, List<Pack> children) {
++    private Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig, List<Pack> children) {
 +        List<Pack> flattenedChildren = new java.util.ArrayList<>();
 +        List<Pack> remainingChildren = children;
 +        // recursively flatten children
@@ -48,27 +48,27 @@
 +            }
 +        }
 +        this.children = List.copyOf(flattenedChildren);
-+        this.hidden = p_326375_.isHidden();
-         this.location = p_326123_;
-         this.resources = p_249377_;
-         this.metadata = p_326375_;
-@@ -60,7 +_,14 @@
-                 PackCompatibility packcompatibility = PackCompatibility.forVersion(packmetadatasection.supportedFormats(), p_435314_);
-                 OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.forPackType(p_433503_));
-                 List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_435314_) : List.of();
--                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list);
++        this.hidden = metadata.isHidden();
+         this.location = location;
+         this.resources = resources;
+         this.metadata = metadata;
+@@ -64,7 +_,14 @@
+                 PackCompatibility packCompatibility = PackCompatibility.forVersion(meta.supportedFormats(), currentPackVersion);
+                 OverlayMetadataSection overlays = pack.getMetadataSection(OverlayMetadataSection.forPackType(type));
+                 List<String> overlaySet = overlays != null ? overlays.overlaysForVersion(currentPackVersion) : List.of();
+-                var11 = new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet);
 +                // Neo: add `neoforge:overlays` overlays as well
-+                var neoOverlays = packresources.getMetadataSection(OverlayMetadataSection.forPackTypeNeoForge(p_433503_));
++                var neoOverlays = pack.getMetadataSection(OverlayMetadataSection.forPackTypeNeoForge(type));
 +                if (neoOverlays != null) {
-+                    list = new java.util.ArrayList<>(list);
-+                    list.addAll(neoOverlays.overlaysForVersion(p_435314_));
-+                    list = List.copyOf(list);
++                    overlaySet = new java.util.ArrayList<>(overlaySet);
++                    overlaySet.addAll(neoOverlays.overlaysForVersion(currentPackVersion));
++                    overlaySet = List.copyOf(overlaySet);
 +                }
-+                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list, packresources.isHidden());
++                var11 = new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet, pack.isHidden());
              }
  
-             return pack$metadata;
-@@ -122,6 +_,38 @@
+             return var11;
+@@ -126,6 +_,38 @@
          return this.location.source();
      }
  
@@ -105,9 +105,9 @@
 +    }
 +
      @Override
-     public boolean equals(Object p_10448_) {
-         if (this == p_10448_) {
-@@ -136,7 +_,12 @@
+     public boolean equals(Object o) {
+         if (this == o) {
+@@ -140,7 +_,12 @@
          return this.location.hashCode();
      }
  

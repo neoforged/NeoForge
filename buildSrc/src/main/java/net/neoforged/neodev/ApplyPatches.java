@@ -62,6 +62,7 @@ abstract class ApplyPatches extends DefaultTask {
                 .mode(isUpdating ? PatchMode.FUZZY : PatchMode.ACCESS)
                 .aPrefix("a/")
                 .bPrefix("b/")
+                .rejectsAsPatches(true)
                 .level(isUpdating ? io.codechicken.diffpatch.util.LogLevel.ALL : io.codechicken.diffpatch.util.LogLevel.WARN)
                 .minFuzz(0.9f); // The 0.5 default in DiffPatch is too low.
 

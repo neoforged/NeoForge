@@ -8,57 +8,57 @@
      private final boolean defaultRightToLeft;
  
 +    @Deprecated
-     private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_) {
-+        this(p_118914_, p_118915_, Map.of());
+     private ClientLanguage(Map<String, String> storage, boolean defaultRightToLeft) {
++        this(storage, defaultRightToLeft, Map.of());
 +    }
 +
-+    private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_, Map<String, net.minecraft.network.chat.Component> componentStorage) {
-         this.storage = p_118914_;
-         this.defaultRightToLeft = p_118915_;
++    private ClientLanguage(Map<String, String> storage, boolean defaultRightToLeft, Map<String, net.minecraft.network.chat.Component> componentStorage) {
+         this.storage = storage;
+         this.defaultRightToLeft = defaultRightToLeft;
 +        this.componentStorage = componentStorage;
      }
  
-     public static ClientLanguage loadFrom(ResourceManager p_265765_, List<String> p_265743_, boolean p_265470_) {
-         Map<String, String> map = new HashMap<>();
+     public static ClientLanguage loadFrom(ResourceManager resourceManager, List<String> languageStack, boolean defaultRightToLeft) {
+         Map<String, String> translations = new HashMap<>();
 +        Map<String, net.minecraft.network.chat.Component> componentMap = new HashMap<>();
  
-         for (String s : p_265743_) {
-             String s1 = String.format(Locale.ROOT, "lang/%s.json", s);
-+            map.putAll(net.neoforged.fml.i18n.I18nManager.loadTranslations(s));
+         for (String languageCode : languageStack) {
+             String path = String.format(Locale.ROOT, "lang/%s.json", languageCode);
++            translations.putAll(net.neoforged.fml.i18n.I18nManager.loadTranslations(languageCode));
  
-             for (String s2 : p_265765_.getNamespaces()) {
+             for (String namespace : resourceManager.getNamespaces()) {
                  try {
-                     Identifier identifier = Identifier.fromNamespaceAndPath(s2, s1);
--                    appendFrom(s, p_265765_.getResourceStack(identifier), map);
-+                    appendFrom(s, p_265765_.getResourceStack(identifier), map, componentMap);
-                 } catch (Exception exception) {
-                     LOGGER.warn("Skipped language file: {}:{} ({})", s2, s1, exception.toString());
+                     Identifier location = Identifier.fromNamespaceAndPath(namespace, path);
+-                    appendFrom(languageCode, resourceManager.getResourceStack(location), translations);
++                    appendFrom(languageCode, resourceManager.getResourceStack(location), translations, componentMap);
+                 } catch (Exception var10) {
+                     LOGGER.warn("Skipped language file: {}:{} ({})", namespace, path, var10.toString());
                  }
 @@ -46,13 +_,18 @@
          }
  
-         DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(map);
--        return new ClientLanguage(Map.copyOf(map), p_265470_);
-+        return new ClientLanguage(Map.copyOf(map), p_265470_, Map.copyOf(componentMap));
+         DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
+-        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft);
++        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft, Map.copyOf(componentMap));
      }
  
 +    @Deprecated
-     private static void appendFrom(String p_235036_, List<Resource> p_235037_, Map<String, String> p_235038_) {
-+        appendFrom(p_235036_, p_235037_, p_235038_, new java.util.HashMap<>());
+     private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations) {
++        appendFrom(languageCode, resources, translations, new java.util.HashMap<>());
 +    }
 +
-+    private static void appendFrom(String p_235036_, List<Resource> p_235037_, Map<String, String> p_235038_, Map<String, net.minecraft.network.chat.Component> componentMap) {
-         for (Resource resource : p_235037_) {
-             try (InputStream inputstream = resource.open()) {
--                Language.loadFromJson(inputstream, p_235038_::put);
-+                Language.loadFromJson(inputstream, p_235038_::put, componentMap::put);
-             } catch (IOException ioexception) {
-                 LOGGER.warn("Failed to load translations for {} from pack {}", p_235036_, resource.sourcePackId(), ioexception);
++    private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations, Map<String, net.minecraft.network.chat.Component> componentMap) {
+         for (Resource resource : resources) {
+             try (InputStream inputStream = resource.open()) {
+-                Language.loadFromJson(inputStream, translations::put);
++                Language.loadFromJson(inputStream, translations::put, componentMap::put);
+             } catch (IOException var10) {
+                 LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), var10);
              }
 @@ -77,5 +_,15 @@
      @Override
-     public FormattedCharSequence getVisualOrder(FormattedText p_118925_) {
-         return FormattedBidiReorder.reorder(p_118925_, this.defaultRightToLeft);
+     public FormattedCharSequence getVisualOrder(FormattedText logicalOrderText) {
+         return FormattedBidiReorder.reorder(logicalOrderText, this.defaultRightToLeft);
 +    }
 +
 +    @Override

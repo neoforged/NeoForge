@@ -9,10 +9,6 @@
     "#c:crops/potato",
     "#c:crops/pumpkin",
     "#c:crops/sugar_cane",
-    "#c:crops/wheat",
-    {
-      "id": "#forge:crops",
-      "required": false
-    }
+    "#c:crops/wheat"
   ]
 }

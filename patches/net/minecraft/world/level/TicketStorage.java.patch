@@ -1,74 +1,75 @@
 --- a/net/minecraft/world/level/TicketStorage.java
 +++ b/net/minecraft/world/level/TicketStorage.java
-@@ -36,7 +_,8 @@
+@@ -35,7 +_,9 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
      private static final Codec<Pair<ChunkPos, Ticket>> TICKET_ENTRY = Codec.mapPair(ChunkPos.CODEC.fieldOf("chunk_pos"), Ticket.CODEC).codec();
      public static final Codec<TicketStorage> CODEC = RecordCodecBuilder.create(
-         p_400948_ -> p_400948_.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets))
--            .apply(p_400948_, TicketStorage::fromPacked)
-+            .and(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.defineExtraStorageParams())
-+            .apply(p_400948_, (tickets, neoData) -> net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readStoredTickets(TicketStorage::fromPacked, tickets, neoData))
+-        i -> i.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets)).apply(i, TicketStorage::fromPacked)
++        i -> i.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets))
++                .and(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.defineExtraStorageParams())
++                .apply(i, (tickets, neoData) -> net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readStoredTickets(TicketStorage::fromPacked, tickets, neoData))
      );
-     public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>("chunks", TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
-     private final Long2ObjectOpenHashMap<List<Ticket>> tickets;
-@@ -49,6 +_,7 @@
-         this.tickets = p_393873_;
-         this.deactivatedTickets = p_394615_;
+     public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>(
+         Identifier.withDefaultNamespace("chunk_tickets"), TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS
+@@ -50,6 +_,7 @@
+         this.tickets = tickets;
+         this.deactivatedTickets = deactivatedTickets;
          this.updateForcedChunks();
 +        this.updateForcedNaturalSpawning();
      }
  
      public TicketStorage() {
-@@ -172,6 +_,7 @@
-         if (p_394469_.getType().equals(TicketType.FORCED)) {
-             this.chunksWithForcedTickets.add(p_394247_);
+@@ -173,6 +_,7 @@
+         if (ticket.getType().equals(TicketType.FORCED)) {
+             this.chunksWithForcedTickets.add(key);
          }
-+        if (p_394469_.getType().forceNaturalSpawning()) chunksWithForceNaturalSpawning.add(p_394247_);
++        if (ticket.getType().forceNaturalSpawning()) chunksWithForceNaturalSpawning.add(key);
  
          this.setDirty();
          return true;
-@@ -258,6 +_,7 @@
-                 if (p_394054_.getType().equals(TicketType.FORCED)) {
+@@ -259,6 +_,7 @@
+                 if (ticket.getType().equals(TicketType.FORCED)) {
                      this.updateForcedChunks();
                  }
-+                if (p_394054_.getType().forceNaturalSpawning()) this.updateForcedNaturalSpawning();
++                if (ticket.getType().forceNaturalSpawning()) this.updateForcedNaturalSpawning();
  
                  this.setDirty();
                  return true;
-@@ -300,11 +_,14 @@
+@@ -301,11 +_,14 @@
  
      public void deactivateTicketsOnClosing() {
-         this.removeTicketIf((p_394604_, p_435717_) -> p_394604_.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
+         this.removeTicketIf((ticket, chunkPos) -> ticket.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
 +        blockForcedChunks.deactivateTicketsOnClosing();
 +        entityForcedChunks.deactivateTicketsOnClosing();
      }
  
-     public void removeTicketIf(TicketStorage.TicketPredicate p_435606_, @Nullable Long2ObjectOpenHashMap<List<Ticket>> p_393746_) {
-         ObjectIterator<Entry<List<Ticket>>> objectiterator = this.tickets.long2ObjectEntrySet().fastIterator();
-         boolean flag = false;
+     public void removeTicketIf(TicketStorage.TicketPredicate predicate, @Nullable Long2ObjectOpenHashMap<List<Ticket>> removedTickets) {
+         ObjectIterator<Entry<List<Ticket>>> ticketsPerChunkIterator = this.tickets.long2ObjectEntrySet().fastIterator();
+         boolean removedForced = false;
 +        boolean updateNaturalSpawning = false;
  
-         while (objectiterator.hasNext()) {
-             Entry<List<Ticket>> entry = objectiterator.next();
-@@ -333,6 +_,7 @@
+         while (ticketsPerChunkIterator.hasNext()) {
+             Entry<List<Ticket>> entry = ticketsPerChunkIterator.next();
+@@ -334,6 +_,7 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
-                         flag = true;
+                         removedForced = true;
                      }
 +                    if (ticket.getType().forceNaturalSpawning()) updateNaturalSpawning = true;
                  }
              }
  
-@@ -355,6 +_,7 @@
-         if (flag) {
+@@ -356,6 +_,7 @@
+         if (removedForced) {
              this.updateForcedChunks();
          }
 +        if (updateNaturalSpawning) this.updateForcedNaturalSpawning();
      }
  
-     public void replaceTicketLevelOfType(int p_393875_, TicketType p_394261_) {
-@@ -408,5 +_,26 @@
+     public void replaceTicketLevelOfType(int newLevel, TicketType ticketType) {
+@@ -409,5 +_,26 @@
  
      public interface TicketPredicate {
-         boolean test(Ticket p_434782_, long p_434387_);
+         boolean test(Ticket ticket, long chunkPos);
 +    }
 +
 +    // Neo: Keep track of forced loaded chunks caused by entities or blocks.
@@ -89,6 +90,6 @@
 +    }
 +
 +    public boolean shouldForceNaturalSpawning(ChunkPos chunkPos) {
-+        return chunksWithForceNaturalSpawning.contains(chunkPos.toLong());
++        return chunksWithForceNaturalSpawning.contains(chunkPos.pack());
      }
  }

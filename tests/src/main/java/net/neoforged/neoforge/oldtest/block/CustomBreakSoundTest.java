@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.animal.cow.CowSoundVariants;
+import net.minecraft.world.entity.animal.pig.PigSoundVariants;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.Level;
@@ -64,9 +66,9 @@ public class CustomBreakSoundTest {
                 @Override
                 public boolean playBreakSound(BlockState state, Level level, BlockPos pos) {
                     SoundEvent sound = switch (Math.abs(pos.getX()) % 3) {
-                        case 0 -> SoundEvents.COW_HURT;
+                        case 0 -> SoundEvents.COW_SOUNDS.get(CowSoundVariants.SoundSet.CLASSIC).hurtSound().value();
                         case 1 -> SoundEvents.ZOMBIE_DEATH;
-                        case 2 -> SoundEvents.PIG_HURT;
+                        case 2 -> SoundEvents.PIG_SOUNDS.get(PigSoundVariants.SoundSet.CLASSIC).adultSounds().hurtSound().value();
                         default -> throw new IncompatibleClassChangeError();
                     };
                     level.playLocalSound(pos, sound, SoundSource.BLOCKS, 1.0F, 0.8F, false);

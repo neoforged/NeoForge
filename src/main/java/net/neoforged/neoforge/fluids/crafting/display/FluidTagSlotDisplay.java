@@ -29,8 +29,8 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  */
 public record FluidTagSlotDisplay(TagKey<Fluid> tag) implements SlotDisplay {
     public static final MapCodec<FluidTagSlotDisplay> MAP_CODEC = RecordCodecBuilder.mapCodec(
-            p_379704_ -> p_379704_.group(TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(FluidTagSlotDisplay::tag))
-                    .apply(p_379704_, FluidTagSlotDisplay::new));
+            i -> i.group(TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(FluidTagSlotDisplay::tag))
+                    .apply(i, FluidTagSlotDisplay::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidTagSlotDisplay> STREAM_CODEC = StreamCodec.composite(
             TagKey.streamCodec(Registries.FLUID), FluidTagSlotDisplay::tag, FluidTagSlotDisplay::new);
 
@@ -46,9 +46,9 @@ public record FluidTagSlotDisplay(TagKey<Fluid> tag) implements SlotDisplay {
             if (registries != null) {
                 return registries.lookupOrThrow(Registries.FLUID)
                         .get(this.tag)
-                        .map(p_380858_ -> p_380858_.stream().map(fluids::forStack))
+                        .map(t -> t.stream().map(fluids::forStack))
                         .stream()
-                        .flatMap(p_380859_ -> p_380859_);
+                        .flatMap(s -> s);
             }
         }
 

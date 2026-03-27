@@ -1,46 +1,48 @@
 --- a/net/minecraft/world/inventory/GrindstoneMenu.java
 +++ b/net/minecraft/world/inventory/GrindstoneMenu.java
-@@ -38,6 +_,7 @@
+@@ -42,6 +_,7 @@
          }
      };
      private final ContainerLevelAccess access;
 +    private int xp = -1;
  
-     public GrindstoneMenu(int p_39563_, Inventory p_39564_) {
-         this(p_39563_, p_39564_, ContainerLevelAccess.NULL);
-@@ -49,13 +_,13 @@
-         this.addSlot(new Slot(this.repairSlots, 0, 49, 19) {
+     public GrindstoneMenu(int containerId, Inventory inventory) {
+         this(containerId, inventory, ContainerLevelAccess.NULL);
+@@ -57,7 +_,7 @@
+ 
              @Override
-             public boolean mayPlace(ItemStack p_39607_) {
--                return p_39607_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39607_);
-+                return p_39607_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39607_) || p_39607_.canGrindstoneRepair();
+             public boolean mayPlace(ItemStack itemStack) {
+-                return itemStack.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(itemStack);
++                return itemStack.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(itemStack) || itemStack.canGrindstoneRepair();
              }
          });
          this.addSlot(new Slot(this.repairSlots, 1, 49, 40) {
+@@ -67,7 +_,7 @@
+ 
              @Override
-             public boolean mayPlace(ItemStack p_39616_) {
--                return p_39616_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39616_);
-+                return p_39616_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39616_) || p_39616_.canGrindstoneRepair();
+             public boolean mayPlace(ItemStack itemStack) {
+-                return itemStack.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(itemStack);
++                return itemStack.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(itemStack) || itemStack.canGrindstoneRepair();
              }
          });
          this.addSlot(new Slot(this.resultSlots, 2, 129, 34) {
-@@ -66,6 +_,7 @@
+@@ -82,6 +_,7 @@
  
              @Override
-             public void onTake(Player p_150574_, ItemStack p_150575_) {
-+                if (net.neoforged.neoforge.common.CommonHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, p_39568_, p_150574_, this::getExperienceAmount)) return;
-                 p_39568_.execute((p_39634_, p_39635_) -> {
-                     if (p_39634_ instanceof ServerLevel) {
-                         ExperienceOrb.award((ServerLevel)p_39634_, Vec3.atCenterOf(p_39635_), this.getExperienceAmount(p_39634_));
-@@ -78,6 +_,7 @@
+             public void onTake(Player player, ItemStack carried) {
++                if (net.neoforged.neoforge.common.CommonHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, access, player, this::getExperienceAmount)) return;
+                 access.execute((level, pos) -> {
+                     if (level instanceof ServerLevel) {
+                         ExperienceOrb.award((ServerLevel)level, Vec3.atCenterOf(pos), this.getExperienceAmount(level));
+@@ -94,6 +_,7 @@
              }
  
-             private int getExperienceAmount(Level p_39632_) {
+             private int getExperienceAmount(Level level) {
 +                if (xp > -1) return xp;
-                 int i = 0;
-                 i += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
-                 i += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
-@@ -116,6 +_,8 @@
+                 int amount = 0;
+                 amount += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
+                 amount += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
+@@ -132,6 +_,8 @@
      }
  
      private void createResult() {
@@ -49,20 +51,20 @@
          this.resultSlots.setItem(0, this.computeResult(this.repairSlots.getItem(0), this.repairSlots.getItem(1)));
          this.broadcastChanges();
      }
-@@ -146,7 +_,7 @@
-             int k = p_332686_.getMaxDamage() - p_332686_.getDamageValue();
-             int l = j + k + i * 5 / 100;
-             int i1 = 1;
--            if (!p_332723_.isDamageableItem()) {
-+            if (!p_332723_.isDamageableItem() || !p_332723_.isCombineRepairable()) {
-                 if (p_332723_.getMaxStackSize() < 2 || !ItemStack.matches(p_332723_, p_332686_)) {
+@@ -162,7 +_,7 @@
+             int remaining2 = additional.getMaxDamage() - additional.getDamageValue();
+             int remaining = remaining1 + remaining2 + durability * 5 / 100;
+             int count = 1;
+-            if (!input.isDamageableItem()) {
++            if (!input.isDamageableItem() || !input.isCombineRepairable()) {
+                 if (input.getMaxStackSize() < 2 || !ItemStack.matches(input, additional)) {
                      return ItemStack.EMPTY;
                  }
-@@ -158,6 +_,7 @@
-             if (itemstack.isDamageableItem()) {
-                 itemstack.set(DataComponents.MAX_DAMAGE, i);
-                 itemstack.setDamageValue(Math.max(i - l, 0));
-+                if (!p_332686_.isCombineRepairable()) itemstack.setDamageValue(p_332723_.getDamageValue());
+@@ -174,6 +_,7 @@
+             if (newItem.isDamageableItem()) {
+                 newItem.set(DataComponents.MAX_DAMAGE, durability);
+                 newItem.setDamageValue(Math.max(durability - remaining, 0));
++                if (!additional.isCombineRepairable()) newItem.setDamageValue(input.getDamageValue());
              }
  
-             this.mergeEnchantsFrom(itemstack, p_332686_);
+             this.mergeEnchantsFrom(newItem, additional);

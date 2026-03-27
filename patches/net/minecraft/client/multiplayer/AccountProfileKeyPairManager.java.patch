@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/multiplayer/AccountProfileKeyPairManager.java
 +++ b/net/minecraft/client/multiplayer/AccountProfileKeyPairManager.java
-@@ -76,6 +_,8 @@
-                     this.writeProfileKeyPair(profilekeypair);
-                     return Optional.ofNullable(profilekeypair);
-                 } catch (CryptException | MinecraftClientException | IOException ioexception) {
+@@ -75,6 +_,8 @@
+                     this.writeProfileKeyPair(fetchedKeyPair);
+                     return Optional.ofNullable(fetchedKeyPair);
+                 } catch (CryptException | MinecraftClientException | IOException var3) {
 +                    // Forge: The offline user api service always returns a null profile key pair, so let's hide this useless exception if in dev
 +                    if (net.neoforged.fml.loading.FMLEnvironment.isProduction() || this.userApiService != UserApiService.OFFLINE)
-                     LOGGER.error("Failed to retrieve profile key pair", (Throwable)ioexception);
+                     LOGGER.error("Failed to retrieve profile key pair", (Throwable)var3);
                      this.writeProfileKeyPair(null);
-                     return p_254074_;
+                     return cachedKeyPair;

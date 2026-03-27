@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/entity/ai/village/poi/PoiType.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiType.java
 @@ -9,7 +_,7 @@
-     public static final Predicate<Holder<PoiType>> NONE = p_218041_ -> false;
+     public static final Predicate<Holder<PoiType>> NONE = poiType -> false;
  
      public PoiType(Set<BlockState> matchingStates, int maxTickets, int validRange) {
 -        matchingStates = Set.copyOf(matchingStates);

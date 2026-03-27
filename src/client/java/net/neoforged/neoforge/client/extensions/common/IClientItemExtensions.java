@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -160,7 +159,7 @@ public interface IClientItemExtensions {
      * @param guiGraphics   The gui graphics
      * @param deltaTracker  The delta tracker
      */
-    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
+    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}
@@ -212,7 +211,7 @@ public interface IClientItemExtensions {
      * @return a default color for the layer, in ARGB format
      */
     default int getDefaultDyeColor(ItemStack stack) {
-        return stack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(stack, 0) : 0;
+        return DyedItemColor.getOrDefault(stack, 0);
     }
 
     /**

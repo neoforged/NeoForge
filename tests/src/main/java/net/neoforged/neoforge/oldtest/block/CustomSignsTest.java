@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -80,11 +79,8 @@ public class CustomSignsTest {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
-        BlockEntityRenderers.register(CUSTOM_SIGN.get(), SignRenderer::new);
+        BlockEntityRenderers.register(CUSTOM_SIGN.get(), StandingSignRenderer::new);
         BlockEntityRenderers.register(CUSTOM_HANGING_SIGN.get(), HangingSignRenderer::new);
-        event.enqueueWork(() -> {
-            Sheets.addWoodType(TEST_WOOD_TYPE);
-        });
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

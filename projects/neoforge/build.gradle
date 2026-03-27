@@ -21,7 +21,7 @@ evaluationDependsOn(":neoforge-coremods")
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '21.6'
+    from '26.1.0'
     disableAutomaticPublicationRegistration()
 }
 
@@ -97,11 +97,6 @@ dependencies {
             requireCapability 'net.neoforged:neoform'
         }
         endorseStrictVersions()
-    }
-    neoFormMappings("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
-        capabilities {
-            requireCapability 'net.neoforged:neoform-parameter-mappings'
-        }
     }
     neoFormDependencies("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
         capabilities {
@@ -260,22 +255,18 @@ generateAccessTransformers {
             fieldsOfType(named('net/minecraft/resources/ResourceKey'))
     )
 
-    // Make all villager item listings classes and constructors public for use in custom trades
-    classGroup(
-            'villager item listings', PUBLIC,
-            classesWithSuperclass('net/minecraft/world/entity/npc/villager/VillagerTrades$ItemListing')
-    )
-    methodGroup(
-            'villager item listing constructors', PUBLIC,
-            classesWithSuperclass('net/minecraft/world/entity/npc/villager/VillagerTrades$ItemListing'),
-            named('<init>')
-    )
-
     // Make all DebugScreenEntry groups public
     fieldGroup(
             'DebugScreenEntry groups', PUBLIC,
             classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
             fieldsOfType(named('net/minecraft/resources/Identifier'))
+    )
+
+    // Make all BuiltInBlockModels factory methods public
+    methodGroup(
+            'BuiltInBlockModels factory methods', PUBLIC,
+            named('net/minecraft/client/renderer/block/BuiltInBlockModels'),
+            or(or(nameStartsWith('create'), nameStartsWith('special')), named('combineSpecialAndBlockModels'))
     )
 }
 
@@ -422,18 +413,6 @@ configurations {
         // Publish it
         javaComponent.addVariantsFromConfiguration(it) {}
     }
-    changelog {
-        canBeDeclared = false
-        canBeResolved = false
-        attributes {
-            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
-            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "changelog"))
-        }
-        // Publish it, but only for release versions
-        if (!rootProject.isPreReleaseVersion) {
-            javaComponent.addVariantsFromConfiguration(it) {}
-        }
-    }
     modDevApiElements {
         canBeDeclared = false
         canBeResolved = false
@@ -489,6 +468,18 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    changelog {
+        canBeDeclared = false
+        canBeResolved = false
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "changelog"))
+        }
+        // Publish it, but only for release versions
+        if (!rootProject.isPreReleaseVersion) {
+            javaComponent.addVariantsFromConfiguration(it) {}
+        }
+    }
 }
 
 sourcesJar {
@@ -496,18 +487,6 @@ sourcesJar {
 }
 javadoc {
     source += sourceSets.client.allSource
-}
-
-processResources {
-    inputs.property("version", project.version)
-    final version = project.version
-    filesMatching("META-INF/neoforge.mods.toml") {
-        expand([
-                "global": [
-                        "neoForgeVersion": version
-                ]
-        ])
-    }
 }
 
 artifacts {
@@ -556,6 +535,13 @@ publishing {
                 url = 'https://github.com/NeoForged/NeoForge'
                 connection = 'scm:git:git://github.com/NeoForged/NeoForge.git'
                 developerConnection = 'scm:git:git@github.com:NeoForged/NeoForge.git'
+                // Set tag in pom.xml to allow tracing back to the source-code for this release
+                tag = (providers.environmentVariable("GITHUB_REF").map { ref ->
+                    if (ref.startsWith("refs/tags/")) {
+                        return ref.substring("refs/tags/".length())
+                    }
+                    return null
+                }).orElse(providers.environmentVariable("GITHUB_SHA"))
             }
 
             issueManagement {

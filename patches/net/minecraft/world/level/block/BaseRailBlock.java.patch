@@ -3,41 +3,41 @@
 @@ -52,7 +_,7 @@
  
      @Override
-     protected VoxelShape getShape(BlockState p_49403_, BlockGetter p_49404_, BlockPos p_49405_, CollisionContext p_49406_) {
--        return p_49403_.getValue(this.getShapeProperty()).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
-+        return getRailDirection(p_49403_, p_49404_, p_49405_, null).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
+     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+-        return state.getValue(this.getShapeProperty()).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
++        return getRailDirection(state, level, pos, null).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
      }
  
      @Override
 @@ -79,7 +_,7 @@
      @Override
-     protected void neighborChanged(BlockState p_49377_, Level p_49378_, BlockPos p_49379_, Block p_49380_, @Nullable Orientation p_361387_, boolean p_49382_) {
-         if (!p_49378_.isClientSide() && p_49378_.getBlockState(p_49379_).is(this)) {
--            RailShape railshape = p_49377_.getValue(this.getShapeProperty());
-+            RailShape railshape = getRailDirection(p_49377_, p_49378_, p_49379_, null);
-             if (shouldBeRemoved(p_49379_, p_49378_, railshape)) {
-                 dropResources(p_49377_, p_49378_, p_49379_);
-                 p_49378_.removeBlock(p_49379_, p_49382_);
+     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
+         if (!level.isClientSide() && level.getBlockState(pos).is(this)) {
+-            RailShape shape = state.getValue(this.getShapeProperty());
++            RailShape shape = getRailDirection(state, level, pos, null);
+             if (shouldBeRemoved(pos, level, shape)) {
+                 dropResources(state, level, pos);
+                 level.removeBlock(pos, movedByPiston);
 @@ -115,7 +_,7 @@
-         if (p_49368_.isClientSide()) {
-             return p_49370_;
+         if (level.isClientSide()) {
+             return state;
          } else {
--            RailShape railshape = p_49370_.getValue(this.getShapeProperty());
-+            RailShape railshape = getRailDirection(p_49370_, p_49368_, p_49369_, null);
-             return new RailState(p_49368_, p_49369_, p_49370_).place(p_49368_.hasNeighborSignal(p_49369_), p_49371_, railshape).getState();
+-            RailShape current = state.getValue(this.getShapeProperty());
++            RailShape current = getRailDirection(state, level, pos, null);
+             return new RailState(level, pos, state).place(level.hasNeighborSignal(pos), first, current).getState();
          }
      }
 @@ -123,7 +_,7 @@
      @Override
-     protected void affectNeighborsAfterRemoval(BlockState p_393821_, ServerLevel p_394170_, BlockPos p_394092_, boolean p_393869_) {
-         if (!p_393869_) {
--            if (p_393821_.getValue(this.getShapeProperty()).isSlope()) {
-+            if (getRailDirection(p_393821_, p_394170_, p_394092_, null).isSlope()) {
-                 p_394170_.updateNeighborsAt(p_394092_.above(), this);
+     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+         if (!movedByPiston) {
+-            if (state.getValue(this.getShapeProperty()).isSlope()) {
++            if (getRailDirection(state, level, pos, null).isSlope()) {
+                 level.updateNeighborsAt(pos.above(), this);
              }
  
 @@ -144,6 +_,11 @@
-         return blockstate.setValue(this.getShapeProperty(), flag1 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, flag);
+         return state.setValue(this.getShapeProperty(), isEastWest ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, isWaterSource);
      }
  
 +    /**
@@ -47,11 +47,11 @@
 +    @Deprecated
      public abstract Property<RailShape> getShapeProperty();
  
-     protected RailShape rotate(RailShape p_418148_, Rotation p_418036_) {
+     protected RailShape rotate(RailShape shape, Rotation rotation) {
 @@ -299,5 +_,15 @@
      @Override
-     protected FluidState getFluidState(BlockState p_152158_) {
-         return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);
+     protected FluidState getFluidState(BlockState state) {
+         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 +    }
 +
 +    @Override

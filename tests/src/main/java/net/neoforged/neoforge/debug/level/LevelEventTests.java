@@ -58,7 +58,7 @@ public class LevelEventTests {
     @TestHolder(description = "Tests if the alter ground event is fired, replacing podzol with redstone blocks")
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
-                .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
+                .fill(0, 0, 0, 15, 0, 15, Blocks.GRASS_BLOCK.defaultBlockState())
                 .set(7, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(8, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(7, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState())
@@ -66,9 +66,9 @@ public class LevelEventTests {
 
         test.eventListeners().forge().addListener((final AlterGroundEvent event) -> {
             final AlterGroundEvent.StateProvider old = event.getStateProvider();
-            event.setStateProvider((rand, pos) -> {
-                final BlockState state = old.getState(rand, pos);
-                return state.is(Blocks.PODZOL) ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
+            event.setStateProvider((level, rand, pos) -> {
+                final BlockState state = old.getState(level, rand, pos);
+                return state != null && state.is(Blocks.PODZOL) ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
             });
         });
 

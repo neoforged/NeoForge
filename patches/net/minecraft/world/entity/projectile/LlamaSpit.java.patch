@@ -2,9 +2,9 @@
 +++ b/net/minecraft/world/entity/projectile/LlamaSpit.java
 @@ -43,6 +_,7 @@
          super.tick();
-         Vec3 vec3 = this.getDeltaMovement();
-         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-+        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
-         this.hitTargetOrDeflectSelf(hitresult);
-         double d0 = this.getX() + vec3.x;
-         double d1 = this.getY() + vec3.y;
+         Vec3 movement = this.getDeltaMovement();
+         HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
++        if (hitResult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitResult))
+         this.hitTargetOrDeflectSelf(hitResult);
+         double x = this.getX() + movement.x;
+         double y = this.getY() + movement.y;

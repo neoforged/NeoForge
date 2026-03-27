@@ -33,6 +33,7 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.process.ExecOperations;
 import org.gradle.process.JavaExecSpec;
 
@@ -87,9 +88,13 @@ public abstract class RunProductionClient extends JavaExec {
     @InputFile
     public abstract RegularFileProperty getOriginalClientJar();
 
+    @Input
+    public abstract Property<Integer> getJavaRuntimeVersion();
+
     @Inject
     public RunProductionClient(ExecOperations execOperations) {
         this.execOperations = execOperations;
+        getJavaLauncher().set(getJavaToolchainService().launcherFor(spec -> spec.getLanguageVersion().set(getJavaRuntimeVersion().map(JavaLanguageVersion::of))));
     }
 
     @TaskAction
@@ -138,6 +143,8 @@ public abstract class RunProductionClient extends JavaExec {
         placeholders.put("classpath_separator", File.pathSeparator);
 
         execOperations.javaexec(spec -> {
+            spec.executable(getJavaLauncher().get().getExecutablePath().getAsFile());
+
             // The JVM args at this point may include debugging options when started through IntelliJ
             spec.jvmArgs(getJvmArguments().get());
             spec.workingDir(installDir);

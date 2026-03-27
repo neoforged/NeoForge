@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -156,6 +_,7 @@
-         if (!p_49282_.is(p_49279_.getBlock())) {
-             if (inPortalDimension(p_49280_)) {
-                 Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(p_49280_, p_49281_, Direction.Axis.X);
-+                optional = net.neoforged.neoforge.event.EventHooks.onTrySpawnPortal(p_49280_, p_49281_, optional);
-                 if (optional.isPresent()) {
-                     optional.get().createPortalBlocks(p_49280_);
+@@ -154,6 +_,7 @@
+         if (!oldState.is(state.getBlock())) {
+             if (inPortalDimension(level)) {
+                 Optional<PortalShape> optionalShape = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X);
++                optionalShape = net.neoforged.neoforge.event.EventHooks.onTrySpawnPortal(level, pos, optionalShape);
+                 if (optionalShape.isPresent()) {
+                     optionalShape.get().createPortalBlocks(level);
                      return;
-@@ -198,7 +_,7 @@
-             boolean flag = false;
+@@ -196,7 +_,7 @@
+             boolean hasObsidian = false;
  
-             for (Direction direction : Direction.values()) {
--                if (p_49270_.getBlockState(blockpos$mutableblockpos.set(p_49271_).move(direction)).is(Blocks.OBSIDIAN)) {
-+                if (p_49270_.getBlockState(blockpos$mutableblockpos.set(p_49271_).move(direction)).isPortalFrame(p_49270_, blockpos$mutableblockpos)) {
-                     flag = true;
+             for (Direction face : Direction.values()) {
+-                if (level.getBlockState(testPos.set(pos).move(face)).is(Blocks.OBSIDIAN)) {
++                if (level.getBlockState(testPos.set(pos).move(face)).isPortalFrame(level, testPos)) {
+                     hasObsidian = true;
                      break;
                  }

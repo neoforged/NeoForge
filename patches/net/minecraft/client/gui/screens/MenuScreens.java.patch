@@ -3,23 +3,23 @@
 @@ -41,18 +_,27 @@
      private static final Map<MenuType<?>, MenuScreens.ScreenConstructor<?, ?>> SCREENS = Maps.newHashMap();
  
-     public static <T extends AbstractContainerMenu> void create(MenuType<T> p_96202_, Minecraft p_96203_, int p_96204_, Component p_96205_) {
-+        getScreenFactory(p_96202_).ifPresent(f -> f.fromPacket(p_96205_, p_96202_, p_96203_, p_96204_));
+     public static <T extends AbstractContainerMenu> void create(MenuType<T> type, Minecraft minecraft, int containerId, Component title) {
++        getScreenFactory(type).ifPresent(f -> f.fromPacket(title, type, minecraft, containerId));
 +    }
 +
-+    public static <T extends AbstractContainerMenu> java.util.Optional<ScreenConstructor<T, ?>> getScreenFactory(MenuType<T> p_96202_) {
-         MenuScreens.ScreenConstructor<T, ?> screenconstructor = getConstructor(p_96202_);
-         if (screenconstructor == null) {
-             LOGGER.warn("Failed to create screen for menu type: {}", BuiltInRegistries.MENU.getKey(p_96202_));
++    public static <T extends AbstractContainerMenu> java.util.Optional<ScreenConstructor<T, ?>> getScreenFactory(MenuType<T> type) {
+         MenuScreens.ScreenConstructor<T, ?> constructor = getConstructor(type);
+         if (constructor == null) {
+             LOGGER.warn("Failed to create screen for menu type: {}", BuiltInRegistries.MENU.getKey(type));
          } else {
--            screenconstructor.fromPacket(p_96205_, p_96202_, p_96203_, p_96204_);
-+            return java.util.Optional.of(screenconstructor);
+-            constructor.fromPacket(title, type, minecraft, containerId);
++            return java.util.Optional.of(constructor);
          }
 +        return java.util.Optional.empty();
      }
  
-     private static <T extends AbstractContainerMenu> MenuScreens.@Nullable ScreenConstructor<T, ?> getConstructor(MenuType<T> p_96200_) {
-         return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(p_96200_);
+     private static <T extends AbstractContainerMenu> MenuScreens.@Nullable ScreenConstructor<T, ?> getConstructor(MenuType<T> type) {
+         return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(type);
      }
  
 +    /**
@@ -27,11 +27,11 @@
 +     */
 +    @Deprecated
      private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
-         MenuType<? extends M> p_96207_, MenuScreens.ScreenConstructor<M, U> p_96208_
+         MenuType<? extends M> type, MenuScreens.ScreenConstructor<M, U> factory
      ) {
 @@ -60,6 +_,12 @@
-         if (screenconstructor != null) {
-             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(p_96207_));
+         if (prev != null) {
+             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(type));
          }
 +    }
 +

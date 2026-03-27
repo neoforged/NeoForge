@@ -1,26 +1,24 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -77,11 +_,11 @@
+@@ -76,9 +_,9 @@
                          }
                      }
  
--                    SoundType soundtype = blockstate1.getSoundType();
-+                    SoundType soundtype = blockstate1.getSoundType(level, blockpos, p_40577_.getPlayer());
+-                    SoundType soundType = placedState.getSoundType();
++                    SoundType soundType = placedState.getSoundType(level, pos, placeContext.getPlayer());
                      level.playSound(
-                         player,
-                         blockpos,
--                        this.getPlaceSound(blockstate1),
-+                        this.getPlaceSound(blockstate1, level, blockpos, p_40577_.getPlayer()),
-                         SoundSource.BLOCKS,
-                         (soundtype.getVolume() + 1.0F) / 2.0F,
-                         soundtype.getPitch() * 0.8F
-@@ -94,8 +_,14 @@
+-                        player, pos, this.getPlaceSound(placedState), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F
++                        player, pos, this.getPlaceSound(placedState, level, pos, placeContext.getPlayer()), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F
+                     );
+                     level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, placedState));
+                     itemStack.consume(1, player);
+@@ -88,8 +_,14 @@
          }
      }
  
 +    @Deprecated //Forge: Use more sensitive version {@link BlockItem#getPlaceSound(BlockState, IBlockReader, BlockPos, Entity) }
-     protected SoundEvent getPlaceSound(BlockState p_40588_) {
-         return p_40588_.getSoundType().getPlaceSound();
+     protected SoundEvent getPlaceSound(BlockState blockState) {
+         return blockState.getSoundType().getPlaceSound();
 +    }
 +
 +    //Forge: Sensitive version of BlockItem#getPlaceSound
@@ -28,4 +26,4 @@
 +        return state.getSoundType(world, pos, entity).getPlaceSound();
      }
  
-     public @Nullable BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
+     public @Nullable BlockPlaceContext updatePlacementContext(BlockPlaceContext context) {

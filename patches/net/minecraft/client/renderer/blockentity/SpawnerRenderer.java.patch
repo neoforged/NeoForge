@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
-@@ -63,4 +_,10 @@
-         p_438990_.submit(p_446169_, p_451126_, 0.0, 0.0, 0.0, p_439357_, p_439460_);
-         p_439357_.popPose();
+@@ -67,4 +_,10 @@
+         entityRenderer.submit(displayEntity, camera, 0.0, 0.0, 0.0, poseStack, submitNodeCollector);
+         poseStack.popPose();
      }
 +
 +    @Override

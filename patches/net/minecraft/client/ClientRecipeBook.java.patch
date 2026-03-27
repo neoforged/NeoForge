@@ -6,14 +6,14 @@
          }
 +        // Neo: Do the same for modded search categories.
 +        for (var entry : net.neoforged.neoforge.client.RecipeBookManager.getSearchCategories().entrySet()) {
-+            map1.put(
++            byCategory.put(
 +                entry.getKey(),
 +                entry.getValue()
 +                    .stream()
-+                    .flatMap(category -> map1.getOrDefault(category, List.of()).stream())
++                    .flatMap(category -> byCategory.getOrDefault(category, List.of()).stream())
 +                    .collect(ImmutableList.toImmutableList())
 +            );
 +        }
  
-         this.collectionsByTab = Map.copyOf(map1);
-         this.allCollections = builder.build();
+         this.collectionsByTab = Map.copyOf(byCategory);
+         this.allCollections = all.build();

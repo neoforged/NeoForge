@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 public class LootTableIdCondition implements LootItemCondition {
     public static final MapCodec<LootTableIdCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -18,7 +17,6 @@ public class LootTableIdCondition implements LootItemCondition {
                     .group(
                             Identifier.CODEC.fieldOf("loot_table_id").forGetter(idCondition -> idCondition.targetLootTableId))
                     .apply(builder, LootTableIdCondition::new));
-    public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(CODEC);
     public static final Identifier UNKNOWN_LOOT_TABLE = Identifier.fromNamespaceAndPath("neoforge", "unknown_loot_table");
 
     private final Identifier targetLootTableId;
@@ -28,8 +26,8 @@ public class LootTableIdCondition implements LootItemCondition {
     }
 
     @Override
-    public LootItemConditionType getType() {
-        return LOOT_TABLE_ID;
+    public MapCodec<? extends LootItemCondition> codec() {
+        return CODEC;
     }
 
     @Override

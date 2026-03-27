@@ -1,47 +1,47 @@
 --- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -383,7 +_,7 @@
-         ItemStack itemstack = p_34868_.getItemInHand(InteractionHand.OFF_HAND);
-         p_34868_.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-         if (p_34868_.isAdult()) {
--            boolean flag = isBarterCurrency(itemstack);
-+            boolean flag = itemstack.isPiglinCurrency();
-             if (p_34869_ && flag) {
-                 throwItems(p_34868_, getBarterResponseItems(p_34868_));
-             } else if (!flag) {
+@@ -385,7 +_,7 @@
+         ItemStack itemStack = body.getItemInHand(InteractionHand.OFF_HAND);
+         body.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+         if (body.isAdult()) {
+-            boolean barterCurrency = isBarterCurrency(itemStack);
++            boolean barterCurrency = itemStack.isPiglinCurrency();
+             if (barteringEnabled && barterCurrency) {
+                 throwItems(body, getBarterResponseItems(body));
+             } else if (!barterCurrency) {
 @@ -467,7 +_,7 @@
              return false;
-         } else if (isAdmiringDisabled(p_34858_) && p_34858_.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+         } else if (isAdmiringDisabled(body) && body.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
              return false;
--        } else if (isBarterCurrency(p_34859_)) {
-+        } else if (p_34859_.isPiglinCurrency()) {
-             return isNotHoldingLovedItemInOffHand(p_34858_);
+-        } else if (isBarterCurrency(itemStack)) {
++        } else if (itemStack.isPiglinCurrency()) {
+             return isNotHoldingLovedItemInOffHand(body);
          } else {
-             boolean flag = p_34858_.canAddToInventory(p_34859_);
-@@ -557,7 +_,7 @@
+             boolean hasSpace = body.canAddToInventory(itemStack);
+@@ -563,7 +_,7 @@
      }
  
-     protected static boolean canAdmire(Piglin p_34910_, ItemStack p_34911_) {
--        return !isAdmiringDisabled(p_34910_) && !isAdmiringItem(p_34910_) && p_34910_.isAdult() && isBarterCurrency(p_34911_);
-+        return !isAdmiringDisabled(p_34910_) && !isAdmiringItem(p_34910_) && p_34910_.isAdult() && p_34911_.isPiglinCurrency();
+     protected static boolean canAdmire(Piglin body, ItemStack playerHeldItemStack) {
+-        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && isBarterCurrency(playerHeldItemStack);
++        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && playerHeldItemStack.isPiglinCurrency();
      }
  
-     protected static void wasHurtBy(ServerLevel p_376829_, Piglin p_34838_, LivingEntity p_34839_) {
-@@ -646,7 +_,7 @@
+     protected static void wasHurtBy(ServerLevel level, Piglin body, LivingEntity attacker) {
+@@ -652,7 +_,7 @@
  
-     public static boolean isWearingSafeArmor(LivingEntity p_371788_) {
-         for (EquipmentSlot equipmentslot : EquipmentSlotGroup.ARMOR) {
--            if (p_371788_.getItemBySlot(equipmentslot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {
-+            if (p_371788_.getItemBySlot(equipmentslot).makesPiglinsNeutral(p_371788_)) {
+     public static boolean isWearingSafeArmor(LivingEntity livingEntity) {
+         for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR) {
+-            if (livingEntity.getItemBySlot(slot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {
++            if (livingEntity.getItemBySlot(slot).makesPiglinsNeutral(livingEntity)) {
                  return true;
              }
          }
-@@ -798,7 +_,7 @@
+@@ -801,7 +_,7 @@
      }
  
-     private static boolean hasCrossbow(LivingEntity p_34919_) {
--        return p_34919_.isHolding(Items.CROSSBOW);
-+        return p_34919_.isHolding(is -> is.getItem() instanceof net.minecraft.world.item.CrossbowItem);
+     private static boolean hasCrossbow(LivingEntity body) {
+-        return body.isHolding(Items.CROSSBOW);
++        return body.isHolding(is -> is.getItem() instanceof net.minecraft.world.item.CrossbowItem);
      }
  
-     private static void admireGoldItem(LivingEntity p_34939_) {
+     private static void admireGoldItem(LivingEntity body) {

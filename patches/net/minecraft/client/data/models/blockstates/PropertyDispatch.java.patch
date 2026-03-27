@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
 +++ b/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
 @@ -103,6 +_,49 @@
-         return new PropertyDispatch.C5<>(p_404784_, p_405605_, p_405623_, p_404668_, p_404790_);
+         return new PropertyDispatch.C5<>(property1, property2, property3, property4, property5);
      }
  
 +    /**

@@ -3,9 +3,9 @@
 @@ -45,6 +_,8 @@
  
      @Override
-     protected boolean canSurvive(BlockState p_48986_, LevelReader p_48987_, BlockPos p_48988_) {
-+        var soilDecision = p_48987_.getBlockState(p_48988_.below()).canSustainPlant(p_48987_, p_48988_.below(), net.minecraft.core.Direction.UP, p_48986_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
++        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return p_48987_.getBlockState(p_48988_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
+         return level.getBlockState(pos.below()).is(BlockTags.SUPPORTS_BAMBOO);
      }
  

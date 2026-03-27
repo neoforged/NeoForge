@@ -36,12 +36,12 @@ public class CustomGlyphProviderTypeTest {
     static void setupGlyphProviderTypeTest(DynamicTest test) {
         test.framework().modEventBus().addListener((AddClientReloadListenersEvent event) -> event.addListener(LISTENER_NAME, new SimplePreparableReloadListener<Void>() {
             @Override
-            protected Void prepare(ResourceManager p_10796_, ProfilerFiller p_10797_) {
+            protected Void prepare(ResourceManager manager, ProfilerFiller profiler) {
                 return null;
             }
 
             @Override
-            protected void apply(Void p_10793_, ResourceManager p_10794_, ProfilerFiller p_10795_) {
+            protected void apply(Void preparations, ResourceManager manager, ProfilerFiller profiler) {
                 final Minecraft minecraft = Minecraft.getInstance();
                 final MutableComponent component = Component.literal("iiiii");
                 final int vanillaWidth = minecraft.font.width(component.withStyle(s -> s

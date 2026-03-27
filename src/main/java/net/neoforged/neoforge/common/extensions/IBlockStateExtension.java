@@ -23,13 +23,14 @@ import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -334,7 +335,7 @@ public interface IBlockStateExtension {
      * @param config        Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
      * @return True to ignore vanilla behaviour
      */
-    default boolean onTreeGrow(LevelReader level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
+    default boolean onTreeGrow(WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
         return self().getBlock().onTreeGrow(self(), level, placeFunction, randomSource, pos, config);
     }
 
@@ -660,7 +661,7 @@ public interface IBlockStateExtension {
      * @param fluidState The state of the fluid
      * @return Whether the fluid overlay texture should be used
      */
-    default boolean shouldDisplayFluidOverlay(BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
+    default boolean shouldDisplayFluidOverlay(BlockAndLightGetter level, BlockPos pos, FluidState fluidState) {
         return self().getBlock().shouldDisplayFluidOverlay(self(), level, pos, fluidState);
     }
 
@@ -773,9 +774,9 @@ public interface IBlockStateExtension {
      * @param queryState The state of the block that is querying the appearance, or {@code null} if not applicable
      * @param queryPos   The position of the block that is querying the appearance, or {@code null} if not applicable
      * @return The appearance of this block from the given side
-     * @see IBlockExtension#getAppearance(BlockState, BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @see IBlockExtension#getAppearance(BlockState, BlockAndLightGetter, BlockPos, Direction, BlockState, BlockPos)
      */
-    default BlockState getAppearance(BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
+    default BlockState getAppearance(BlockAndLightGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
         return self().getBlock().getAppearance(self(), level, pos, side, queryState, queryPos);
     }
 

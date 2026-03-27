@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -68,9 +_,14 @@
-         public int get(int p_58431_) {
-             switch (p_58431_) {
+@@ -72,9 +_,14 @@
+         public int get(int dataId) {
+             switch (dataId) {
                  case 0:
 +                    if (litTotalTime > Short.MAX_VALUE) {
 +                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
@@ -16,115 +16,77 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -104,12 +_,14 @@
+@@ -108,12 +_,14 @@
      };
      private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
      private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
 +    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
  
      protected AbstractFurnaceBlockEntity(
-         BlockEntityType<?> p_154991_, BlockPos p_154992_, BlockState p_154993_, RecipeType<? extends AbstractCookingRecipe> p_154994_
+         BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, RecipeType<? extends AbstractCookingRecipe> recipeType
      ) {
-         super(p_154991_, p_154992_, p_154993_);
-         this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
-+        this.recipeType = p_154994_;
+         super(type, worldPosition, blockState);
+         this.quickCheck = RecipeManager.createCheck(recipeType);
++        this.recipeType = recipeType;
      }
  
-     private boolean isLit() {
+     @Override
 @@ -121,10 +_,10 @@
-         super.loadAdditional(p_421736_);
+         super.loadAdditional(input);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-         ContainerHelper.loadAllItems(p_421736_, this.items);
--        this.cookingTimer = p_421736_.getShortOr("cooking_time_spent", (short)0);
--        this.cookingTotalTime = p_421736_.getShortOr("cooking_total_time", (short)0);
--        this.litTimeRemaining = p_421736_.getShortOr("lit_time_remaining", (short)0);
--        this.litTotalTime = p_421736_.getShortOr("lit_total_time", (short)0);
-+        this.cookingTimer = p_421736_.getIntOr("cooking_time_spent", (short)0);
-+        this.cookingTotalTime = p_421736_.getIntOr("cooking_total_time", (short)0);
-+        this.litTimeRemaining = p_421736_.getIntOr("lit_time_remaining", (short)0);
-+        this.litTotalTime = p_421736_.getIntOr("lit_total_time", (short)0);
+         ContainerHelper.loadAllItems(input, this.items);
+-        this.cookingTimer = input.getShortOr("cooking_time_spent", (short)0);
+-        this.cookingTotalTime = input.getShortOr("cooking_total_time", (short)0);
+-        this.litTimeRemaining = input.getShortOr("lit_time_remaining", (short)0);
+-        this.litTotalTime = input.getShortOr("lit_total_time", (short)0);
++        this.cookingTimer = input.getIntOr("cooking_time_spent", (short)0);
++        this.cookingTotalTime = input.getIntOr("cooking_total_time", (short)0);
++        this.litTimeRemaining = input.getIntOr("lit_time_remaining", (short)0);
++        this.litTotalTime = input.getIntOr("lit_total_time", (short)0);
          this.recipesUsed.clear();
-         this.recipesUsed.putAll(p_421736_.read("RecipesUsed", RECIPES_USED_CODEC).orElse(Map.of()));
+         this.recipesUsed.putAll(input.read("RecipesUsed", RECIPES_USED_CODEC).orElse(Map.of()));
      }
 @@ -132,10 +_,10 @@
      @Override
-     protected void saveAdditional(ValueOutput p_421785_) {
-         super.saveAdditional(p_421785_);
--        p_421785_.putShort("cooking_time_spent", (short)this.cookingTimer);
--        p_421785_.putShort("cooking_total_time", (short)this.cookingTotalTime);
--        p_421785_.putShort("lit_time_remaining", (short)this.litTimeRemaining);
--        p_421785_.putShort("lit_total_time", (short)this.litTotalTime);
-+        p_421785_.putInt("cooking_time_spent", this.cookingTimer);
-+        p_421785_.putInt("cooking_total_time", this.cookingTotalTime);
-+        p_421785_.putInt("lit_time_remaining", this.litTimeRemaining);
-+        p_421785_.putInt("lit_total_time", this.litTotalTime);
-         ContainerHelper.saveAllItems(p_421785_, this.items);
-         p_421785_.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
+     protected void saveAdditional(ValueOutput output) {
+         super.saveAdditional(output);
+-        output.putShort("cooking_time_spent", (short)this.cookingTimer);
+-        output.putShort("cooking_total_time", (short)this.cookingTotalTime);
+-        output.putShort("lit_time_remaining", (short)this.litTimeRemaining);
+-        output.putShort("lit_total_time", (short)this.litTotalTime);
++        output.putInt("cooking_time_spent", this.cookingTimer);
++        output.putInt("cooking_total_time", this.cookingTotalTime);
++        output.putInt("lit_time_remaining", this.litTimeRemaining);
++        output.putInt("lit_total_time", this.litTotalTime);
+         ContainerHelper.saveAllItems(output, this.items);
+         output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
      }
-@@ -166,11 +_,15 @@
-                 p_155017_.litTotalTime = p_155017_.litTimeRemaining;
-                 if (p_155017_.isLit()) {
-                     flag1 = true;
-+                    var remainder = itemstack.getCraftingRemainder();
-+                    if (!remainder.isEmpty())
-+                        p_155017_.items.set(1, remainder);
-+                    else
-                     if (flag3) {
-                         Item item = itemstack.getItem();
-                         itemstack.shrink(1);
-                         if (itemstack.isEmpty()) {
--                            p_155017_.items.set(1, item.getCraftingRemainder());
-+                            p_155017_.items.set(1, item.getCraftingRemainder()); // Neo: Remainder is handled in the `if` check above.
-                         }
-                     }
-                 }
-@@ -223,9 +_,9 @@
-                 } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
-                     return false;
-                 } else {
--                    return itemstack1.getCount() < p_155008_ && itemstack1.getCount() < itemstack1.getMaxStackSize()
-+                    return itemstack1.getCount() + itemstack.getCount() <= p_155008_ && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize() // Neo fix: make furnace respect stack sizes in furnace recipes
-                         ? true
--                        : itemstack1.getCount() < itemstack.getMaxStackSize();
-+                        : itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize(); // Neo fix: make furnace respect stack sizes in furnace recipes
-                 }
-             }
-         } else {
-@@ -247,7 +_,7 @@
-             if (itemstack2.isEmpty()) {
-                 p_267073_.set(2, itemstack1.copy());
-             } else if (ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) {
--                itemstack2.grow(1);
-+                itemstack2.grow(itemstack1.getCount());
-             }
- 
-             if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -262,7 +_,7 @@
+@@ -248,7 +_,7 @@
      }
  
-     protected int getBurnDuration(FuelValues p_363501_, ItemStack p_58343_) {
--        return p_363501_.burnDuration(p_58343_);
-+        return p_58343_.getBurnTime(this.recipeType, p_363501_);
+     protected int getBurnDuration(FuelValues fuelValues, ItemStack itemStack) {
+-        return fuelValues.burnDuration(itemStack);
++        return itemStack.getBurnTime(this.recipeType, fuelValues);
      }
  
-     private static int getTotalCookTime(ServerLevel p_380169_, AbstractFurnaceBlockEntity p_222694_) {
-@@ -306,17 +_,57 @@
+     private static int getTotalCookTime(ServerLevel level, AbstractFurnaceBlockEntity entity) {
+@@ -292,17 +_,57 @@
  
      @Override
-     public void setItem(int p_58333_, ItemStack p_58334_) {
-+        setItem(p_58333_, p_58334_, false);
+     public void setItem(int slot, ItemStack itemStack) {
++        setItem(slot, itemStack, false);
 +    }
 +
 +    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
 +    @Override
-+    public void setItem(int p_58333_, ItemStack p_58334_, boolean insideTransaction) {
-         ItemStack itemstack = this.items.get(p_58333_);
-         boolean flag = !p_58334_.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, p_58334_);
-         this.items.set(p_58333_, p_58334_);
-         p_58334_.limitSize(this.getMaxStackSize(p_58334_));
--        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel) {
-+        if (p_58333_ == 0 && !flag && this.level instanceof ServerLevel serverlevel && !insideTransaction) {
-             this.cookingTotalTime = getTotalCookTime(serverlevel, this);
++    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
+         ItemStack oldStack = this.items.get(slot);
+         boolean same = !itemStack.isEmpty() && ItemStack.isSameItemSameComponents(oldStack, itemStack);
+         this.items.set(slot, itemStack);
+         itemStack.limitSize(this.getMaxStackSize(itemStack));
+-        if (slot == 0 && !same && this.level instanceof ServerLevel serverLevel) {
++        if (slot == 0 && !same && this.level instanceof ServerLevel serverLevel && !insideTransaction) {
+             this.cookingTotalTime = getTotalCookTime(serverLevel, this);
              this.cookingTimer = 0;
              this.setChanged();
          }
@@ -165,14 +127,14 @@
 +    }
 +
      @Override
-     public boolean canPlaceItem(int p_58389_, ItemStack p_58390_) {
-         if (p_58389_ == 2) {
-@@ -325,7 +_,7 @@
+     public boolean canPlaceItem(int slot, ItemStack itemStack) {
+         if (slot == 2) {
+@@ -311,7 +_,7 @@
              return true;
          } else {
-             ItemStack itemstack = this.items.get(1);
--            return this.level.fuelValues().isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+            return p_58390_.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
+             ItemStack fuelSlot = this.items.get(1);
+-            return this.level.fuelValues().isFuel(itemStack) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
++            return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
          }
      }
  

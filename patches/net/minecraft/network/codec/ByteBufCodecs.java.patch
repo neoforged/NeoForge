@@ -1,24 +1,24 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -562,7 +_,7 @@
+@@ -560,7 +_,7 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
-             private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_421864_) {
--                return p_320353_.apply(p_421864_.registryAccess().lookupOrThrow(p_319942_));
-+                return p_320353_.apply(getSyncableRegistryOrThrow(p_421864_, p_319942_));
+             private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
+-                return mapExtractor.apply(input.registryAccess().lookupOrThrow(registryKey));
++                return mapExtractor.apply(getSyncableRegistryOrThrow(input, registryKey));
              }
  
-             public R decode(RegistryFriendlyByteBuf p_412249_) {
-@@ -592,7 +_,7 @@
+             public R decode(RegistryFriendlyByteBuf input) {
+@@ -590,7 +_,7 @@
              private static final int DIRECT_HOLDER_ID = 0;
  
-             private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf p_428365_) {
--                return p_428365_.registryAccess().lookupOrThrow(p_320391_).asHolderIdMap();
-+                return getSyncableRegistryOrThrow(p_428365_, p_320391_).asHolderIdMap();
+             private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
+-                return input.registryAccess().lookupOrThrow(registryKey).asHolderIdMap();
++                return getSyncableRegistryOrThrow(input, registryKey).asHolderIdMap();
              }
  
-             public Holder<T> decode(RegistryFriendlyByteBuf p_421902_) {
-@@ -614,13 +_,38 @@
+             public Holder<T> decode(RegistryFriendlyByteBuf input) {
+@@ -612,13 +_,38 @@
          };
      }
  
@@ -30,46 +30,46 @@
 +        return registry;
 +    }
 +
-     static <T> StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>> holderSet(final ResourceKey<? extends Registry<T>> p_332137_) {
+     static <T> StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>> holderSet(ResourceKey<? extends Registry<T>> registryKey) {
          return new StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>>() {
              private static final int NAMED_SET = -1;
-             private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(p_332137_);
+             private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(registryKey);
  
 +            private final Map<net.neoforged.neoforge.registries.holdersets.HolderSetType, StreamCodec<RegistryFriendlyByteBuf, ? extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>>> holderSetCodecs = new java.util.concurrent.ConcurrentHashMap<>();
 +
 +            private StreamCodec<RegistryFriendlyByteBuf, ? extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> holderSetCodec(net.neoforged.neoforge.registries.holdersets.HolderSetType type) {
-+                return this.holderSetCodecs.computeIfAbsent(type, key -> key.makeStreamCodec(p_332137_));
++                return this.holderSetCodecs.computeIfAbsent(type, key -> key.makeStreamCodec(registryKey));
 +            }
 +
 +            private <H extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> H cast(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> holderSet) {
 +                return (H) holderSet;
 +            }
 +
-             public HolderSet<T> decode(RegistryFriendlyByteBuf p_428283_) {
-                 int i = VarInt.read(p_428283_) - 1;
+             public HolderSet<T> decode(RegistryFriendlyByteBuf input) {
+                 int count = VarInt.read(input) - 1;
 +                // Neo: Co-opt negative VarInt values within the HolderSet codec as an HolderSetType id.
 +                // Vanilla uses 0 for tag and [1, Integer.MAX_VALUE] for list size [0, Integer.MAX_VALUE - 1].
 +                // So we may encode the registry id for custom holder set types in [Integer.MIN_VALUE + 1, -1] (local variable i must not be underflow).
 +                // The registry id for custom holder set types is (-1 - network id), while local variable i is (network id - 1), so the registry id would be (-2 - i).
-+                if (i < -1) {
-+                    return this.holderSetCodec(net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byIdOrThrow(-2 - i)).decode(p_428283_);
++                if (count < -1) {
++                    return this.holderSetCodec(net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byIdOrThrow(-2 - count)).decode(input);
 +                }
-                 if (i == -1) {
-                     Registry<T> registry = p_428283_.registryAccess().lookupOrThrow(p_332137_);
-                     return registry.get(TagKey.create(p_332137_, Identifier.STREAM_CODEC.decode(p_428283_))).orElseThrow();
-@@ -636,6 +_,15 @@
+                 if (count == -1) {
+                     Registry<T> registry = input.registryAccess().lookupOrThrow(registryKey);
+                     return registry.get(TagKey.create(registryKey, Identifier.STREAM_CODEC.decode(input))).orElseThrow();
+@@ -634,6 +_,15 @@
              }
  
-             public void encode(RegistryFriendlyByteBuf p_428187_, HolderSet<T> p_428305_) {
+             public void encode(RegistryFriendlyByteBuf output, HolderSet<T> value) {
 +                // Neo: Co-opt negative VarInt values within the HolderSet codec as an HolderSetType id.
 +                // Vanilla uses 0 for tag and [1, Integer.MAX_VALUE] for list size [0, Integer.MAX_VALUE - 1] (local variable i in decode() must not be underflow).
 +                // So we may encode the registry id for custom holder set types in [Integer.MIN_VALUE + 1, -1].
 +                // The network id for custom holder set types is (-1 - registry id)
-+                if (p_428187_.getConnectionType().isNeoForge() && p_428305_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> customHolderSet) {
-+                    VarInt.write(p_428187_, -1 - net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.getId(customHolderSet.type()));
-+                    this.holderSetCodec(customHolderSet.type()).encode(p_428187_, cast(customHolderSet));
++                if (output.getConnectionType().isNeoForge() && value instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> customHolderSet) {
++                    VarInt.write(output, -1 - net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.getId(customHolderSet.type()));
++                    this.holderSetCodec(customHolderSet.type()).encode(output, cast(customHolderSet));
 +                    return;
 +                }
-                 Optional<TagKey<T>> optional = p_428305_.unwrapKey();
-                 if (optional.isPresent()) {
-                     VarInt.write(p_428187_, 0);
+                 Optional<TagKey<T>> key = value.unwrapKey();
+                 if (key.isPresent()) {
+                     VarInt.write(output, 0);

@@ -1,7 +1,7 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
 @@ -123,7 +_,8 @@
-     public static final boolean USE_WORKFLOWS_HOOKS = false;
+     public static final float MAXIMUM_BLOCK_EXPLOSION_RESISTANCE = 3600000.0F;
      public static final boolean USE_DEVONLY = false;
      public static boolean CHECK_DATA_FIXER_SCHEMA = true;
 -    public static boolean IS_RUNNING_IN_IDE;

@@ -1,44 +1,44 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -217,7 +_,10 @@
-             component1 = Component.translatable("selectWorld.backupWarning.customized");
+@@ -255,7 +_,9 @@
+             backupWarning = Component.translatable("selectWorld.backupWarning.customized");
          } else {
-             component = Component.translatable("selectWorld.backupQuestion.experimental");
--            component1 = Component.translatable("selectWorld.backupWarning.experimental");
-+            // Neo: Add a line saying that the message won't show again.
-+            component1 = Component.translatable("selectWorld.backupWarning.experimental")
+             backupQuestion = Component.translatable("selectWorld.backupQuestion.experimental");
+-            backupWarning = Component.translatable("selectWorld.backupWarning.experimental");
++            backupWarning = Component.translatable("selectWorld.backupWarning.experimental")
 +                    .append("\n\n")
 +                    .append(Component.translatable("neoforge.selectWorld.backupWarning.experimental.additional"));
          }
  
-         this.minecraft.setScreen(new BackupConfirmScreen(p_307323_, (p_307085_, p_307086_) -> {
-@@ -274,6 +_,7 @@
+         this.minecraft
+@@ -314,6 +_,7 @@
          try {
-             dynamic = p_330608_.getDataTag();
-             levelsummary = p_330608_.getSummary(dynamic);
-+            p_330608_.readAdditionalLevelSaveData(false);
-         } catch (NbtException | ReportedNbtException | IOException ioexception) {
-             this.minecraft.setScreen(new RecoverWorldDataScreen(this.minecraft, p_329781_ -> {
-                 if (p_329781_) {
-@@ -383,10 +_,19 @@
-         WorldData worlddata = p_330774_.worldData();
-         boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
-         boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();
--        if (!flag && !flag1) {
-+        boolean skipConfirmation = worlddata instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
-+        if (skipConfirmation || (!flag && !flag1)) {
-             this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_);
+             levelDataTag = worldAccess.getUnfixedDataTag(false);
+             summary = worldAccess.fixAndGetSummaryFromTag(levelDataTag);
++            worldAccess.readAdditionalLevelSaveData(false);
+         } catch (NbtException | ReportedNbtException | IOException var10) {
+             this.minecraft.setScreen(new RecoverWorldDataScreen(this.minecraft, success -> {
+                 if (success) {
+@@ -518,11 +_,20 @@
+         WorldData data = worldDataAndGenSettings.data();
+         boolean oldCustomized = worldDataAndGenSettings.genSettings().options().isOldCustomizedWorld();
+         boolean unstable = data.worldGenSettingsLifecycle() != Lifecycle.stable();
+-        if (!oldCustomized && !unstable) {
++        boolean skipConfirmation = data instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
++        if (skipConfirmation || (!oldCustomized && !unstable)) {
+             this.openWorldLoadBundledResourcePack(worldAccess, worldStem, packRepository, onCancel);
          } else {
--            this.askForBackup(p_331469_, flag, () -> this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_), () -> {
-+            this.askForBackup(p_331469_, flag, () -> {
-+                if (!flag) {
-+                    // Neo: Prevent the message from showing again
-+                    if (p_330774_.worldData() instanceof PrimaryLevelData pld) {
-+                        pld.withConfirmedWarning(true);
+             this.askForBackup(
+-                worldAccess, oldCustomized, () -> this.openWorldLoadBundledResourcePack(worldAccess, worldStem, packRepository, onCancel), () -> {
++                worldAccess, oldCustomized, () -> {
++                    if (!oldCustomized) {
++                        // Neo: Prevent the message from showing again
++                        if (worldStem.worldDataAndGenSettings().data() instanceof PrimaryLevelData pld) {
++                            pld.withConfirmedWarning(true);
++                        }
 +                    }
-+                }
-+                this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_);
-+            }, () -> {
-                 p_330774_.close();
-                 p_331469_.safeClose();
-                 p_332128_.run();
++                    this.openWorldLoadBundledResourcePack(worldAccess, worldStem, packRepository, onCancel);
++                }, () -> {
+                     worldStem.close();
+                     worldAccess.safeClose();
+                     onCancel.run();

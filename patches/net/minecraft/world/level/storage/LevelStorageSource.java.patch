@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -457,6 +_,19 @@
+@@ -531,6 +_,19 @@
              }
          }
  
@@ -20,15 +20,28 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
-@@ -490,6 +_,7 @@
-             CompoundTag compoundtag = p_78292_.createTag(p_78291_, p_78293_);
-             CompoundTag compoundtag1 = new CompoundTag();
-             compoundtag1.put("Data", compoundtag);
-+            net.neoforged.neoforge.common.CommonHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
-             this.saveLevelData(compoundtag1);
+@@ -560,10 +_,12 @@
+             Dynamic<?> unfixedDataTag;
+             try {
+                 unfixedDataTag = this.getUnfixedDataTag(false);
++                this.readAdditionalLevelSaveData(false);
+             } catch (NbtException | ReportedNbtException | IOException var3) {
+                 LevelStorageSource.LOGGER.warn("Failed to load world data from {}", this.levelDirectory.dataFile(), var3);
+                 LevelStorageSource.LOGGER.info("Attempting to use fallback {}", this.levelDirectory.oldDataFile());
+                 unfixedDataTag = this.getUnfixedDataTag(true);
++                this.readAdditionalLevelSaveData(true);
+                 this.restoreLevelDataFromOld();
+             }
+ 
+@@ -589,6 +_,7 @@
+             CompoundTag dataTag = levelData.createTag(singleplayerUUID);
+             CompoundTag root = new CompoundTag();
+             root.put("Data", dataTag);
++            net.neoforged.neoforge.common.CommonHooks.writeAdditionalLevelSaveData(levelData, root);
+             this.saveLevelData(root);
          }
  
-@@ -509,6 +_,10 @@
+@@ -615,6 +_,10 @@
  
          public Optional<Path> getIconFile() {
              return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());

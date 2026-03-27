@@ -107,7 +107,7 @@ public class VanillaInventoryCodeHooks {
                     return entity instanceof Container || entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, side) != null;
                 });
         if (!list.isEmpty()) {
-            var entity = list.get(level.random.nextInt(list.size()));
+            var entity = list.get(level.getRandom().nextInt(list.size()));
             if (entity instanceof Container container) {
                 return new ContainerOrHandler(container, null);
             }

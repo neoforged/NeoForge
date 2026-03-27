@@ -5,7 +5,11 @@
 
 package net.neoforged.neoforge.oldtest.item;
 
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,14 +45,14 @@ public class CustomShieldTest {
 
     private static class CustomShieldItem extends Item {
         public CustomShieldItem(Properties properties) {
-            super(properties.component(DataComponents.BLOCKS_ATTACKS, new BlocksAttacks(
+            super(properties.delayedComponent(DataComponents.BLOCKS_ATTACKS, context -> new BlocksAttacks(
                     0.25F,
                     1.0F,
-                    java.util.List.of(new BlocksAttacks.DamageReduction(90.0F, java.util.Optional.empty(), 0.0F, 1.0F)),
+                    List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)),
                     new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
-                    java.util.Optional.of(net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD),
-                    java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BLOCK),
-                    java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BREAK))));
+                    Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
+                    Optional.of(SoundEvents.SHIELD_BLOCK),
+                    Optional.of(SoundEvents.SHIELD_BREAK))));
         }
 
         @Override

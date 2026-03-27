@@ -1,15 +1,11 @@
 --- a/net/minecraft/core/registries/Registries.java
 +++ b/net/minecraft/core/registries/Registries.java
-@@ -309,10 +_,10 @@
+@@ -323,7 +_,7 @@
      }
  
-     public static String elementsDirPath(ResourceKey<? extends Registry<?>> p_350960_) {
--        return p_350960_.identifier().getPath();
-+        return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_350960_.identifier());
+     private static String registryDirPath(ResourceKey<? extends Registry<?>> registryKey) {
+-        return registryKey.identifier().getPath();
++        return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(registryKey.identifier());
      }
  
-     public static String tagsDirPath(ResourceKey<? extends Registry<?>> p_350980_) {
--        return "tags/" + p_350980_.identifier().getPath();
-+        return "tags/" + net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_350980_.identifier());
-     }
- }
+     public static String elementsDirPath(ResourceKey<? extends Registry<?>> registryKey) {

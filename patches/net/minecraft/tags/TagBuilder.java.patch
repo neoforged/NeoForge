@@ -1,9 +1,10 @@
 --- a/net/minecraft/tags/TagBuilder.java
 +++ b/net/minecraft/tags/TagBuilder.java
-@@ -5,6 +_,16 @@
+@@ -5,8 +_,17 @@
  import net.minecraft.resources.Identifier;
  
  public class TagBuilder implements net.neoforged.neoforge.common.extensions.ITagBuilderExtension {
+-    private final List<TagEntry> entries = new ArrayList<>();
 +    // FORGE: Remove entries are used for datagen.
 +    private final List<TagEntry> removeEntries = new ArrayList<>();
 +    public java.util.stream.Stream<TagEntry> getRemoveEntries() { return this.removeEntries.stream(); }
@@ -13,14 +14,15 @@
 +        return this;
 +    }
 +    // FORGE: is this tag set to replace or not?
-+    private boolean replace = false;
-     private final List<TagEntry> entries = new ArrayList<>();
+     private boolean replace = false;
++    private final List<TagEntry> entries = new ArrayList<>();
  
      public static TagBuilder create() {
-@@ -34,5 +_,21 @@
+         return new TagBuilder();
+@@ -44,5 +_,21 @@
  
-     public TagBuilder addOptionalTag(Identifier p_467982_) {
-         return this.add(TagEntry.optionalTag(p_467982_));
+     public TagBuilder addOptionalTag(Identifier id) {
+         return this.add(TagEntry.optionalTag(id));
 +    }
 +
 +    // FORGE: Set the replace property of this tag.

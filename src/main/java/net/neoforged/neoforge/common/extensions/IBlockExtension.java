@@ -32,7 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -40,6 +40,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
@@ -47,7 +48,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.CandleCakeBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.GrowingPlantHeadBlock;
@@ -443,7 +444,7 @@ public interface IBlockExtension {
      * @param config        Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
      * @return True to ignore vanilla behaviour
      */
-    default boolean onTreeGrow(BlockState state, LevelReader level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
+    default boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
         return false;
     }
 
@@ -457,8 +458,8 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.getBlock() instanceof FarmBlock)
-            return state.getValue(FarmBlock.MOISTURE) > 0;
+        if (state.getBlock() instanceof FarmlandBlock)
+            return state.getValue(FarmlandBlock.MOISTURE) > 0;
 
         return false;
     }
@@ -611,7 +612,7 @@ public interface IBlockExtension {
      */
     @Nullable
     default PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-        return state.getBlock() == Blocks.LAVA ? PathType.LAVA : state.isBurning(level, pos) ? PathType.DAMAGE_FIRE : null;
+        return state.getBlock() == Blocks.LAVA ? PathType.LAVA : state.isBurning(level, pos) ? PathType.FIRE : null;
     }
 
     /**
@@ -629,8 +630,8 @@ public interface IBlockExtension {
      */
     @Nullable
     default PathType getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
-        if (state.is(Blocks.SWEET_BERRY_BUSH)) return PathType.DANGER_OTHER;
-        else if (WalkNodeEvaluator.isBurningBlock(state)) return PathType.DANGER_FIRE;
+        if (state.is(Blocks.SWEET_BERRY_BUSH)) return PathType.DAMAGING_IN_NEIGHBOR;
+        else if (WalkNodeEvaluator.isBurningBlock(state)) return PathType.FIRE_IN_NEIGHBOR;
         else return null;
     }
 
@@ -793,7 +794,7 @@ public interface IBlockExtension {
      * @param fluidState The state of the fluid
      * @return Whether the fluid overlay texture should be used
      */
-    default boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
+    default boolean shouldDisplayFluidOverlay(BlockState state, BlockAndLightGetter level, BlockPos pos, FluidState fluidState) {
         return state.getBlock() instanceof HalfTransparentBlock || state.getBlock() instanceof LeavesBlock;
     }
 
@@ -1011,9 +1012,9 @@ public interface IBlockExtension {
      * @param queryState The state of the block that is querying the appearance, or {@code null} if not applicable
      * @param queryPos   The position of the block that is querying the appearance, or {@code null} if not applicable
      * @return The appearance of this block on the given side. By default, the current state
-     * @see IBlockStateExtension#getAppearance(BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @see IBlockStateExtension#getAppearance(BlockAndLightGetter, BlockPos, Direction, BlockState, BlockPos)
      */
-    default BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
+    default BlockState getAppearance(BlockState state, BlockAndLightGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
         return state;
     }
 
@@ -1049,16 +1050,16 @@ public interface IBlockExtension {
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
      * <p>
-     * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
+     * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(Block, LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *
      * @param state The current state
      * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
      */
     default BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
-        if (state.is(Blocks.SOUL_SAND)) {
+        if (state.is(BlockTags.ENABLES_BUBBLE_COLUMN_PUSH_UP)) {
             return BubbleColumnDirection.UPWARD;
-        } else if (state.is(Blocks.MAGMA_BLOCK)) {
+        } else if (state.is(BlockTags.ENABLES_BUBBLE_COLUMN_DRAG_DOWN)) {
             return BubbleColumnDirection.DOWNWARD;
         } else {
             return BubbleColumnDirection.NONE;

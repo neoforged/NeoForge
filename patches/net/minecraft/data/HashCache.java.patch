@@ -6,36 +6,36 @@
      private final Map<String, HashCache.ProviderCache> caches;
 +    private final Map<String, HashCache.ProviderCache> originalCaches;
      private final Set<String> cachesToWrite = new HashSet<>();
-     final Set<Path> cachePaths = new HashSet<>();
+     private final Set<Path> cachePaths = new HashSet<>();
      private final int initialCount;
 @@ -65,6 +_,7 @@
          }
  
-         this.caches = map;
+         this.caches = loadedCaches;
 +        this.originalCaches = Map.copyOf(this.caches);
-         this.initialCount = i;
+         this.initialCount = initialCount;
      }
  
 @@ -106,6 +_,8 @@
-         this.caches.forEach((p_458821_, p_458822_) -> {
-             if (this.cachesToWrite.contains(p_458821_)) {
-                 Path path = this.getProviderCachePath(p_458821_);
+         this.caches.forEach((providerId, cache) -> {
+             if (this.cachesToWrite.contains(providerId)) {
+                 Path cachePath = this.getProviderCachePath(providerId);
 +                // Forge: Only rewrite the cache file if it changed or is missing
-+                if (!p_458822_.equals(this.originalCaches.get(p_458821_)) || !Files.exists(path))
-                 p_458822_.save(this.rootDir, path, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + p_458821_);
++                if (!cache.equals(this.originalCaches.get(providerId)) || !Files.exists(cachePath))
+                 cache.save(this.rootDir, cachePath, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + providerId);
              }
  
-@@ -221,10 +_,11 @@
-                 bufferedwriter.write(p_236145_);
-                 bufferedwriter.newLine();
+@@ -224,10 +_,11 @@
+                 output.write(extraHeaderInfo);
+                 output.newLine();
  
--                for (Entry<Path, HashCode> entry : this.data.entrySet()) {
+-                for (Entry<Path, HashCode> e : this.data.entrySet()) {
 +                // Forge: Standardize order of entries
-+                for(Map.Entry<Path, HashCode> entry : this.data.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
-                     bufferedwriter.write(entry.getValue().toString());
-                     bufferedwriter.write(32);
--                    bufferedwriter.write(p_236143_.relativize(entry.getKey()).toString());
-+                    bufferedwriter.write(p_236143_.relativize(entry.getKey()).toString().replace("\\", "/")); // Forge: Standardize file paths.
-                     bufferedwriter.newLine();
++                for (Entry<Path, HashCode> e : this.data.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
+                     output.write(e.getValue().toString());
+                     output.write(32);
+-                    output.write(rootDir.relativize(e.getKey()).toString());
++                    output.write(rootDir.relativize(e.getKey()).toString().replace("\\", "/")); // Forge: Standardize file paths.
+                     output.newLine();
                  }
-             } catch (IOException ioexception) {
+             } catch (IOException var9) {

@@ -1,35 +1,35 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
 @@ -40,7 +_,7 @@
-                 this.addEntry(new KeyBindsList.CategoryEntry(keymapping$category1));
+                 this.addEntry(new KeyBindsList.CategoryEntry(category));
              }
  
--            Component component = Component.translatable(keymapping.getName());
-+            Component component = keymapping.getDisplayName();
-             int i = p_346132_.font.width(component);
-             if (i > this.maxNameWidth) {
-                 this.maxNameWidth = i;
-@@ -127,6 +_,7 @@
+-            Component name = Component.translatable(key.getName());
++            Component name = key.getDisplayName();
+             int width = minecraft.font.width(name);
+             if (width > this.maxNameWidth) {
+                 this.maxNameWidth = width;
+@@ -132,6 +_,7 @@
                  )
                  .build();
-             this.resetButton = Button.builder(RESET_BUTTON_TITLE, p_359096_ -> {
+             this.resetButton = Button.builder(RESET_BUTTON_TITLE, button -> {
 +                this.key.setToDefault();
-                 p_345998_.setKey(p_345998_.getDefaultKey());
+                 key.setKey(key.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
-             }).bounds(0, 0, 50, 20).createNarration(p_344899_ -> Component.translatable("narrator.controls.reset", p_345196_)).build();
-@@ -168,13 +_,13 @@
-             MutableComponent mutablecomponent = Component.empty();
+             }).bounds(0, 0, 50, 20).createNarration(defaultNarrationSupplier -> Component.translatable("narrator.controls.reset", name)).build();
+@@ -173,13 +_,13 @@
+             MutableComponent tooltip = Component.empty();
              if (!this.key.isUnbound()) {
-                 for (KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {
--                    if (keymapping != this.key && this.key.same(keymapping) && (!keymapping.isDefault() || !this.key.isDefault())) {
-+                    if ((keymapping != this.key && this.key.same(keymapping)) || keymapping.hasKeyModifierConflict(this.key)) { // Neo: gracefully handle conflicts like SHIFT vs SHIFT+G
+                 for (KeyMapping otherKey : KeyBindsList.this.minecraft.options.keyMappings) {
+-                    if (otherKey != this.key && this.key.same(otherKey) && (!otherKey.isDefault() || !this.key.isDefault())) {
++                    if ((otherKey != this.key && this.key.same(otherKey)) || otherKey.hasKeyModifierConflict(this.key)) { // Neo: gracefully handle conflicts like SHIFT vs SHIFT+G
                          if (this.hasCollision) {
-                             mutablecomponent.append(", ");
+                             tooltip.append(", ");
                          }
  
                          this.hasCollision = true;
--                        mutablecomponent.append(Component.translatable(keymapping.getName()));
-+                        mutablecomponent.append(keymapping.getDisplayName());
+-                        tooltip.append(Component.translatable(otherKey.getName()));
++                        tooltip.append(otherKey.getDisplayName());
                      }
                  }
              }

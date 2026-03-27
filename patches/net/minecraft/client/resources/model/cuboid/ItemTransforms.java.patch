@@ -1,0 +1,72 @@
+--- a/net/minecraft/client/resources/model/cuboid/ItemTransforms.java
++++ b/net/minecraft/client/resources/model/cuboid/ItemTransforms.java
+@@ -20,8 +_,24 @@
+     ItemTransform gui,
+     ItemTransform ground,
+     ItemTransform fixed,
+-    ItemTransform fixedFromBottom
++    ItemTransform fixedFromBottom,
++    com.google.common.collect.ImmutableMap<ItemDisplayContext, ItemTransform> moddedTransforms
+ ) {
++    @Deprecated
++    public ItemTransforms(
++        ItemTransform thirdPersonLeftHand,
++        ItemTransform thirdPersonRightHand,
++        ItemTransform firstPersonLeftHand,
++        ItemTransform firstPersonRightHand,
++        ItemTransform head,
++        ItemTransform gui,
++        ItemTransform ground,
++        ItemTransform fixed,
++        ItemTransform fixedFromBottom
++    ) {
++        this(thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom, com.google.common.collect.ImmutableMap.of());
++    }
++
+     public static final ItemTransforms NO_TRANSFORMS = new ItemTransforms(
+         ItemTransform.NO_TRANSFORM,
+         ItemTransform.NO_TRANSFORM,
+@@ -35,6 +_,17 @@
+     );
+ 
+     public ItemTransform getTransform(ItemDisplayContext type) {
++        if (type.isModded()) {
++            ItemTransform moddedTransform = moddedTransforms.get(type);
++            if (moddedTransform != null) {
++                return moddedTransform;
++            }
++            ItemDisplayContext moddedFallback = type.fallback();
++            if (moddedFallback == null) {
++                return ItemTransform.NO_TRANSFORM;
++            }
++            type = moddedFallback;
++        }
+         return switch (type) {
+             case THIRD_PERSON_LEFT_HAND -> this.thirdPersonLeftHand;
+             case THIRD_PERSON_RIGHT_HAND -> this.thirdPersonRightHand;
+@@ -70,8 +_,24 @@
+             ItemTransform ground = this.getTransform(context, object, ItemDisplayContext.GROUND);
+             ItemTransform fixed = this.getTransform(context, object, ItemDisplayContext.FIXED);
+             ItemTransform fixedFromBottom = this.getTransform(context, object, ItemDisplayContext.ON_SHELF);
++
++            var builder = com.google.common.collect.ImmutableMap.<ItemDisplayContext, ItemTransform>builder();
++            for (ItemDisplayContext type : ItemDisplayContext.values()) {
++                if (type.isModded()) {
++                    var transform = this.getTransform(context, object, type);
++                    var fallbackType = type;
++                    while (transform == ItemTransform.NO_TRANSFORM && fallbackType.fallback() != null) {
++                        fallbackType = fallbackType.fallback();
++                        transform = this.getTransform(context, object, fallbackType);
++                    }
++                    if (transform != ItemTransform.NO_TRANSFORM){
++                        builder.put(type, transform);
++                    }
++                }
++            }
++
+             return new ItemTransforms(
+-                thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom
++                thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom, builder.build()
+             );
+         }
+ 

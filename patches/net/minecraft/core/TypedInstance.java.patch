@@ -1,0 +1,12 @@
+--- a/net/minecraft/core/TypedInstance.java
++++ b/net/minecraft/core/TypedInstance.java
+@@ -24,7 +_,8 @@
+     }
+ 
+     default boolean is(Holder<T> type) {
+-        return this.typeHolder() == type;
++        // Neo: Fix comparing for custom holders such as DeferredHolders
++        return is(type.value());
+     }
+ 
+     default boolean is(ResourceKey<T> type) {

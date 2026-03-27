@@ -40,7 +40,8 @@ public class RecipeBookExtensionTest {
     public static final RecipeBookType TEST_TYPE = RecipeBookType.valueOf("NEOTESTS_TESTING");
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register("test_recipe", RecipeBookTestRecipeSerializer::new);
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register(
+            "test_recipe", () -> new RecipeSerializer<>(RecipeBookTestRecipe.CODEC, RecipeBookTestRecipe.STREAM_CODEC));
 
     public static final DeferredRegister<MenuType<?>> MENU_TYPE = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeBookTestMenu>> RECIPE_BOOK_TEST_MENU_TYPE = MENU_TYPE.register("test_recipe_menu", () -> IMenuTypeExtension.create(RecipeBookTestMenu::new));

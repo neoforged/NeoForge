@@ -2,8 +2,8 @@
 +++ b/net/minecraft/world/level/block/DetectorRailBlock.java
 @@ -39,6 +_,10 @@
  
-     public DetectorRailBlock(BlockBehaviour.Properties p_52431_) {
-         super(true, p_52431_);
+     public DetectorRailBlock(BlockBehaviour.Properties properties) {
+         super(true, properties);
 +        this.registerDefaultState();
 +    }
 +
@@ -11,11 +11,11 @@
          this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false).setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(WATERLOGGED, false));
      }
  
-@@ -185,6 +_,6 @@
+@@ -183,6 +_,6 @@
  
      @Override
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_52469_) {
--        p_52469_.add(SHAPE, POWERED, WATERLOGGED);
-+        p_52469_.add(getShapeProperty(), POWERED, WATERLOGGED);
+     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+-        builder.add(SHAPE, POWERED, WATERLOGGED);
++        builder.add(getShapeProperty(), POWERED, WATERLOGGED);
      }
  }

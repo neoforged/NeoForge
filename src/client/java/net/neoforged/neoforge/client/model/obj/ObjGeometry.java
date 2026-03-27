@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.model.obj;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,13 +17,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import joptsimple.internal.Strings;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.TextureSlots;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -283,7 +284,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return builder.build();
     }
 
-    private Pair<BakedQuad, Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, TextureAtlasSprite texture, Transformation transform) {
+    private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -304,7 +305,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
 
         var quadBaker = new QuadBakingVertexConsumer();
 
-        quadBaker.setSprite(texture);
+        quadBaker.setSprite(material, transparency);
         quadBaker.setTintIndex(tintIndex);
 
         if (emissiveAmbient) {
@@ -342,8 +343,8 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             quadBaker.addVertex(position.x(), position.y(), position.z());
             quadBaker.setColor(tintedColor.x(), tintedColor.y(), tintedColor.z(), tintedColor.w());
             quadBaker.setUv(
-                    texture.getU(texCoord.x),
-                    texture.getV((flipV ? 1 - texCoord.y : texCoord.y)));
+                    material.sprite().getU(texCoord.x),
+                    material.sprite().getV((flipV ? 1 - texCoord.y : texCoord.y)));
             quadBaker.setNormal(normal.x(), normal.y(), normal.z());
             if (i == 0) {
                 quadBaker.setDirection(Direction.getApproximateNearest(normal.x(), normal.y(), normal.z()));
@@ -399,7 +400,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             }
         }
 
-        return Pair.of(quadBaker.bakeQuad(), cull);
+        return Pair.of(quadBaker.bakeQuad(baker.interner()), cull);
     }
 
     public class ModelObject {
@@ -464,14 +465,15 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         public void addQuads(QuadCollection.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, ModelDebugName debugName, ContextMap additionalProperties) {
             if (mat == null)
                 return;
-            TextureAtlasSprite texture = baker.sprites().resolveSlot(slots, mat.diffuseColorMap, debugName);
+            Material.Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
+            Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite().transparency();
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;
 
-            var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.identity());
+            var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
             var transform = rootTransform.isIdentity() ? state.transformation() : state.transformation().compose(rootTransform);
             for (int[][] face : faces) {
-                Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, texture, transform);
+                Pair<BakedQuad, Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
                 if (quad.getRight() == null)
                     builder.addUnculledFace(quad.getLeft());
                 else

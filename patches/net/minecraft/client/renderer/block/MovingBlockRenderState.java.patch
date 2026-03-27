@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/block/MovingBlockRenderState.java
++++ b/net/minecraft/client/renderer/block/MovingBlockRenderState.java
+@@ -22,6 +_,7 @@
+     public @Nullable Holder<Biome> biome;
+     public CardinalLighting cardinalLighting = CardinalLighting.DEFAULT;
+     public LevelLightEngine lightEngine = LevelLightEngine.EMPTY;
++    public net.neoforged.neoforge.model.data.ModelData modelData = net.neoforged.neoforge.model.data.ModelData.EMPTY;
+ 
+     @Override
+     public CardinalLighting cardinalLighting() {
+@@ -61,5 +_,10 @@
+     @Override
+     public int getMinY() {
+         return this.blockPos.getY();
++    }
++
++    @Override
++    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
++        return pos.equals(this.blockPos) ? this.modelData : net.neoforged.neoforge.model.data.ModelData.EMPTY;
+     }
+ }

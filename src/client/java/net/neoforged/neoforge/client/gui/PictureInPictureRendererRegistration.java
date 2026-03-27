@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.gui;
 
 import java.util.function.Function;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 
 /**
  * Encapsulates a factory to create {@link PictureInPictureRenderer} and links it to the type of {@link PictureInPictureRenderState}

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -164,6 +_,35 @@
+@@ -172,6 +_,36 @@
          }
      }
  
@@ -21,7 +21,8 @@
 +     */
 +    public ItemStack getStackInSlot(int slot) {
 +        validateSlotIndex(slot);
-+        return this.items.get(slot).copy();
++        // TODO 26.1: Migrate to ItemStackTemplate or ItemInstance
++        return this.items.get(slot).map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
 +    }
 +
 +    /**
@@ -33,6 +34,6 @@
 +        }
 +    }
 +
-     record Slot(int index, ItemStack item) {
+     private record Slot(int index, ItemStackTemplate item) {
          public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
-             p_331695_ -> p_331695_.group(
+             i -> i.group(

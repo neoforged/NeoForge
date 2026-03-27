@@ -4,36 +4,36 @@
      }
  
      static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
--        final CustomPacketPayload.FallbackProvider<B> p_319839_, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> p_320495_
-+        final CustomPacketPayload.FallbackProvider<B> p_319839_, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> p_320495_, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
+-        CustomPacketPayload.FallbackProvider<B> fallback, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> types
++        final CustomPacketPayload.FallbackProvider<B> fallback, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> types, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
      ) {
-         final Map<Identifier, StreamCodec<? super B, ? extends CustomPacketPayload>> map = p_320495_.stream()
-             .collect(Collectors.toUnmodifiableMap(p_466114_ -> p_466114_.type().id(), CustomPacketPayload.TypeAndCodec::codec));
+         final Map<Identifier, StreamCodec<? super B, ? extends CustomPacketPayload>> idToType = types.stream()
+             .collect(Collectors.toUnmodifiableMap(t -> t.type().id(), CustomPacketPayload.TypeAndCodec::codec));
          return new StreamCodec<B, CustomPacketPayload>() {
-             private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(Identifier p_467071_) {
-                 StreamCodec<? super B, ? extends CustomPacketPayload> streamcodec = map.get(p_467071_);
-+                if (streamcodec == null) streamcodec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(p_467071_, protocol, packetFlow);
-                 return streamcodec != null ? streamcodec : p_319839_.create(p_467071_);
+             private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(Identifier typeId) {
+                 StreamCodec<? super B, ? extends CustomPacketPayload> codec = idToType.get(typeId);
++                if (codec == null) codec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(typeId, protocol, packetFlow);
+                 return codec != null ? codec : fallback.create(typeId);
              }
  
-             private <T extends CustomPacketPayload> void writeCap(B p_320565_, CustomPacketPayload.Type<T> p_320917_, CustomPacketPayload p_320112_) {
-                 p_320565_.writeIdentifier(p_320917_.id());
-                 StreamCodec<B, T> streamcodec = (StreamCodec<B, T>)this.findCodec(p_320917_.id);
+             private <T extends CustomPacketPayload> void writeCap(B output, CustomPacketPayload.Type<T> type, CustomPacketPayload payload) {
+                 output.writeIdentifier(type.id());
+                 StreamCodec<B, T> codec = (StreamCodec<B, T>)this.findCodec(type.id);
 +                try {
-                 streamcodec.encode(p_320565_, (T)p_320112_);
+                 codec.encode(output, (T)payload);
 +                } catch (RuntimeException e) {
-+                    throw new RuntimeException("Failed encoding custom payload " + p_320917_.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
++                    throw new RuntimeException("Failed encoding custom payload " + type.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
 +                }
              }
  
-             public void encode(B p_320490_, CustomPacketPayload p_319776_) {
+             public void encode(B output, CustomPacketPayload value) {
 @@ -44,9 +_,27 @@
  
-             public CustomPacketPayload decode(B p_320227_) {
-                 Identifier identifier = p_320227_.readIdentifier();
--                return (CustomPacketPayload)this.findCodec(identifier).decode(p_320227_);
+             public CustomPacketPayload decode(B input) {
+                 Identifier identifier = input.readIdentifier();
+-                return (CustomPacketPayload)this.findCodec(identifier).decode(input);
 +                try {
-+                    return (CustomPacketPayload)this.findCodec(identifier).decode(p_320227_);
++                    return (CustomPacketPayload)this.findCodec(identifier).decode(input);
 +                } catch (RuntimeException e) {
 +                    throw new RuntimeException("Failed decoding custom payload " + identifier + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
 +                }

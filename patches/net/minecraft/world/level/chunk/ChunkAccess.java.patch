@@ -3,28 +3,28 @@
 @@ -318,10 +_,14 @@
  
      @Override
-     public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
--        this.findBlocks(p_360197_ -> p_360197_.getLightEmission() != 0, p_285269_);
-+        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
+     public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
+-        this.findBlocks(state -> state.getLightEmission() != 0, consumer);
++        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, consumer);
      }
  
-     public void findBlocks(Predicate<BlockState> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        findBlocks(p_285343_, (state, pos) -> p_285343_.test(state), p_285030_);
+     public void findBlocks(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
++        findBlocks(predicate, (state, pos) -> predicate.test(state), consumer);
 +    }
 +
-+    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
-         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
++    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
+         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
  
-         for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
+         for (int sectionY = this.getMinSectionY(); sectionY <= this.getMaxSectionY(); sectionY++) {
 @@ -333,8 +_,9 @@
-                     for (int k = 0; k < 16; k++) {
-                         for (int l = 0; l < 16; l++) {
-                             BlockState blockstate = levelchunksection.getBlockState(l, j, k);
--                            if (p_285343_.test(blockstate)) {
--                                p_285030_.accept(blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k), blockstate);
-+                            blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k);
-+                            if (fineFilter.test(blockstate, blockpos$mutableblockpos)) {
-+                                p_285030_.accept(blockpos$mutableblockpos, blockstate);
+                     for (int z = 0; z < 16; z++) {
+                         for (int x = 0; x < 16; x++) {
+                             BlockState state = section.getBlockState(x, y, z);
+-                            if (predicate.test(state)) {
+-                                consumer.accept(mutablePos.setWithOffset(origin, x, y, z), state);
++                            mutablePos.setWithOffset(origin, x, y, z);
++                            if (fineFilter.test(state, mutablePos)) {
++                                consumer.accept(mutablePos, state);
                              }
                          }
                      }
@@ -110,5 +110,5 @@
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
 +    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
  
-     public static ProblemReporter.PathElement problemPath(ChunkPos p_421990_) {
-         return new ChunkAccess.ChunkPathElement(p_421990_);
+     public static ProblemReporter.PathElement problemPath(ChunkPos pos) {
+         return new ChunkAccess.ChunkPathElement(pos);

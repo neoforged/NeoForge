@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/CampfireBlock.java
 +++ b/net/minecraft/world/level/block/CampfireBlock.java
-@@ -264,7 +_,7 @@
+@@ -257,7 +_,7 @@
                  return true;
              }
  
--            boolean flag = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockstate.getCollisionShape(p_51249_, p_51250_, CollisionContext.empty()), BooleanOp.AND);
-+            boolean flag = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockstate.getCollisionShape(p_51249_, blockpos, CollisionContext.empty()), BooleanOp.AND); // FORGE: Fix MC-201374
-             if (flag) {
-                 BlockState blockstate1 = p_51249_.getBlockState(blockpos.below());
-                 return isLitCampfire(blockstate1);
+-            boolean smokeBlocked = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockState.getCollisionShape(level, pos, CollisionContext.empty()), BooleanOp.AND);
++            boolean smokeBlocked = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockState.getCollisionShape(level, posToCheck, CollisionContext.empty()), BooleanOp.AND); // FORGE: Fix MC-201374
+             if (smokeBlocked) {
+                 BlockState belowState = level.getBlockState(posToCheck.below());
+                 return isLitCampfire(belowState);

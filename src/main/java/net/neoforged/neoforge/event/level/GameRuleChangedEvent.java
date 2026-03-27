@@ -36,7 +36,7 @@ public final class GameRuleChangedEvent extends Event {
     }
 
     public GameRules getGameRules() {
-        return server.getWorldData().getGameRules();
+        return server.getGameRules();
     }
 
     public GameRule<?> getGameRule() {

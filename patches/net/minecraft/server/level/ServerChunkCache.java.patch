@@ -1,30 +1,30 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -100,7 +_,7 @@
-             LOGGER.error("Failed to create dimension data storage directory", (Throwable)ioexception);
+@@ -99,7 +_,7 @@
+             LOGGER.error("Failed to create dimension data storage directory", (Throwable)var14);
          }
  
--        this.dataStorage = new DimensionDataStorage(path, p_214984_, p_214982_.registryAccess());
-+        this.dataStorage = new DimensionDataStorage(p_214982_, path, p_214984_, p_214982_.registryAccess());
-         this.ticketStorage = this.dataStorage.computeIfAbsent(TicketStorage.TYPE);
+-        this.savedDataStorage = new SavedDataStorage(dataFolder, fixerUpper, level.registryAccess());
++        this.savedDataStorage = new SavedDataStorage(level, dataFolder, fixerUpper, level.registryAccess());
+         this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(
-             p_214982_,
-@@ -161,6 +_,10 @@
+             level,
+@@ -160,6 +_,10 @@
                  }
              }
  
-+            ChunkHolder chunkholder = this.getVisibleChunkIfPresent(i);
++            ChunkHolder chunkholder = this.getVisibleChunkIfPresent(pos);
 +            if (chunkholder != null && chunkholder.currentlyLoading != null)
 +                return chunkholder.currentlyLoading; // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
 +
-             profilerfiller.incrementCounter("getChunkCacheMiss");
-             CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
-             this.mainThreadProcessor.managedBlock(completablefuture::isDone);
-@@ -194,6 +_,7 @@
-             if (chunkholder == null) {
+             profiler.incrementCounter("getChunkCacheMiss");
+             CompletableFuture<ChunkResult<ChunkAccess>> serverFuture = this.getChunkFutureMainThread(x, z, targetStatus, loadOrGenerate);
+             this.mainThreadProcessor.managedBlock(serverFuture::isDone);
+@@ -193,6 +_,7 @@
+             if (chunkHolder == null) {
                  return null;
              } else {
-+                if (chunkholder.currentlyLoading != null) return chunkholder.currentlyLoading; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
-                 ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
-                 if (chunkaccess1 != null) {
-                     this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
++                if (chunkHolder.currentlyLoading != null) return chunkHolder.currentlyLoading; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
+                 ChunkAccess chunk = chunkHolder.getChunkIfPresent(ChunkStatus.FULL);
+                 if (chunk != null) {
+                     this.storeInCache(pos, chunk, ChunkStatus.FULL);

@@ -73,7 +73,7 @@ public class EnchantmentLevelTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests if the PlayerEnchantedItemEvent fired.")
+    @TestHolder(description = "Tests if the PlayerEnchantItemEvent fired.")
     static void playerEnchantItemTest(final DynamicTest test, final RegistrationHelper reg) {
         test.eventListeners().forge().addListener((PlayerEnchantItemEvent event) -> {
             event.getEnchantedItem().setDamageValue(1); //change a value we can reference in our test sequence

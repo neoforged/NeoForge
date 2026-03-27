@@ -3,41 +3,41 @@
 @@ -121,7 +_,6 @@
  
      @Override
-     public void setTarget(@Nullable LivingEntity p_32537_) {
--        super.setTarget(p_32537_);
-         AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-         if (p_32537_ == null) {
+     public void setTarget(@Nullable LivingEntity target) {
+-        super.setTarget(target);
+         AttributeInstance movementSpeed = this.getAttribute(Attributes.MOVEMENT_SPEED);
+         if (target == null) {
              this.targetChangeTime = 0;
 @@ -135,6 +_,7 @@
-                 attributeinstance.addTransientModifier(SPEED_MODIFIER_ATTACKING);
+                 movementSpeed.addTransientModifier(SPEED_MODIFIER_ATTACKING);
              }
          }
-+        super.setTarget(p_32537_); //Forge: Moved down to allow event handlers to write data manager values.
++        super.setTarget(target); //Forge: Moved down to allow event handlers to write data manager values.
      }
  
      @Override
 @@ -207,7 +_,7 @@
      }
  
-     boolean isBeingStaredBy(Player p_380267_) {
--        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(p_380267_) ? false : this.isLookingAtMe(p_380267_, 0.025, true, false, this.getEyeY());
-+        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(p_380267_, this) ? false : this.isLookingAtMe(p_380267_, 0.025, true, false, this.getEyeY()) && !net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, p_380267_);
+     private boolean isBeingStaredBy(Player player) {
+-        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(player) ? false : this.isLookingAtMe(player, 0.025, true, false, this.getEyeY());
++        return !LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, this) ? false : this.isLookingAtMe(player, 0.025, true, false, this.getEyeY()) && !net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, player);
      }
  
      @Override
 @@ -285,8 +_,10 @@
-         boolean flag = blockstate.blocksMotion();
-         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
-         if (flag && !flag1) {
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
+         boolean couldStandOn = blockState.blocksMotion();
+         boolean isWet = blockState.getFluidState().is(FluidTags.WATER);
+         if (couldStandOn && !isWet) {
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, x, y, z);
 +            if (event.isCanceled()) return false;
-             Vec3 vec3 = this.position();
--            boolean flag2 = this.randomTeleport(p_32544_, p_32545_, p_32546_, true);
-+            boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
-             if (flag2) {
-                 this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+             Vec3 oldPos = this.position();
+-            boolean result = this.randomTeleport(x, y, z, true);
++            boolean result = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+             if (result) {
+                 this.level().gameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Context.of(this));
                  if (!this.isSilent()) {
-@@ -443,7 +_,7 @@
+@@ -441,7 +_,7 @@
              if (this.enderman.getCarriedBlock() == null) {
                  return false;
              } else {
@@ -46,24 +46,24 @@
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
              }
-@@ -463,7 +_,7 @@
-             BlockState blockstate2 = this.enderman.getCarriedBlock();
-             if (blockstate2 != null) {
-                 blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
--                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
-+                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
-                     level.setBlock(blockpos, blockstate2, 3);
-                     level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
+@@ -461,7 +_,7 @@
+             BlockState carried = this.enderman.getCarriedBlock();
+             if (carried != null) {
+                 carried = Block.updateFromNeighbourShapes(carried, this.enderman.level(), pos);
+-                if (this.canPlaceBlock(level, pos, carried, targetState, belowState, below)) {
++                if (this.canPlaceBlock(level, pos, carried, targetState, belowState, below) && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, below), net.minecraft.core.Direction.UP)) {
+                     level.setBlock(pos, carried, 3);
+                     level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(this.enderman, carried));
                      this.enderman.setCarriedBlock(null);
-@@ -475,6 +_,7 @@
-             return p_32562_.isAir()
-                 && !p_32563_.isAir()
-                 && !p_32563_.is(Blocks.BEDROCK)
-+                && !p_32563_.is(net.neoforged.neoforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST)
-                 && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
-                 && p_32561_.canSurvive(p_32559_, p_32560_)
-                 && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
-@@ -585,7 +_,7 @@
+@@ -473,6 +_,7 @@
+             return targetState.isAir()
+                 && !belowState.isAir()
+                 && !belowState.is(Blocks.BEDROCK)
++                && !belowState.is(net.neoforged.neoforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST)
+                 && belowState.isCollisionShapeFullBlock(level, below)
+                 && carried.canSurvive(level, pos)
+                 && level.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(pos))).isEmpty();
+@@ -583,7 +_,7 @@
              if (this.enderman.getCarriedBlock() != null) {
                  return false;
              } else {

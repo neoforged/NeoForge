@@ -6,35 +6,35 @@
  
 +    @Deprecated
      public IntrinsicHolderTagsProvider(
-         PackOutput p_256164_,
-         ResourceKey<? extends Registry<T>> p_256155_,
-         CompletableFuture<HolderLookup.Provider> p_256488_,
-         Function<T, ResourceKey<T>> p_256168_
+         PackOutput output,
+         ResourceKey<? extends Registry<T>> registryKey,
+         CompletableFuture<HolderLookup.Provider> lookupProvider,
+         Function<T, ResourceKey<T>> keyExtractor
      ) {
--        super(p_256164_, p_256155_, p_256488_);
--        this.keyExtractor = p_256168_;
-+        this(p_256164_, p_256155_, p_256488_, p_256168_, "vanilla");
+-        super(output, registryKey, lookupProvider);
+-        this.keyExtractor = keyExtractor;
++        this(output, registryKey, lookupProvider, keyExtractor, "vanilla");
      }
  
 +    @Deprecated
      public IntrinsicHolderTagsProvider(
-         PackOutput p_275304_,
-         ResourceKey<? extends Registry<T>> p_275709_,
+         PackOutput output,
+         ResourceKey<? extends Registry<T>> registryKey,
 @@ -29,7 +_,16 @@
-         CompletableFuture<TagsProvider.TagLookup<T>> p_275311_,
-         Function<T, ResourceKey<T>> p_275566_
+         CompletableFuture<TagsProvider.TagLookup<T>> parentProvider,
+         Function<T, ResourceKey<T>> keyExtractor
      ) {
--        super(p_275304_, p_275709_, p_275227_, p_275311_);
-+        this(p_275304_, p_275709_, p_275227_, p_275311_, p_275566_, "vanilla");
+-        super(output, registryKey, lookupProvider, parentProvider);
++        this(output, registryKey, lookupProvider, parentProvider, keyExtractor, "vanilla");
 +    }
 +
-+    public IntrinsicHolderTagsProvider(PackOutput p_256164_, ResourceKey<? extends Registry<T>> p_256155_, CompletableFuture<HolderLookup.Provider> p_256488_, Function<T, ResourceKey<T>> p_256168_, String modId) {
-+        super(p_256164_, p_256155_, p_256488_, modId);
-+        this.keyExtractor = p_256168_;
++    public IntrinsicHolderTagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, Function<T, ResourceKey<T>> keyExtractor, String modId) {
++        super(output, registryKey, lookupProvider, modId);
++        this.keyExtractor = keyExtractor;
 +    }
 +
-+    public IntrinsicHolderTagsProvider(PackOutput p_275304_, ResourceKey<? extends Registry<T>> p_275709_, CompletableFuture<HolderLookup.Provider> p_275227_, CompletableFuture<TagsProvider.TagLookup<T>> p_275311_, Function<T, ResourceKey<T>> p_275566_, String modId) {
-+        super(p_275304_, p_275709_, p_275227_, p_275311_, modId);
-         this.keyExtractor = p_275566_;
++    public IntrinsicHolderTagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<T>> parentProvider, Function<T, ResourceKey<T>> keyExtractor, String modId) {
++        super(output, registryKey, lookupProvider, parentProvider, modId);
+         this.keyExtractor = keyExtractor;
      }
  

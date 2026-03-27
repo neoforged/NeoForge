@@ -11,6 +11,6 @@
 +    }
 +
 +    @Override
-     public void putBoolean(String p_422027_, boolean p_422245_) {
-         this.output.putBoolean(p_422027_, p_422245_);
+     public void putBoolean(String name, boolean value) {
+         this.output.putBoolean(name, value);
      }

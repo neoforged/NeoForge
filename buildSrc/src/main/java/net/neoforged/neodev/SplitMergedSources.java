@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.inject.Inject;
@@ -23,6 +25,9 @@ abstract class SplitMergedSources extends DefaultTask {
     public SplitMergedSources() {}
 
     @InputFile
+    abstract RegularFileProperty getOriginalResourcesJar();
+
+    @InputFile
     abstract RegularFileProperty getMergedJar();
 
     @OutputFile
@@ -34,21 +39,32 @@ abstract class SplitMergedSources extends DefaultTask {
     @TaskAction
     public void splitMergedJar() throws IOException {
         try (
+                var originalResources = new JarFile(getOriginalResourcesJar().get().getAsFile());
                 var merged = new ZipInputStream(new BufferedInputStream(Files.newInputStream(getMergedJar().get().getAsFile().toPath())));
                 var common = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(getCommonJar().get().getAsFile().toPath())));
                 var client = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(getClientJar().get().getAsFile().toPath())))) {
+
+            var manifest = originalResources.getManifest();
+            var sourceDistName = new Attributes.Name("Minecraft-Dist");
+
             for (var entry = merged.getNextEntry(); entry != null; entry = merged.getNextEntry()) {
                 if (entry.isDirectory()) {
                     continue;
                 }
-                var bytes = merged.readAllBytes();
-                if (new String(bytes).contains("\n@OnlyIn(Dist.CLIENT)")) {
+
+                var fileEntry = manifest.getEntries().get(entry.getName().replace(".java", ".class"));
+                String sourceDist = null;
+                if (fileEntry != null) {
+                    sourceDist = fileEntry.getValue(sourceDistName);
+                }
+
+                if ("client".equals(sourceDist)) {
                     client.putNextEntry(entry);
-                    client.write(bytes);
+                    merged.transferTo(client);
                     client.closeEntry();
                 } else {
                     common.putNextEntry(entry);
-                    common.write(bytes);
+                    merged.transferTo(common);
                     common.closeEntry();
                 }
             }

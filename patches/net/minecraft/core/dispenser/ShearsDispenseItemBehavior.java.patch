@@ -1,23 +1,23 @@
 --- a/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
-@@ -24,7 +_,7 @@
-         ServerLevel serverlevel = p_302443_.level();
-         if (!serverlevel.isClientSide()) {
-             BlockPos blockpos = p_302443_.pos().relative(p_302443_.state().getValue(DispenserBlock.FACING));
--            this.setSuccess(tryShearBeehive(serverlevel, p_123581_, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
-+            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(p_302443_, p_123581_, serverlevel, blockpos) || tryShearBeehive(serverlevel, p_123581_, blockpos) || tryShearEntity(serverlevel, blockpos, p_123581_));
+@@ -22,7 +_,7 @@
+         ServerLevel level = source.level();
+         if (!level.isClientSide()) {
+             BlockPos pos = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
+-            this.setSuccess(tryShearBeehive(level, dispensed, pos) || tryShearEntity(level, pos, dispensed));
++            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(source, dispensed, level, pos) || tryShearBeehive(level, dispensed, pos) || tryShearEntity(level, pos, dispensed));
              if (this.isSuccess()) {
-                 p_123581_.hurtAndBreak(1, serverlevel, null, p_348118_ -> {});
+                 dispensed.hurtAndBreak(1, level, null, item -> {});
              }
-@@ -56,8 +_,9 @@
+@@ -53,8 +_,9 @@
                  return true;
              }
  
 -            if (entity instanceof Shearable shearable && shearable.readyForShearing()) {
--                shearable.shear(p_418032_, SoundSource.BLOCKS, p_418413_);
-+            if (entity instanceof net.neoforged.neoforge.common.IShearable shearable && shearable.isShearable(null, p_418413_, p_418032_, p_418277_)) {
-+                shearable.onSheared(null, p_418413_, p_418032_, p_418277_)
-+                        .forEach(drop -> shearable.spawnShearedDrop(p_418032_, p_418277_, drop));
-                 p_418032_.gameEvent(null, GameEvent.SHEAR, p_418277_);
+-                shearable.shear(level, SoundSource.BLOCKS, tool);
++            if (entity instanceof net.neoforged.neoforge.common.IShearable shearable && shearable.isShearable(null, tool, level, pos)) {
++                shearable.onSheared(null, tool, level, pos)
++                        .forEach(drop -> shearable.spawnShearedDrop(level, pos, drop));
+                 level.gameEvent(null, GameEvent.SHEAR, pos);
                  return true;
              }

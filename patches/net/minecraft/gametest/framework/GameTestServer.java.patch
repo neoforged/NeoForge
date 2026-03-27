@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -88,6 +_,11 @@
+@@ -91,6 +_,11 @@
      private final Stopwatch stopwatch = Stopwatch.createUnstarted();
      private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
      private @Nullable MultipleTestTracker testTracker;
@@ -11,30 +11,30 @@
 +    });
  
      public static GameTestServer create(
-         Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Optional<String> p_397118_, boolean p_397698_
-@@ -98,7 +_,7 @@
-         arraylist.addFirst("vanilla");
-         WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(new DataPackConfig(arraylist, List.of()), ENABLED_FEATURES);
-         LevelSettings levelsettings = new LevelSettings(
--            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(ENABLED_FEATURES), worlddataconfiguration
-+            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, worlddataconfiguration
-         );
-         WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_206609_, worlddataconfiguration, false, true);
-         WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(
-@@ -159,10 +_,12 @@
-     public boolean initServer() {
-         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()) {});
+         Thread serverThread,
+@@ -159,7 +_,7 @@
+             levelStorageSource,
+             packRepository,
+             worldStem,
+-            Optional.of(new GameRules(ENABLED_FEATURES)),
++            Optional.of(TEST_GAME_RULES),
+             Proxy.NO_PROXY,
+             DataFixers.getDataFixer(),
+             NO_SERVICES,
+@@ -179,10 +_,12 @@
+             }
+         });
          Gizmos.withCollector(GizmoCollector.NOOP);
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
-         ServerLevel serverlevel = this.overworld();
-         this.testBatches = this.evaluateTestsToRun(serverlevel);
+         ServerLevel level = this.overworld();
+         this.testBatches = this.evaluateTestsToRun(level);
          LOGGER.info("Started game test server");
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
          return true;
      }
  
-@@ -223,8 +_,14 @@
+@@ -261,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,17 +50,17 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -240,11 +_,11 @@
+@@ -278,11 +_,11 @@
  
-     private static void logFailedTest(GameTestInfo p_401161_) {
-         if (p_401161_.getRotation() != Rotation.NONE) {
+     private static void logFailedTest(GameTestInfo testInfo) {
+         if (testInfo.getRotation() != Rotation.NONE) {
 -            LOGGER.info(
 +            LOGGER.error(
-                 "   - {} with rotation {}: {}", p_401161_.id(), p_401161_.getRotation().getSerializedName(), p_401161_.getError().getDescription().getString()
+                 "   - {} with rotation {}: {}", testInfo.id(), testInfo.getRotation().getSerializedName(), testInfo.getError().getDescription().getString()
              );
          } else {
--            LOGGER.info("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
-+            LOGGER.error("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
+-            LOGGER.info("   - {}: {}", testInfo.id(), testInfo.getError().getDescription().getString());
++            LOGGER.error("   - {}: {}", testInfo.id(), testInfo.getError().getDescription().getString());
          }
      }
  

@@ -16,7 +16,6 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": "Changed Description",
     "icon": {
-      "count": 1,
       "id": "minecraft:grass_block"
     },
     "show_toast": false,

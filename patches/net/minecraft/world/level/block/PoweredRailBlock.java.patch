@@ -6,12 +6,12 @@
  
 +    private final boolean isActivator;  // TRUE for an Activator Rail, FALSE for Powered Rail
 +
-     public PoweredRailBlock(BlockBehaviour.Properties p_55218_) {
-+        this(p_55218_, false);
+     public PoweredRailBlock(BlockBehaviour.Properties properties) {
++        this(properties, false);
 +    }
 +
-+    public PoweredRailBlock(BlockBehaviour.Properties p_55218_, boolean isPoweredRail) {
-         super(true, p_55218_);
++    public PoweredRailBlock(BlockBehaviour.Properties properties, boolean isPoweredRail) {
+         super(true, properties);
 +        this.isActivator = !isPoweredRail;
 +        this.registerDefaultState();
 +    }
@@ -21,52 +21,51 @@
      }
  
 @@ -35,7 +_,7 @@
-             int j = p_55221_.getY();
-             int k = p_55221_.getZ();
-             boolean flag = true;
--            RailShape railshape = p_55222_.getValue(SHAPE);
-+            RailShape railshape = ((BaseRailBlock)p_55222_.getBlock()).getRailDirection(p_55222_, p_55220_, p_55221_, null);
-             switch (railshape) {
+             int y = pos.getY();
+             int z = pos.getZ();
+             boolean checkBelow = true;
+-            RailShape shape = state.getValue(SHAPE);
++            RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null);
+             switch (shape) {
                  case NORTH_SOUTH:
-                     if (p_55223_) {
-@@ -104,18 +_,18 @@
+                     if (forward) {
+@@ -104,17 +_,17 @@
  
-     protected boolean isSameRailWithPower(Level p_55226_, BlockPos p_55227_, boolean p_55228_, int p_55229_, RailShape p_55230_) {
-         BlockState blockstate = p_55226_.getBlockState(p_55227_);
--        if (!blockstate.is(this)) {
-+        if (!(blockstate.getBlock() instanceof PoweredRailBlock other)) {
+     protected boolean isSameRailWithPower(Level level, BlockPos pos, boolean forward, int searchDepth, RailShape dir) {
+         BlockState state = level.getBlockState(pos);
+-        if (!state.is(this)) {
++        if (!(state.getBlock() instanceof PoweredRailBlock other)) {
              return false;
          } else {
--            RailShape railshape = blockstate.getValue(SHAPE);
-+            RailShape railshape = other.getRailDirection(blockstate, p_55226_, p_55227_, null);
-             if (p_55230_ != RailShape.EAST_WEST
-                 || railshape != RailShape.NORTH_SOUTH && railshape != RailShape.ASCENDING_NORTH && railshape != RailShape.ASCENDING_SOUTH) {
-                 if (p_55230_ != RailShape.NORTH_SOUTH
-                     || railshape != RailShape.EAST_WEST && railshape != RailShape.ASCENDING_EAST && railshape != RailShape.ASCENDING_WEST) {
--                    if (!blockstate.getValue(POWERED)) {
+-            RailShape myShape = state.getValue(SHAPE);
++            RailShape myShape = other.getRailDirection(state, level, pos, null);
+             if (dir != RailShape.EAST_WEST || myShape != RailShape.NORTH_SOUTH && myShape != RailShape.ASCENDING_NORTH && myShape != RailShape.ASCENDING_SOUTH) {
+                 if (dir != RailShape.NORTH_SOUTH
+                     || myShape != RailShape.EAST_WEST && myShape != RailShape.ASCENDING_EAST && myShape != RailShape.ASCENDING_WEST) {
+-                    if (!state.getValue(POWERED)) {
 +                    if (isActivatorRail() != other.isActivatorRail()) {
                          return false;
                      } else {
--                        return p_55226_.hasNeighborSignal(p_55227_) ? true : this.findPoweredRailSignal(p_55226_, p_55227_, blockstate, p_55228_, p_55229_ + 1);
-+                        return p_55226_.hasNeighborSignal(p_55227_) ? true : other.findPoweredRailSignal(p_55226_, p_55227_, blockstate, p_55228_, p_55229_ + 1);
+-                        return level.hasNeighborSignal(pos) ? true : this.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
++                        return level.hasNeighborSignal(pos) ? true : other.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
                      }
                  } else {
                      return false;
-@@ -135,7 +_,7 @@
-         if (flag1 != flag) {
-             p_55233_.setBlock(p_55234_, p_55232_.setValue(POWERED, flag1), 3);
-             p_55233_.updateNeighborsAt(p_55234_.below(), this);
--            if (p_55232_.getValue(SHAPE).isSlope()) {
-+            if (((BaseRailBlock)p_55232_.getBlock()).getRailDirection(p_55232_, p_55233_, p_55234_, null).isSlope()) {
-                 p_55233_.updateNeighborsAt(p_55234_.above(), this);
+@@ -134,7 +_,7 @@
+         if (shouldPower != isPowered) {
+             level.setBlock(pos, state.setValue(POWERED, shouldPower), 3);
+             level.updateNeighborsAt(pos.below(), this);
+-            if (state.getValue(SHAPE).isSlope()) {
++            if (((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null).isSlope()) {
+                 level.updateNeighborsAt(pos.above(), this);
              }
          }
-@@ -162,6 +_,10 @@
+@@ -161,6 +_,10 @@
  
      @Override
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_55243_) {
--        p_55243_.add(SHAPE, POWERED, WATERLOGGED);
-+        p_55243_.add(getShapeProperty(), POWERED, WATERLOGGED);
+     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+-        builder.add(SHAPE, POWERED, WATERLOGGED);
++        builder.add(getShapeProperty(), POWERED, WATERLOGGED);
 +    }
 +
 +    public boolean isActivatorRail() {

@@ -1,69 +1,60 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -46,7 +_,7 @@
+@@ -77,12 +_,14 @@
  
      @Override
-     protected boolean mayPlaceOn(BlockState p_52302_, BlockGetter p_52303_, BlockPos p_52304_) {
--        return p_52302_.is(Blocks.FARMLAND);
-+        return p_52302_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
-     }
- 
-     protected IntegerProperty getAgeProperty() {
-@@ -76,12 +_,14 @@
- 
-     @Override
-     protected void randomTick(BlockState p_221050_, ServerLevel p_221051_, BlockPos p_221052_, RandomSource p_221053_) {
-+        if (!p_221051_.isAreaLoaded(p_221052_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-         if (p_221051_.getRawBrightness(p_221052_, 0) >= 9) {
-             int i = this.getAge(p_221050_);
-             if (i < this.getMaxAge()) {
--                float f = getGrowthSpeed(this, p_221051_, p_221052_);
--                if (p_221053_.nextInt((int)(25.0F / f) + 1) == 0) {
-+                float f = getGrowthSpeed(p_221050_, p_221051_, p_221052_);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221051_, p_221052_, p_221050_, p_221053_.nextInt((int)(25.0F / f) + 1) == 0)) {
-                     p_221051_.setBlock(p_221052_, this.getStateForAge(i + 1), 2);
-+                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221051_, p_221052_, p_221050_);
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
++        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+         if (level.getRawBrightness(pos, 0) >= 9) {
+             int age = this.getAge(state);
+             if (age < this.getMaxAge()) {
+-                float growthSpeed = getGrowthSpeed(this, level, pos);
+-                if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
++                float f = getGrowthSpeed(state, level, pos);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
+                     level.setBlock(pos, this.getStateForAge(age + 1), 2);
++                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
              }
          }
-@@ -96,7 +_,8 @@
-         return Mth.nextInt(p_52262_.random, 2, 5);
+@@ -97,7 +_,8 @@
+         return Mth.nextInt(level.getRandom(), 2, 5);
      }
  
--    protected static float getGrowthSpeed(Block p_52273_, BlockGetter p_52274_, BlockPos p_52275_) {
-+    protected static float getGrowthSpeed(BlockState blockState, BlockGetter p_52274_, BlockPos p_52275_) {
-+        Block p_52273_ = blockState.getBlock();
-         float f = 1.0F;
-         BlockPos blockpos = p_52275_.below();
+-    protected static float getGrowthSpeed(Block type, BlockGetter level, BlockPos pos) {
++    protected static float getGrowthSpeed(BlockState cropBlockState, BlockGetter level, BlockPos pos) {
++        Block type = cropBlockState.getBlock();
+         float speed = 1.0F;
+         BlockPos below = pos.below();
  
-@@ -104,9 +_,10 @@
-             for (int j = -1; j <= 1; j++) {
-                 float f1 = 0.0F;
-                 BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
--                if (blockstate.is(Blocks.FARMLAND)) {
-+                var soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, blockState);
-+                if (soilDecision.isDefault() ? blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock : soilDecision.isTrue()) {
-                     f1 = 1.0F;
--                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
-+                    if (blockstate.isFertile(p_52274_, p_52275_.offset(i, 0, j))) {
-                         f1 = 3.0F;
+@@ -105,9 +_,10 @@
+             for (int zz = -1; zz <= 1; zz++) {
+                 float blockSpeed = 0.0F;
+                 BlockState blockState = level.getBlockState(below.offset(xx, 0, zz));
+-                if (blockState.is(BlockTags.GROWS_CROPS)) {
++                var soilDecision = blockState.canSustainPlant(level, below.offset(xx, 0, zz), net.minecraft.core.Direction.UP, blockState);
++                if (soilDecision.isDefault() ? blockState.is(BlockTags.GROWS_CROPS) : soilDecision.isTrue()) {
+                     blockSpeed = 1.0F;
+-                    if (blockState.getValueOrElse(FarmlandBlock.MOISTURE, 0) > 0) {
++                    if (blockState.isFertile(level, pos.offset(xx, 0, zz))) {
+                         blockSpeed = 3.0F;
                      }
                  }
-@@ -142,6 +_,8 @@
+@@ -143,6 +_,8 @@
  
      @Override
-     protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
-+        var soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
++        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
+         return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
      }
  
-@@ -151,7 +_,7 @@
+@@ -152,7 +_,7 @@
  
      @Override
-     protected void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_, InsideBlockEffectApplier p_405324_, boolean p_451780_) {
--        if (p_52278_ instanceof ServerLevel serverlevel && p_52280_ instanceof Ravager && serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
-+        if (p_52278_ instanceof ServerLevel serverlevel && p_52280_ instanceof Ravager && net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, p_52280_)) {
-             serverlevel.destroyBlock(p_52279_, true, p_52280_);
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+-        if (level instanceof ServerLevel serverLevel && entity instanceof Ravager && serverLevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
++        if (level instanceof ServerLevel serverLevel && entity instanceof Ravager && net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverLevel, entity)) {
+             serverLevel.destroyBlock(pos, true, entity);
          }
  

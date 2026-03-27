@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
 +++ b/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
-@@ -41,6 +_,14 @@
-         return !this.modifiers.isPresent() || this.modifiers.get().test(p_399563_.modifiers());
+@@ -40,6 +_,14 @@
+         return !this.modifiers.isPresent() || this.modifiers.get().test(value.modifiers());
      }
  
 +    @Override

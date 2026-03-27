@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -354,7 +_,7 @@
+@@ -320,7 +_,7 @@
          } else if (this.isChargingCrossbow()) {
              return PiglinArmPose.CROSSBOW_CHARGE;
          } else {
@@ -9,30 +9,30 @@
          }
      }
  
-@@ -383,7 +_,7 @@
+@@ -349,7 +_,7 @@
  
      @Override
-     public boolean canUseNonMeleeWeapon(ItemStack p_482058_) {
--        return p_482058_.getItem() == Items.CROSSBOW || p_482058_.has(DataComponents.KINETIC_WEAPON);
-+        return p_482058_.is(net.neoforged.neoforge.common.Tags.Items.PIGLIN_USABLE_CROSSBOWS) || p_482058_.has(DataComponents.KINETIC_WEAPON);
+     public boolean canUseNonMeleeWeapon(ItemStack item) {
+-        return item.getItem() == Items.CROSSBOW || item.has(DataComponents.KINETIC_WEAPON);
++        return item.is(net.neoforged.neoforge.common.Tags.Items.PIGLIN_USABLE_CROSSBOWS) || item.has(DataComponents.KINETIC_WEAPON);
      }
  
-     protected void holdInMainHand(ItemStack p_34784_) {
-@@ -391,7 +_,7 @@
+     protected void holdInMainHand(ItemStack itemStack) {
+@@ -357,7 +_,7 @@
      }
  
-     protected void holdInOffHand(ItemStack p_34786_) {
--        if (p_34786_.is(PiglinAi.BARTERING_ITEM)) {
-+        if (p_34786_.isPiglinCurrency()) {
-             this.setItemSlot(EquipmentSlot.OFFHAND, p_34786_);
+     protected void holdInOffHand(ItemStack itemStack) {
+-        if (itemStack.is(PiglinAi.BARTERING_ITEM)) {
++        if (itemStack.isPiglinCurrency()) {
+             this.setItemSlot(EquipmentSlot.OFFHAND, itemStack);
              this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
          } else {
-@@ -401,7 +_,7 @@
+@@ -367,7 +_,7 @@
  
      @Override
-     public boolean wantsToPickUp(ServerLevel p_376232_, ItemStack p_34777_) {
--        return p_376232_.getGameRules().get(GameRules.MOB_GRIEFING) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, p_34777_);
-+        return net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_376232_, this) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, p_34777_);
+     public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+-        return level.getGameRules().get(GameRules.MOB_GRIEFING) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, itemStack);
++        return net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, itemStack);
      }
  
-     protected boolean canReplaceCurrentItem(ItemStack p_34788_) {
+     protected boolean canReplaceCurrentItem(ItemStack newItemStack) {

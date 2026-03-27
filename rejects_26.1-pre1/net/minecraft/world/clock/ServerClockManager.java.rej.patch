@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/clock/ServerClockManager.java
++++ b/net/minecraft/world/clock/ServerClockManager.java
+@@ -133,26 +170,37 @@
+         public void tick() {
+             if (!this.paused) {
+-                this.totalTicks++;
++                // advances the fractional daytime, returns the integer part of it
++                float timeStep = fractionalTick + speed;
++                long result = (long)timeStep;
++                this.fractionalTick = (timeStep - result);
++                this.totalTicks += result;
+             }
+         }
+ }

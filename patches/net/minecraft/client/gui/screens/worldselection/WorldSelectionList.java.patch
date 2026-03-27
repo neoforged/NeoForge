@@ -1,29 +1,29 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
-@@ -82,6 +_,7 @@
-     static final Identifier WARNING_SPRITE = Identifier.withDefaultNamespace("world_list/warning");
-     static final Identifier JOIN_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("world_list/join_highlighted");
-     static final Identifier JOIN_SPRITE = Identifier.withDefaultNamespace("world_list/join");
+@@ -83,6 +_,7 @@
+     private static final Identifier WARNING_SPRITE = Identifier.withDefaultNamespace("world_list/warning");
+     private static final Identifier JOIN_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("world_list/join_highlighted");
+     private static final Identifier JOIN_SPRITE = Identifier.withDefaultNamespace("world_list/join");
 +    private static final Identifier FORGE_EXPERIMENTAL_WARNING_ICON = Identifier.fromNamespaceAndPath("neoforge","textures/gui/experimental_warning.png");
-     static final Logger LOGGER = LogUtils.getLogger();
-     static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
-     static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -519,6 +_,7 @@
-             this.infoText.setPosition(i, this.getContentY() + 9 + 9 + 3);
-             this.infoText.render(p_439856_, p_439492_, p_440095_, p_439455_);
-             p_439856_.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
-+            renderExperimentalWarning(p_439856_, p_439492_, p_440095_, p_438893_);
-             if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && (this.minecraft.options.touchscreen().get() || p_438893_)) {
-                 p_439856_.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
-                 int j = p_439492_ - this.getContentX();
-@@ -787,6 +_,19 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
+     private static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
+@@ -515,6 +_,7 @@
+             this.infoText.setPosition(textX, this.getContentY() + 9 + 9 + 3);
+             this.infoText.extractRenderState(graphics, mouseX, mouseY, a);
+             graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++            renderExperimentalWarning(graphics, mouseX, mouseY, hovered);
+             if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && (this.minecraft.options.touchscreen().get() || hovered)) {
+                 graphics.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
+                 int relX = mouseX - this.getContentX();
+@@ -779,6 +_,19 @@
          @Override
          public LevelSummary getLevelSummary() {
              return this.summary;
 +        }
 +
 +        // FORGE: Patch in experimental warning icon for worlds in the world selection screen
-+        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered) {
++        private void renderExperimentalWarning(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = this.getContentX() + this.getContentWidth();
 +                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);

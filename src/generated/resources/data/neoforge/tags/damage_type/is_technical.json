@@ -2,10 +2,6 @@
   "values": [
     "minecraft:generic_kill",
     "minecraft:outside_border",
-    "minecraft:out_of_world",
-    {
-      "id": "#forge:is_technical",
-      "required": false
-    }
+    "minecraft:out_of_world"
   ]
 }

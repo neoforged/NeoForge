@@ -1,25 +1,25 @@
 --- a/net/minecraft/world/level/block/CocoaBlock.java
 +++ b/net/minecraft/world/level/block/CocoaBlock.java
-@@ -52,10 +_,11 @@
+@@ -50,10 +_,11 @@
  
      @Override
-     protected void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
--        if (p_221001_.random.nextInt(5) == 0) {
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        if (level.getRandom().nextInt(5) == 0) {
 +        if (true) {
-             int i = p_221000_.getValue(AGE);
--            if (i < 2) {
-+            if (i < 2 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221001_, p_221002_, p_221000_, p_221001_.random.nextInt(5) == 0)) {
-                 p_221001_.setBlock(p_221002_, p_221000_.setValue(AGE, i + 1), 2);
-+                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221001_, p_221002_, p_221000_);
+             int age = state.getValue(AGE);
+-            if (age < 2) {
++            if (age < 2 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, level.getRandom().nextInt(5) == 0)) {
+                 level.setBlock(pos, state.setValue(AGE, age + 1), 2);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
              }
          }
      }
-@@ -63,6 +_,8 @@
+@@ -61,6 +_,8 @@
      @Override
-     protected boolean canSurvive(BlockState p_51767_, LevelReader p_51768_, BlockPos p_51769_) {
-         BlockState blockstate = p_51768_.getBlockState(p_51769_.relative(p_51767_.getValue(FACING)));
-+        var soilDecision = blockstate.canSustainPlant(p_51768_, p_51769_.relative(p_51767_.getValue(FACING)), p_51767_.getValue(FACING).getOpposite(), p_51767_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+         BlockState relativeState = level.getBlockState(pos.relative(state.getValue(FACING)));
++        var soilDecision = relativeState.canSustainPlant(level, pos.relative(state.getValue(FACING)), state.getValue(FACING).getOpposite(), state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return blockstate.is(BlockTags.JUNGLE_LOGS);
+         return relativeState.is(BlockTags.SUPPORTS_COCOA);
      }
  

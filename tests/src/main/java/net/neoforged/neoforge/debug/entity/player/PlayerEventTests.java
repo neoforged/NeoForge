@@ -92,7 +92,7 @@ public class PlayerEventTests {
                     BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
                     if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER) {
                         if (!level.isClientSide()) {
-                            context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
+                            context.getPlayer().sendSystemMessage(Component.literal("Can't place dirt on dispenser"));
                         }
                         test.pass();
                         event.cancelWithResult(InteractionResult.SUCCESS);
@@ -126,7 +126,7 @@ public class PlayerEventTests {
         test.onGameTest(helper -> {
             Mob illusioner = helper.spawnWithNoFreeWill(EntityType.ILLUSIONER, 1, 1, 1);
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                    .thenExecute(player -> player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(illusioner, player.isShiftKeyDown(), InteractionHand.MAIN_HAND, helper.absoluteVec(new BlockPos(1, 1, 1).getCenter()))))
+                    .thenExecute(player -> player.connection.handleInteract(new ServerboundInteractPacket(illusioner.getId(), InteractionHand.MAIN_HAND, helper.absoluteVec(new BlockPos(1, 1, 1).getCenter()), player.isShiftKeyDown())))
                     .thenExecute(player -> helper.assertTrue(illusioner.getName().getString().contains("entityInteractEventTest"), "Illager name did not get changed on player interact"))
                     .thenSucceed();
         });

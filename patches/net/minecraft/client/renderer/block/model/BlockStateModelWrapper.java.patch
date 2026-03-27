@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/block/model/BlockStateModelWrapper.java
++++ b/net/minecraft/client/renderer/block/model/BlockStateModelWrapper.java
+@@ -27,8 +_,8 @@
+ 
+     @Override
+     public void update(BlockModelRenderState output, BlockState blockState, BlockDisplayContext displayContext, long seed) {
+-        List<BlockStateModelPart> partList = output.setupModel(this.transformation, this.model.hasMaterialFlag(1));
+-        this.model.collectParts(output.scratchRandomSource(seed), partList);
++        List<BlockStateModelPart> partList = output.setupModel(this.transformation, this.model.hasMaterialFlag(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, blockState, 1));
++        this.model.collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO, blockState, output.scratchRandomSource(seed), partList);
+         this.updateTints(output, blockState);
+     }
+ 

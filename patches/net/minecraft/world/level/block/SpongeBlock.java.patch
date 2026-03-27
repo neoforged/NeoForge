@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/block/SpongeBlock.java
 +++ b/net/minecraft/world/level/block/SpongeBlock.java
-@@ -51,6 +_,7 @@
+@@ -50,6 +_,7 @@
      }
  
-     private boolean removeWaterBreadthFirstSearch(Level p_56808_, BlockPos p_56809_) {
-+        BlockState spongeState = p_56808_.getBlockState(p_56809_);
-         return BlockPos.breadthFirstTraversal(
-                 p_56809_,
-                 6,
-@@ -66,7 +_,7 @@
-                     } else {
-                         BlockState blockstate = p_56808_.getBlockState(p_294069_);
-                         FluidState fluidstate = p_56808_.getFluidState(p_294069_);
--                        if (!fluidstate.is(FluidTags.WATER)) {
-+                        if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
-                             return BlockPos.TraversalNodeStatus.SKIP;
-                         } else if (blockstate.getBlock() instanceof BucketPickup bucketpickup
-                             && !bucketpickup.pickupBlock(null, p_56808_, p_294069_, blockstate).isEmpty()) {
+     private boolean removeWaterBreadthFirstSearch(Level level, BlockPos startPos) {
++        BlockState spongeState = level.getBlockState(startPos);
+         return BlockPos.breadthFirstTraversal(startPos, 6, 65, (pos, consumer) -> {
+             for (Direction direction : ALL_DIRECTIONS) {
+                 consumer.accept(pos.relative(direction));
+@@ -60,7 +_,7 @@
+             } else {
+                 BlockState state = level.getBlockState(pos);
+                 FluidState fluidState = level.getFluidState(pos);
+-                if (!fluidState.is(FluidTags.WATER)) {
++                if (!spongeState.canBeHydrated(level, startPos, fluidState, pos)) {
+                     return BlockPos.TraversalNodeStatus.SKIP;
+                 } else if (state.getBlock() instanceof BucketPickup bucketPickup && !bucketPickup.pickupBlock(null, level, pos, state).isEmpty()) {
+                     return BlockPos.TraversalNodeStatus.ACCEPT;

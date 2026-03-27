@@ -1,0 +1,77 @@
+--- a/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
++++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
+@@ -22,13 +_,21 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface BlockStateModel extends net.neoforged.neoforge.client.extensions.BlockStateModelExtension {
++    /// @deprecated Neo: Use [#collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)].
++    @Deprecated
+     void collectParts(RandomSource random, List<BlockStateModelPart> output);
+ 
++    /// @deprecated Neo: Use [#particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState)].
++    @Deprecated
+     Material.Baked particleMaterial();
+ 
++    /// @deprecated Neo: Use [#materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState)] instead
++    @Deprecated
+     @BakedQuad.MaterialFlags
+     int materialFlags();
+ 
++    /// @deprecated Neo: Use [#hasMaterialFlag(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState, int)] instead
++    @Deprecated
+     default boolean hasMaterialFlag(@BakedQuad.MaterialFlags int flag) {
+         return (this.materialFlags() & flag) != 0;
+     }
+@@ -72,30 +_,41 @@
+             i -> i.group(Variant.MAP_CODEC.forGetter(Weighted::value), ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Weighted::weight))
+                 .apply(i, Weighted::new)
+         );
+-        Codec<WeightedVariants.Unbaked> HARDCODED_WEIGHTED_CODEC = ExtraCodecs.nonEmptyList(ELEMENT_CODEC.listOf())
++        @org.jetbrains.annotations.ApiStatus.Internal
++        Codec<Either<net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel, SingleVariant.Unbaked>> SINGLE_MODEL_CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeSingleModelCodec().codec();
++        @org.jetbrains.annotations.ApiStatus.Internal
++        Codec<Weighted<Either<net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel, SingleVariant.Unbaked>>> WEIGHTED_MODEL_CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeElementCodec();
++        Codec<WeightedVariants.Unbaked> HARDCODED_WEIGHTED_CODEC = ExtraCodecs.nonEmptyList(WEIGHTED_MODEL_CODEC.listOf())
+             .flatComapMap(
+-                w -> new WeightedVariants.Unbaked(WeightedList.of(Lists.transform((List<Weighted<Variant>>)w, e -> e.map(SingleVariant.Unbaked::new)))),
++                w -> new WeightedVariants.Unbaked(WeightedList.of(Lists.transform(w, e -> e.map(either -> either.map(m -> m, m -> m))))),
+                 unbaked -> {
+                     List<Weighted<BlockStateModel.Unbaked>> entries = unbaked.entries().unwrap();
+-                    List<Weighted<Variant>> result = new ArrayList<>(entries.size());
++                    List<Weighted<Either<net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel, SingleVariant.Unbaked>>> result = new ArrayList<>(entries.size());
+ 
+                     for (Weighted<BlockStateModel.Unbaked> entry : entries) {
+-                        if (!(entry.value() instanceof SingleVariant.Unbaked singleVariant)) {
+-                            return DataResult.error(() -> "Only single variants are supported");
++                        switch (entry.value()) {
++                            case net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel customModel -> {
++                                result.add(new Weighted<>(Either.left(customModel), entry.weight()));
++                            }
++                            case SingleVariant.Unbaked singlevariant$unbaked -> {
++                                result.add(new Weighted<>(Either.right(new SingleVariant.Unbaked(singlevariant$unbaked.variant())), entry.weight()));
++                            }
++                            default -> {
++                                return DataResult.error(() -> "Only custom models or single variants are supported");
++                            }
+                         }
+-
+-                        result.add(new Weighted<>(singleVariant.variant(), entry.weight()));
+                     }
+ 
+                     return DataResult.success(result);
+                 }
+             );
+-        Codec<BlockStateModel.Unbaked> CODEC = Codec.either(HARDCODED_WEIGHTED_CODEC, SingleVariant.Unbaked.CODEC)
+-            .flatComapMap(v -> v.map(l -> l, r -> r), o -> {
++        Codec<BlockStateModel.Unbaked> CODEC = Codec.either(HARDCODED_WEIGHTED_CODEC, SINGLE_MODEL_CODEC)
++            .flatComapMap(v -> v.map(l -> l, r -> r.map(m -> m, m -> m)), o -> {
+                 return switch (o) {
+-                    case SingleVariant.Unbaked single -> DataResult.success(Either.right(single));
++                    case net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel customModel -> DataResult.success(Either.right(Either.left(customModel)));
++                    case SingleVariant.Unbaked single -> DataResult.success(Either.right(Either.right(single)));
+                     case WeightedVariants.Unbaked multiple -> DataResult.success(Either.left(multiple));
+-                    default -> DataResult.error(() -> "Only a single variant or a list of variants are supported");
++                    default -> DataResult.error(() -> "Only a custom model or a single variant or a list of variants are supported");
+                 };
+             });
+ 

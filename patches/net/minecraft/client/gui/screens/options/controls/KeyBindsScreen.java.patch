@@ -10,23 +10,22 @@
 +    private boolean isLastKeyHeldDown = false;
 +    private boolean isLastModifierHeldDown = false;
  
-     public KeyBindsScreen(Screen p_344996_, Options p_344771_) {
-         super(p_344996_, p_344771_, TITLE);
+     public KeyBindsScreen(Screen lastScreen, Options options) {
+         super(lastScreen, options, TITLE);
 @@ -42,7 +_,7 @@
      protected void addFooter() {
-         this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
-             for (KeyMapping keymapping : this.options.keyMappings) {
--                keymapping.setKey(keymapping.getDefaultKey());
-+                keymapping.setToDefault();
+         this.resetButton = Button.builder(Component.translatable("controls.resetAll"), button -> {
+             for (KeyMapping key : this.options.keyMappings) {
+-                key.setKey(key.getDefaultKey());
++                key.setToDefault();
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
 @@ -73,18 +_,67 @@
      @Override
-     public boolean keyPressed(KeyEvent p_446842_) {
+     public boolean keyPressed(KeyEvent event) {
          if (this.selectedKey != null) {
--            if (p_446842_.isEscape()) {
-+            var key = InputConstants.getKey(p_446842_);
++            var key = InputConstants.getKey(event);
 +            if (this.lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
 +                this.lastPressedModifier = key;
 +                this.isLastModifierHeldDown = true;
@@ -36,7 +35,7 @@
 +            }
 +            return true;
 +        } else {
-+            return super.keyPressed(p_446842_);
++            return super.keyPressed(event);
 +        }
 +    }
 +
@@ -46,7 +45,7 @@
 +        // (only as RELEASE, not PRESS) by Mac systems to indicate that "Fn" is being pressed
 +        // See https://github.com/neoforged/NeoForge/issues/1683
 +        if (this.selectedKey != null && (!net.minecraft.client.input.InputQuirks.ON_OSX || event.scancode() != 63)) {
-+            if (event.isEscape()) {
+             if (event.isEscape()) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);
 +                this.lastPressedKey = InputConstants.UNKNOWN;
@@ -54,7 +53,7 @@
 +                this.isLastKeyHeldDown = false;
 +                this.isLastModifierHeldDown = false;
              } else {
--                this.selectedKey.setKey(InputConstants.getKey(p_446842_));
+-                this.selectedKey.setKey(InputConstants.getKey(event));
 -            }
 +                var key = InputConstants.getKey(event);
 +                if (this.lastPressedKey.equals(key)) {
@@ -88,7 +87,7 @@
              this.keyBindsList.resetMappingAndUpdateButtons();
              return true;
          } else {
--            return super.keyPressed(p_446842_);
+-            return super.keyPressed(event);
 +            return super.keyReleased(event);
          }
      }

@@ -6,8 +6,10 @@ name: Release
 on:
   push:
     branches:
-      - '1.*'                 # Mainline release branches 
+      - '26.*'                 # Mainline release branches 
       - '[0-9][0-9]w14[a-z]+' # w14 April Fools Snapshots
+    tags:
+      - 'release/*'           # Manual releases
 
 permissions:
   contents: read
@@ -17,10 +19,13 @@ jobs:
   release:
     uses: neoforged/actions/.github/workflows/gradle-publish.yml@main
     with:
-      java: 21
+      java: 25
       pre_gradle_tasks: setup
-      gradle_tasks: publish '-Pneogradle.runtime.platform.installer.debug=false'
+      gradle_tasks: publish
       version_labels: -beta, -stable
+      set_project_version: true
+      # always add the offset as a 4th version component
+      increment_last_version_component: false
 
     # We only publish the main repository. This way we avoid publishing Kits
     if: ${{ github.repository == 'neoforged/NeoForge' }}

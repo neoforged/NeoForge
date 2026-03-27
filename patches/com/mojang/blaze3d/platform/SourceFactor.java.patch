@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/platform/SourceFactor.java
 +++ b/com/mojang/blaze3d/platform/SourceFactor.java
-@@ -6,6 +_,7 @@
+@@ -4,6 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
- @DontObfuscate
 +@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further source factors may be added")
  public enum SourceFactor {
      CONSTANT_ALPHA,

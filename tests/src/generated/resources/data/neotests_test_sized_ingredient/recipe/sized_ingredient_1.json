@@ -20,7 +20,7 @@
     }
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:cherry_fence"
-  }
+  },
+  "show_notification": false
 }

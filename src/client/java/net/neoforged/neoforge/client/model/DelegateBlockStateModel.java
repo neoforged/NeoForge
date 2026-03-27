@@ -6,12 +6,13 @@
 package net.neoforged.neoforge.client.model;
 
 import java.util.List;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -30,23 +31,36 @@ public abstract class DelegateBlockStateModel implements BlockStateModel {
 
     @Override
     @Deprecated
-    public void collectParts(RandomSource random, List<BlockModelPart> parts) {
+    public void collectParts(RandomSource random, List<BlockStateModelPart> parts) {
         this.delegate.collectParts(random, parts);
     }
 
     @Override
-    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         this.delegate.collectParts(level, pos, state, random, parts);
     }
 
     @Override
     @Deprecated
-    public TextureAtlasSprite particleIcon() {
-        return this.delegate.particleIcon();
+    public Material.Baked particleMaterial() {
+        return this.delegate.particleMaterial();
     }
 
     @Override
-    public TextureAtlasSprite particleIcon(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return this.delegate.particleIcon(level, pos, state);
+    public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return this.delegate.particleMaterial(level, pos, state);
+    }
+
+    @Override
+    @Deprecated
+    @BakedQuad.MaterialFlags
+    public int materialFlags() {
+        return this.delegate.materialFlags();
+    }
+
+    @Override
+    @BakedQuad.MaterialFlags
+    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return this.delegate.materialFlags(level, pos, state);
     }
 }

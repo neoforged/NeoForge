@@ -1,15 +1,15 @@
 --- a/net/minecraft/util/random/WeightedList.java
 +++ b/net/minecraft/util/random/WeightedList.java
-@@ -133,7 +_,7 @@
+@@ -144,7 +_,7 @@
      }
  
      public static class Builder<E> {
 -        private final ImmutableList.Builder<Weighted<E>> result = ImmutableList.builder();
 +        private final List<Weighted<E>> result = new java.util.ArrayList<>();
  
-         public WeightedList.Builder<E> add(E p_394625_) {
-             return this.add(p_394625_, 1);
-@@ -144,8 +_,41 @@
+         public WeightedList.Builder<E> add(E item) {
+             return this.add(item, 1);
+@@ -155,8 +_,41 @@
              return this;
          }
  

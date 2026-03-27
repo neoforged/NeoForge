@@ -5,10 +5,6 @@
     "#c:seeds/pumpkin",
     "#c:seeds/torchflower",
     "#c:seeds/pitcher_plant",
-    "#c:seeds/wheat",
-    {
-      "id": "#forge:seeds",
-      "required": false
-    }
+    "#c:seeds/wheat"
   ]
 }

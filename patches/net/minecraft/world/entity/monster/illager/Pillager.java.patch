@@ -3,9 +3,9 @@
 @@ -97,7 +_,7 @@
  
      @Override
-     public boolean canUseNonMeleeWeapon(ItemStack p_478227_) {
--        return p_478227_.getItem() == Items.CROSSBOW;
-+        return p_478227_.is(net.neoforged.neoforge.common.Tags.Items.PILLAGER_USABLE_CROSSBOWS);
+     public boolean canUseNonMeleeWeapon(ItemStack item) {
+-        return item.getItem() == Items.CROSSBOW;
++        return item.is(net.neoforged.neoforge.common.Tags.Items.PILLAGER_USABLE_CROSSBOWS);
      }
  
      public boolean isChargingCrossbow() {

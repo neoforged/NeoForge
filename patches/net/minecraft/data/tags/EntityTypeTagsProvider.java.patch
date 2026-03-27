@@ -6,12 +6,12 @@
  public class EntityTypeTagsProvider extends IntrinsicHolderTagsProvider<EntityType<?>> {
 +    /** @deprecated Forge: Use the {@linkplain #EntityTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public EntityTypeTagsProvider(PackOutput p_256095_, CompletableFuture<HolderLookup.Provider> p_256572_) {
--        super(p_256095_, Registries.ENTITY_TYPE, p_256572_, p_256665_ -> p_256665_.builtInRegistryHolder().key());
-+        this(p_256095_, p_256572_, "vanilla");
+     public EntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+-        super(output, Registries.ENTITY_TYPE, lookupProvider, e -> e.builtInRegistryHolder().key());
++        this(output, lookupProvider, "vanilla");
 +    }
-+    public EntityTypeTagsProvider(PackOutput p_256095_, CompletableFuture<HolderLookup.Provider> p_256572_, String modId) {
-+        super(p_256095_, Registries.ENTITY_TYPE, p_256572_, p_256665_ -> p_256665_.builtInRegistryHolder().key(), modId);
++    public EntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.ENTITY_TYPE, lookupProvider, e -> e.builtInRegistryHolder().key(), modId);
      }
  
      @Override

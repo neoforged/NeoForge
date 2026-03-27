@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -565,6 +_,12 @@
+@@ -560,6 +_,12 @@
      }
  
-     private boolean tryItemClickBehaviourOverride(Player p_249615_, ClickAction p_250300_, Slot p_249384_, ItemStack p_251073_, ItemStack p_252026_) {
+     private boolean tryItemClickBehaviourOverride(Player player, ClickAction clickAction, Slot slot, ItemStack clicked, ItemStack carried) {
 +        // Neo: Fire the ItemStackedOnOtherEvent, and return true if it was cancelled (meaning the event was handled). Returning true will trigger the container to stop processing further logic.
 +        // The first parameter to onItemStackedOn is the "carried" (under-mouse) item, which is the second ItemStack parameter to this method.
-+        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(p_252026_, p_251073_, p_249384_, p_250300_, p_249615_, createCarriedSlotAccess())) {
++        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(carried, clicked, slot, clickAction, player, createCarriedSlotAccess())) {
 +            return true;
 +        }
 +
-         FeatureFlagSet featureflagset = p_249615_.level().enabledFeatures();
-         return p_252026_.isItemEnabled(featureflagset) && p_252026_.overrideStackedOnOther(p_249384_, p_250300_, p_249615_)
+         FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
+         return carried.isItemEnabled(enabledFeatures) && carried.overrideStackedOnOther(slot, clickAction, player)
              ? true

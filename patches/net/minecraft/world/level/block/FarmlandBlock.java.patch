@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/FarmlandBlock.java
++++ b/net/minecraft/world/level/block/FarmlandBlock.java
+@@ -108,10 +_,7 @@
+     @Override
+     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
+         if (level instanceof ServerLevel serverLevel
+-            && level.getRandom().nextFloat() < fallDistance - 0.5
+-            && entity instanceof LivingEntity
+-            && (entity instanceof Player || serverLevel.getGameRules().get(GameRules.MOB_GRIEFING))
+-            && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
++            && net.neoforged.neoforge.common.CommonHooks.onFarmlandTrample(serverLevel, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity)) { // Neo: Move logic to Entity#canTrample
+             turnToDirt(entity, state, level, pos);
+         }
+ 
+@@ -129,13 +_,14 @@
+     }
+ 
+     private static boolean isNearWater(LevelReader level, BlockPos pos) {
++        BlockState state = level.getBlockState(pos);
+         for (BlockPos blockPos : BlockPos.betweenClosed(pos.offset(-4, 0, -4), pos.offset(4, 1, 4))) {
+-            if (level.getFluidState(blockPos).is(FluidTags.WATER)) {
++            if (state.canBeHydrated(level, pos, level.getFluidState(blockPos), blockPos)) {
+                 return true;
+             }
+         }
+ 
+-        return false;
++        return net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(level, pos);
+     }
+ 
+     @Override

@@ -1,21 +1,21 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -2433,11 +_,19 @@
+@@ -2358,11 +_,19 @@
      }
  
-     public static Item registerBlock(Block p_252092_, Block... p_248886_) {
--        Item item = registerBlock(p_252092_);
+     private static Item registerBlock(Block block, Block... alternatives) {
+-        Item item = registerBlock(block);
 -
--        for (Block block : p_248886_) {
--            Item.BY_BLOCK.put(block, item);
+-        for (Block alternative : alternatives) {
+-            Item.BY_BLOCK.put(alternative, item);
 -        }
 +        Item item = registerItem(
-+                blockIdToItemId(p_252092_.builtInRegistryHolder().key()),
-+                p -> new BlockItem(p_252092_, p) {
++                blockIdToItemId(block.builtInRegistryHolder().key()),
++                p -> new BlockItem(block, p) {
 +                    @Override
 +                    public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
 +                        super.registerBlocks(map, self);
-+                        for (Block block : p_248886_) {
++                        for (Block block : alternatives) {
 +                            map.put(block, self);
 +                        }
 +                    }

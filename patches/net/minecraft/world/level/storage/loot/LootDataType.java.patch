@@ -1,31 +1,31 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -10,14 +_,26 @@
- import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+@@ -13,14 +_,26 @@
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
  import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
  
--public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator) {
-+public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jspecify.annotations.Nullable T defaultValue, Codec<java.util.Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
+-public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter) {
++public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter, @org.jspecify.annotations.Nullable T defaultValue, Codec<java.util.Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
-         Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, createSimpleValidator()
+         Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
      );
      public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(
-         Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, createSimpleValidator()
+         Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
      );
--    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, createLootTableValidator());
-+    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, createLootTableValidator(), LootTable.EMPTY, LootTable::setLootTableId);
+-    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, LootTable::getParamSet);
++    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, LootTable::getParamSet, LootTable.EMPTY, LootTable::setLootTableId);
 +
 +    /**
-+     * @deprecated Neo: use the constructor {@link #LootDataType(ResourceKey, Codec, Validator, T, java.util.function.BiConsumer) with a default value and id setter} to support conditions
++     * @deprecated Neo: use the constructor {@link #LootDataType(ResourceKey, Codec, LootDataType.ContextGetter, T, java.util.function.BiConsumer) with a default value and id setter} to support conditions
 +     */
 +    @Deprecated
-+    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator) {
-+        this(registryKey, codec, validator, null, (it, id) -> {});
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter) {
++        this(registryKey, codec, contextGetter, null, (it, id) -> {});
 +    }
 +
-+    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jspecify.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
-+        this(registryKey, codec, validator, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter, @org.jspecify.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
++        this(registryKey, codec, contextGetter, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
 +    }
  
-     public void runValidation(ValidationContext p_279366_, ResourceKey<T> p_336149_, T p_279124_) {
-         this.validator.run(p_279366_, p_336149_, p_279124_);
+     public void runValidation(ValidationContextSource contextSource, ResourceKey<T> key, T value) {
+         ContextKeySet contextKeys = this.contextGetter.context(value);

@@ -15,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -44,7 +43,6 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
-import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -80,7 +78,6 @@ final class ClientPayloadHandler {
         event.register(AuxiliaryLightDataPayload.TYPE, ClientPayloadHandler::handle);
         event.register(RegistryDataMapSyncPayload.TYPE, ClientRegistryManager::handleDataMapSync);
         event.register(AdvancedContainerSetDataPayload.TYPE, ClientPayloadHandler::handle);
-        event.register(ClientboundCustomSetTimePayload.TYPE, ClientPayloadHandler::handle);
         event.register(RecipeContentPayload.TYPE, ClientPayloadHandler::handle);
         event.register(SyncAttachmentsPayload.TYPE, ClientPayloadHandler::handle);
     }
@@ -183,14 +180,6 @@ final class ClientPayloadHandler {
         context.handle(msg.toVanillaPacket());
     }
 
-    private static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
-        @SuppressWarnings("resource")
-        final ClientLevel level = Minecraft.getInstance().level;
-        level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
-        level.setDayTimeFraction(payload.dayTimeFraction());
-        level.setDayTimePerTick(payload.dayTimePerTick());
-    }
-
     private static void handle(final RecipeContentPayload payload, final IPayloadContext context) {
         var recipeMap = RecipeMap.create(payload.recipes());
         NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(payload.recipeTypes(), recipeMap));
@@ -207,7 +196,7 @@ final class ClientPayloadHandler {
                 }
             }
             case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
-                var chunk = context.player().level().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+                var chunk = context.player().level().getChunk(pos.x(), pos.z(), ChunkStatus.FULL, false);
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {

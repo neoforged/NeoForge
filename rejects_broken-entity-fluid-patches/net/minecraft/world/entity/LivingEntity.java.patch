@@ -1,0 +1,40 @@
+             }
+
++            int airSupply = this.getAirSupply();
++            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
++            if (false) // Forge: Handled in ForgeHooks#onLivingBreathe(LivingEntity, int, int)
+             if (this.isEyeInFluid(FluidTags.WATER)
+                 && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
+
+     protected boolean shouldTravelInFluid(FluidState fluidState) {
+-        return (this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
++        // Neo: Call (patched-in overload of) #travelInFluid for custom fluid types
++        return (this.isInWater() || this.isInLava() || this.isInFluidType(fluidState)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
+     }
+
+         double baseGravity = this.getEffectiveGravity();
+-        if (this.isInWater()) {
++        // Neo: patched in to use the fluid the eye is in because fluidState is always EMPTY fluid.
++        if (this.isInWater() || (this.isInFluidType(this.getEyeInFluidType()) && !this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity))) {
+             this.travelInWater(input, baseGravity, isFalling, oldY);
+
+         profiler.push("jump");
+         if (this.jumping && this.isAffectedByFluids()) {
+             double fluidHeight;
++            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
++            if (!fluidType.isAir()) fluidHeight = this.getFluidTypeHeight(fluidType);
++            else
+             if (this.isInLava()) {
+                 fluidHeight = this.getFluidHeight(FluidTags.LAVA);
+             } else {
+@@ -3000,15 +_,17 @@
+             double fluidJumpThreshold = this.getFluidJumpThreshold();
+             if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
+                 if (!this.isInLava() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
++                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
+                     if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
+                         this.jumpFromGround();
+                         this.noJumpDelay = 10;
+                     }
++                    } else this.jumpInFluid(fluidType);
+                 } else {

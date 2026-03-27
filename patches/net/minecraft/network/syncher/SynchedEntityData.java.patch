@@ -1,14 +1,14 @@
 --- a/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/net/minecraft/network/syncher/SynchedEntityData.java
 @@ -26,8 +_,10 @@
-         this.itemsById = p_326032_;
+         this.itemsById = itemsById;
      }
  
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-     public static <T> EntityDataAccessor<T> defineId(Class<? extends SyncedDataHolder> p_135354_, EntityDataSerializer<T> p_135355_) {
+     public static <T> EntityDataAccessor<T> defineId(Class<? extends SyncedDataHolder> clazz, EntityDataSerializer<T> type) {
 -        if (LOGGER.isDebugEnabled()) {
-+        net.neoforged.neoforge.common.CommonHooks.verifyEntityDataAccessorRegistration(STACK_WALKER.getCallerClass(), p_135354_);
++        net.neoforged.neoforge.common.CommonHooks.verifyEntityDataAccessorRegistration(STACK_WALKER.getCallerClass(), clazz);
 +        if (false && LOGGER.isDebugEnabled()) { // Neo: disable this check as we are handling it in the above hook
              try {
-                 Class<?> oclass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
-                 if (!oclass.equals(p_135354_)) {
+                 Class<?> aClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+                 if (!aClass.equals(clazz)) {

@@ -1,27 +1,27 @@
 --- a/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
 +++ b/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
-@@ -52,6 +_,8 @@
+@@ -50,6 +_,8 @@
          GameEvent.RESONATE_15.key()
      );
      int NO_VIBRATION_FREQUENCY = 0;
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VIBRATION_FREQUENCIES data map} instead. */
 +    @Deprecated
-     ToIntFunction<ResourceKey<GameEvent>> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Reference2IntOpenHashMap<>(), p_316653_ -> {
-         p_316653_.defaultReturnValue(0);
-         p_316653_.put(GameEvent.STEP.key(), 1);
-@@ -105,11 +_,13 @@
+     ToIntFunction<ResourceKey<GameEvent>> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Reference2IntOpenHashMap<>(), map -> {
+         map.defaultReturnValue(0);
+         map.put(GameEvent.STEP.key(), 1);
+@@ -103,11 +_,13 @@
      VibrationSystem.User getVibrationUser();
  
-     static int getGameEventFrequency(Holder<GameEvent> p_316300_) {
--        return p_316300_.unwrapKey().map(VibrationSystem::getGameEventFrequency).orElse(0);
-+        var data = p_316300_.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
+     static int getGameEventFrequency(Holder<GameEvent> event) {
+-        return event.unwrapKey().map(VibrationSystem::getGameEventFrequency).orElse(0);
++        var data = event.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
 +        return data != null ? data.frequency() : 0;
      }
  
-     static int getGameEventFrequency(ResourceKey<GameEvent> p_316800_) {
--        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_316800_);
-+        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.get(p_316800_);
+     static int getGameEventFrequency(ResourceKey<GameEvent> event) {
+-        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(event);
++        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.get(event);
 +        return holder.map(VibrationSystem::getGameEventFrequency).orElse(0);
      }
  
-     static ResourceKey<GameEvent> getResonanceEventByFrequency(int p_282105_) {
+     static ResourceKey<GameEvent> getResonanceEventByFrequency(int vibrationFrequency) {

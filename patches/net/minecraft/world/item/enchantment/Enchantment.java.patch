@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -124,6 +_,10 @@
-         return map;
+@@ -119,6 +_,10 @@
+         return itemStacks;
      }
  
 +    /**
@@ -11,8 +11,8 @@
      public HolderSet<Item> getSupportedItems() {
          return this.definition.supportedItems();
      }
-@@ -132,10 +_,20 @@
-         return this.definition.slots().stream().anyMatch(p_345027_ -> p_345027_.test(p_345146_));
+@@ -127,10 +_,20 @@
+         return this.definition.slots().stream().anyMatch(group -> group.test(slot));
      }
  
 +    /**
@@ -21,30 +21,30 @@
 +     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
 +     */
 +    @Deprecated
-     public boolean isPrimaryItem(ItemStack p_336088_) {
-         return this.isSupportedItem(p_336088_) && (this.definition.primaryItems.isEmpty() || p_336088_.is(this.definition.primaryItems.get()));
+     public boolean isPrimaryItem(ItemStack item) {
+         return this.isSupportedItem(item) && (this.definition.primaryItems.isEmpty() || item.is(this.definition.primaryItems.get()));
      }
  
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
-     public boolean isSupportedItem(ItemStack p_344865_) {
-         return p_344865_.is(this.definition.supportedItems);
+     public boolean isSupportedItem(ItemStack item) {
+         return item.is(this.definition.supportedItems);
      }
-@@ -188,6 +_,10 @@
-         return mutablecomponent;
+@@ -183,6 +_,10 @@
+         return result;
      }
  
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
-     public boolean canEnchant(ItemStack p_44689_) {
-         return this.definition.supportedItems().contains(p_44689_.getItemHolder());
+     public boolean canEnchant(ItemStack itemStack) {
+         return this.definition.supportedItems().contains(itemStack.typeHolder());
      }
-@@ -519,12 +_,26 @@
-         return new Enchantment.Builder(p_345873_);
+@@ -522,12 +_,26 @@
+         return new Enchantment.Builder(definition);
      }
  
 +//    TODO: Reimplement. Not sure if we want to patch EnchantmentDefinition or hack this in as an EnchantmentEffectComponent.
@@ -58,7 +58,7 @@
 +
      public static class Builder {
          private final Enchantment.EnchantmentDefinition definition;
-         private HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
+         private HolderSet<Enchantment> exclusiveSet = HolderSet.empty();
          private final Map<DataComponentType<?>, List<?>> effectLists = new HashMap<>();
          private final DataComponentMap.Builder effectMapBuilder = DataComponentMap.builder();
  
@@ -67,10 +67,10 @@
 +         */
 +        protected java.util.function.UnaryOperator<MutableComponent> nameFactory = java.util.function.UnaryOperator.identity();
 +
-         public Builder(Enchantment.EnchantmentDefinition p_345317_) {
-             this.definition = p_345317_;
+         public Builder(Enchantment.EnchantmentDefinition definition) {
+             this.definition = definition;
          }
-@@ -577,6 +_,16 @@
+@@ -580,6 +_,16 @@
              return this;
          }
  
@@ -84,17 +84,16 @@
 +            return this;
 +        }
 +
-         private <E> List<E> getEffectsList(DataComponentType<List<E>> p_344770_) {
-             return (List<E>)this.effectLists.computeIfAbsent(p_344770_, p_346247_ -> {
-                 ArrayList<E> arraylist = new ArrayList<>();
-@@ -587,7 +_,9 @@
+         private <E> List<E> getEffectsList(DataComponentType<List<E>> type) {
+             return (List<E>)this.effectLists.computeIfAbsent(type, k -> {
+                 ArrayList<E> newList = new ArrayList<>();
+@@ -590,7 +_,8 @@
  
-         public Enchantment build(Identifier p_469761_) {
+         public Enchantment build(Identifier descriptionKey) {
              return new Enchantment(
--                Component.translatable(Util.makeDescriptionId("enchantment", p_469761_)), this.definition, this.exclusiveSet, this.effectMapBuilder.build()
+-                Component.translatable(Util.makeDescriptionId("enchantment", descriptionKey)),
 +                // Neo: permit custom name components instead of a single hardcoded translatable component.
-+                this.nameFactory.apply(Component.translatable(Util.makeDescriptionId("enchantment", p_469761_))),
-+                this.definition, this.exclusiveSet, this.effectMapBuilder.build()
-             );
-         }
-     }
++                this.nameFactory.apply(Component.translatable(Util.makeDescriptionId("enchantment", descriptionKey))),
+                 this.definition,
+                 this.exclusiveSet,
+                 this.effectMapBuilder.build()

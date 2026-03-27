@@ -113,7 +113,7 @@ public abstract class AbstractTest implements Test {
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
-                gameTest.skyAccess(), gameTest.manualOnly());
+                gameTest.skyAccess(), gameTest.padding(), gameTest.manualOnly());
     }
 
     protected String gameTestTemplate(GameTest gameTest) {
@@ -198,15 +198,14 @@ public abstract class AbstractTest implements Test {
 
     public final void requestConfirmation(Player player, Component message) {
         if (framework instanceof MutableTestFramework internal) {
-            player.displayClientMessage(message.copy().append(" ").append(
+            player.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
                             .withClickEvent(internal.setStatusCommand(
                                     id(), Result.PASSED, "")))
                             .append(" ").append(
                                     Component.literal("No").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)
                                             .withClickEvent(internal.setStatusCommand(
-                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))),
-                    false);
+                                                    id(), Result.FAILED, player.getGameProfile().name() + " denied seeing the effects of the test"))))));
         }
     }
 
@@ -327,7 +326,7 @@ public abstract class AbstractTest implements Test {
                 }
 
                 @Override
-                public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
+                public void testAddedForRerun(GameTestInfo original, GameTestInfo copy, GameTestRunner runner) {}
             });
             this.onGameTest.forEach(test -> test.accept(helper));
         }

@@ -1,39 +1,54 @@
 Porting NeoForge to New Minecraft Versions
 ==========================================
 
-## Neoform
+## NeoForm
 
 [NeoForm](https://github.com/neoforged/NeoForm) must be updated before anything can be done in NeoForge itself.
 
-## Neoforge
+## NeoForge
 
-1. Start Kits branch with [action](https://github.com/neoforged/actions/actions/workflows/start-kits.yml)
-    1. Press "Run workflow"
-    2. Fill out the fields
-        1. The workflow checks out the specified branch from this repository
-        2. It updates `minecraft_version` in gradle.properties with the given Minecraft version
-        3. It updates `neoform_version` in gradle.properties with the given NeoForm version. Grab it from
-           its [project page](https://projects.neoforged.net/neoforged/neoform). The version does not include the
-           Minecraft version (i.e. `20240415.193619`)
-    3. Wait
-        1. If it fails (i.e. with `Failed to download game artifact EXECUTABLE for CLIENT`), retry the job
-2. Clone the Kits repository and check out the branch corresponding to the Minecraft version
-3. Setup has already been run and `projects/neoforge` will contain the patched sources
-4. Fix rejected patch hunks found in the `rejects/` folder by re-applying the broken hunk and deleting the reject file
-5. Fix other compile errors
-6. Run tests (see above)
-7. Fix any problems found by tests
-8. Generate patches (`unpackSourcePatches`)
-9. Apply formatting (`applyAllFormatting`)
-10. Push this state to Kits
-11. Create a squashed branch (i.e. `<mc_version>-squashed`)
-12. Remove MC sources and commit
-13. Squash all commits from "Initial base" created by the action, ensure the resulting commit contains no bot
-    authorship.
-14. Push the squashed branch to Kits
-15. **Make absolutly sure no Minecraft sources are still present in the history of the branch**
-16. If this is the first snapshot for a new version, publish this Kits branch to a `port/<mc_version>` branch on the
-    main repository.
+To update to a new Minecraft version, perform these actions to update the source patches:
+
+1. Update `minecraft_version` and `neoform_version` in the `gradle.properties` file.
+2. Run `gradlew setup -Pupdating=true` to patch the Minecraft sources in a lenient/"fuzzy" way.
+3. Patches that could not be fuzzily applied will be put in the `rejects/` folder.
+   The folder must be renamed such that running `gradlew setup` again will not wipe it.
+   Rename it to `rejects-<minecraft version>/`. For example `rejects-26.1-snapshot-3/`.
+4. Run `gradlew genPatches` to generated updated patches, such that a plain `gradlew setup` will work.
+5. Commit the updated files and push them to the repo.
+   If this is the first snapshot for a new upcoming version, push it to a `port/<upcoming mc>` branch.
+   For example `port/26.1` for the snapshots leading up to the 26.1 release.
+
+At this stage, NeoForge will likely not compile or run yet.
+The following steps are usually taken:
+- Manually reapplying the patches from a `rejects-*/` folder, or deleting them if the patch is not applicable anymore. 
+  Once a patch is applied, delete the corresponding reject.
+  Once you are finished, remember to run `gradlew genPatches` to update the patches.
+- Fixing compilation errors.
+- Making sure the game runs.
+- Running and fixing tests.
+- Fixing the formatting (`gradlew applyAllFormatting`).
+
+To make a release, first figure out the version. Follow the following format:
+```
+<upcoming mc>.0-alpha.<N>+<snapshot>
+where <upcoming mc> = upcoming minecraft release, padded to 3 components
+      <snapshot> = current snapshot, for example snapshot-6
+      <N> = alpha number, generally increment for every alpha release leading to a given stable mc version
+```
+For example, in the 26.1 cycle we published the following alphas:
+```
+(...)
+26.1.0.0-alpha.4+snapshot-1
+26.1.0.0-alpha.5+snapshot-2
+26.1.0.0-alpha.6+snapshot-2
+26.1.0.0-alpha.7+snapshot-3
+(...)
+```
+Once you have the version figured out:
+1. Create the corresponding (lightweight) tag: `git tag release/<version>`.
+2. Push it: `git push origin release/<version>`.
+   This will automatically trigger a release of the snapshot build to our Maven repository.
 
 Contributor License Agreement
 =============================

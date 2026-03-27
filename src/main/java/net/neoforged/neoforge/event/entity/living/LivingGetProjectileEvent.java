@@ -18,8 +18,6 @@ import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
  * <p>
  * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.
  * <p>
- * This event does not have a result. {@link net.neoforged.bus.api.Event.HasResult}
- * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class LivingGetProjectileEvent extends LivingEvent {

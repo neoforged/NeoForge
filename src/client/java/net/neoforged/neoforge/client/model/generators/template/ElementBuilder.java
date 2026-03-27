@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import org.joml.Vector3f;
@@ -222,11 +222,11 @@ public final class ElementBuilder {
         validateCoordinate(pos.z(), 'z');
     }
 
-    BlockElement build() {
-        Map<Direction, BlockElementFace> faces = this.faces.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
+    CuboidModelElement build() {
+        Map<Direction, CuboidFace> faces = this.faces.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
             throw new IllegalArgumentException();
         }, LinkedHashMap::new));
-        return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, 0, this.hasAmbientOcclusion));
+        return new CuboidModelElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, 0, this.hasAmbientOcclusion));
     }
 
     ElementBuilder copy() {

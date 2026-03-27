@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/entity/monster/skeleton/Bogged.java
 @@ -70,7 +_,7 @@
      @Override
-     protected InteractionResult mobInteract(Player p_481992_, InteractionHand p_481651_) {
-         ItemStack itemstack = p_481992_.getItemInHand(p_481651_);
--        if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
-+        if (false && itemstack.is(Items.SHEARS) && this.readyForShearing()) { // Neo: Shear logic is handled by IShearable
-             if (this.level() instanceof ServerLevel serverlevel) {
-                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
-                 this.gameEvent(GameEvent.SHEAR, p_481992_);
+     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+         ItemStack itemStack = player.getItemInHand(hand);
+-        if (itemStack.is(Items.SHEARS) && this.readyForShearing()) {
++        if (false && itemStack.is(Items.SHEARS) && this.readyForShearing()) { // Neo: Shear logic is handled by IShearable
+             if (this.level() instanceof ServerLevel level) {
+                 this.shear(level, SoundSource.PLAYERS, itemStack);
+                 this.gameEvent(GameEvent.SHEAR, player);

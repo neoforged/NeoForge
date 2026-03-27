@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/component/FireworkExplosion.java
 +++ b/net/minecraft/world/item/component/FireworkExplosion.java
-@@ -104,6 +_,9 @@
-         return new FireworkExplosion(this.shape, this.colors, new IntArrayList(p_330678_), this.hasTrail, this.hasTwinkle);
+@@ -103,6 +_,9 @@
+         return new FireworkExplosion(this.shape, this.colors, new IntArrayList(fadeColors), this.hasTrail, this.hasTwinkle);
      }
  
 +    @net.neoforged.fml.common.asm.enumextension.IndexedEnum
@@ -10,7 +10,7 @@
      public static enum Shape implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          SMALL_BALL(0, "small_ball"),
          LARGE_BALL(1, "large_ball"),
-@@ -139,6 +_,10 @@
+@@ -138,6 +_,10 @@
          @Override
          public String getSerializedName() {
              return this.name;

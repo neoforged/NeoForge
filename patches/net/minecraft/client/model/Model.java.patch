@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/model/Model.java
 +++ b/net/minecraft/client/model/Model.java
 @@ -23,6 +_,10 @@
-         this.allParts = p_368583_.getAllParts();
+         this.allParts = root.getAllParts();
      }
  
 +    protected static net.neoforged.neoforge.client.entity.animation.json.AnimationHolder getAnimation(Identifier key) {
 +        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
 +    }
 +
-     public final RenderType renderType(Identifier p_469737_) {
-         return this.renderType.apply(p_469737_);
+     public final Function<Identifier, RenderType> renderType() {
+         return this.renderType;
      }

@@ -1,72 +1,74 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -60,7 +_,7 @@
-                     ItemStack itemstack3 = bucketpickup.pickupBlock(p_40704_, p_40703_, blockpos, blockstate1);
-                     if (!itemstack3.isEmpty()) {
-                         p_40704_.awardStat(Stats.ITEM_USED.get(this));
--                        bucketpickup.getPickupSound().ifPresent(p_150709_ -> p_40704_.playSound(p_150709_, 1.0F, 1.0F));
-+                        bucketpickup.getPickupSound(blockstate1).ifPresent(p_150709_ -> p_40704_.playSound(p_150709_, 1.0F, 1.0F));
-                         p_40703_.gameEvent(p_40704_, GameEvent.FLUID_PICKUP, blockpos);
-                         ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, p_40704_, itemstack3);
-                         if (!p_40703_.isClientSide()) {
-@@ -74,8 +_,8 @@
+@@ -59,7 +_,7 @@
+                     ItemStack taken = bucketPickupBlock.pickupBlock(player, level, pos, blockState);
+                     if (!taken.isEmpty()) {
+                         player.awardStat(Stats.ITEM_USED.get(this));
+-                        bucketPickupBlock.getPickupSound().ifPresent(soundEvent -> player.playSound(soundEvent, 1.0F, 1.0F));
++                        bucketPickupBlock.getPickupSound(blockState).ifPresent(soundEvent -> player.playSound(soundEvent, 1.0F, 1.0F));
+                         level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+                         ItemStack result = ItemUtils.createFilledResult(itemStack, player, taken);
+                         if (!level.isClientSide()) {
+@@ -73,8 +_,8 @@
                  return InteractionResult.FAIL;
              } else {
-                 BlockState blockstate = p_40703_.getBlockState(blockpos);
--                BlockPos blockpos2 = blockstate.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? blockpos : blockpos1;
--                if (this.emptyContents(p_40704_, p_40703_, blockpos2, blockhitresult)) {
-+                BlockPos blockpos2 = canBlockContainFluid(p_40704_, p_40703_, blockpos, blockstate) ? blockpos : blockpos1;
-+                if (this.emptyContents(p_40704_, p_40703_, blockpos2, blockhitresult, itemstack)) {
-                     this.checkExtraContent(p_40704_, p_40703_, itemstack, blockpos2);
-                     if (p_40704_ instanceof ServerPlayer) {
-                         CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)p_40704_, blockpos2, itemstack);
-@@ -100,7 +_,12 @@
+                 BlockState clicked = level.getBlockState(pos);
+-                BlockPos placePos = clicked.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? pos : directionOffsetPos;
+-                if (this.emptyContents(player, level, placePos, hitResult)) {
++                BlockPos placePos = canBlockContainFluid(player, level, pos, clicked) && this.content == Fluids.WATER ? pos : directionOffsetPos;
++                if (this.emptyContents(player, level, placePos, hitResult, itemStack)) {
+                     this.checkExtraContent(player, level, itemStack, placePos);
+                     if (player instanceof ServerPlayer) {
+                         CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, placePos, itemStack);
+@@ -99,7 +_,12 @@
      }
  
      @Override
 +    @Deprecated // Neo: use the ItemStack sensitive version
-     public boolean emptyContents(@Nullable LivingEntity p_394627_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_) {
-+        return this.emptyContents(p_394627_, p_150717_, p_150718_, p_150719_, null);
+     public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
++        return this.emptyContents(user, level, pos, hitResult, null);
 +    }
 +
-+    public boolean emptyContents(@Nullable LivingEntity p_394627_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_, @Nullable ItemStack container) {
-         if (!(this.content instanceof FlowingFluid flowingfluid)) {
++    public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, @Nullable ItemStack containerItem) {
+         if (!(this.content instanceof FlowingFluid flowingFluid)) {
              return false;
          } else {
-@@ -111,9 +_,14 @@
-             boolean flag2 = $$8
-                 || $$7 instanceof LiquidBlockContainer liquidblockcontainer
-                     && liquidblockcontainer.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, this.content);
+@@ -109,9 +_,14 @@
+             boolean shiftKeyDown = user != null && user.isShiftKeyDown();
+             boolean placeLiquid = mayReplace
+                 || block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content);
 +            // TODO: The stack is only used as a parameter in the vaporization check. What if the fluidType is different? And should the rest of the method be made stack-aware as well?
-+            var containedFluidStack = container != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(container) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
-             boolean flag3 = blockstate.isAir() || flag2 && (!flag1 || p_150719_ == null);
-             if (!flag3) {
--                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
-+                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null, container);
-+            } else if (!containedFluidStack.isEmpty() && this.content.getFluidType().isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack)) {
-+                this.content.getFluidType().onVaporize(p_394627_, p_150717_, p_150718_, containedFluidStack);
++            var containedFluidStack = containerItem != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(containerItem) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
+             boolean canPlaceFluidInsideBlock = blockState.isAir() || placeLiquid && (!shiftKeyDown || hitResult == null);
+             if (!canPlaceFluidInsideBlock) {
+-                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null);
++                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null, containerItem);
++            } else if (!containedFluidStack.isEmpty() && this.content.getFluidType().isVaporizedOnPlacement(level, pos, containedFluidStack)) {
++                this.content.getFluidType().onVaporize(user, level, pos, containedFluidStack);
 +                return true;
-             } else if (p_150717_.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, p_150718_) && this.content.is(FluidTags.WATER)) {
-                 int l = p_150718_.getX();
-                 int i = p_150718_.getY();
-@@ -140,7 +_,7 @@
+             } else if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content.is(FluidTags.WATER)) {
+                 int x = pos.getX();
+                 int y = pos.getY();
+@@ -124,8 +_,8 @@
                  }
  
                  return true;
--            } else if ($$7 instanceof LiquidBlockContainer liquidblockcontainer1 && this.content == Fluids.WATER) {
-+            } else if ($$7 instanceof LiquidBlockContainer liquidblockcontainer1 && liquidblockcontainer1.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, content)) {
-                 liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
-                 this.playEmptySound(p_394627_, p_150717_, p_150718_);
+-            } else if (block instanceof LiquidBlockContainer containerx && this.content == Fluids.WATER) {
+-                containerx.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
++            } else if (block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, content)) {
++                container.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
+                 this.playEmptySound(user, level, pos);
                  return true;
-@@ -160,9 +_,15 @@
+             } else {
+@@ -144,9 +_,15 @@
      }
  
-     protected void playEmptySound(@Nullable LivingEntity p_394061_, LevelAccessor p_40697_, BlockPos p_40698_) {
--        SoundEvent soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-+        SoundEvent soundevent = this.content.getFluidType().getSound(p_394061_, p_40697_, p_40698_, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
-+        if(soundevent == null) soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-         p_40697_.playSound(p_394061_, p_40698_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-         p_40697_.gameEvent(p_394061_, GameEvent.FLUID_PLACE, p_40698_);
+     protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {
+-        SoundEvent soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
++        SoundEvent soundEvent = this.content.getFluidType().getSound(user, level, pos, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
++        if(soundEvent == null) soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+         level.playSound(user, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+         level.gameEvent(user, GameEvent.FLUID_PLACE, pos);
 +    }
 +
 +    protected boolean canBlockContainFluid(@Nullable Player player, Level worldIn, BlockPos posIn, BlockState blockstate)

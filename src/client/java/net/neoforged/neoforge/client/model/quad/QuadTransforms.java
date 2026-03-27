@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.quad;
 
 import com.mojang.math.Transformation;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector4f;
@@ -46,15 +46,11 @@ public final class QuadTransforms {
                 quad.packedUV1(),
                 quad.packedUV2(),
                 quad.packedUV3(),
-                quad.tintIndex(),
                 // TODO: the direction is currently not being transformed, but probably should be
                 quad.direction(),
-                quad.sprite(),
-                quad.shade(),
-                quad.lightEmission(),
+                quad.materialInfo(),
                 updatedNormals,
-                quad.bakedColors(),
-                quad.hasAmbientOcclusion());
+                quad.bakedColors());
     }
 
     private static Vector3fc transformPosition(Vector4f temp, Vector3fc pos, Transformation transformation) {

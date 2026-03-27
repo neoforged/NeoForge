@@ -4,38 +4,38 @@
                      String.format(Locale.ROOT, "%.2f", this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND)
                  );
                  LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
--                CrashReport crashreport = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId());
+-                CrashReport report = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId());
 +                // Neo: don't just make a crash report with a seemingly-inexplicable Error
 +                String message = String.format(
 +                        Locale.ROOT,
 +                        "ServerWatchdog detected that a single server tick took %.2f seconds (should be max %.2f)",
-+                        (float)k / (float)TimeUtil.NANOSECONDS_PER_SECOND,
++                        (float)deltaNanos / (float)TimeUtil.NANOSECONDS_PER_SECOND,
 +                        this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND);
-+                CrashReport crashreport = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId(), message);
-                 this.server.fillSystemReport(crashreport.getSystemReport());
-                 CrashReportCategory crashreportcategory = crashreport.addCategory("Performance stats");
-                 crashreportcategory.setDetail("Random tick rate", () -> this.server.getWorldData().getGameRules().getAsString(GameRules.RANDOM_TICK_SPEED));
++                CrashReport report = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId(), message);
+                 this.server.fillSystemReport(report.getSystemReport());
+                 CrashReportCategory serverStats = report.addCategory("Performance stats");
+                 serverStats.setDetail("Random tick rate", () -> this.server.getGameRules().getAsString(GameRules.RANDOM_TICK_SPEED));
 @@ -75,17 +_,21 @@
      }
  
-     public static CrashReport createWatchdogCrashReport(String p_363165_, long p_364052_) {
-+        return createWatchdogCrashReport(p_363165_, p_364052_, "Watchdog");
+     public static CrashReport createWatchdogCrashReport(String message, long mainThreadId) {
++        return createWatchdogCrashReport(message, mainThreadId, "Watchdog");
 +    }
 +
-+    public static CrashReport createWatchdogCrashReport(String p_363165_, long p_364052_, String message) {
-         ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
-         ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
-         StringBuilder stringbuilder = new StringBuilder();
--        Error error = new Error("Watchdog");
-+        Error error = new Error(message);
++    public static CrashReport createWatchdogCrashReport(String message, long mainThreadId, String messageSource) {
+         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+         ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
+         StringBuilder builder = new StringBuilder();
+-        Error exception = new Error("Watchdog");
++        Error exception = new Error(messageSource);
  
-         for (ThreadInfo threadinfo : athreadinfo) {
-             if (threadinfo.getThreadId() == p_364052_) {
-                 error.setStackTrace(threadinfo.getStackTrace());
+         for (ThreadInfo threadInfo : threadInfos) {
+             if (threadInfo.getThreadId() == mainThreadId) {
+                 exception.setStackTrace(threadInfo.getStackTrace());
              }
  
--            stringbuilder.append(threadinfo);
-+            stringbuilder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadinfo));
-             stringbuilder.append("\n");
+-            builder.append(threadInfo);
++            builder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadInfo));
+             builder.append("\n");
          }
  

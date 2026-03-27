@@ -240,6 +240,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
         add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
         add(Tags.Items.FOODS_COOKIE, "Cookies");
+        add(Tags.Items.FOODS_DOUGH, "Doughs");
         add(Tags.Items.FOODS_EDIBLE_WHEN_PLACED, "Edible When Placed");
         add(Tags.Items.FOODS_FOOD_POISONING, "Food Poisoning Foods");
         add(Tags.Items.FOODS_FRUIT, "Fruits");
@@ -378,7 +379,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_FISHING_ROD, "Fishing Rods");
         add(Tags.Items.TOOLS_BRUSH, "Brushes");
         add(Tags.Items.TOOLS_MACE, "Maces");
-        add(Tags.Items.TOOLS_SPEAR, "Spears");
+        add(Tags.Items.TOOLS_TRIDENT, "Tridents");
         add(Tags.Items.TOOLS_IGNITER, "Igniters");
         add(Tags.Items.TOOLS_WRENCH, "Wrenches");
         add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
@@ -410,6 +411,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.EntityTypes.BOSSES, "Bosses");
         add(Tags.EntityTypes.MINECARTS, "Minecarts");
         add(Tags.EntityTypes.BOATS, "Boats");
+        add(Tags.EntityTypes.ITEM_FRAMES, "Item Frames");
         add(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED, "Capturing Not Supported");
         add(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED, "Teleporting Not Supported");
 

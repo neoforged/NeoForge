@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +76,7 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     /**
      * {@return the amount of packed (sky and block) light for rendering}
      *
-     * @see LightTexture
+     * @see net.minecraft.util.LightCoordsUtil
      */
     public int getPackedLight() {
         return packedLight;

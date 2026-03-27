@@ -29,16 +29,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -69,7 +72,7 @@ import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.Util;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -130,14 +133,14 @@ public class DataGeneratorTest {
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(GeneratingOverlayMetadataSection.neoforgeType(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeMod.MOD_ID)),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_disabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE)), "pack_overlays_test")),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeMod.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE)), "conditional_overlays_disabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
-                        new InclusiveRange<>(PackFormat.of(0), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
+                        new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
@@ -254,9 +257,7 @@ public class DataGeneratorTest {
                     .pattern("#")
                     .pattern("#")
                     .define('#', CompoundIngredient.of(tag(ItemTags.PLANKS), tag(ItemTags.LOGS), net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, Util.make(() -> {
-                        ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
-                        stack.setDamageValue(3);
-                        return stack;
+                        return new ItemStackTemplate(Items.STONE_PICKAXE, DataComponentPatch.builder().set(DataComponents.DAMAGE, 3).build());
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));
@@ -516,6 +517,10 @@ public class DataGeneratorTest {
             add(MobEffects.POISON.value(), "Poison");
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
+            add(MODID + ".test.component.literal", Component.literal("Literal"));
+            add(MODID + ".test.component.styled", Component.literal("Blue").withStyle(ChatFormatting.BLUE));
+            add(MODID + ".test.component.appended", Component.literal("First").append(Component.literal("Second").withStyle(ChatFormatting.GOLD)));
+            add(MODID + ".test.component.nested", Component.translatable(MODID + ".test.component.literal", Component.translationArg(Identifier.withDefaultNamespace("test"))));
         }
     }
 

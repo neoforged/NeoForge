@@ -8,18 +8,18 @@ package net.neoforged.neoforge.client;
 import com.mojang.brigadier.Command;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -42,8 +42,8 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
-import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -79,6 +79,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportPr
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
@@ -138,6 +139,17 @@ public class ClientNeoForgeMod {
                                         return Command.SINGLE_SUCCESS;
                                     })));
         });
+
+        // Eagerly report missing item models when client resources reload
+        NeoForge.EVENT_BUS.addListener(DefaultDataComponentsBoundEvent.class, _ -> {
+            for (var item : BuiltInRegistries.ITEM) {
+                var modelId = item.components().get(DataComponents.ITEM_MODEL);
+                if (modelId != null) {
+                    // This will internally warn about each missing model at most once
+                    Minecraft.getInstance().getModelManager().getItemModel(modelId);
+                }
+            }
+        });
     }
 
     @SubscribeEvent
@@ -193,11 +205,6 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(Identifier.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes::getUnlitUnsortedTranslucent);
-    }
-
-    @SubscribeEvent
     static void onRegisterSpriteSourceTypes(RegisterSpriteSourcesEvent event) {
         event.register(NamespacedDirectoryLister.ID, NamespacedDirectoryLister.CODEC);
         event.register(DirectoryPalettedPermutations.ID, DirectoryPalettedPermutations.CODEC);
@@ -207,70 +214,25 @@ public class ClientNeoForgeMod {
     static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerFluidType(new IClientFluidTypeExtensions() {
             private static final Identifier UNDERWATER_LOCATION = Identifier.withDefaultNamespace("textures/misc/underwater.png");
-            private static final Identifier WATER_STILL = Identifier.withDefaultNamespace("block/water_still");
-            private static final Identifier WATER_FLOW = Identifier.withDefaultNamespace("block/water_flow");
-            private static final Identifier WATER_OVERLAY = Identifier.withDefaultNamespace("block/water_overlay");
-
-            @Override
-            public Identifier getStillTexture() {
-                return WATER_STILL;
-            }
-
-            @Override
-            public Identifier getFlowingTexture() {
-                return WATER_FLOW;
-            }
-
-            @Override
-            public Identifier getOverlayTexture() {
-                return WATER_OVERLAY;
-            }
 
             @Override
             public Identifier getRenderOverlayTexture(Minecraft mc) {
                 return UNDERWATER_LOCATION;
             }
-
-            @Override
-            public int getTintColor() {
-                return 0xFF3F76E4;
-            }
-
-            @Override
-            public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                return BiomeColors.getAverageWaterColor(getter, pos) | 0xFF000000;
-            }
         }, NeoForgeMod.WATER_TYPE.value());
+    }
 
-        event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final Identifier LAVA_STILL = Identifier.withDefaultNamespace("block/lava_still");
-            private static final Identifier LAVA_FLOW = Identifier.withDefaultNamespace("block/lava_flow");
-
-            @Override
-            public Identifier getStillTexture() {
-                return LAVA_STILL;
-            }
-
-            @Override
-            public Identifier getFlowingTexture() {
-                return LAVA_FLOW;
-            }
-        }, NeoForgeMod.LAVA_TYPE.value());
-
-        NeoForgeMod.MILK_TYPE.asOptional().ifPresent(milkType -> event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final Identifier MILK_STILL = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_still");
-            private static final Identifier MILK_FLOW = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "block/milk_flowing");
-
-            @Override
-            public Identifier getStillTexture() {
-                return MILK_STILL;
-            }
-
-            @Override
-            public Identifier getFlowingTexture() {
-                return MILK_FLOW;
-            }
-        }, milkType));
+    @SubscribeEvent
+    static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+        NeoForgeMod.MILK_TYPE.asOptional().ifPresent(_ -> {
+            Fluid stillFluid = NeoForgeMod.MILK.value();
+            Fluid flowingFluid = NeoForgeMod.FLOWING_MILK.value();
+            event.register(new FluidModel.Unbaked(
+                    new Material(neoForgeId("block/milk_still")),
+                    new Material(neoForgeId("block/milk_flowing")),
+                    null,
+                    null), stillFluid, flowingFluid);
+        });
     }
 
     @SubscribeEvent

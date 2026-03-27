@@ -3,12 +3,12 @@
 @@ -8,7 +_,10 @@
  @OnlyIn(Dist.CLIENT)
  public class TextureTarget extends RenderTarget {
-     public TextureTarget(@Nullable String p_405118_, int p_166213_, int p_166214_, boolean p_166215_) {
--        super(p_405118_, p_166215_);
-+        this(p_405118_, p_166213_, p_166214_, p_166215_, false);
+     public TextureTarget(@Nullable String label, int width, int height, boolean useDepth) {
+-        super(label, useDepth);
++        this(label, width, height, useDepth, false);
 +    }
-+    public TextureTarget(@Nullable String p_405118_, int p_166213_, int p_166214_, boolean p_166215_, boolean enableStencil) {
-+        super(p_405118_, p_166215_, enableStencil);
++    public TextureTarget(@Nullable String label, int width, int height, boolean useDepth, boolean enableStencil) {
++        super(label, useDepth, enableStencil);
          RenderSystem.assertOnRenderThread();
-         this.resize(p_166213_, p_166214_);
+         this.resize(width, height);
      }

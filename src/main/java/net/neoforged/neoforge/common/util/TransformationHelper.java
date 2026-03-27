@@ -97,10 +97,10 @@ public final class TransformationHelper {
 
     public static Transformation slerp(Transformation one, Transformation that, float progress) {
         return new Transformation(
-                lerp(one.getTranslation(), that.getTranslation(), progress),
-                slerp(one.getLeftRotation(), that.getLeftRotation(), progress),
-                lerp(one.getScale(), that.getScale(), progress),
-                slerp(one.getRightRotation(), that.getRightRotation(), progress));
+                lerp(one.translation(), that.translation(), progress),
+                slerp(one.leftRotation(), that.leftRotation(), progress),
+                lerp(one.scale(), that.scale(), progress),
+                slerp(one.rightRotation(), that.rightRotation(), progress));
     }
 
     public static boolean epsilonEquals(Vector4f v1, Vector4f v2, float epsilon) {
@@ -116,7 +116,7 @@ public final class TransformationHelper {
             if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
                 String transform = json.getAsString();
                 if (transform.equals("identity")) {
-                    return Transformation.identity();
+                    return Transformation.IDENTITY;
                 } else {
                     throw new JsonParseException("TRSR: unknown default string: " + transform);
                 }

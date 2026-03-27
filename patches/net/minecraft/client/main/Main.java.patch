@@ -1,25 +1,25 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -76,12 +_,13 @@
-         OptionSpec<Integer> optionspec12 = optionparser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
-         OptionSpec<String> optionspec13 = optionparser.accepts("proxyUser").withRequiredArg();
-         OptionSpec<String> optionspec14 = optionparser.accepts("proxyPass").withRequiredArg();
--        OptionSpec<String> optionspec15 = optionparser.accepts("username").withRequiredArg().defaultsTo("Player" + System.currentTimeMillis() % 1000L);
-+        OptionSpec<String> optionspec15 = optionparser.accepts("username").withRequiredArg().defaultsTo(net.neoforged.fml.loading.FMLEnvironment.isProduction() ? "Player" + System.currentTimeMillis() % 1000L : "Dev").withValuesConvertedBy(net.neoforged.neoforge.client.ClientHooks.convertUsername());
-         OptionSpec<Void> optionspec16 = optionparser.accepts("offlineDeveloperMode");
-         OptionSpec<String> optionspec17 = optionparser.accepts("uuid").withRequiredArg();
-         OptionSpec<String> optionspec18 = optionparser.accepts("xuid").withOptionalArg().defaultsTo("");
-         OptionSpec<String> optionspec19 = optionparser.accepts("clientId").withOptionalArg().defaultsTo("");
--        OptionSpec<String> optionspec20 = optionparser.accepts("accessToken").withRequiredArg().required();
+@@ -74,12 +_,13 @@
+         OptionSpec<Integer> proxyPortOption = parser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
+         OptionSpec<String> proxyUserOption = parser.accepts("proxyUser").withRequiredArg();
+         OptionSpec<String> proxyPassOption = parser.accepts("proxyPass").withRequiredArg();
+-        OptionSpec<String> usernameOption = parser.accepts("username").withRequiredArg().defaultsTo("Player" + System.currentTimeMillis() % 1000L);
++        OptionSpec<String> usernameOption = parser.accepts("username").withRequiredArg().defaultsTo(net.neoforged.fml.loading.FMLEnvironment.isProduction() ? "Player" + System.currentTimeMillis() % 1000L : "Dev").withValuesConvertedBy(net.neoforged.neoforge.client.ClientHooks.convertUsername());
+         OptionSpec<Void> offlineDeveloperMode = parser.accepts("offlineDeveloperMode");
+         OptionSpec<String> uuidOption = parser.accepts("uuid").withRequiredArg();
+         OptionSpec<String> xuidOption = parser.accepts("xuid").withOptionalArg().defaultsTo("");
+         OptionSpec<String> clientIdOption = parser.accepts("clientId").withOptionalArg().defaultsTo("");
+-        OptionSpec<String> accessTokenOption = parser.accepts("accessToken").withRequiredArg().required();
 +        // Neo: Make accessToken optional in dev
-+        OptionSpec<String> optionspec20 = net.neoforged.neoforge.client.ClientHooks.optionalInDev(optionparser.accepts("accessToken").withRequiredArg(), "0");
-         OptionSpec<String> optionspec21 = optionparser.accepts("version").withRequiredArg().required();
-         OptionSpec<Integer> optionspec22 = optionparser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
-         OptionSpec<Integer> optionspec23 = optionparser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
-@@ -116,10 +_,12 @@
++        OptionSpec<String> accessTokenOption = net.neoforged.neoforge.client.ClientHooks.optionalInDev(parser.accepts("accessToken").withRequiredArg(), "0");
+         OptionSpec<String> versionOption = parser.accepts("version").withRequiredArg().required();
+         OptionSpec<Integer> widthOption = parser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
+         OptionSpec<Integer> heightOption = parser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
+@@ -114,10 +_,12 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
-             s1 = "Bootstrap";
+             stage = "Bootstrap";
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
 +            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(() -> Bootstrap.bootStrap(), net.neoforged.fml.loading.ImmediateWindowHandler::renderTick);
@@ -28,16 +28,30 @@
 +
 +            net.neoforged.neoforge.client.loading.ClientModLoader.begin(); // Mirroring server mod-loading, we construct immediately after Bootstrap.validate()
 +
-             s1 = "Argument parsing";
-             List<String> list = optionset.valuesOf(optionspec28);
-             if (!list.isEmpty()) {
-@@ -174,7 +_,8 @@
-                 new GameConfig.UserData(user, proxy),
-                 new DisplayData(i, j, optionalint, optionalint1, flag),
-                 new GameConfig.FolderData(file1, file3, file2, s6),
--                new GameConfig.GameData(flag1, s, s5, flag2, flag3, flag4, flag5, optionset.has(optionspec16)),
-+                // Neo: Auto-enable offlineDeveloperMode if no accessToken is passed in dev
-+                new GameConfig.GameData(flag1, s, s5, flag2, flag3, flag4, flag5, optionset.has(optionspec16) || !optionset.has(optionspec20)),
-                 new GameConfig.QuickPlayData(s9, gameconfig$quickplayvariant)
+             stage = "Argument parsing";
+             List<String> leftoverArgs = optionSet.valuesOf(nonOption);
+             if (!leftoverArgs.isEmpty()) {
+@@ -186,7 +_,8 @@
+                     disableChat,
+                     captureTracyImages,
+                     renderDebugLabels,
+-                    optionSet.has(offlineDeveloperMode)
++                    // Neo: Auto-enable offlineDeveloperMode if no accessToken is passed in dev
++                    optionSet.has(offlineDeveloperMode) || !optionSet.has(accessTokenOption)
+                 ),
+                 new GameConfig.QuickPlayData(quickPlayLogPath, quickPlayVariant)
              );
-             Util.startTimerHackThread();
+@@ -197,8 +_,11 @@
+             CrashReportCategory initialization = report.addCategory("Initialization");
+             NativeModuleLister.addCrashSection(initialization);
+             Minecraft.fillReport(null, null, launchedVersion, null, report);
+-            Minecraft.crash(null, gameDir, report);
+-            return;
++            // Neo: Instead of crash(...), we show the error immediately using our earlydisplay GUI
++            int exitCode = Minecraft.saveReport(gameDir, report);
++            net.neoforged.fml.startup.FatalErrorReporting.reportFatalError(var75);
++            System.exit(exitCode);
++            return; // Neo: Rethrow to let early error screen handle it
+         }
+ 
+         Thread shutdownThread = new Thread("Client Shutdown Thread") {

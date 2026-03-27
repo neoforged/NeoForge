@@ -1,118 +1,118 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -154,6 +_,7 @@
-         this.setAllStarts(p_196851_.getAllStarts());
-         this.setAllReferences(p_196851_.getAllReferences());
+@@ -155,6 +_,7 @@
+         this.setAllStarts(protoChunk.getAllStarts());
+         this.setAllReferences(protoChunk.getAllReferences());
  
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(p_196850_.registryAccess(), p_196851_.getAttachmentHolder(), this.getAttachmentHolder());
-         for (Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(level.registryAccess(), protoChunk.getAttachmentHolder(), this.getAttachmentHolder());
+         for (Entry<Heightmap.Types, Heightmap> entry : protoChunk.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
-@@ -290,7 +_,7 @@
-                     this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x, SectionPos.blockToSectionCoord(i), this.chunkPos.z, flag1);
+@@ -291,7 +_,7 @@
+                     this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x(), SectionPos.blockToSectionCoord(y), this.chunkPos.z(), isEmpty);
                  }
  
--                if (LightEngine.hasDifferentLightProperties(blockstate, p_62866_)) {
-+                if (LightEngine.hasDifferentLightProperties(this, p_62865_, blockstate, p_62866_)) {
-                     ProfilerFiller profilerfiller = Profiler.get();
-                     profilerfiller.push("updateSkyLightSources");
-                     this.skyLightSources.update(this, j, i, l);
-@@ -320,7 +_,7 @@
-                 if (!levelchunksection.getBlockState(j, k, l).is(block)) {
+-                if (LightEngine.hasDifferentLightProperties(oldState, state)) {
++                if (LightEngine.hasDifferentLightProperties(this, pos, oldState, state)) {
+                     ProfilerFiller profiler = Profiler.get();
+                     profiler.push("updateSkyLightSources");
+                     this.skyLightSources.update(this, localX, y, localZ);
+@@ -323,7 +_,7 @@
+                 if (!section.getBlockState(localX, localY, localZ).is(newBlock)) {
                      return null;
                  } else {
--                    if (!this.level.isClientSide() && (p_393859_ & 512) == 0) {
-+                    if (!this.level.isClientSide() && !this.level.captureBlockSnapshots && (p_393859_ & 512) == 0) {
-                         p_62866_.onPlace(this.level, p_62865_, blockstate, flag2);
+-                    if (!this.level.isClientSide() && (flags & 512) == 0) {
++                    if (!this.level.isClientSide() && !this.level.captureBlockSnapshots && (flags & 512) == 0) {
+                         state.onPlace(this.level, pos, oldState, movedByPiston);
                      }
  
-@@ -372,6 +_,10 @@
+@@ -370,6 +_,10 @@
  
-     public @Nullable BlockEntity getBlockEntity(BlockPos p_62868_, LevelChunk.EntityCreationType p_62869_) {
-         BlockEntity blockentity = this.blockEntities.get(p_62868_);
-+        if (blockentity != null && blockentity.isRemoved()) {
-+            blockEntities.remove(p_62868_);
-+            blockentity = null;
+     public @Nullable BlockEntity getBlockEntity(BlockPos pos, LevelChunk.EntityCreationType creationType) {
+         BlockEntity blockEntity = this.blockEntities.get(pos);
++        if (blockEntity != null && blockEntity.isRemoved()) {
++            blockEntities.remove(pos);
++            blockEntity = null;
 +        }
-         if (blockentity == null) {
-             CompoundTag compoundtag = this.pendingBlockEntities.remove(p_62868_);
-             if (compoundtag != null) {
-@@ -389,9 +_,6 @@
-                     this.addAndRegisterBlockEntity(blockentity);
+         if (blockEntity == null) {
+             CompoundTag tag = this.pendingBlockEntities.remove(pos);
+             if (tag != null) {
+@@ -387,9 +_,6 @@
+                     this.addAndRegisterBlockEntity(blockEntity);
                  }
              }
--        } else if (blockentity.isRemoved()) {
--            this.blockEntities.remove(p_62868_);
+-        } else if (blockEntity.isRemoved()) {
+-            this.blockEntities.remove(pos);
 -            return null;
          }
  
-         return blockentity;
-@@ -406,6 +_,7 @@
+         return blockEntity;
+@@ -404,6 +_,7 @@
  
-             this.level.onBlockEntityAdded(p_156391_);
-             this.updateBlockEntityTicker(p_156391_);
-+            this.level.addFreshBlockEntities(java.util.List.of(p_156391_));
+             this.level.onBlockEntityAdded(blockEntity);
+             this.updateBlockEntityTicker(blockEntity);
++            this.level.addFreshBlockEntities(java.util.List.of(blockEntity));
          }
      }
  
-@@ -449,6 +_,7 @@
-             BlockEntity blockentity = this.blockEntities.put(blockpos.immutable(), p_156374_);
-             if (blockentity != null && blockentity != p_156374_) {
-                 blockentity.setRemoved();
-+                auxLightManager.removeLightAt(blockpos);
+@@ -447,6 +_,7 @@
+             BlockEntity previousEntry = this.blockEntities.put(pos.immutable(), blockEntity);
+             if (previousEntry != null && previousEntry != blockEntity) {
+                 previousEntry.setRemoved();
++                auxLightManager.removeLightAt(pos);
              }
          }
      }
-@@ -457,9 +_,14 @@
-     public @Nullable CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_, HolderLookup.Provider p_323699_) {
-         BlockEntity blockentity = this.getBlockEntity(p_62932_);
-         if (blockentity != null && !blockentity.isRemoved()) {
+@@ -455,9 +_,14 @@
+     public @Nullable CompoundTag getBlockEntityNbtForSaving(BlockPos blockPos, HolderLookup.Provider registryAccess) {
+         BlockEntity blockEntity = this.getBlockEntity(blockPos);
+         if (blockEntity != null && !blockEntity.isRemoved()) {
 +            try {
-             CompoundTag compoundtag1 = blockentity.saveWithFullMetadata(this.level.registryAccess());
-             compoundtag1.putBoolean("keepPacked", false);
-             return compoundtag1;
+             CompoundTag result = blockEntity.saveWithFullMetadata(this.level.registryAccess());
+             result.putBoolean("keepPacked", false);
+             return result;
 +            } catch (Exception e) {
-+                LOGGER.error("A BlockEntity type {} has thrown an exception trying to write state. It will not persist, Report this to the mod author", blockentity.getClass().getName(), e);
++                LOGGER.error("A BlockEntity type {} has thrown an exception trying to write state. It will not persist, Report this to the mod author", blockEntity.getClass().getName(), e);
 +                return null;
 +            }
          } else {
-             CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
-             if (compoundtag != null) {
-@@ -482,6 +_,7 @@
+             CompoundTag result = this.pendingBlockEntities.get(blockPos);
+             if (result != null) {
+@@ -480,6 +_,7 @@
                  }
  
-                 blockentity.setRemoved();
-+                auxLightManager.removeLightAt(p_62919_);
+                 removeThis.setRemoved();
++                auxLightManager.removeLightAt(pos);
              }
          }
  
-@@ -539,7 +_,7 @@
-                 (p_421432_, p_421433_, p_421434_) -> {
-                     BlockEntity blockentity = this.getBlockEntity(p_421432_, LevelChunk.EntityCreationType.IMMEDIATE);
-                     if (blockentity != null && p_421434_ != null && blockentity.getType() == p_421433_) {
--                        blockentity.loadWithComponents(
-+                        blockentity.handleUpdateTag(
-                             TagValueInput.create(problemreporter$scopedcollector.forChild(blockentity.problemPath()), this.level.registryAccess(), p_421434_)
-                         );
-                     }
-@@ -679,6 +_,7 @@
+@@ -536,7 +_,7 @@
+             blockEntities.accept((pos, type, tag) -> {
+                 BlockEntity blockEntity = this.getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
+                 if (blockEntity != null && tag != null && blockEntity.getType() == type) {
+-                    blockEntity.loadWithComponents(TagValueInput.create(reporter.forChild(blockEntity.problemPath()), this.level.registryAccess(), tag));
++                    blockEntity.handleUpdateTag(TagValueInput.create(reporter.forChild(blockEntity.problemPath()), this.level.registryAccess(), tag));
+                 }
+             });
+         }
+@@ -675,6 +_,7 @@
      }
  
      public void clearAllBlockEntities() {
 +        this.blockEntities.values().forEach(BlockEntity::onChunkUnloaded);
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
-         this.tickersInLevel.values().forEach(p_187966_ -> p_187966_.rebind(NULL_TICKER));
-@@ -686,6 +_,7 @@
+         this.tickersInLevel.values().forEach(ticker -> ticker.rebind(NULL_TICKER));
+@@ -682,6 +_,7 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
 +        this.level.addFreshBlockEntities(this.blockEntities.values());
-         this.blockEntities.values().forEach(p_427220_ -> {
-             if (this.level instanceof ServerLevel serverlevel) {
-                 this.addGameEventListener(p_427220_, serverlevel);
-@@ -738,6 +_,19 @@
-         return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
+         this.blockEntities.values().forEach(blockEntity -> {
+             if (this.level instanceof ServerLevel serverLevel) {
+                 this.addGameEventListener(blockEntity, serverLevel);
+@@ -728,6 +_,19 @@
+         return new LevelChunk.BoundTickingBlockEntity<>(blockEntity, ticker);
      }
  
 +    // Neo: Threadsafe lighting system for BlockEntities that change lighting based on dynamic data changing.
@@ -128,28 +128,27 @@
 +        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, getAttachmentHolder(), type);
 +    }
 +
-     class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
+     private class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -755,6 +_,7 @@
-                 if (LevelChunk.this.isTicking(blockpos)) {
+@@ -747,6 +_,7 @@
+                 if (LevelChunk.this.isTicking(pos)) {
                      try {
-                         ProfilerFiller profilerfiller = Profiler.get();
+                         ProfilerFiller profiler = Profiler.get();
 +                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackStart(blockEntity);
-                         profilerfiller.push(this::getType);
-                         BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
-                         if (this.blockEntity.getType().isValid(blockstate)) {
-@@ -776,7 +_,15 @@
-                         CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking block entity");
-                         CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
-                         this.blockEntity.fillCrashReportCategory(crashreportcategory);
-+
+                         profiler.push(this::getType);
+                         BlockState blockState = LevelChunk.this.getBlockState(pos);
+                         if (this.blockEntity.getType().isValid(blockState)) {
+@@ -768,7 +_,14 @@
+                         CrashReport report = CrashReport.forThrowable(var5, "Ticking block entity");
+                         CrashReportCategory category = report.addCategory("Block entity being ticked");
+                         this.blockEntity.fillCrashReportCategory(category);
 +                        if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.removeErroringBlockEntities.get()) {
-+                            LOGGER.error("{}", crashreport.getFriendlyReport(net.minecraft.ReportType.CRASH));
++                            LOGGER.error("{}", report.getFriendlyReport(net.minecraft.ReportType.CRASH));
 +                            blockEntity.setRemoved();
 +                            LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());
 +                        } else
-                         throw new ReportedException(crashreport);
+                         throw new ReportedException(report);
 +                    } finally {
 +                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackEnd(blockEntity);
                      }

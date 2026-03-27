@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.core.component.DataComponents;
@@ -36,14 +36,14 @@ import org.jspecify.annotations.Nullable;
  */
 public abstract class RenderTooltipEvent extends Event {
     protected final ItemStack itemStack;
-    protected final GuiGraphics graphics;
+    protected final GuiGraphicsExtractor graphics;
     protected int x;
     protected int y;
     protected Font font;
     protected final List<ClientTooltipComponent> components;
 
     @ApiStatus.Internal
-    protected RenderTooltipEvent(ItemStack itemStack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
+    protected RenderTooltipEvent(ItemStack itemStack, GuiGraphicsExtractor graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
         this.itemStack = itemStack;
         this.graphics = graphics;
         this.components = Collections.unmodifiableList(components);
@@ -63,7 +63,7 @@ public abstract class RenderTooltipEvent extends Event {
     /**
      * {@return the graphics helper for the gui}
      */
-    public GuiGraphics getGraphics() {
+    public GuiGraphicsExtractor getGraphics() {
         return this.graphics;
     }
 
@@ -194,7 +194,7 @@ public abstract class RenderTooltipEvent extends Event {
         private final ClientTooltipPositioner positioner;
 
         @ApiStatus.Internal
-        public Pre(ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, Font font, List<ClientTooltipComponent> components, ClientTooltipPositioner positioner) {
+        public Pre(ItemStack stack, GuiGraphicsExtractor graphics, int x, int y, int screenWidth, int screenHeight, Font font, List<ClientTooltipComponent> components, ClientTooltipPositioner positioner) {
             super(stack, graphics, x, y, font, components);
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
@@ -266,7 +266,7 @@ public abstract class RenderTooltipEvent extends Event {
         private Identifier texture;
 
         @ApiStatus.Internal
-        public Texture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
+        public Texture(ItemStack stack, GuiGraphicsExtractor graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable Identifier texture) {
             super(stack, graphics, x, y, font, components);
             this.originalTexture = texture;
             this.texture = texture;

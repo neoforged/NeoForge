@@ -1,24 +1,24 @@
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-@@ -321,7 +_,7 @@
+@@ -320,7 +_,7 @@
  
              if (this.destroyBlocksTick > 0) {
                  this.destroyBlocksTick--;
--                if (this.destroyBlocksTick == 0 && p_376675_.getGameRules().get(GameRules.MOB_GRIEFING)) {
-+                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_376675_, this)) {
-                     boolean flag = false;
-                     int l = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
-                     int i1 = Mth.floor(this.getBbHeight());
-@@ -330,7 +_,7 @@
-                         this.getBlockX() - l, this.getBlockY(), this.getBlockZ() - l, this.getBlockX() + l, this.getBlockY() + i1, this.getBlockZ() + l
+-                if (this.destroyBlocksTick == 0 && level.getGameRules().get(GameRules.MOB_GRIEFING)) {
++                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this)) {
+                     boolean destroyed = false;
+                     int width = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
+                     int height = Mth.floor(this.getBbHeight());
+@@ -334,7 +_,7 @@
+                         this.getBlockZ() + width
                      )) {
-                         BlockState blockstate = p_376675_.getBlockState(blockpos);
--                        if (canDestroy(blockstate)) {
-+                        if (blockstate.canEntityDestroy(this.level(), blockpos, this) && net.neoforged.neoforge.event.EventHooks.onEntityDestroyBlock(this, blockpos, blockstate)) {
-                             flag = p_376675_.destroyBlock(blockpos, true, this) || flag;
+                         BlockState state = level.getBlockState(blockPos);
+-                        if (canDestroy(state)) {
++                        if (state.canEntityDestroy(this.level(), blockPos, this) && net.neoforged.neoforge.event.EventHooks.onEntityDestroyBlock(this, blockPos, state)) {
+                             destroyed = level.destroyBlock(blockPos, true, this) || destroyed;
                          }
                      }
-@@ -349,6 +_,10 @@
+@@ -353,6 +_,10 @@
          }
      }
  
@@ -26,10 +26,10 @@
 +     * @deprecated Forge: Use {@link BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)} instead.
 +     */
 +    @Deprecated
-     public static boolean canDestroy(BlockState p_31492_) {
-         return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
+     public static boolean canDestroy(BlockState state) {
+         return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -490,6 +_,7 @@
+@@ -492,6 +_,7 @@
  
      @Override
      public void checkDespawn() {

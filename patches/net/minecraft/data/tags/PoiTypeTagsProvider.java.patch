@@ -6,11 +6,11 @@
  public class PoiTypeTagsProvider extends KeyTagProvider<PoiType> {
 +    /** @deprecated Forge: Use the {@linkplain #PoiTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_) {
-         super(p_256012_, Registries.POINT_OF_INTEREST_TYPE, p_256617_);
+     public PoiTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.POINT_OF_INTEREST_TYPE, lookupProvider);
 +    }
-+    public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_, String modId) {
-+        super(p_256012_, Registries.POINT_OF_INTEREST_TYPE, p_256617_, modId);
++    public PoiTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.POINT_OF_INTEREST_TYPE, lookupProvider, modId);
      }
  
      @Override

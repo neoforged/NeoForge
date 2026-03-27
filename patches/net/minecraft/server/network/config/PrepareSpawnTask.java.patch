@@ -1,10 +1,10 @@
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
-@@ -186,6 +_,7 @@
+@@ -187,6 +_,7 @@
                      .loadPlayerData(PrepareSpawnTask.this.nameAndId)
-                     .map(p_435936_ -> TagValueInput.create(problemreporter$scopedcollector, PrepareSpawnTask.this.server.registryAccess(), p_435936_));
-                 optional.ifPresent(serverplayer::load);
-+                net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(serverplayer, PrepareSpawnTask.this.server.getPlayerList(), serverplayer.getStringUUID());
-                 serverplayer.snapTo(this.spawnPosition, this.spawnAngle.x, this.spawnAngle.y);
-                 PrepareSpawnTask.this.server.getPlayerList().placeNewPlayer(p_436059_, serverplayer, p_434132_);
-                 optional.ifPresent(p_433587_ -> {
+                     .map(tag -> TagValueInput.create(reporter, PrepareSpawnTask.this.server.registryAccess(), tag));
+                 input.ifPresent(player::load);
++                net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(player, PrepareSpawnTask.this.server.getPlayerList(), player.getStringUUID());
+                 player.snapTo(this.spawnPosition, this.spawnAngle.x, this.spawnAngle.y);
+                 PrepareSpawnTask.this.server.getPlayerList().placeNewPlayer(connection, player, cookie);
+                 input.ifPresent(tag -> {

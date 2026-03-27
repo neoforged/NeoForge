@@ -1,10 +1,25 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
-@@ -249,6 +_,7 @@
+@@ -156,6 +_,14 @@
+         return new DataComponentPatch.Builder();
+     }
+ 
++    /**
++     * {@return the patch stored for the given component type, null if no patch is stored}
++     */
++    @SuppressWarnings("unchecked")
++    public <T> @Nullable Optional<T> getPatch(DataComponentType<? extends T> type) {
++        return (Optional<T>) this.map.get(type);
++    }
++
+     public <T> @Nullable T get(DataComponentGetter prototype, DataComponentType<? extends T> type) {
+         return getFromPatchAndPrototype(this.map, prototype, type);
+     }
+@@ -255,6 +_,7 @@
          }
  
-         public <T> DataComponentPatch.Builder set(DataComponentType<T> p_332004_, T p_331566_) {
-+            net.neoforged.neoforge.common.CommonHooks.validateComponent(p_331566_);
-             this.map.put(p_332004_, Optional.of(p_331566_));
+         public <T> DataComponentPatch.Builder set(DataComponentType<T> type, T value) {
++            net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
+             this.map.put(type, Optional.of(value));
              return this;
          }

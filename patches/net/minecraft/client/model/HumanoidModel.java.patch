@@ -1,35 +1,35 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -306,6 +_,9 @@
+@@ -389,6 +_,9 @@
                  break;
              case SPEAR:
-                 SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, true, p_364666_.getUseItemStackForArm(HumanoidArm.RIGHT), p_364666_);
+                 SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, true, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
 +                break;
 +            default:
-+                p_364666_.rightArmPose.applyTransform(this, p_364666_, net.minecraft.world.entity.HumanoidArm.RIGHT);
++                state.rightArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -351,6 +_,9 @@
+@@ -434,6 +_,9 @@
                  break;
              case SPEAR:
-                 SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, false, p_361741_.getUseItemStackForArm(HumanoidArm.LEFT), p_361741_);
+                 SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, false, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
 +                break;
 +            default:
-+                p_361741_.leftArmPose.applyTransform(this, p_361741_, net.minecraft.world.entity.HumanoidArm.LEFT);
++                state.leftArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
-@@ -445,9 +_,20 @@
+@@ -518,9 +_,20 @@
          private final boolean twoHanded;
          private final boolean affectsOffhandPose;
  
 +        private final net.neoforged.neoforge.client.@org.jspecify.annotations.Nullable IArmPoseTransformer forgeArmPose;
 +
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         ArmPose(boolean p_102896_, boolean p_470634_) {
-             this.twoHanded = p_102896_;
-             this.affectsOffhandPose = p_470634_;
+         private ArmPose(boolean twoHanded, boolean affectsOffhandPose) {
+             this.twoHanded = twoHanded;
+             this.affectsOffhandPose = affectsOffhandPose;
 +            this.forgeArmPose = null;
 +        }
 +
@@ -41,7 +41,7 @@
          }
  
          public boolean isTwoHanded() {
-@@ -456,6 +_,14 @@
+@@ -529,6 +_,14 @@
  
          public boolean affectsOffhandPose() {
              return this.affectsOffhandPose;
@@ -55,4 +55,4 @@
 +            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(HumanoidModel.ArmPose.class);
          }
  
-         public <S extends ArmedEntityRenderState> void animateUseItem(
+         public <S extends ArmedEntityRenderState> void animateUseItem(S state, PoseStack poseStack, float ticksUsingItem, HumanoidArm arm, ItemStack actualItem) {

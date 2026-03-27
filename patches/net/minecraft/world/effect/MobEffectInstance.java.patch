@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -337,11 +_,11 @@
-                 .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
-                 .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
-                 .compare(this.getDuration(), p_19566_.getDuration())
--                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
-+                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
+@@ -336,11 +_,11 @@
+                 .compareFalseFirst(this.isAmbient(), o.isAmbient())
+                 .compareFalseFirst(this.isInfiniteDuration(), o.isInfiniteDuration())
+                 .compare(this.getDuration(), o.getDuration())
+-                .compare(this.getEffect().value().getColor(), o.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), o.getEffect().value().getSortOrder(o))
                  .result()
              : ComparisonChain.start()
-                 .compare(this.isAmbient(), p_19566_.isAmbient())
--                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
-+                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
+                 .compare(this.isAmbient(), o.isAmbient())
+-                .compare(this.getEffect().value().getColor(), o.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), o.getEffect().value().getSortOrder(o))
                  .result();
      }
  

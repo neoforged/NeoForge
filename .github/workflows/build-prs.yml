@@ -22,10 +22,10 @@ jobs:
       - name: Checkout repository
         uses: neoforged/actions/checkout@main
 
-      - name: Setup JDK 21
+      - name: Setup JDK 25
         uses: neoforged/actions/setup-java@main
         with:
-          java-version: 21
+          java-version: 25
           # Exclude minecraft sources from emitting annotation warnings since we cannot point to them anyway
           warning-file-path: '(?!.+\/projects\/neoforge\/src\/)[^:]+'
 

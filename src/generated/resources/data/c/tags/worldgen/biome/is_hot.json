@@ -2,10 +2,6 @@
   "values": [
     "#c:is_hot/overworld",
     "#c:is_hot/nether",
-    "#c:is_hot/end",
-    {
-      "id": "#forge:is_hot",
-      "required": false
-    }
+    "#c:is_hot/end"
   ]
 }

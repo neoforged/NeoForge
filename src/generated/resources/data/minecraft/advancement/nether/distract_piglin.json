@@ -77,7 +77,6 @@
       "translate": "advancements.nether.distract_piglin.description"
     },
     "icon": {
-      "count": 1,
       "id": "minecraft:gold_ingot"
     },
     "title": {

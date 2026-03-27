@@ -1,61 +1,43 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -93,6 +_,10 @@
-         GLFW.glfwWindowHint(139267, 3);
-         GLFW.glfwWindowHint(139272, 204801);
-         GLFW.glfwWindowHint(139270, 1);
+@@ -92,6 +_,16 @@
+         this.windowedWidth = this.width = allowedWindowMinSize(displayData.width());
+         this.windowedHeight = this.height = allowedWindowMinSize(displayData.height());
+         this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.getMonitor() : 0L);
++        // Neo: If the window was taken over from EarlyLoadingScreen, inherit a potentially resized window size
 +        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
 +        if (earlyLoadingScreen != null) {
-+            this.handle = takeOverWindow(earlyLoadingScreen, p_85376_);
-+        } else {
-         this.handle = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
-         if (monitor != null) {
-             VideoMode videomode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -105,6 +_,7 @@
-             this.windowedX = this.x = aint1[0];
-             this.windowedY = this.y = aint[0];
-         }
++            var width = new int[1];
++            var height = new int[1];
++            GLFW.glfwGetWindowSize(this.handle, width, height);
++            // The window height and width can be 0 if minimized
++            this.width = this.windowedWidth = Math.max(width[0], 1);
++            this.height = this.windowedHeight = Math.max(height[0], 1);
 +        }
- 
-         this.setMode();
-         this.refreshFramebufferSize();
-@@ -206,8 +_,10 @@
+         this.backend = backend;
+         if (initialMonitor != null) {
+             VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
+@@ -121,6 +_,11 @@
+         long windowHandle;
+         try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
+             backend.setWindowHints();
++            var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
++            if (earlyLoadingScreen != null) {
++                windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
++                GLFW.glfwSetWindowTitle(windowHandle, title);
++            } else
+             windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
+             if (windowHandle == 0L) {
+                 backend.handleWindowCreationErrors(glfwErrors.firstError());
+@@ -226,8 +_,10 @@
      }
  
-     public void defaultErrorCallback(int p_85383_, long p_85384_) {
+     public void defaultErrorCallback(int errorCode, long description) {
 -        RenderSystem.assertOnRenderThread();
-         String s = MemoryUtil.memUTF8(p_85384_);
+         String errorString = MemoryUtil.memUTF8(description);
 +        if (!RenderSystem.isOnRenderThread()) {
-+            throw new IllegalStateException("Encountered GL error off-thread @ " + errorSection + ": " + p_85383_ + ": " + s);
++            throw new IllegalStateException("Encountered GL error off-thread @ " + errorSection + ": " + errorCode + ": " + errorString);
 +        }
          LOGGER.error("########## GL ERROR ##########");
          LOGGER.error("@ {}", this.errorSection);
-         LOGGER.error("{}: {}", p_85383_, s);
-@@ -513,5 +_,27 @@
-         WindowInitFailed(String p_85455_) {
-             super(p_85455_);
-         }
-+    }
-+
-+    // Neo take over window and its properties from early display
-+    private long takeOverWindow(net.neoforged.fml.loading.EarlyLoadingScreenController earlyLoadingScreen, String title) {
-+        long window = earlyLoadingScreen.takeOverGlfwWindow();
-+
-+        GLFW.glfwSetWindowTitle(window, title);
-+
-+        var x = new int[1];
-+        var y = new int[1];
-+        GLFW.glfwGetWindowPos(window, x, y);
-+        this.x = this.windowedX = x[0];
-+        this.y = this.windowedY = y[0];
-+
-+        var width = new int[1];
-+        var height = new int[1];
-+        GLFW.glfwGetWindowSize(window, width, height);
-+        // The window height and width can be 0 if minimized
-+        this.width = this.windowedWidth = Math.max(width[0], 1);
-+        this.height = this.windowedHeight = Math.max(height[0], 1);
-+
-+        return window;
-     }
- }
+         LOGGER.error("{}: {}", errorCode, errorString);

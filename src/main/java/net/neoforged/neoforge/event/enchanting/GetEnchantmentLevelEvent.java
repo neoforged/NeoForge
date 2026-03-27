@@ -9,27 +9,28 @@ import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.extensions.IItemStackExtension;
+import net.neoforged.neoforge.common.extensions.ItemInstanceExtension;
 import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired whenever the enchantment level of a particular item is requested for gameplay purposes.<br>
- * It is called from {@link IItemStackExtension#getEnchantmentLevel(Enchantment)} and {@link IItemStackExtension#getAllEnchantments()}.
+ * It is called from {@link ItemInstanceExtension#getEnchantmentLevel(Holder)} and {@link IItemStackExtension#getAllEnchantments(RegistryLookup)}.
  * <p>
  * It is not fired for interactions with NBT, which means these changes will not reflect in the item tooltip.
  */
 public class GetEnchantmentLevelEvent extends Event {
-    protected final ItemStack stack;
+    protected final ItemInstance stack;
     protected final ItemEnchantments.Mutable enchantments;
     @Nullable
     protected final Holder<Enchantment> targetEnchant;
     protected final RegistryLookup<Enchantment> lookup;
 
-    public GetEnchantmentLevelEvent(ItemStack stack, ItemEnchantments.Mutable enchantments, @Nullable Holder<Enchantment> targetEnchant, RegistryLookup<Enchantment> lookup) {
+    public GetEnchantmentLevelEvent(ItemInstance stack, ItemEnchantments.Mutable enchantments, @Nullable Holder<Enchantment> targetEnchant, RegistryLookup<Enchantment> lookup) {
         this.stack = stack;
         this.enchantments = enchantments;
         this.targetEnchant = targetEnchant;
@@ -39,7 +40,7 @@ public class GetEnchantmentLevelEvent extends Event {
     /**
      * Returns the item stack that is being queried against.
      */
-    public ItemStack getStack() {
+    public ItemInstance getStack() {
         return this.stack;
     }
 
@@ -51,11 +52,11 @@ public class GetEnchantmentLevelEvent extends Event {
     }
 
     /**
-     * This method returns the specific enchantment being queried from {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
+     * This method returns the specific enchantment being queried from {@link ItemInstanceExtension#getEnchantmentLevel(Holder)}.
      * <p>
      * If this is value is present, you only need to adjust the level of that enchantment.
      * <p>
-     * If this value is null, then the event was fired from {@link IItemStackExtension#getAllEnchantments()} and all enchantments should be populated.
+     * If this value is null, then the event was fired from {@link IItemStackExtension#getAllEnchantments(RegistryLookup)} and all enchantments should be populated.
      * 
      * @return The specific enchantment being queried, or null, if all enchantments are being requested.
      */

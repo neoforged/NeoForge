@@ -1,11 +1,11 @@
 --- a/net/minecraft/server/WorldLoader.java
 +++ b/net/minecraft/server/WorldLoader.java
-@@ -42,7 +_,7 @@
-             );
-             RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess.getAccessForLoading(RegistryLayer.WORLDGEN);
-             List<HolderLookup.RegistryLookup<?>> list1 = TagLoader.buildUpdatedLookups(registryaccess$frozen, list);
--            RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(closeableresourcemanager, list1, RegistryDataLoader.WORLDGEN_REGISTRIES);
-+            RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(closeableresourcemanager, list1, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries());
-             List<HolderLookup.RegistryLookup<?>> list2 = Stream.concat(list1.stream(), registryaccess$frozen1.listRegistries()).toList();
-             RegistryAccess.Frozen registryaccess$frozen2 = RegistryDataLoader.load(closeableresourcemanager, list2, RegistryDataLoader.DIMENSION_REGISTRIES);
-             WorldDataConfiguration worlddataconfiguration = pair.getFirst();
+@@ -39,7 +_,7 @@
+                     );
+                     RegistryAccess.Frozen worldgenLoadContext = initialLayers.getAccessForLoading(RegistryLayer.WORLDGEN);
+                     List<HolderLookup.RegistryLookup<?>> worldgenContextRegistries = TagLoader.buildUpdatedLookups(worldgenLoadContext, staticLayerTags);
+-                    return RegistryDataLoader.load(resources, worldgenContextRegistries, RegistryDataLoader.WORLDGEN_REGISTRIES, backgroundExecutor)
++                    return RegistryDataLoader.load(resources, worldgenContextRegistries, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), backgroundExecutor)
+                         .thenComposeAsync(
+                             loadedWorldgenRegistries -> {
+                                 List<HolderLookup.RegistryLookup<?>> dimensionContextRegistries = Stream.concat(

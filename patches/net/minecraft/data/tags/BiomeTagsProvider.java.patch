@@ -6,11 +6,11 @@
  public class BiomeTagsProvider extends KeyTagProvider<Biome> {
 +    /** @deprecated Forge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_) {
-         super(p_255800_, Registries.BIOME, p_256205_);
+     public BiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.BIOME, lookupProvider);
 +    }
-+    public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_, String modId) {
-+        super(p_255800_, Registries.BIOME, p_256205_, modId);
++    public BiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.BIOME, lookupProvider, modId);
      }
  
      @Override

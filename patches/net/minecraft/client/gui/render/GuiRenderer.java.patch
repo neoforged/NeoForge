@@ -1,38 +1,38 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -109,7 +_,8 @@
+@@ -104,7 +_,8 @@
      private final MultiBufferSource.BufferSource bufferSource;
      private final SubmitNodeCollector submitNodeCollector;
      private final FeatureRenderDispatcher featureRenderDispatcher;
 -    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
 +    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
 +    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
-     private @Nullable GpuTexture itemsAtlas;
-     private @Nullable GpuTextureView itemsAtlasView;
-     private @Nullable GpuTexture itemsAtlasDepth;
-@@ -128,19 +_,13 @@
-         MultiBufferSource.BufferSource p_415673_,
-         SubmitNodeCollector p_440036_,
-         FeatureRenderDispatcher p_439972_,
--        List<PictureInPictureRenderer<?>> p_415849_
+     private @Nullable GuiItemAtlas itemAtlas;
+     private int cachedGuiScale;
+     private final CubeMap cubeMap = new CubeMap(Identifier.withDefaultNamespace("textures/gui/title/background/panorama"));
+@@ -118,19 +_,13 @@
+         MultiBufferSource.BufferSource bufferSource,
+         SubmitNodeCollector submitNodeCollector,
+         FeatureRenderDispatcher featureRenderDispatcher,
+-        List<PictureInPictureRenderer<?>> pictureInPictureRenderers
 +        List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories
      ) {
-         this.renderState = p_416418_;
-         this.bufferSource = p_415673_;
-         this.submitNodeCollector = p_440036_;
-         this.featureRenderDispatcher = p_439972_;
+         this.renderState = renderState;
+         this.bufferSource = bufferSource;
+         this.submitNodeCollector = submitNodeCollector;
+         this.featureRenderDispatcher = featureRenderDispatcher;
 -        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();
 -
--        for (PictureInPictureRenderer<?> pictureinpicturerenderer : p_415849_) {
--            builder.put((Class<? extends PictureInPictureRenderState>)pictureinpicturerenderer.getRenderStateClass(), pictureinpicturerenderer);
+-        for (PictureInPictureRenderer<?> pictureInPictureRenderer : pictureInPictureRenderers) {
+-            builder.put((Class<? extends PictureInPictureRenderState>)pictureInPictureRenderer.getRenderStateClass(), pictureInPictureRenderer);
 -        }
 -
 -        this.pictureInPictureRenderers = builder.buildOrThrow();
-+        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(p_415673_, pipRendererFactories);
++        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(bufferSource, pipRendererFactories);
      }
  
-     public void incrementFrameNumber() {
-@@ -160,6 +_,7 @@
+     public void endFrame() {
+@@ -161,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -40,47 +40,73 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -419,14 +_,31 @@
+@@ -290,7 +_,9 @@
+         RenderPipeline pipeline = elementState.pipeline();
+         TextureSetup textureSetup = elementState.textureSetup();
+         ScreenRectangle scissorArea = elementState.scissorArea();
+-        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)) {
++        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)
++                || pipeline.getVertexFormatMode().connectedPrimitives // Neo: flush elements with connected primitives individually
++        ) {
+             if (this.bufferBuilder != null) {
+                 this.recordMesh(this.bufferBuilder, this.previousPipeline, this.previousTextureSetup, this.previousScissorArea);
+             }
+@@ -368,14 +_,31 @@
  
      private void preparePictureInPicture() {
-         int i = Minecraft.getInstance().getWindow().getGuiScale();
--        this.renderState.forEachPictureInPicture(p_417621_ -> this.preparePictureInPictureState(p_417621_, i));
+         int guiScale = Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.guiScale;
+-        this.renderState.forEachPictureInPicture(pictureInPictureState -> this.preparePictureInPictureState(pictureInPictureState, guiScale));
 +        this.pictureInPictureRenderStatesScratch.clear();
 +        this.renderState.forEachPictureInPicture(state -> {
-+            if (this.preparePictureInPictureState(state, i, true)) {
++            if (this.preparePictureInPictureState(state, guiScale, true)) {
 +                this.pictureInPictureRenderStatesScratch.add(state);
 +            }
 +        });
 +        this.renderState.forEachPictureInPicture(state -> {
 +            if (this.pictureInPictureRenderStatesScratch.add(state)) {
-+                this.preparePictureInPictureState(state, i, false);
++                this.preparePictureInPictureState(state, guiScale, false);
 +            }
 +        });
 +        this.pictureInPictureRenderStatesScratch.clear();
      }
  
--    private <T extends PictureInPictureRenderState> void preparePictureInPictureState(T p_415554_, int p_415565_) {
--        PictureInPictureRenderer<T> pictureinpicturerenderer = (PictureInPictureRenderer<T>)this.pictureInPictureRenderers.get(p_415554_.getClass());
-+    private <T extends PictureInPictureRenderState> boolean preparePictureInPictureState(T p_415554_, int p_415565_, boolean firstPass) {
-+        var pool = (net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<T>)this.pictureInPictureRendererPools.get(p_415554_.getClass());
+-    private <T extends PictureInPictureRenderState> void preparePictureInPictureState(T picturesInPictureState, int guiScale) {
+-        PictureInPictureRenderer<T> renderer = (PictureInPictureRenderer<T>)this.pictureInPictureRenderers.get(picturesInPictureState.getClass());
++    private <T extends PictureInPictureRenderState> boolean preparePictureInPictureState(T picturesInPictureState, int guiScale, boolean firstPass) {
++        var pool = (net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<T>)this.pictureInPictureRendererPools.get(picturesInPictureState.getClass());
 +        if (pool == null) {
 +            return false;
 +        }
-+        PictureInPictureRenderer<T> pictureinpicturerenderer = pool.get(p_415554_, p_415565_, firstPass);
-         if (pictureinpicturerenderer != null) {
-             pictureinpicturerenderer.prepare(p_415554_, this.renderState, p_415565_);
++        PictureInPictureRenderer<T> renderer = pool.get(picturesInPictureState, guiScale, firstPass);
+         if (renderer != null) {
+             renderer.prepare(picturesInPictureState, this.renderState, guiScale);
 +            return true;
          }
 +        return false;
      }
  
-     private void renderItemToAtlas(TrackingItemStackRenderState p_428843_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
-@@ -699,7 +_,7 @@
-             this.itemsAtlasDepthView.close();
+     private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
+@@ -548,6 +_,14 @@
+             renderPass.bindTexture("Sampler2", draw.textureSetup.texure2(), draw.textureSetup.sampler2());
+         }
+ 
++        // Neo: support non-quad vertex format modes
++        VertexFormat.Mode formatMode = pipeline.getVertexFormatMode();
++        if (formatMode != VertexFormat.Mode.QUADS) {
++            RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(formatMode);
++            indexBuffer = autoStorageIndexBuffer.getBuffer(draw.indexCount);
++            indexType = autoStorageIndexBuffer.type();
++        }
++
+         renderPass.setIndexBuffer(indexBuffer, indexType);
+         renderPass.drawIndexed(draw.baseVertex, 0, draw.indexCount, 1);
+     }
+@@ -587,7 +_,7 @@
+             this.itemAtlas = null;
          }
  
 -        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
 +        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
          this.guiProjectionMatrixBuffer.close();
-         this.itemsProjectionMatrixBuffer.close();
  
+         for (MappableRingBuffer buffer : this.vertexBuffers.values()) {

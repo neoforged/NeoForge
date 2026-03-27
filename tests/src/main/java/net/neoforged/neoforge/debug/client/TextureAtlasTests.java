@@ -21,8 +21,8 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.client.resources.metadata.texture.TextureMetadataSection;
-import net.minecraft.client.resources.model.AtlasManager;
-import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
@@ -68,7 +68,7 @@ public class TextureAtlasTests {
                 }
 
                 try {
-                    Material material = new Material(atlasLoc, Identifier.withDefaultNamespace("block/stone"));
+                    SpriteId material = new SpriteId(atlasLoc, Identifier.withDefaultNamespace("block/stone"));
                     TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager().get(material);
                     if (sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
                         test.fail("Expected sprite was not stitched");

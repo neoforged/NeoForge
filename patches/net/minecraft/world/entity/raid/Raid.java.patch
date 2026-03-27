@@ -1,37 +1,37 @@
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -524,7 +_,7 @@
-             int k = 0;
+@@ -530,7 +_,7 @@
+             int ravagersSpawned = 0;
  
-             for (int l = 0; l < j; l++) {
--                Raider raider = raid$raidertype.entityType.create(p_401196_, EntitySpawnReason.EVENT);
-+                Raider raider = raid$raidertype.entityTypeSupplier.get().create(p_401196_, EntitySpawnReason.EVENT);
+             for (int i = 0; i < numSpawns; i++) {
+-                Raider raider = raiderType.entityType.create(level, EntitySpawnReason.EVENT);
++                Raider raider = raiderType.entityTypeSupplier.get().create(level, EntitySpawnReason.EVENT);
                  if (raider == null) {
                      break;
                  }
-@@ -536,7 +_,7 @@
+@@ -542,7 +_,7 @@
                  }
  
-                 this.joinRaid(p_401196_, i, raider, p_37756_, false);
--                if (raid$raidertype.entityType == EntityType.RAVAGER) {
-+                if (raid$raidertype.entityTypeSupplier.get() == EntityType.RAVAGER) {
-                     Raider raider1 = null;
-                     if (i == this.getNumGroups(Difficulty.NORMAL)) {
-                         raider1 = EntityType.PILLAGER.create(p_401196_, EntitySpawnReason.EVENT);
-@@ -827,12 +_,26 @@
+                 this.joinRaid(level, groupNumber, raider, pos, false);
+-                if (raiderType.entityType == EntityType.RAVAGER) {
++                if (raiderType.entityTypeSupplier.get() == EntityType.RAVAGER) {
+                     Raider ridingRaider = null;
+                     if (groupNumber == this.getNumGroups(Difficulty.NORMAL)) {
+                         ridingRaider = EntityType.PILLAGER.create(level, EntitySpawnReason.EVENT);
+@@ -835,12 +_,26 @@
          RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  
-         static final Raid.RaiderType[] VALUES = values();
+         private static final Raid.RaiderType[] VALUES = values();
 +        @Deprecated // Neo: null for custom types, use the supplier instead
-         final EntityType<? extends Raider> entityType;
-         final int[] spawnsPerWaveBeforeBonus;
+         private final EntityType<? extends Raider> entityType;
+         private final int[] spawnsPerWaveBeforeBonus;
 +        final java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier;
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         private RaiderType(EntityType<? extends Raider> p_37821_, int[] p_37822_) {
-             this.entityType = p_37821_;
-             this.spawnsPerWaveBeforeBonus = p_37822_;
-+            this.entityTypeSupplier = () -> p_37821_;
+         private RaiderType(EntityType<? extends Raider> entityType, int[] spawnsPerWaveBeforeBonus) {
+             this.entityType = entityType;
+             this.spawnsPerWaveBeforeBonus = spawnsPerWaveBeforeBonus;
++            this.entityTypeSupplier = () -> entityType;
 +        }
 +
 +        private RaiderType(java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier, int[] spawnsPerWave) {

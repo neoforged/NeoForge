@@ -8,4 +8,4 @@
 +    private static final Map<BlockEntityType<?>, BlockEntityRendererProvider<?, ?>> PROVIDERS = new java.util.concurrent.ConcurrentHashMap<>();
  
      public static <T extends BlockEntity, S extends BlockEntityRenderState> void register(
-         BlockEntityType<? extends T> p_173591_, BlockEntityRendererProvider<T, S> p_173592_
+         BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> renderer

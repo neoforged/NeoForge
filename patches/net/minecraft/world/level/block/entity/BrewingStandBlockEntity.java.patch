@@ -1,37 +1,34 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -168,6 +_,7 @@
+@@ -174,6 +_,7 @@
      }
  
-     private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(p_155293_)) return;
-         ItemStack itemstack = p_155293_.get(3);
-         PotionBrewing potionbrewing = p_155291_.potionBrewing();
+     private static void doBrew(Level level, BlockPos pos, NonNullList<ItemStack> items) {
++        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(items)) return;
+         ItemStack ingredient = items.get(3);
+         PotionBrewing potionBrewing = level.potionBrewing();
  
-@@ -175,8 +_,9 @@
-             p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
+@@ -181,6 +_,7 @@
+             items.set(dest, potionBrewing.mix(ingredient, items.get(dest)));
          }
  
-+        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(p_155293_);
-+        ItemStack itemstack1 = itemstack.getCraftingRemainder();
-         itemstack.shrink(1);
--        ItemStack itemstack1 = itemstack.getItem().getCraftingRemainder();
-         if (!itemstack1.isEmpty()) {
-             if (itemstack.isEmpty()) {
-                 itemstack = itemstack1;
-@@ -212,13 +_,13 @@
++        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
+         ingredient.shrink(1);
+         ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
+         if (remainder != null) {
+@@ -218,13 +_,13 @@
  
      @Override
-     public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
-+        PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
-         if (p_59017_ == 3) {
--            PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
-             return potionbrewing.isIngredient(p_59018_);
+     public boolean canPlaceItem(int slot, ItemStack itemStack) {
++        PotionBrewing potionBrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
+         if (slot == 3) {
+-            PotionBrewing potionBrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
+             return potionBrewing.isIngredient(itemStack);
          } else {
-             return p_59017_ == 4
-                 ? p_59018_.is(ItemTags.BREWING_FUEL)
--                : (p_59018_.is(Items.POTION) || p_59018_.is(Items.SPLASH_POTION) || p_59018_.is(Items.LINGERING_POTION) || p_59018_.is(Items.GLASS_BOTTLE))
-+                : (potionbrewing.isInput(p_59018_) || p_59018_.is(Items.GLASS_BOTTLE))
-                     && this.getItem(p_59017_).isEmpty();
+             return slot == 4
+                 ? itemStack.is(ItemTags.BREWING_FUEL)
+-                : (itemStack.is(Items.POTION) || itemStack.is(Items.SPLASH_POTION) || itemStack.is(Items.LINGERING_POTION) || itemStack.is(Items.GLASS_BOTTLE))
++                : (potionBrewing.isInput(itemStack) || itemStack.is(Items.GLASS_BOTTLE))
+                     && this.getItem(slot).isEmpty();
          }
      }

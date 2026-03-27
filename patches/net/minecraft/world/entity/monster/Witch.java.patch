@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/entity/monster/Witch.java
++++ b/net/minecraft/world/entity/monster/Witch.java
+@@ -207,10 +_,11 @@
+     protected float getDamageAfterMagicAbsorb(DamageSource damageSource, float damage) {
+         damage = super.getDamageAfterMagicAbsorb(damageSource, damage);
+         if (damageSource.getEntity() == this) {
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INNATE_RESISTANCE, damage);
+             damage = 0.0F;
+-        }
+-
+-        if (damageSource.is(DamageTypeTags.WITCH_RESISTANT_TO)) {
++            // Neo: Join the two ifs; if the first one runs (reducing damage to 0), the second one (reducing damage by 15%) effectively does nothing
++        } else if (damageSource.is(DamageTypeTags.WITCH_RESISTANT_TO)) {
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INNATE_RESISTANCE, damage * 0.85F);
+             damage *= 0.15F;
+         }
+ 

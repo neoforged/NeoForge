@@ -1,35 +1,37 @@
 --- a/net/minecraft/client/Screenshot.java
 +++ b/net/minecraft/client/Screenshot.java
-@@ -43,6 +_,13 @@
-                     file2 = new File(file1, p_92297_);
+@@ -42,6 +_,13 @@
+                     file = new File(picDir, forceName);
                  }
  
-+                net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ClientHooks.onScreenshot(p_465362_, file2);
++                net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ClientHooks.onScreenshot(image, file);
 +                if (event.isCanceled()) {
-+                    p_92301_.accept(event.getCancelMessage());
++                    callback.accept(event.getCancelMessage());
 +                    return;
 +                }
-+                final File target = event.getScreenshotFile();
++                final File screenshotFile = event.getScreenshotFile();
 +
                  Util.ioPool()
                      .execute(
                          () -> {
-@@ -50,11 +_,15 @@
-                                 NativeImage $$4x = p_465362_;
+@@ -49,11 +_,15 @@
+                                 NativeImage twrVar0$ = image;
  
                                  try {
--                                    p_465362_.writeToFile(file2);
--                                    Component component = Component.literal(file2.getName())
-+                                    $$4x.writeToFile(target);
+-                                    image.writeToFile(file);
+-                                    Component component = Component.literal(file.getName())
+-                                        .withStyle(ChatFormatting.UNDERLINE)
+-                                        .withStyle(s -> s.withClickEvent(new ClickEvent.OpenFile(file.getAbsoluteFile())));
+-                                    callback.accept(Component.translatable("screenshot.success", component));
++                                    image.writeToFile(screenshotFile);
 +                                    if (event.getResultMessage() != null) {
-+                                        p_92301_.accept(event.getResultMessage());
++                                        callback.accept(event.getResultMessage());
 +                                    } else {
-+                                    Component component = Component.literal(target.getName())
-                                         .withStyle(ChatFormatting.UNDERLINE)
--                                        .withStyle(p_392495_ -> p_392495_.withClickEvent(new ClickEvent.OpenFile(file2.getAbsoluteFile())));
-+                                        .withStyle(p_392495_ -> p_392495_.withClickEvent(new ClickEvent.OpenFile(target.getAbsoluteFile())));
-                                     p_92301_.accept(Component.translatable("screenshot.success", component));
++                                        Component component = Component.literal(screenshotFile.getName())
++                                                .withStyle(ChatFormatting.UNDERLINE)
++                                                .withStyle(s -> s.withClickEvent(new ClickEvent.OpenFile(screenshotFile.getAbsoluteFile())));
++                                        callback.accept(Component.translatable("screenshot.success", component));
 +                                    }
-                                 } catch (Throwable throwable1) {
-                                     if (p_465362_ != null) {
+                                 } catch (Throwable var7) {
+                                     if (image != null) {
                                          try {

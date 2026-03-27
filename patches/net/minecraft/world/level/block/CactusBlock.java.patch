@@ -3,24 +3,24 @@
 @@ -45,6 +_,7 @@
  
      @Override
-     protected void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
-+        if (!p_220909_.isAreaLoaded(p_220910_, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
-         if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
-             p_220909_.destroyBlock(p_220910_, true);
+     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
++        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
+         if (!state.canSurvive(level, pos)) {
+             level.destroyBlock(pos, true);
          }
 @@ -57,6 +_,7 @@
-             int i = 1;
-             int j = p_220913_.getValue(AGE);
+             int height = 1;
+             int age = state.getValue(AGE);
  
-+            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220914_, blockpos, p_220913_, true)) {
-             while (p_220914_.getBlockState(p_220915_.below(i)).is(this)) {
-                 if (++i == 3 && j == 15) {
++            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {
+             while (level.getBlockState(pos.below(height)).is(this)) {
+                 if (++height == 3 && age == 15) {
                      return;
 @@ -78,6 +_,8 @@
-             if (j < 15) {
-                 p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, j + 1), 260);
+             if (age < 15) {
+                 level.setBlock(pos, state.setValue(AGE, age + 1), 260);
              }
-+            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_220914_, p_220915_, p_220913_);
++            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
 +            }
          }
      }
@@ -28,9 +28,9 @@
 @@ -119,6 +_,8 @@
          }
  
-         BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
-+        var soilDecision = blockstate1.canSustainPlant(p_51154_, p_51155_.below(), Direction.UP, p_51153_);
+         BlockState belowState = level.getBlockState(pos.below());
++        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return (blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid();
+         return (belowState.is(this) || belowState.is(BlockTags.SUPPORTS_CACTUS)) && !level.getBlockState(pos.above()).liquid();
      }
  

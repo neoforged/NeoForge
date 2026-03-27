@@ -44,8 +44,6 @@ public abstract class PotionBrewEvent extends Event {
      * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
      * If the event is not canceled, the vanilla brewing will take place instead of modded brewing.
      * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
@@ -64,8 +62,6 @@ public abstract class PotionBrewEvent extends Event {
      * {@link #stacks} contains the itemstack array from the TileEntityBrewer holding all items in Brewer.<br>
      * <br>
      * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/

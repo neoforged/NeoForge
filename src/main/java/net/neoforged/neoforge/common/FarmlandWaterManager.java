@@ -73,8 +73,8 @@ public class FarmlandWaterManager {
         ChunkPos leftUp = new ChunkPos(((int) aabb.minX) >> 4, ((int) aabb.minZ) >> 4);
         ChunkPos rightDown = new ChunkPos(((int) aabb.maxX) >> 4, ((int) aabb.maxZ) >> 4);
         Set<ChunkPos> posSet = new HashSet<>();
-        for (int x = leftUp.x; x <= rightDown.x; x++) {
-            for (int z = leftUp.z; z <= rightDown.z; z++) {
+        for (int x = leftUp.x(); x <= rightDown.x(); x++) {
+            for (int z = leftUp.z(); z <= rightDown.z(); z++) {
                 posSet.add(new ChunkPos(x, z));
             }
         }
@@ -98,15 +98,15 @@ public class FarmlandWaterManager {
 
     private static double getDistanceSq(ChunkPos pos, Vec3 vec3d) {
         //See ChunkPos#getDistanceSq
-        double d0 = (double) (pos.x * 16 + 8);
-        double d1 = (double) (pos.z * 16 + 8);
+        double d0 = (double) (pos.x() * 16 + 8);
+        double d1 = (double) (pos.z() * 16 + 8);
         double d2 = d0 - vec3d.x;
         double d3 = d1 - vec3d.z;
         return d2 * d2 + d3 * d3;
     }
 
     /**
-     * Tests if a block is in a region that is watered by blocks. This does not check vanilla water, see {@code net.minecraft.level.level.block.FarmBlock#isNearWater(LevelReader, BlockPos)}
+     * Tests if a block is in a region that is watered by blocks. This does not check vanilla water, see {@code net.minecraft.level.level.block.FarmlandBlock#isNearWater(LevelReader, BlockPos)}
      * 
      * @return true if there is a ticket with an AABB that includes your block
      */

@@ -10,39 +10,39 @@
          .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
          .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
 @@ -64,7 +_,7 @@
-         if (playerHasBlockingItemUseIntent(p_40529_)) {
+         if (playerHasBlockingItemUseIntent(context)) {
              return InteractionResult.PASS;
          } else {
--            Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos));
-+            Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos), p_40529_);
-             if (optional.isEmpty()) {
+-            Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos));
++            Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos), context);
+             if (newBlock.isEmpty()) {
                  return InteractionResult.PASS;
              } else {
 @@ -91,19 +_,18 @@
              && !player.isSecondaryUseActive();
      }
  
--    private Optional<BlockState> evaluateNewBlockState(Level p_308922_, BlockPos p_308899_, @Nullable Player p_309192_, BlockState p_308900_) {
--        Optional<BlockState> optional = this.getStripped(p_308900_);
-+    private Optional<BlockState> evaluateNewBlockState(Level p_308922_, BlockPos p_308899_, @Nullable Player p_309192_, BlockState p_308900_, UseOnContext p_40529_) {
-+        Optional<BlockState> optional = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ItemAbilities.AXE_STRIP, false));
-         if (optional.isPresent()) {
-             p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
-             return optional;
+-    private Optional<BlockState> evaluateNewBlockState(Level level, BlockPos pos, @Nullable Player player, BlockState oldState) {
+-        Optional<BlockState> strippedBlock = this.getStripped(oldState);
++    private Optional<BlockState> evaluateNewBlockState(Level level, BlockPos pos, @Nullable Player player, BlockState oldState, UseOnContext context) {
++        Optional<BlockState> strippedBlock = Optional.ofNullable(oldState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.AXE_STRIP, false));
+         if (strippedBlock.isPresent()) {
+             level.playSound(player, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+             return strippedBlock;
          } else {
--            Optional<BlockState> optional1 = WeatheringCopper.getPrevious(p_308900_);
-+            Optional<BlockState> optional1 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ItemAbilities.AXE_SCRAPE, false));
-             if (optional1.isPresent()) {
-                 spawnSoundAndParticle(p_308922_, p_308899_, p_309192_, p_308900_, SoundEvents.AXE_SCRAPE, 3005);
-                 return optional1;
+-            Optional<BlockState> scrapedBlock = WeatheringCopper.getPrevious(oldState);
++            Optional<BlockState> scrapedBlock = Optional.ofNullable(oldState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.AXE_SCRAPE, false));
+             if (scrapedBlock.isPresent()) {
+                 spawnSoundAndParticle(level, pos, player, oldState, SoundEvents.AXE_SCRAPE, 3005);
+                 return scrapedBlock;
              } else {
--                Optional<BlockState> optional2 = Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(p_308900_.getBlock()))
--                    .map(p_150694_ -> p_150694_.withPropertiesOf(p_308900_));
-+                Optional<BlockState> optional2 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ItemAbilities.AXE_WAX_OFF, false));
-                 if (optional2.isPresent()) {
-                     spawnSoundAndParticle(p_308922_, p_308899_, p_309192_, p_308900_, SoundEvents.AXE_WAX_OFF, 3004);
-                     return optional2;
-@@ -126,8 +_,25 @@
+-                Optional<BlockState> waxoffBlock = Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(oldState.getBlock()))
+-                    .map(b -> b.withPropertiesOf(oldState));
++                Optional<BlockState> waxoffBlock = Optional.ofNullable(oldState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.AXE_WAX_OFF, false));
+                 if (waxoffBlock.isPresent()) {
+                     spawnSoundAndParticle(level, pos, player, oldState, SoundEvents.AXE_WAX_OFF, 3004);
+                     return waxoffBlock;
+@@ -124,8 +_,25 @@
          }
      }
  
@@ -54,17 +54,17 @@
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
 +
-     private Optional<BlockState> getStripped(BlockState p_150691_) {
-+        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
+     private Optional<BlockState> getStripped(BlockState state) {
++        var strippable = state.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) {
-+            return Optional.of(strippable.strippedBlock().withPropertiesOf(p_150691_));
++            return Optional.of(strippable.strippedBlock().withPropertiesOf(state));
 +        }
-         return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
-             .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
+         return Optional.ofNullable(STRIPPABLES.get(state.getBlock()))
+             .map(block -> block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS)));
 +    }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
 +        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_AXE_ACTIONS.contains(itemAbility);
      }
  }

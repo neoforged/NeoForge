@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-@@ -119,7 +_,7 @@
-             List<Entity> list = p_155911_.getEntities(null, PistonMath.getMovementArea(aabb, direction, d0).minmax(aabb));
-             if (!list.isEmpty()) {
-                 List<AABB> list1 = voxelshape.toAabbs();
--                boolean flag = p_155914_.movedState.is(Blocks.SLIME_BLOCK);
-+                boolean flag = p_155914_.movedState.isSlimeBlock(); //TODO: is this patch really needed the logic of the original seems sound revisit later
-                 Iterator iterator = list.iterator();
+@@ -121,7 +_,7 @@
+             List<Entity> entities = level.getEntities(null, PistonMath.getMovementArea(aabb, movement, deltaProgress).minmax(aabb));
+             if (!entities.isEmpty()) {
+                 List<AABB> shapeAabbs = shape.toAabbs();
+-                boolean causeBounce = self.movedState.is(Blocks.SLIME_BLOCK);
++                boolean causeBounce = self.movedState.isSlimeBlock(); //TODO: is this patch really needed the logic of the original seems sound revisit later
+                 Iterator var12 = entities.iterator();
  
                  while (true) {

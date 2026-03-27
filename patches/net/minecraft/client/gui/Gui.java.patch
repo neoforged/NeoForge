@@ -9,7 +9,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Gui {
-@@ -173,6 +_,15 @@
+@@ -172,6 +_,15 @@
      private Pair<Gui.ContextualInfo, ContextualBarRenderer> contextualInfoBar = Pair.of(Gui.ContextualInfo.EMPTY, ContextualBarRenderer.EMPTY);
      private final Map<Gui.ContextualInfo, Supplier<ContextualBarRenderer>> contextualInfoBarRenderers;
      private float scopeScale;
@@ -23,299 +23,296 @@
 +     */
 +    public int rightHeight;
  
-     public Gui(Minecraft p_232355_) {
-         this.minecraft = p_232355_;
-@@ -193,6 +_,7 @@
-             () -> new JumpableVehicleBarRenderer(p_232355_)
+     public Gui(Minecraft minecraft) {
+         this.minecraft = minecraft;
+@@ -192,6 +_,7 @@
+             () -> new JumpableVehicleBarRenderer(minecraft)
          );
          this.resetTitleTimes();
 +        this.registerVanillaLayers();
      }
  
      public void resetTitleTimes() {
-@@ -203,28 +_,47 @@
+@@ -202,28 +_,47 @@
  
-     public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
+     public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (!(this.minecraft.screen instanceof LevelLoadingScreen)) {
 -            if (!this.minecraft.options.hideGui) {
--                this.renderCameraOverlays(p_282884_, p_348630_);
--                this.renderCrosshair(p_282884_, p_348630_);
--                p_282884_.nextStratum();
--                this.renderHotbarAndDecorations(p_282884_, p_348630_);
--                this.renderEffects(p_282884_, p_348630_);
--                this.renderBossOverlay(p_282884_, p_348630_);
+-                this.extractCameraOverlays(graphics, deltaTracker);
+-                this.extractCrosshair(graphics, deltaTracker);
+-                graphics.nextStratum();
+-                this.extractHotbarAndDecorations(graphics, deltaTracker);
+-                this.extractEffects(graphics, deltaTracker);
+-                this.extractBossOverlay(graphics, deltaTracker);
 -            }
 +            leftHeight = 39;
 +            rightHeight = 39;
 +            updateContextualBarRenderer();
-+            layerManager.render(p_282884_, p_348630_);
++            layerManager.render(graphics, deltaTracker);
 +        }
 +    }
  
--            this.renderSleepOverlay(p_282884_, p_348630_);
+-            this.extractSleepOverlay(graphics, deltaTracker);
 +    private void registerVanillaLayers() {
 +        java.util.function.BooleanSupplier guiVisible = () -> !this.minecraft.options.hideGui;
 +        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean();
-+        layerManager.add(CAMERA_OVERLAYS, this::renderCameraOverlays, guiVisible);
-+        layerManager.add(CROSSHAIR, this::renderCrosshair, guiVisible);
++        layerManager.add(CAMERA_OVERLAYS, this::extractCameraOverlays, guiVisible);
++        layerManager.add(CROSSHAIR, this::extractCrosshair, guiVisible);
 +        layerManager.add(AFTER_CAMERA_DECORATIONS, (guiGraphics, deltaTracker) -> guiGraphics.nextStratum(), guiVisible);
 +        // TODO: Split this up again into its pieces
-+        layerManager.add(HOTBAR, this::renderHotbar, guiVisible);
-+        layerManager.add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics), survivalVisible);
-+        layerManager.add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics), survivalVisible);
-+        layerManager.add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics), survivalVisible);
-+        layerManager.add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> renderVehicleHealth(guiGraphics), guiVisible);
-+        layerManager.add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics), survivalVisible);
-+        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBarBackground, guiVisible);
-+        layerManager.add(EXPERIENCE_LEVEL, this::renderExperienceLevel, guiVisible);
-+        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
-+        layerManager.add(SELECTED_ITEM_NAME, this::maybeRenderSelectedItemName, guiVisible);
-+        layerManager.add(SPECTATOR_TOOLTIP, this::maybeRenderSpectatorTooltip, guiVisible);
-+        layerManager.add(EFFECTS, this::renderEffects, guiVisible);
-+        layerManager.add(BOSS_OVERLAY, this::renderBossOverlay, guiVisible);
-+        layerManager.add(SLEEP_OVERLAY, this::renderSleepOverlay);
-+        layerManager.add(DEMO_OVERLAY, this::renderDemoOverlay, guiVisible);
-+        layerManager.add(SCOREBOARD_SIDEBAR, this::renderScoreboardSidebar, guiVisible);
-+        layerManager.add(OVERLAY_MESSAGE, this::renderOverlayMessage, guiVisible);
-+        layerManager.add(TITLE, this::renderTitle, guiVisible);
-+        layerManager.add(CHAT, this::renderChat, guiVisible);
-+        layerManager.add(TAB_LIST, this::renderTabList, guiVisible);
-+        layerManager.add(SUBTITLE_OVERLAY, (graphics, deltaTracker) -> {
++        layerManager.add(HOTBAR, this::extractHotbar, guiVisible);
++        layerManager.add(PLAYER_HEALTH, (guiGraphics, partialTick) -> extractHealthLevel(guiGraphics), survivalVisible);
++        layerManager.add(ARMOR_LEVEL, (guiGraphics, partialTick) -> extractArmorLevel(guiGraphics), survivalVisible);
++        layerManager.add(FOOD_LEVEL, (guiGraphics, partialTick) -> extractFoodLevel(guiGraphics), survivalVisible);
++        layerManager.add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> extractVehicleHealth(guiGraphics), guiVisible);
++        layerManager.add(AIR_LEVEL, (guiGraphics, partialTick) -> extractAirLevel(guiGraphics), survivalVisible);
++        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::extractContextualInfoBarBackground, guiVisible);
++        layerManager.add(EXPERIENCE_LEVEL, this::extractExperienceLevel, guiVisible);
++        layerManager.add(CONTEXTUAL_INFO_BAR, this::extractContextualInfoBar, guiVisible);
++        layerManager.add(SELECTED_ITEM_NAME, this::maybeExtractSelectedItemName, guiVisible);
++        layerManager.add(SPECTATOR_TOOLTIP, this::maybeExtractSpectatorTooltip, guiVisible);
++        layerManager.add(EFFECTS, this::extractEffects, guiVisible);
++        layerManager.add(BOSS_OVERLAY, this::extractBossOverlay, guiVisible);
++        layerManager.add(SLEEP_OVERLAY, this::extractSleepOverlay);
++        layerManager.add(DEMO_OVERLAY, this::extractDemoOverlay, guiVisible);
++        layerManager.add(SCOREBOARD_SIDEBAR, this::extractScoreboardSidebar, guiVisible);
++        layerManager.add(OVERLAY_MESSAGE, this::extractOverlayMessage, guiVisible);
++        layerManager.add(TITLE, this::extractTitle, guiVisible);
++        layerManager.add(CHAT, this::extractChat, guiVisible);
++        layerManager.add(TAB_LIST, this::extractTabList, guiVisible);
++        layerManager.add(SUBTITLE_OVERLAY, (graphics, _) -> {
              if (!this.minecraft.options.hideGui) {
--                this.renderDemoOverlay(p_282884_, p_348630_);
--                this.renderScoreboardSidebar(p_282884_, p_348630_);
--                this.renderOverlayMessage(p_282884_, p_348630_);
--                this.renderTitle(p_282884_, p_348630_);
--                this.renderChat(p_282884_, p_348630_);
--                this.renderTabList(p_282884_, p_348630_);
--                this.renderSubtitleOverlay(p_282884_, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
-+                this.renderSubtitleOverlay(graphics, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
+-                this.extractDemoOverlay(graphics, deltaTracker);
+-                this.extractScoreboardSidebar(graphics, deltaTracker);
+-                this.extractOverlayMessage(graphics, deltaTracker);
+-                this.extractTitle(graphics, deltaTracker);
+-                this.extractChat(graphics, deltaTracker);
+-                this.extractTabList(graphics, deltaTracker);
+                 this.extractSubtitleOverlay(graphics, this.minecraft.screen == null || this.minecraft.screen.isInGameUi());
              } else if (this.minecraft.screen != null && this.minecraft.screen.isInGameUi()) {
--                this.renderSubtitleOverlay(p_282884_, true);
-+                this.renderSubtitleOverlay(graphics, true);
+                 this.extractSubtitleOverlay(graphics, true);
              }
 -        }
 +        });
      }
  
-     private void renderBossOverlay(GuiGraphics p_416128_, DeltaTracker p_416660_) {
-@@ -268,8 +_,12 @@
-                 for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
-                     ItemStack itemstack = localplayer.getItemBySlot(equipmentslot);
-                     Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
--                    if (equippable != null && equippable.slot() == equipmentslot && equippable.cameraOverlay().isPresent()) {
--                        this.renderTextureOverlay(p_316735_, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);
-+                    if (equippable != null && equippable.slot() == equipmentslot) {
+     private void extractBossOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+@@ -267,8 +_,12 @@
+                 for (EquipmentSlot slot : EquipmentSlot.values()) {
+                     ItemStack item = player.getItemBySlot(slot);
+                     Equippable equippable = item.get(DataComponents.EQUIPPABLE);
+-                    if (equippable != null && equippable.slot() == slot && equippable.cameraOverlay().isPresent()) {
+-                        this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
++                    if (equippable != null && equippable.slot() == slot) {
 +                        if (equippable.cameraOverlay().isPresent()) {
-+                            this.renderTextureOverlay(p_316735_, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);
++                            this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
 +                        }
 +
-+                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).renderFirstPersonOverlay(itemstack, equipmentslot, this.minecraft.player, p_316735_, p_348538_);
++                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, this.minecraft.player, graphics, deltaTracker);
                      }
                  }
              }
-@@ -322,7 +_,11 @@
-             if (i > 0) {
-                 p_316291_.nextStratum();
-                 p_316291_.pose().pushMatrix();
--                p_316291_.pose().translate(p_316291_.guiWidth() / 2, p_316291_.guiHeight() - 68);
+@@ -321,7 +_,11 @@
+             if (alpha > 0) {
+                 graphics.nextStratum();
+                 graphics.pose().pushMatrix();
+-                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - 68);
 +                // Include a shift based on the bar height plus the difference between the height that renderSelectedItemName
 +                // renders at (59) and the height that the overlay/status bar renders at (68) by default
 +                int yShift = Math.max(leftHeight, rightHeight) + (68 - 59);
 +                // If y shift is less than the default y level, just render it at the base y level
-+                p_316291_.pose().translate(p_316291_.guiWidth() / 2, p_316291_.guiHeight() - Math.max(yShift, 68));
-                 int j;
++                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - Math.max(yShift, 68));
+                 int color;
                  if (this.animateOverlayMessageColor) {
-                     j = Mth.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
-@@ -383,10 +_,19 @@
-     private void renderChat(GuiGraphics p_316307_, DeltaTracker p_348631_) {
-         if (!this.chat.isChatFocused()) {
+                     color = Mth.hsvToArgb(t / 50.0F, 0.7F, 0.6F, alpha);
+@@ -382,10 +_,19 @@
+     private void extractChat(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+         if (this.minecraft.player != null && !this.chat.isChatFocused()) {
              Window window = this.minecraft.getWindow();
 +            // Neo: Allow customizing position of chat component
 +            var chatBottomMargin = 40; // See ChatComponent#BOTTOM_MARGIN (used in translate calls in ChatComponent#render)
 +            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
-+                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, p_316307_, p_348631_, 0, p_316307_.guiHeight() - chatBottomMargin)
++                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, graphics, deltaTracker, 0, graphics.guiHeight() - chatBottomMargin)
 +            );
 +            // The event is given the absolute Y position; account for chat component's own offsetting here
-+            p_316307_.pose().pushMatrix();
-+            p_316307_.pose().translate(event.getPosX(), (event.getPosY() - p_316307_.guiHeight() + chatBottomMargin) / (float) this.chat.getScale());
-             int i = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
-             int j = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
-             p_316307_.nextStratum();
-             this.chat.render(p_316307_, this.getFont(), this.tickCount, i, j, false, false);
-+            p_316307_.pose().popMatrix();
++            graphics.pose().pushMatrix();
++            graphics.pose().translate(event.getPosX(), (event.getPosY() - graphics.guiHeight() + chatBottomMargin) / (float) this.chat.getScale());
+             int mouseX = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
+             int mouseY = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
+             graphics.nextStratum();
+             this.chat.extractRenderState(graphics, this.getFont(), this.tickCount, mouseX, mouseY, ChatComponent.DisplayMode.BACKGROUND, false);
++            graphics.pose().popMatrix();
          }
      }
  
-@@ -475,6 +_,8 @@
-             int j = 0;
+@@ -477,6 +_,8 @@
+             int harmfulCount = 0;
  
-             for (MobEffectInstance mobeffectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
-+                var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
-+                if (!renderer.isVisibleInGui(mobeffectinstance)) continue;
-                 Holder<MobEffect> holder = mobeffectinstance.getEffect();
-                 if (mobeffectinstance.showIcon()) {
-                     int k = p_282812_.guiWidth();
-@@ -506,6 +_,7 @@
+             for (MobEffectInstance instance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
++                var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(instance);
++                if (!renderer.isVisibleInGui(instance)) continue;
+                 Holder<MobEffect> effect = instance.getEffect();
+                 if (instance.showIcon()) {
+                     int x = graphics.guiWidth();
+@@ -508,6 +_,7 @@
                          }
                      }
  
-+                    if (renderer.renderGuiIcon(mobeffectinstance, this, p_282812_, k, l, 0, f)) continue;
-                     p_282812_.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(holder), k + 3, l + 3, 18, 18, ARGB.white(f));
++                    if (renderer.renderGuiIcon(instance, this, graphics, x, y, 0, alpha)) continue;
+                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
-@@ -519,32 +_,52 @@
-             .orElseGet(MissingTextureAtlasSprite::getLocation);
+@@ -518,32 +_,52 @@
+         return effect.unwrapKey().map(ResourceKey::identifier).map(id -> id.withPrefix("mob_effect/")).orElseGet(MissingTextureAtlasSprite::getLocation);
      }
  
--    private void renderHotbarAndDecorations(GuiGraphics p_316628_, DeltaTracker p_348543_) {
+-    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderHotbar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
-             this.spectatorGui.renderHotbar(p_316628_);
+             this.spectatorGui.extractHotbar(graphics);
          } else {
-             this.renderItemHotbar(p_316628_, p_348543_);
+             this.extractItemHotbar(graphics, deltaTracker);
          }
 -
 -        if (this.minecraft.gameMode.canHurtPlayer()) {
--            this.renderPlayerHealth(p_316628_);
+-            this.extractPlayerHealth(graphics);
 -        }
 -
--        this.renderVehicleHealth(p_316628_);
+-        this.extractVehicleHealth(graphics);
 +    }
 +
 +    // Neo: Wrap in a method to call it when re-rendering
 +    private void updateContextualBarRenderer() {
-         Gui.ContextualInfo gui$contextualinfo = this.nextContextualInfoState();
-         if (gui$contextualinfo != this.contextualInfoBar.getKey()) {
-             this.contextualInfoBar = Pair.of(gui$contextualinfo, this.contextualInfoBarRenderers.get(gui$contextualinfo).get());
+         Gui.ContextualInfo nextContextualInfo = this.nextContextualInfoState();
+         if (nextContextualInfo != this.contextualInfoBar.getKey()) {
+             this.contextualInfoBar = Pair.of(nextContextualInfo, this.contextualInfoBarRenderers.get(nextContextualInfo).get());
          }
 +    }
  
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderContextualInfoBarBackground(GuiGraphics p_316628_, DeltaTracker p_348543_)
++    private void extractContextualInfoBarBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker)
 +    {
-         this.contextualInfoBar.getValue().renderBackground(p_316628_, p_348543_);
+         this.contextualInfoBar.getValue().extractBackground(graphics, deltaTracker);
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderExperienceLevel(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void extractExperienceLevel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.hasExperience() && this.minecraft.player.experienceLevel > 0) {
-             ContextualBarRenderer.renderExperienceLevel(p_316628_, this.minecraft.font, this.minecraft.player.experienceLevel);
+             ContextualBarRenderer.extractExperienceLevel(graphics, this.minecraft.font, this.minecraft.player.experienceLevel);
          }
 +    }
  
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void renderContextualInfoBar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-         this.contextualInfoBar.getValue().render(p_316628_, p_348543_);
++    private void extractContextualInfoBar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+         this.contextualInfoBar.getValue().extractRenderState(graphics, deltaTracker);
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void maybeRenderSelectedItemName(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void maybeExtractSelectedItemName(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
--            this.renderSelectedItemName(p_316628_);
+-            this.extractSelectedItemName(graphics);
 -        } else if (this.minecraft.player.isSpectator()) {
-+            this.renderSelectedItemName(p_316628_, Math.max(this.leftHeight, this.rightHeight));
++            this.extractSelectedItemName(graphics, Math.max(this.leftHeight, this.rightHeight));
 +        }
 +    }
 +
 +    // Neo: Split off into separate method to wrap in a layer
-+    private void maybeRenderSpectatorTooltip(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void maybeExtractSpectatorTooltip(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +        // Neo: Note this is originally mutually exclusive with the condition in maybeRenderSelectedItemName
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
-             this.spectatorGui.renderAction(p_316628_);
+             this.spectatorGui.extractAction(graphics);
          }
      }
-@@ -609,18 +_,23 @@
+@@ -610,15 +_,20 @@
      }
  
-     private void renderSelectedItemName(GuiGraphics p_283501_) {
-+        renderSelectedItemName(p_283501_, 0);
+     private void extractSelectedItemName(GuiGraphicsExtractor graphics) {
++        extractSelectedItemName(graphics, 0);
 +    }
 +
-+    private void renderSelectedItemName(GuiGraphics p_283501_, int yShift) {
-         Profiler.get().push("selectedItemName");
++    private void extractSelectedItemName(GuiGraphicsExtractor graphics, int yShift) {
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
-             MutableComponent mutablecomponent = Component.empty()
-                 .append(this.lastToolHighlight.getHoverName())
--                .withStyle(this.lastToolHighlight.getRarity().color());
-+                .withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
+-            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().color());
++            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
              if (this.lastToolHighlight.has(DataComponents.CUSTOM_NAME)) {
-                 mutablecomponent.withStyle(ChatFormatting.ITALIC);
+                 str.withStyle(ChatFormatting.ITALIC);
              }
  
--            int i = this.getFont().width(mutablecomponent);
-+            Component highlightTip = this.lastToolHighlight.getHighlightTip(mutablecomponent);
-+            int i = this.getFont().width(highlightTip);
-             int j = (p_283501_.guiWidth() - i) / 2;
--            int k = p_283501_.guiHeight() - 59;
-+            int k = p_283501_.guiHeight() - Math.max(yShift, 59);
+-            int strWidth = this.getFont().width(str);
++            Component highlightTip = this.lastToolHighlight.getHighlightTip(str);
++            int strWidth = this.getFont().width(highlightTip);
+             int x = (graphics.guiWidth() - strWidth) / 2;
+-            int y = graphics.guiHeight() - 59;
++            int y = graphics.guiHeight() -  Math.max(yShift, 59);
              if (!this.minecraft.gameMode.canHurtPlayer()) {
-                 k += 14;
+                 y += 14;
              }
-@@ -631,7 +_,13 @@
+@@ -629,7 +_,13 @@
              }
  
-             if (l > 0) {
--                p_283501_.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, ARGB.white(l));
+             if (alpha > 0) {
+-                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
-+                    p_283501_.drawStringWithBackdrop(this.getFont(), highlightTip, j, k, i, ARGB.color(l, -1));
++                    graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
 +                } else {
-+                    j = (p_283501_.guiWidth() - font.width(highlightTip)) / 2;
-+                    p_283501_.drawStringWithBackdrop(font, highlightTip, j, k, i, ARGB.color(l, -1));
++                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
++                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.color(alpha, -1));
 +                }
              }
          }
- 
-@@ -750,7 +_,15 @@
-         return (int)Math.ceil(p_93013_ / 10.0);
+     }
+@@ -746,7 +_,15 @@
+         return (int)Math.ceil(hearts / 10.0);
      }
  
 +    @Deprecated // Neo: Split up into different layers
-     private void renderPlayerHealth(GuiGraphics p_283143_) {
-+        renderHealthLevel(p_283143_);
-+        renderArmorLevel(p_283143_);
-+        renderFoodLevel(p_283143_);
-+        renderAirLevel(p_283143_);
+     private void extractPlayerHealth(GuiGraphicsExtractor graphics) {
++        extractHealthLevel(graphics);
++        extractArmorLevel(graphics);
++        extractFoodLevel(graphics);
++        extractAirLevel(graphics);
 +    }
 +
-+    private void renderHealthLevel(GuiGraphics p_283143_) {
++    private void extractHealthLevel(GuiGraphicsExtractor graphics) {
          Player player = this.getCameraPlayer();
          if (player != null) {
-             int i = Mth.ceil(player.getHealth());
-@@ -774,31 +_,59 @@
+             int currentHealth = Mth.ceil(player.getHealth());
+@@ -770,33 +_,62 @@
              this.random.setSeed(this.tickCount * 312871);
-             int l = p_283143_.guiWidth() / 2 - 91;
-             int i1 = p_283143_.guiWidth() / 2 + 91;
--            int j1 = p_283143_.guiHeight() - 39;
-+            int j1 = p_283143_.guiHeight() - leftHeight;
-             float f = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), (float)Math.max(k, i));
-             int k1 = Mth.ceil(player.getAbsorptionAmount());
-             int l1 = Mth.ceil((f + k1) / 2.0F / 10.0F);
-             int i2 = Math.max(10 - (l1 - 2), 3);
-             int j2 = j1 - 10;
-+            leftHeight += (l1 - 1) * i2 + 10;
-             int k2 = -1;
+             int xLeft = graphics.guiWidth() / 2 - 91;
+             int xRight = graphics.guiWidth() / 2 + 91;
+-            int yLineBase = graphics.guiHeight() - 39;
++            int yLineBase = graphics.guiHeight() - leftHeight;
+             float maxHealth = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), (float)Math.max(oldHealth, currentHealth));
+             int totalAbsorption = Mth.ceil(player.getAbsorptionAmount());
+             int numHealthRows = Mth.ceil((maxHealth + totalAbsorption) / 2.0F / 10.0F);
+             int healthRowHeight = Math.max(10 - (numHealthRows - 2), 3);
+             int yLineAir = yLineBase - 10;
++            leftHeight += (numHealthRows - 1) * healthRowHeight + 10;
+             int heartOffsetIndex = -1;
              if (player.hasEffect(MobEffects.REGENERATION)) {
-                 k2 = this.tickCount % Mth.ceil(f + 5.0F);
+                 heartOffsetIndex = this.tickCount % Mth.ceil(maxHealth + 5.0F);
              }
--
+ 
 -            Profiler.get().push("armor");
--            renderArmor(p_283143_, player, j1, l1, i2, l);
+-            extractArmor(graphics, player, yLineBase, numHealthRows, healthRowHeight, xLeft);
 -            Profiler.get().popPush("health");
 +            Profiler.get().push("health");
-             this.renderHearts(p_283143_, player, l, j1, i2, k2, f, i, k, k1, flag);
+             this.extractHearts(
+                 graphics, player, xLeft, yLineBase, healthRowHeight, heartOffsetIndex, maxHealth, currentHealth, oldHealth, totalAbsorption, blink
+             );
 +            Profiler.get().pop();
 +        }
 +    }
 +
-+    private void renderArmorLevel(GuiGraphics p_283143_) {
++    private void extractArmorLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int l = p_283143_.guiWidth() / 2 - 91;
++            int l = graphics.guiWidth() / 2 - 91;
 +            Profiler.get().push("armor");
-+            renderArmor(p_283143_, player, p_283143_.guiHeight() - leftHeight + 10, 1, 0, l);
++            extractArmor(graphics, player, graphics.guiHeight() - leftHeight + 10, 1, 0, l);
 +            Profiler.get().pop();
 +            if (player.getArmorValue() > 0) {
 +                leftHeight += 10;
@@ -323,18 +320,18 @@
 +        }
 +    }
 +
-+    private void renderFoodLevel(GuiGraphics p_283143_) {
++    private void extractFoodLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-             LivingEntity livingentity = this.getPlayerVehicleWithHealth();
-             int l2 = this.getVehicleMaxHearts(livingentity);
-             if (l2 == 0) {
+             LivingEntity vehicleWithHearts = this.getPlayerVehicleWithHealth();
+             int vehicleHearts = this.getVehicleMaxHearts(vehicleWithHearts);
+             if (vehicleHearts == 0) {
 -                Profiler.get().popPush("food");
 +                Profiler.get().push("food");
-+                int i1 = p_283143_.guiWidth() / 2 + 91;
-+                int j1 = p_283143_.guiHeight() - rightHeight;
-                 this.renderFood(p_283143_, player, j1, i1);
--                j2 -= 10;
++                int xRight = graphics.guiWidth() / 2 + 91;
++                int yLineBase = graphics.guiHeight() - rightHeight;
+                 this.extractFood(graphics, player, yLineBase, xRight);
+-                yLineAir -= 10;
 +                rightHeight += 10;
 +                Profiler.get().pop();
              }
@@ -342,19 +339,19 @@
 +    }
  
 -            Profiler.get().popPush("air");
--            this.renderAirBubbles(p_283143_, player, l2, j2, i1);
-+    private void renderAirLevel(GuiGraphics p_283143_) {
+-            this.extractAirBubbles(graphics, player, vehicleHearts, yLineAir, xRight);
++    private void extractAirLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int i1 = p_283143_.guiWidth() / 2 + 91;
-+            int j2 = p_283143_.guiHeight() - rightHeight;
++            int xRight = graphics.guiWidth() / 2 + 91;
++            int yLineAir = graphics.guiHeight() - rightHeight;
 +            Profiler.get().push("air");
-+            this.renderAirBubbles(p_283143_, player, 10, j2, i1);
++            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
              Profiler.get().pop();
          }
      }
-@@ -912,6 +_,8 @@
-                     p_381066_.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, k1, p_381100_ + l1, 9, 9);
+@@ -909,6 +_,8 @@
+                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }
              }
 +
@@ -362,68 +359,59 @@
          }
      }
  
-@@ -979,7 +_,7 @@
-             if (i != 0) {
-                 int j = (int)Math.ceil(livingentity.getHealth());
+@@ -976,7 +_,7 @@
+             if (hearts != 0) {
+                 int currentHealth = (int)Math.ceil(vehicleWithHearts.getHealth());
                  Profiler.get().popPush("mountHealth");
--                int k = p_283368_.guiHeight() - 39;
-+                int k = p_283368_.guiHeight() - rightHeight;
-                 int l = p_283368_.guiWidth() / 2 + 91;
-                 int i1 = k;
+-                int yLine1 = graphics.guiHeight() - 39;
++                int yLine1 = graphics.guiHeight() - rightHeight;
+                 int xRight = graphics.guiWidth() / 2 + 91;
+                 int yo = yLine1;
  
-@@ -1000,6 +_,7 @@
+@@ -997,6 +_,7 @@
                      }
  
-                     i1 -= 10;
+                     yo -= 10;
 +                    rightHeight += 10;
                  }
              }
          }
-@@ -1031,7 +_,9 @@
-         int l = (p_282069_.guiHeight() - j) / 2;
-         int i1 = k + i;
-         int j1 = l + j;
--        p_282069_.blit(RenderPipelines.GUI_TEXTURED, SPYGLASS_SCOPE_LOCATION, k, l, 0.0F, 0.0F, i, j, i, j);
+@@ -1028,7 +_,9 @@
+         int top = (graphics.guiHeight() - height) / 2;
+         int right = left + width;
+         int bottom = top + height;
+-        graphics.blit(RenderPipelines.GUI_TEXTURED, SPYGLASS_SCOPE_LOCATION, left, top, 0.0F, 0.0F, width, height, width, height);
 +        ItemStack useItem = this.minecraft.player.getUseItem();
 +        var clientItemExtensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(useItem);
-+        p_282069_.blit(RenderPipelines.GUI_TEXTURED, clientItemExtensions.getScopeOverlayTexture(useItem), k, l, 0.0F, 0.0F, i, j, i, j);
-         p_282069_.fill(RenderPipelines.GUI, 0, j1, p_282069_.guiWidth(), p_282069_.guiHeight(), -16777216);
-         p_282069_.fill(RenderPipelines.GUI, 0, 0, p_282069_.guiWidth(), l, -16777216);
-         p_282069_.fill(RenderPipelines.GUI, 0, l, k, j1, -16777216);
-@@ -1164,7 +_,7 @@
++        graphics.blit(RenderPipelines.GUI_TEXTURED, clientItemExtensions.getScopeOverlayTexture(useItem), left, top, 0.0F, 0.0F, width, height, width, height);
+         graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
+         graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
+         graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
+@@ -1177,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
-                 || !itemstack.is(this.lastToolHighlight.getItem())
--                || !itemstack.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
-+                || (!itemstack.getHoverName().equals(this.lastToolHighlight.getHoverName()) || !itemstack.getHighlightTip(itemstack.getHoverName()).equals(this.lastToolHighlight.getHighlightTip(this.lastToolHighlight.getHoverName())))) {
+                 || !selected.is(this.lastToolHighlight.getItem())
+-                || !selected.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
++                || (!selected.getHoverName().equals(this.lastToolHighlight.getHoverName()) || !selected.getHighlightTip(selected.getHoverName()).equals(this.lastToolHighlight.getHighlightTip(this.lastToolHighlight.getHoverName())))) {
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1448,12 +_,27 @@
-                 gui$hearttype = NORMAL;
+@@ -1452,7 +_,18 @@
+                 type = NORMAL;
              }
  
-+            gui$hearttype = net.neoforged.neoforge.client.ClientHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
++            type = net.neoforged.neoforge.client.ClientHooks.firePlayerHeartTypeEvent(player, type);
 +
-             return gui$hearttype;
+             return type;
          }
 +
 +        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
 +            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(Gui.HeartType.class);
 +        }
-     }
- 
-     @OnlyIn(Dist.CLIENT)
-     public interface RenderFunction {
-         void render(GuiGraphics p_415878_, DeltaTracker p_416589_);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void initModdedOverlays() {
 +        this.layerManager.initModdedLayers();
-+    }
-+
-+    public int getLayerCount() {
-+        return this.layerManager.getLayerCount();
      }
  }

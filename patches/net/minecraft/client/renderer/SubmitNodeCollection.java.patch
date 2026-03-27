@@ -1,0 +1,52 @@
+--- a/net/minecraft/client/renderer/SubmitNodeCollection.java
++++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
+@@ -38,6 +_,7 @@
+     private final List<SubmitNodeStorage.LeashSubmit> leashSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.MovingBlockSubmit> movingBlockSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.BlockModelSubmit> blockModelSubmits = new ArrayList<>();
++    private final List<SubmitNodeStorage.MultiLayerBlockModelSubmit> multiLayerBlockModelSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.BreakingBlockModelSubmit> breakingBlockModelSubmits = new ArrayList<>();
+     private final List<SubmitNodeStorage.ItemSubmit> itemSubmits = new ArrayList<>();
+     private final List<SubmitNodeCollector.ParticleGroupRenderer> particleGroupRenderers = new ArrayList<>();
+@@ -173,6 +_,21 @@
+     }
+ 
+     @Override
++    public void submitMultiLayerBlockModel(
++        PoseStack poseStack,
++        List<BlockStateModelPart> modelParts,
++        boolean translucent,
++        int[] tintLayers,
++        int lightCoords,
++        int overlayCoords,
++        int outlineColor
++    ) {
++        this.wasUsed = true;
++        this.multiLayerBlockModelSubmits
++            .add(new SubmitNodeStorage.MultiLayerBlockModelSubmit(poseStack.last().copy(), modelParts, translucent, tintLayers, lightCoords, overlayCoords, outlineColor));
++    }
++
++    @Override
+     public void submitBreakingBlockModel(PoseStack poseStack, BlockStateModel model, long seed, int progress) {
+         this.wasUsed = true;
+         this.breakingBlockModelSubmits.add(new SubmitNodeStorage.BreakingBlockModelSubmit(poseStack.last().copy(), model, seed, progress));
+@@ -236,6 +_,11 @@
+         return this.blockModelSubmits;
+     }
+ 
++    /// Neo: expose multi-layer block model submits with support for per-quad render types
++    public List<SubmitNodeStorage.MultiLayerBlockModelSubmit> getMultiLayerBlockModelSubmits() {
++        return this.multiLayerBlockModelSubmits;
++    }
++
+     public List<SubmitNodeStorage.BreakingBlockModelSubmit> getBreakingBlockModelSubmits() {
+         return this.breakingBlockModelSubmits;
+     }
+@@ -272,6 +_,7 @@
+         this.leashSubmits.clear();
+         this.movingBlockSubmits.clear();
+         this.blockModelSubmits.clear();
++        this.multiLayerBlockModelSubmits.clear();
+         this.breakingBlockModelSubmits.clear();
+         this.itemSubmits.clear();
+         this.particleGroupRenderers.clear();

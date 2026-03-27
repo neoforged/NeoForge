@@ -45,7 +45,7 @@ public final class GameTestRegistration {
         private final TestFramework framework;
         private final String testId;
 
-        public Instance(TestData<Holder<TestEnvironmentDefinition>> data, TestFramework framework, String testId) {
+        public Instance(TestData<Holder<TestEnvironmentDefinition<?>>> data, TestFramework framework, String testId) {
             super(data);
             this.framework = framework;
             this.testId = testId;
@@ -145,7 +145,7 @@ public final class GameTestRegistration {
                                     game.maxTicks(), game.setupTicks(),
                                     game.required(), game.rotation(),
                                     game.manualOnly(), game.maxAttempts(),
-                                    game.requiredSuccesses(), game.skyAccess()), framework, test.id()));
+                                    game.requiredSuccesses(), game.skyAccess(), game.padding()), framework, test.id()));
                 }
             }
         }

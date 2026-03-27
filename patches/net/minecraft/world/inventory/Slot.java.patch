@@ -8,7 +8,7 @@
 +        return backgroundSprite;
      }
  
-     public ItemStack remove(int p_40227_) {
+     public ItemStack remove(int amount) {
 @@ -92,6 +_,37 @@
  
      public boolean isActive() {
@@ -46,4 +46,4 @@
 +         return this;
      }
  
-     public Optional<ItemStack> tryRemove(int p_150642_, int p_150643_, Player p_150644_) {
+     public Optional<ItemStack> tryRemove(int amount, int maxAmount, Player player) {

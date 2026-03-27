@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
 
 public interface ModelStateExtension {
     private ModelState self() {

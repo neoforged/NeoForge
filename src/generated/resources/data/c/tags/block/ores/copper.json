@@ -1,9 +1,5 @@
 {
   "values": [
-    "#minecraft:copper_ores",
-    {
-      "id": "#forge:ores/copper",
-      "required": false
-    }
+    "#minecraft:copper_ores"
   ]
 }

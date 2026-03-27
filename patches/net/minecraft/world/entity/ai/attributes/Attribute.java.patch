@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/entity/ai/attributes/Attribute.java
 +++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
 @@ -52,6 +_,21 @@
-         return this.sentiment.getStyle(p_347715_);
+         return this.sentiment.getStyle(valueIncrease);
      }
  
 +    // Neo: Patch in the default implementation of IAttributeExtension#getMergedStyle since we need access to Attribute#sentiment

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
-@@ -66,4 +_,10 @@
-             );
+@@ -64,4 +_,10 @@
+             SpawnerRenderer.submitEntityInSpawner(poseStack, submitNodeCollector, state.displayEntity, this.entityRenderer, state.spin, state.scale, camera);
          }
      }
 +

@@ -9,5 +9,5 @@
 +    }
 +
      @Override
-     public boolean equals(Object p_331195_) {
-         if (p_331195_ == this) {
+     public boolean equals(Object obj) {
+         if (obj == this) {

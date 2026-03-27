@@ -3,17 +3,17 @@
 @@ -52,6 +_,16 @@
      }
  
-     public static @Nullable MapItemSavedData getSavedData(ItemStack p_42854_, Level p_42855_) {
+     public static @Nullable MapItemSavedData getSavedData(ItemStack itemStack, Level level) {
 +        // Neo: Add instance method so that mods can override
-+        Item map = p_42854_.getItem();
++        Item map = itemStack.getItem();
 +        if(map instanceof MapItem) {
-+            return ((MapItem)map).getCustomMapData(p_42854_, p_42855_);
++            return ((MapItem)map).getCustomMapData(itemStack, level);
 +        }
 +        return null;
 +    }
 +
 +    @Nullable
-+    protected MapItemSavedData getCustomMapData(ItemStack p_42854_, Level p_42855_) {
-         MapId mapid = p_42854_.get(DataComponents.MAP_ID);
-         return getSavedData(mapid, p_42855_);
++    protected MapItemSavedData getCustomMapData(ItemStack itemStack, Level level) {
+         MapId id = itemStack.get(DataComponents.MAP_ID);
+         return getSavedData(id, level);
      }

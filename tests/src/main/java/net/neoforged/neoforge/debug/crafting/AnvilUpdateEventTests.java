@@ -12,11 +12,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -37,8 +38,6 @@ public class AnvilUpdateEventTests {
     private static final int INVENTORY_SLOT_FIRST = 0;
     private static final int INVENTORY_SLOT_SECOND = 1;
 
-    private static final ItemStack MOCK_OUTPUT = new ItemStack(Items.COBBLESTONE);
-
     private static ItemStack sampleStack() {
         ItemStack s = new ItemStack(Items.GOLDEN_HOE, 1);
         s.setDamageValue(4);
@@ -46,13 +45,13 @@ public class AnvilUpdateEventTests {
     }
 
     private static void moveItemsToInputs(AnvilMenu menu, Player player) {
-        menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, player);
-        menu.clicked(MENU_SLOT_INV_SECOND, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, player);
+        menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, player);
+        menu.clicked(MENU_SLOT_INV_SECOND, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, player);
     }
 
     private static void clearInputs(AnvilMenu menu, Player player) {
-        menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, player);
-        menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, player);
+        menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, player);
+        menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, player);
     }
 
     /** Holds the pieces every test needs after setup. */
@@ -104,8 +103,10 @@ public class AnvilUpdateEventTests {
         final int CUSTOM_COST = 7;
         final int CUSTOM_MATERIAL_COST = 3;
 
+        var mockOutput = Lazy.of(() -> new ItemStack(Items.COBBLESTONE));
+
         test.whenEnabled(listeners -> listeners.forge().addListener((AnvilUpdateEvent e) -> {
-            e.setOutput(MOCK_OUTPUT.copy());
+            e.setOutput(mockOutput.get().copy());
             e.setXpCost(CUSTOM_COST);
             e.setMaterialCost(CUSTOM_MATERIAL_COST);
         }));
@@ -117,7 +118,7 @@ public class AnvilUpdateEventTests {
             moveItemsToInputs(ctx.menu, ctx.player);
             ItemStack out = ctx.menu.getSlot(MENU_SLOT_RESULT).getItem();
             ctx.helper.assertTrue(
-                    ItemStack.isSameItemSameComponents(out, MOCK_OUTPUT),
+                    ItemStack.isSameItemSameComponents(out, mockOutput.get()),
                     "Expected custom cobblestone output; output is " + out);
             ctx.helper.assertValueEqual(
                     CUSTOM_COST, ctx.menu.getCost(),
@@ -144,10 +145,10 @@ public class AnvilUpdateEventTests {
             ctx.player.getInventory().setItem(INVENTORY_SLOT_FIRST, sampleStack().copy());
             ctx.player.getInventory().setItem(INVENTORY_SLOT_SECOND, sampleStack().copy());
 
-            ctx.menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, ctx.player);
             ctx.menu.setItemName(CUSTOM_NAME);
             cancel.set(true);
-            ctx.menu.clicked(MENU_SLOT_INV_SECOND, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_INV_SECOND, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, ctx.player);
             ItemStack out = ctx.menu.getSlot(MENU_SLOT_RESULT).getItem();
             int cost = ctx.menu.getCost();
             int repairItemCountCost = ctx.menu.repairItemCountCost;
@@ -192,7 +193,7 @@ public class AnvilUpdateEventTests {
             ctx.player.getInventory().setItem(INVENTORY_SLOT_SECOND, sampleStack().copy());
 
             moveItemsToInputs(ctx.menu, ctx.player);
-            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, ctx.player);
 
             ItemStack out = ctx.menu.getSlot(MENU_SLOT_RESULT).getItem();
             ctx.helper.assertTrue(out.isEmpty(), "Expected result to reset when left slot cleared; the result is " + out);
@@ -213,18 +214,18 @@ public class AnvilUpdateEventTests {
             // AnvilMenu#createResult() changes behavior depending on this component, but we must call the event even for stacks without this component
             ctx.player.getInventory().getItem(INVENTORY_SLOT_FIRST).remove(DataComponents.ENCHANTMENTS);
 
-            ctx.menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ClickType.PICKUP, ctx.player);
-            ctx.menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.PICKUP, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_INV_FIRST, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.PICKUP, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.PICKUP, ctx.player);
             ctx.helper.assertFalse(eventFired.getPlain(), "Event should not fire when placing item in right slot");
 
-            ctx.menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.PICKUP, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_RIGHT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.PICKUP, ctx.player);
             ctx.helper.assertFalse(eventFired.getPlain(), "Event should not fire when removing item from right slot");
 
-            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.PICKUP, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.PICKUP, ctx.player);
             ctx.helper.assertTrue(eventFired.getPlain(), "Event should fire when placing item in left slot");
 
             eventFired.set(false);
-            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, ctx.player);
+            ctx.menu.clicked(MENU_SLOT_LEFT, InputConstants.MOUSE_BUTTON_LEFT, ContainerInput.QUICK_MOVE, ctx.player);
             ctx.helper.assertFalse(eventFired.getPlain(), "Event should not fire when removing item from left slot");
 
             ctx.helper.succeed();

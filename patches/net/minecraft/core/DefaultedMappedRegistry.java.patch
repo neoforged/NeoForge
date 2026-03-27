@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/DefaultedMappedRegistry.java
 +++ b/net/minecraft/core/DefaultedMappedRegistry.java
 @@ -38,6 +_,12 @@
-         return identifier == null ? this.defaultKey : identifier;
+         return k == null ? this.defaultKey : k;
      }
  
 +    @Nullable
@@ -11,5 +11,5 @@
 +    }
 +
      @Override
-     public T getValue(@Nullable Identifier p_468616_) {
-         T t = super.getValue(p_468616_);
+     public T getValue(@Nullable Identifier key) {
+         T t = super.getValue(key);

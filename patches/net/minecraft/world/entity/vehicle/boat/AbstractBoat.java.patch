@@ -1,56 +1,47 @@
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-@@ -418,7 +_,7 @@
-                 for (int i2 = i1; i2 < j1; i2++) {
-                     blockpos$mutableblockpos.set(l1, k1, i2);
-                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                    if (fluidstate.is(FluidTags.WATER)) {
-+                    if (this.canBoatInFluid(fluidstate)) {
-                         f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
+@@ -416,7 +_,7 @@
+                 for (int z = minZ; z < maxZ; z++) {
+                     pos.set(x, y, z);
+                     FluidState fluidState = this.level().getFluidState(pos);
+-                    if (fluidState.is(FluidTags.WATER)) {
++                    if (this.canBoatInFluid(fluidState)) {
+                         blockHeight = Math.max(blockHeight, fluidState.getHeight(this.level(), pos));
                      }
  
-@@ -464,7 +_,7 @@
-                                     voxelshape,
-                                     BooleanOp.AND
-                                 )) {
--                                f += blockstate.getBlock().getFriction();
-+                                f += blockstate.getFriction(this.level(), blockpos$mutableblockpos, this);
-                                 k1++;
+@@ -458,7 +_,7 @@
+                             BlockState blockState = this.level().getBlockState(blockPos);
+                             if (!(blockState.getBlock() instanceof LilyPadBlock)
+                                 && Shapes.joinIsNotEmpty(blockState.getCollisionShape(this.level(), blockPos).move(blockPos), boatShape, BooleanOp.AND)) {
+-                                friction += blockState.getBlock().getFriction();
++                                friction += blockState.getFriction(this.level(), blockPos, this);
+                                 count++;
                              }
                          }
-@@ -493,7 +_,7 @@
-                 for (int i2 = i1; i2 < j1; i2++) {
-                     blockpos$mutableblockpos.set(k1, l1, i2);
-                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                    if (fluidstate.is(FluidTags.WATER)) {
-+                    if (this.canBoatInFluid(fluidstate)) {
-                         float f = l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
-                         this.waterLevel = Math.max((double)f, this.waterLevel);
-                         flag |= aabb.minY < f;
-@@ -522,7 +_,7 @@
-                 for (int i2 = i1; i2 < j1; i2++) {
-                     blockpos$mutableblockpos.set(k1, l1, i2);
-                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                    if (fluidstate.is(FluidTags.WATER) && d0 < blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos)) {
-+                    if (this.canBoatInFluid(fluidstate) && d0 < blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos)) {
-                         if (!fluidstate.isSource()) {
+@@ -487,7 +_,7 @@
+                 for (int z = minZ; z < maxZ; z++) {
+                     pos.set(x, y, z);
+                     FluidState fluidState = this.level().getFluidState(pos);
+-                    if (fluidState.is(FluidTags.WATER)) {
++                    if (this.canBoatInFluid(fluidState)) {
+                         float height = y + fluidState.getHeight(this.level(), pos);
+                         this.waterLevel = Math.max((double)height, this.waterLevel);
+                         inWater |= bb.minY < height;
+@@ -516,7 +_,7 @@
+                 for (int z = z0; z < z1; z++) {
+                     pos.set(x, y, z);
+                     FluidState fluidState = this.level().getFluidState(pos);
+-                    if (fluidState.is(FluidTags.WATER) && maxY < pos.getY() + fluidState.getHeight(this.level(), pos)) {
++                    if (this.canBoatInFluid(fluidState) && maxY < pos.getY() + fluidState.getHeight(this.level(), pos)) {
+                         if (!fluidState.isSource()) {
                              return AbstractBoat.Status.UNDER_FLOWING_WATER;
                          }
-@@ -724,7 +_,7 @@
+@@ -722,7 +_,7 @@
          if (!this.isPassenger()) {
-             if (p_478464_) {
+             if (onGround) {
                  this.resetFallDistance();
--            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_478149_ < 0.0) {
-+            } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && p_478149_ < 0.0) {
-                 this.fallDistance -= (float)p_478149_;
+-            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && ya < 0.0) {
++            } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && ya < 0.0) {
+                 this.fallDistance -= (float)ya;
              }
          }
-@@ -748,7 +_,7 @@
- 
-     @Override
-     protected boolean canAddPassenger(Entity p_478625_) {
--        return this.getPassengers().size() < this.getMaxPassengers() && !this.isEyeInFluid(FluidTags.WATER);
-+        return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
-     }
- 
-     protected int getMaxPassengers() {

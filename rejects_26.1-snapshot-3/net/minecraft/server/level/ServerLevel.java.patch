@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -350,7 +354,7 @@
+         if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
+             if (this.getGameRules().get(GameRules.ADVANCE_TIME)) {
+                 long newTime = this.levelData.getDayTime() + 24000L;
+-                this.setDayTime(newTime - newTime % 24000L);
++                this.setDayTime(net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, newTime - newTime % 24000L, this.getDayTime()));
+             }
+ 
+             this.wakeUpAllPlayers();
+@@ -466,7 +472,7 @@
+             this.serverLevelData.getScheduledEvents().tick(this.server, time);
+             Profiler.get().pop();
+             if (this.getGameRules().get(GameRules.ADVANCE_TIME)) {
+-                this.setDayTime(this.levelData.getDayTime() + 1L);
++                this.setDayTime(this.levelData.getDayTime() + advanceDaytime());
+             }
+         }
+     }

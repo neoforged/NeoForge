@@ -1,27 +1,27 @@
 --- a/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
-@@ -94,6 +_,7 @@
-             p_434437_.translate(0.0F, 0.0F, 0.4375F);
+@@ -77,6 +_,7 @@
+             poseStack.translate(0.0F, 0.0F, 0.4375F);
          }
  
-+        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(p_433594_, this, p_434437_, p_434593_)).isCanceled()) {
-         if (p_433594_.mapId != null) {
-             int j = p_433594_.rotation % 4 * 2;
-             p_434437_.mulPose(Axis.ZP.rotationDegrees(j * 360.0F / 8.0F));
-@@ -110,6 +_,7 @@
-             p_434437_.scale(0.5F, 0.5F, 0.5F);
-             p_433594_.item.submit(p_434437_, p_434593_, k, OverlayTexture.NO_OVERLAY, p_433594_.outlineColor);
++        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(state, this, poseStack, submitNodeCollector)).isCanceled()) {
+         if (state.mapId != null) {
+             int rotation = state.rotation % 4 * 2;
+             poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 360.0F / 8.0F));
+@@ -93,6 +_,7 @@
+             poseStack.scale(0.5F, 0.5F, 0.5F);
+             state.item.submit(poseStack, submitNodeCollector, lightVal, OverlayTexture.NO_OVERLAY, state.outlineColor);
          }
 +        }
  
-         p_434437_.popPose();
+         poseStack.popPose();
      }
-@@ -145,7 +_,7 @@
-         if (!itemstack.isEmpty()) {
-             MapId mapid = p_363125_.getFramedMapId(itemstack);
-             if (mapid != null) {
--                MapItemSavedData mapitemsaveddata = p_363125_.level().getMapData(mapid);
-+                MapItemSavedData mapitemsaveddata = net.minecraft.world.item.MapItem.getSavedData(itemstack, p_363125_.level());
-                 if (mapitemsaveddata != null) {
-                     this.mapRenderer.extractRenderState(mapid, mapitemsaveddata, p_362907_.mapRenderState);
-                     p_362907_.mapId = mapid;
+@@ -128,7 +_,7 @@
+         if (!itemStack.isEmpty()) {
+             MapId framedMapId = entity.getFramedMapId(itemStack);
+             if (framedMapId != null) {
+-                MapItemSavedData mapData = entity.level().getMapData(framedMapId);
++                MapItemSavedData mapData = net.minecraft.world.item.MapItem.getSavedData(itemStack, entity.level());
+                 if (mapData != null) {
+                     this.mapRenderer.extractRenderState(framedMapId, mapData, state.mapRenderState);
+                     state.mapId = framedMapId;

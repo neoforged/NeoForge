@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -44,7 +45,7 @@ public final class DataPackRegistriesHooks {
         DATA_PACK_REGISTRIES.add(loaderData);
         if (data.networkCodec() != null) {
             SYNCED_CUSTOM_REGISTRIES.add(loaderData.key());
-            NETWORKABLE_REGISTRIES.add(new RegistryDataLoader.RegistryData<T>(loaderData.key(), data.networkCodec(), false));
+            NETWORKABLE_REGISTRIES.add(new RegistryDataLoader.RegistryData<T>(loaderData.key(), data.networkCodec(), RegistryValidator.none()));
         }
     }
 

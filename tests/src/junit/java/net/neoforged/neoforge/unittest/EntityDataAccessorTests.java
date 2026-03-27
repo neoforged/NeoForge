@@ -21,10 +21,10 @@ import org.junit.jupiter.api.Test;
 public final class EntityDataAccessorTests {
     private static abstract class NoopSyncedDataHolder implements SyncedDataHolder {
         @Override
-        public final void onSyncedDataUpdated(final EntityDataAccessor<?> p_326288_) {}
+        public final void onSyncedDataUpdated(final EntityDataAccessor<?> accessor) {}
 
         @Override
-        public final void onSyncedDataUpdated(final List<SynchedEntityData.DataValue<?>> p_326334_) {}
+        public final void onSyncedDataUpdated(final List<SynchedEntityData.DataValue<?>> updatedItems) {}
     }
 
     public static final class NoIssuesHolder extends NoopSyncedDataHolder {

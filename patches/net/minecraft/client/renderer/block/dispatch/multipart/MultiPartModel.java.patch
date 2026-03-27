@@ -1,0 +1,79 @@
+--- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
++++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
+@@ -44,18 +_,64 @@
+         return this.shared.materialFlags;
+     }
+ 
+-    @Override
+-    public void collectParts(RandomSource random, List<BlockStateModelPart> output) {
+-        if (this.models == null) {
+-            this.models = this.shared.selectModels(this.blockState);
+-        }
+-
+-        long seed = random.nextLong();
+-
+-        for (BlockStateModel model : this.models) {
+-            random.setSeed(seed);
+-            model.collectParts(random, output);
+-        }
++    // Neo: Implement our overloads (here and below) so child models can have custom logic
++    @Override
++    public void collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> output) {
++        if (this.models == null) {
++            this.models = this.shared.selectModels(this.blockState);
++        }
++
++        long seed = random.nextLong();
++
++        for (BlockStateModel model : this.models) {
++            random.setSeed(seed);
++            model.collectParts(level, pos, state, random, output);
++        }
++    }
++
++    @Override
++    @Nullable
++    public Object createGeometryKey(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random) {
++        if (this.models == null) {
++            this.models = this.shared.selectModels(this.blockState);
++        }
++
++        long seed = random.nextLong();
++
++        if (this.models.size() == 1) {
++            random.setSeed(seed);
++            return this.models.getFirst().createGeometryKey(level, pos, state, random);
++        } else {
++            List<Object> subKeys = new java.util.ArrayList<>(models.size());
++            for (var model : this.models) {
++                random.setSeed(seed);
++                var subKey = model.createGeometryKey(level, pos, state, random);
++                if (subKey == null) {
++                    return null;
++                }
++                subKeys.add(subKey);
++            }
++            return new GeometryKey(subKeys, this);
++        }
++    }
++    private record GeometryKey(List<Object> subKeys, MultiPartModel multiPart) {}
++
++    @Override
++    public Material.Baked particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
++        return this.shared.selectors.getFirst().model.particleMaterial(level, pos, state);
++    }
++
++    @Override
++    @BakedQuad.MaterialFlags
++    public int materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state) {
++        if (this.models == null) {
++            this.models = this.shared.selectModels(this.blockState);
++        }
++        int flags = 0;
++        for (BlockStateModel model : this.models) {
++            flags |= model.materialFlags(level, pos, state);
++        }
++        return flags;
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

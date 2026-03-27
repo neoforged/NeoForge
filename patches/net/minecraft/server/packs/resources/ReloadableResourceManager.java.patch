@@ -10,10 +10,10 @@
 +     * @throws UnsupportedOperationException if called after the event has been fired.
 +     */
 +    @Deprecated
-     public void registerReloadListener(PreparableReloadListener p_10714_) {
-         this.listeners.add(p_10714_);
+     public void registerReloadListener(PreparableReloadListener listener) {
+         this.listeners.add(listener);
      }
-@@ -72,5 +_,24 @@
+@@ -74,5 +_,24 @@
      @Override
      public Stream<PackResources> listPacks() {
          return this.resources.listPacks();

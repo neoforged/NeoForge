@@ -92,6 +92,18 @@
             "name": "NEOTESTS_LAYER_TYPE",
             "constructor": "(Ljava/lang/String;)V",
             "parameters": [ "neotests:layer_type" ]
+        },
+        {
+            "enum": "net/minecraft/world/level/gamerules/GameRuleType",
+            "name": "NEOTESTS_DOUBLE",
+            "constructor": "(Ljava/lang/String;)V",
+            "parameters": [ "neotests:double" ]
+        },
+        {
+            "enum": "net/minecraft/world/level/gamerules/GameRuleType",
+            "name": "NEOTESTS_STRING",
+            "constructor": "(Ljava/lang/String;)V",
+            "parameters": [ "neotests:string" ]
         }
     ]
 }

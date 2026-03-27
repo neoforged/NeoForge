@@ -1,14 +1,14 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1374,10 +_,35 @@
-         Schema schema203 = p_14514_.addSchema(3800, SAME_NAMESPACED);
-         UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
-         p_14514_.addFixer(ItemRenameFix.create(schema203, "Rename scute item to turtle_scute", unaryoperator2));
+@@ -1372,10 +_,35 @@
+         Schema v3800 = fixerUpper.addSchema(3800, SAME_NAMESPACED);
+         UnaryOperator<String> scuteRenamer = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
+         fixerUpper.addFixer(ItemRenameFix.create(v3800, "Rename scute item to turtle_scute", scuteRenamer));
 +
 +        // Neo: Remove step height attribute, which cannot be sanely updated
 +        // Happens in 23w51a
-+        Schema neoSchema3801 = p_14514_.addSchema(3801, SAME_NAMESPACED);
-+        p_14514_.addFixer(new net.neoforged.neoforge.common.data.fixes.NeoForgeEntityLegacyAttributesFix(
++        Schema neoSchema3801 = fixerUpper.addSchema(3801, SAME_NAMESPACED);
++        fixerUpper.addFixer(new net.neoforged.neoforge.common.data.fixes.NeoForgeEntityLegacyAttributesFix(
 +                "(Neo) Remove step height attribute",
 +                neoSchema3801,
 +                java.util.List.of(
@@ -16,15 +16,15 @@
 +                )
 +        ));
 +
-         Schema schema204 = p_14514_.addSchema(3803, SAME_NAMESPACED);
-         p_14514_.addFixer(
-             new RenameEnchantmentsFix(schema204, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
+         Schema v3803 = fixerUpper.addSchema(3803, SAME_NAMESPACED);
+         fixerUpper.addFixer(
+             new RenameEnchantmentsFix(v3803, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
          );
 +
 +        // Neo: rename neo attributes to new MC attributes
 +        // Happens in 24w03a
-+        Schema neoSchema3804 = p_14514_.addSchema(3804, SAME_NAMESPACED);
-+        p_14514_.addFixer(new AttributesRenameLegacy(
++        Schema neoSchema3804 = fixerUpper.addSchema(3804, SAME_NAMESPACED);
++        fixerUpper.addFixer(new AttributesRenameLegacy(
 +                neoSchema3804,
 +                "(Neo) Rename reach attributes to vanilla",
 +                createRenamer(ImmutableMap.of(
@@ -33,18 +33,18 @@
 +                ))
 +        ));
 +
-         Schema schema205 = p_14514_.addSchema(3807, V3807::new);
-         p_14514_.addFixer(new AddNewChoices(schema205, "Added Vault", References.BLOCK_ENTITY));
-         Schema schema206 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1400,6 +_,18 @@
-                 schema213, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
+         Schema v3807 = fixerUpper.addSchema(3807, V3807::new);
+         fixerUpper.addFixer(new AddNewChoices(v3807, "Added Vault", References.BLOCK_ENTITY));
+         Schema v3807_1 = fixerUpper.addSchema(3807, 1, SAME_NAMESPACED);
+@@ -1398,6 +_,18 @@
+                 v3814, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
              )
          );
 +
 +        // Neo: rename neo attributes to new MC attributes
 +        // Happens in 24w06a
-+        Schema neoSchema3815 = p_14514_.addSchema(3815, SAME_NAMESPACED);
-+        p_14514_.addFixer(new AttributesRenameLegacy(
++        Schema neoSchema3815 = fixerUpper.addSchema(3815, SAME_NAMESPACED);
++        fixerUpper.addFixer(new AttributesRenameLegacy(
 +                neoSchema3815,
 +                "(Neo) Rename gravity attribute to vanilla",
 +                createRenamer(
@@ -52,6 +52,6 @@
 +                )
 +        ));
 +
-         Schema schema214 = p_14514_.addSchema(3816, V3816::new);
-         p_14514_.addFixer(new AddNewChoices(schema214, "Added Bogged", References.ENTITY));
-         Schema schema215 = p_14514_.addSchema(3818, V3818::new);
+         Schema v3816 = fixerUpper.addSchema(3816, V3816::new);
+         fixerUpper.addFixer(new AddNewChoices(v3816, "Added Bogged", References.ENTITY));
+         Schema v3818 = fixerUpper.addSchema(3818, V3818::new);

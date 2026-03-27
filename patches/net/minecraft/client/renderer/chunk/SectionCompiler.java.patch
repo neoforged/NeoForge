@@ -1,51 +1,30 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
-@@ -42,6 +_,10 @@
+@@ -59,6 +_,10 @@
      }
  
-     public SectionCompiler.Results compile(SectionPos p_350790_, RenderSectionRegion p_427336_, VertexSorting p_350635_, SectionBufferBuilderPack p_350612_) {
-+        return compile(p_350790_, p_427336_, p_350635_, p_350612_, List.of());
+     public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders) {
++        return compile(sectionPos, region, vertexSorting, builders, List.of());
 +    }
 +
-+    public SectionCompiler.Results compile(SectionPos p_350790_, RenderSectionRegion p_427336_, VertexSorting p_350635_, SectionBufferBuilderPack p_350612_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
-         SectionCompiler.Results sectioncompiler$results = new SectionCompiler.Results();
-         BlockPos blockpos = p_350790_.origin();
-         BlockPos blockpos1 = blockpos.offset(15, 15, 15);
-@@ -49,8 +_,10 @@
-         PoseStack posestack = new PoseStack();
-         ModelBlockRenderer.enableCaching();
-         Map<ChunkSectionLayer, BufferBuilder> map = new EnumMap<>(ChunkSectionLayer.class);
--        RandomSource randomsource = RandomSource.create();
-+        // Neo: use a SingleThreadedRandomSource to avoid overhead of atomics
-+        RandomSource randomsource = new net.minecraft.world.level.levelgen.SingleThreadedRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed());
-         List<BlockModelPart> list = new ObjectArrayList<>();
-+        java.util.function.Function<ChunkSectionLayer, com.mojang.blaze3d.vertex.VertexConsumer> bufferLookup = renderType -> this.getOrBeginLayer(map, p_350612_, renderType);
++    public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
+         SectionCompiler.Results results = new SectionCompiler.Results();
+         BlockPos minPos = sectionPos.origin();
+         BlockPos maxPos = minPos.offset(15, 15, 15);
+@@ -94,6 +_,8 @@
  
-         for (BlockPos blockpos2 : BlockPos.betweenClosed(blockpos, blockpos1)) {
-             BlockState blockstate = p_427336_.getBlockState(blockpos2);
-@@ -73,22 +_,20 @@
-             }
+                     FluidState fluidState = blockState.getFluidState();
+                     if (!fluidState.isEmpty()) {
++                        var customRenderer = this.fluidModelSet.get(fluidState).customRenderer();
++                        if (customRenderer == null || !customRenderer.renderFluid(fluidRenderer, fluidState, region, pos, fluidOutput, blockState))
+                         fluidRenderer.tesselate(region, pos, fluidOutput, blockState, fluidState);
+                     }
  
-             if (blockstate.getRenderShape() == RenderShape.MODEL) {
--                ChunkSectionLayer chunksectionlayer2 = ItemBlockRenderTypes.getChunkRenderType(blockstate);
--                BufferBuilder bufferbuilder1 = this.getOrBeginLayer(map, p_350612_, chunksectionlayer2);
-                 randomsource.setSeed(blockstate.getSeed(blockpos2));
--                this.blockRenderer.getBlockModel(blockstate).collectParts(randomsource, list);
-+                this.blockRenderer.getBlockModel(blockstate).collectParts(p_427336_, blockpos2, blockstate, randomsource, list);
-                 posestack.pushPose();
-                 posestack.translate(
-                     (float)SectionPos.sectionRelative(blockpos2.getX()),
-                     (float)SectionPos.sectionRelative(blockpos2.getY()),
-                     (float)SectionPos.sectionRelative(blockpos2.getZ())
-                 );
--                this.blockRenderer.renderBatched(blockstate, blockpos2, p_427336_, posestack, bufferbuilder1, true, list);
-+                this.blockRenderer.renderBatched(blockstate, blockpos2, p_427336_, posestack, bufferLookup, true, list);
-                 posestack.popPose();
-                 list.clear();
+@@ -119,6 +_,7 @@
              }
          }
--
-+        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, bufferLookup, p_427336_, posestack);
-         for (Entry<ChunkSectionLayer, BufferBuilder> entry : map.entrySet()) {
-             ChunkSectionLayer chunksectionlayer1 = entry.getKey();
-             MeshData meshdata = entry.getValue().build();
+ 
++        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, blockRenderer, minPos);
+         for (Entry<ChunkSectionLayer, BufferBuilder> entry : startedLayers.entrySet()) {
+             ChunkSectionLayer layer = entry.getKey();
+             MeshData mesh = entry.getValue().build();

@@ -64,7 +64,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @ForEachTest(groups = "transfer.vanillahandlers")
 public class VanillaHandlersTests {
-    private static final ItemResource RESOURCE = ItemResource.of(Items.APPLE);
+    private static ItemResource resource() {
+        return ItemResource.of(Items.APPLE);
+    }
 
     @GameTest
     @EmptyTemplate
@@ -79,7 +81,7 @@ public class VanillaHandlersTests {
 
         // Insertion into empty hopper -> cooldown
         try (var transaction = Transaction.openRoot()) {
-            hopper.insert(RESOURCE, 10, transaction);
+            hopper.insert(resource(), 10, transaction);
             transaction.commit();
         }
         helper.assertValueEqual(HopperBlockEntity.MOVE_ITEM_SPEED, getHopperCooldown(hopperEntity), "hopper cooldown");
@@ -87,24 +89,24 @@ public class VanillaHandlersTests {
 
         // Second insertion into hopper -> no cooldown because the hopper is not empty
         try (var transaction = Transaction.openRoot()) {
-            hopper.insert(RESOURCE, 10, transaction);
+            hopper.insert(resource(), 10, transaction);
             transaction.commit();
         }
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         hopperEntity.clearContent();
-        hopperEntity.setItem(4, RESOURCE.toStack());
+        hopperEntity.setItem(4, resource().toStack());
 
         // Insertion into non-empty (with an item at a different index) hopper -> no cooldown
         try (var transaction = Transaction.openRoot()) {
-            hopper.insert(RESOURCE, 10, transaction);
+            hopper.insert(resource(), 10, transaction);
             transaction.commit();
         }
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         // Extraction -> no cooldown
         try (var transaction = Transaction.openRoot()) {
-            hopper.extract(RESOURCE, 15, transaction);
+            hopper.extract(resource(), 15, transaction);
             transaction.commit();
         }
         helper.assertContainerEmpty(pos);
@@ -112,15 +114,15 @@ public class VanillaHandlersTests {
 
         // Simulated insertion into empty hopper -> no cooldown
         try (var transaction = Transaction.openRoot()) {
-            hopper.insert(RESOURCE, 10, transaction);
+            hopper.insert(resource(), 10, transaction);
         }
         helper.assertValueEqual(0, getHopperCooldown(hopperEntity), "hopper cooldown");
 
         // Insertion into empty hopper + extract in the same transaction -> cooldown
         try (var transaction = Transaction.openRoot()) {
-            hopper.insert(RESOURCE, 10, transaction);
-            helper.assertContainerContains(pos, RESOURCE.getItem());
-            hopper.extract(RESOURCE, 10, transaction);
+            hopper.insert(resource(), 10, transaction);
+            helper.assertContainerContains(pos, resource().getItem());
+            hopper.extract(resource(), 10, transaction);
             transaction.commit();
         }
         helper.assertValueEqual(HopperBlockEntity.MOVE_ITEM_SPEED, getHopperCooldown(hopperEntity), "hopper cooldown");

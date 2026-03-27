@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.transfer.item;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -22,16 +24,20 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resource.DataComponentHolderResource;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
 public final class ItemResource implements DataComponentHolderResource<Item> {
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * The empty resource instance of a {@link ItemResource}
      */
@@ -39,10 +45,14 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
 
     /**
      * Codec for an item resource.
-     * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack);
+    public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(
+            () -> RecordCodecBuilder.create(
+                    i -> i.group(
+                            Item.CODEC.fieldOf("id").forGetter(ItemResource::typeHolder),
+                            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemResource::getComponentsPatch))
+                            .apply(i, ItemResource::of)));
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
@@ -55,7 +65,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
      * Stream codec for an item resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
+            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::typeHolder,
             DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
             ItemResource::of);
 
@@ -70,6 +80,26 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
             return of(stack.getItem());
         }
         return new ItemResource(stack.copyWithCount(1));
+    }
+
+    /**
+     * Creates an ItemResource using the default or copy of the passed in item stack. Note the count is lost.
+     *
+     * @param template stack to copy with a size of 1
+     * @return If null was given, an empty resource is returned.
+     *         If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
+     */
+    public static ItemResource of(@Nullable ItemStackTemplate template) {
+        if (template == null) {
+            return EMPTY;
+        }
+        if (template.components().isEmpty()) {
+            return of(template.item());
+        }
+
+        var stack = template.create();
+        stack.setCount(1);
+        return new ItemResource(stack);
     }
 
     /**
@@ -120,7 +150,16 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
         if (holder.value() == Items.AIR || patch.isEmpty()) {
             return of(holder.value());
         }
-        return new ItemResource(new ItemStack(holder, 1, patch));
+
+        var stack = new ItemStack(holder, 1, patch);
+        var err = ItemStack.validateStrict(stack).error();
+
+        if (err.isPresent()) {
+            LOGGER.warn("Can't create item resource '{}' with components {}, error: {}", holder.getRegisteredName(), patch, err.get().message());
+            return EMPTY;
+        }
+
+        return new ItemResource(stack);
     }
 
     /**
@@ -146,8 +185,8 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
     }
 
     @Override
-    public Holder<Item> getHolder() {
-        return innerStack.getItemHolder();
+    public Holder<Item> typeHolder() {
+        return innerStack.typeHolder();
     }
 
     @Override
@@ -162,6 +201,15 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
      */
     public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
+    }
+
+    /**
+     * {@return true if this resource matches the item and components of the passed template}
+     *
+     * @param template the item stack template to check
+     */
+    public boolean matches(@Nullable ItemStackTemplate template) {
+        return ItemStack.isSameItemSameComponents(innerStack, template);
     }
 
     /**

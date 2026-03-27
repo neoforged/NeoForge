@@ -20,8 +20,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the block will not be destroyed.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingDestroyBlockEvent extends LivingEvent implements ICancellableEvent {

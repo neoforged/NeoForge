@@ -4,10 +4,6 @@
     "minecraft:crimson_forest",
     "minecraft:warped_forest",
     "minecraft:soul_sand_valley",
-    "minecraft:basalt_deltas",
-    {
-      "id": "#forge:is_hot/nether",
-      "required": false
-    }
+    "minecraft:basalt_deltas"
   ]
 }

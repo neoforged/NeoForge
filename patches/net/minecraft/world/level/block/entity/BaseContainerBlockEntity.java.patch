@@ -3,15 +3,15 @@
 @@ -118,9 +_,17 @@
  
      @Override
-     public void setItem(int p_332705_, ItemStack p_332643_) {
-+        setItem(p_332705_, p_332643_, false);
+     public void setItem(int slot, ItemStack itemStack) {
++        setItem(slot, itemStack, false);
 +    }
 +
 +    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
 +    @Override
-+    public void setItem(int p_332705_, ItemStack p_332643_, boolean insideTransaction) {
-         this.getItems().set(p_332705_, p_332643_);
-         p_332643_.limitSize(this.getMaxStackSize(p_332643_));
++    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
+         this.getItems().set(slot, itemStack);
+         itemStack.limitSize(this.getMaxStackSize(itemStack));
 -        this.setChanged();
 +        if (!insideTransaction) {
 +            this.setChanged();

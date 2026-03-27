@@ -6,11 +6,11 @@
  public class StructureTagsProvider extends KeyTagProvider<Structure> {
 +    /** @deprecated Forge: Use the {@linkplain #StructureTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public StructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_) {
-         super(p_256522_, Registries.STRUCTURE, p_256661_);
+     public StructureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.STRUCTURE, lookupProvider);
 +    }
-+    public StructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_, String modId) {
-+        super(p_256522_, Registries.STRUCTURE, p_256661_, modId);
++    public StructureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.STRUCTURE, lookupProvider, modId);
      }
  
      @Override

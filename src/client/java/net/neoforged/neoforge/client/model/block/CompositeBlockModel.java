@@ -9,24 +9,32 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
 import org.jspecify.annotations.Nullable;
 
 public class CompositeBlockModel implements DynamicBlockStateModel {
     private final List<BlockStateModel> models;
-    private final TextureAtlasSprite particleIcon;
+    private final Material.Baked particleMaterial;
+    @BakedQuad.MaterialFlags
+    private final int materialFlags;
 
     public CompositeBlockModel(List<BlockStateModel> models) {
         this.models = models;
-        this.particleIcon = models.getFirst().particleIcon();
+        this.particleMaterial = models.getFirst().particleMaterial();
+        int flags = 0;
+        for (BlockStateModel model : models) {
+            flags |= model.materialFlags();
+        }
+        this.materialFlags = flags;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
     private record GeometryKey(List<Object> subKeys, CompositeBlockModel composite) {}
 
     @Override
-    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         long seed = random.nextLong();
 
         for (var model : models) {
@@ -64,8 +72,29 @@ public class CompositeBlockModel implements DynamicBlockStateModel {
     }
 
     @Override
-    public TextureAtlasSprite particleIcon() {
-        return particleIcon;
+    public Material.Baked particleMaterial() {
+        return particleMaterial;
+    }
+
+    @Override
+    public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return models.getFirst().particleMaterial(level, pos, state);
+    }
+
+    @Override
+    @BakedQuad.MaterialFlags
+    public int materialFlags() {
+        return materialFlags;
+    }
+
+    @Override
+    @BakedQuad.MaterialFlags
+    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        int flags = 0;
+        for (BlockStateModel model : models) {
+            flags |= model.materialFlags(level, pos, state);
+        }
+        return flags;
     }
 
     public record Unbaked(List<BlockStateModel.Unbaked> models) implements CustomUnbakedBlockStateModel {

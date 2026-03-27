@@ -1,16 +1,16 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -42,6 +_,9 @@
-         this.commands = new Commands(p_206858_, CommandBuildContext.simple(p_361583_, p_250695_));
-         this.advancements = new ServerAdvancementManager(p_361583_);
-         this.functionLibrary = new ServerFunctionLibrary(p_456167_, this.commands.getDispatcher());
+@@ -47,6 +_,9 @@
+         this.commands = new Commands(commandSelection, CommandBuildContext.simple(loadingContext, enabledFeatures));
+         this.advancements = new ServerAdvancementManager(loadingContext);
+         this.functionLibrary = new ServerFunctionLibrary(functionCompilationPermissions, this.commands.getDispatcher());
 +        // Neo: Store registries and create context object
-+        this.registryLookup = p_361583_;
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, p_362982_.compositeAccess(), p_250695_);
++        this.registryLookup = loadingContext;
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, fullLayers.compositeAccess(), enabledFeatures);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -68,6 +_,25 @@
+@@ -73,6 +_,25 @@
          return List.of(this.recipes, this.functionLibrary, this.advancements);
      }
  
@@ -34,44 +34,51 @@
 +    }
 +
      public static CompletableFuture<ReloadableServerResources> loadResources(
-         ResourceManager p_248588_,
-         LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -84,10 +_,30 @@
-                     ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_454398_.layers(), p_454398_.lookupWithUpdatedTags(), p_250212_, p_249301_, p_363739_, p_456254_
-                     );
+         ResourceManager resourceManager,
+         LayeredRegistryAccess<RegistryLayer> contextLayers,
+@@ -99,15 +_,35 @@
+                                 functionCompilationPermissions,
+                                 (List<DataComponentInitializers.PendingComponents<?>>)pendingComponents
+                             );
 +
-+                    // Neo: Fire the AddServerReloadListenersEvent and use the resulting listeners instead of the vanilla listener list.
-+                    List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_454398_.layers().compositeAccess());
++                            // Neo: Fire the AddServerReloadListenersEvent and use the resulting listeners instead of the vanilla listener list.
++                            List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(result, fullRegistries.layers().compositeAccess());
 +
-+                    // Neo: Inject the ConditionContext and RegistryLookup to any resource listener that requests it.
-+                    for (PreparableReloadListener rl : listeners) {
-+                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener carl) {
-+                            carl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
-+                        }
-+                    }
-+
-                     return SimpleReloadInstance.create(
--                            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
-+                            p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
-                         )
-                         .done()
-+                        .thenRun(() -> {
-+                            // Neo: Clear context after reload completes
-+                            reloadableserverresources.context.clear();
-+                            listeners.forEach(rl -> {
-+                                if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {
-+                                    srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, net.minecraft.core.RegistryAccess.EMPTY);
++                            // Neo: Inject the ConditionContext and RegistryLookup to any resource listener that requests it.
++                            for (PreparableReloadListener rl : listeners) {
++                                if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener carl) {
++                                    carl.injectContext(result.context, result.registryLookup);
 +                                }
-+                            });
-+                        })
-                         .thenApply(p_214306_ -> reloadableserverresources);
-                 }
-             );
-@@ -95,5 +_,6 @@
++                            }
++
+                             return SimpleReloadInstance.create(
+                                     resourceManager,
+-                                    result.listeners(),
++                                    listeners,
+                                     backgroundExecutor,
+                                     mainThreadExecutor,
+                                     DATA_RELOAD_INITIAL_TASK,
+                                     LOGGER.isDebugEnabled()
+                                 )
+                                 .done()
++                                .thenRun(() -> {
++                                    // Neo: Clear context after reload completes
++                                    result.context.clear();
++                                    listeners.forEach(rl -> {
++                                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {
++                                            srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, net.minecraft.core.RegistryAccess.EMPTY);
++                                        }
++                                    });
++                                })
+                                 .thenApply(ignore -> result);
+                         }
+                     )
+@@ -116,6 +_,8 @@
  
-     public void updateStaticRegistryTags() {
+     public void updateComponentsAndStaticRegistryTags() {
          this.postponedTags.forEach(Registry.PendingTags::apply);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(registryLookup, false, false));
+         this.newComponents.forEach(DataComponentInitializers.PendingComponents::apply);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent(false, false));
      }
  }

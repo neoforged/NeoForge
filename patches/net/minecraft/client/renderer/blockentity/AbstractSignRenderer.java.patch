@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
-@@ -178,4 +_,13 @@
-         p_446340_.isTextFilteringEnabled = Minecraft.getInstance().isTextFilteringEnabled();
-         p_446340_.drawOutline = isOutlineVisible(p_446457_.getBlockPos());
+@@ -150,4 +_,13 @@
+         state.drawOutline = isOutlineVisible(blockEntity.getBlockPos());
+         state.woodType = SignBlock.getWoodType(blockEntity.getBlockState().getBlock());
      }
 +
 +    @Override

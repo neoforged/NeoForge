@@ -1,42 +1,22 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -196,4 +_,44 @@
+@@ -176,4 +_,24 @@
  
          return false;
      }
 +
-+    public static final net.minecraft.core.dispenser.DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = new net.minecraft.core.dispenser.DefaultDispenseItemBehavior() {
-+        @Override
-+        protected ItemStack execute(net.minecraft.core.dispenser.BlockSource source, ItemStack egg) {
-+            Direction direction = source.state().getValue(net.minecraft.world.level.block.DispenserBlock.FACING);
-+            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(egg);
-+
-+            try {
-+                entitytype.spawn(
-+                        source.level(), egg, null, source.pos().relative(direction), EntitySpawnReason.DISPENSER, direction != Direction.UP, false
-+                );
-+            } catch (Exception exception) {
-+                LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.pos(), exception);
-+                return ItemStack.EMPTY;
-+            }
-+
-+            egg.shrink(1);
-+            source.level().gameEvent(null, GameEvent.ENTITY_PLACE, source.pos());
-+            return egg;
-+        }
-+    };
-+
 +    /**
-+     * {@return the dispense behavior to register by default}
++     * {@return the dispense behavior to register or null to register the default}
 +     */
 +    protected net.minecraft.core.dispenser.@Nullable DispenseItemBehavior createDispenseBehavior() {
-+        return DEFAULT_DISPENSE_BEHAVIOR;
++        return null;
 +    }
 +
++    // TODO 26.1: It's questionable that this is even needed anymore
 +    @net.neoforged.bus.api.SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
 +    private static void registerDispenseBehavior(final net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) {
-+        event.enqueueWork(() -> eggs().forEach(egg -> {
-+            if (!net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(egg)) {
++        event.enqueueWork(() -> BuiltInRegistries.ITEM.forEach(item -> {
++            if (item instanceof SpawnEggItem egg && !net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(egg)) {
 +                var beh = egg.createDispenseBehavior();
 +                if (beh != null) {
 +                    net.minecraft.world.level.block.DispenserBlock.registerBehavior(egg, beh);

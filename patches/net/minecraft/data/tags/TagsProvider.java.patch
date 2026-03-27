@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -32,26 +_,49 @@
+@@ -31,26 +_,49 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<Identifier, TagBuilder> builders = Maps.newLinkedHashMap();
@@ -10,12 +10,12 @@
 +     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, String) mod id variant}
 +     */
 +    @Deprecated
-     protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_) {
--        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
-+        this(p_256596_, p_255886_, p_256513_, "vanilla");
+     protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+-        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
++        this(output, registryKey, lookupProvider, "vanilla");
 +    }
-+    protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_, String modId) {
-+        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId);
++    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId);
      }
  
 +    /**
@@ -23,19 +23,19 @@
 +     */
 +    @Deprecated
      protected TagsProvider(
-         PackOutput p_275432_,
-         ResourceKey<? extends Registry<T>> p_275476_,
-         CompletableFuture<HolderLookup.Provider> p_275222_,
-         CompletableFuture<TagsProvider.TagLookup<T>> p_275565_
+         PackOutput output,
+         ResourceKey<? extends Registry<T>> registryKey,
+         CompletableFuture<HolderLookup.Provider> lookupProvider,
+         CompletableFuture<TagsProvider.TagLookup<T>> parentProvider
      ) {
-+        this(p_275432_, p_275476_, p_275222_, p_275565_, "vanilla");
++        this(output, registryKey, lookupProvider, parentProvider, "vanilla");
 +    }
 +
-+    protected TagsProvider(PackOutput p_275432_, ResourceKey<? extends Registry<T>> p_275476_, CompletableFuture<HolderLookup.Provider> p_275222_, CompletableFuture<TagsProvider.TagLookup<T>> p_275565_, String modId) {
-         this.pathProvider = p_275432_.createRegistryTagsPathProvider(p_275476_);
-         this.registryKey = p_275476_;
-         this.parentProvider = p_275565_;
-         this.lookupProvider = p_275222_;
++    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<T>> parentProvider, String modId) {
+         this.pathProvider = output.createRegistryTagsPathProvider(registryKey);
+         this.registryKey = registryKey;
+         this.parentProvider = parentProvider;
+         this.lookupProvider = lookupProvider;
 +        this.modId = modId;
 +    }
 +
@@ -51,29 +51,29 @@
 +        return "Tags for " + this.registryKey.identifier() + " mod id " + this.modId;
      }
  
-     protected abstract void addTags(HolderLookup.Provider p_256380_);
-@@ -84,7 +_,10 @@
-                                     Identifier identifier = p_466086_.getKey();
-                                     TagBuilder tagbuilder = p_466086_.getValue();
-                                     List<TagEntry> list = tagbuilder.build();
--                                    List<TagEntry> list1 = list.stream().filter(p_274771_ -> !p_274771_.verifyIfPresent(predicate, predicate1)).toList();
-+                                    List<TagEntry> list1 = java.util.stream.Stream.concat(list.stream(), tagbuilder.getRemoveEntries())
+     protected abstract void addTags(HolderLookup.Provider registries);
+@@ -80,7 +_,10 @@
+                                     Identifier id = entry.getKey();
+                                     TagBuilder builder = entry.getValue();
+                                     List<TagEntry> entries = builder.build();
+-                                    List<TagEntry> unresolvedEntries = entries.stream().filter(e -> !e.verifyIfPresent(elementCheck, tagCheck)).toList();
++                                    List<TagEntry> unresolvedEntries = java.util.stream.Stream.concat(entries.stream(), builder.getRemoveEntries())
 +                                               // Neo: Assume tags from other namespaces always exists
-+                                              .filter((p_274771_) -> p_274771_.getId().getNamespace().equals(modId) && !p_274771_.verifyIfPresent(predicate, predicate1))
++                                              .filter((e) -> e.getId().getNamespace().equals(modId) && !e.verifyIfPresent(elementCheck, tagCheck))
 +                                              .toList();
-                                     if (!list1.isEmpty()) {
+                                     if (!unresolvedEntries.isEmpty()) {
                                          throw new IllegalArgumentException(
                                              String.format(
-@@ -95,8 +_,10 @@
+@@ -91,8 +_,10 @@
                                              )
                                          );
                                      } else {
--                                        Path path = this.pathProvider.json(identifier);
--                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, false), path);
-+                                        Path path = this.getPath(identifier);
+-                                        Path path = this.pathProvider.json(id);
+-                                        return DataProvider.saveStable(cache, c.contents, TagFile.CODEC, new TagFile(entries, builder.shouldReplace()), path);
++                                        Path path = this.getPath(id);
 +                                        if (path == null) return CompletableFuture.completedFuture(null); // Neo: Allow running this data provider without writing it. Recipe provider needs valid tags.
-+                                        var removed = tagbuilder.getRemoveEntries().toList();
-+                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, tagbuilder.isReplace(), removed), path);
++                                        var removed = builder.getRemoveEntries().toList();
++                                        return DataProvider.saveStable(cache, c.contents, TagFile.CODEC, new TagFile(entries, builder.isReplace(), removed), path);
                                      }
                                  }
                              )

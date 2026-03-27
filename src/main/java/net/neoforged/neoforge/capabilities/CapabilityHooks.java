@@ -28,6 +28,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.BucketResourceHandler;
+import net.neoforged.neoforge.transfer.item.BundleItemHandler;
 import net.neoforged.neoforge.transfer.item.ComposterWrapper;
 import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -84,7 +85,17 @@ public class CapabilityHooks {
 
         event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> {
             return ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER);
-        }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
+        },
+                Blocks.CHEST,
+                Blocks.TRAPPED_CHEST,
+                Blocks.COPPER_CHEST,
+                Blocks.EXPOSED_COPPER_CHEST,
+                Blocks.WEATHERED_COPPER_CHEST,
+                Blocks.OXIDIZED_COPPER_CHEST,
+                Blocks.WAXED_COPPER_CHEST,
+                Blocks.WAXED_EXPOSED_COPPER_CHEST,
+                Blocks.WAXED_WEATHERED_COPPER_CHEST,
+                Blocks.WAXED_OXIDIZED_COPPER_CHEST);
 
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
@@ -104,7 +115,8 @@ public class CapabilityHooks {
                 BlockEntityType.HOPPER,
                 BlockEntityType.JUKEBOX,
                 BlockEntityType.CRAFTER,
-                BlockEntityType.DECORATED_POT);
+                BlockEntityType.DECORATED_POT,
+                BlockEntityType.SHELF);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.Item.BLOCK, type, (container, side) -> VanillaContainerWrapper.of(container));
         }
@@ -148,6 +160,24 @@ public class CapabilityHooks {
                 Items.RED_SHULKER_BOX,
                 Items.WHITE_SHULKER_BOX,
                 Items.YELLOW_SHULKER_BOX);
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS),
+                Items.BUNDLE,
+                Items.BLACK_BUNDLE,
+                Items.BLUE_BUNDLE,
+                Items.BROWN_BUNDLE,
+                Items.CYAN_BUNDLE,
+                Items.GRAY_BUNDLE,
+                Items.GREEN_BUNDLE,
+                Items.LIGHT_BLUE_BUNDLE,
+                Items.LIGHT_GRAY_BUNDLE,
+                Items.LIME_BUNDLE,
+                Items.MAGENTA_BUNDLE,
+                Items.ORANGE_BUNDLE,
+                Items.PINK_BUNDLE,
+                Items.PURPLE_BUNDLE,
+                Items.RED_BUNDLE,
+                Items.WHITE_BUNDLE,
+                Items.YELLOW_BUNDLE);
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {

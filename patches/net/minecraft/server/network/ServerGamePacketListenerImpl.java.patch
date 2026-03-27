@@ -1,28 +1,28 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -482,18 +_,21 @@
+@@ -492,18 +_,21 @@
  
-                 if (flag1 && serverlevel.noCollision(entity, aabb) || this.isEntityCollidingWithAnythingNew(serverlevel, entity, aabb, d3, d4, d5)) {
-                     entity.absSnapTo(d0, d1, d2, f, f1);
-+                    resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-                     this.send(ClientboundMoveVehiclePacket.fromEntity(entity));
-                     entity.removeLatestMovementRecording();
+                 if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
+                     vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
++                    resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
+                     this.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
+                     vehicle.removeLatestMovementRecording();
                      return;
                  }
  
-                 entity.absSnapTo(d3, d4, d5, f, f1);
-+                resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
+                 vehicle.absSnapTo(targetX, targetY, targetZ, targetYRot, targetXRot);
++                resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
                  this.player.level().getChunkSource().move(this.player);
-                 Vec3 vec3 = new Vec3(entity.getX() - d0, entity.getY() - d1, entity.getZ() - d2);
-                 this.handlePlayerKnownMovement(vec3);
-                 entity.setOnGroundWithMovement(p_9876_.onGround(), vec3);
-                 entity.doCheckFallDamage(vec3.x, vec3.y, vec3.z, p_9876_.onGround());
-                 this.player.checkMovementStatistics(vec3.x, vec3.y, vec3.z);
-+                this.player.checkRidingStatistics(vec3.x, vec3.y, vec3.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
-                 this.clientVehicleIsFloating = d11 >= -0.03125
-                     && !flag
+                 Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
+                 this.handlePlayerKnownMovement(clientDeltaMovement);
+                 vehicle.setOnGroundWithMovement(packet.onGround(), clientDeltaMovement);
+                 vehicle.doCheckFallDamage(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z, packet.onGround());
+                 this.player.checkMovementStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
++                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
+                 this.clientVehicleIsFloating = oyDist >= -0.03125
+                     && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
-@@ -507,6 +_,23 @@
+@@ -517,6 +_,23 @@
          }
      }
  
@@ -43,34 +43,34 @@
 +        this.player.zo = oldPos.z;
 +    }
 +
-     private boolean noBlocksAround(Entity p_9794_) {
-         return p_9794_.level()
-             .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -697,7 +_,7 @@
-             if (serverlevel.isLoaded(blockpos)) {
-                 BlockState blockstate = serverlevel.getBlockState(blockpos);
-                 boolean flag = this.player.hasInfiniteMaterials() && p_382999_.includeData();
--                ItemStack itemstack = blockstate.getCloneItemStack(serverlevel, blockpos, flag);
-+                ItemStack itemstack = blockstate.getCloneItemStack(blockpos, serverlevel, flag, player);
-                 if (!itemstack.isEmpty()) {
-                     if (flag) {
-                         addBlockDataToItem(blockstate, serverlevel, blockpos, itemstack);
-@@ -1117,7 +_,7 @@
-                                         && !flag1
+     private boolean noBlocksAround(Entity entity) {
+         return entity.level()
+             .getBlockStates(entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
+@@ -700,7 +_,7 @@
+             if (level.isLoaded(pos)) {
+                 BlockState blockState = level.getBlockState(pos);
+                 boolean includeData = this.player.hasInfiniteMaterials() && packet.includeData();
+-                ItemStack itemStack = blockState.getCloneItemStack(level, pos, includeData);
++                ItemStack itemStack = blockState.getCloneItemStack(pos, level, includeData, player);
+                 if (!itemStack.isEmpty()) {
+                     if (includeData) {
+                         addBlockDataToItem(blockState, level, pos, itemStack);
+@@ -1157,7 +_,7 @@
+                                         && !playerStandsOnSomething
                                          && !this.player.isSpectator()
                                          && !this.server.allowFlight()
 -                                        && !this.player.getAbilities().mayfly
 +                                        && !this.player.mayFly()
                                          && !this.player.hasEffect(MobEffects.LEVITATION)
-                                         && !flag
-                                         && !flag3
-@@ -1246,9 +_,10 @@
+                                         && !isFallFlying
+                                         && !isAutoSpinAttack
+@@ -1286,9 +_,10 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
--                        ItemStack itemstack1 = this.player.getItemInHand(InteractionHand.OFF_HAND);
+-                        ItemStack swap = this.player.getItemInHand(InteractionHand.OFF_HAND);
 -                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
--                        this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack1);
+-                        this.player.setItemInHand(InteractionHand.MAIN_HAND, swap);
 +                        var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
 +                        if (event.isCanceled()) return;
 +                        this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
@@ -78,67 +78,67 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1276,7 +_,7 @@
-                         .handleBlockBreakAction(
-                             blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxY(), p_9889_.getSequence()
-                         );
--                    this.ackBlockChangesUpTo(p_9889_.getSequence());
-+                    this.player.connection.ackBlockChangesUpTo = p_9889_.getSequence();
+@@ -1312,7 +_,7 @@
+                 case ABORT_DESTROY_BLOCK:
+                 case STOP_DESTROY_BLOCK:
+                     this.player.gameMode.handleBlockBreakAction(pos, action, packet.getDirection(), this.player.level().getMaxY(), packet.getSequence());
+-                    this.ackBlockChangesUpTo(packet.getSequence());
++                    this.player.connection.ackBlockChangesUpTo = packet.getSequence();
                      return;
                  default:
                      throw new IllegalArgumentException("Invalid player action");
-@@ -1298,7 +_,7 @@
-     public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
-         PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.level());
+@@ -1334,7 +_,7 @@
+     public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
--            this.ackBlockChangesUpTo(p_9930_.getSequence());
-+            this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
-             ServerLevel serverlevel = this.player.level();
-             InteractionHand interactionhand = p_9930_.getHand();
-             ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1454,8 +_,9 @@
+-            this.ackBlockChangesUpTo(packet.getSequence());
++            this.player.connection.ackBlockChangesUpTo = packet.getSequence();
+             ServerLevel level = this.player.level();
+             InteractionHand hand = packet.getHand();
+             ItemStack itemStack = this.player.getItemInHand(hand);
+@@ -1504,8 +_,9 @@
                  }
  
-                 CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
--                Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-+                Component component = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-                 this.chatMessageChain.append(completablefuture, p_300785_ -> {
-+                    if (component == null) return; // Forge: ServerChatEvent was canceled if this is null.
-                     PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
-                     this.broadcastChatMessage(playerchatmessage1);
+                 CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
+-                Component decorated = this.server.getChatDecorator().decorate(this.player, signedMessage.decoratedContent());
++                Component decorated = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, signedMessage.decoratedContent());
+                 this.chatMessageChain.append(filteredFuture, filtered -> {
++                    if (decorated == null) return; // Forge: ServerChatEvent was canceled if this is null.
+                     PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
+                     this.broadcastChatMessage(filteredMessage);
                  });
-@@ -1789,7 +_,11 @@
- 
-                             @Override
-                             public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
--                                this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
-+                                this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
-+                                    InteractionResult onInteractEntityAtResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, p_143683_, p_143682_);
-+                                    if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
-+                                    return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
-+                                });
-                             }
- 
-                             @Override
-@@ -1994,14 +_,16 @@
+@@ -1836,7 +_,11 @@
+                     ItemStack tool = this.player.getItemInHand(hand);
+                     if (tool.isItemEnabled(level.enabledFeatures())) {
+                         ItemStack usedItemStack = tool.copy();
+-                        if (this.player.interactOn(target, hand, location) instanceof InteractionResult.Success success) {
++                        var interactionResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, target, location, hand);
++                        if (interactionResult == null) {
++                            interactionResult = this.player.interactOn(target, hand, location);
++                        }
++                        if (interactionResult instanceof InteractionResult.Success success) {
+                             ItemStack awardedForStack = success.wasItemInteraction() ? usedItemStack : ItemStack.EMPTY;
+                             CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(this.player, awardedForStack, target);
+                             if (success.swingSource() == InteractionResult.SwingSource.SERVER) {
+@@ -2057,14 +_,16 @@
      @Override
-     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
-         PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.level());
--        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.getAbilities().mayfly;
-+        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.mayFly();
+     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
+-        this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().mayfly;
++        this.player.getAbilities().flying = packet.isFlying() && this.player.mayFly();
      }
  
      @Override
-     public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {
-         PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.level());
-         boolean flag = this.player.isModelPartShown(PlayerModelPart.HAT);
+     public void handleClientInformation(ServerboundClientInformationPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
+         boolean wasHatShown = this.player.isModelPartShown(PlayerModelPart.HAT);
 +        net.minecraft.server.level.ClientInformation oldInfo = this.player.clientInformation();
-         this.player.updateOptions(p_301979_.information());
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent(this.player, oldInfo, p_301979_.information()));
-         if (this.player.isModelPartShown(PlayerModelPart.HAT) != flag) {
+         this.player.updateOptions(packet.information());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent(this.player, oldInfo, packet.information()));
+         if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2077,7 +_,7 @@
+@@ -2140,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -147,11 +147,11 @@
                  );
          }
      }
-@@ -2112,6 +_,7 @@
+@@ -2175,6 +_,7 @@
  
      @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
-+        super.handleCustomPayload(p_333887_); // Neo: Call super to invoke modded payload handling.
+     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
++        super.handleCustomPayload(packet); // Neo: Call super to invoke modded payload handling.
      }
  
      @Override

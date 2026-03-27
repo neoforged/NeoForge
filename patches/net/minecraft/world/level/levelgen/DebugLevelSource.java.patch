@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/DebugLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/DebugLevelSource.java
-@@ -86,6 +_,12 @@
+@@ -84,6 +_,12 @@
          return 0;
      }
  
@@ -11,5 +11,5 @@
 +    }
 +
      @Override
-     public NoiseColumn getBaseColumn(int p_223959_, int p_223960_, LevelHeightAccessor p_223961_, RandomState p_223962_) {
+     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor heightAccessor, RandomState randomState) {
          return new NoiseColumn(0, new BlockState[0]);

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.oldtest.client.rendering;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,7 +35,7 @@ public class CustomItemDecorationsTest {
 
     private static class StackSizeDurabilityBar implements IItemDecorator {
         @Override
-        public boolean render(GuiGraphics graphics, Font font, ItemStack stack, int xOffset, int yOffset) {
+        public boolean render(GuiGraphicsExtractor graphics, Font font, ItemStack stack, int xOffset, int yOffset) {
             float f = Math.max(0.0F, (float) stack.getCount() / stack.getMaxStackSize());
             int i = Math.round((float) stack.getCount() * 13.0F / stack.getMaxStackSize());
             int j = Mth.hsvToRgb(f / 3.0F, 1f, 1f) | 0xFF000000;

@@ -4,8 +4,8 @@
          if (this.hasLevelCollision(this.getPopBox())) {
              return false;
          } else {
--            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(p_423325_ -> {
-+            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection())).allMatch(p_423325_ -> {
-                 BlockState blockstate = this.level().getBlockState(p_423325_);
-                 return blockstate.isSolid() || DiodeBlock.isDiode(blockstate);
+-            boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(pos -> {
++            boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection())).allMatch(pos -> {
+                 BlockState state = this.level().getBlockState(pos);
+                 return state.isSolid() || DiodeBlock.isDiode(state);
              });

@@ -7,10 +7,13 @@ package net.neoforged.neoforge.debug.client;
 
 import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockQuadOutput;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -21,10 +24,10 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,19 +35,17 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.hoglin.HoglinBase;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -110,16 +111,20 @@ public class ClientEventTests {
                                 testBlockAt.getX() - sectionOrigin.getX(),
                                 testBlockAt.getY() - sectionOrigin.getY(),
                                 testBlockAt.getZ() - sectionOrigin.getZ());
-                        var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
-                                .collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, Blocks.DIAMOND_BLOCK.defaultBlockState(), new SingleThreadedRandomSource(0));
-                        Minecraft.getInstance().getBlockRenderer().renderBatched(
-                                Blocks.DIAMOND_BLOCK.defaultBlockState(),
-                                testBlockAt,
+                        BlockQuadOutput quadOutput = (x, y, z, quad, instance) -> {
+                            VertexConsumer builder = context.getOrCreateChunkBuffer(quad.materialInfo().layer());
+                            builder.putBlockBakedQuad(x, y, z, quad, instance);
+                        };
+                        context.getBlockRenderer().tesselateBlock(
+                                quadOutput,
+                                SectionPos.sectionRelative(testBlockAt.getX()),
+                                SectionPos.sectionRelative(testBlockAt.getY()),
+                                SectionPos.sectionRelative(testBlockAt.getZ()),
                                 context.getRegion(),
-                                poseStack,
-                                context::getOrCreateChunkBuffer,
-                                false,
-                                parts);
+                                testBlockAt,
+                                Blocks.DIAMOND_BLOCK.defaultBlockState(),
+                                Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(Blocks.DIAMOND_BLOCK.defaultBlockState()),
+                                0);
                         poseStack.popPose();
                     });
                 }
@@ -140,7 +145,7 @@ public class ClientEventTests {
 
                 ItemStackRenderState renderState = new ItemStackRenderState();
                 Minecraft.getInstance().getItemModelResolver().updateForTopItem(renderState, itemStack, ItemDisplayContext.GROUND, null, null, 0);
-                renderState.submit(event.getPoseStack(), event.getSubmitNodeCollector(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+                renderState.submit(event.getPoseStack(), event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                 event.getPoseStack().popPose();
             });
@@ -171,6 +176,7 @@ public class ClientEventTests {
             } catch (IllegalArgumentException ignored) {}
         });
         test.whenEnabled(listeners -> {
+            BlockDisplayContext blockDisplayContext = BlockDisplayContext.create();
             listeners.forge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
                 int numRender = event.getRenderState().getRenderDataOrDefault(numRenderAttachmentKey, -1);
                 if (numRender == -1) {
@@ -190,12 +196,11 @@ public class ClientEventTests {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
                     poseStack.mulPose(Axis.XP.rotation(xRotation));
-                    event.getSubmitNodeCollector().submitBlock(
-                            poseStack,
-                            Blocks.CALCITE.defaultBlockState(),
-                            event.getRenderState().lightCoords,
-                            OverlayTexture.NO_OVERLAY,
-                            -1);
+
+                    BlockModelRenderState renderState = new BlockModelRenderState();
+                    Minecraft.getInstance().getBlockModelResolver().update(renderState, Blocks.CALCITE.defaultBlockState(), blockDisplayContext);
+                    renderState.submit(poseStack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+
                     poseStack.popPose();
                 }
                 poseStack.popPose();
@@ -207,10 +212,10 @@ public class ClientEventTests {
     @TestHolder(description = { "Tests if rendering custom geometry on visible chunks works", "When the message \"gold block\" is sent in chat, gold blocks should render at the origin of every visible section with blocks" })
     static void renderLevelStageWithSectionData(final DynamicTest test) {
         test.whenEnabled(listeners -> {
+            BlockDisplayContext blockDisplayContext = BlockDisplayContext.create();
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
-                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterOpaqueBlocks event) -> {
-                        var randomSource = new SingleThreadedRandomSource(0);
+                    NeoForge.EVENT_BUS.addListener((final SubmitCustomGeometryEvent event) -> {
                         var state = Blocks.GOLD_BLOCK.defaultBlockState();
                         var stack = event.getPoseStack();
                         var camera = event.getLevelRenderState().cameraRenderState.pos;
@@ -225,21 +230,24 @@ public class ClientEventTests {
                                     section.getRenderOrigin().getY() - camera.y,
                                     section.getRenderOrigin().getZ() - camera.z);
 
-                            var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
-                            Minecraft.getInstance().getBlockRenderer().renderBatched(
-                                    state,
-                                    section.getRenderOrigin(),
-                                    EmptyBlockAndTintGetter.INSTANCE,
-                                    stack,
-                                    csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
-                                    false,
-                                    parts);
+                            BlockModelRenderState renderState = new BlockModelRenderState();
+                            Minecraft.getInstance().getBlockModelResolver().update(renderState, state, blockDisplayContext);
+                            renderState.submit(stack, event.getSubmitNodeCollector(), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                             stack.popPose();
 
                             test.pass();
                         });
                     });
                 }
+            });
+        });
+    }
+
+    @TestHolder(description = { "Test RenderNameTagEvent.CanRender is called" })
+    static void nameTagCanRender(final DynamicTest test) {
+        test.whenEnabled(listeners -> {
+            listeners.forge().addListener((final RenderNameTagEvent.CanRender canRenderEvent) -> {
+                test.pass();
             });
         });
     }

@@ -6,11 +6,11 @@
  public class DamageTypeTagsProvider extends KeyTagProvider<DamageType> {
 +    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
-         super(p_270719_, Registries.DAMAGE_TYPE, p_270256_);
+     public DamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.DAMAGE_TYPE, lookupProvider);
 +    }
-+    public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId) {
-+        super(p_270719_, Registries.DAMAGE_TYPE, p_270256_, modId);
++    public DamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.DAMAGE_TYPE, lookupProvider, modId);
      }
  
      @Override

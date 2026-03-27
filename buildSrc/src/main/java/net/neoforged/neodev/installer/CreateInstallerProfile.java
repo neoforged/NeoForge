@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.MavenIdentifier;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -106,12 +105,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     public void createInstallerProfile() throws IOException {
         var icon = "data:image/png;base64," + Base64.getEncoder().encodeToString(Files.readAllBytes(getIcon().getAsFile().get().toPath()));
 
-        var clientMappingsCoordinate = new MavenIdentifier("net.minecraft", "client", getMinecraftVersion().get(), "mappings", "txt");
-        var serverMappingsCoordinate = new MavenIdentifier("net.minecraft", "server", getMinecraftVersion().get(), "mappings", "txt");
-
         var data = new LinkedHashMap<String, LauncherDataEntry>();
         var neoFormVersion = getMcAndNeoFormVersion().get();
-        data.put("MOJMAPS", new LauncherDataEntry(clientMappingsCoordinate, serverMappingsCoordinate));
         data.put("BINPATCH", new LauncherDataEntry("/data/client.lzma", "/data/client.lzma"));
 
         var patchedClientCoordinate = new MavenIdentifier("net.neoforged", "minecraft-client-patched", getNeoForgeVersion().get(), "", "jar");
@@ -131,35 +126,18 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                         "--from", "data/win_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/win_args.txt".formatted(getNeoForgeVersion().get()),
                         "--from", "data/unix_args.txt", "--to", "{ROOT}/libraries/net/neoforged/neoforge/%s/unix_args.txt".formatted(getNeoForgeVersion().get())));
 
-        var neoformMappingsDependency = "net.neoforged:neoform:" + getMcAndNeoFormVersion().get() + ":mappings@tsrg.lzma";
-        // Validate it will actually be downloaded
-        if (getLibraryFiles().get().stream().noneMatch(l -> {
-            var identifier = l.getIdentifier().get();
-            return identifier.artifactNotation().equals(neoformMappingsDependency);
-        })) {
-            throw new GradleException("Libraries list must contain NeoForm mappings: " + neoformMappingsDependency);
-        }
-
-        // This task will be auto-replaced by legacyinstaller and is mostly here for other launchers that
-        // never implemented the optimization of downloading mojmaps ahead of time.
-        commonProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
-                List.of("--task", "DOWNLOAD_MOJMAPS", "--version", getMinecraftVersion().get(), "--side", "{SIDE}", "--output", "{MOJMAPS}"));
-
         commonProcessor.accept(
                 InstallerProcessor.INSTALLERTOOLS,
                 List.of(
                         "--task",
                         "PROCESS_MINECRAFT_JAR",
+                        "--no-mod-manifest",
                         "--input",
                         "{MINECRAFT_JAR}",
-                        "--input-mappings",
-                        "{MOJMAPS}",
                         "--output",
                         "{PATCHED}",
                         "--extract-libraries-to",
                         "{ROOT}/libraries/",
-                        "--neoform-data",
-                        String.format("[%s]", neoformMappingsDependency),
                         "--apply-patches",
                         "{BINPATCH}"));
 

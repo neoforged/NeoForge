@@ -25,6 +25,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -48,6 +49,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -128,6 +130,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -591,13 +594,11 @@ public class NeoForgeMod {
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
-        NeoForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
         NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
         NeoForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         UsernameCache.load();
         DualStackUtils.initialise();
-        TagConventionLogWarning.init();
 
         modEventBus.addListener(EventPriority.HIGH, CapabilityHooks::markProxyableCapabilities);
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
@@ -609,6 +610,13 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
 
         NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
+
+        // When the components are bound, we have to reset the default resources too
+        NeoForge.EVENT_BUS.addListener(DefaultDataComponentsBoundEvent.class, event -> {
+            if (event.shouldUpdateStaticData()) {
+                BuiltInRegistries.ITEM.forEach(Item::resetDefaultResource);
+            }
+        });
 
         modEventBus.register(NeoForgeDataMaps.class);
 
@@ -664,8 +672,8 @@ public class NeoForgeMod {
         if (!event.getRegistryKey().equals(Registries.LOOT_CONDITION_TYPE))
             return;
 
-        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
-        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "can_item_perform_ability"), () -> CanItemPerformAbility.LOOT_CONDITION_TYPE);
+        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.CODEC);
+        event.register(Registries.LOOT_CONDITION_TYPE, Identifier.fromNamespaceAndPath("neoforge", "can_item_perform_ability"), () -> CanItemPerformAbility.CODEC);
     }
 
     private static void onConfigLoad(final ModConfigEvent.Loading configEvent) {

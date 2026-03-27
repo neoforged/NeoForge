@@ -89,8 +89,8 @@ public class EntityDataSerializerTest {
         }
 
         @Override
-        protected void defineSynchedData(SynchedEntityData.Builder p_326003_) {
-            p_326003_.define(DATA_TEST_VALUE, (byte) 0);
+        protected void defineSynchedData(SynchedEntityData.Builder entityData) {
+            entityData.define(DATA_TEST_VALUE, (byte) 0);
         }
 
         @Override
@@ -100,7 +100,7 @@ public class EntityDataSerializerTest {
         protected void addAdditionalSaveData(ValueOutput tag) {}
 
         @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
+        public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
             return false;
         }
     }

@@ -6,11 +6,11 @@
  public class WorldPresetTagsProvider extends KeyTagProvider<WorldPreset> {
 +    /** @deprecated Forge: Use the {@linkplain #WorldPresetTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public WorldPresetTagsProvider(PackOutput p_255701_, CompletableFuture<HolderLookup.Provider> p_255974_) {
-         super(p_255701_, Registries.WORLD_PRESET, p_255974_);
+     public WorldPresetTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.WORLD_PRESET, lookupProvider);
 +    }
-+    public WorldPresetTagsProvider(PackOutput p_255701_, CompletableFuture<HolderLookup.Provider> p_255974_, String modId) {
-+        super(p_255701_, Registries.WORLD_PRESET, p_255974_, modId);
++    public WorldPresetTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.WORLD_PRESET, lookupProvider, modId);
      }
  
      @Override

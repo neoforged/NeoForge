@@ -1,14 +1,15 @@
 --- a/net/minecraft/world/level/levelgen/Beardifier.java
 +++ b/net/minecraft/world/level/levelgen/Beardifier.java
-@@ -52,6 +_,11 @@
+@@ -51,7 +_,11 @@
  
-                 for (StructurePiece structurepiece : structurestart.getPieces()) {
-                     if (structurepiece.isCloseToChunk(p_223939_, 12)) {
-+                        if (structurepiece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
+                 for (StructurePiece piece : start.getPieces()) {
+                     if (piece.isCloseToChunk(chunkPos, 12)) {
+-                        if (piece instanceof PoolElementStructurePiece poolPiece) {
++                        if (piece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
 +                            if (pieceBeardifierModifier.getTerrainAdjustment() != TerrainAdjustment.NONE) {
-+                                list1.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
++                                rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
 +                            }
-+                        } else
-                         if (structurepiece instanceof PoolElementStructurePiece poolelementstructurepiece) {
-                             StructureTemplatePool.Projection structuretemplatepool$projection = poolelementstructurepiece.getElement().getProjection();
-                             if (structuretemplatepool$projection == StructureTemplatePool.Projection.RIGID) {
++                        } else if (piece instanceof PoolElementStructurePiece poolPiece) {
+                             StructureTemplatePool.Projection projection = poolPiece.getElement().getProjection();
+                             if (projection == StructureTemplatePool.Projection.RIGID) {
+                                 rigids.add(new Beardifier.Rigid(poolPiece.getBoundingBox(), terrainAdjustment, poolPiece.getGroundLevelDelta()));

@@ -1,0 +1,4 @@
+     private boolean shouldStopSwimSprinting() {
+-        return !this.isSprintingPossible(true) || !this.isInWater() || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
++        return !this.isSprintingPossible(true) || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
+     }

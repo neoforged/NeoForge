@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -37,8 +38,6 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import org.jspecify.annotations.Nullable;
@@ -46,7 +45,7 @@ import org.jspecify.annotations.Nullable;
 /*
  * Extension added to ItemStack that bounces to ItemSack sensitive Item methods. Typically this is just for convince.
  */
-public interface IItemStackExtension {
+public interface IItemStackExtension extends ItemInstanceExtension {
     // Helpers for accessing Item data
     private ItemStack self() {
         return (ItemStack) this;
@@ -58,7 +57,7 @@ public interface IItemStackExtension {
      *
      * @return The resulting ItemStack
      */
-    default ItemStack getCraftingRemainder() {
+    default @Nullable ItemStackTemplate getCraftingRemainder() {
         return self().getItem().getCraftingRemainder(self());
     }
 
@@ -101,17 +100,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Queries if an item can perform the given action.
-     * See {@link ItemAbilities} for a description of each stock action
-     * 
-     * @param itemAbility The action being queried
-     * @return True if the stack can perform the action
-     */
-    default boolean canPerformAction(ItemAbility itemAbility) {
-        return self().getItem().canPerformAction(self(), itemAbility);
-    }
-
-    /**
      * Called when the player is mining a block and the item in his hand changes.
      * Allows to not reset blockbreaking if only NBT or similar changes.
      *
@@ -134,22 +122,6 @@ public interface IItemStackExtension {
      */
     default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
         return self().getItem().supportsEnchantment(self(), enchantment);
-    }
-
-    /**
-     * Gets the gameplay level of the target enchantment on this stack.
-     * <p>
-     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
-     * <p>
-     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
-     *
-     * @param enchantment The enchantment being checked for.
-     * @return The level of the enchantment, or 0 if not present.
-     * @see {@link #getAllEnchantments} to get all gameplay enchantments
-     */
-    default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
-        int level = self().getItem().getEnchantmentLevel(self(), enchantment);
-        return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
 
     /**

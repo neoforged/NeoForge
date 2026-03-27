@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
 @@ -221,6 +_,19 @@
-         this.focused = p_93693_;
+         this.focused = focused;
      }
  
 +    public static final int UNSET_FG_COLOR = -1;

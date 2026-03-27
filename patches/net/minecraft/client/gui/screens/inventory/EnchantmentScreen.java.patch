@@ -1,32 +1,34 @@
 --- a/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
-@@ -110,7 +_,7 @@
-                 int l1 = 86 - this.font.width(s);
-                 FormattedText formattedtext = EnchantmentNames.getInstance().getRandomName(this.font, l1);
-                 int i2 = -9937334;
--                if ((k < l + 1 || this.minecraft.player.experienceLevel < k1) && !this.minecraft.player.hasInfiniteMaterials()) {
-+                if (((k < l + 1 || this.minecraft.player.experienceLevel < k1) && !this.minecraft.player.getAbilities().instabuild) || this.menu.enchantClue[l] == -1) { // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
-                     p_282430_.blitSprite(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_SPRITE, i1, j + 14 + 19 * l, 108, 19);
-                     p_282430_.blitSprite(RenderPipelines.GUI_TEXTURED, DISABLED_LEVEL_SPRITES[l], i1 + 1, j + 15 + 19 * l, 16, 16);
-                     p_282430_.drawWordWrap(this.font, formattedtext, j1, j + 16 + 19 * l, l1, ARGB.opaque((i2 & 16711422) >> 1), false);
-@@ -162,13 +_,16 @@
+@@ -111,7 +_,7 @@
+                 int textWidth = 86 - this.font.width(costText);
+                 FormattedText message = EnchantmentNames.getInstance().getRandomName(this.font, textWidth);
+                 int col = -9937334;
+-                if ((goldCount < i + 1 || this.minecraft.player.experienceLevel < cost) && !this.minecraft.player.hasInfiniteMaterials()) {
++                if (((goldCount < i + 1 || this.minecraft.player.experienceLevel < cost) && !this.minecraft.player.getAbilities().instabuild) || this.menu.enchantClue[i] == -1) { // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
+                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_SPRITE, leftPos, yo + 14 + 19 * i, 108, 19);
+                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DISABLED_LEVEL_SPRITES[i], leftPos + 1, yo + 15 + 19 * i, 16, 16);
+                     graphics.textWithWordWrap(this.font, message, leftPosText, yo + 16 + 19 * i, textWidth, ARGB.opaque((col & 16711422) >> 1), false);
+@@ -162,15 +_,18 @@
                  .registryAccess()
                  .lookupOrThrow(Registries.ENCHANTMENT)
-                 .get(this.menu.enchantClue[j]);
--            if (!optional.isEmpty()) {
+                 .get(this.menu.enchantClue[i]);
+-            if (!enchant.isEmpty()) {
 +            if (true) {
-                 int l = this.menu.levelClue[j];
-                 int i1 = j + 1;
--                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0 && l >= 0) {
-+                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0) {
-                     List<Component> list = Lists.newArrayList();
--                    list.add(Component.translatable("container.enchant.clue", Enchantment.getFullname(optional.get(), l)).withStyle(ChatFormatting.WHITE));
--                    if (!flag) {
-+                    list.add(Component.translatable("container.enchant.clue", optional.isEmpty() ? "" : Enchantment.getFullname(optional.get(), l)).withStyle(ChatFormatting.WHITE));
-+                    if (optional.isEmpty()) {
-+                        list.add(Component.literal(""));
-+                        list.add(Component.translatable("neoforge.container.enchant.limitedEnchantability").withStyle(ChatFormatting.RED));
-+                    } else if (!flag) {
-                         list.add(CommonComponents.EMPTY);
-                         if (this.minecraft.player.experienceLevel < k) {
-                             list.add(Component.translatable("container.enchant.level.requirement", this.menu.costs[j]).withStyle(ChatFormatting.RED));
+                 int enchantLevel = this.menu.levelClue[i];
+                 int cost = i + 1;
+-                if (this.isHovering(60, 14 + 19 * i, 108, 17, mouseX, mouseY) && minLevel > 0 && enchantLevel >= 0) {
++                if (this.isHovering(60, 14 + 19 * i, 108, 17, mouseX, mouseY) && minLevel > 0) {
+                     List<Component> texts = Lists.newArrayList();
+                     texts.add(
+-                        Component.translatable("container.enchant.clue", Enchantment.getFullname(enchant.get(), enchantLevel)).withStyle(ChatFormatting.WHITE)
++                        Component.translatable("container.enchant.clue", enchant.isEmpty() ? "" : Enchantment.getFullname(enchant.get(), enchantLevel)).withStyle(ChatFormatting.WHITE)
+                     );
+-                    if (!infiniteMaterials) {
++                    if (enchant.isEmpty()) {
++                        texts.add(Component.literal(""));
++                        texts.add(Component.translatable("neoforge.container.enchant.limitedEnchantability").withStyle(ChatFormatting.RED));
++                    } else if (!infiniteMaterials) {
+                         texts.add(CommonComponents.EMPTY);
+                         if (this.minecraft.player.experienceLevel < minLevel) {
+                             texts.add(Component.translatable("container.enchant.level.requirement", this.menu.costs[i]).withStyle(ChatFormatting.RED));

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.bus.api.Event;
@@ -67,7 +66,7 @@ public class RenderArmEvent extends Event implements ICancellableEvent {
     /**
      * {@return the amount of packed (sky and block) light for rendering}
      *
-     * @see LightTexture
+     * @see net.minecraft.util.LightCoordsUtil
      */
     public int getPackedLight() {
         return packedLight;

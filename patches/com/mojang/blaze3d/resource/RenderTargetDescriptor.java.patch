@@ -15,22 +15,22 @@
 +        return new TextureTarget(null, this.width, this.height, this.useDepth, this.useStencil);
      }
  
-     public void prepare(RenderTarget p_393765_) {
+     public void prepare(RenderTarget resource) {
 @@ -20,6 +_,9 @@
          } else {
-             RenderSystem.getDevice().createCommandEncoder().clearColorTexture(p_393765_.getColorTexture(), this.clearColor);
+             RenderSystem.getDevice().createCommandEncoder().clearColorTexture(resource.getColorTexture(), this.clearColor);
          }
 +        if (this.useStencil) {
-+            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(p_393765_.getDepthTexture(), 0);
++            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), 0);
 +        }
      }
  
-     public void free(RenderTarget p_363223_) {
+     public void free(RenderTarget resource) {
 @@ -30,6 +_,6 @@
-     public boolean canUsePhysicalResource(ResourceDescriptor<?> p_394237_) {
-         return !(p_394237_ instanceof RenderTargetDescriptor rendertargetdescriptor)
+     public boolean canUsePhysicalResource(ResourceDescriptor<?> other) {
+         return !(other instanceof RenderTargetDescriptor descriptor)
              ? false
--            : this.width == rendertargetdescriptor.width && this.height == rendertargetdescriptor.height && this.useDepth == rendertargetdescriptor.useDepth;
-+            : this.width == rendertargetdescriptor.width && this.height == rendertargetdescriptor.height && this.useDepth == rendertargetdescriptor.useDepth && this.useStencil == rendertargetdescriptor.useStencil;
+-            : this.width == descriptor.width && this.height == descriptor.height && this.useDepth == descriptor.useDepth;
++            : this.width == descriptor.width && this.height == descriptor.height && this.useDepth == descriptor.useDepth && this.useStencil == descriptor.useStencil;
      }
  }

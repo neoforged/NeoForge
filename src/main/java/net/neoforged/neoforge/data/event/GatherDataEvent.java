@@ -171,7 +171,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         }
 
         public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer) {
-            final DataGenerator generator = new DataGenerator(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
+            final DataGenerator generator = new DataGenerator.Cached(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
             generators.add(generator);
             return generator;
         }

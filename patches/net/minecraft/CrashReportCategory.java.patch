@@ -1,28 +1,28 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -121,8 +_,10 @@
-         if (astacktraceelement.length <= 0) {
+@@ -140,8 +_,10 @@
+         if (full.length <= 0) {
              return 0;
          } else {
--            this.stackTrace = new StackTraceElement[astacktraceelement.length - 3 - p_128149_];
--            System.arraycopy(astacktraceelement, 3 + p_128149_, this.stackTrace, 0, this.stackTrace.length);
-+            int len = astacktraceelement.length - 3 - p_128149_;
-+            if (len <= 0) len = astacktraceelement.length;
+-            this.stackTrace = new StackTraceElement[full.length - 3 - nestedOffset];
+-            System.arraycopy(full, 3 + nestedOffset, this.stackTrace, 0, this.stackTrace.length);
++            int len = full.length - 3 - nestedOffset;
++            if (len <= 0) len = full.length;
 +            this.stackTrace = new StackTraceElement[len];
-+            System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.stackTrace, 0, this.stackTrace.length);
++            System.arraycopy(full, full.length - len, this.stackTrace, 0, this.stackTrace.length);
              return this.stackTrace.length;
          }
      }
-@@ -169,16 +_,16 @@
+@@ -188,16 +_,16 @@
  
          if (this.stackTrace != null && this.stackTrace.length > 0) {
-             p_128169_.append("\nStacktrace:");
+             builder.append("\nStacktrace:");
 -
--            for (StackTraceElement stacktraceelement : this.stackTrace) {
--                p_128169_.append("\n\tat ");
--                p_128169_.append(stacktraceelement);
+-            for (StackTraceElement element : this.stackTrace) {
+-                builder.append("\n\tat ");
+-                builder.append(element);
 -            }
-+            p_128169_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.stackTrace));
++            builder.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.stackTrace));
          }
      }
  
@@ -34,4 +34,4 @@
 +        this.stackTrace = stackTrace;
      }
  
-     public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, BlockState p_178954_) {
+     public static void populateBlockDetails(CrashReportCategory category, LevelHeightAccessor levelHeightAccessor, BlockPos pos, BlockState state) {

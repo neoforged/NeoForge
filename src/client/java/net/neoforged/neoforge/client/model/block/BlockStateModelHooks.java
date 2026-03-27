@@ -11,8 +11,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.client.renderer.block.model.BlockModelDefinition;
-import net.minecraft.client.renderer.block.model.SingleVariant;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
+import net.minecraft.client.renderer.block.dispatch.SingleVariant;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.random.Weighted;
@@ -47,23 +47,23 @@ public class BlockStateModelHooks {
                         .apply(instance, Weighted::new));
     }
 
-    public static Codec<BlockModelDefinition> makeDefinitionCodec() {
+    public static Codec<BlockStateModelDispatcher> makeDefinitionCodec() {
         return NeoForgeExtraCodecs.dispatchMapOrElse(
                 "neoforge:definition_type",
                 BLOCK_MODEL_DEFINITION_IDS.codec(Identifier.CODEC),
                 CustomBlockModelDefinition::codec,
                 Function.identity(),
-                BlockModelDefinition.VANILLA_CODEC).xmap(
+                BlockStateModelDispatcher.VANILLA_CODEC).xmap(
                         BlockStateModelHooks::packDefinition,
                         BlockStateModelHooks::unpackDefinition)
                 .codec();
     }
 
-    private static BlockModelDefinition packDefinition(Either<CustomBlockModelDefinition, BlockModelDefinition> definition) {
-        return definition.map(def -> new BlockModelDefinition(Optional.empty(), Optional.empty(), Optional.of(def)), Function.identity());
+    private static BlockStateModelDispatcher packDefinition(Either<CustomBlockModelDefinition, BlockStateModelDispatcher> definition) {
+        return definition.map(def -> new BlockStateModelDispatcher(Optional.empty(), Optional.empty(), Optional.of(def)), Function.identity());
     }
 
-    private static Either<CustomBlockModelDefinition, BlockModelDefinition> unpackDefinition(BlockModelDefinition definition) {
+    private static Either<CustomBlockModelDefinition, BlockStateModelDispatcher> unpackDefinition(BlockStateModelDispatcher definition) {
         return definition.customDefinition().isPresent() ? Either.left(definition.customDefinition().get()) : Either.right(definition);
     }
 

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
 @@ -49,7 +_,7 @@
          this.applyInertia();
-         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-         Vec3 vec3;
--        if (hitresult.getType() != HitResult.Type.MISS) {
-+        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
-             vec3 = hitresult.getLocation();
+         HitResult result = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+         Vec3 newPosition;
+-        if (result.getType() != HitResult.Type.MISS) {
++        if (result.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, result)) {
+             newPosition = result.getLocation();
          } else {
-             vec3 = this.position().add(this.getDeltaMovement());
+             newPosition = this.position().add(this.getDeltaMovement());

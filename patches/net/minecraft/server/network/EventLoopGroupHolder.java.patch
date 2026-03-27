@@ -6,8 +6,8 @@
      private volatile @Nullable EventLoopGroup group;
 +    private volatile @Nullable EventLoopGroup serverGroup;
  
-     public static EventLoopGroupHolder remote(boolean p_459148_) {
-         if (p_459148_) {
+     public static EventLoopGroupHolder remote(boolean allowNativeTransport) {
+         if (allowNativeTransport) {
 @@ -85,6 +_,23 @@
  
      private EventLoopGroup createEventLoopGroup() {

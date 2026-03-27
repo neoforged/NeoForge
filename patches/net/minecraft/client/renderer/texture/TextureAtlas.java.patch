@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -129,6 +_,8 @@
-                     LOGGER.warn("Failed to dump atlas contents to {}", path);
+@@ -133,6 +_,8 @@
+                     LOGGER.warn("Failed to dump atlas contents to {}", dumpDir);
                  }
              }
 +
@@ -9,7 +9,7 @@
          }
      }
  
-@@ -304,5 +_,9 @@
+@@ -302,5 +_,9 @@
  
      int getHeight() {
          return this.height;

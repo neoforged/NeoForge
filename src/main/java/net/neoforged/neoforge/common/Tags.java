@@ -14,6 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -328,6 +329,10 @@ public class Tags {
         public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
         public static final TagKey<EntityType<?>> BOATS = tag("boats");
 
+        /// Tag containing entity types, generally extending {@link ItemFrame},
+        /// that can be placed on the surfaces of blocks to display an item.
+        public static final TagKey<EntityType<?>> ITEM_FRAMES = tag("item_frames");
+
         /**
          * Entities should be included in this tag if they are not allowed to be picked up by items or grabbed in a way
          * that a player can easily move the entity to anywhere they want. Ideal for special entities that should not
@@ -584,6 +589,20 @@ public class Tags {
         public static final TagKey<Item> FOODS_BERRY = tag("foods/berry");
         public static final TagKey<Item> FOODS_BREAD = tag("foods/bread");
         public static final TagKey<Item> FOODS_COOKIE = tag("foods/cookie");
+        /**
+         * For all doughs regardless of type, specific types of dough should fall under their respective sub-tag.<br/>
+         * For example:<br/>
+         * - Wheat dough (which generally results in bread) would go in "#c:foods/dough/wheat"<br/>
+         * - Rye dough (which has rye as it's main ingredient) would go in "#c:foods/dough/rye"<br/>
+         * - Sub-tags should also be added to this tag, for example: "#c:foods/dough/wheat" should be added to "#c:foods/dough"<br/>
+         * <br/>
+         * There are some important assumptions that should be kept in mind.<br/>
+         * - It is assumed that "1 dough = result", which in the case of wheat dough would be "1 dough = 1 bread"<br/>
+         * - It is assumed that this dough can be baked into another item<br/>
+         * - It is *not* assumed that all doughs result in bread, there can be doughs in this tag that result in things like pizza, etc.
+         * This means that this tag should *not* be used for furnace recipes, mods should add their own dough to result recipes for their respective items.
+         */
+        public static final TagKey<Item> FOODS_DOUGH = tag("foods/dough");
         public static final TagKey<Item> FOODS_RAW_MEAT = tag("foods/raw_meat");
         public static final TagKey<Item> FOODS_COOKED_MEAT = tag("foods/cooked_meat");
         public static final TagKey<Item> FOODS_RAW_FISH = tag("foods/raw_fish");
@@ -901,15 +920,16 @@ public class Tags {
          */
         public static final TagKey<Item> TOOLS_FISHING_ROD = tag("tools/fishing_rod");
         /**
-         * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
-         * should not be put into this tag and should be put into their own tool tags.
+         * A tag containing all existing throwable stick-like weapons like tridents.
+         * Other tools such as throwing knives or boomerangs should not be put into
+         * this tag and should be put into their own tool tags.
          * Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
          * @see ItemAbility
          * @see ItemAbilities
          */
-        public static final TagKey<Item> TOOLS_SPEAR = tag("tools/spear");
+        public static final TagKey<Item> TOOLS_TRIDENT = tag("tools/trident");
         /**
          * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.

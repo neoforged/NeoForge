@@ -9,19 +9,23 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.IRenderableSection;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Fires at various times during {@linkplain LevelRenderer#renderLevel} and {@linkplain GameRenderer#renderLevel}.
  * Custom render state used in the various stages must be extracted in {@link ExtractLevelRenderStateEvent} and
  * stored in the provided {@link LevelRenderState}
+ *
+ *
+ * <p>To submit custom geometry to the {@link SubmitNodeCollector} system, use {@link SubmitCustomGeometryEvent} instead.
  *
  * <p>The sub-events are not {@linkplain ICancellableEvent cancellable}. </p>
  *
@@ -31,10 +35,10 @@ import org.jspecify.annotations.Nullable;
  * <p>The sub-events are fired in the following order:
  * {@link AfterSky},
  * {@link AfterOpaqueBlocks},
- * {@link AfterEntities},
+ * {@link AfterOpaqueFeatures},
+ * {@link AfterTranslucentFeatures}
  * {@link AfterTranslucentBlocks},
- * {@link AfterTripwireBlocks},
- * {@link AfterParticles},
+ * {@link AfterTranslucentParticles},
  * {@link AfterWeather},
  * {@link AfterLevel}
  */
@@ -42,10 +46,10 @@ public abstract class RenderLevelStageEvent extends Event {
     private final LevelRenderer levelRenderer;
     private final LevelRenderState levelRenderState;
     private final PoseStack poseStack;
-    private final Matrix4f modelViewMatrix;
+    private final Matrix4fc modelViewMatrix;
     private final Iterable<? extends IRenderableSection> renderableSections;
 
-    public RenderLevelStageEvent(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+    public RenderLevelStageEvent(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
         this.levelRenderer = levelRenderer;
         this.levelRenderState = levelRenderState;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
@@ -77,7 +81,7 @@ public abstract class RenderLevelStageEvent extends Event {
     /**
      * {@return the model view matrix used for rendering}
      */
-    public Matrix4f getModelViewMatrix() {
+    public Matrix4fc getModelViewMatrix() {
         return modelViewMatrix;
     }
 
@@ -95,7 +99,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired at the end of {@linkplain LevelRenderer#addSkyPass} after the sky has been rendered. This is the first RenderLevelStageEvent sub-event to fire.
      */
     public static class AfterSky extends RenderLevelStageEvent {
-        public AfterSky(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterSky(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -104,16 +108,25 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired early in {@linkplain LevelRenderer#addMainPass} after solid and cutout chunk geometry has been rendered.
      */
     public static class AfterOpaqueBlocks extends RenderLevelStageEvent {
-        public AfterOpaqueBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterOpaqueBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
 
     /**
-     * Fired within {@linkplain LevelRenderer#addMainPass} after entities and block entities have been rendered.
+     * Fired within {@linkplain LevelRenderer#addMainPass} after opaque "features" from entities, block entities and particles have been rendered.
      */
-    public static class AfterEntities extends RenderLevelStageEvent {
-        public AfterEntities(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+    public static class AfterOpaqueFeatures extends RenderLevelStageEvent {
+        public AfterOpaqueFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+            super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
+        }
+    }
+
+    /**
+     * Fired within {@linkplain LevelRenderer#addMainPass} after translucent "features" from entities and block entities have been rendered.
+     */
+    public static class AfterTranslucentFeatures extends RenderLevelStageEvent {
+        public AfterTranslucentFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -122,25 +135,16 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after translucent chunk geometry has been rendered.
      */
     public static class AfterTranslucentBlocks extends RenderLevelStageEvent {
-        public AfterTranslucentBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTranslucentBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
 
     /**
-     * Fired near the end of {@linkplain LevelRenderer#addMainPass} after tripwire chunk geometry has been rendered.
+     * Fired within {@linkplain LevelRenderer#addMainPass} after translucent "features" from particles have been rendered.
      */
-    public static class AfterTripwireBlocks extends RenderLevelStageEvent {
-        public AfterTripwireBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
-            super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
-        }
-    }
-
-    /**
-     * Fired at the end of {@linkplain LevelRenderer#addParticlesPass} after particles have been rendered.
-     */
-    public static class AfterParticles extends RenderLevelStageEvent {
-        public AfterParticles(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+    public static class AfterTranslucentParticles extends RenderLevelStageEvent {
+        public AfterTranslucentParticles(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -149,7 +153,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired near the end of {@linkplain LevelRenderer#addWeatherPass} after weather has been rendered, before world border rendering.
      */
     public static class AfterWeather extends RenderLevelStageEvent {
-        public AfterWeather(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterWeather(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -158,7 +162,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain GameRenderer#renderLevel} after {@linkplain LevelRenderer#renderLevel} is called. This is the last RenderLevelStageEvent sub-event to fire.
      */
     public static class AfterLevel extends RenderLevelStageEvent {
-        public AfterLevel(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterLevel(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }

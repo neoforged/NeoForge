@@ -255,6 +255,28 @@ public final class ResourceHandlerUtil {
             Predicate<T> filter,
             int amount,
             @Nullable TransactionContext transaction) {
+        return moveInternal(from, to, filter, amount, false, transaction);
+    }
+
+    /**
+     * Same as {@link #move}, but uses {@link #insertStacking} for inserting resources.
+     */
+    public static <T extends Resource> int moveStacking(
+            @Nullable ResourceHandler<T> from,
+            @Nullable ResourceHandler<T> to,
+            Predicate<T> filter,
+            int amount,
+            @Nullable TransactionContext transaction) {
+        return moveInternal(from, to, filter, amount, true, transaction);
+    }
+
+    private static <T extends Resource> int moveInternal(
+            @Nullable ResourceHandler<T> from,
+            @Nullable ResourceHandler<T> to,
+            Predicate<T> filter,
+            int amount,
+            boolean stacking,
+            @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         TransferPreconditions.checkNonNegative(amount);
         if (from == null || to == null || amount == 0) return 0;
@@ -277,7 +299,12 @@ public final class ResourceHandlerUtil {
 
                 try (Transaction transferTransaction = Transaction.open(subTransaction)) {
                     // check how much can be inserted
-                    int inserted = to.insert(fromResource, maxExtracted, transferTransaction);
+                    int inserted;
+                    if (stacking) {
+                        inserted = insertStacking(to, fromResource, maxExtracted, transferTransaction);
+                    } else {
+                        inserted = to.insert(fromResource, maxExtracted, transferTransaction);
+                    }
 
                     // extract it, or rollback if we cannot actually extract the amount we inserted
                     // this can happen even for a well-behaving handler if it only supports extracting the exact
@@ -332,6 +359,30 @@ public final class ResourceHandlerUtil {
             Predicate<T> filter,
             int amount,
             @Nullable TransactionContext transaction) {
+        return moveFirstInternal(from, to, filter, amount, false, transaction);
+    }
+
+    /**
+     * Same as {@link #moveFirst}, but uses {@link #insertStacking} for inserting resources.
+     */
+    @Nullable
+    public static <T extends Resource> ResourceStack<T> moveFirstStacking(
+            @Nullable ResourceHandler<T> from,
+            @Nullable ResourceHandler<T> to,
+            Predicate<T> filter,
+            int amount,
+            @Nullable TransactionContext transaction) {
+        return moveFirstInternal(from, to, filter, amount, true, transaction);
+    }
+
+    @Nullable
+    private static <T extends Resource> ResourceStack<T> moveFirstInternal(
+            @Nullable ResourceHandler<T> from,
+            @Nullable ResourceHandler<T> to,
+            Predicate<T> filter,
+            int amount,
+            boolean stacking,
+            @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         TransferPreconditions.checkNonNegative(amount);
         if (from == null || to == null || amount == 0)
@@ -362,7 +413,12 @@ public final class ResourceHandlerUtil {
 
                 try (Transaction transferTransaction = Transaction.open(transaction)) {
                     // check how much can be inserted
-                    int inserted = to.insert(fromResource, extracted, transferTransaction);
+                    int inserted;
+                    if (stacking) {
+                        inserted = insertStacking(to, fromResource, extracted, transferTransaction);
+                    } else {
+                        inserted = to.insert(fromResource, extracted, transferTransaction);
+                    }
 
                     // The target might not accept the resource at all, or might be full
                     if (inserted == 0) continue;

@@ -1,11 +1,11 @@
 --- a/net/minecraft/network/protocol/BundlerInfo.java
 +++ b/net/minecraft/network/protocol/BundlerInfo.java
-@@ -27,6 +_,26 @@
+@@ -28,6 +_,26 @@
              }
  
              @Override
 +            public void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
-+                if (bundlePacket.type() == p_320816_) {
++                if (bundlePacket.type() == bundlePacketType) {
 +                    P p = (P)bundlePacket;
 +                    java.util.List<Packet<?>> packets = net.neoforged.neoforge.network.registration.NetworkRegistry.filterGameBundlePackets(context, p.subPackets());
 +                    if (packets.isEmpty()) {
@@ -15,19 +15,19 @@
 +                        packetSender.accept(packets.get(0));
 +                        return;
 +                    }
-+                    packetSender.accept(p_265373_);
++                    packetSender.accept(delimiterPacket);
 +                    packets.forEach(packetSender);
-+                    packetSender.accept(p_265373_);
++                    packetSender.accept(delimiterPacket);
 +                } else {
 +                    packetSender.accept(bundlePacket);
 +                }
 +            }
 +
 +            @Override
-             public BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> p_265749_) {
-                 return p_265749_ == p_265373_ ? new BundlerInfo.Bundler() {
-                     private final List<Packet<? super T>> bundlePackets = new ArrayList<>();
-@@ -47,7 +_,24 @@
+             public BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> packet) {
+                 return packet == delimiterPacket ? new BundlerInfo.Bundler() {
+                     private final List<Packet<? super T>> bundlePackets;
+@@ -53,7 +_,24 @@
          };
      }
  
@@ -35,7 +35,7 @@
 +     * @deprecated Use {@link #unbundlePacket(Packet, Consumer, io.netty.channel.ChannelHandlerContext)} instead, as it supports packet filtering and is more efficient.
 +     */
 +    @Deprecated
-     void unbundlePacket(Packet<?> p_265095_, Consumer<Packet<?>> p_265715_);
+     void unbundlePacket(Packet<?> packet, Consumer<Packet<?>> output);
 +
 +    /**
 +     * Unwrap and flattens a bundle packet.
@@ -50,5 +50,5 @@
 +        unbundlePacket(bundlePacket, packetSender);
 +    }
  
-     BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> p_265162_);
+     BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> packet);
  

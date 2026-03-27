@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -226,6 +_,14 @@
+@@ -247,6 +_,14 @@
              }
          }
  
@@ -12,10 +12,10 @@
 +            return null;
 +        }
 +
-         void bindTags(Collection<TagKey<T>> p_205770_) {
-             this.tags = Set.copyOf(p_205770_);
+         void bindTags(Collection<TagKey<T>> tags) {
+             this.tags = Set.copyOf(tags);
          }
-@@ -238,6 +_,32 @@
+@@ -268,6 +_,32 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";

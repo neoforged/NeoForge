@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
@@ -72,18 +72,8 @@ public interface BlockStateModelExtension {
      * @param random a random source for random model variations
      * @param parts  the list that should receive all parts to be rendered
      */
-    default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+    default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         self().collectParts(random, parts);
-    }
-
-    /**
-     * Helper to collects the parts of the model into a new list.
-     */
-    @ApiStatus.NonExtendable
-    default List<BlockModelPart> collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
-        List<BlockModelPart> parts = new ObjectArrayList<>();
-        this.collectParts(level, pos, state, random, parts);
-        return parts;
     }
 
     /**
@@ -91,7 +81,28 @@ public interface BlockStateModelExtension {
      *
      * <p>Block entity data can be accessed using {@link IBlockGetterExtension#getModelData(BlockPos)}.
      */
-    default TextureAtlasSprite particleIcon(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return self().particleIcon();
+    default Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return self().particleMaterial();
+    }
+
+    /// Returns the material flags of this model.
+    ///
+    /// @param level a level to query block entity data or other world state
+    /// @param pos   the position of the block being rendered
+    /// @param state the state of the block being rendered
+    @BakedQuad.MaterialFlags
+    default int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        return self().materialFlags();
+    }
+
+    /// Returns whether this model has the provided material flag.
+    ///
+    /// @param level a level to query block entity data or other world state
+    /// @param pos   the position of the block being rendered
+    /// @param state the state of the block being rendered
+    /// @param flag  the material flag to check
+    @ApiStatus.NonExtendable
+    default boolean hasMaterialFlag(BlockAndTintGetter level, BlockPos pos, BlockState state, @BakedQuad.MaterialFlags int flag) {
+        return (self().materialFlags(level, pos, state) & flag) != 0;
     }
 }

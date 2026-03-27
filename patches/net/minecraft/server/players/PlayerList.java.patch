@@ -6,134 +6,121 @@
      private int sendAllPlayerInfoIn;
 +    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(players);
  
-     public PlayerList(MinecraftServer p_203842_, LayeredRegistryAccess<RegistryLayer> p_251844_, PlayerDataStorage p_203844_, NotificationService p_443409_) {
-         this.server = p_203842_;
-@@ -158,7 +_,7 @@
-         LevelData leveldata = serverlevel.getLevelData();
-         ServerGamePacketListenerImpl servergamepacketlistenerimpl = new ServerGamePacketListenerImpl(this.server, p_11262_, p_11263_, p_301988_);
-         p_11262_.setupInboundProtocol(
--            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), servergamepacketlistenerimpl),
-+            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess(), servergamepacketlistenerimpl.getConnectionType()), servergamepacketlistenerimpl),
-             servergamepacketlistenerimpl
+     public PlayerList(
+         MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService
+@@ -160,7 +_,7 @@
+         LevelData levelData = level.getLevelData();
+         ServerGamePacketListenerImpl playerConnection = new ServerGamePacketListenerImpl(this.server, connection, player, cookie);
+         connection.setupInboundProtocol(
+-            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), playerConnection), playerConnection
++            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess(), playerConnection.getConnectionType()), playerConnection), playerConnection
          );
-         servergamepacketlistenerimpl.suspendFlushing();
-@@ -184,10 +_,12 @@
-         servergamepacketlistenerimpl.send(new ClientboundChangeDifficultyPacket(leveldata.getDifficulty(), leveldata.isDifficultyLocked()));
-         servergamepacketlistenerimpl.send(new ClientboundPlayerAbilitiesPacket(p_11263_.getAbilities()));
-         servergamepacketlistenerimpl.send(new ClientboundSetHeldSlotPacket(p_11263_.getInventory().getSelectedSlot()));
-+        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, p_11263_));
-         RecipeManager recipemanager = this.server.getRecipeManager();
-         servergamepacketlistenerimpl.send(
-             new ClientboundUpdateRecipesPacket(recipemanager.getSynchronizedItemProperties(), recipemanager.getSynchronizedStonecutterRecipes())
+         playerConnection.suspendFlushing();
+         GameRules gameRules = level.getGameRules();
+@@ -185,10 +_,12 @@
+         playerConnection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
+         playerConnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+         playerConnection.send(new ClientboundSetHeldSlotPacket(player.getInventory().getSelectedSlot()));
++        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, player));
+         RecipeManager recipeManager = this.server.getRecipeManager();
+         playerConnection.send(
+             new ClientboundUpdateRecipesPacket(recipeManager.getSynchronizedItemProperties(), recipeManager.getSynchronizedStonecutterRecipes())
          );
-+        net.neoforged.neoforge.common.CommonHooks.sendRecipes(p_11263_, dataSyncEvent.getRecipeTypesToSend(), recipemanager.recipeMap());
-         this.sendPlayerPermissionLevel(p_11263_);
-         p_11263_.getStats().markAllDirty();
-         p_11263_.getRecipeBook().sendInitialRecipeBook(p_11263_);
-@@ -218,6 +_,9 @@
-         p_11263_.initInventoryMenu();
-         this.server.notificationManager().playerJoined(p_11263_);
-         servergamepacketlistenerimpl.resumeFlushing();
++        net.neoforged.neoforge.common.CommonHooks.sendRecipes(player, dataSyncEvent.getRecipeTypesToSend(), recipeManager.recipeMap());
+         this.sendPlayerPermissionLevel(player);
+         player.getStats().markAllDirty();
+         player.getRecipeBook().sendInitialRecipeBook(player);
+@@ -219,6 +_,9 @@
+         player.initInventoryMenu();
+         this.server.notificationManager().playerJoined(player);
+         playerConnection.resumeFlushing();
 +
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(p_11263_);
-+        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(p_11263_);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(player);
++        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(player);
      }
  
-     protected void updateEntireScoreboard(ServerScoreboard p_11274_, ServerPlayer p_11275_) {
-@@ -287,6 +_,7 @@
+     protected void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
+@@ -292,6 +_,7 @@
      }
  
-     protected void save(ServerPlayer p_11277_) {
-+        if (p_11277_.connection == null) return;
-         this.playerIo.save(p_11277_);
-         ServerStatsCounter serverstatscounter = this.stats.get(p_11277_.getUUID());
-         if (serverstatscounter != null) {
-@@ -300,6 +_,7 @@
+     protected void save(ServerPlayer player) {
++        if (player.connection == null) return;
+         this.playerIo.save(player);
+         ServerStatsCounter stats = this.stats.get(player.getUUID());
+         if (stats != null) {
+@@ -305,6 +_,7 @@
      }
  
-     public void remove(ServerPlayer p_11287_) {
-+        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedOut(p_11287_);
-         ServerLevel serverlevel = p_11287_.level();
-         p_11287_.awardStat(Stats.LEAVE_GAME);
-         this.save(p_11287_);
-@@ -389,13 +_,20 @@
-         TeleportTransition teleporttransition = p_11237_.findRespawnPositionAndUseSpawnBlock(!p_11238_, TeleportTransition.DO_NOTHING);
-         this.players.remove(p_11237_);
-         p_11237_.level().removePlayerImmediately(p_11237_, p_348558_);
+     public void remove(ServerPlayer player) {
++        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedOut(player);
+         ServerLevel level = player.level();
+         player.awardStat(Stats.LEAVE_GAME);
+         this.save(player);
+@@ -390,13 +_,20 @@
+         TeleportTransition respawnInfo = serverPlayer.findRespawnPositionAndUseSpawnBlock(!keepAllPlayerData, TeleportTransition.DO_NOTHING);
+         this.players.remove(serverPlayer);
+         serverPlayer.level().removePlayerImmediately(serverPlayer, removalReason);
 +
 +        // Neo: Allow changing the respawn position of players. The local dimension transition is updated with the new target.
-+        var event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnPositionEvent(p_11237_, teleporttransition, p_11238_);
-+        teleporttransition = event.getTeleportTransition();
++        var event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnPositionEvent(serverPlayer, respawnInfo, keepAllPlayerData);
++        respawnInfo = event.getTeleportTransition();
 +
-         ServerLevel serverlevel = teleporttransition.newLevel();
-         ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel, p_11237_.getGameProfile(), p_11237_.clientInformation());
-         serverplayer.connection = p_11237_.connection;
-         serverplayer.restoreFrom(p_11237_, p_11238_);
-         serverplayer.setId(p_11237_.getId());
-         serverplayer.setMainArm(p_11237_.getMainArm());
--        if (!teleporttransition.missingRespawnBlock()) {
+         ServerLevel level = respawnInfo.newLevel();
+         ServerPlayer player = new ServerPlayer(this.server, level, serverPlayer.getGameProfile(), serverPlayer.clientInformation());
+         player.connection = serverPlayer.connection;
+         player.restoreFrom(serverPlayer, keepAllPlayerData);
+         player.setId(serverPlayer.getId());
+         player.setMainArm(serverPlayer.getMainArm());
+-        if (!respawnInfo.missingRespawnBlock()) {
 +
 +        // Neo: Allow the event to control if the original spawn position is copied
 +        if (event.copyOriginalSpawnPosition()) {
-             serverplayer.copyRespawnPosition(p_11237_);
+             player.copyRespawnPosition(serverPlayer);
          }
  
 @@ -426,6 +_,8 @@
-         this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
-         serverplayer.initInventoryMenu();
-         serverplayer.setHealth(serverplayer.getHealth());
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(serverplayer);
-+        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
-         ServerPlayer.RespawnConfig serverplayer$respawnconfig = serverplayer.getRespawnConfig();
-         if (!p_11238_ && serverplayer$respawnconfig != null) {
-             LevelData.RespawnData leveldata$respawndata = serverplayer$respawnconfig.respawnData();
+         this.playersByUUID.put(player.getUUID(), player);
+         player.initInventoryMenu();
+         player.setHealth(player.getHealth());
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(player);
++        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(player, keepAllPlayerData);
+         ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
+         if (!keepAllPlayerData && respawnConfig != null) {
+             LevelData.RespawnData respawnData = respawnConfig.respawnData();
 @@ -539,6 +_,7 @@
      }
  
-     public void op(NameAndId p_442929_, Optional<LevelBasedPermissionSet> p_443490_, Optional<Boolean> p_443080_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_442929_, this.server.operatorUserPermissions(), this)) return;
+     public void op(NameAndId nameAndId, Optional<LevelBasedPermissionSet> permissions, Optional<Boolean> canBypassPlayerLimit) {
++        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, this.server.operatorUserPermissions(), this)) return;
          this.ops
              .add(
                  new ServerOpListEntry(
 @@ -552,6 +_,7 @@
      }
  
-     public void deop(NameAndId p_435771_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_435771_, LevelBasedPermissionSet.ALL, this)) return;
-         if (this.ops.remove(p_435771_)) {
-             ServerPlayer serverplayer = this.getPlayer(p_435771_.id());
-             if (serverplayer != null) {
-@@ -642,8 +_,12 @@
-     public void sendLevelInfo(ServerPlayer p_11230_, ServerLevel p_11231_) {
-         WorldBorder worldborder = p_11231_.getWorldBorder();
-         p_11230_.connection.send(new ClientboundInitializeBorderPacket(worldborder));
-+        if (p_11230_.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
-+            p_11230_.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().get(GameRules.ADVANCE_TIME), p_11231_.getDayTimeFraction(), p_11231_.getDayTimePerTick()));
-+        } else {
-         p_11230_.connection
-             .send(new ClientboundSetTimePacket(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().get(GameRules.ADVANCE_TIME)));
-+        }
-         p_11230_.connection.send(new ClientboundSetDefaultSpawnPositionPacket(p_11231_.getRespawnData()));
-         if (p_11231_.isRaining()) {
-             p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));
-@@ -653,6 +_,7 @@
+     public void deop(NameAndId nameAndId) {
++        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, LevelBasedPermissionSet.ALL, this)) return;
+         if (this.ops.remove(nameAndId)) {
+             ServerPlayer player = this.getPlayer(nameAndId.id());
+             if (player != null) {
+@@ -650,6 +_,7 @@
  
-         p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
-         this.server.tickRateManager().updateJoiningPlayer(p_11230_);
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialLevelAttachments(p_11231_, p_11230_);
+         player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
+         this.server.tickRateManager().updateJoiningPlayer(player);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialLevelAttachments(level, player);
      }
  
-     public void sendAllPlayerInfo(ServerPlayer p_11293_) {
-@@ -797,6 +_,8 @@
-             this.advancements.put(uuid, playeradvancements);
+     public void sendAllPlayerInfo(ServerPlayer player) {
+@@ -790,6 +_,8 @@
+             this.advancements.put(uuid, result);
          }
  
 +        // Forge: don't overwrite active player with a fake one.
-+        if (!(p_11297_ instanceof net.neoforged.neoforge.common.util.FakePlayer))
-         playeradvancements.setPlayer(p_11297_);
-         return playeradvancements;
++        if (!(player instanceof net.neoforged.neoforge.common.util.FakePlayer))
+         result.setPlayer(player);
+         return result;
      }
-@@ -820,7 +_,7 @@
+@@ -813,7 +_,7 @@
      }
  
      public List<ServerPlayer> getPlayers() {
@@ -141,20 +128,20 @@
 +        return this.playersView; // Neo: Return an unmodifiable view, we don't want people removing things without us knowing.
      }
  
-     public @Nullable ServerPlayer getPlayer(UUID p_11260_) {
-@@ -846,6 +_,7 @@
-             playeradvancements.reload(this.server.getAdvancements());
+     public @Nullable ServerPlayer getPlayer(UUID uuid) {
+@@ -839,6 +_,7 @@
+             advancements.reload(this.server.getAdvancements());
          }
  
 +        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, null));
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
-         RecipeManager recipemanager = this.server.getRecipeManager();
-         ClientboundUpdateRecipesPacket clientboundupdaterecipespacket = new ClientboundUpdateRecipesPacket(
-@@ -855,10 +_,15 @@
-         for (ServerPlayer serverplayer : this.players) {
-             serverplayer.connection.send(clientboundupdaterecipespacket);
-             serverplayer.getRecipeBook().sendInitialRecipeBook(serverplayer);
-+            net.neoforged.neoforge.common.CommonHooks.sendRecipes(serverplayer, dataSyncEvent.getRecipeTypesToSend(), recipemanager.recipeMap());
+         RecipeManager recipeManager = this.server.getRecipeManager();
+         ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
+@@ -848,10 +_,15 @@
+         for (ServerPlayer player : this.players) {
+             player.connection.send(recipes);
+             player.getRecipeBook().sendInitialRecipeBook(player);
++            net.neoforged.neoforge.common.CommonHooks.sendRecipes(player, dataSyncEvent.getRecipeTypesToSend(), recipeManager.recipeMap());
          }
      }
  

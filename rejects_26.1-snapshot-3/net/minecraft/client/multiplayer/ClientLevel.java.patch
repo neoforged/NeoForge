@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -320,7 +328,7 @@
+     private void tickTime() {
+         this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
+         if (this.tickDayTime) {
+-            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + 1L);
++            this.clientLevelData.setDayTime(this.clientLevelData.getDayTime() + advanceDaytime());
+         }
+     }
+ 

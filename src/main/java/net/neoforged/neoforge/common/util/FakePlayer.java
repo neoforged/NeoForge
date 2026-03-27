@@ -92,7 +92,7 @@ public class FakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void displayClientMessage(Component chatComponent, boolean actionBar) {}
+    public void sendSystemMessage(Component chatComponent, boolean actionBar) {}
 
     @Override
     public void awardStat(Stat<?> stat, int amount) {}
@@ -109,7 +109,7 @@ public class FakePlayer extends ServerPlayer {
     public void tick() {}
 
     @Override
-    public void updateOptions(ClientInformation p_301998_) {}
+    public void updateOptions(ClientInformation information) {}
 
     @Override
     public OptionalInt openMenu(@Nullable MenuProvider menuProvider, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
@@ -120,7 +120,7 @@ public class FakePlayer extends ServerPlayer {
     public void openHorseInventory(AbstractHorse horse, Container container) {}
 
     @Override
-    public boolean startRiding(Entity p_277395_, boolean p_278062_, boolean p_434333_) {
+    public boolean startRiding(Entity entityToRide, boolean force, boolean sendEventAndTriggers) {
         return false;
     }
 
@@ -218,7 +218,7 @@ public class FakePlayer extends ServerPlayer {
         public void handleTeleportToEntityPacket(ServerboundTeleportToEntityPacket packet) {}
 
         @Override
-        public void handleResourcePackResponse(ServerboundResourcePackPacket p_295695_) {}
+        public void handleResourcePackResponse(ServerboundResourcePackPacket packet) {}
 
         @Override
         public void handlePaddleBoat(ServerboundPaddleBoatPacket packet) {}
@@ -269,13 +269,13 @@ public class FakePlayer extends ServerPlayer {
         public void handleSignUpdate(ServerboundSignUpdatePacket packet) {}
 
         @Override
-        public void handleKeepAlive(ServerboundKeepAlivePacket p_294627_) {}
+        public void handleKeepAlive(ServerboundKeepAlivePacket packet) {}
 
         @Override
-        public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {}
+        public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {}
 
         @Override
-        public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {}
+        public void handleClientInformation(ServerboundClientInformationPacket packet) {}
 
         @Override
         public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {}

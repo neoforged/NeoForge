@@ -2,7 +2,7 @@
 +++ b/net/minecraft/client/renderer/blockentity/BrushableBlockRenderer.java
 @@ -92,4 +_,10 @@
  
-         return afloat;
+         return xyzTranslations;
      }
 +
 +    @Override

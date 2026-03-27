@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest.client;
 
 import com.mojang.brigadier.Command;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -22,7 +22,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int MouseX, int MouseY, float PartialTick) {
-        renderTransparentBackground(graphics);
+    public void extractBackground(GuiGraphicsExtractor graphics, int MouseX, int MouseY, float PartialTick) {
+        extractTransparentBackground(graphics);
     }
 }

@@ -1,0 +1,24 @@
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -1193,10 +1222,17 @@
+     }
+ 
+     private void synchronizeTime(ServerLevel level) {
+-        this.playerList
+-            .broadcastAll(
+-                new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME)), level.dimension()
+-            );
++        ClientboundSetTimePacket vanillaPacket = new ClientboundSetTimePacket(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME));
++        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(level.getGameTime(), level.getDayTime(), level.getGameRules().get(GameRules.ADVANCE_TIME), level.getDayTimeFraction(), level.getDayTimePerTick());
++        for (ServerPlayer serverplayer : playerList.getPlayers()) {
++            if (serverplayer.level().dimension() == level.dimension()) {
++                if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++                    serverplayer.connection.send(neoPacket);
++                } else {
++                    serverplayer.connection.send(vanillaPacket);
++                }
++            }
++        }
+     }
+ 
+     public void forceTimeSynchronization() {

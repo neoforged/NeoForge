@@ -2,18 +2,18 @@
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
 @@ -80,7 +_,7 @@
          .stream()
-         .flatMap(p_432542_ -> p_432542_.getStateDefinition().getPossibleStates().stream())
+         .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
          .collect(ImmutableSet.toImmutableSet());
 -    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = Maps.newHashMap();
 +    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
  
-     private static Set<BlockState> getBlockStates(Block p_218074_) {
-         return ImmutableSet.copyOf(p_218074_.getStateDefinition().getPossibleStates());
+     private static Set<BlockState> getBlockStates(Block block) {
+         return ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates());
 @@ -98,6 +_,7 @@
      }
  
-     private static void registerBlockStates(Holder<PoiType> p_250815_, Set<BlockState> p_250679_) {
+     private static void registerBlockStates(Holder<PoiType> type, Set<BlockState> matchingStates) {
 +        // Neo: we do this automatically for modded PoiTypes in NeoForgeRegistryCallbacks
-         p_250679_.forEach(
-             p_466600_ -> {
-                 Holder<PoiType> holder = TYPE_BY_STATE.put(p_466600_, p_250815_);
+         matchingStates.forEach(
+             blockState -> {
+                 Holder<PoiType> previous = TYPE_BY_STATE.put(blockState, type);

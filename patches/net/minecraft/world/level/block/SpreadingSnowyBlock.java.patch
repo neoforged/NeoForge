@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/SpreadingSnowyBlock.java
++++ b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
+@@ -50,8 +_,10 @@
+         Optional<Block> baseBlock = blocks.getOptional(this.baseBlock);
+         if (!baseBlock.isEmpty()) {
+             if (!canStayAlive(state, level, pos)) {
++                if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
+                 level.setBlockAndUpdate(pos, baseBlock.get().defaultBlockState());
+             } else {
++                if (!level.isAreaLoaded(pos, 3)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
+                 if (level.getMaxLocalRawBrightness(pos.above()) >= 9) {
+                     BlockState defaultBlockState = this.defaultBlockState();
+ 

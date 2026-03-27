@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/vehicle/ContainerEntity.java
 +++ b/net/minecraft/world/entity/vehicle/ContainerEntity.java
-@@ -102,6 +_,9 @@
+@@ -101,6 +_,9 @@
  
              this.setContainerLootTable(null);
-             LootParams.Builder lootparams$builder = new LootParams.Builder((ServerLevel)this.level()).withParameter(LootContextParams.ORIGIN, this.position());
+             LootParams.Builder builder = new LootParams.Builder((ServerLevel)this.level()).withParameter(LootContextParams.ORIGIN, this.position());
 +            // Neo: set the chest to attacking_entity for loot context.
 +            if (this instanceof net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer entityContainer)
-+                lootparams$builder.withParameter(LootContextParams.ATTACKING_ENTITY, entityContainer);
-             if (p_219950_ != null) {
-                 lootparams$builder.withLuck(p_219950_.getLuck()).withParameter(LootContextParams.THIS_ENTITY, p_219950_);
++                builder.withParameter(LootContextParams.ATTACKING_ENTITY, entityContainer);
+             if (player != null) {
+                 builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
              }

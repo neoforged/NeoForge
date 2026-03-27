@@ -1,63 +1,52 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -898,9 +_,10 @@
-             }
-         },
-         new OptionInstance.LazyEnum<>(
-+            // FORGE: fix incorrect string comparison - PR #8767
-             () -> Stream.concat(Stream.of(""), Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().stream()).toList(),
-             p_232011_ -> Minecraft.getInstance().isRunning()
--                    && p_232011_ != ""
-+                    && (p_232011_ == null || !p_232011_.isEmpty())
-                     && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
-                 ? Optional.empty()
-                 : Optional.of(p_232011_),
 @@ -1029,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
-         for (Pack pack : p_275268_.getSelectedPacks()) {
--            if (!pack.isFixedPosition()) {
-+            if (!pack.isFixedPosition() && !pack.isHidden()) {
-                 this.resourcePacks.add(pack.getId());
-                 if (!pack.getCompatibility().isCompatible()) {
-                     this.incompatibleResourcePacks.add(pack.getId());
-@@ -1402,6 +_,7 @@
+         for (Pack entry : packRepository.getSelectedPacks()) {
+-            if (!entry.isFixedPosition()) {
++            if (!entry.isFixedPosition() && !entry.isHidden()) {
+                 this.resourcePacks.add(entry.getId());
+                 if (!entry.getCompatibility().isCompatible()) {
+                     this.incompatibleResourcePacks.add(entry.getId());
+@@ -1404,6 +_,7 @@
      }
  
-     public Options(Minecraft p_92138_, File p_92139_) {
+     public Options(Minecraft minecraft, File workingDirectory) {
 +        setForgeKeybindProperties();
-         this.minecraft = p_92138_;
-         this.optionsFile = new File(p_92139_, "options.txt");
-         boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1425,6 +_,7 @@
-             p_461224_ -> this.setGraphicsPresetToCustom()
+         this.minecraft = minecraft;
+         this.optionsFile = new File(workingDirectory, "options.txt");
+         boolean largeDistances = Runtime.getRuntime().maxMemory() >= 1000000000L;
+@@ -1427,6 +_,7 @@
+             value -> this.setGraphicsPresetToCustom()
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
 +        net.neoforged.neoforge.client.ClientHooks.onRegisterKeyMappings(this, KeyMapping.Category.SORT_ORDER);
          this.load();
+         this.initialExclusiveFullscreen = this.exclusiveFullscreen.get();
      }
+@@ -1558,10 +_,15 @@
+         access.process("musicFrequency", this.musicFrequency);
  
-@@ -1556,10 +_,14 @@
-         p_168428_.process("musicFrequency", this.musicFrequency);
- 
-         for (KeyMapping keymapping : this.keyMappings) {
--            String s = keymapping.saveString();
-+            String s = keymapping.saveString() + (keymapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keymapping.getKeyModifier() : "");
-             String s1 = p_168428_.process("key_" + keymapping.getName(), s);
-             if (!s.equals(s1)) {
--                keymapping.setKey(InputConstants.getKey(s1));
-+                if (s1.indexOf(':') != -1) {
-+                    String[] pts = s1.split(":");
-+                    keymapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.valueFromString(pts[1]), InputConstants.getKey(pts[0]));
-+                } else
-+                    keymapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.getKey(s1));
+         for (KeyMapping keyMapping : this.keyMappings) {
+-            String currentValue = keyMapping.saveString();
++            String currentValue = keyMapping.saveString() + (keyMapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keyMapping.getKeyModifier() : "");
+             String newValue = access.process("key_" + keyMapping.getName(), currentValue);
+             if (!currentValue.equals(newValue)) {
+-                keyMapping.setKey(InputConstants.getKey(newValue));
++                if (newValue.indexOf(':') != -1) {
++                    String[] pts = newValue.split(":");
++                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.valueFromString(pts[1]), InputConstants.getKey(pts[0]));
++                } else {
++                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.getKey(newValue));
++                }
              }
          }
  
-@@ -1849,6 +_,23 @@
+@@ -1857,6 +_,23 @@
          }
  
-         p_92146_.setSelected(set);
+         repository.setSelected(selected);
 +    }
 +
 +    private void setForgeKeybindProperties() {

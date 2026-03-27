@@ -1,26 +1,17 @@
 --- a/net/minecraft/client/particle/TerrainParticle.java
 +++ b/net/minecraft/client/particle/TerrainParticle.java
-@@ -52,7 +_,7 @@
-         this.rCol = 0.6F;
-         this.gCol = 0.6F;
-         this.bCol = 0.6F;
--        if (!p_172458_.is(Blocks.GRASS_BLOCK)) {
-+        if (net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_172458_).areBreakingParticlesTinted(p_172458_, p_172451_, p_172459_)) {
-             int i = Minecraft.getInstance().getBlockColors().getColor(p_172458_, p_172451_, p_172459_, 0);
-             this.rCol *= (i >> 16 & 0xFF) / 255.0F;
-             this.gCol *= (i >> 8 & 0xFF) / 255.0F;
-@@ -108,8 +_,14 @@
+@@ -74,8 +_,14 @@
      ) {
-         BlockState blockstate = p_338588_.getState();
-         return !blockstate.isAir() && !blockstate.is(Blocks.MOVING_PISTON) && blockstate.shouldSpawnTerrainParticles()
--            ? new TerrainParticle(p_338858_, p_338212_, p_338420_, p_338623_, p_338262_, p_338289_, p_338400_, blockstate)
-+            ? new TerrainParticle(p_338858_, p_338212_, p_338420_, p_338623_, p_338262_, p_338289_, p_338400_, blockstate).updateSprite(blockstate, p_338588_.getPos())
+         BlockState state = options.getState();
+         return !state.isAir() && !state.is(Blocks.MOVING_PISTON) && state.shouldSpawnTerrainParticles()
+-            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state)
++            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state).updateSprite(state, options.getPos())
              : null;
 +    }
 +
 +    public TerrainParticle updateSprite(BlockState state, BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
 +        if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
-+            this.setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(state, level, pos));
++            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
 +        return this;
      }
  

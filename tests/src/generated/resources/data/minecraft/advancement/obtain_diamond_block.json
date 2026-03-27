@@ -17,7 +17,6 @@
     "description": "You obtained a DiamondBlock",
     "frame": "challenge",
     "icon": {
-      "count": 1,
       "id": "minecraft:diamond_block"
     },
     "title": {

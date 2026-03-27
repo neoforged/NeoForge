@@ -147,7 +147,7 @@ public class PartEntityTest {
         }
 
         @Override
-        protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder p_326003_) {}
+        protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder entityData) {}
 
         @Override
         protected void readAdditionalSaveData(ValueInput valueInput) {}

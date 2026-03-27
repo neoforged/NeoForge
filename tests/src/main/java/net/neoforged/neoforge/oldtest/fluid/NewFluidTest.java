@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.oldtest.fluid;
 
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -22,7 +24,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -35,9 +36,11 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSources;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -52,7 +55,7 @@ import org.jspecify.annotations.Nullable;
 
 @Mod(NewFluidTest.MODID)
 public class NewFluidTest {
-    public static final boolean ENABLE = false; // TODO fix
+    public static final boolean ENABLE = false; // TODO: fix (custom block cannot be fluidlogged)
     public static final String MODID = "new_fluid_test";
 
     public static final Identifier FLUID_STILL = Identifier.fromNamespaceAndPath("minecraft", "block/brown_mushroom_block");
@@ -74,12 +77,12 @@ public class NewFluidTest {
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(makeProperties()));
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(makeProperties()));
 
-    public static DeferredBlock<LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(test_fluid.value(), Properties.of().noCollision().strength(100.0F).noLootTable()));
-    public static DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(test_fluid.value(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static DeferredBlock<LiquidBlock> test_fluid_block = BLOCKS.registerBlock("test_fluid_block", properties -> new LiquidBlock(test_fluid.value(), properties.noCollision().strength(100.0F).noLootTable()));
+    public static DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.registerItem("test_fluid_bucket", properties -> new BucketItem(test_fluid.value(), properties.craftRemainder(Items.BUCKET).stacksTo(1)));
 
     // WARNING: this doesn't allow "any fluid", only the fluid from this test mod!
-    public static DeferredBlock<Block> fluidloggable_block = BLOCKS.register("fluidloggable_block", () -> new FluidloggableBlock(Properties.of().mapColor(MapColor.WOOD).noCollision().strength(100.0F).noLootTable()));
-    public static DeferredItem<Item> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.register("fluidloggable_block", () -> new BlockItem(fluidloggable_block.get(), new Item.Properties()));
+    public static DeferredBlock<Block> fluidloggable_block = BLOCKS.registerBlock("fluidloggable_block", properties -> new FluidloggableBlock(properties.mapColor(MapColor.WOOD).noCollision().strength(100.0F).noLootTable()));
+    public static DeferredItem<BlockItem> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(fluidloggable_block);
 
     public NewFluidTest(IEventBus modEventBus) {
         if (ENABLE) {
@@ -92,8 +95,10 @@ public class NewFluidTest {
             modEventBus.addListener(this::addCreative);
 
             if (FMLEnvironment.getDist().isClient()) {
-                modEventBus.addListener(ClientEvents::onRegisterClientExtensions);
+                modEventBus.addListener(ClientEvents::onRegisterFluidModels);
             }
+
+            NeoForge.EVENT_BUS.addListener(this::serverStarted);
         }
     }
 
@@ -104,14 +109,17 @@ public class NewFluidTest {
         }
     }
 
-    public void loadComplete(FMLLoadCompleteEvent event) {
+    private void loadComplete(FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> DispenserBlock.registerBehavior(TEST_FLUID_BUCKET.get(), DispenseFluidContainer.getInstance()));
+    }
+
+    private void serverStarted(ServerStartedEvent event) {
         // some sanity checks
         BlockState state = Fluids.WATER.defaultFluidState().createLegacyBlock();
         BlockState state2 = Fluids.WATER.getFluidType().getBlockForFluidState(null, null, Fluids.WATER.defaultFluidState());
         Validate.isTrue(state.getBlock() == Blocks.WATER && state2 == state);
         ItemStack stack = Fluids.WATER.getFluidType().getBucket(new FluidStack(Fluids.WATER, 1));
         Validate.isTrue(stack.getItem() == Fluids.WATER.getBucket());
-        event.enqueueWork(() -> DispenserBlock.registerBehavior(TEST_FLUID_BUCKET.get(), DispenseFluidContainer.getInstance()));
     }
 
     // WARNING: this doesn't allow "any fluid", only the fluid from this test mod!
@@ -164,28 +172,12 @@ public class NewFluidTest {
     }
 
     private static final class ClientEvents {
-        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
-            event.registerFluidType(new IClientFluidTypeExtensions() {
-                @Override
-                public Identifier getStillTexture() {
-                    return FLUID_STILL;
-                }
-
-                @Override
-                public Identifier getFlowingTexture() {
-                    return FLUID_FLOWING;
-                }
-
-                @Override
-                public Identifier getOverlayTexture() {
-                    return FLUID_OVERLAY;
-                }
-
-                @Override
-                public int getTintColor() {
-                    return 0x3F1080FF;
-                }
-            }, test_fluid_type.value());
+        private static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+            event.register(new FluidModel.Unbaked(
+                    new Material(FLUID_STILL, true),
+                    new Material(FLUID_FLOWING, true),
+                    new Material(FLUID_OVERLAY, true),
+                    FluidTintSources.constant(0x3F1080FF, -1)), test_fluid.value(), test_fluid_flowing.value());
         }
     }
 }

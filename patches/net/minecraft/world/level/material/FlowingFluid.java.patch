@@ -1,25 +1,25 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -172,7 +_,7 @@
-             BlockState blockstate = p_376839_.getBlockState(blockpos);
-             FluidState fluidstate = blockstate.getFluidState();
-             if (fluidstate.getType().isSame(this) && canPassThroughWall(direction, p_376839_, p_76037_, p_76038_, blockpos, blockstate)) {
--                if (fluidstate.isSource()) {
-+                if (fluidstate.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(p_376839_, blockpos, blockstate)) {
-                     j++;
+@@ -169,7 +_,7 @@
+             BlockState blockState = level.getBlockState(relativePos);
+             FluidState fluidState = blockState.getFluidState();
+             if (fluidState.getType().isSame(this) && canPassThroughWall(direction, level, pos, state, relativePos, blockState)) {
+-                if (fluidState.isSource()) {
++                if (fluidState.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(level, relativePos, blockState)) {
+                     neighbourSources++;
                  }
  
-@@ -180,7 +_,7 @@
+@@ -177,7 +_,7 @@
              }
          }
  
--        if (j >= 2 && this.canConvertToSource(p_376839_)) {
-+        if (j >= 2) {
-             BlockState blockstate1 = p_376839_.getBlockState(blockpos$mutableblockpos.setWithOffset(p_76037_, Direction.DOWN));
-             FluidState fluidstate1 = blockstate1.getFluidState();
-             if (blockstate1.isSolid() || this.isSourceBlockOfThisType(fluidstate1)) {
-@@ -262,6 +_,15 @@
-         return this.getSource().defaultFluidState().setValue(FALLING, p_76069_);
+-        if (neighbourSources >= 2 && this.canConvertToSource(level)) {
++        if (neighbourSources >= 2) {
+             BlockState belowState = level.getBlockState(mutablePos.setWithOffset(pos, Direction.DOWN));
+             FluidState belowFluid = belowState.getFluidState();
+             if (belowState.isSolid() || this.isSourceBlockOfThisType(belowFluid)) {
+@@ -257,6 +_,15 @@
+         return this.getSource().defaultFluidState().setValue(FALLING, falling);
      }
  
 +    @Override
@@ -31,6 +31,6 @@
 +     * @deprecated Forge: Use {@link #canConvertToSource(FluidState, ServerLevel, BlockPos)} instead.
 +     */
 +    @Deprecated
-     protected abstract boolean canConvertToSource(ServerLevel p_376940_);
+     protected abstract boolean canConvertToSource(ServerLevel level);
  
-     protected void spreadTo(LevelAccessor p_76005_, BlockPos p_76006_, BlockState p_76007_, Direction p_76008_, FluidState p_76009_) {
+     protected void spreadTo(LevelAccessor level, BlockPos pos, BlockState state, Direction direction, FluidState target) {

@@ -18,8 +18,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,6 +39,9 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
+    static final MapCodec<RecipeBookTestRecipe> CODEC = Ingredients.CODEC.xmap(RecipeBookTestRecipe::new, recipeBookTestRecipe -> recipeBookTestRecipe.ingredients);
+    static final StreamCodec<RegistryFriendlyByteBuf, RecipeBookTestRecipe> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
+
     public final Ingredients ingredients;
     private final int width;
     private final int height;
@@ -90,8 +96,8 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput p_44001_, HolderLookup.Provider registryAccess) {
-        return this.ingredients.result.copy();
+    public ItemStack assemble(CraftingInput input) {
+        return this.ingredients.result.create();
     }
 
     @Override
@@ -102,6 +108,11 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     @Override
     public RecipeType<RecipeBookTestRecipe> getType() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get();
+    }
+
+    @Override
+    public boolean showNotification() {
+        return false;
     }
 
     @Override
@@ -123,7 +134,7 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
                 new ShapedCraftingRecipeDisplay(
                         width,
                         height,
-                        items.stream().map(p_380107_ -> p_380107_.map(Ingredient::display).orElse(SlotDisplay.Empty.INSTANCE)).toList(),
+                        items.stream().map(e -> e.map(Ingredient::display).orElse(SlotDisplay.Empty.INSTANCE)).toList(),
                         new SlotDisplay.ItemStackSlotDisplay(ingredients.result),
                         new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)));
     }
@@ -137,7 +148,7 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
         }
     }
 
-    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStack result) {
+    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStackTemplate result) {
         private static final Function<String, DataResult<String>> VERIFY_LENGTH_2 = s -> s.length() == 2 ? DataResult.success(s) : DataResult.error(() -> "Key row length must be of 2!");
         private static final Function<List<String>, DataResult<List<String>>> VERIFY_SIZE = l -> {
             if (l.size() <= 4 && l.size() >= 1) {
@@ -153,6 +164,6 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
                 Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
                 Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
                 Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),
-                ItemStack.CODEC.fieldOf("result").forGetter(Ingredients::result)).apply(inst, Ingredients::new));
+                ItemStackTemplate.CODEC.fieldOf("result").forGetter(Ingredients::result)).apply(inst, Ingredients::new));
     }
 }

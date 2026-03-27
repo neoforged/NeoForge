@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -61,7 +_,7 @@
-                 case PIGLIN -> new PiglinHeadModel(p_387840_.bakeLayer(ModelLayers.PIGLIN_HEAD));
+@@ -67,7 +_,7 @@
+                 case PIGLIN -> new PiglinHeadModel(modelSet.bakeLayer(ModelLayers.PIGLIN_HEAD));
              });
          } else {
 -            return null;
-+            return net.neoforged.neoforge.client.ClientHooks.getModdedSkullModel(p_387840_, p_388801_); // Neo: Lookup model for modded skull types
++            return net.neoforged.neoforge.client.ClientHooks.getModdedSkullModel(modelSet, type); // Neo: Lookup model for modded skull types
          }
      }
  
-@@ -150,5 +_,15 @@
- 
-     public static RenderType getPlayerSkinRenderType(Identifier p_468590_) {
-         return RenderTypes.entityTranslucent(p_468590_);
+@@ -158,5 +_,15 @@
+         return new Transformation(
+             new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-RotationSegment.convertToDegrees(segment))).scale(-1.0F, -1.0F, 1.0F)
+         );
 +    }
 +
 +    @Override

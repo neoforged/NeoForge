@@ -10,15 +10,15 @@
              this.socket.joinGroup(this.pingGroup);
          }
 @@ -87,7 +_,11 @@
-             String s = LanServerPinger.parseMotd(p_120097_);
-             String s1 = LanServerPinger.parseAddress(p_120097_);
-             if (s1 != null) {
--                s1 = p_120098_.getHostAddress() + ":" + s1;
-+                if (net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_120098_)) {
-+                    s1 = "[" + com.google.common.net.InetAddresses.toAddrString(p_120098_) + "]:" + s1;
+             String motd = LanServerPinger.parseMotd(pingData);
+             String address = LanServerPinger.parseAddress(pingData);
+             if (address != null) {
+-                address = socketAddress.getHostAddress() + ":" + address;
++                if (net.neoforged.neoforge.network.DualStackUtils.checkIPv6(socketAddress)) {
++                    address = "[" + com.google.common.net.InetAddresses.toAddrString(socketAddress) + "]:" + address;
 +                } else {
-+                    s1 = p_120098_.getHostAddress() + ":" + s1;
++                    address = socketAddress.getHostAddress() + ":" + address;
 +                }
-                 boolean flag = false;
+                 boolean found = false;
  
-                 for (LanServer lanserver : this.servers) {
+                 for (LanServer server : this.servers) {

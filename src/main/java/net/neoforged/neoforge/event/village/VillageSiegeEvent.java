@@ -19,8 +19,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * <br>
  * This event is {@link ICancellableEvent}; canceling stops the siege.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class VillageSiegeEvent extends Event implements ICancellableEvent {

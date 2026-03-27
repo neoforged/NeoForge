@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.crafting;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -22,22 +20,22 @@ import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -155,7 +153,7 @@ public class IngredientTests {
 
                 // Axe is now damaged, we expect the recipe to work, even if we also add other random values to the compound
                 .thenExecute(crafter -> crafter.getItem(0).hurtAndBreak(2, helper.getLevel(), null, item -> {}))
-                .thenExecute(crafter -> CustomData.update(DataComponents.CUSTOM_DATA, crafter.getItem(0), tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat())))
+                .thenExecute(crafter -> CustomData.update(DataComponents.CUSTOM_DATA, crafter.getItem(0), tag -> tag.putFloat("abcd", helper.getLevel().getRandom().nextFloat())))
 
                 .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
                 .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.ALLIUM))
@@ -175,7 +173,10 @@ public class IngredientTests {
                     protected void buildRecipes() {
                         this.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)
                                 .requires(new TestEnabledIngredient(
-                                        DataComponentIngredient.of(true, DataComponents.DAMAGE, 4, Items.DIAMOND_PICKAXE),
+                                        DataComponentIngredient.of(DataComponentPatch.builder()
+                                                .set(DataComponents.DAMAGE, 4)
+                                                .remove(DataComponents.CUSTOM_DATA)
+                                                .build(), Items.DIAMOND_PICKAXE),
                                         test.framework(), test.id()).toVanilla())
                                 .requires(Items.ACACIA_PLANKS)
                                 .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
@@ -230,21 +231,39 @@ public class IngredientTests {
         REG_HELPER.register(framework.modEventBus(), framework.container());
     }
 
-    private static final DeferredHolder<RecipeSerializer<?>, CompressedShapelessRecipeSerializer> COMPRESSED_SHAPELESS_SERIALIZER = REG_HELPER
+    private static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CompressedShapelessRecipe>> COMPRESSED_SHAPELESS_SERIALIZER = REG_HELPER
             .registrar(Registries.RECIPE_SERIALIZER)
-            .register("compressed_shapeless", CompressedShapelessRecipeSerializer::new);
+            .register("compressed_shapeless", () -> new RecipeSerializer<CompressedShapelessRecipe>(CompressedShapelessRecipe.CODEC, (StreamCodec) ShapelessRecipe.STREAM_CODEC));
 
     private static List<Ingredient> shapelessRecipeIngredients(ShapelessRecipe recipe) {
         return ObfuscationReflectionHelper.getPrivateValue(ShapelessRecipe.class, recipe, "ingredients");
     }
 
     static class CompressedShapelessRecipe extends ShapelessRecipe {
-        public CompressedShapelessRecipe(String group, CraftingBookCategory category, ItemStack result, List<SizedIngredient> ingredients) {
-            super(group, category, result, decompressList(ingredients));
-        }
+        private static final MapCodec<CompressedShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(
+                p_337958_ -> p_337958_.group(
+                        Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
+                        CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(ShapelessRecipe::result),
+                        SizedIngredient.NESTED_CODEC
+                                .listOf()
+                                .fieldOf("ingredients")
+                                .flatXmap(
+                                        ingredients -> {
+                                            if (ingredients.isEmpty()) {
+                                                return DataResult.error(() -> "No ingredients for shapeless recipe");
+                                            } else {
+                                                return ingredients.size() > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
+                                                        ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
+                                                        : DataResult.success(ingredients);
+                                            }
+                                        },
+                                        DataResult::success)
+                                .forGetter(r -> CompressedShapelessRecipe.compressIngredients(shapelessRecipeIngredients(r))))
+                        .apply(p_337958_, CompressedShapelessRecipe::new));
 
-        public CompressedShapelessRecipe(ShapelessRecipe uncompressed) {
-            this(uncompressed.group(), uncompressed.category(), uncompressed.assemble(null, null), compressIngredients(shapelessRecipeIngredients(uncompressed)));
+        public CompressedShapelessRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, ItemStackTemplate result, List<SizedIngredient> ingredients) {
+            super(commonInfo, bookInfo, result, decompressList(ingredients));
         }
 
         private static NonNullList<Ingredient> decompressList(List<SizedIngredient> ingredients) {
@@ -273,102 +292,72 @@ public class IngredientTests {
         }
     }
 
-    static class CompressedShapelessRecipeSerializer implements RecipeSerializer<CompressedShapelessRecipe> {
-        private static final MapCodec<CompressedShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(
-                p_337958_ -> p_337958_.group(
-                        Codec.STRING.optionalFieldOf("group", "").forGetter(ShapelessRecipe::group),
-                        CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category()),
-                        ItemStack.CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.assemble(null, null)),
-                        SizedIngredient.NESTED_CODEC
-                                .listOf()
-                                .fieldOf("ingredients")
-                                .flatXmap(
-                                        ingredients -> {
-                                            if (ingredients.isEmpty()) {
-                                                return DataResult.error(() -> "No ingredients for shapeless recipe");
-                                            } else {
-                                                return ingredients.size() > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
-                                                        ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
-                                                        : DataResult.success(ingredients);
-                                            }
-                                        },
-                                        DataResult::success)
-                                .forGetter(r -> CompressedShapelessRecipe.compressIngredients(shapelessRecipeIngredients(r))))
-                        .apply(p_337958_, CompressedShapelessRecipe::new));
-
-        @Override
-        public MapCodec<CompressedShapelessRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, CompressedShapelessRecipe> streamCodec() {
-            // very ugly, don't look too much at this
-            return (StreamCodec) ShapelessRecipe.Serializer.STREAM_CODEC;
-        }
-    }
-
     static class CompressedShapelessRecipeBuilder implements RecipeBuilder {
         private final RecipeCategory category;
-        private final ItemStack result;
+        private final ItemStackTemplate result;
         private final List<Ingredient> ingredients = new ArrayList<>();
         private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
         @org.jspecify.annotations.Nullable
         private String group;
 
-        private CompressedShapelessRecipeBuilder(RecipeCategory p_250837_, ItemStack p_363612_) {
-            this.category = p_250837_;
-            this.result = p_363612_;
+        private CompressedShapelessRecipeBuilder(RecipeCategory category, ItemStackTemplate result) {
+            this.category = category;
+            this.result = result;
         }
 
-        public static CompressedShapelessRecipeBuilder compressedShapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
-            return compressedShapeless(p_250714_, p_249659_, 1);
+        @Override
+        public ResourceKey<Recipe<?>> defaultId() {
+            return RecipeBuilder.getDefaultRecipeId(this.result);
         }
 
-        public static CompressedShapelessRecipeBuilder compressedShapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
-            return new CompressedShapelessRecipeBuilder(p_252339_, p_250836_.asItem().getDefaultInstance().copyWithCount(p_249928_));
+        public static CompressedShapelessRecipeBuilder compressedShapeless(RecipeCategory category, ItemLike item) {
+            return compressedShapeless(category, item, 1);
         }
 
-        public CompressedShapelessRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
-            for (int i = 0; i < p_126188_; i++) {
-                this.ingredients.add(p_126187_);
+        public static CompressedShapelessRecipeBuilder compressedShapeless(RecipeCategory category, ItemLike item, int count) {
+            return new CompressedShapelessRecipeBuilder(category, new ItemStackTemplate(item.asItem(), count));
+        }
+
+        public CompressedShapelessRecipeBuilder requires(Ingredient ingredient, int count) {
+            for (int i = 0; i < count; i++) {
+                this.ingredients.add(ingredient);
             }
 
             return this;
         }
 
-        public CompressedShapelessRecipeBuilder unlockedBy(String p_176781_, Criterion<?> p_300897_) {
-            this.criteria.put(p_176781_, p_300897_);
-            return this;
-        }
-
-        public CompressedShapelessRecipeBuilder group(@Nullable String p_126195_) {
-            this.group = p_126195_;
+        @Override
+        public CompressedShapelessRecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
+            this.criteria.put(name, criterion);
             return this;
         }
 
         @Override
-        public Item getResult() {
-            return this.result.getItem();
+        public CompressedShapelessRecipeBuilder group(@Nullable String group) {
+            this.group = group;
+            return this;
         }
 
         @Override
-        public void save(RecipeOutput p_301215_, ResourceKey<Recipe<?>> p_379987_) {
-            this.ensureValid(p_379987_);
-            Advancement.Builder advancement$builder = p_301215_.advancement()
-                    .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_379987_))
-                    .rewards(AdvancementRewards.Builder.recipe(p_379987_))
+        public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+            this.ensureValid(id);
+            Advancement.Builder advancement$builder = output.advancement()
+                    .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                    .rewards(AdvancementRewards.Builder.recipe(id))
                     .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(advancement$builder::addCriterion);
             ShapelessRecipe shapelessrecipe = new CompressedShapelessRecipe(
-                    Objects.requireNonNullElse(this.group, ""), RecipeBuilder.determineBookCategory(this.category), this.result, CompressedShapelessRecipe.compressIngredients(this.ingredients));
-            p_301215_.accept(
-                    p_379987_, shapelessrecipe, advancement$builder.build(p_379987_.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/")));
+                    new Recipe.CommonInfo(false),
+                    RecipeBuilder.createCraftingBookInfo(this.category, this.group),
+                    this.result,
+                    CompressedShapelessRecipe.compressIngredients(this.ingredients));
+            output.accept(
+                    id, shapelessrecipe, advancement$builder.build(id.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/")));
         }
 
-        private void ensureValid(ResourceKey<Recipe<?>> p_379745_) {
+        private void ensureValid(ResourceKey<Recipe<?>> id) {
             if (this.criteria.isEmpty()) {
-                throw new IllegalStateException("No way of obtaining recipe " + p_379745_.identifier());
+                throw new IllegalStateException("No way of obtaining recipe " + id.identifier());
             }
         }
     }

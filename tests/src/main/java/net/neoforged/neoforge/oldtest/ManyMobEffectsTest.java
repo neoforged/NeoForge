@@ -108,7 +108,7 @@ public class ManyMobEffectsTest {
             } else if (heldItem.isEmpty()) {
                 var effect = ((MobEffect) ObfuscationReflectionHelper.getPrivateValue(MushroomCow.class, cow, "effect"));
                 if (effect != null) {
-                    event.getEntity().displayClientMessage(Component.literal(String.valueOf(BuiltInRegistries.MOB_EFFECT.getKey(effect))), true);
+                    event.getEntity().sendOverlayMessage(Component.literal(String.valueOf(BuiltInRegistries.MOB_EFFECT.getKey(effect))));
                 }
             }
         }

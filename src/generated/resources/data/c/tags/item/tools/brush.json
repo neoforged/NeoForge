@@ -1,13 +1,5 @@
 {
   "values": [
-    "minecraft:brush",
-    {
-      "id": "#forge:tools/brushes",
-      "required": false
-    },
-    {
-      "id": "#c:tools/brushes",
-      "required": false
-    }
+    "minecraft:brush"
   ]
 }

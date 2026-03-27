@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/item/TridentItem.java
 +++ b/net/minecraft/world/item/TridentItem.java
-@@ -142,4 +_,9 @@
-         throwntrident.pickup = AbstractArrow.Pickup.ALLOWED;
-         return throwntrident;
+@@ -144,4 +_,9 @@
+         trident.pickup = AbstractArrow.Pickup.ALLOWED;
+         return trident;
      }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
 +        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_TRIDENT_ACTIONS.contains(itemAbility);
 +    }
  }

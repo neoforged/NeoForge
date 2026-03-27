@@ -3,10 +3,10 @@
 @@ -80,6 +_,9 @@
      }
  
-     public final CompoundTag createTag(StructurePieceSerializationContext p_192645_) {
+     public final CompoundTag createTag(StructurePieceSerializationContext context) {
 +        if (BuiltInRegistries.STRUCTURE_PIECE.getKey(this.getType()) == null) { // Neo: Friendlier error then the Null String error below.
 +            throw new RuntimeException("StructurePiece \"" + this.getClass().getName() + "\": \"" + this.getType() + "\" unregistered, serializing impossible.");
 +        }
-         CompoundTag compoundtag = new CompoundTag();
-         compoundtag.putString("id", BuiltInRegistries.STRUCTURE_PIECE.getKey(this.getType()).toString());
-         compoundtag.store("BB", BoundingBox.CODEC, this.boundingBox);
+         CompoundTag tag = new CompoundTag();
+         tag.putString("id", BuiltInRegistries.STRUCTURE_PIECE.getKey(this.getType()).toString());
+         tag.store("BB", BoundingBox.CODEC, this.boundingBox);

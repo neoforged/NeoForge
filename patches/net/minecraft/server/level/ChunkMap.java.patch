@@ -1,103 +1,104 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -402,6 +_,7 @@
+@@ -389,6 +_,7 @@
                  this.modified = true;
              }
  
-+            net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(this.level, p_140177_, p_140180_, p_140178_, p_140179_);
-             return p_140179_;
++            net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(this.level, node, oldLevel, level, chunk);
+             return chunk;
          }
      }
-@@ -531,12 +_,15 @@
+@@ -518,12 +_,15 @@
              } else {
-                 ChunkAccess chunkaccess = p_140183_.getLatestChunk();
-                 if (this.pendingUnloads.remove(p_140182_, p_140183_) && chunkaccess != null) {
-+                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, chunkaccess); // Neo: Must be called for all chunk unloading. Not just LevelChunks.
-+                    this.chunkTypeCache.remove(chunkaccess.getPos().toLong()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
-                     if (chunkaccess instanceof LevelChunk levelchunk) {
-                         levelchunk.setLoaded(false);
+                 ChunkAccess chunk = chunkHolder.getLatestChunk();
+                 if (this.pendingUnloads.remove(pos, chunkHolder) && chunk != null) {
++                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, chunk); // Neo: Must be called for all chunk unloading. Not just LevelChunks.
++                    this.chunkTypeCache.remove(chunk.getPos().pack()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
+                     if (chunk instanceof LevelChunk levelChunk) {
+                         levelChunk.setLoaded(false);
                      }
  
-                     this.save(chunkaccess);
-                     if (chunkaccess instanceof LevelChunk levelchunk1) {
-+                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelchunk1));
-                         this.level.unload(levelchunk1);
+                     this.save(chunk);
+                     if (chunk instanceof LevelChunk levelChunk) {
++                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelChunk));
+                         this.level.unload(levelChunk);
                      }
  
-@@ -580,6 +_,7 @@
+@@ -566,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
-                 if (p_432462_.isPresent()) {
-                     ChunkAccess chunkaccess = p_432462_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
-+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Load(chunkaccess, p_432462_.get()));
-                     this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
-                     return chunkaccess;
+                 if (chunkData.isPresent()) {
+                     ChunkAccess chunk = chunkData.get().read(this.level, this.poiManager, this.storageInfo(), pos);
++                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Load(chunk, chunkData.get()));
+                     this.markPosition(pos, chunk.getPersistedStatus().getChunkType());
+                     return chunk;
                  } else {
-@@ -776,6 +_,7 @@
+@@ -759,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
-                 SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(p_140259_, this.level, serializablechunkdata));
-                 CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
-                 this.write(chunkpos, completablefuture::join).handle((p_432454_, p_432455_) -> {
-                     if (p_432455_ != null) {
-@@ -842,9 +_,11 @@
+                 SerializableChunkData data = SerializableChunkData.copyOf(this.level, chunk);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(chunk, this.level, data));
+                 CompletableFuture<CompoundTag> encodedData = CompletableFuture.supplyAsync(data::write, Util.backgroundExecutor());
+                 this.write(pos, encodedData::join).handle((ignored, throwable) -> {
+                     if (throwable != null) {
+@@ -825,9 +_,11 @@
  
-     private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
-         p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
-+        net.neoforged.neoforge.event.EventHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.level());
+     private static void markChunkPendingToSend(ServerPlayer player, LevelChunk chunk) {
+         player.connection.chunkSender.markChunkPendingToSend(chunk);
++        net.neoforged.neoforge.event.EventHooks.fireChunkWatch(player, chunk, player.level());
      }
  
-     private static void dropChunk(ServerPlayer p_294215_, ChunkPos p_294758_) {
-+        net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.level());
-         p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
+     private static void dropChunk(ServerPlayer player, ChunkPos pos) {
++        net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(player, pos, player.level());
+         player.connection.chunkSender.dropChunk(player, pos);
      }
  
-@@ -947,7 +_,7 @@
-             ChunkHolder chunkholder = this.visibleChunkMap.get(longiterator.nextLong());
-             if (chunkholder != null) {
-                 LevelChunk levelchunk = chunkholder.getTickingChunk();
--                if (levelchunk != null && this.anyPlayerCloseEnoughForSpawningInternal(chunkholder.getPos())) {
-+                if (levelchunk != null && (this.anyPlayerCloseEnoughForSpawningInternal(chunkholder.getPos()) || ticketStorage.shouldForceNaturalSpawning(chunkholder.getPos()))) {// Neo: Force natural spawning in other chunks
-                     p_401784_.add(levelchunk);
+@@ -935,7 +_,7 @@
+             ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
+             if (holder != null) {
+                 LevelChunk chunk = holder.getTickingChunk();
+-                if (chunk != null && this.anyPlayerCloseEnoughForSpawningInternal(holder.getPos())) {
++                if (chunk != null && (this.anyPlayerCloseEnoughForSpawningInternal(holder.getPos()) || ticketStorage.shouldForceNaturalSpawning(holder.getPos()))) {// Neo: Force natural spawning in other chunks
+                     output.add(chunk);
                  }
              }
-@@ -971,6 +_,18 @@
-         return tristate == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(p_183880_) : tristate.toBoolean(true);
+@@ -959,6 +_,19 @@
+         return triState == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(pos) : triState.toBoolean(true);
      }
  
-+    void collectForceTickingChunks(List<LevelChunk> list) {
-+        for (long l : distanceManager.ticketStorage.getForceLoadedChunks()) {
-+            ChunkHolder holder = this.visibleChunkMap.get(l);
-+            if (holder != null) {
-+                var chunk = holder.getTickingChunk();
-+                if (chunk != null) {
-+                    list.add(chunk);
-+                }
-+            }
-+        }
-+    }
++    // TODO 1.21.11 unobfuscated - seems unused and requires an AT for ticketStorage
++//    void collectForceTickingChunks(List<LevelChunk> list) {
++//        for (long l : distanceManager.ticketStorage.getForceLoadedChunks()) {
++//            ChunkHolder holder = this.visibleChunkMap.get(l);
++//            if (holder != null) {
++//                var chunk = holder.getTickingChunk();
++//                if (chunk != null) {
++//                    list.add(chunk);
++//                }
++//            }
++//        }
++//    }
 +
-     boolean anyPlayerCloseEnoughTo(BlockPos p_461043_, int p_460915_) {
-         Vec3 vec3 = new Vec3(p_461043_);
+     boolean anyPlayerCloseEnoughTo(BlockPos pos, int maxDistance) {
+         Vec3 target = new Vec3(pos);
  
-@@ -1100,6 +_,7 @@
-                 this.playerMap.unIgnorePlayer(p_140185_);
+@@ -1088,6 +_,7 @@
+                 this.playerMap.unIgnorePlayer(player);
              }
  
 +            //PATCH 1.20.2: Figure out the firing of the watch and unwatch events when chunk tracking updates.
-             this.updateChunkTracking(p_140185_);
+             this.updateChunkTracking(player);
          }
      }
-@@ -1151,7 +_,7 @@
+@@ -1132,7 +_,7 @@
      }
  
-     protected void addEntity(Entity p_140200_) {
--        if (!(p_140200_ instanceof EnderDragonPart)) {
-+        if (!(p_140200_ instanceof net.neoforged.neoforge.entity.PartEntity)) {
-             EntityType<?> entitytype = p_140200_.getType();
-             int i = entitytype.clientTrackingRange() * 16;
-             if (i != 0) {
-@@ -1310,6 +_,20 @@
+     protected void addEntity(Entity entity) {
+-        if (!(entity instanceof EnderDragonPart)) {
++        if (!(entity instanceof net.neoforged.neoforge.entity.PartEntity)) {
+             EntityType<?> type = entity.getType();
+             int range = type.clientTrackingRange() * 16;
+             if (range != 0) {
+@@ -1291,6 +_,20 @@
          }
      }
  
@@ -115,11 +116,11 @@
 +        }
 +    }
 +
-     class DistanceManager extends net.minecraft.server.level.DistanceManager {
-         protected DistanceManager(TicketStorage p_394597_, Executor p_140459_, Executor p_140460_) {
-             super(p_394597_, p_140459_, p_140460_);
-@@ -1441,5 +_,20 @@
-                 this.updatePlayer(serverplayer);
+     private class DistanceManager extends net.minecraft.server.level.DistanceManager {
+         protected DistanceManager(TicketStorage ticketStorage, Executor executor, Executor mainThreadExecutor) {
+             Objects.requireNonNull(ChunkMap.this);
+@@ -1426,5 +_,20 @@
+                 this.updatePlayer(player);
              }
          }
 +    }

@@ -3,9 +3,9 @@
 @@ -107,6 +_,8 @@
  
      @Override
-     public InteractionResult interact(Player p_478294_, InteractionHand p_479681_) {
-+        InteractionResult ret = super.interact(p_478294_, p_479681_);
+     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
++        InteractionResult ret = super.interact(player, hand, location);
 +        if (ret.consumesAction()) return ret;
-         ItemStack itemstack = p_478294_.getItemInHand(p_479681_);
-         if (this.addFuel(p_478294_.position(), itemstack)) {
-             itemstack.consume(1, p_478294_);
+         ItemStack itemStack = player.getItemInHand(hand);
+         if (this.addFuel(player.position(), itemStack)) {
+             itemStack.consume(1, player);

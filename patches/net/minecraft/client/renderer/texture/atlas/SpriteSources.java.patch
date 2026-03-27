@@ -3,7 +3,7 @@
 @@ -17,7 +_,7 @@
  public class SpriteSources {
      private static final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends SpriteSource>> ID_MAPPER = new ExtraCodecs.LateBoundIdMapper<>();
-     public static final Codec<SpriteSource> CODEC = ID_MAPPER.codec(Identifier.CODEC).dispatch(SpriteSource::codec, p_399350_ -> p_399350_);
+     public static final Codec<SpriteSource> CODEC = ID_MAPPER.codec(Identifier.CODEC).dispatch(SpriteSource::codec, c -> c);
 -    public static final Codec<List<SpriteSource>> FILE_CODEC = CODEC.listOf().fieldOf("sources").codec();
 +    public static final Codec<List<SpriteSource>> FILE_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(CODEC).fieldOf("sources").codec();
  

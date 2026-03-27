@@ -1,6 +1,6 @@
 --- a/com/mojang/math/Transformation.java
 +++ b/com/mojang/math/Transformation.java
-@@ -161,6 +_,19 @@
+@@ -156,6 +_,19 @@
          return Objects.hash(this.matrix);
      }
  
@@ -17,6 +17,6 @@
 +        }
 +    }
 +
-     public Transformation slerp(Transformation p_175938_, float p_175939_) {
+     public Transformation slerp(Transformation that, float progress) {
          return new Transformation(
-             this.getTranslation().lerp(p_175938_.getTranslation(), p_175939_, new Vector3f()),
+             this.translation().lerp(that.translation(), progress, new Vector3f()),

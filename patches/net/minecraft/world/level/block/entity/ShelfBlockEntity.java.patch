@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
+@@ -87,6 +_,20 @@
+         return retrievedItem;
+     }
+ 
++    @Override
++    public void setItem(int slot, ItemStack itemStack) {
++        setItem(slot, itemStack, false);
++    }
++
++    // Neo: Skip side effects if insideTransaction is true so the caller can defer them until the transaction commits
++    @Override
++    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
++        this.setItemNoUpdate(slot, itemStack);
++        if (!insideTransaction) {
++            this.setChanged();
++        }
++    }
++
+     public void setChanged(Holder.@Nullable Reference<GameEvent> event) {
+         super.setChanged();
+         if (this.level != null) {

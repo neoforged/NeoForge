@@ -15,10 +15,6 @@
     {
       "id": "#c:armors/wolf",
       "required": false
-    },
-    {
-      "id": "#forge:armors",
-      "required": false
     }
   ]
 }

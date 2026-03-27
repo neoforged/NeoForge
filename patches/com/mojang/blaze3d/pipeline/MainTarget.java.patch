@@ -1,25 +1,25 @@
 --- a/com/mojang/blaze3d/pipeline/MainTarget.java
 +++ b/com/mojang/blaze3d/pipeline/MainTarget.java
 @@ -18,7 +_,11 @@
-     static final MainTarget.Dimension DEFAULT_DIMENSIONS = new MainTarget.Dimension(854, 480);
+     private static final MainTarget.Dimension DEFAULT_DIMENSIONS = new MainTarget.Dimension(854, 480);
  
-     public MainTarget(int p_166137_, int p_166138_) {
+     public MainTarget(int desiredWidth, int desiredHeight) {
 -        super("Main", true);
-+        this(p_166137_, p_166138_, false);
++        this(desiredWidth, desiredHeight, false);
 +    }
 +
-+    public MainTarget(int p_166137_, int p_166138_, boolean enableStencil) {
++    public MainTarget(int desiredWidth, int desiredHeight, boolean enableStencil) {
 +        super("Main", true, enableStencil);
-         this.createFrameBuffer(p_166137_, p_166138_);
+         this.createFrameBuffer(desiredWidth, desiredHeight);
      }
  
 @@ -84,7 +_,8 @@
  
-     private @Nullable GpuTexture allocateDepthAttachment(MainTarget.Dimension p_166145_) {
+     private @Nullable GpuTexture allocateDepthAttachment(MainTarget.Dimension dimension) {
          try {
--            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, p_166145_.width, p_166145_.height, 1, 1);
+-            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, dimension.width, dimension.height, 1, 1);
 +            var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
-+            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, format, p_166145_.width, p_166145_.height, 1, 1);
-         } catch (GpuOutOfMemoryException gpuoutofmemoryexception) {
++            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, format, dimension.width, dimension.height, 1, 1);
+         } catch (GpuOutOfMemoryException var3) {
              return null;
          }

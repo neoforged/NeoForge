@@ -8,13 +8,13 @@
 +     * @deprecated Neo: Use {@link #KeyTagProvider(PackOutput,ResourceKey,CompletableFuture,String)}
 +     */
 +    @Deprecated
-     protected KeyTagProvider(PackOutput p_421572_, ResourceKey<? extends Registry<T>> p_421754_, CompletableFuture<HolderLookup.Provider> p_422211_) {
--        super(p_421572_, p_421754_, p_422211_);
-+        this(p_421572_, p_421754_, p_422211_, "vanilla");
+     protected KeyTagProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+-        super(output, registryKey, lookupProvider);
++        this(output, registryKey, lookupProvider, "vanilla");
 +    }
 +
-+    protected KeyTagProvider(PackOutput p_421572_, ResourceKey<? extends Registry<T>> p_421754_, CompletableFuture<HolderLookup.Provider> p_422211_, String modId) {
-+        super(p_421572_, p_421754_, p_422211_, modId);
++    protected KeyTagProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, registryKey, lookupProvider, modId);
      }
  
-     protected TagAppender<ResourceKey<T>, T> tag(TagKey<T> p_421489_) {
+     protected TagAppender<ResourceKey<T>, T> tag(TagKey<T> tag) {

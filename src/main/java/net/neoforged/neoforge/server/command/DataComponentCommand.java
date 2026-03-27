@@ -51,7 +51,7 @@ class DataComponentCommand {
             DataComponentMap prototype = stack.getPrototype();
             DataComponentPatch patch = stack.getComponentsPatch();
             prototype.forEach(component -> {
-                Optional<?> optData = patch.get(component.type());
+                Optional<?> optData = patch.getPatch(component.type());
                 if (optData == null) { // Component is default
                     Component tooltip = CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.data_components.list.tooltip.default",

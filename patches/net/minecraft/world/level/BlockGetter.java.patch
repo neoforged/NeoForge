@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
 @@ -34,7 +_,7 @@
-     FluidState getFluidState(BlockPos p_45569_);
+     FluidState getFluidState(BlockPos pos);
  
-     default int getLightEmission(BlockPos p_45572_) {
--        return this.getBlockState(p_45572_).getLightEmission();
-+        return this.getBlockState(p_45572_).getLightEmission(this, p_45572_);
+     default int getLightEmission(BlockPos pos) {
+-        return this.getBlockState(pos).getLightEmission();
++        return this.getBlockState(pos).getLightEmission(this, pos);
      }
  
-     default Stream<BlockState> getBlockStates(AABB p_45557_) {
+     default Stream<BlockState> getBlockStates(AABB box) {

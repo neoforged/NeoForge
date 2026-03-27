@@ -13,8 +13,8 @@
  
          while (!this.isInterrupted() && this.isRunning) {
              try {
--                InetAddress inetaddress = InetAddress.getByName("224.0.2.60");
-+                InetAddress inetaddress = InetAddress.getByName(MULTICAST_GROUP);
-                 DatagramPacket datagrampacket = new DatagramPacket(abyte, abyte.length, inetaddress, 4445);
-                 this.socket.send(datagrampacket);
-             } catch (IOException ioexception) {
+-                InetAddress group = InetAddress.getByName("224.0.2.60");
++                InetAddress group = InetAddress.getByName(MULTICAST_GROUP);
+                 DatagramPacket packet = new DatagramPacket(ping, ping.length, group, 4445);
+                 this.socket.send(packet);
+             } catch (IOException var6) {

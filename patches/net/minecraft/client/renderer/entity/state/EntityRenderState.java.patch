@@ -9,7 +9,7 @@
      public static final int NO_OUTLINE = 0;
      public EntityType<?> entityType;
      public double x;
-@@ -35,6 +_,7 @@
+@@ -36,6 +_,7 @@
      public @Nullable List<EntityRenderState.LeashState> leashStates;
      public float shadowRadius;
      public final List<EntityRenderState.ShadowPiece> shadowPieces = new ArrayList<>();

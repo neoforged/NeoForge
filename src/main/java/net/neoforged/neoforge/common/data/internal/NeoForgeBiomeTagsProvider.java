@@ -7,11 +7,8 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
-import net.minecraft.data.tags.TagAppender;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
@@ -249,10 +246,12 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Tags.Biomes.IS_OLD_GROWTH).add(Biomes.OLD_GROWTH_BIRCH_FOREST, Biomes.OLD_GROWTH_PINE_TAIGA, Biomes.OLD_GROWTH_SPRUCE_TAIGA);
         tag(Tags.Biomes.IS_LUSH).add(Biomes.LUSH_CAVES);
         tag(Tags.Biomes.IS_SANDY).add(Biomes.DESERT, Biomes.BADLANDS, Biomes.WOODED_BADLANDS, Biomes.ERODED_BADLANDS, Biomes.BEACH);
+        tag(Tags.Biomes.IS_MAGICAL);
         tag(Tags.Biomes.IS_MUSHROOM).add(Biomes.MUSHROOM_FIELDS);
         tag(Tags.Biomes.IS_PLATEAU).add(Biomes.WOODED_BADLANDS, Biomes.SAVANNA_PLATEAU, Biomes.CHERRY_GROVE, Biomes.MEADOW);
         tag(Tags.Biomes.IS_SPOOKY).add(Biomes.DARK_FOREST, Biomes.PALE_GARDEN, Biomes.DEEP_DARK);
         tag(Tags.Biomes.IS_WASTELAND);
+        tag(Tags.Biomes.IS_DEAD);
         tag(Tags.Biomes.IS_RARE).add(Biomes.SUNFLOWER_PLAINS, Biomes.FLOWER_FOREST, Biomes.OLD_GROWTH_BIRCH_FOREST, Biomes.OLD_GROWTH_SPRUCE_TAIGA, Biomes.BAMBOO_JUNGLE, Biomes.SPARSE_JUNGLE, Biomes.ERODED_BADLANDS, Biomes.SAVANNA_PLATEAU, Biomes.WINDSWEPT_SAVANNA, Biomes.ICE_SPIKES, Biomes.WINDSWEPT_GRAVELLY_HILLS, Biomes.PALE_GARDEN, Biomes.MUSHROOM_FIELDS, Biomes.DEEP_DARK);
 
         tag(Tags.Biomes.IS_RIVER).addTags(BiomeTags.IS_RIVER);
@@ -267,61 +266,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         tag(Tags.Biomes.IS_NETHER_FOREST).add(Biomes.CRIMSON_FOREST, Biomes.WARPED_FOREST);
         tag(Tags.Biomes.IS_OUTER_END_ISLAND).add(Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.END_BARRENS);
-
-        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
-        // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(forge("is_slope"));
-        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(forge("is_peak"));
-        tagWithOptionalLegacy(Tags.Biomes.IS_MOUNTAIN);
-        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_OVERWORLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_HOT);
-        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_OVERWORLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_COLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION);
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(forge("is_sparse/overworld"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(forge("is_sparse/nether"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(forge("is_sparse/end"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(forge("is_sparse"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(forge("is_dense/overworld"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(forge("is_dense/nether"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(forge("is_dense/end"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(forge("is_dense"));
-        tagWithOptionalLegacy(Tags.Biomes.IS_WET_OVERWORLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_WET_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_WET_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_WET);
-        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_OVERWORLD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_DRY);
-        tagWithOptionalLegacy(Tags.Biomes.IS_CONIFEROUS_TREE);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SPOOKY);
-        tagWithOptionalLegacy(Tags.Biomes.IS_DEAD);
-        tagWithOptionalLegacy(Tags.Biomes.IS_LUSH);
-        tagWithOptionalLegacy(Tags.Biomes.IS_MUSHROOM);
-        tagWithOptionalLegacy(Tags.Biomes.IS_MAGICAL);
-        tagWithOptionalLegacy(Tags.Biomes.IS_RARE);
-        tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
-        tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
-        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(forge("is_water"));
-        tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
-        tagWithOptionalLegacy(Tags.Biomes.IS_PLAINS);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SWAMP);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SANDY);
-        tagWithOptionalLegacy(Tags.Biomes.IS_SNOWY);
-        tagWithOptionalLegacy(Tags.Biomes.IS_WASTELAND);
-        tagWithOptionalLegacy(Tags.Biomes.IS_VOID);
-        tagWithOptionalLegacy(Tags.Biomes.IS_CAVE);
-        tagWithOptionalLegacy(Tags.Biomes.IS_END);
-        tagWithOptionalLegacy(Tags.Biomes.IS_NETHER);
-        tagWithOptionalLegacy(Tags.Biomes.IS_OVERWORLD);
     }
 
     @SafeVarargs
@@ -329,14 +273,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         for (TagKey<Biome> key : tags) {
             tag(key).add(biome);
         }
-    }
-
-    private TagAppender<ResourceKey<Biome>, Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
-        return tag(tag).addOptionalTag(forge(tag.location().getPath()));
-    }
-
-    private TagKey<Biome> forge(String id) {
-        return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath("forge", id));
     }
 
     @Override

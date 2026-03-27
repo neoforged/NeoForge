@@ -1,27 +1,27 @@
 --- a/net/minecraft/world/level/BaseSpawner.java
 +++ b/net/minecraft/world/level/BaseSpawner.java
-@@ -156,16 +_,14 @@
+@@ -146,16 +_,15 @@
  
-                             entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), randomsource.nextFloat() * 360.0F, 0.0F);
+                             entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
                              if (entity instanceof Mob mob) {
--                                if (spawndata.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(p_151312_, EntitySpawnReason.SPAWNER)
--                                    || !mob.checkSpawnObstruction(p_151312_)) {
-+                                if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, p_151312_, EntitySpawnReason.SPAWNER, spawndata, this)) {
+-                                if (nextSpawnData.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(level, EntitySpawnReason.SPAWNER)
+-                                    || !mob.checkSpawnObstruction(level)) {
++                                if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, level, EntitySpawnReason.SPAWNER, nextSpawnData, this)) {
                                      continue;
                                  }
  
-                                 boolean flag1 = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().getString("id").isPresent();
--                                if (flag1) {
--                                    ((Mob)entity)
--                                        .finalizeSpawn(p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
+                                 boolean hasNoConfiguration = nextSpawnData.getEntityToSpawn().size() == 1
+                                     && nextSpawnData.getEntityToSpawn().getString("id").isPresent();
+-                                if (hasNoConfiguration) {
+-                                    ((Mob)entity).finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
 -                                }
 +                                // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
-+                                // The local flag1 is the conditions under which the spawner will normally call Mob#finalizeSpawn.
-+                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null, this, flag1);
++                                // The local hasNoConfiguration is the conditions under which the spawner will normally call Mob#finalizeSpawn.
++                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null, this, hasNoConfiguration);
  
-                                 spawndata.getEquipment().ifPresent(mob::equip);
+                                 nextSpawnData.getEquipment().ifPresent(mob::equip);
                              }
-@@ -281,5 +_,11 @@
+@@ -271,5 +_,11 @@
  
      public double getOSpin() {
          return this.oSpin;

@@ -1,0 +1,33 @@
+--- a/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
++++ b/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
+@@ -14,9 +_,28 @@
+     VoxelShape shape,
+     @Nullable VoxelShape collisionShape,
+     @Nullable VoxelShape occlusionShape,
+-    @Nullable VoxelShape interactionShape
++    @Nullable VoxelShape interactionShape,
++    java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers
+ ) {
++    @Deprecated
++    public BlockOutlineRenderState(
++            BlockPos pos,
++            boolean isTranslucent,
++            boolean highContrast,
++            VoxelShape shape,
++            @Nullable VoxelShape collisionShape,
++            @Nullable VoxelShape occlusionShape,
++            @Nullable VoxelShape interactionShape
++    ) {
++        this(pos, isTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape, java.util.List.of());
++    }
++
++    @Deprecated
+     public BlockOutlineRenderState(BlockPos pos, boolean isTranslucent, boolean highContrast, VoxelShape shape) {
+-        this(pos, isTranslucent, highContrast, shape, null, null, null);
++        this(pos, isTranslucent, highContrast, shape, java.util.List.of());
++    }
++
++    public BlockOutlineRenderState(BlockPos pos, boolean isTranslucent, boolean highContrast, VoxelShape shape, java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers) {
++        this(pos, isTranslucent, highContrast, shape, null, null, null, customRenderers);
+     }
+ }

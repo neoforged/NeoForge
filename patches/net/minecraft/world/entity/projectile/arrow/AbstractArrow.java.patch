@@ -1,29 +1,19 @@
 --- a/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
-@@ -191,7 +_,8 @@
-             this.shakeTime--;
-         }
+@@ -278,11 +_,15 @@
  
--        if (this.isInWaterOrRain()) {
-+        // Neo: Allow custom fluids to extinguish flaming arrows
-+        if (this.isInWaterOrRain() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
-             this.clearFire();
-         }
- 
-@@ -282,11 +_,15 @@
- 
-             if (arraylist.isEmpty()) {
-                 if (this.isAlive() && p_479463_.getType() != HitResult.Type.MISS) {
-+                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, p_479463_))
+             if (entitiesHit.isEmpty()) {
+                 if (this.isAlive() && blockHitResult.getType() != HitResult.Type.MISS) {
++                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, blockHitResult))
 +                        break;
-                     this.hitTargetOrDeflectSelf(p_479463_);
+                     this.hitTargetOrDeflectSelf(blockHitResult);
                      this.needsSync = true;
                  }
                  break;
 -            } else if (this.isAlive() && !this.noPhysics) {
-+            } else if (this.isAlive() && !this.noPhysics && entityhitresult.getType() != HitResult.Type.MISS) {
-+                if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, entityhitresult))
++            } else if (this.isAlive() && !this.noPhysics && firstEntityHit.getType() != HitResult.Type.MISS) {
++                if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, firstEntityHit))
 +                    break;
-                 ProjectileDeflection projectiledeflection = this.hitTargetsOrDeflectSelf(arraylist);
+                 ProjectileDeflection deflection = this.hitTargetsOrDeflectSelf(entitiesHit);
                  this.needsSync = true;
-                 if (this.getPierceLevel() > 0 && projectiledeflection == ProjectileDeflection.NONE) {
+                 if (this.getPierceLevel() > 0 && deflection == ProjectileDeflection.NONE) {

@@ -3,7 +3,7 @@
 @@ -11,7 +_,7 @@
  
  public class PacketProcessor implements AutoCloseable {
-     static final Logger LOGGER = LogUtils.getLogger();
+     private static final Logger LOGGER = LogUtils.getLogger();
 -    private final Queue<PacketProcessor.ListenerAndPacket<?>> packetsToBeHandled = Queues.newConcurrentLinkedQueue();
 +    private final Queue<net.neoforged.neoforge.network.handling.QueuedPacket> packetsToBeHandled = Queues.newConcurrentLinkedQueue();
      private final Thread runningThread;
@@ -12,7 +12,7 @@
 @@ -28,6 +_,19 @@
              throw new RejectedExecutionException("Server already shutting down");
          } else {
-             this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(p_446530_, p_445832_));
+             this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(listener, packet));
 +        }
 +    }
 +

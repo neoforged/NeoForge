@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -36,20 +_,58 @@
+@@ -34,20 +_,58 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -8,14 +8,14 @@
  
 +    // Neo: Use the constructor which accepts a mod ID.
 +    @Deprecated
-     public ModelProvider(PackOutput p_388260_) {
-+        this(p_388260_, Identifier.DEFAULT_NAMESPACE);
+     public ModelProvider(PackOutput output) {
++        this(output, Identifier.DEFAULT_NAMESPACE);
 +    }
 +
-+    public ModelProvider(PackOutput p_388260_, String modId) {
-         this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
-         this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
-         this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++    public ModelProvider(PackOutput output, String modId) {
+         this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+         this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+         this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
 +    }
 +
@@ -25,45 +25,45 @@
 +    }
 +
 +    /**
-+     * Returns a {@link Stream stream} containing all {@link Block blocks} which must have their models/block states generated or {@link Stream#empty() empty} if none are desired.
++     * Returns a {@link java.util.stream.Stream stream} containing all {@link Block blocks} which must have their models/block states generated or {@link java.util.stream.Stream#empty() empty} if none are desired.
 +     * <p>
 +     * When using providers for specific {@link Block block} usages, it is best to override this method returning the exact {@link Block blocks} which must be generated,
-+     * or {@link Stream#empty() empty} if generating only {@link Item item} models.
++     * or {@link java.util.stream.Stream#empty() empty} if generating only {@link Item item} models.
 +     * <p>
 +     * Default implementation generates models for {@link Block blocks} matching the given {@code modId}.
 +     * @see #getKnownItems()
 +     */
-+    protected Stream<? extends Holder<Block>> getKnownBlocks() {
++    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>> getKnownBlocks() {
 +        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.getKey().identifier().getNamespace().equals(modId));
 +    }
 +
 +    /**
-+     * Returns a {@link Stream stream} containing all {@link Item items} which must have their models/client items generated or {@link Stream#empty() empty} if none are desired.
++     * Returns a {@link java.util.stream.Stream stream} containing all {@link Item items} which must have their models/client items generated or {@link java.util.stream.Stream#empty() empty} if none are desired.
 +     * <p>
 +     * When using providers for specific {@link Item item} usages, it is best to override this method returning the exact {@link Item items} which must be generated,
-+     * or {@link Stream#empty() empty} if generating only {@link Block block} models (which have no respective {@link Item item}).
++     * or {@link java.util.stream.Stream#empty() empty} if generating only {@link Block block} models (which have no respective {@link Item item}).
 +     * <p>
 +     * Default implementation generates models for {@link Item items} matching the given {@code modId}.
 +     * @see #getKnownBlocks()
 +     */
-+    protected Stream<? extends Holder<Item>> getKnownItems() {
++    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>> getKnownItems() {
 +        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().identifier().getNamespace().equals(modId));
      }
  
      @Override
-     public CompletableFuture<?> run(CachedOutput p_387857_) {
--        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector();
--        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector();
-+        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector(this::getKnownItems);
-+        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector(this::getKnownBlocks);
-         ModelProvider.SimpleModelCollector modelprovider$simplemodelcollector = new ModelProvider.SimpleModelCollector();
--        new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
--        new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
-+        registerModels(new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector), new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector));
-         modelprovider$blockstategeneratorcollector.validate();
-         modelprovider$iteminfocollector.finalizeAndValidate();
+     public CompletableFuture<?> run(CachedOutput cache) {
+-        ModelProvider.ItemInfoCollector itemModels = new ModelProvider.ItemInfoCollector();
+-        ModelProvider.BlockStateGeneratorCollector blockStateGenerators = new ModelProvider.BlockStateGeneratorCollector();
++        ModelProvider.ItemInfoCollector itemModels = new ModelProvider.ItemInfoCollector(this::getKnownItems);
++        ModelProvider.BlockStateGeneratorCollector blockStateGenerators = new ModelProvider.BlockStateGeneratorCollector(this::getKnownBlocks);
+         ModelProvider.SimpleModelCollector simpleModels = new ModelProvider.SimpleModelCollector();
+-        new BlockModelGenerators(blockStateGenerators, itemModels, simpleModels).run();
+-        new ItemModelGenerators(itemModels, simpleModels).run();
++        registerModels(new BlockModelGenerators(blockStateGenerators, itemModels, simpleModels), new ItemModelGenerators(itemModels, simpleModels));
+         blockStateGenerators.validate();
+         itemModels.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -61,12 +_,22 @@
+@@ -59,12 +_,22 @@
  
      @Override
      public String getName() {
@@ -72,11 +72,11 @@
      }
  
      @OnlyIn(Dist.CLIENT)
-     static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
+     private static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
-+        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
++        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>>> knownBlocks;
 +
-+        public BlockStateGeneratorCollector(Supplier<Stream<? extends Holder<Block>>> knownBlocks) {
++        public BlockStateGeneratorCollector(Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>>> knownBlocks) {
 +            this.knownBlocks = knownBlocks;
 +        }
 +
@@ -85,27 +85,30 @@
 +            this(BuiltInRegistries.BLOCK::listElements);
 +        }
  
-         public void accept(BlockModelDefinitionGenerator p_405192_) {
-             Block block = p_405192_.block();
-@@ -77,9 +_,9 @@
+         public void accept(BlockModelDefinitionGenerator generator) {
+             Block block = generator.block();
+@@ -75,11 +_,8 @@
          }
  
          public void validate() {
--            Stream<Holder.Reference<Block>> stream = BuiltInRegistries.BLOCK.listElements().filter(p_388333_ -> true);
-+            Stream<? extends Holder<Block>> stream = knownBlocks.get();
-             List<Identifier> list = stream.filter(p_386843_ -> !this.generators.containsKey(p_386843_.value()))
--                .map(p_465437_ -> p_465437_.key().identifier())
-+                .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().identifier())
-                 .toList();
-             if (!list.isEmpty()) {
-                 throw new IllegalStateException("Missing blockstate definitions for: " + list);
-@@ -97,6 +_,16 @@
+-            List<Identifier> missingDefinitions = BuiltInRegistries.BLOCK
+-                .listElements()
+-                .filter(e -> !this.generators.containsKey(e.value()))
+-                .map(e -> e.key().identifier())
+-                .toList();
++            var holders = knownBlocks.get();
++            List<Identifier> missingDefinitions = holders.filter(e -> !this.generators.containsKey(e.value())).map(e -> e.unwrapKey().orElseThrow().identifier()).toList();
+             if (!missingDefinitions.isEmpty()) {
+                 throw new IllegalStateException("Missing blockstate definitions for: " + missingDefinitions);
+             }
+@@ -96,6 +_,17 @@
      public static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
-+        private final Supplier<Stream<? extends Holder<Item>>> knownItems;
++        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems;
++        private final Map<Identifier, ClientItem> idItemInfos = new HashMap<>();
 +
-+        public ItemInfoCollector(Supplier<Stream<? extends Holder<Item>>> knownItems) {
++        public ItemInfoCollector(Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems) {
 +            this.knownItems = knownItems;
 +        }
 +
@@ -115,30 +118,50 @@
 +        }
  
          @Override
-         public void accept(Item p_387063_, ItemModel.Unbaked p_388578_, ClientItem.Properties p_455547_) {
-@@ -116,9 +_,9 @@
+         public void accept(Item item, ItemModel.Unbaked model, ClientItem.Properties properties) {
+@@ -110,12 +_,20 @@
+         }
+ 
+         @Override
++        public void register(Identifier identifier, ClientItem clientItem) {
++            ClientItem existing = this.idItemInfos.putIfAbsent(identifier, clientItem);
++            if (existing != null) {
++                throw new IllegalStateException("Duplicate item model definition for " + identifier);
++            }
++        }
++
++        @Override
+         public void copy(Item donor, Item acceptor) {
+             this.copies.put(acceptor, donor);
          }
  
          public void finalizeAndValidate() {
--            BuiltInRegistries.ITEM.forEach(p_465440_ -> {
--                if (!this.copies.containsKey(p_465440_)) {
--                    if (p_465440_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
-+            knownItems.get().map(Holder::value).forEach(p_388426_ -> {
-+                if (!this.copies.containsKey(p_388426_)) {
-+                    if (p_388426_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
-                         Identifier identifier = ModelLocationUtils.getModelLocation(blockitem.getBlock());
-                         this.accept(blockitem, ItemModelUtils.plainModel(identifier));
-                     }
-@@ -132,10 +_,9 @@
-                     this.register(p_386494_, clientitem);
+-            BuiltInRegistries.ITEM.forEach(item -> {
++            knownItems.get().map(net.minecraft.core.Holder::value).forEach(item -> {
+                 if (!this.copies.containsKey(item)) {
+                     if (item instanceof BlockItem blockItem && !this.itemInfos.containsKey(blockItem)) {
+                         Identifier targetModel = ModelLocationUtils.getModelLocation(blockItem.getBlock());
+@@ -131,10 +_,9 @@
+                     this.register(acceptor, donorInfo);
                  }
              });
--            List<Identifier> list = BuiltInRegistries.ITEM
+-            List<Identifier> missingDefinitions = BuiltInRegistries.ITEM
 -                .listElements()
-+            List<Identifier> list = knownItems.get()
-                 .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
--                .map(p_465441_ -> p_465441_.key().identifier())
-+                .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().identifier())
++            List<Identifier> missingDefinitions = knownItems.get()
+                 .filter(e -> !this.itemInfos.containsKey(e.value()))
+-                .map(e -> e.key().identifier())
++                .map(e -> e.unwrapKey().orElseThrow().identifier())
                  .toList();
-             if (!list.isEmpty()) {
-                 throw new IllegalStateException("Missing item model definitions for: " + list);
+             if (!missingDefinitions.isEmpty()) {
+                 throw new IllegalStateException("Missing item model definitions for: " + missingDefinitions);
+@@ -142,7 +_,9 @@
+         }
+ 
+         public CompletableFuture<?> save(CachedOutput cache, PackOutput.PathProvider pathProvider) {
+-            return DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos);
++            return CompletableFuture.allOf(
++                    DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos),
++                    DataProvider.saveAll(cache, ClientItem.CODEC, pathProvider::json, this.idItemInfos));
+         }
+     }
+ 

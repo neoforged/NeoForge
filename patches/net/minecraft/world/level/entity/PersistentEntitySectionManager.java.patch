@@ -1,77 +1,79 @@
 --- a/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-@@ -71,7 +_,16 @@
-         return this.addEntity(p_157534_, false);
+@@ -72,7 +_,16 @@
+         return this.addEntity(entity, false);
      }
  
 +    public boolean addNewEntityWithoutEvent(T entity) {
 +        return this.addEntityWithoutEvent(entity, false);
 +    }
 +
-     private boolean addEntity(T p_157539_, boolean p_157540_) {
-+        if (p_157539_ instanceof Entity entity && net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(entity, entity.level(), p_157540_)).isCanceled()) return false;
-+        return addEntityWithoutEvent(p_157539_, p_157540_);
+     private boolean addEntity(T entity, boolean loaded) {
++        if (entity instanceof Entity actualEntity && net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(actualEntity, actualEntity.level(), loaded)).isCanceled()) return false;
++        return addEntityWithoutEvent(entity, loaded);
 +    }
 +
-+    private boolean addEntityWithoutEvent(T p_157539_, boolean p_157540_) {
-         if (!this.addEntityUuid(p_157539_)) {
++    private boolean addEntityWithoutEvent(T entity, boolean loaded) {
+         if (!this.addEntityUuid(entity)) {
              return false;
          } else {
-@@ -105,11 +_,17 @@
+@@ -106,11 +_,17 @@
      }
  
-     public void addLegacyChunkEntities(Stream<T> p_157553_) {
--        p_157553_.forEach(p_157607_ -> this.addEntity((T)p_157607_, true));
-+        p_157553_.forEach(p_157607_ -> {
-+            this.addEntity(p_157607_, true);
-+            if (p_157607_ instanceof Entity entity) entity.onAddedToLevel();
+     public void addLegacyChunkEntities(Stream<T> entities) {
+-        entities.forEach(e -> this.addEntity((T)e, true));
++        entities.forEach(e -> {
++            this.addEntity(e, true);
++            if (e instanceof Entity entity) entity.onAddedToLevel();
 +        });
      }
  
-     public void addWorldGenChunkEntities(Stream<T> p_157560_) {
--        p_157560_.forEach(p_157605_ -> this.addEntity((T)p_157605_, false));
-+        p_157560_.forEach(p_157605_ -> {
-+            this.addEntity(p_157605_, false);
-+            if (p_157605_ instanceof Entity entity) entity.onAddedToLevel();
+     public void addWorldGenChunkEntities(Stream<T> entities) {
+-        entities.forEach(e -> this.addEntity((T)e, false));
++        entities.forEach(e -> {
++            this.addEntity(e, false);
++            if (e instanceof Entity entity) entity.onAddedToLevel();
 +        });
      }
  
-     void startTicking(T p_157565_) {
-@@ -232,7 +_,10 @@
+     private void startTicking(T entity) {
+@@ -233,7 +_,10 @@
      public void processPendingLoads() {
-         ChunkEntities<T> chunkentities;
-         while ((chunkentities = this.loadingInbox.poll()) != null) {
--            chunkentities.getEntities().forEach(p_157593_ -> this.addEntity((T)p_157593_, true));
-+            chunkentities.getEntities().forEach(p_157593_ -> {
-+                this.addEntity(p_157593_, true);
-+                if (p_157593_ instanceof Entity entity) entity.onAddedToLevel();
+         ChunkEntities<T> loadedChunk;
+         while ((loadedChunk = this.loadingInbox.poll()) != null) {
+-            loadedChunk.getEntities().forEach(e -> this.addEntity((T)e, true));
++            loadedChunk.getEntities().forEach(e -> {
++                this.addEntity(e, true);
++                if (e instanceof Entity entity) entity.onAddedToLevel();
 +            });
-             this.chunkLoadStatuses.put(chunkentities.getPos().toLong(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
+             this.chunkLoadStatuses.put(loadedChunk.getPos().pack(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
          }
      }
-@@ -369,11 +_,13 @@
+@@ -370,6 +_,7 @@
  
-     class Callback implements EntityInLevelCallback {
+     private class Callback implements EntityInLevelCallback {
          private final T entity;
 +        private final Entity realEntity;
          private long currentSectionKey;
          private EntitySection<T> currentSection;
  
-         Callback(T p_157614_, long p_157615_, EntitySection<T> p_157616_) {
-             this.entity = p_157614_;
-+            this.realEntity = p_157614_ instanceof Entity ? (Entity) p_157614_ : null;
-             this.currentSectionKey = p_157615_;
-             this.currentSection = p_157616_;
+@@ -377,6 +_,7 @@
+             Objects.requireNonNull(PersistentEntitySectionManager.this);
+             super();
+             this.entity = entity;
++            this.realEntity = entity instanceof Entity ? (Entity) entity : null;
+             this.currentSectionKey = currentSectionKey;
+             this.currentSection = currentSection;
          }
-@@ -392,9 +_,11 @@
+@@ -395,9 +_,11 @@
                  PersistentEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
-                 EntitySection<T> entitysection = PersistentEntitySectionManager.this.sectionStorage.getOrCreateSection(i);
-                 entitysection.add(this.entity);
+                 EntitySection<T> newSection = PersistentEntitySectionManager.this.sectionStorage.getOrCreateSection(newSectionPos);
+                 newSection.add(this.entity);
 +                long oldSectionKey = currentSectionKey;
-                 this.currentSection = entitysection;
-                 this.currentSectionKey = i;
-                 this.updateStatus(visibility, entitysection.getStatus());
-+                if (this.realEntity != null) net.neoforged.neoforge.common.CommonHooks.onEntityEnterSection(this.realEntity, oldSectionKey, i);
+                 this.currentSection = newSection;
+                 this.currentSectionKey = newSectionPos;
+                 this.updateStatus(previousStatus, newSection.getStatus());
++                if (this.realEntity != null) net.neoforged.neoforge.common.CommonHooks.onEntityEnterSection(this.realEntity, oldSectionKey, newSectionPos);
              }
          }
  

@@ -20,25 +20,25 @@
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
  
-     public static void click(InputConstants.Key p_90836_) {
-         forAllKeyMappings(p_90836_, p_445128_ -> p_445128_.clickCount++);
+     public static void click(InputConstants.Key key) {
+         forAllKeyMappings(key, keyMapping -> keyMapping.clickCount++);
      }
  
-     public static void set(InputConstants.Key p_90838_, boolean p_90839_) {
--        forAllKeyMappings(p_90838_, p_445126_ -> p_445126_.setDown(p_90839_));
-+        forAllKeyMappings(p_90838_, p_445126_ -> p_445126_.setDown(p_90839_), !p_90839_);
+     public static void set(InputConstants.Key key, boolean state) {
+-        forAllKeyMappings(key, keyMapping -> keyMapping.setDown(state));
++        forAllKeyMappings(key, keyMapping -> keyMapping.setDown(state), !state);
      }
  
-     private static void forAllKeyMappings(InputConstants.Key p_446544_, Consumer<KeyMapping> p_446545_) {
--        List<KeyMapping> list = MAP.get(p_446544_);
-+        forAllKeyMappings(p_446544_, p_446545_, false);
+     private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation) {
+-        List<KeyMapping> keyMappings = MAP.get(key);
++        forAllKeyMappings(key, operation, false);
 +    }
 +
-+    private static void forAllKeyMappings(InputConstants.Key p_446544_, Consumer<KeyMapping> p_446545_, boolean releasing) {
-+        List<KeyMapping> list = MAP.getAll(p_446544_, releasing);
-         if (list != null && !list.isEmpty()) {
-             for (KeyMapping keymapping : list) {
-                 p_446545_.accept(keymapping);
++    private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation, boolean releasing) {
++        List<KeyMapping> keyMappings = MAP.getAll(key, releasing);
+         if (keyMappings != null && !keyMappings.isEmpty()) {
+             for (KeyMapping keyMapping : keyMappings) {
+                 operation.accept(keyMapping);
 @@ -105,8 +_,83 @@
          this.registerMapping(this.key);
      }
@@ -127,13 +127,13 @@
 @@ -157,6 +_,20 @@
      }
  
-     public boolean same(KeyMapping p_90851_) {
-+        if (getKeyConflictContext().conflicts(p_90851_.getKeyConflictContext()) || p_90851_.getKeyConflictContext().conflicts(getKeyConflictContext())) {
+     public boolean same(KeyMapping that) {
++        if (getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(getKeyConflictContext())) {
 +            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
-+            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = p_90851_.getKeyModifier();
-+            if (keyModifier.matches(p_90851_.getKey()) || otherKeyModifier.matches(getKey())) {
++            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = that.getKeyModifier();
++            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(getKey())) {
 +                return true;
-+            } else if (getKey().equals(p_90851_.getKey())) {
++            } else if (getKey().equals(that.getKey())) {
 +                // IN_GAME key contexts have a conflict when at least one modifier is NONE.
 +                // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +                // GUI and other key contexts do not have this limitation.
@@ -142,7 +142,7 @@
 +                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +            }
 +        }
-         return this.key.equals(p_90851_.key);
+         return this.key.equals(that.key);
      }
  
 @@ -175,11 +_,13 @@
@@ -163,20 +163,20 @@
 @@ -191,7 +_,7 @@
      }
  
-     private void registerMapping(InputConstants.Key p_446356_) {
--        MAP.computeIfAbsent(p_446356_, p_445127_ -> new ArrayList<>()).add(this);
-+        MAP.put(p_446356_, this);
+     private void registerMapping(InputConstants.Key key) {
+-        MAP.computeIfAbsent(key, k -> new ArrayList<>()).add(this);
++        MAP.put(key, this);
      }
  
-     public static @Nullable KeyMapping get(String p_389468_) {
+     public static @Nullable KeyMapping get(String name) {
 @@ -214,6 +_,10 @@
-             return register(Identifier.withDefaultNamespace(p_449101_));
+             return register(Identifier.withDefaultNamespace(name));
          }
  
 +        /**
 +         * @deprecated Neo: use {@link net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)} instead
 +         */
 +        @Deprecated
-         public static KeyMapping.Category register(Identifier p_468881_) {
-             KeyMapping.Category keymapping$category = new KeyMapping.Category(p_468881_);
-             if (SORT_ORDER.contains(keymapping$category)) {
+         public static KeyMapping.Category register(Identifier id) {
+             KeyMapping.Category category = new KeyMapping.Category(id);
+             if (SORT_ORDER.contains(category)) {

@@ -9,19 +9,21 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.Objects;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
 public class LevelAttachmentsSavedData extends SavedData {
     public static final SavedDataType<LevelAttachmentsSavedData> TYPE = new SavedDataType<>(
-            "neoforge_data_attachments",
+            Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "data_attachments"),
             LevelAttachmentsSavedData::new,
             LevelAttachmentsSavedData::makeCodec);
 

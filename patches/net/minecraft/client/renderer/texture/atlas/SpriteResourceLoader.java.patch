@@ -3,24 +3,24 @@
 @@ -27,7 +_,7 @@
      Logger LOGGER = LogUtils.getLogger();
  
-     static SpriteResourceLoader create(Set<MetadataSectionType<?>> p_434463_) {
--        return (p_477742_, p_477743_) -> {
-+        return (p_477742_, p_477743_, constructor) -> {
-             Optional<AnimationMetadataSection> optional;
-             Optional<TextureMetadataSection> optional1;
-             List<MetadataSectionType.WithValue<?>> list;
+     static SpriteResourceLoader create(Set<MetadataSectionType<?>> additionalMetadataSections) {
+-        return (spriteLocation, resource) -> {
++        return (spriteLocation, resource, constructor) -> {
+             Optional<AnimationMetadataSection> animationInfo;
+             Optional<TextureMetadataSection> textureInfo;
+             List<MetadataSectionType.WithValue<?>> additionalMetadata;
 @@ -68,9 +_,14 @@
-                 framesize = new FrameSize(nativeimage.getWidth(), nativeimage.getHeight());
+                 frameSize = new FrameSize(image.getWidth(), image.getHeight());
              }
  
--            return new SpriteContents(p_477742_, framesize, nativeimage, optional, list, optional1);
-+            return constructor.create(p_477742_, framesize, nativeimage, optional, list, optional1);
+-            return new SpriteContents(spriteLocation, frameSize, image, animationInfo, additionalMetadata, textureInfo);
++            return constructor.create(spriteLocation, frameSize, image, animationInfo, additionalMetadata, textureInfo);
          };
      }
  
--    @Nullable SpriteContents loadSprite(Identifier p_469874_, Resource p_294329_);
-+    default SpriteContents loadSprite(Identifier p_295581_, Resource p_294329_) {
-+        return loadSprite(p_295581_, p_294329_, SpriteContents::new);
+-    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource);
++    default SpriteContents loadSprite(Identifier p_295581_, Resource resource) {
++        return loadSprite(p_295581_, resource, SpriteContents::new);
 +    }
 +
 +    @Nullable

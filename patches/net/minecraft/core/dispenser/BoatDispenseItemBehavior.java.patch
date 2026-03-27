@@ -1,38 +1,29 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -29,27 +_,33 @@
-         double d2 = vec3.y() + direction.getStepY() * 1.125F;
-         double d3 = vec3.z() + direction.getStepZ() * d0;
-         BlockPos blockpos = p_302460_.pos().relative(direction);
-+        AbstractBoat abstractboat = this.type.create(serverlevel, EntitySpawnReason.DISPENSER);
+@@ -29,11 +_,17 @@
+         double spawnY = center.y() + direction.getStepY() * 1.125F;
+         double spawnZ = center.z() + direction.getStepZ() * justOutsideDispenser;
+         BlockPos frontPos = source.pos().relative(direction);
++        AbstractBoat abstractboat = this.type.create(level, EntitySpawnReason.DISPENSER);
 +        if (abstractboat != null) {
-+            EntityType.<AbstractBoat>createDefaultStackConfig(serverlevel, p_123376_, null).accept(abstractboat);
++            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).accept(abstractboat);
 +            abstractboat.setYRot(direction.toYRot());
-+            serverlevel.addFreshEntity(abstractboat);
++            level.addFreshEntity(abstractboat);
 +        }
-         double d4;
--        if (serverlevel.getFluidState(blockpos).is(FluidTags.WATER)) {
-+        if (canBoatInFluid(abstractboat, serverlevel.getFluidState(blockpos))) {
-             d4 = 1.0;
+         double yOffset;
+-        if (level.getFluidState(frontPos).is(FluidTags.WATER)) {
++        if (canBoatInFluid(abstractboat, level.getFluidState(frontPos))) {
+             yOffset = 1.0;
          } else {
--            if (!serverlevel.getBlockState(blockpos).isAir() || !serverlevel.getFluidState(blockpos.below()).is(FluidTags.WATER)) {
-+            if (!serverlevel.getBlockState(blockpos).isAir() || !canBoatInFluid(abstractboat, serverlevel.getFluidState(blockpos.below()))) {
-                 return this.defaultDispenseItemBehavior.dispense(p_302460_, p_123376_);
+-            if (!level.getBlockState(frontPos).isAir() || !level.getFluidState(frontPos.below()).is(FluidTags.WATER)) {
++            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(abstractboat, level.getFluidState(frontPos.below()))) {
+                 return this.defaultDispenseItemBehavior.dispense(source, dispensed);
              }
  
-             d4 = 0.0;
+@@ -50,6 +_,10 @@
          }
  
--        AbstractBoat abstractboat = this.type.create(serverlevel, EntitySpawnReason.DISPENSER);
-         if (abstractboat != null) {
-             abstractboat.setInitialPos(d1, d2 + d4, d3);
--            EntityType.<AbstractBoat>createDefaultStackConfig(serverlevel, p_123376_, null).accept(abstractboat);
--            abstractboat.setYRot(direction.toYRot());
--            serverlevel.addFreshEntity(abstractboat);
-             p_123376_.shrink(1);
-         }
- 
-         return p_123376_;
+         return dispensed;
 +    }
 +
 +    private static boolean canBoatInFluid(@org.jspecify.annotations.Nullable AbstractBoat boat, net.minecraft.world.level.material.FluidState fluid) {

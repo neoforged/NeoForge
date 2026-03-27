@@ -1,12 +1,12 @@
 --- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
 +++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
-@@ -33,7 +_,8 @@
+@@ -34,7 +_,8 @@
              }
          }
  
--        return new RenderSectionRegion(p_200466_, l, i1, j1, asectioncopy);
-+        var modelDataManager = p_200466_.getModelDataManager().snapshotSectionRegion(l, i1, j1, k1, l1, i2);
-+        return new RenderSectionRegion(p_200466_, l, i1, j1, asectioncopy, modelDataManager);
+-        return new RenderSectionRegion(level, minSectionX, minSectionY, minSectionZ, regionSections);
++        var modelDataManager = level.getModelDataManager().snapshotSectionRegion(minSectionX, minSectionY, minSectionZ, maxSectionX, maxSectionY, maxSectionZ);
++        return new RenderSectionRegion(level, minSectionX, minSectionY, minSectionZ, regionSections, modelDataManager);
      }
  
-     private SectionCopy getSectionDataCopy(Level p_427240_, int p_427457_, int p_427278_, int p_427229_) {
+     private SectionCopy getSectionDataCopy(Level level, int sectionX, int sectionY, int sectionZ) {

@@ -641,6 +641,56 @@ public class ResourceHandlerUtilTest {
     }
 
     @Nested
+    class MoveStacking {
+        // Note that the internal implementation of moveStacking is almost equivalent, so
+        // we do not repeat all the tests of 'move' here.
+        @Test
+        void stackingIntoFilledSlotsFirst() {
+            var source = handlerForStacks(stack(TestResource.OTHER_1, 10), stack(TestResource.SOME, 10));
+            var target = handler(slotInfo(TestResource.EMPTY, 0, 100), slotInfo(TestResource.SOME, 0, 3));
+
+            int moved = ResourceHandlerUtil.moveStacking(source, target, r -> r.equals(TestResource.SOME), 10, null);
+
+            assertEquals(10, moved);
+
+            // Verify source and target state
+            assertThat(describeStacks(source)).containsExactly(
+                    stack(TestResource.OTHER_1, 10),
+                    null);
+            assertThat(describeStacks(target)).containsExactly(
+                    stack(TestResource.SOME, 7),
+                    stack(TestResource.SOME, 3));
+        }
+    }
+
+    @Nested
+    class MoveFirstStacking {
+        // Note that the internal implementation of moveFirstStacking is almost equivalent, so
+        // we do not repeat all the tests of 'moveFirst' here.
+        @Test
+        void stackingIntoFilledSlotsFirst() {
+            var source = handlerForStacks(stack(TestResource.OTHER_1, 10), stack(TestResource.SOME, 10));
+            var target = handler(
+                    slotInfo(TestResource.EMPTY, 0, 100),
+                    slotInfo(TestResource.OTHER_1, 0, 3),
+                    slotInfo(TestResource.EMPTY, 0, 100));
+
+            var moved = ResourceHandlerUtil.moveFirstStacking(source, target, r -> true, 10, null);
+
+            assertEquals(new ResourceStack<>(TestResource.OTHER_1, 10), moved);
+
+            // Verify source and target state
+            assertThat(describeStacks(source)).containsExactly(
+                    null,
+                    stack(TestResource.SOME, 10));
+            assertThat(describeStacks(target)).containsExactly(
+                    stack(TestResource.OTHER_1, 7),
+                    stack(TestResource.OTHER_1, 3),
+                    null);
+        }
+    }
+
+    @Nested
     class Contains {
         @Test
         void emptyHandlerDoesNotContainResource() {

@@ -20,7 +20,7 @@ public class NeoForgeSplashHooks {
         List<Component> list = Lists.newArrayList();
         for (Resource resource : resourceManager.listResources("texts", location -> location.getPath().equals(SplashManager.SPLASHES_LOCATION.getPath())).values()) {
             try (BufferedReader reader = resource.openAsReader()) {
-                list.addAll(reader.lines().map(String::trim).filter(p_118876_ -> p_118876_.hashCode() != 125780783).map(SplashManager::literalSplash).toList());
+                list.addAll(reader.lines().map(String::trim).filter(line -> line.hashCode() != 125780783).map(SplashManager::literalSplash).toList());
             } catch (IOException e) {
                 LogUtils.getLogger().warn("Invalid {} in resourcepack: '{}'", SplashManager.SPLASHES_LOCATION.getPath(), resource.sourcePackId(), e);
             }

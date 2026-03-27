@@ -21,25 +21,25 @@
 +    @Deprecated
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
  
-     static Optional<Block> getPrevious(Block p_154891_) {
--        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(p_154891_));
-+        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154891_));
+     static Optional<Block> getPrevious(Block block) {
+-        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(block));
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block));
      }
  
-     static Block getFirst(Block p_154898_) {
-         Block block = p_154898_;
+     static Block getFirst(Block block) {
+         Block candiate = block;
  
--        for (Block block1 = PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
-+        for (Block block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154898_); block1 != null; block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block1)) {
-             block = block1;
+-        for (Block previous = PREVIOUS_BY_BLOCK.get().get(block); previous != null; previous = PREVIOUS_BY_BLOCK.get().get(previous)) {
++        for (Block previous = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block); previous != null; previous = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(previous)) {
+             candiate = previous;
          }
  
 @@ -79,7 +_,7 @@
      }
  
-     static Optional<Block> getNext(Block p_154905_) {
--        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
-+        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getNextOxidizedStage(p_154905_));
+     static Optional<Block> getNext(Block block) {
+-        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(block));
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getNextOxidizedStage(block));
      }
  
-     static BlockState getFirst(BlockState p_154907_) {
+     static BlockState getFirst(BlockState state) {

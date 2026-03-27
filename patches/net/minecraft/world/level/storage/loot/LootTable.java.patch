@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
-@@ -41,12 +_,14 @@
-             p_466781_ -> p_466781_.group(
-                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_380906_ -> p_380906_.paramSet),
-                     Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
--                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
--                    LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
-+                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
-+                    net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
+@@ -39,12 +_,14 @@
+             i -> i.group(
+                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(t -> t.paramSet),
+                     Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(t -> t.randomSequence),
+-                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
+-                    LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(t -> t.functions)
++                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
++                    net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter(t -> t.functions)
                  )
-                 .apply(p_466781_, LootTable::new)
+                 .apply(i, LootTable::new)
          )
      );
 +    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<LootTable>>> CONDITIONAL_DIRECT_CODEC =
@@ -17,61 +17,61 @@
      public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.create(Registries.LOOT_TABLE, DIRECT_CODEC);
      public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
      private final ContextKeySet paramSet;
-@@ -58,7 +_,7 @@
-     LootTable(ContextKeySet p_380952_, Optional<Identifier> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
-         this.paramSet = p_380952_;
-         this.randomSequence = p_299055_;
--        this.pools = p_298390_;
-+        this.pools = Lists.newArrayList(p_298390_);
-         this.functions = p_298775_;
-         this.compositeFunction = LootItemFunctions.compose(p_298775_);
+@@ -56,7 +_,7 @@
+     private LootTable(ContextKeySet paramSet, Optional<Identifier> randomSequence, List<LootPool> pools, List<LootItemFunction> functions) {
+         this.paramSet = paramSet;
+         this.randomSequence = randomSequence;
+-        this.pools = pools;
++        this.pools = Lists.newArrayList(pools);
+         this.functions = functions;
+         this.compositeFunction = LootItemFunctions.compose(functions);
      }
-@@ -81,10 +_,12 @@
+@@ -79,10 +_,12 @@
          };
      }
  
 +    @Deprecated // Use a non-'Raw' version of 'getRandomItems', so that the Forge Global Loot Modifiers will be applied
-     public void getRandomItemsRaw(LootParams p_287669_, Consumer<ItemStack> p_287781_) {
-         this.getRandomItemsRaw(new LootContext.Builder(p_287669_).create(this.randomSequence), p_287781_);
+     public void getRandomItemsRaw(LootParams params, Consumer<ItemStack> output) {
+         this.getRandomItemsRaw(new LootContext.Builder(params).create(this.randomSequence), output);
      }
  
 +    @Deprecated // Use a non-'Raw' version of 'getRandomItems', so that the Forge Global Loot Modifiers will be applied
-     public void getRandomItemsRaw(LootContext p_79132_, Consumer<ItemStack> p_79133_) {
-         LootContext.VisitedEntry<?> visitedentry = LootContext.createVisitedEntry(this);
-         if (p_79132_.pushVisitedElement(visitedentry)) {
-@@ -101,18 +_,15 @@
+     public void getRandomItemsRaw(LootContext context, Consumer<ItemStack> output) {
+         LootContext.VisitedEntry<?> breadcrumb = LootContext.createVisitedEntry(this);
+         if (context.pushVisitedElement(breadcrumb)) {
+@@ -99,18 +_,15 @@
      }
  
-     public void getRandomItems(LootParams p_287748_, long p_287729_, Consumer<ItemStack> p_287583_) {
+     public void getRandomItems(LootParams params, long optionalLootTableSeed, Consumer<ItemStack> output) {
 -        this.getRandomItemsRaw(
--            new LootContext.Builder(p_287748_).withOptionalRandomSeed(p_287729_).create(this.randomSequence),
--            createStackSplitter(p_287748_.getLevel(), p_287583_)
+-            new LootContext.Builder(params).withOptionalRandomSeed(optionalLootTableSeed).create(this.randomSequence),
+-            createStackSplitter(params.getLevel(), output)
 -        );
-+        this.getRandomItems((new LootContext.Builder(p_287748_)).withOptionalRandomSeed(p_287729_).create(this.randomSequence)).forEach(p_287583_);
++        this.getRandomItems((new LootContext.Builder(params)).withOptionalRandomSeed(optionalLootTableSeed).create(this.randomSequence)).forEach(output);
      }
  
-     public void getRandomItems(LootParams p_287704_, Consumer<ItemStack> p_287617_) {
--        this.getRandomItemsRaw(p_287704_, createStackSplitter(p_287704_.getLevel(), p_287617_));
-+        this.getRandomItems(p_287704_).forEach(p_287617_);
+     public void getRandomItems(LootParams params, Consumer<ItemStack> output) {
+-        this.getRandomItemsRaw(params, createStackSplitter(params.getLevel(), output));
++        this.getRandomItems(params).forEach(output);
      }
  
-     public void getRandomItems(LootContext p_79149_, Consumer<ItemStack> p_79150_) {
--        this.getRandomItemsRaw(p_79149_, createStackSplitter(p_79149_.getLevel(), p_79150_));
-+        this.getRandomItems(p_79149_).forEach(p_79150_);
+     public void getRandomItems(LootContext context, Consumer<ItemStack> output) {
+-        this.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), output));
++        this.getRandomItems(context).forEach(output);
      }
  
-     public ObjectArrayList<ItemStack> getRandomItems(LootParams p_347545_, RandomSource p_347680_) {
-@@ -129,7 +_,8 @@
+     public ObjectArrayList<ItemStack> getRandomItems(LootParams params, RandomSource randomSource) {
+@@ -127,7 +_,8 @@
  
-     private ObjectArrayList<ItemStack> getRandomItems(LootContext p_230923_) {
-         ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
--        this.getRandomItems(p_230923_, objectarraylist::add);
-+        this.getRandomItemsRaw(p_230923_, createStackSplitter(p_230923_.getLevel(), objectarraylist::add));
-+        objectarraylist = net.neoforged.neoforge.common.CommonHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
-         return objectarraylist;
+     private ObjectArrayList<ItemStack> getRandomItems(LootContext context) {
+         ObjectArrayList<ItemStack> result = new ObjectArrayList<>();
+-        this.getRandomItems(context, result::add);
++        this.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), result::add));
++        result = net.neoforged.neoforge.common.CommonHooks.modifyLoot(this.getLootTableId(), result, context);
+         return result;
      }
  
-@@ -220,11 +_,68 @@
+@@ -214,11 +_,68 @@
          return new LootTable.Builder();
      }
  
@@ -138,9 +138,9 @@
          private Optional<Identifier> randomSequence = Optional.empty();
 +        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new java.util.ArrayList<>();
  
-         public LootTable.Builder withPool(LootPool.Builder p_79162_) {
-             this.pools.add(p_79162_.build());
-@@ -252,6 +_,20 @@
+         public LootTable.Builder withPool(LootPool.Builder pool) {
+             this.pools.add(pool.build());
+@@ -246,6 +_,20 @@
  
          public LootTable build() {
              return new LootTable(this.paramSet, this.randomSequence, this.pools.build(), this.functions.build());

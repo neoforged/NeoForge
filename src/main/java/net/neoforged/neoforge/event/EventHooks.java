@@ -27,6 +27,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -72,6 +73,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
@@ -113,6 +115,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.common.util.ClockAdjustment;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
@@ -146,6 +149,7 @@ import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.entity.player.FluidTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
@@ -179,6 +183,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -366,7 +371,7 @@ public class EventHooks {
      */
     public static PlayerSpawnPhantomsEvent firePlayerSpawnPhantoms(ServerPlayer player, ServerLevel level, BlockPos pos) {
         Difficulty difficulty = level.getCurrentDifficultyAt(pos).getDifficulty();
-        var event = new PlayerSpawnPhantomsEvent(player, 1 + level.random.nextInt(difficulty.getId() + 1));
+        var event = new PlayerSpawnPhantomsEvent(player, 1 + level.getRandom().nextInt(difficulty.getId() + 1));
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
@@ -439,6 +444,12 @@ public class EventHooks {
 
     public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
+    public static FluidTooltipEvent onFluidTooltip(FluidStack fluidStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
+        FluidTooltipEvent event = new FluidTooltipEvent(fluidStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
@@ -789,10 +800,14 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PistonEvent.Post(level, pos, direction, extending ? PistonEvent.PistonMoveType.EXTEND : PistonEvent.PistonMoveType.RETRACT));
     }
 
-    public static long onSleepFinished(ServerLevel level, long newTime, long minTime) {
-        SleepFinishedTimeEvent event = new SleepFinishedTimeEvent(level, newTime, minTime);
+    @Nullable
+    public static ClockAdjustment onSleepFinished(ServerLevel level, ClockAdjustment defaultAdjustment) {
+        SleepFinishedTimeEvent event = new SleepFinishedTimeEvent(level, defaultAdjustment);
         NeoForge.EVENT_BUS.post(event);
-        return event.getNewTime();
+        if (event.isCanceled()) {
+            return null;
+        }
+        return event.getAdjustment();
     }
 
     /**
@@ -1040,7 +1055,7 @@ public class EventHooks {
      * @param ench  The enchantment being queried for.
      * @return The new level of the enchantment.
      */
-    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Holder<Enchantment> ench) {
+    public static int getEnchantmentLevelSpecific(int level, ItemInstance stack, Holder<Enchantment> ench) {
         RegistryLookup<Enchantment> lookup = ench.unwrapLookup();
         if (lookup == null) { // Pretty sure this is never null, but I can't *prove* that it isn't.
             return level;
@@ -1071,14 +1086,15 @@ public class EventHooks {
      * Fires the {@link BuildCreativeModeTabContentsEvent}.
      *
      * @param tab               The tab that contents are being collected for.
-     * @param tabKey            The resource key of the tab.
      * @param originalGenerator The display items generator that populates vanilla entries.
      * @param params            Display parameters, controlling if certain items are hidden.
      * @param output            The output acceptor.
      * @apiNote Call via {@link CreativeModeTab#buildContents(CreativeModeTab.ItemDisplayParameters)}
      */
     @ApiStatus.Internal
-    public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
+    public static void onCreativeModeTabBuildContents(CreativeModeTab tab, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
+        var tabKey = BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab).orElseThrow();
+
         final var parentEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
         final var searchEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
 

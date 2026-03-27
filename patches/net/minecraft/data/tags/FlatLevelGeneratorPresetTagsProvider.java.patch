@@ -6,11 +6,11 @@
  public class FlatLevelGeneratorPresetTagsProvider extends KeyTagProvider<FlatLevelGeneratorPreset> {
 +    /** @deprecated Forge: Use the {@linkplain #FlatLevelGeneratorPresetTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public FlatLevelGeneratorPresetTagsProvider(PackOutput p_256604_, CompletableFuture<HolderLookup.Provider> p_255962_) {
-         super(p_256604_, Registries.FLAT_LEVEL_GENERATOR_PRESET, p_255962_);
+     public FlatLevelGeneratorPresetTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.FLAT_LEVEL_GENERATOR_PRESET, lookupProvider);
 +    }
-+    public FlatLevelGeneratorPresetTagsProvider(PackOutput p_256604_, CompletableFuture<HolderLookup.Provider> p_255962_, String modId) {
-+        super(p_256604_, Registries.FLAT_LEVEL_GENERATOR_PRESET, p_255962_, modId);
++    public FlatLevelGeneratorPresetTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.FLAT_LEVEL_GENERATOR_PRESET, lookupProvider, modId);
      }
  
      @Override

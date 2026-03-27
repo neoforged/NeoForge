@@ -68,7 +68,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
             }
             return false;
         } else {
-            return this.fluids.contains(stack.getFluidHolder()) && this.components.test(stack);
+            return this.fluids.contains(stack.typeHolder()) && this.components.test(stack);
         }
     }
 

@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockModelLighter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -17,11 +18,11 @@ import net.minecraft.world.level.block.state.BlockState;
  * There are 24 possible configurations for each block, depending on: the direction,
  * whether the quad wants to be shaded, and whether the sample is taken outside the block.
  *
- * <p>The {@link EnhancedAoRenderStorage} then works by combining the results of multiple configurations,
+ * <p>The {@link EnhancedBlockModelLighter} then works by combining the results of multiple configurations,
  * using various interpolation schemes depending on the quad.
  *
  * <p>The logic is mostly contained in {@link #calculateFaceUncached},
- * and derives from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate},
+ * and derives from vanilla's {@link BlockModelLighter#prepareQuadAmbientOcclusion},
  * with a few fixes applied:
  * <ul>
  * <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
@@ -38,7 +39,7 @@ class FullFaceCalculator {
     private static final boolean DISABLE_LIGHTMAP_BLENDING_FIX = Boolean.getBoolean("neoforge.ao.disableLightmapBlendingFix");
 
     final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
-    private ModelBlockRenderer.Cache cache;
+    private BlockModelLighter.Cache cache;
 
     private final AoCalculatedFace[] aoFaces = new AoCalculatedFace[24];
     {
@@ -48,7 +49,7 @@ class FullFaceCalculator {
     }
     private int calculatedAoFaces = 0;
 
-    void startBlock(ModelBlockRenderer.Cache cache) {
+    void startBlock(BlockModelLighter.Cache cache) {
         this.calculatedAoFaces = 0;
         this.cache = cache;
     }
@@ -81,7 +82,7 @@ class FullFaceCalculator {
      */
     private void calculateFaceUncached(AoCalculatedFace out, BlockAndTintGetter level, BlockState renderedState, BlockPos renderedPos, Direction direction, boolean shade, boolean sampleOutside) {
         BlockPos samplePos = sampleOutside ? renderedPos.relative(direction) : renderedPos;
-        ModelBlockRenderer.AdjacencyInfo adjacencyInfo = ModelBlockRenderer.AdjacencyInfo.fromFacing(direction);
+        BlockModelLighter.AdjacencyInfo adjacencyInfo = BlockModelLighter.AdjacencyInfo.fromFacing(direction);
         BlockPos.MutableBlockPos scratchPos = this.scratchPos;
 
         // Sample light and brightness for each side of the face
@@ -89,27 +90,27 @@ class FullFaceCalculator {
         // AdjacencyInfo calls them corners, but they are actually sides
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[0]);
         BlockState sideState0 = level.getBlockState(scratchPos);
-        int sideLightmap0 = this.cache.getLightColor(sideState0, level, scratchPos);
+        int sideLightmap0 = this.cache.getLightCoords(sideState0, level, scratchPos);
         float sideBrightness0 = this.cache.getShadeBrightness(sideState0, level, scratchPos);
-        boolean sideClear0 = !sideState0.isViewBlocking(level, scratchPos) || sideState0.getLightBlock() == 0;
+        boolean sideClear0 = !sideState0.isViewBlocking(level, scratchPos) || sideState0.getLightDampening() == 0;
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[1]);
         BlockState sideState1 = level.getBlockState(scratchPos);
-        int sideLightmap1 = this.cache.getLightColor(sideState1, level, scratchPos);
+        int sideLightmap1 = this.cache.getLightCoords(sideState1, level, scratchPos);
         float sideBrightness1 = this.cache.getShadeBrightness(sideState1, level, scratchPos);
-        boolean sideClear1 = !sideState1.isViewBlocking(level, scratchPos) || sideState1.getLightBlock() == 0;
+        boolean sideClear1 = !sideState1.isViewBlocking(level, scratchPos) || sideState1.getLightDampening() == 0;
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[2]);
         BlockState sideState2 = level.getBlockState(scratchPos);
-        int sideLightmap2 = this.cache.getLightColor(sideState2, level, scratchPos);
+        int sideLightmap2 = this.cache.getLightCoords(sideState2, level, scratchPos);
         float sideBrightness2 = this.cache.getShadeBrightness(sideState2, level, scratchPos);
-        boolean sideClear2 = !sideState2.isViewBlocking(level, scratchPos) || sideState2.getLightBlock() == 0;
+        boolean sideClear2 = !sideState2.isViewBlocking(level, scratchPos) || sideState2.getLightDampening() == 0;
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[3]);
         BlockState sideState3 = level.getBlockState(scratchPos);
-        int sideLightmap3 = this.cache.getLightColor(sideState3, level, scratchPos);
+        int sideLightmap3 = this.cache.getLightCoords(sideState3, level, scratchPos);
         float sideBrightness3 = this.cache.getShadeBrightness(sideState3, level, scratchPos);
-        boolean sideClear3 = !sideState3.isViewBlocking(level, scratchPos) || sideState3.getLightBlock() == 0;
+        boolean sideClear3 = !sideState3.isViewBlocking(level, scratchPos) || sideState3.getLightDampening() == 0;
 
         // Process corners
         // Note that corners[0] and corners[1] are on the same axis, and same for corners[2] and corners[3].
@@ -125,8 +126,8 @@ class FullFaceCalculator {
             scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[0]).move(adjacencyInfo.corners[2]);
             BlockState cornerState0 = level.getBlockState(scratchPos);
             cornerBrightness0 = this.cache.getShadeBrightness(cornerState0, level, scratchPos);
-            cornerLightmap0 = this.cache.getLightColor(cornerState0, level, scratchPos);
-            cornerClear0 = !cornerState0.isViewBlocking(level, scratchPos) || cornerState0.getLightBlock() == 0;
+            cornerLightmap0 = this.cache.getLightCoords(cornerState0, level, scratchPos);
+            cornerClear0 = !cornerState0.isViewBlocking(level, scratchPos) || cornerState0.getLightDampening() == 0;
         }
 
         float cornerBrightness1;
@@ -140,8 +141,8 @@ class FullFaceCalculator {
             scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[0]).move(adjacencyInfo.corners[3]);
             BlockState cornerState1 = level.getBlockState(scratchPos);
             cornerBrightness1 = this.cache.getShadeBrightness(cornerState1, level, scratchPos);
-            cornerLightmap1 = this.cache.getLightColor(cornerState1, level, scratchPos);
-            cornerClear1 = !cornerState1.isViewBlocking(level, scratchPos) || cornerState1.getLightBlock() == 0;
+            cornerLightmap1 = this.cache.getLightCoords(cornerState1, level, scratchPos);
+            cornerClear1 = !cornerState1.isViewBlocking(level, scratchPos) || cornerState1.getLightDampening() == 0;
         }
 
         float cornerBrightness2;
@@ -156,8 +157,8 @@ class FullFaceCalculator {
             scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[1]).move(adjacencyInfo.corners[2]);
             BlockState cornerState2 = level.getBlockState(scratchPos);
             cornerBrightness2 = this.cache.getShadeBrightness(cornerState2, level, scratchPos);
-            cornerLightmap2 = this.cache.getLightColor(cornerState2, level, scratchPos);
-            cornerClear2 = !cornerState2.isViewBlocking(level, scratchPos) || cornerState2.getLightBlock() == 0;
+            cornerLightmap2 = this.cache.getLightCoords(cornerState2, level, scratchPos);
+            cornerClear2 = !cornerState2.isViewBlocking(level, scratchPos) || cornerState2.getLightDampening() == 0;
         }
 
         float cornerBrightness3;
@@ -172,8 +173,8 @@ class FullFaceCalculator {
             scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[1]).move(adjacencyInfo.corners[3]);
             BlockState cornerState3 = level.getBlockState(scratchPos);
             cornerBrightness3 = this.cache.getShadeBrightness(cornerState3, level, scratchPos);
-            cornerLightmap3 = this.cache.getLightColor(cornerState3, level, scratchPos);
-            cornerClear3 = !cornerState3.isViewBlocking(level, scratchPos) || cornerState3.getLightBlock() == 0;
+            cornerLightmap3 = this.cache.getLightCoords(cornerState3, level, scratchPos);
+            cornerClear3 = !cornerState3.isViewBlocking(level, scratchPos) || cornerState3.getLightDampening() == 0;
         }
 
         // Process the inside of the block
@@ -182,11 +183,12 @@ class FullFaceCalculator {
         // which causes seams e.g. when a slab is placed below an active sculk sensor
         BlockState insideState = sampleOutside ? level.getBlockState(samplePos) : renderedState;
         float insideBrightness = this.cache.getShadeBrightness(insideState, level, samplePos);
-        int insideLightmap = this.cache.getLightColor(insideState, level, samplePos);
-        boolean insideClear = !insideState.isViewBlocking(level, samplePos) || insideState.getLightBlock() == 0;
+        int insideLightmap = this.cache.getLightCoords(insideState, level, samplePos);
+        boolean insideClear = !insideState.isViewBlocking(level, samplePos) || insideState.getLightDampening() == 0;
 
         // Wrap up
-        float levelBrightness = level.getShade(direction, shade);
+        CardinalLighting cardinalLighting = level.cardinalLighting();
+        float levelBrightness = shade ? cardinalLighting.byFace(direction) : cardinalLighting.up();
 
         out.brightness0 = ((sideBrightness3 + sideBrightness0 + cornerBrightness1 + insideBrightness) * 0.25F) * levelBrightness;
         out.brightness1 = ((sideBrightness2 + sideBrightness0 + cornerBrightness0 + insideBrightness) * 0.25F) * levelBrightness;
@@ -230,14 +232,14 @@ class FullFaceCalculator {
             //   which means that a natural 0 value will not get ignored in the blending.
             // - It treats all 4 lightmaps equally.
 
-            int sideBlockA = LightTexture.blockWithFraction(sideLightmapA);
-            int sideBlockB = LightTexture.blockWithFraction(sideLightmapB);
-            int cornerBlock = LightTexture.blockWithFraction(cornerLightmap);
-            int insideBlock = LightTexture.blockWithFraction(insideLightmap);
-            int sideSkyA = LightTexture.skyWithFraction(sideLightmapA);
-            int sideSkyB = LightTexture.skyWithFraction(sideLightmapB);
-            int cornerSky = LightTexture.skyWithFraction(cornerLightmap);
-            int insideSky = LightTexture.skyWithFraction(insideLightmap);
+            int sideBlockA = LightCoordsUtil.smoothBlock(sideLightmapA);
+            int sideBlockB = LightCoordsUtil.smoothBlock(sideLightmapB);
+            int cornerBlock = LightCoordsUtil.smoothBlock(cornerLightmap);
+            int insideBlock = LightCoordsUtil.smoothBlock(insideLightmap);
+            int sideSkyA = LightCoordsUtil.smoothSky(sideLightmapA);
+            int sideSkyB = LightCoordsUtil.smoothSky(sideLightmapB);
+            int cornerSky = LightCoordsUtil.smoothSky(cornerLightmap);
+            int insideSky = LightCoordsUtil.smoothSky(insideLightmap);
 
             // Compute per-component minimum light, only including values from clear positions
             int minBlock = 0x10000;
@@ -265,10 +267,10 @@ class FullFaceCalculator {
             minSky &= 0xFFFF;
 
             // Increase all components of non-clear blocks to the minimum light value
-            sideLightmapA = LightTexture.packWithFraction(Math.max(minBlock, sideBlockA), Math.max(minSky, sideSkyA));
-            sideLightmapB = LightTexture.packWithFraction(Math.max(minBlock, sideBlockB), Math.max(minSky, sideSkyB));
-            cornerLightmap = LightTexture.packWithFraction(Math.max(minBlock, cornerBlock), Math.max(minSky, cornerSky));
-            insideLightmap = LightTexture.packWithFraction(Math.max(minBlock, insideBlock), Math.max(minSky, insideSky));
+            sideLightmapA = LightCoordsUtil.smoothPack(Math.max(minBlock, sideBlockA), Math.max(minSky, sideSkyA));
+            sideLightmapB = LightCoordsUtil.smoothPack(Math.max(minBlock, sideBlockB), Math.max(minSky, sideSkyB));
+            cornerLightmap = LightCoordsUtil.smoothPack(Math.max(minBlock, cornerBlock), Math.max(minSky, cornerSky));
+            insideLightmap = LightCoordsUtil.smoothPack(Math.max(minBlock, insideBlock), Math.max(minSky, insideSky));
         }
 
         return sideLightmapA + sideLightmapB + cornerLightmap + insideLightmap >> 2 & 0xFF00FF;

@@ -23,30 +23,30 @@ import net.neoforged.neoforge.gametest.GameTestHooks;
 
 /**
  * Game tests are registered on client or server startup.
- * It is run in {@link net.minecraft.resources.RegistryDataLoader#load(ResourceManager, List, List)} if {@link GameTestHooks#isGametestEnabled} returns true.
+ * It is run in {@link net.minecraft.resources.RegistryDataLoader#load(ResourceManager, List, List, java.util.concurrent.Executor)} if {@link GameTestHooks#isGametestEnabled} returns true.
  * <p>
  * Fired on the Mod bus, see {@link IModBusEvent}.
  */
 public class RegisterGameTestsEvent extends Event implements IModBusEvent {
-    private final WritableRegistry<TestEnvironmentDefinition> environmentsRegistry;
+    private final WritableRegistry<TestEnvironmentDefinition<?>> environmentsRegistry;
     private final WritableRegistry<GameTestInstance> testsRegistry;
 
-    public RegisterGameTestsEvent(WritableRegistry<TestEnvironmentDefinition> environmentsRegistry, WritableRegistry<GameTestInstance> testsRegistry) {
+    public RegisterGameTestsEvent(WritableRegistry<TestEnvironmentDefinition<?>> environmentsRegistry, WritableRegistry<GameTestInstance> testsRegistry) {
         this.environmentsRegistry = environmentsRegistry;
         this.testsRegistry = testsRegistry;
     }
 
-    public Holder<TestEnvironmentDefinition> registerEnvironment(Identifier name, TestEnvironmentDefinition... definitions) {
+    public Holder<TestEnvironmentDefinition<?>> registerEnvironment(Identifier name, TestEnvironmentDefinition<?>... definitions) {
         return registerEnvironment(name, new TestEnvironmentDefinition.AllOf(definitions));
     }
 
-    public Holder<TestEnvironmentDefinition> registerEnvironment(Identifier name, TestEnvironmentDefinition definition) {
+    public Holder<TestEnvironmentDefinition<?>> registerEnvironment(Identifier name, TestEnvironmentDefinition<?> definition) {
         return environmentsRegistry.register(
                 ResourceKey.create(Registries.TEST_ENVIRONMENT, name),
                 definition, RegistrationInfo.BUILT_IN);
     }
 
-    public void registerTest(Identifier name, Function<TestData<Holder<TestEnvironmentDefinition>>, GameTestInstance> factory, TestData<Holder<TestEnvironmentDefinition>> testData) {
+    public void registerTest(Identifier name, Function<TestData<Holder<TestEnvironmentDefinition<?>>>, GameTestInstance> factory, TestData<Holder<TestEnvironmentDefinition<?>>> testData) {
         registerTest(name, factory.apply(testData));
     }
 

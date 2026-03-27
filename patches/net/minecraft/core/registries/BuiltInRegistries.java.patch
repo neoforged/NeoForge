@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -433,6 +_,10 @@
-         ((MappedRegistry)p_365443_).bindAllTagsToEmpty();
+@@ -436,6 +_,10 @@
+         ((MappedRegistry)registry).bindAllTagsToEmpty();
      }
  
 +    public static java.util.Set<Identifier> getVanillaRegistrationOrder() {
@@ -9,5 +9,5 @@
 +    }
 +
      @FunctionalInterface
-     interface RegistryBootstrap<T> {
-         Object run(Registry<T> p_260128_);
+     private interface RegistryBootstrap<T> {
+         Object run(Registry<T> registry);

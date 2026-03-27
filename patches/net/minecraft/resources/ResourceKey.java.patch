@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceKey.java
 +++ b/net/minecraft/resources/ResourceKey.java
-@@ -66,6 +_,13 @@
+@@ -64,6 +_,13 @@
          return createRegistryKey(this.registryName);
      }
  
@@ -11,6 +11,6 @@
 +        return ret;
 +    }
 +
-     record InternKey(Identifier registry, Identifier identifier) {
+     private record InternKey(Identifier registry, Identifier identifier) {
      }
  }

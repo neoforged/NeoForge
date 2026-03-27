@@ -1,0 +1,57 @@
+--- a/net/minecraft/resources/RegistryLoadTask.java
++++ b/net/minecraft/resources/RegistryLoadTask.java
+@@ -27,6 +_,9 @@
+ import net.minecraft.util.StrictJsonParser;
+ 
+ public abstract class RegistryLoadTask<T> {
++    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
++    // Neo: Used as a marker to skip registration elements that were disabled due to conditions
++    private static final Exception SKIPPED_ELEMENT_MARKER = new Exception();
+     private final Object registryWriteLock = new Object();
+     protected final RegistryDataLoader.RegistryData<T> data;
+     private final WritableRegistry<T> registry;
+@@ -35,8 +_,11 @@
+     private volatile boolean elementsRegistered;
+ 
+     protected RegistryLoadTask(RegistryDataLoader.RegistryData<T> data, Lifecycle lifecycle, Map<ResourceKey<?>, Exception> loadingErrors) {
++        var registryBuilder = new net.neoforged.neoforge.registries.RegistryBuilder<>(data.key());
++        data.registryBuilderConsumer().accept(registryBuilder);
++
+         this.data = data;
+-        this.registry = new MappedRegistry<>(data.key(), lifecycle);
++        this.registry = (WritableRegistry<T>) registryBuilder.disableRegistrationCheck().create();
+         this.loadingErrors = loadingErrors;
+         this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
+     }
+@@ -64,7 +_,13 @@
+             elements.forEach(
+                 element -> element.value
+                     .ifLeft(value -> this.registry.register(element.key, (T)value, element.registrationInfo))
+-                    .ifRight(error -> this.loadingErrors.put(element.key, error))
++                    .ifRight(error -> {
++                        if (error == SKIPPED_ELEMENT_MARKER) {
++                            LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", element.key);
++                        } else {
++                            this.loadingErrors.put(element.key, error);
++                        }
++                    })
+             );
+             this.elementsRegistered = true;
+         }
+@@ -105,7 +_,15 @@
+                 Either var6;
+                 try (Reader reader = thunk.openAsReader()) {
+                     JsonElement json = StrictJsonParser.parse(reader);
+-                    var6 = Either.left(elementDecoder.parse(ops, json).getOrThrow());
++
++                    // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_ELEMENT_MARKER
++                    var conditionalDecoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(elementDecoder));
++                    var candidate = conditionalDecoder.parse(ops, json).getOrThrow();
++                    if (candidate.isPresent()) {
++                        var6 = Either.left(candidate.get());
++                    } else {
++                        var6 = Either.right(SKIPPED_ELEMENT_MARKER);
++                    }
+                 }
+ 
+                 return var6;

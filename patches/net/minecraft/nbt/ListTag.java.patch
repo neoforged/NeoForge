@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/ListTag.java
 +++ b/net/minecraft/nbt/ListTag.java
-@@ -153,6 +_,15 @@
+@@ -152,6 +_,15 @@
          this(new ArrayList<>());
      }
  
@@ -13,6 +13,6 @@
 +        this(new ArrayList<>(initialCapacity));
 +    }
 +
-     ListTag(List<Tag> p_128721_) {
-         this.list = p_128721_;
+     ListTag(List<Tag> list) {
+         this.list = list;
      }

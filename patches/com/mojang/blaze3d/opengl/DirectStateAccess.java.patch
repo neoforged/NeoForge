@@ -4,47 +4,47 @@
  
      abstract int createFrameBufferObject();
  
--    abstract void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, int p_412779_);
-+    abstract void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, @GpuBuffer.Usage int p_412779_, boolean useStencil);
+-    abstract void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, int bindSlot);
++    abstract void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, int bindSlot, boolean useStencil);
 +
-+    public void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, @GpuBuffer.Usage int p_412779_) {
-+        bindFrameBufferTextures(p_412046_, p_412388_, p_412116_, p_412536_, p_412779_, false);
++    public void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, int bindSlot) {
++        bindFrameBufferTextures(fbo, color0, depth, mipLevel, bindSlot, false);
 +    }
  
      abstract void blitFrameBuffers(
-         int p_412546_,
-@@ -112,9 +_,14 @@
+         int source, int dest, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter
+@@ -101,9 +_,14 @@
          }
  
          @Override
--        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, @GpuBuffer.Usage int p_412591_) {
-+        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, @GpuBuffer.Usage int p_412591_, boolean useStencil) {
-             ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36064, p_412101_, p_412742_);
-             ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36096, p_412181_, p_412742_);
+-        public void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, @GpuBuffer.Usage int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, @GpuBuffer.Usage int bindSlot, boolean useStencil) {
+             ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36064, color0, mipLevel);
+             ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36096, depth, mipLevel);
 +            if (useStencil) {
-+                ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, p_412181_, p_412742_);
++                ARBDirectStateAccess.glNamedFramebufferTexture(fbo, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, depth, mipLevel);
 +            } else {
-+                ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 0, 0);
++                ARBDirectStateAccess.glNamedFramebufferTexture(fbo, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 0, 0);
 +            }
-             if (p_412591_ != 0) {
-                 GlStateManager._glBindFramebuffer(p_412591_, p_412474_);
+             if (bindSlot != 0) {
+                 GlStateManager._glBindFramebuffer(bindSlot, fbo);
              }
-@@ -248,12 +_,17 @@
+@@ -224,12 +_,17 @@
          }
  
          @Override
--        public void bindFrameBufferTextures(int p_412192_, int p_412614_, int p_412332_, int p_412295_, int p_412775_) {
-+        public void bindFrameBufferTextures(int p_412192_, int p_412614_, int p_412332_, int p_412295_, int p_412775_, boolean useStencil) {
-             int i = p_412775_ == 0 ? '\u8ca9' : p_412775_;
-             int j = GlStateManager.getFrameBuffer(i);
-             GlStateManager._glBindFramebuffer(i, p_412192_);
-             GlStateManager._glFramebufferTexture2D(i, 36064, 3553, p_412614_, p_412295_);
-             GlStateManager._glFramebufferTexture2D(i, 36096, 3553, p_412332_, p_412295_);
+-        public void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int color0, int depth, int mipLevel, int bindSlot, boolean useStencil) {
+             int tempBindSlot = bindSlot == 0 ? '\u8ca9' : bindSlot;
+             int oldFbo = GlStateManager.getFrameBuffer(tempBindSlot);
+             GlStateManager._glBindFramebuffer(tempBindSlot, fbo);
+             GlStateManager._glFramebufferTexture2D(tempBindSlot, 36064, 3553, color0, mipLevel);
+             GlStateManager._glFramebufferTexture2D(tempBindSlot, 36096, 3553, depth, mipLevel);
 +            if (useStencil) {
-+                GlStateManager._glFramebufferTexture2D(i, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, p_412332_, p_412295_);
++                GlStateManager._glFramebufferTexture2D(tempBindSlot, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, depth, mipLevel);
 +            } else {
-+                GlStateManager._glFramebufferTexture2D(i, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, 0, 0);
++                GlStateManager._glFramebufferTexture2D(tempBindSlot, org.lwjgl.opengl.GL32C.GL_STENCIL_ATTACHMENT, 3553, 0, 0);
 +            }
-             if (p_412775_ == 0) {
-                 GlStateManager._glBindFramebuffer(i, j);
+             if (bindSlot == 0) {
+                 GlStateManager._glBindFramebuffer(tempBindSlot, oldFbo);
              }

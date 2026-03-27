@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
-@@ -75,6 +_,15 @@
-         return ELEMENTS.stream().filter(p_460208_ -> (p_350349_ & p_460208_.mask()) != 0);
+@@ -67,6 +_,15 @@
      }
  
+     @OnlyIn(Dist.CLIENT)
 +    public static int findNextId() {
 +        for (int i = 0; i < BY_ID.length; i++) {
 +            if (BY_ID[i] == null) {
@@ -13,6 +13,6 @@
 +        throw new IllegalStateException("VertexFormatElement count limit exceeded");
 +    }
 +
-     @OnlyIn(Dist.CLIENT)
-     @DontObfuscate
      public static enum Type {
+         FLOAT(4, "Float"),
+         UBYTE(1, "Unsigned Byte"),

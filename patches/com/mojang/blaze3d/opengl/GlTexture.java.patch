@@ -1,22 +1,18 @@
 --- a/com/mojang/blaze3d/opengl/GlTexture.java
 +++ b/com/mojang/blaze3d/opengl/GlTexture.java
-@@ -17,17 +_,25 @@
+@@ -17,15 +_,21 @@
      private @Nullable Int2IntMap fboCache;
      protected boolean closed;
      private int views;
 +    protected final boolean external; // If true, the raw OpenGL texture is not managed by this GpuTexture
  
-     protected GlTexture(
-         @GpuTexture.Usage int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_
-     ) {
-+        this(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_, p_423590_, false);
+     protected GlTexture(@GpuTexture.Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id) {
++        this(usage, label, format, width, height, depthOrLayers, mipLevels, id, false);
 +    }
 +
-+    protected GlTexture(
-+        @GpuTexture.Usage int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_, boolean external
-+    ) {
-         super(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_);
-         this.id = p_423590_;
++    protected GlTexture(@GpuTexture.Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, boolean external) {
+         super(usage, label, format, width, height, depthOrLayers, mipLevels);
+         this.id = id;
 +        this.external = external;
      }
  
@@ -27,39 +23,39 @@
              this.closed = true;
              if (this.views == 0) {
                  this.destroyImmediately();
-@@ -55,10 +_,11 @@
+@@ -53,10 +_,11 @@
  
-     public int getFbo(DirectStateAccess p_412345_, @Nullable GpuTexture p_410364_) {
-         int i = p_410364_ == null ? 0 : ((GlTexture)p_410364_).id;
-+        var useStencil = p_410364_ != null && p_410364_.getFormat().hasStencilAspect();
-         if (this.firstFboDepthId == i) {
+     public int getFbo(DirectStateAccess dsa, @Nullable GpuTexture depth) {
+         int depthId = depth == null ? 0 : ((GlTexture)depth).id;
++        var useStencil = depth != null && depth.getFormat().hasStencilAspect();
+         if (this.firstFboDepthId == depthId) {
              return this.firstFboId;
          } else if (this.firstFboId == -1) {
--            this.firstFboId = this.createFbo(p_412345_, i);
-+            this.firstFboId = this.createFbo(p_412345_, i, useStencil);
-             this.firstFboDepthId = i;
+-            this.firstFboId = this.createFbo(dsa, depthId);
++            this.firstFboId = this.createFbo(dsa, depthId, useStencil);
+             this.firstFboDepthId = depthId;
              return this.firstFboId;
          } else {
-@@ -66,13 +_,20 @@
+@@ -64,13 +_,20 @@
                  this.fboCache = new Int2IntArrayMap();
              }
  
--            return this.fboCache.computeIfAbsent(i, p_470461_ -> this.createFbo(p_412345_, p_470461_));
-+            return this.fboCache.computeIfAbsent(i, p_470461_ -> this.createFbo(p_412345_, p_470461_, useStencil));
+-            return this.fboCache.computeIfAbsent(depthId, _depthId -> this.createFbo(dsa, _depthId));
++            return this.fboCache.computeIfAbsent(depthId, _depthId -> this.createFbo(dsa, _depthId, useStencil));
          }
      }
  
 +    /** @deprecated use overload that takes useStencil */
 +    @Deprecated
-     private int createFbo(DirectStateAccess p_470782_, int p_470657_) {
-+        return createFbo(p_470782_, p_470657_, false);
+     private int createFbo(DirectStateAccess dsa, int depthid) {
++        return createFbo(dsa, depthid, false);
 +    }
 +
 +    // Neo: Allow for stencil use
-+    private int createFbo(DirectStateAccess p_470782_, int p_470657_, boolean useStencil) {
-         int i = p_470782_.createFrameBufferObject();
--        p_470782_.bindFrameBufferTextures(i, this.id, p_470657_, 0, 0);
-+        p_470782_.bindFrameBufferTextures(i, this.id, p_470657_, 0, 0, useStencil);
-         return i;
++    private int createFbo(DirectStateAccess dsa, int depthid, boolean useStencil) {
+         int fbo = dsa.createFrameBufferObject();
+-        dsa.bindFrameBufferTextures(fbo, this.id, depthid, 0, 0);
++        dsa.bindFrameBufferTextures(fbo, this.id, depthid, 0, 0, useStencil);
+         return fbo;
      }
  

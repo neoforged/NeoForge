@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
-@@ -526,6 +_,7 @@
-                 builder.put(ModelLayers.createHangingSignModelName(p_382521_, hangingsignrenderer$attachmenttype), layerdefinition58);
+@@ -569,6 +_,7 @@
+                 result.put(ModelLayers.createHangingSignModelName(woodType, attachmentType), hangingSignModel);
              }
          });
-+        net.neoforged.neoforge.client.ClientHooks.loadLayerDefinitions(builder);
-         ImmutableMap<ModelLayerLocation, LayerDefinition> immutablemap = builder.build();
-         List<ModelLayerLocation> list = ModelLayers.getKnownLocations().filter(p_171117_ -> !immutablemap.containsKey(p_171117_)).toList();
-         if (!list.isEmpty()) {
++        net.neoforged.neoforge.client.ClientHooks.loadLayerDefinitions(result);
+         ImmutableMap<ModelLayerLocation, LayerDefinition> definitions = result.build();
+         List<ModelLayerLocation> missingDefinitions = ModelLayers.getKnownLocations().filter(l -> !definitions.containsKey(l)).toList();
+         if (!missingDefinitions.isEmpty()) {

@@ -6,11 +6,11 @@
  public class InstrumentTagsProvider extends KeyTagProvider<Instrument> {
 +    /** @deprecated Forge: Use the {@linkplain #InstrumentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
-     public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_) {
-         super(p_256418_, Registries.INSTRUMENT, p_256038_);
+     public InstrumentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.INSTRUMENT, lookupProvider);
 +    }
-+    public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_, String modId) {
-+        super(p_256418_, Registries.INSTRUMENT, p_256038_, modId);
++    public InstrumentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.INSTRUMENT, lookupProvider, modId);
      }
  
      @Override

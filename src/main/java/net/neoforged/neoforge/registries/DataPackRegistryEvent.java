@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -71,7 +72,7 @@ public abstract class DataPackRegistryEvent extends Event implements IModBusEven
          * @see #dataPackRegistry(ResourceKey, Codec)
          */
         public <T> void dataPackRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec) {
-            this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, false), networkCodec));
+            this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, RegistryValidator.none()), networkCodec));
         }
 
         /**
@@ -94,7 +95,7 @@ public abstract class DataPackRegistryEvent extends Event implements IModBusEven
          * @see #dataPackRegistry(ResourceKey, Codec, Codec)
          */
         public <T> void dataPackRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec, Consumer<RegistryBuilder<T>> consumer) {
-            this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, false, consumer), networkCodec));
+            this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, RegistryValidator.none(), consumer), networkCodec));
         }
 
         void process() {

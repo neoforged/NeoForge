@@ -13,10 +13,6 @@
     "minecraft:windswept_gravelly_hills",
     "minecraft:pale_garden",
     "minecraft:mushroom_fields",
-    "minecraft:deep_dark",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    }
+    "minecraft:deep_dark"
   ]
 }

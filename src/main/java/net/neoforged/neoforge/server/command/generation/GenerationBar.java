@@ -10,7 +10,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.neoforged.neoforge.server.command.CommandUtils;
 
@@ -23,8 +25,12 @@ public class GenerationBar implements AutoCloseable {
 
     private final ServerBossEvent bar;
 
-    public GenerationBar() {
-        this.bar = new ServerBossEvent(CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.progress_bar_title"), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS);
+    public GenerationBar(ServerLevel level) {
+        this.bar = new ServerBossEvent(
+                Mth.createInsecureUUID(level.getRandom()),
+                CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.progress_bar_title"),
+                BossEvent.BossBarColor.YELLOW,
+                BossEvent.BossBarOverlay.PROGRESS);
         this.bar.setPlayBossMusic(false);
         this.bar.setCreateWorldFog(false);
         this.bar.setDarkenScreen(false);

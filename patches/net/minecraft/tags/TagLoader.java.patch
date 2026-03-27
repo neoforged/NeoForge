@@ -2,32 +2,32 @@
 +++ b/net/minecraft/tags/TagLoader.java
 @@ -64,6 +_,8 @@
  
-                     String s = resource.sourcePackId();
-                     tagfile.entries().forEach(p_215997_ -> list.add(new TagLoader.EntryWithSource(p_215997_, s)));
+                     String sourceId = resource.sourcePackId();
+                     parsedContents.entries().forEach(ex -> tagContents.add(new TagLoader.EntryWithSource(ex, sourceId)));
 +                    // Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
-+                    tagfile.remove().forEach(e -> list.add(new TagLoader.EntryWithSource(e.withRequired(false), s, true)));
-                 } catch (Exception exception) {
-                     LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier1, identifier, resource.sourcePackId(), exception);
++                    parsedContents.remove().forEach(e -> tagContents.add(new TagLoader.EntryWithSource(e.withRequired(false), sourceId, true)));
+                 } catch (Exception var17) {
+                     LOGGER.error("Couldn't read tag list {} from {} in data pack {}", id, location, resource.sourcePackId(), var17);
                  }
 @@ -78,7 +_,7 @@
-         List<TagLoader.EntryWithSource> list = new ArrayList<>();
+         List<TagLoader.EntryWithSource> missingElements = new ArrayList<>();
  
-         for (TagLoader.EntryWithSource tagloader$entrywithsource : p_215980_) {
--            if (!tagloader$entrywithsource.entry().build(p_215979_, sequencedset::add)) {
-+            if (!tagloader$entrywithsource.entry().build(p_215979_, tagloader$entrywithsource.remove() ? sequencedset::remove : sequencedset::add)) {
-                 list.add(tagloader$entrywithsource);
+         for (TagLoader.EntryWithSource entry : entries) {
+-            if (!entry.entry().build(lookup, values::add)) {
++            if (!entry.entry().build(lookup, entry.remove() ? values::remove : values::add)) {
+                 missingElements.add(entry);
              }
          }
-@@ -109,7 +_,7 @@
-                     p_359633_ -> LOGGER.error(
+@@ -111,7 +_,7 @@
+                     missing -> LOGGER.error(
                          "Couldn't load tag {} as it is missing following references: {}",
-                         p_468743_,
--                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining(", "))
-+                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
+                         id,
+-                        missing.stream().map(Objects::toString).collect(Collectors.joining(", "))
++                        missing.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
                      )
                  )
-                 .ifRight(p_364232_ -> map.put(p_468743_, (List<T>)p_364232_))
-@@ -180,7 +_,11 @@
+                 .ifRight(tag -> newTags.put(id, (List<T>)tag))
+@@ -188,7 +_,11 @@
          }
      }
  

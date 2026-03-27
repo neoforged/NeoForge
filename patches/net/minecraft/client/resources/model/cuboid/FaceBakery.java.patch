@@ -1,0 +1,100 @@
+--- a/net/minecraft/client/resources/model/cuboid/FaceBakery.java
++++ b/net/minecraft/client/resources/model/cuboid/FaceBakery.java
+@@ -69,10 +_,14 @@
+ 
+         Transparency transparency = computeMaterialTransparency(material, uvs);
+         ModelBaker.Interner interner = modelBaker.interner();
+-        BakedQuad.MaterialInfo materialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(material, transparency, face.tintIndex(), shade, lightEmission));
+-        return bakeQuad(interner, from, to, uvs, face.rotation(), materialInfo, facing, modelState, elementRotation);
++        var faceData = face.faceData();
++        lightEmission = Math.max(lightEmission, faceData.lightEmission());
++        BakedQuad.MaterialInfo materialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(material, transparency, face.tintIndex(), shade, lightEmission, faceData.ambientOcclusion()));
++        return bakeQuad(interner, from, to, uvs, face.rotation(), materialInfo, facing, modelState, elementRotation, faceData);
+     }
+ 
++    /// @deprecated Neo: use [#bakeQuad(ModelBaker.Interner, Vector3fc, Vector3fc, CuboidFace.UVs, Quadrant, int, BakedQuad.MaterialInfo, Direction, ModelState, CuboidRotation, boolean, int, net.neoforged.neoforge.client.model.ExtraFaceData)] instead
++    @Deprecated
+     public static BakedQuad bakeQuad(
+         ModelBaker.Interner interner,
+         Vector3fc from,
+@@ -84,6 +_,21 @@
+         ModelState modelState,
+         @Nullable CuboidRotation elementRotation
+     ) {
++        return bakeQuad(interner, from, to, uvs, uvRotation, materialInfo, facing, modelState, elementRotation, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
++    public static BakedQuad bakeQuad(
++        ModelBaker.Interner interner,
++        Vector3fc from,
++        Vector3fc to,
++        CuboidFace.UVs uvs,
++        Quadrant uvRotation,
++        BakedQuad.MaterialInfo materialInfo,
++        Direction facing,
++        ModelState modelState,
++        @Nullable CuboidRotation elementRotation,
++        net.neoforged.neoforge.client.model.ExtraFaceData faceData
++    ) {
+         Matrix4fc uvTransform = modelState.inverseFaceTransformation(facing);
+         Vector3fc[] vertexPositions = new Vector3fc[4];
+         long[] vertexPackedUvs = new long[4];
+@@ -109,6 +_,8 @@
+ 
+         Direction finalDirection = calculateFacing(vertexPositions);
+         if (elementRotation == null && finalDirection != null) {
++            // Neo: Suppress winding re-calculation when the quads may not be axis-aligned due to root transforms
++            if (!modelState.mayApplyArbitraryRotation())
+             recalculateWinding(vertexPositions, vertexPackedUvs, finalDirection);
+         }
+ 
+@@ -122,7 +_,9 @@
+             vertexPackedUvs[2],
+             vertexPackedUvs[3],
+             Objects.requireNonNullElse(finalDirection, Direction.UP),
+-            materialInfo
++            materialInfo,
++            interner.normals(net.neoforged.neoforge.client.model.quad.BakedNormals.of(net.neoforged.neoforge.client.model.quad.BakedNormals.computeQuadNormal(vertexPositions[0], vertexPositions[1], vertexPositions[2], vertexPositions[3]))),
++            interner.colors(net.neoforged.neoforge.client.model.quad.BakedColors.of(faceData.color()))
+         );
+     }
+ 
+@@ -208,6 +_,11 @@
+     }
+ 
+     public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction) {
++        recalculateWinding(positions, uvs, direction, null, null);
++    }
++
++    // Neo: Allow swapping colors and normals alongside the positions/uvs
++    public static void recalculateWinding(Vector3fc[] positions, long[] uvs, Direction direction, int @Nullable [] colors, int @Nullable [] normals) {
+         float minX = 999.0F;
+         float minY = 999.0F;
+         float minZ = 999.0F;
+@@ -260,6 +_,12 @@
+             if (vertexToSwap != vertex) {
+                 swap(positions, vertexToSwap, vertex);
+                 swap(uvs, vertexToSwap, vertex);
++                if (colors != null) {
++                    swap(colors, vertexToSwap, vertex);
++                }
++                if (normals != null) {
++                    swap(normals, vertexToSwap, vertex);
++                }
+             }
+         }
+     }
+@@ -283,6 +_,13 @@
+ 
+     private static void swap(long[] array, int indexA, int indexB) {
+         long tmp = array[indexA];
++        array[indexA] = array[indexB];
++        array[indexB] = tmp;
++    }
++
++    // Neo: Used by the winding patch to swap colors/normals
++    private static void swap(int[] array, int indexA, int indexB) {
++        int tmp = array[indexA];
+         array[indexA] = array[indexB];
+         array[indexB] = tmp;
+     }

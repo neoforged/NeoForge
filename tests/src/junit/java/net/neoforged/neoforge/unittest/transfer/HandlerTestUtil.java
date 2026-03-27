@@ -70,7 +70,7 @@ final class HandlerTestUtil {
     }
 
     @SafeVarargs
-    static MockResourceHandler handlerForStacks(ResourceStack<TestResource>... slots) {
+    static MockResourceHandler handlerForStacks(@Nullable ResourceStack<TestResource>... slots) {
         MockResourceHandler handler = new MockResourceHandler(slots.length);
         for (int i = 0; i < slots.length; i++) {
             var stack = slots[i];

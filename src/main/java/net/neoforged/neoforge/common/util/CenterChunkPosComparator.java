@@ -25,10 +25,10 @@ public class CenterChunkPosComparator implements java.util.Comparator<ChunkPos> 
         }
 
         // Subtract current position to set center point
-        int ax = a.x - this.x;
-        int az = a.z - this.z;
-        int bx = b.x - this.x;
-        int bz = b.z - this.z;
+        int ax = a.x() - this.x;
+        int az = a.z() - this.z;
+        int bx = b.x() - this.x;
+        int bz = b.z() - this.z;
         int result = ((ax - bx) * (ax + bx)) + ((az - bz) * (az + bz));
 
         if (result != 0) {

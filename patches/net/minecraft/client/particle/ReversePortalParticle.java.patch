@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/particle/ReversePortalParticle.java
 +++ b/net/minecraft/client/particle/ReversePortalParticle.java
-@@ -42,6 +_,7 @@
-             this.x = this.x + this.xd * f;
-             this.y = this.y + this.yd * f;
-             this.z = this.z + this.zd * f;
+@@ -33,6 +_,7 @@
+             this.x = this.x + this.xd * speedMultiplier;
+             this.y = this.y + this.yd * speedMultiplier;
+             this.z = this.z + this.zd * speedMultiplier;
 +            this.setPos(this.x, this.y, this.z); // Neo: update the particle's bounding box
          }
      }

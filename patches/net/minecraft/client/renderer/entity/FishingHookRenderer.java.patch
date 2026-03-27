@@ -3,9 +3,9 @@
 @@ -65,7 +_,7 @@
      }
  
-     public static HumanoidArm getHoldingArm(Player p_386900_) {
--        return p_386900_.getMainHandItem().getItem() instanceof FishingRodItem ? p_386900_.getMainArm() : p_386900_.getMainArm().getOpposite();
-+        return p_386900_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST) ? p_386900_.getMainArm() : p_386900_.getMainArm().getOpposite();
+     public static HumanoidArm getHoldingArm(Player owner) {
+-        return owner.getMainHandItem().getItem() instanceof FishingRodItem ? owner.getMainArm() : owner.getMainArm().getOpposite();
++        return owner.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST) ? owner.getMainArm() : owner.getMainArm().getOpposite();
      }
  
-     private Vec3 getPlayerHandPos(Player p_340935_, float p_340872_, float p_341261_) {
+     private Vec3 getPlayerHandPos(Player owner, float swing, float partialTicks) {

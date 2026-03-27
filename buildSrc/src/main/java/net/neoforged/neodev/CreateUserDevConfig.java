@@ -89,11 +89,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
                         "--assetsDir", "{assets_root}");
             }
 
-            Collections.addAll(args,
-                    "--fml.mcVersion", getMinecraftVersion().get(),
-                    "--fml.neoForgeVersion", getNeoForgeVersion().get(),
-                    "--fml.neoFormVersion", getRawNeoFormVersion().get());
-
             Map<String, String> systemProperties = new LinkedHashMap<>();
             systemProperties.put("java.net.preferIPv6Addresses", "system");
 
@@ -107,6 +102,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
                     Objects.requireNonNullElse(runType.mainClass, "NONE"),
                     args,
                     List.of(
+                            "--sun-misc-unsafe-memory-access=allow",
+                            "--enable-native-access=ALL-UNNAMED",
                             "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
                             "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"),
                     runType == RunType.CLIENT || runType == RunType.JUNIT || runType == RunType.CLIENT_DATA,

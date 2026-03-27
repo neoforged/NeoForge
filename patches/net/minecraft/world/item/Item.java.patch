@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -105,7 +_,7 @@
-         );
-     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Item>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.ITEM);
+@@ -106,7 +_,7 @@
+             : DataResult.success(item)
+     );
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
@@ -10,40 +10,36 @@
      public static final Identifier BASE_ATTACK_SPEED_ID = Identifier.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
 @@ -117,6 +_,7 @@
-     private final @Nullable Item craftingRemainingItem;
+     private final @Nullable ItemStackTemplate craftingRemainingItem;
      protected final String descriptionId;
      private final FeatureFlagSet requiredFeatures;
 +    private net.neoforged.neoforge.transfer.item.@Nullable ItemResource defaultResource;
  
-     public static int getId(Item p_41394_) {
-         return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
-@@ -136,12 +_,13 @@
-         this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
-         this.craftingRemainingItem = p_41383_.craftingRemainingItem;
-         this.requiredFeatures = p_41383_.requiredFeatures;
+     public static int getId(Item item) {
+         return item == null ? 0 : BuiltInRegistries.ITEM.getId(item);
+@@ -139,12 +_,13 @@
+         BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.add(properties.itemIdOrThrow(), componentInitializer);
+         this.craftingRemainingItem = properties.craftingRemainingItem;
+         this.requiredFeatures = properties.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
-             String s = this.getClass().getSimpleName();
-             if (!s.endsWith("Item")) {
-                 LOGGER.error("Item classes should end with Item and {} doesn't.", s);
+             String className = this.getClass().getSimpleName();
+             if (!className.endsWith("Item")) {
+                 LOGGER.error("Item classes should end with Item and {} doesn't.", className);
              }
          }
-+        this.canCombineRepair = p_41383_.canCombineRepair;
++        this.canCombineRepair = properties.canCombineRepair;
      }
  
      @Deprecated
-@@ -153,6 +_,25 @@
-         return this.components;
+@@ -156,6 +_,21 @@
+         return this.builtInRegistryHolder.components();
      }
  
-+    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.event.ModifyDefaultComponentsEvent the event} instead */
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
 +    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
-+    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
-+        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
-+        var builder = DataComponentMap.builder().addAll(components);
-+        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
-+        components = Properties.validateComponents(builder.build());
-+        defaultResource = null;
++    public void resetDefaultResource() {
++        this.defaultResource = null;
 +    }
 +
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
@@ -56,31 +52,32 @@
 +    }
 +
      public int getDefaultMaxStackSize() {
-         return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
+         return this.components().getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -160,6 +_,8 @@
-     public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
+@@ -163,6 +_,8 @@
+     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int ticksRemaining) {
      }
  
 +    /** @deprecated Forge: {@link net.neoforged.neoforge.common.extensions.IItemExtension#onDestroyed(ItemEntity, DamageSource) Use damage source sensitive version} */
 +    @Deprecated
-     public void onDestroyed(ItemEntity p_150887_) {
+     public void onDestroyed(ItemEntity itemEntity) {
      }
  
-@@ -278,6 +_,7 @@
+@@ -279,6 +_,8 @@
          return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
      }
  
-+    @Deprecated // Use ItemStack sensitive version.
-     public final ItemStack getCraftingRemainder() {
-         return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
++    /** @deprecated use {@link #getCraftingRemainder(ItemStack)} instead */
++    @Deprecated
+     public final @Nullable ItemStackTemplate getCraftingRemainder() {
+         return this.craftingRemainingItem;
      }
-@@ -350,13 +_,26 @@
+@@ -345,13 +_,26 @@
      }
  
-     public boolean useOnRelease(ItemStack p_41464_) {
+     public boolean useOnRelease(ItemStack itemStack) {
 -        return false;
-+        return p_41464_.getItem() == Items.CROSSBOW;
++        return itemStack.getItem() == Items.CROSSBOW;
 +    }
 +
 +    protected final boolean canCombineRepair;
@@ -103,7 +100,7 @@
      public boolean canFitInsideContainerItems() {
          return true;
      }
-@@ -379,6 +_,12 @@
+@@ -376,6 +_,12 @@
          private @Nullable ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
          private final DependantName<Item, Identifier> model = ResourceKey::identifier;
@@ -114,28 +111,22 @@
 +            return this;
 +        }
  
-         public Item.Properties food(FoodProperties p_41490_) {
-             return this.food(p_41490_, Consumables.DEFAULT_FOOD);
-@@ -635,6 +_,7 @@
+         public Item.Properties food(FoodProperties foodProperties) {
+             return this.food(foodProperties, Consumables.DEFAULT_FOOD);
+@@ -660,7 +_,11 @@
          }
  
-         public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
-+            net.neoforged.neoforge.common.CommonHooks.validateComponent(p_330323_);
-             this.components.set(p_330871_, p_330323_);
+         public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
+-            this.componentInitializer = this.componentInitializer.andThen((components, context, key) -> components.set(type, context.getOrThrow(valueKey)));
++            this.componentInitializer = this.componentInitializer.andThen((components, context, key) -> {
++                var value = context.getOrThrow(valueKey);
++                net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
++                components.set(type, value);
++            });
              return this;
          }
-@@ -645,6 +_,10 @@
  
-         DataComponentMap buildAndValidateComponents(Component p_371796_, Identifier p_467042_) {
-             DataComponentMap datacomponentmap = this.components.set(DataComponents.ITEM_NAME, p_371796_).set(DataComponents.ITEM_MODEL, p_467042_).build();
-+            return validateComponents(datacomponentmap);
-+        }
-+
-+        public static DataComponentMap validateComponents(DataComponentMap datacomponentmap) {
-             if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
-                 throw new IllegalStateException("Item cannot have both durability and be stackable");
-             } else {
-@@ -684,6 +_,14 @@
+@@ -709,6 +_,14 @@
  
          boolean isPeaceful();
  
@@ -147,18 +138,18 @@
 +            return null;
 +        }
 +
-         static Item.TooltipContext of(final @Nullable Level p_339599_) {
-             return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
+         static Item.TooltipContext of(@Nullable Level level) {
+             return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -704,6 +_,11 @@
+@@ -729,6 +_,11 @@
                  @Override
                  public boolean isPeaceful() {
-                     return p_339599_.getDifficulty() == Difficulty.PEACEFUL;
+                     return level.getDifficulty() == Difficulty.PEACEFUL;
 +                }
 +
 +                @Override
 +                public Level level() {
-+                    return p_339599_;
++                    return level;
                  }
              };
          }

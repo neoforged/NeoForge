@@ -6,8 +6,8 @@
      private final LevelHeightAccessor levelHeightAccessor;
 +    final LevelChunk wrapped;
  
-     SectionCopy(LevelChunk p_427469_, int p_427413_) {
-+        this.wrapped = p_427469_;
-         this.levelHeightAccessor = p_427469_;
-         this.debug = p_427469_.getLevel().isDebug();
-         this.blockEntities = ImmutableMap.copyOf(p_427469_.getBlockEntities());
+     SectionCopy(LevelChunk levelChunk, int sectionIndex) {
++        this.wrapped = levelChunk;
+         this.levelHeightAccessor = levelChunk;
+         this.debug = levelChunk.getLevel().isDebug();
+         this.blockEntities = ImmutableMap.copyOf(levelChunk.getBlockEntities());

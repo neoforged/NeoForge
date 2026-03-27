@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/ClientBrandRetriever.java
 +++ b/net/minecraft/client/ClientBrandRetriever.java
-@@ -10,6 +_,6 @@
+@@ -8,6 +_,6 @@
+     public static final String VANILLA_NAME = "vanilla";
  
-     @DontObfuscate
      public static String getClientModName() {
 -        return "vanilla";
 +        return net.neoforged.neoforge.internal.BrandingControl.getClientBranding();

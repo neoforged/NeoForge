@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/CreativeModeTab.java
 +++ b/net/minecraft/world/item/CreativeModeTab.java
-@@ -13,6 +_,8 @@
+@@ -11,6 +_,8 @@
  import org.jspecify.annotations.Nullable;
  
  public class CreativeModeTab {
 +    private static final net.minecraft.resources.Identifier SCROLLER_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller");
 +    private static final net.minecraft.resources.Identifier SCROLLER_DISABLED_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
-     static final Identifier DEFAULT_BACKGROUND = createTextureLocation("items");
+     private static final Identifier DEFAULT_BACKGROUND = createTextureLocation("items");
      private final Component displayName;
-     Identifier backgroundTexture = DEFAULT_BACKGROUND;
-@@ -27,6 +_,14 @@
+     private Identifier backgroundTexture = DEFAULT_BACKGROUND;
+@@ -25,6 +_,14 @@
      private Set<ItemStack> displayItemsSearchTab = ItemStackLinkedSet.createTypeAndComponentsSet();
      private final Supplier<ItemStack> iconGenerator;
      private final CreativeModeTab.DisplayItemsGenerator displayItemsGenerator;
@@ -22,14 +22,14 @@
 +    public final java.util.List<net.minecraft.resources.Identifier> tabsBefore;
 +    public final java.util.List<net.minecraft.resources.Identifier> tabsAfter;
  
-     CreativeModeTab(
-         CreativeModeTab.Row p_260217_,
-@@ -34,7 +_,15 @@
-         CreativeModeTab.Type p_260176_,
-         Component p_260100_,
-         Supplier<ItemStack> p_259543_,
--        CreativeModeTab.DisplayItemsGenerator p_259085_
-+        CreativeModeTab.DisplayItemsGenerator p_259085_,
+     private CreativeModeTab(
+         CreativeModeTab.Row row,
+@@ -32,7 +_,15 @@
+         CreativeModeTab.Type type,
+         Component displayName,
+         Supplier<ItemStack> iconGenerator,
+-        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator
++        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator,
 +        net.minecraft.resources.Identifier scrollerSpriteLocation,
 +        boolean hasSearchBar,
 +        int searchBarWidth,
@@ -39,12 +39,12 @@
 +        java.util.List<net.minecraft.resources.Identifier> tabsBefore,
 +        java.util.List<net.minecraft.resources.Identifier> tabsAfter
      ) {
-         this.row = p_260217_;
-         this.column = p_259557_;
-@@ -42,12 +_,29 @@
-         this.iconGenerator = p_259543_;
-         this.displayItemsGenerator = p_259085_;
-         this.type = p_260176_;
+         this.row = row;
+         this.column = column;
+@@ -40,12 +_,29 @@
+         this.iconGenerator = iconGenerator;
+         this.displayItemsGenerator = displayItemsGenerator;
+         this.type = type;
 +        this.scrollerSpriteLocation = scrollerSpriteLocation;
 +        this.hasSearchBar = hasSearchBar;
 +        this.searchBarWidth = searchBarWidth;
@@ -63,25 +63,25 @@
 +        return new CreativeModeTab.Builder(Row.TOP, 0);
      }
  
-     public static Identifier createTextureLocation(String p_350882_) {
-         return Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + p_350882_ + ".png");
+     public static Identifier createTextureLocation(String name) {
+         return Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + name + ".png");
      }
  
 +    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
-     public static CreativeModeTab.Builder builder(CreativeModeTab.Row p_259342_, int p_260312_) {
-         return new CreativeModeTab.Builder(p_259342_, p_260312_);
+     public static CreativeModeTab.Builder builder(CreativeModeTab.Row row, int column) {
+         return new CreativeModeTab.Builder(row, column);
      }
-@@ -105,7 +_,7 @@
-         ResourceKey<CreativeModeTab> resourcekey = BuiltInRegistries.CREATIVE_MODE_TAB
-             .getResourceKey(this)
-             .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + this));
--        this.displayItemsGenerator.accept(p_270156_, creativemodetab$itemdisplaybuilder);
-+        net.neoforged.neoforge.event.EventHooks.onCreativeModeTabBuildContents(this, resourcekey, this.displayItemsGenerator, p_270156_, creativemodetab$itemdisplaybuilder);
-         this.displayItems = creativemodetab$itemdisplaybuilder.tabContents;
-         this.displayItemsSearchTab = creativemodetab$itemdisplaybuilder.searchTabContents;
+@@ -100,7 +_,7 @@
+ 
+     public void buildContents(CreativeModeTab.ItemDisplayParameters parameters) {
+         CreativeModeTab.ItemDisplayBuilder displayList = new CreativeModeTab.ItemDisplayBuilder(this, parameters.enabledFeatures);
+-        this.displayItemsGenerator.accept(parameters, displayList);
++        net.neoforged.neoforge.event.EventHooks.onCreativeModeTabBuildContents(this, this.displayItemsGenerator, parameters, displayList);
+         this.displayItems = displayList.tabContents;
+         this.displayItemsSearchTab = displayList.searchTabContents;
      }
-@@ -122,8 +_,36 @@
-         return this.displayItemsSearchTab.contains(p_259317_);
+@@ -117,8 +_,36 @@
+         return this.displayItemsSearchTab.contains(stack);
      }
  
 +    public boolean hasSearchBar() {
@@ -111,13 +111,13 @@
 +    }
 +
      public static class Builder {
-         private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (p_270422_, p_259433_) -> {};
+         private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (parameters, output) -> {};
 +        private static final net.minecraft.resources.Identifier CREATIVE_INVENTORY_TABS_IMAGE = net.minecraft.resources.Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tabs.png");
 +        private static final net.minecraft.resources.Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
          private final CreativeModeTab.Row row;
          private final int column;
          private Component displayName = Component.empty();
-@@ -134,6 +_,15 @@
+@@ -129,6 +_,15 @@
          private boolean alignedRight = false;
          private CreativeModeTab.Type type = CreativeModeTab.Type.CATEGORY;
          private Identifier backgroundTexture = CreativeModeTab.DEFAULT_BACKGROUND;
@@ -131,18 +131,18 @@
 +        private final java.util.List<net.minecraft.resources.Identifier> tabsBefore = new java.util.ArrayList<>();
 +        private final java.util.List<net.minecraft.resources.Identifier> tabsAfter = new java.util.ArrayList<>();
  
-         public Builder(CreativeModeTab.Row p_259171_, int p_259661_) {
-             this.row = p_259171_;
-@@ -172,6 +_,8 @@
+         public Builder(CreativeModeTab.Row row, int column) {
+             this.row = row;
+@@ -167,6 +_,8 @@
  
-         protected CreativeModeTab.Builder type(CreativeModeTab.Type p_259283_) {
-             this.type = p_259283_;
-+            if (p_259283_ == Type.SEARCH)
+         protected CreativeModeTab.Builder type(CreativeModeTab.Type type) {
+             this.type = type;
++            if (type == Type.SEARCH)
 +                return this.withSearchBar();
              return this;
          }
  
-@@ -180,13 +_,109 @@
+@@ -175,11 +_,109 @@
              return this;
          }
  
@@ -170,8 +170,8 @@
 +         * Sets the location of the scroll bar background.
 +         */
 +        public CreativeModeTab.Builder withScrollBarSpriteLocation(net.minecraft.resources.Identifier scrollBarSpriteLocation) {
-+             this.spriteScrollerLocation = scrollBarSpriteLocation;
-+             return this;
++            this.spriteScrollerLocation = scrollBarSpriteLocation;
++            return this;
 +        }
 +
 +        /**
@@ -186,16 +186,16 @@
 +         * Sets the color of the tab label.
 +         */
 +        public CreativeModeTab.Builder withLabelColor(int labelColor) {
-+             this.labelColor = labelColor;
-+             return this;
++            this.labelColor = labelColor;
++            return this;
 +        }
 +
 +        /**
 +         * Sets the color of tab's slots.
 +         */
 +        public CreativeModeTab.Builder withSlotColor(int slotColor) {
-+             this.slotColor = slotColor;
-+             return this;
++            this.slotColor = slotColor;
++            return this;
 +        }
 +
 +        public CreativeModeTab.Builder withTabFactory(java.util.function.Function<CreativeModeTab.Builder, CreativeModeTab> tabFactory) {
@@ -232,7 +232,7 @@
 +        /**
 +         * Helper to set this tabs contents to everything in the supplied Collection of Holders.
 +         * Intended for use with {@link net.neoforged.neoforge.registries.DeferredRegister#getEntries()}, for Item or Block DeferredRegisters.
-+         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items.AIR} or if disabled via {@link Item#isEnabled(FeatureFlagSet)}.
++         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items#AIR} or if disabled via {@link Item#isEnabled(FeatureFlagSet)}.
 +         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
 +         */
 +        public CreativeModeTab.Builder displayItems(Collection<? extends net.minecraft.core.Holder<? extends ItemLike>> collection) {
@@ -248,10 +248,8 @@
              if ((this.type == CreativeModeTab.Type.HOTBAR || this.type == CreativeModeTab.Type.INVENTORY) && this.displayItemsGenerator != EMPTY_GENERATOR) {
                  throw new IllegalStateException("Special tabs can't have display items");
              } else {
--                CreativeModeTab creativemodetab = new CreativeModeTab(
--                    this.row, this.column, this.type, this.displayName, this.iconGenerator, this.displayItemsGenerator
--                );
-+                CreativeModeTab creativemodetab = tabFactory.apply(this);
-                 creativemodetab.alignedRight = this.alignedRight;
-                 creativemodetab.showTitle = this.showTitle;
-                 creativemodetab.canScroll = this.canScroll;
+-                CreativeModeTab tab = new CreativeModeTab(this.row, this.column, this.type, this.displayName, this.iconGenerator, this.displayItemsGenerator);
++                CreativeModeTab tab = tabFactory.apply(this);
+                 tab.alignedRight = this.alignedRight;
+                 tab.showTitle = this.showTitle;
+                 tab.canScroll = this.canScroll;

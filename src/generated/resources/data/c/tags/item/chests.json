@@ -3,10 +3,6 @@
     "minecraft:copper_chest",
     "#c:chests/ender",
     "#c:chests/trapped",
-    "#c:chests/wooden",
-    {
-      "id": "#forge:chests",
-      "required": false
-    }
+    "#c:chests/wooden"
   ]
 }

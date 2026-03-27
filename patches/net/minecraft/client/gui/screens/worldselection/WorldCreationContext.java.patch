@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
-@@ -95,6 +_,10 @@
+@@ -98,6 +_,10 @@
          );
      }
  

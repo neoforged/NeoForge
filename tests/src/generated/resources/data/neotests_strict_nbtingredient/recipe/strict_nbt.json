@@ -7,10 +7,10 @@
       "base": {
         "neoforge:ingredient_type": "neoforge:components",
         "components": {
+          "!minecraft:custom_data": {},
           "minecraft:damage": 4
         },
-        "items": "minecraft:diamond_pickaxe",
-        "strict": true
+        "items": "minecraft:diamond_pickaxe"
       },
       "framework": "neotests:tests",
       "testId": "strictNBTIngredient"
@@ -18,7 +18,6 @@
     "minecraft:acacia_planks"
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:acacia_boat"
   }
 }

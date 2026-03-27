@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.model.obj;
 
-import net.minecraft.client.resources.model.UnbakedGeometry;
+import net.minecraft.client.resources.model.geometry.UnbakedGeometry;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.AbstractUnbakedModel;
 import net.neoforged.neoforge.client.model.StandardModelParameters;

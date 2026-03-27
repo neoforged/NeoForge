@@ -19,6 +19,8 @@ public @interface GameTest {
 
     boolean skyAccess() default false;
 
+    int padding() default 0;
+
     int rotationSteps() default 0;
 
     boolean required() default true;

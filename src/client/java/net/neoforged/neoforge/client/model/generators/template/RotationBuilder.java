@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.client.renderer.block.model.BlockElementRotation;
+import net.minecraft.client.resources.model.cuboid.CuboidRotation;
 import net.minecraft.core.Direction;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 public final class RotationBuilder {
     @Nullable
     private Vector3f origin;
-    private BlockElementRotation.@Nullable RotationValue value;
+    private CuboidRotation.@Nullable RotationValue value;
     private boolean rescale;
 
     /**
@@ -35,7 +35,7 @@ public final class RotationBuilder {
      */
     public RotationBuilder singleAxis(Direction.Axis axis, float angle) {
         Preconditions.checkNotNull(axis, "Axis must not be null");
-        this.value = new BlockElementRotation.SingleAxisRotation(axis, angle);
+        this.value = new CuboidRotation.SingleAxisRotation(axis, angle);
         return this;
     }
 
@@ -48,7 +48,7 @@ public final class RotationBuilder {
      * @return this builder
      */
     public RotationBuilder eulerXYZ(float angleX, float angleY, float angleZ) {
-        this.value = new BlockElementRotation.EulerXYZRotation(angleX, angleY, angleZ);
+        this.value = new CuboidRotation.EulerXYZRotation(angleX, angleY, angleZ);
         return this;
     }
 
@@ -60,10 +60,10 @@ public final class RotationBuilder {
         return this;
     }
 
-    BlockElementRotation build() {
+    CuboidRotation build() {
         Preconditions.checkNotNull(origin, "No origin specified");
         Preconditions.checkNotNull(value, "No value specified");
-        return new BlockElementRotation(origin, value, rescale);
+        return new CuboidRotation(origin, value, rescale);
     }
 
     RotationBuilder copy() {

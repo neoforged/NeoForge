@@ -1,31 +1,31 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -91,6 +_,13 @@
-                 optionparser.printHelpOn(System.err);
+@@ -89,6 +_,13 @@
+                 parser.printHelpOn(System.err);
                  return;
              }
-+            Path path2 = Paths.get("eula.txt");
-+            Eula eula = new Eula(path2);
++            Path eulaFile = Paths.get("eula.txt");
++            Eula eula = new Eula(eulaFile);
 +
 +            if (!eula.hasAgreedToEULA()) {
 +                LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
 +                return;
 +            }
  
-             Path path = optionset.valueOf(optionspec14);
-             if (path != null) {
-@@ -106,24 +_,22 @@
+             Path pidFilePath = options.valueOf(pidFile);
+             if (pidFilePath != null) {
+@@ -104,24 +_,22 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
-             Path path1 = Paths.get("server.properties");
-+            if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(false); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
-             DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
-             dedicatedserversettings.forceSave();
-             RegionFileVersion.configure(dedicatedserversettings.getProperties().regionFileComression);
--            Path path2 = Paths.get("eula.txt");
--            Eula eula = new Eula(path2);
-             if (optionset.has(optionspec1)) {
-                 LOGGER.info("Initialized '{}' and '{}'", path1.toAbsolutePath(), path2.toAbsolutePath());
+             Path settingsFile = Paths.get("server.properties");
++            if (!options.has(initSettings)) net.neoforged.neoforge.server.loading.ServerModLoader.load(false); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
+             DedicatedServerSettings settings = new DedicatedServerSettings(settingsFile);
+             settings.forceSave();
+             RegionFileVersion.configure(settings.getProperties().regionFileComression);
+-            Path eulaFile = Paths.get("eula.txt");
+-            Eula eula = new Eula(eulaFile);
+             if (options.has(initSettings)) {
+                 LOGGER.info("Initialized '{}' and '{}'", settingsFile.toAbsolutePath(), eulaFile.toAbsolutePath());
                  return;
              }
  
@@ -34,47 +34,31 @@
 -                return;
 -            }
 -
-             File file1 = new File(optionset.valueOf(optionspec9));
-             Services services = Services.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file1);
-             String s = Optional.ofNullable(optionset.valueOf(optionspec10)).orElse(dedicatedserversettings.getProperties().levelName);
-+            if (s == null || s.isEmpty() || new File(file1, s).getAbsolutePath().equals(new File(s).getAbsolutePath())) {
-+                LOGGER.error("Invalid world directory specified, must not be null, empty or the same directory as your universe! " + s);
+             File universePath = new File(options.valueOf(universe));
+             Services services = Services.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), universePath);
+             String levelName = Optional.ofNullable(options.valueOf(worldName)).orElse(settings.getProperties().levelName);
++            if (levelName == null || levelName.isEmpty() || new File(universePath, levelName).getAbsolutePath().equals(new File(levelName).getAbsolutePath())) {
++                LOGGER.error("Invalid world directory specified, must not be null, empty or the same directory as your universe! {}", levelName);
 +                return;
 +            }
-             LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
-             LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
-             Dynamic<?> dynamic;
-@@ -132,6 +_,7 @@
-                 try {
-                     dynamic = levelstoragesource$levelstorageaccess.getDataTag();
-                     levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
-+                    levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(false);
-                 } catch (NbtException | ReportedNbtException | IOException ioexception1) {
-                     LevelStorageSource.LevelDirectory levelstoragesource$leveldirectory = levelstoragesource$levelstorageaccess.getLevelDirectory();
-                     LOGGER.warn("Failed to load world data from {}", levelstoragesource$leveldirectory.dataFile(), ioexception1);
-@@ -140,6 +_,7 @@
-                     try {
-                         dynamic = levelstoragesource$levelstorageaccess.getDataTagFallback();
-                         levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
-+                        levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(true);
-                     } catch (NbtException | ReportedNbtException | IOException ioexception) {
-                         LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
-                         LOGGER.error(
-@@ -252,6 +_,7 @@
+             LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
+             LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
+             Dynamic<?> levelDataTag;
+@@ -219,6 +_,7 @@
                  @Override
                  public void run() {
-                     dedicatedserver.halt(true);
+                     dedicatedServer.halt(true);
 +                    org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
                  }
              };
-             thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
-@@ -286,6 +_,9 @@
-             worlddimensions = dedicatedserverproperties.createDimensions(p_443153_.datapackWorldgen());
+             shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
+@@ -251,6 +_,9 @@
+             dimensions = properties.createDimensions(context.datapackWorldgen());
          }
  
 +        // Neo: Do a write-read-cycle to inject modded dimensions on first start of a dedicated server into its generated world dimensions list.
-+        var registryOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, p_443153_.datapackWorldgen());
-+        worlddimensions = WorldDimensions.CODEC.encoder().encodeStart(registryOps, worlddimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(registryOps, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(worlddimensions);
-         WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(p_443610_);
-         Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_443153_.datapackWorldgen().allRegistriesLifecycle());
-         return new WorldLoader.DataLoadOutput<>(
++        var registryOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, context.datapackWorldgen());
++        dimensions = WorldDimensions.CODEC.encoder().encodeStart(registryOps, dimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(registryOps, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(dimensions);
+         WorldDimensions.Complete finalDimensions = dimensions.bake(datapackDimensions);
+         Lifecycle lifecycle = finalDimensions.lifecycle().add(context.datapackWorldgen().allRegistriesLifecycle());
+         PrimaryLevelData primaryLevelData = new PrimaryLevelData(createLevelSettings, finalDimensions.specialWorldProperty(), lifecycle);

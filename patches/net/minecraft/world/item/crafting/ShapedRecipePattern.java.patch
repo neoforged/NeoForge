@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
-@@ -21,8 +_,31 @@
+@@ -20,8 +_,31 @@
  import net.minecraft.world.item.ItemStack;
  
  public final class ShapedRecipePattern {
@@ -32,24 +32,24 @@
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
          .flatXmap(
              ShapedRecipePattern::unpack,
-@@ -206,16 +_,16 @@
+@@ -205,16 +_,16 @@
  
      public record Data(Map<Character, Ingredient> key, List<String> pattern) {
-         private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {
--            if (p_312085_.size() > 3) {
+         private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(strings -> {
+-            if (strings.size() > 3) {
 -                return DataResult.error(() -> "Invalid pattern: too many rows, 3 is maximum");
-+            if (p_312085_.size() > maxHeight) {
++            if (strings.size() > maxHeight) {
 +                return DataResult.error(() -> "Invalid pattern: too many rows, %s is maximum".formatted(maxHeight));
-             } else if (p_312085_.isEmpty()) {
+             } else if (strings.isEmpty()) {
                  return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
              } else {
-                 int i = p_312085_.getFirst().length();
+                 int firstLength = strings.getFirst().length();
  
-                 for (String s : p_312085_) {
--                    if (s.length() > 3) {
+                 for (String line : strings) {
+-                    if (line.length() > 3) {
 -                        return DataResult.error(() -> "Invalid pattern: too many columns, 3 is maximum");
-+                    if (s.length() > maxWidth) {
++                    if (line.length() > maxWidth) {
 +                        return DataResult.error(() -> "Invalid pattern: too many columns, %s is maximum".formatted(maxWidth));
                      }
  
-                     if (i != s.length()) {
+                     if (firstLength != line.length()) {

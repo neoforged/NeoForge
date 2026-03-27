@@ -255,8 +255,8 @@ public class OnDestroyedByPushReactionTests {
     private static class DestroyedByPushReactionListeningBlock extends Block {
         private final Runnable onDestroyedByPushReactionCallback;
 
-        public DestroyedByPushReactionListeningBlock(Properties p_49795_, Runnable onDestroyedByPushReactionCallback) {
-            super(p_49795_);
+        public DestroyedByPushReactionListeningBlock(Properties properties, Runnable onDestroyedByPushReactionCallback) {
+            super(properties);
             this.onDestroyedByPushReactionCallback = onDestroyedByPushReactionCallback;
         }
 

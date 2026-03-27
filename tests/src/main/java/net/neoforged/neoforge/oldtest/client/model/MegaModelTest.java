@@ -6,14 +6,16 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.math.Transformation;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
-import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,7 +27,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -139,7 +140,7 @@ public class MegaModelTest {
                 return ModelData.of(TestData.PROPERTY, new TestData(new Transformation(
                         new Vector3f(0, y * 0.2f, 0),
                         new Quaternionf(1f, 1f, 1f, 1f),
-                        Transformation.identity().getScale(),
+                        Transformation.IDENTITY.scale(),
                         new Quaternionf(1f, 1f, 1f, 1f))));
             }
         }
@@ -157,14 +158,16 @@ public class MegaModelTest {
         }
 
         @Override
-        public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+        public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
             TestData data = level.getModelData(pos).get(TestData.PROPERTY);
             if (data == null) {
                 super.collectParts(level, pos, state, random, parts);
                 return;
             }
 
-            for (BlockModelPart part : delegate.collectParts(level, pos, state, random)) {
+            List<BlockStateModelPart> srcParts = new ObjectArrayList<>();
+            delegate.collectParts(level, pos, state, random, srcParts);
+            for (BlockStateModelPart part : srcParts) {
                 QuadCollection.Builder builder = new QuadCollection.Builder();
                 for (Direction side : DIRECTIONS) {
                     for (BakedQuad quad : part.getQuads(side)) {
@@ -176,7 +179,7 @@ public class MegaModelTest {
                         }
                     }
                 }
-                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleIcon(), part.getRenderType(state)));
+                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial()));
             }
         }
     }

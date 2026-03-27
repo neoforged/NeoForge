@@ -8,9 +8,9 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -578,6 +_,14 @@
-             p_165883_.y + p_165885_ / 2.0,
-             p_165883_.z + p_165886_ / 2.0
+@@ -458,6 +_,14 @@
+         return new AABB(
+             center.x - sizeX / 2.0, center.y - sizeY / 2.0, center.z - sizeZ / 2.0, center.x + sizeX / 2.0, center.y + sizeY / 2.0, center.z + sizeZ / 2.0
          );
 +    }
 +

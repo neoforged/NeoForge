@@ -96,23 +96,23 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
                 }
             }
 
-            private static NonNullList<ItemStack> copyAllInputItems(CraftingInput p_379867_) {
-                NonNullList<ItemStack> nonnulllist = NonNullList.withSize(p_379867_.size(), ItemStack.EMPTY);
+            private static NonNullList<ItemStack> copyAllInputItems(CraftingInput input) {
+                NonNullList<ItemStack> nonnulllist = NonNullList.withSize(input.size(), ItemStack.EMPTY);
 
                 for (int i = 0; i < nonnulllist.size(); i++) {
-                    nonnulllist.set(i, p_379867_.getItem(i));
+                    nonnulllist.set(i, input.getItem(i));
                 }
 
                 return nonnulllist;
             }
 
-            private NonNullList<ItemStack> getRemainingItems(CraftingInput p_379501_, Level p_380183_) {
-                return p_380183_ instanceof ServerLevel serverlevel
+            private NonNullList<ItemStack> getRemainingItems(CraftingInput input, Level level) {
+                return level instanceof ServerLevel serverlevel
                         ? serverlevel.recipeAccess()
-                                .getRecipeFor(RecipeType.CRAFTING, p_379501_, serverlevel)
-                                .map(p_380214_ -> p_380214_.value().getRemainingItems(p_379501_))
-                                .orElseGet(() -> copyAllInputItems(p_379501_))
-                        : CraftingRecipe.defaultCraftingReminder(p_379501_);
+                                .getRecipeFor(RecipeType.CRAFTING, input, serverlevel)
+                                .map(recipe -> recipe.value().getRemainingItems(input))
+                                .orElseGet(() -> copyAllInputItems(input))
+                        : CraftingRecipe.defaultCraftingReminder(input);
             }
 
             @Override
@@ -168,32 +168,32 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
     }
 
     protected static void slotChangedCraftingGrid(
-            AbstractContainerMenu p_150547_,
-            ServerLevel p_379963_,
-            Player p_150549_,
-            RecipeBookTestContainer p_150550_,
-            ResultContainer p_150551_,
-            @Nullable RecipeHolder<RecipeBookTestRecipe> p_345124_) {
-        CraftingInput craftinginput = p_150550_.asCraftingInput();
-        ServerPlayer serverplayer = (ServerPlayer) p_150549_;
+            AbstractContainerMenu menu,
+            ServerLevel level,
+            Player player,
+            RecipeBookTestContainer container,
+            ResultContainer resultSlots,
+            @Nullable RecipeHolder<RecipeBookTestRecipe> recipeHint) {
+        CraftingInput craftinginput = container.asCraftingInput();
+        ServerPlayer serverplayer = (ServerPlayer) player;
         ItemStack itemstack = ItemStack.EMPTY;
-        Optional<RecipeHolder<RecipeBookTestRecipe>> optional = p_379963_.getServer()
+        Optional<RecipeHolder<RecipeBookTestRecipe>> optional = level.getServer()
                 .getRecipeManager()
-                .getRecipeFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), craftinginput, p_379963_, p_345124_);
+                .getRecipeFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), craftinginput, level, recipeHint);
         if (optional.isPresent()) {
             RecipeHolder<RecipeBookTestRecipe> recipeholder = optional.get();
             RecipeBookTestRecipe craftingrecipe = recipeholder.value();
-            if (p_150551_.setRecipeUsed(serverplayer, recipeholder)) {
-                ItemStack itemstack1 = craftingrecipe.assemble(craftinginput, p_379963_.registryAccess());
-                if (itemstack1.isItemEnabled(p_379963_.enabledFeatures())) {
+            if (resultSlots.setRecipeUsed(serverplayer, recipeholder)) {
+                ItemStack itemstack1 = craftingrecipe.assemble(craftinginput);
+                if (itemstack1.isItemEnabled(level.enabledFeatures())) {
                     itemstack = itemstack1;
                 }
             }
         }
 
-        p_150551_.setItem(0, itemstack);
-        p_150547_.setRemoteSlot(0, itemstack);
-        serverplayer.connection.send(new ClientboundContainerSetSlotPacket(p_150547_.containerId, p_150547_.incrementStateId(), 0, itemstack));
+        resultSlots.setItem(0, itemstack);
+        menu.setRemoteSlot(0, itemstack);
+        serverplayer.connection.send(new ClientboundContainerSetSlotPacket(menu.containerId, menu.incrementStateId(), 0, itemstack));
     }
 
     @Override
@@ -215,8 +215,8 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
     @Override
     public void slotsChanged(Container container) {
         if (!this.placingRecipe) {
-            this.access.execute((p_379187_, p_379188_) -> {
-                if (p_379187_ instanceof ServerLevel serverlevel) {
+            this.access.execute((level, pos) -> {
+                if (level instanceof ServerLevel serverlevel) {
                     slotChangedCraftingGrid(this, serverlevel, this.player, this.container, this.resultContainer, null);
                 }
             });
@@ -284,15 +284,15 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
     }
 
     @Override
-    public PostPlaceAction handlePlacement(boolean p_40119_, boolean p_362739_, RecipeHolder<?> rawHolder, ServerLevel serverLevel, Inventory inventory) {
+    public PostPlaceAction handlePlacement(boolean useMaxItems, boolean allowDroppingItemsToClear, RecipeHolder<?> rawHolder, ServerLevel serverLevel, Inventory inventory) {
         placingRecipe = true;
         RecipeHolder<RecipeBookTestRecipe> recipeHolder = (RecipeHolder<RecipeBookTestRecipe>) rawHolder;
         try {
             List<Slot> list = getGridSlots();
             return ServerPlaceRecipe.placeRecipe(new ServerPlaceRecipe.CraftingMenuAccess<>() {
                 @Override
-                public void fillCraftSlotsStackedContents(StackedItemContents p_362423_) {
-                    RecipeBookTestMenu.this.fillCraftSlotsStackedContents(p_362423_);
+                public void fillCraftSlotsStackedContents(StackedItemContents stackedContents) {
+                    RecipeBookTestMenu.this.fillCraftSlotsStackedContents(stackedContents);
                 }
 
                 @Override
@@ -305,7 +305,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
                 public boolean recipeMatches(RecipeHolder<RecipeBookTestRecipe> recipeHolder) {
                     return recipeHolder.value().matches(container.asCraftingInput(), player.level());
                 }
-            }, 2, 4, list, list, inventory, recipeHolder, p_40119_, p_362739_);
+            }, 2, 4, list, list, inventory, recipeHolder, useMaxItems, allowDroppingItemsToClear);
         } finally {
             placingRecipe = false;
             slotChangedCraftingGrid(this, serverLevel, player, container, resultContainer, recipeHolder);

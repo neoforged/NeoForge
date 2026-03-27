@@ -1,0 +1,11 @@
+--- a/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
++++ b/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
+@@ -40,7 +_,7 @@
+         return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
+             .thenCompose(
+                 registryResources -> {
+-                    RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, context);
++                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
+                     return ParallelMapTransform.schedule(
+                         (Map<Identifier, Resource>)registryResources,
+                         (resourceId, thunk) -> {

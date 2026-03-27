@@ -14,6 +14,6 @@
 +        this(gameProfile, latency, clientInformation, transferred, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
 +
-     public static CommonListenerCookie createInitial(GameProfile p_302024_, boolean p_320180_) {
-         return new CommonListenerCookie(p_302024_, 0, ClientInformation.createDefault(), p_320180_);
+     public static CommonListenerCookie createInitial(GameProfile gameProfile, boolean transferred) {
+         return new CommonListenerCookie(gameProfile, 0, ClientInformation.createDefault(), transferred);
      }

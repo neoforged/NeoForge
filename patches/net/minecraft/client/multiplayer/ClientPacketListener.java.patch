@@ -8,32 +8,32 @@
      private @Nullable LevelLoadTracker levelLoadTracker;
      private boolean serverEnforcesSecureChat;
      private volatile boolean closed;
-@@ -449,7 +_,8 @@
-             p_253924_.gui.getChat().restoreState(p_295121_.chatState());
+@@ -450,7 +_,8 @@
+             minecraft.gui.getChat().restoreState(cookie.chatState());
          }
  
 -        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
-+        this.connectionType = p_295121_.connectionType();
++        this.connectionType = cookie.connectionType();
 +        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures, this.registryAccess);
-         this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
-         this.levelLoadTracker = p_295121_.levelLoadTracker();
-     }
-@@ -527,12 +_,13 @@
+         this.fuelValues = FuelValues.vanillaBurnTimes(cookie.receivedRegistries(), this.enabledFeatures);
+         this.levelLoadTracker = cookie.levelLoadTracker();
+         this.clockManager = new ClientClockManager();
+@@ -529,12 +_,13 @@
          this.debugSubscriber.clear();
          this.minecraft.levelRenderer.debugRenderer.refreshRendererList();
          this.minecraft.player.resetPos();
 +        net.neoforged.neoforge.client.ClientHooks.firePlayerLogin(this.minecraft.gameMode, this.minecraft.player, this.minecraft.getConnection().connection);
-         this.minecraft.player.setId(p_105030_.playerId());
+         this.minecraft.player.setId(packet.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(this.minecraft.player);
          this.minecraft.setCameraEntity(this.minecraft.player);
 -        this.startWaitingForNewLevel(this.minecraft.player, this.level, LevelLoadingScreen.Reason.OTHER);
 +        this.startWaitingForNewLevel(this.minecraft.player, this.level, LevelLoadingScreen.Reason.OTHER, null, null);
-         this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
-         this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
-         this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -977,7 +_,8 @@
+         this.minecraft.player.setReducedDebugInfo(packet.reducedDebugInfo());
+         this.minecraft.player.setShowDeathScreen(packet.showDeathScreen());
+         this.minecraft.player.setDoLimitedCrafting(packet.doLimitedCrafting());
+@@ -965,7 +_,8 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -43,82 +43,81 @@
                      )
                  )
              );
-@@ -1302,7 +_,7 @@
+@@ -1293,7 +_,7 @@
          }
  
          this.setClientLoaded(false);
--        this.startWaitingForNewLevel(localplayer1, this.level, levelloadingscreen$reason);
-+        this.startWaitingForNewLevel(localplayer1, this.level, levelloadingscreen$reason, localplayer.isDeadOrDying() ? null : resourcekey, localplayer.isDeadOrDying() ? null : resourcekey1);
-         localplayer1.setId(localplayer.getId());
-         this.minecraft.player = localplayer1;
-         if (flag) {
-@@ -1330,6 +_,7 @@
-             localplayer1.getAttributes().assignBaseValues(localplayer.getAttributes());
+-        this.startWaitingForNewLevel(newPlayer, this.level, levelLoadingReason);
++        this.startWaitingForNewLevel(newPlayer, this.level, levelLoadingReason, oldPlayer.isDeadOrDying() ? null : dimensionKey, oldPlayer.isDeadOrDying() ? null : oldDimensionKey);
+         newPlayer.setId(oldPlayer.getId());
+         this.minecraft.player = newPlayer;
+         if (dimensionChanged) {
+@@ -1321,6 +_,7 @@
+             newPlayer.getAttributes().assignBaseValues(oldPlayer.getAttributes());
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.firePlayerRespawn(this.minecraft.gameMode, localplayer, localplayer1, localplayer1.connection.connection);
-         this.level.addEntity(localplayer1);
-         localplayer1.input = new KeyboardInput(this.minecraft.options);
-         this.minecraft.gameMode.adjustPlayer(localplayer1);
-@@ -1487,7 +_,7 @@
-             ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(p_421289_.problemPath(), LOGGER);
++        net.neoforged.neoforge.client.ClientHooks.firePlayerRespawn(this.minecraft.gameMode, oldPlayer, newPlayer, newPlayer.connection.connection);
+         this.level.addEntity(newPlayer);
+         newPlayer.input = new KeyboardInput(this.minecraft.options);
+         this.minecraft.gameMode.adjustPlayer(newPlayer);
+@@ -1474,7 +_,7 @@
+             ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(blockEntity.problemPath(), LOGGER);
  
              try {
--                p_421289_.loadWithComponents(TagValueInput.create(problemreporter$scopedcollector, this.registryAccess, p_104976_.getTag()));
-+                p_421289_.onDataPacket(connection, TagValueInput.create(problemreporter$scopedcollector, this.registryAccess, p_104976_.getTag()));
-             } catch (Throwable throwable1) {
+-                blockEntity.loadWithComponents(TagValueInput.create(reporter, this.registryAccess, packet.getTag()));
++                blockEntity.onDataPacket(connection, TagValueInput.create(reporter, this.registryAccess, packet.getTag()));
+             } catch (Throwable var7) {
                  try {
-                     problemreporter$scopedcollector.close();
-@@ -1609,7 +_,13 @@
-         }
+                     reporter.close();
+@@ -1622,7 +_,12 @@
+             );
      }
  
 +    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)} instead. */
-+    @Deprecated
-     private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, LevelLoadingScreen.Reason p_433545_) {
-+        this.startWaitingForNewLevel(p_304688_, p_304528_, p_433545_, null, null);
+     private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason) {
++        startWaitingForNewLevel(player, level, reason, null, null);
 +    }
 +
-+    private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, LevelLoadingScreen.Reason p_433545_, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
++    private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
          if (this.levelLoadTracker == null) {
              this.levelLoadTracker = new LevelLoadTracker();
          }
-@@ -1619,7 +_,7 @@
-             levelloadingscreen.update(this.levelLoadTracker, p_433545_);
+@@ -1632,7 +_,7 @@
+             loadingScreen.update(this.levelLoadTracker, reason);
          } else {
              this.minecraft.gui.getChat().preserveCurrentChatScreen();
--            this.minecraft.setScreenAndShow(new LevelLoadingScreen(this.levelLoadTracker, p_433545_));
-+            this.minecraft.setScreenAndShow(net.neoforged.neoforge.client.DimensionTransitionScreenManager.getScreen(toDimension, fromDimension).create(this.levelLoadTracker, p_433545_));
+-            this.minecraft.setScreenAndShow(new LevelLoadingScreen(this.levelLoadTracker, reason));
++            this.minecraft.setScreenAndShow(net.neoforged.neoforge.client.DimensionTransitionScreenManager.getScreen(toDimension, fromDimension).create(this.levelLoadTracker, reason));
          }
      }
  
-@@ -1668,7 +_,9 @@
+@@ -1681,7 +_,9 @@
      @Override
-     public void handleCommands(ClientboundCommandsPacket p_104990_) {
-         PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft.packetProcessor());
--        this.commands = new CommandDispatcher<>(p_104990_.getRoot(CommandBuildContext.simple(this.registryAccess, this.enabledFeatures), COMMAND_NODE_BUILDER));
+     public void handleCommands(ClientboundCommandsPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
+-        this.commands = new CommandDispatcher<>(packet.getRoot(CommandBuildContext.simple(this.registryAccess, this.enabledFeatures), COMMAND_NODE_BUILDER));
 +        var context = CommandBuildContext.simple(this.registryAccess, this.enabledFeatures);
-+        this.commands = new CommandDispatcher<>(p_104990_.getRoot(context, COMMAND_NODE_BUILDER));
++        this.commands = new CommandDispatcher<>(packet.getRoot(context, COMMAND_NODE_BUILDER));
 +        this.commands = net.neoforged.neoforge.client.ClientCommandHandler.mergeServerCommands(this.commands, context);
      }
  
      @Override
-@@ -1687,6 +_,8 @@
-     public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
-         PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft.packetProcessor());
-         this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
+@@ -1700,6 +_,8 @@
+     public void handleUpdateRecipes(ClientboundUpdateRecipesPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
+         this.recipes = new ClientRecipeContainer(packet.itemSets(), packet.stonecutterRecipes());
 +
 +        net.neoforged.neoforge.client.ClientHooks.handleUpdateRecipes(this, v -> this.fuelValues = v);
      }
  
      @Override
-@@ -1811,8 +_,11 @@
-         });
-         list.forEach(Registry.PendingTags::apply);
+@@ -1822,8 +_,11 @@
+         }
+ 
          this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
--        List<ItemStack> list1 = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
--        this.searchTrees.updateCreativeTags(list1);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, flag));
+-        List<ItemStack> searchItems = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
+-        this.searchTrees.updateCreativeTags(searchItems);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, this.connection.isMemoryConnection()));
 +        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
 +            List<ItemStack> stacks = List.copyOf(tab.getDisplayItems());
 +            this.searchTrees.updateCreativeTags(stacks, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
@@ -126,33 +125,33 @@
      }
  
      @Override
-@@ -2642,6 +_,8 @@
+@@ -2641,6 +_,8 @@
      }
  
-     public void sendChat(String p_249888_) {
-+        p_249888_ = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(p_249888_);
-+        if (p_249888_.isEmpty()) return;
-         Instant instant = Instant.now();
-         long i = Crypt.SaltSupplier.getLong();
-         LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2651,6 +_,7 @@
+     public void sendChat(String content) {
++        content = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(content);
++        if (content.isEmpty()) return;
+         Instant timeStamp = Instant.now();
+         long salt = Crypt.SaltSupplier.getLong();
+         LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
+@@ -2649,6 +_,7 @@
      }
  
-     public void sendCommand(String p_250092_) {
-+        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(p_250092_)) return;
-         SignableCommand<ClientSuggestionProvider> signablecommand = SignableCommand.of(this.commands.parse(p_250092_, this.suggestionsProvider));
-         if (signablecommand.arguments().isEmpty()) {
-             this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2667,6 +_,8 @@
+     public void sendCommand(String command) {
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) return;
+         SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
+         if (signableCommand.arguments().isEmpty()) {
+             this.send(new ServerboundChatCommandPacket(command));
+@@ -2665,6 +_,8 @@
      }
  
-     public void sendUnattendedCommand(String p_425988_, @Nullable Screen p_427225_) {
+     public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
 +        // Neo: Dispatch client commands for text component click actions.
-+        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(p_425988_)) return;
-         switch (this.verifyCommand(p_425988_)) {
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) return;
+         switch (this.verifyCommand(command)) {
              case NO_ISSUES:
-                 this.send(new ServerboundChatCommandPacket(p_425988_));
-@@ -2825,6 +_,10 @@
+                 this.send(new ServerboundChatCommandPacket(command));
+@@ -2833,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

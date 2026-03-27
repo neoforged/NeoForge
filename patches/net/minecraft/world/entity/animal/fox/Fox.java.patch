@@ -1,32 +1,32 @@
 --- a/net/minecraft/world/entity/animal/fox/Fox.java
 +++ b/net/minecraft/world/entity/animal/fox/Fox.java
-@@ -698,13 +_,18 @@
+@@ -700,13 +_,18 @@
  
      @Override
-     protected void dropAllDeathLoot(ServerLevel p_479911_, DamageSource p_479438_) {
-+        super.dropAllDeathLoot(p_479911_, p_479438_);
+     protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
++        super.dropAllDeathLoot(level, source);
 +    }
 +
 +    @Override
-+    protected void dropEquipment(ServerLevel p_479911_) { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
-+        super.dropEquipment(p_479911_);
-         ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
-         if (!itemstack.isEmpty()) {
-             this.spawnAtLocation(p_479911_, itemstack);
++    protected void dropEquipment(ServerLevel level) { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
++        super.dropEquipment(level);
+         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.MAINHAND);
+         if (!itemStack.isEmpty()) {
+             this.spawnAtLocation(level, itemStack);
              this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
          }
  
--        super.dropAllDeathLoot(p_479911_, p_479438_);
+-        super.dropAllDeathLoot(level, source);
      }
  
-     public static boolean isPathClear(Fox p_480404_, LivingEntity p_479734_) {
-@@ -860,6 +_,17 @@
+     public static boolean isPathClear(Fox fox, LivingEntity target) {
+@@ -873,6 +_,17 @@
          @Override
          protected void breed() {
-             Fox fox = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
-+            final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
+             Fox offspring = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
++            final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, offspring);
 +            final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
-+            fox = (Fox) event.getChild();
++            offspring = (Fox) event.getChild();
 +            if (cancelled) {
 +                //Reset the "inLove" state for the animals
 +                this.animal.setAge(6000);
@@ -35,24 +35,15 @@
 +                this.partner.resetLove();
 +                return;
 +            }
-             if (fox != null) {
-                 ServerPlayer serverplayer = this.animal.getLoveCause();
-                 ServerPlayer serverplayer1 = this.partner.getLoveCause();
-@@ -937,7 +_,7 @@
+             if (offspring != null) {
+                 ServerPlayer animalLoveCause = this.animal.getLoveCause();
+                 ServerPlayer partnerLoveCause = this.partner.getLoveCause();
+@@ -951,7 +_,7 @@
          }
  
          protected void onReachedTarget() {
 -            if (getServerLevel(Fox.this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
 +            if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(Fox.this.level()), Fox.this)) {
-                 BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
-                 if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
-                     this.pickSweetBerries(blockstate);
-@@ -996,7 +_,7 @@
- 
-         @Override
-         public boolean canUse() {
--            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25 || Fox.this.isInLava();
-+            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25D || Fox.this.isInLava() || Fox.this.isInFluidType((fluidType, height) -> Fox.this.canSwimInFluidType(fluidType) && height > 0.25D);
-         }
-     }
- 
+                 BlockState state = Fox.this.level().getBlockState(this.blockPos);
+                 if (state.is(Blocks.SWEET_BERRY_BUSH)) {
+                     this.pickSweetBerries(state);

@@ -16,7 +16,6 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
-import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
@@ -94,9 +93,6 @@ final class NetworkInitialization {
                         RegistryDataMapSyncPayload.STREAM_CODEC)
                 .playToClient(AdvancedContainerSetDataPayload.TYPE,
                         AdvancedContainerSetDataPayload.STREAM_CODEC)
-                .playToClient(
-                        ClientboundCustomSetTimePayload.TYPE,
-                        ClientboundCustomSetTimePayload.STREAM_CODEC)
                 .playToClient(
                         RecipeContentPayload.TYPE,
                         RecipeContentPayload.STREAM_CODEC)

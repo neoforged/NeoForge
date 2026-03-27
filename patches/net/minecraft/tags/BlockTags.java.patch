@@ -1,8 +1,8 @@
 --- a/net/minecraft/tags/BlockTags.java
 +++ b/net/minecraft/tags/BlockTags.java
-@@ -216,4 +_,8 @@
-     private static TagKey<Block> create(String p_203847_) {
-         return TagKey.create(Registries.BLOCK, Identifier.withDefaultNamespace(p_203847_));
+@@ -260,4 +_,8 @@
+     private static TagKey<Block> create(String name) {
+         return TagKey.create(Registries.BLOCK, Identifier.withDefaultNamespace(name));
      }
 +
 +    public static TagKey<Block> create(Identifier name) {

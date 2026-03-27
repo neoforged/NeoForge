@@ -10,13 +10,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.testframework.junit.EphemeralTestServerProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.opentest4j.TestAbortedException;
 
+@ExtendWith(EphemeralTestServerProvider.class)
 public class ComponentHashingTest {
     @Test
-    void testHashCodeCollisions() {
+    void testHashCodeCollisions(MinecraftServer server) {
+        // If the hashcode of DAMAGE and REPAIR_COST is identical, this test will produce a lot more collisions
+        if (System.identityHashCode(DataComponents.DAMAGE) == System.identityHashCode(DataComponents.REPAIR_COST)) {
+            throw new TestAbortedException("Cannot run hash collision test when hashcode of the two data components used by this test is the same");
+        }
+
         int MAX_DAMAGE = 1000;
         int MAX_REPAIR_COST = 100;
 

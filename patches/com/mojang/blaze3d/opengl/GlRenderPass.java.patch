@@ -1,30 +1,30 @@
 --- a/com/mojang/blaze3d/opengl/GlRenderPass.java
 +++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
-@@ -21,7 +_,7 @@
+@@ -22,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
- public class GlRenderPass implements RenderPass {
+ class GlRenderPass implements RenderPassBackend {
      protected static final int MAX_VERTEX_BUFFERS = 1;
 -    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
 +    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.getBoolean("neoforge.disableGlValidation");
      private final GlCommandEncoder encoder;
+     private final GlDevice device;
      private final boolean hasDepthTexture;
-     private boolean closed;
-@@ -68,6 +_,7 @@
+@@ -58,6 +_,7 @@
  
      @Override
-     public void setPipeline(RenderPipeline p_409823_) {
-+        p_409823_ = com.mojang.blaze3d.systems.RenderSystem.applyPipelineModifiers(p_409823_);
-         if (this.pipeline == null || this.pipeline.info() != p_409823_) {
+     public void setPipeline(RenderPipeline pipeline) {
++        pipeline = com.mojang.blaze3d.systems.RenderSystem.applyPipelineModifiers(pipeline);
+         if (this.pipeline == null || this.pipeline.info() != pipeline) {
              this.dirtyUniforms.addAll(this.uniforms.keySet());
              this.dirtyUniforms.addAll(this.samplers.keySet());
-@@ -102,6 +_,11 @@
-             this.uniforms.put(p_409689_, p_418312_);
-             this.dirtyUniforms.add(p_409689_);
-         }
+@@ -87,6 +_,11 @@
+     public void setUniform(String name, GpuBufferSlice value) {
+         this.uniforms.put(name, value);
+         this.dirtyUniforms.add(name);
 +    }
 +
 +    @Override
-+    public void setViewport(int x, int y, int width, int height){
++    public void setViewport(int x, int y, int width, int height) {
 +        GlStateManager._viewport(x, y, width, height);
      }
  

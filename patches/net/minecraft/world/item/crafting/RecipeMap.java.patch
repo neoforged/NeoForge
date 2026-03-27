@@ -8,11 +8,11 @@
 +    private Multimap<RecipeType<?>, RecipeHolder<?>> byType;
      private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
  
-     private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> p_379497_, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> p_380280_) {
+     private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> byType, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey) {
 @@ -31,6 +_,25 @@
          }
  
-         return new RecipeMap(builder.build(), builder1.build());
+         return new RecipeMap(byType.build(), byKey.build());
 +    }
 +
 +    // Neo: handle ordering according to any recipe priorities
@@ -34,4 +34,4 @@
 +        this.byType = ImmutableMultimap.copyOf(finalBuilder);
      }
  
-     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> byType(RecipeType<T> p_379772_) {
+     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> byType(RecipeType<T> type) {

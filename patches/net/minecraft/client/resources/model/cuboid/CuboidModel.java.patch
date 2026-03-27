@@ -1,0 +1,59 @@
+--- a/net/minecraft/client/resources/model/cuboid/CuboidModel.java
++++ b/net/minecraft/client/resources/model/cuboid/CuboidModel.java
+@@ -28,21 +_,44 @@
+     @Nullable Boolean ambientOcclusion,
+     @Nullable ItemTransforms transforms,
+     TextureSlots.Data textureSlots,
+-    @Nullable Identifier parent
++    @Nullable Identifier parent,
++    com.mojang.math.@Nullable Transformation rootTransform,
++    java.util.Map<String, Boolean> partVisibility
+ ) implements UnbakedModel {
+     @VisibleForTesting
+     public static final Gson GSON = new GsonBuilder()
++        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())
+         .registerTypeAdapter(CuboidModel.class, new CuboidModel.Deserializer())
+         .registerTypeAdapter(CuboidModelElement.class, new CuboidModelElement.Deserializer())
+         .registerTypeAdapter(CuboidFace.class, new CuboidFace.Deserializer())
+         .registerTypeAdapter(ItemTransform.class, new ItemTransform.Deserializer())
+         .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
++        .registerTypeAdapter(com.mojang.math.Transformation.class, new net.neoforged.neoforge.common.util.TransformationHelper.Deserializer())
+         .create();
+ 
++    /// @deprecated Neo: use [net.neoforged.neoforge.client.model.UnbakedModelParser#parse(Reader)] instead
++    @Deprecated
+     public static CuboidModel fromStream(Reader reader) {
+         return GsonHelper.fromJson(GSON, reader, CuboidModel.class);
+     }
+ 
++    public CuboidModel(
++            @Nullable UnbakedGeometry geometry,
++            UnbakedModel.@Nullable GuiLight guiLight,
++            @Nullable Boolean ambientOcclusion,
++            @Nullable ItemTransforms transforms,
++            TextureSlots.Data textureSlots,
++            @Nullable Identifier parent
++    ) {
++        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of());
++    }
++
++    @Override
++    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.rootTransform);
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.partVisibility);
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     public static class Deserializer implements JsonDeserializer<CuboidModel> {
+         public CuboidModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+@@ -63,7 +_,9 @@
+             }
+ 
+             Identifier parentLocation = parentName.isEmpty() ? null : Identifier.parse(parentName);
+-            return new CuboidModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation);
++            var rootTransform = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRootTransform(object, context);
++            var partVisibility = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializePartVisibility(object);
++            return new CuboidModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, partVisibility);
+         }
+ 
+         private TextureSlots.Data getTextureMap(JsonObject object) {

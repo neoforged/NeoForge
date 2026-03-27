@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/texture/SpriteLoader.java
 +++ b/net/minecraft/client/renderer/texture/SpriteLoader.java
 @@ -129,7 +_,7 @@
-         ResourceManager p_295469_, Identifier p_469435_, int p_294855_, Executor p_294720_, Set<MetadataSectionType<?>> p_432812_
+         ResourceManager manager, Identifier atlasInfoLocation, int maxMipmapLevels, Executor taskExecutor, Set<MetadataSectionType<?>> additionalMetadata
      ) {
-         SpriteResourceLoader spriteresourceloader = SpriteResourceLoader.create(p_432812_);
--        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(p_295469_, p_469435_).list(p_295469_), p_294720_)
-+        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(p_295469_, p_469435_).list(p_295469_, p_432812_), p_294720_)
-             .thenCompose(p_293671_ -> runSpriteSuppliers(spriteresourceloader, (List<SpriteSource.Loader>)p_293671_, p_294720_))
-             .thenApply(p_261393_ -> this.stitch((List<SpriteContents>)p_261393_, p_294855_, p_294720_));
+         SpriteResourceLoader spriteResourceLoader = SpriteResourceLoader.create(additionalMetadata);
+-        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(manager, atlasInfoLocation).list(manager), taskExecutor)
++        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(manager, atlasInfoLocation).list(manager, additionalMetadata), taskExecutor)
+             .thenCompose(sprites -> runSpriteSuppliers(spriteResourceLoader, (List<SpriteSource.Loader>)sprites, taskExecutor))
+             .thenApply(resources -> this.stitch((List<SpriteContents>)resources, maxMipmapLevels, taskExecutor));
      }

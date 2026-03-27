@@ -3,18 +3,18 @@
 @@ -74,13 +_,16 @@
      }
  
-     private static void sendChunk(ServerGamePacketListenerImpl p_295237_, ServerLevel p_294963_, LevelChunk p_295144_) {
--        p_295237_.send(new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null));
-+        p_295237_.send(p_295144_.getAuxLightManager(p_295144_.getPos()).sendLightDataTo(
-+                new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null)
+     private static void sendChunk(ServerGamePacketListenerImpl connection, ServerLevel level, LevelChunk chunk) {
+-        connection.send(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null));
++        connection.send(chunk.getAuxLightManager(chunk.getPos()).sendLightDataTo(
++                new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null)
 +        ));
-         ChunkPos chunkpos = p_295144_.getPos();
+         ChunkPos pos = chunk.getPos();
          if (SharedConstants.DEBUG_VERBOSE_SERVER_EVENTS) {
-             LOGGER.debug("SEN {}", chunkpos);
+             LOGGER.debug("SEN {}", pos);
          }
  
-         p_294963_.debugSynchronizers().startTrackingChunk(p_295237_.player, p_295144_.getPos());
-+        net.neoforged.neoforge.event.EventHooks.fireChunkSent(p_295237_.player, p_295144_, p_294963_);
+         level.debugSynchronizers().startTrackingChunk(connection.player, chunk.getPos());
++        net.neoforged.neoforge.event.EventHooks.fireChunkSent(connection.player, chunk, level);
      }
  
-     private List<LevelChunk> collectChunksToSend(ChunkMap p_296053_, ChunkPos p_295659_) {
+     private List<LevelChunk> collectChunksToSend(ChunkMap chunkMap, ChunkPos playerPos) {

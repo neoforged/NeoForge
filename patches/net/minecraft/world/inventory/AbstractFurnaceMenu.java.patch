@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/inventory/AbstractFurnaceMenu.java
 +++ b/net/minecraft/world/inventory/AbstractFurnaceMenu.java
-@@ -142,7 +_,7 @@
+@@ -143,7 +_,7 @@
      }
  
-     protected boolean isFuel(ItemStack p_38989_) {
--        return this.level.fuelValues().isFuel(p_38989_);
-+        return p_38989_.getBurnTime(this.recipeType, this.level.fuelValues()) > 0;
+     protected boolean isFuel(ItemStack itemStack) {
+-        return this.level.fuelValues().isFuel(itemStack);
++        return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0;
      }
  
      public float getBurnProgress() {

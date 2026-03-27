@@ -129,8 +129,8 @@ public class CommandTests {
                     player);
         }
 
-        public ErrorCatchingStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, PermissionSet p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
-            super(p_81302_, p_81303_, p_81304_, p_81305_, p_81306_, p_81307_, p_81308_, p_81309_, p_81310_);
+        public ErrorCatchingStack(CommandSource source, Vec3 position, Vec2 rotation, ServerLevel level, PermissionSet p_81306_, String textName, Component displayName, MinecraftServer server, @Nullable Entity entity) {
+            super(source, position, rotation, level, p_81306_, textName, displayName, server, entity);
         }
 
         final List<Component> errors = new ArrayList<>();

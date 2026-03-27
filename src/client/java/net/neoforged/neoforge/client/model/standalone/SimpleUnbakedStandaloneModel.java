@@ -6,16 +6,16 @@
 package net.neoforged.neoforge.client.model.standalone;
 
 import java.util.function.BiFunction;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
-import net.minecraft.client.renderer.block.model.SingleVariant;
-import net.minecraft.client.resources.model.BlockModelRotation;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.renderer.block.dispatch.SingleVariant;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.client.resources.model.ResolvedModel;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -58,17 +58,17 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
     }
 
     /**
-     * {@return an unbaked standalone model for a {@link BlockModelPart}, baked without additional transformations}
+     * {@return an unbaked standalone model for a {@link BlockStateModelPart}, baked without additional transformations}
      */
-    public static SimpleUnbakedStandaloneModel<BlockModelPart> simpleModelWrapper(Identifier modelId) {
+    public static SimpleUnbakedStandaloneModel<BlockStateModelPart> simpleModelWrapper(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
                 modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY));
     }
 
     /**
-     * {@return an unbaked standalone model for a {@link BlockModelPart}, baked with the provided {@link ModelState} transformations}
+     * {@return an unbaked standalone model for a {@link BlockStateModelPart}, baked with the provided {@link ModelState} transformations}
      */
-    public static SimpleUnbakedStandaloneModel<BlockModelPart> simpleModelWrapper(Identifier modelId, ModelState modelState) {
+    public static SimpleUnbakedStandaloneModel<BlockStateModelPart> simpleModelWrapper(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
                 modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, modelState));
     }

@@ -38,7 +38,7 @@ public interface SpecialPlantable {
     void spawnPlantAtPosition(ItemStack itemStack, LevelAccessor level, BlockPos pos, @Nullable Direction direction);
 
     /**
-     * Whether Villagers can pick up this item and plant it down on any block that extends FarmBlock.
+     * Whether Villagers can pick up this item and plant it down on any block that extends FarmlandBlock.
      */
     default boolean villagerCanPlantItem(Villager villager) {
         return false;

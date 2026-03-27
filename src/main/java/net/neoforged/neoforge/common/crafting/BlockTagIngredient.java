@@ -68,7 +68,7 @@ public class BlockTagIngredient implements ICustomIngredient {
         if (stack == null)
             return false;
 
-        return dissolve().contains(stack.getItemHolder());
+        return dissolve().contains(stack.typeHolder());
     }
 
     public TagKey<Block> getTag() {

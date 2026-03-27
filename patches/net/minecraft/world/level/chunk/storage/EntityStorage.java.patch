@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/EntityStorage.java
-@@ -108,9 +_,13 @@
-                             TagValueOutput tagvalueoutput = TagValueOutput.createWithContext(
-                                 problemreporter$scopedcollector.forChild(p_421446_.problemPath()), p_421446_.registryAccess()
-                             );
-+                            try {
-                             if (p_421446_.save(tagvalueoutput)) {
-                                 CompoundTag compoundtag1 = tagvalueoutput.buildResult();
-                                 listtag.add(compoundtag1);
-+                            }
-+                            } catch (Exception e) {
-+                                LOGGER.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author", p_421446_.getType(), e);
-                             }
-                         }
-                     );
+@@ -97,9 +_,13 @@
+                 ListTag entities = new ListTag();
+                 chunk.getEntities().forEach(e -> {
+                     TagValueOutput output = TagValueOutput.createWithContext(reporter.forChild(e.problemPath()), e.registryAccess());
++                    try {
+                     if (e.save(output)) {
+                         CompoundTag result = output.buildResult();
+                         entities.add(result);
++                    }
++                    } catch (Exception ex) {
++                        LOGGER.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author", e.getType(), ex);
+                     }
+                 });
+                 CompoundTag chunkTag = NbtUtils.addCurrentDataVersion(new CompoundTag());

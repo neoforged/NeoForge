@@ -113,7 +113,7 @@ public class EntityTests {
         public void readSpawnData(RegistryFriendlyByteBuf additionalData) {}
 
         @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
+        public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
             return false;
         }
     }
@@ -138,7 +138,7 @@ public class EntityTests {
         }
 
         @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
+        public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
             return false;
         }
     }
@@ -158,7 +158,7 @@ public class EntityTests {
         protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
+        public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
             return false;
         }
     }

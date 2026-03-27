@@ -21,7 +21,6 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import org.jspecify.annotations.Nullable;
 
 public class ExtendedModelTemplateBuilder {
@@ -33,8 +32,6 @@ public class ExtendedModelTemplateBuilder {
     @Nullable
     CustomLoaderBuilder customLoader = null;
     final RootTransformsBuilder rootTransforms = new RootTransformsBuilder();
-    @Nullable
-    Identifier renderType = null;
     @Nullable
     Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
     UnbakedModel.@Nullable GuiLight guiLight = null;
@@ -49,7 +46,6 @@ public class ExtendedModelTemplateBuilder {
             ext.elements.forEach(elem -> builder.elements.add(elem.copy()));
             builder.customLoader = ext.customLoader != null ? ext.customLoader.copy() : null;
             builder.rootTransforms.copyFrom(ext.rootTransforms);
-            builder.renderType = ext.renderType;
             builder.ambientOcclusion = ext.ambientOcclusion;
             builder.guiLight = ext.guiLight;
         }
@@ -81,33 +77,6 @@ public class ExtendedModelTemplateBuilder {
      */
     public ExtendedModelTemplateBuilder requiredTextureSlot(TextureSlot slot) {
         this.requiredSlots.add(slot);
-        return this;
-    }
-
-    /**
-     * Set the render type for this model.
-     *
-     * @param renderType the render type. Must be registered via
-     *                   {@link RegisterNamedRenderTypesEvent}
-     * @return this builder
-     * @throws NullPointerException if {@code renderType} is {@code null}
-     */
-    public ExtendedModelTemplateBuilder renderType(String renderType) {
-        Preconditions.checkNotNull(renderType, "Render type must not be null");
-        return renderType(Identifier.parse(renderType));
-    }
-
-    /**
-     * Set the render type for this model.
-     *
-     * @param renderType the render type. Must be registered via
-     *                   {@link RegisterNamedRenderTypesEvent}
-     * @return this builder
-     * @throws NullPointerException if {@code renderType} is {@code null}
-     */
-    public ExtendedModelTemplateBuilder renderType(Identifier renderType) {
-        Preconditions.checkNotNull(renderType, "Render type must not be null");
-        this.renderType = renderType;
         return this;
     }
 

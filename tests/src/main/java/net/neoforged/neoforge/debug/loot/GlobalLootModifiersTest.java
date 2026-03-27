@@ -111,7 +111,7 @@ public class GlobalLootModifiersTest {
         private static ItemStack smelt(ItemStack stack, LootContext context) {
             SingleRecipeInput input = new SingleRecipeInput(stack);
             return context.getLevel().recipeAccess().getRecipeFor(RecipeType.SMELTING, input, context.getLevel())
-                    .map(smeltingRecipe -> smeltingRecipe.value().assemble(input, context.getLevel().registryAccess()))
+                    .map(smeltingRecipe -> smeltingRecipe.value().assemble(input))
                     .filter(itemStack -> !itemStack.isEmpty())
                     .map(itemStack -> itemStack.copyWithCount(stack.getCount() * itemStack.getCount()))
                     .orElse(stack);
@@ -135,7 +135,7 @@ public class GlobalLootModifiersTest {
 
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-            ItemStack ctxTool = context.getOptionalParameter(LootContextParams.TOOL);
+            ItemStack ctxTool = context.getOptionalParameter(LootContextParams.TOOL) instanceof ItemStack stack ? stack : null;
             var reg = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
             // return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
             if (ctxTool == null || ctxTool.getEnchantmentLevel(reg.getOrThrow(Enchantments.SILK_TOUCH)) > 0)

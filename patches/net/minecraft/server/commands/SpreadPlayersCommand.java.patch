@@ -1,35 +1,35 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
-@@ -259,16 +_,23 @@
-                 spreadplayerscommand$position = p_138732_[i++];
+@@ -252,16 +_,23 @@
+                 position = positions[positionIndex++];
              }
  
 -            entity.teleportTo(
--                p_138731_,
--                Mth.floor(spreadplayerscommand$position.x) + 0.5,
--                spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
--                Mth.floor(spreadplayerscommand$position.z) + 0.5,
+-                level,
+-                Mth.floor(position.x) + 0.5,
+-                position.getSpawnY(level, maxHeight),
+-                Mth.floor(position.z) + 0.5,
 -                Set.of(),
 -                entity.getYRot(),
 -                entity.getXRot(),
 -                true
 +            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
-+                      (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
-+                      spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
-+                      (double)Mth.floor(spreadplayerscommand$position.z) + 0.5
++                    (double)Mth.floor(position.x) + 0.5,
++                    position.getSpawnY(level, maxHeight),
++                    (double)Mth.floor(position.z) + 0.5
              );
 +            if (!event.isCanceled()) {
 +                entity.teleportTo(
-+                          p_138731_,
-+                          event.getTargetX(),
-+                          event.getTargetY(),
-+                          event.getTargetZ(),
-+                          Set.of(),
-+                          entity.getYRot(),
-+                          entity.getXRot(),
-+                          true
++                        level,
++                        event.getTargetX(),
++                        event.getTargetY(),
++                        event.getTargetZ(),
++                        Set.of(),
++                        entity.getYRot(),
++                        entity.getXRot(),
++                        true
 +                );
 +            }
-             double d2 = Double.MAX_VALUE;
+             double closest = Double.MAX_VALUE;
  
-             for (SpreadPlayersCommand.Position spreadplayerscommand$position1 : p_138732_) {
+             for (SpreadPlayersCommand.Position testPosition : positions) {

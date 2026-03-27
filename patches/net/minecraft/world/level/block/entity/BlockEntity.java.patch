@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -36,15 +_,18 @@
+@@ -39,15 +_,20 @@
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
  
--public abstract class BlockEntity implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
-+public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
+-public abstract class BlockEntity implements DebugValueSource, TypedInstance<BlockEntityType<?>>, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
++public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
 +    @Deprecated // Neo: always use getType()
@@ -17,40 +17,42 @@
      private DataComponentMap components = DataComponentMap.EMPTY;
 +    @Nullable
 +    private CompoundTag customPersistentData;
++    @Nullable
++    private Set<net.neoforged.neoforge.attachment.AttachmentType<?>> attachmentTypesToSync;
  
-     public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
-         this.type = p_155228_;
-@@ -60,7 +_,7 @@
+     public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
+         this.type = type;
+@@ -63,7 +_,7 @@
      }
  
-     public boolean isValidBlockState(BlockState p_353131_) {
--        return this.type.isValid(p_353131_);
-+        return this.getType().isValid(p_353131_); // Neo: use getter so correct type is checked for modded subclasses
+     public boolean isValidBlockState(BlockState blockState) {
+-        return this.type.isValid(blockState);
++        return this.getType().isValid(blockState); // Neo: use getter so correct type is checked for modded subclasses
      }
  
-     public static BlockPos getPosFromTag(ChunkPos p_412201_, CompoundTag p_187473_) {
-@@ -91,6 +_,8 @@
+     public static BlockPos getPosFromTag(ChunkPos base, CompoundTag entityTag) {
+@@ -94,6 +_,8 @@
      }
  
-     protected void loadAdditional(ValueInput p_422607_) {
-+        p_422607_.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
-+        p_422607_.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
+     protected void loadAdditional(ValueInput input) {
++        input.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
++        input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
      }
  
-     public final void loadWithComponents(ValueInput p_422624_) {
-@@ -103,6 +_,11 @@
+     public final void loadWithComponents(ValueInput input) {
+@@ -106,6 +_,11 @@
      }
  
-     protected void saveAdditional(ValueOutput p_422639_) {
-+        if (this.customPersistentData != null) p_422639_.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
+     protected void saveAdditional(ValueOutput output) {
++        if (this.customPersistentData != null) output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
 +        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
-+        var attachments = p_422639_.child(ATTACHMENTS_NBT_KEY);
++        var attachments = output.child(ATTACHMENTS_NBT_KEY);
 +        serializeAttachments(attachments);
-+        if (attachments.isEmpty()) p_422639_.discard(ATTACHMENTS_NBT_KEY);
++        if (attachments.isEmpty()) output.discard(ATTACHMENTS_NBT_KEY);
      }
  
-     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
-@@ -236,10 +_,14 @@
+     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
+@@ -239,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -64,8 +66,8 @@
 +        invalidateCapabilities();
      }
  
-     public void preRemoveSideEffects(BlockPos p_394577_, BlockState p_394161_) {
-@@ -269,6 +_,32 @@
+     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+@@ -272,6 +_,48 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -94,7 +96,23 @@
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
++        if (!(level instanceof ServerLevel serverLevel)) {
++            return;
++        }
++        if (attachmentTypesToSync == null) {
++            attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        }
++        attachmentTypesToSync.add(type);
++        // Schedule the BE for syncing
++        serverLevel.getChunkSource().blockChanged(worldPosition);
++    }
++
++    @Nullable
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final Set<net.neoforged.neoforge.attachment.AttachmentType<?>> getAndClearAttachmentTypesToSync() {
++        var ret = attachmentTypesToSync;
++        attachmentTypesToSync = null;
++        return ret;
      }
  
-     @Deprecated
+     @Override
