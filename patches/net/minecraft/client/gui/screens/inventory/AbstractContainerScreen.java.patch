@@ -101,7 +101,7 @@
          } else {
 -            boolean flag = this.minecraft.options.keyPickItem.matchesMouse(p_97750_) && this.minecraft.gameMode.hasInfiniteItems();
 +            InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(p_97750_);
-+            boolean flag = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey);
++            boolean flag = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey) && this.minecraft.player.hasInfiniteMaterials();
              Slot slot = this.findSlot(p_97748_, p_97749_);
              long i = Util.getMillis();
              this.doubleclick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == p_97750_;
