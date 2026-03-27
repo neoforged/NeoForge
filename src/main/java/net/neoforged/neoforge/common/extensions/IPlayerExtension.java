@@ -78,8 +78,8 @@ public interface IPlayerExtension {
     /**
      * Determine whether a player is allowed creative flight via game mode or attribute.
      * <p>
-     * Modders are discouraged from setting {@link Abilities#mayfly} directly.
-     * That {@link Abilities#mayfly} field will no longer control flight due to {@link NeoForgeMod#CREATIVE_FLIGHT} replacing it.
+     * Modders are forbidden from setting {@link Abilities#mayfly} directly because it will
+     * no longer control flight due to {@link NeoForgeMod#CREATIVE_FLIGHT} replacing it.
      *
      * @return true when creative flight is available
      * @see NeoForgeMod#CREATIVE_FLIGHT
