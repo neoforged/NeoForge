@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.renderer.block.dispatch.SingleVariant;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.SimpleModelWrapper;
@@ -48,7 +49,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
     }
 
     @Override
-    public T bake(ModelBaker baker) {
+    public T bake(ModelBaker baker, ModelDebugName name) {
         return bake.apply(baker.getModel(modelId), baker);
     }
 

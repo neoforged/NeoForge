@@ -34,7 +34,7 @@ public final class StandaloneModelLoader {
     public static CompletableFuture<BakedModels> bake(LoadedModels standaloneModels, ModelBaker baker, Executor executor) {
         return ParallelMapTransform.schedule(standaloneModels.models, (key, model) -> {
             try {
-                return model.bake(baker);
+                return model.bake(baker, key::getName);
             } catch (Exception e) {
                 LOGGER.warn("Unable to bake standalone model: '{}': {}", key.getName(), e);
                 return null;
