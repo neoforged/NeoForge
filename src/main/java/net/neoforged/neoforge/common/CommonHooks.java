@@ -1778,10 +1778,4 @@ public class CommonHooks {
             LOGGER.warn(message);
         }
     }
-
-    @ApiStatus.Internal
-    public static void registerCauldronInteractions(ExtraCodecs.LateBoundIdMapper<String, CauldronInteraction.Dispatcher> idMapper) {
-        ModLoader.postEvent(new RegisterCauldronInteractionEvent.Dispatcher(idMapper));
-        ModLoader.postEvent(new RegisterCauldronInteractionEvent.Interaction(idMapper));
-    }
 }
