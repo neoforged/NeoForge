@@ -10,16 +10,18 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-
 import java.util.List;
 import java.util.Objects;
-
-import net.minecraft.client.color.item.ItemTintSource;
-import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
-import net.minecraft.client.renderer.item.*;
+import net.minecraft.client.renderer.item.CompositeModel;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemModels;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
@@ -51,53 +53,52 @@ import org.jspecify.annotations.Nullable;
  * This issue can be avoided by making your material path more unique. We would encourage you to prefix your material with your mod id or something along those lines.
  */
 public class TrimmedArmorModel implements ItemModel {
+    private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
+    private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
-	private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
-	private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
+    private final Object2ObjectMap<TrimModelKey, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
 
-	private final Object2ObjectMap<TrimModelKey, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
+    private final Unbaked unbakedModel;
+    private final BakingContext bakingContext;
+    private final Matrix4fc transformation;
+    private final ItemTransforms itemTransforms;
 
-	private final Unbaked unbakedModel;
-	private final BakingContext bakingContext;
-	private final Matrix4fc transformation;
-	private final ItemTransforms itemTransforms;
+    private TrimmedArmorModel(Unbaked unbakedModel, BakingContext bakingContext, Matrix4fc transformation) {
+        this.unbakedModel = unbakedModel;
+        this.bakingContext = bakingContext;
+        this.transformation = transformation;
+        var baseItemModel = bakingContext.blockModelBaker().getModel(Identifier.withDefaultNamespace("item/generated"));
+        this.itemTransforms = baseItemModel.getTopTransforms();
+    }
 
-	private TrimmedArmorModel(Unbaked unbakedModel, BakingContext bakingContext, Matrix4fc transformation) {
-		this.unbakedModel = unbakedModel;
-		this.bakingContext = bakingContext;
-		this.transformation = transformation;
-		var baseItemModel = bakingContext.blockModelBaker().getModel(Identifier.withDefaultNamespace("item/generated"));
-		this.itemTransforms = baseItemModel.getTopTransforms();
-	}
-
-	@Override
-	public void update(ItemStackRenderState state, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext context, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+    @Override
+    public void update(ItemStackRenderState state, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext context, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
         TrimModelKey key = null;
 
-		if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
-			Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
+            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
 
-			if (equippable.assetId().isPresent()) {
-				Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
-				String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
+            if (equippable.assetId().isPresent()) {
+                Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
+                String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
 
                 key = new TrimModelKey(this.unbakedModel.baseModel(), new Material(this.unbakedModel.baseTrimTexture().withSuffix("_" + suffix)));
-			}
-		}
+            }
+        }
 
         if (key == null) {
             key = new TrimModelKey(this.unbakedModel.baseModel(), null);
         }
 
         this.itemsWithTrims.computeIfAbsent(key, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
-	}
+    }
 
-	private ItemModel createTrimLayer(TrimModelKey key) {
+    private ItemModel createTrimLayer(TrimModelKey key) {
         ModelBaker baker = this.bakingContext.blockModelBaker();
         MaterialBaker materials = baker.materials();
         ModelState state = BlockModelRotation.IDENTITY;
 
-		ItemModel baseModel = this.unbakedModel.baseModel.bake(this.bakingContext, this.transformation);
+        ItemModel baseModel = this.unbakedModel.baseModel.bake(this.bakingContext, this.transformation);
 
         if (key.overlay() != null) {
             Material.Baked overlayMat = materials.get(key.overlay(), DEBUG_NAME);
@@ -107,29 +108,29 @@ public class TrimmedArmorModel implements ItemModel {
             return new CompositeModel(List.of(baseModel, new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation)));
         }
         return baseModel;
-	}
+    }
 
-	public record Unbaked(ItemModel.Unbaked baseModel, Identifier baseTrimTexture) implements ItemModel.Unbaked {
-		public static final MapCodec<TrimmedArmorModel.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-						ItemModels.CODEC.fieldOf("base_model").forGetter(Unbaked::baseModel),
-						Identifier.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::baseTrimTexture))
-				.apply(instance, Unbaked::new));
+    public record Unbaked(ItemModel.Unbaked baseModel, Identifier baseTrimTexture) implements ItemModel.Unbaked {
+        public static final MapCodec<TrimmedArmorModel.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                ItemModels.CODEC.fieldOf("base_model").forGetter(Unbaked::baseModel),
+                Identifier.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::baseTrimTexture))
+                .apply(instance, Unbaked::new));
 
-		@Override
-		public ItemModel bake(BakingContext context, Matrix4fc transformation) {
-			return new TrimmedArmorModel(this, context, transformation);
-		}
+        @Override
+        public ItemModel bake(BakingContext context, Matrix4fc transformation) {
+            return new TrimmedArmorModel(this, context, transformation);
+        }
 
-		@Override
-		public void resolveDependencies(Resolver resolver) {
-			this.baseModel.resolveDependencies(resolver);
-		}
+        @Override
+        public void resolveDependencies(Resolver resolver) {
+            this.baseModel.resolveDependencies(resolver);
+        }
 
-		@Override
-		public MapCodec<? extends ItemModel.Unbaked> type() {
-			return MAP_CODEC;
-		}
-	}
+        @Override
+        public MapCodec<? extends ItemModel.Unbaked> type() {
+            return MAP_CODEC;
+        }
+    }
 
     record TrimModelKey(ItemModel.Unbaked base, @Nullable Material overlay) {}
 }
