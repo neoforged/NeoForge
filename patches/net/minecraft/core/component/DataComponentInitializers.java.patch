@@ -8,12 +8,12 @@
 +            // Neo: Support programmatic customization of the default components for items
 +            if (elementKey.isFor(net.minecraft.core.registries.Registries.ITEM)) {
 +                var item = (net.minecraft.world.item.Item) element.value();
-+                var modifier = net.neoforged.neoforge.internal.RegistrationEvents.componentModifiersByItem.get(item);
++                var modifier = net.neoforged.neoforge.internal.RegistrationEvents.getComponentModifiersByItem().get(item);
 +                if (modifier != null) {
 +                    modifier.accept(elementBuilder);
 +                }
-+                for (var pair : net.neoforged.neoforge.internal.RegistrationEvents.componentModifiersByPredicate) {
-+                    if (pair.getFirst().test(item)) {
++                for (var pair : net.neoforged.neoforge.internal.RegistrationEvents.getComponentModifiersByPredicate()) {
++                    if (pair.getFirst().test(item, elementBuilder.getAppliedDefaultComponentTypes())) {
 +                        pair.getSecond().accept(elementBuilder);
 +                    }
 +                }

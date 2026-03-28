@@ -83,4 +83,25 @@ public class ItemComponentTests {
             helper.succeed();
         });
     }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ModifyDefaultComponentsEvent can modify based on another default component", groups = EventTests.GROUP)
+    static void testModifyDefaultComponentsEventOnDefaultComponentMatching(DynamicTest test, RegistrationHelper reg) {
+        final var testItem = reg.items().registerSimpleItem("test_item_2", props -> props
+                .component(DataComponents.BASE_COLOR, DyeColor.BLUE))
+                .withLang("Test components item 2");
+
+        test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> event.modifyMatching(
+                (item, appliedDefaultComponents) -> appliedDefaultComponents.contains(DataComponents.BASE_COLOR) && item == testItem.asItem(),
+                builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+        ));
+
+        test.onGameTest(helper -> {
+            helper.assertFalse(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added");
+            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
+            helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
+            helper.succeed();
+        });
+    }
 }
