@@ -30,7 +30,7 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
             super(idMapper);
         }
 
-        public synchronized void register(Identifier id, CauldronInteraction.Dispatcher dispatcher) {
+        public void register(Identifier id, CauldronInteraction.Dispatcher dispatcher) {
             idMapper.put(id.toString(), dispatcher);
         }
     }
@@ -51,7 +51,7 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
         /// @param item         The item that will trigger the cauldron interaction.
         /// @param interaction  The cauldron interaction to be registered for the specified item.
         /// @throws IllegalArgumentException If no dispatcher is found for the given identifier.
-        public synchronized void register(Identifier dispatcherId, Item item, CauldronInteraction interaction) {
+        public void register(Identifier dispatcherId, Item item, CauldronInteraction interaction) {
             CauldronInteraction.Dispatcher dispatcher = idMapper.getValue(dispatcherId.toShortString());
             if (dispatcher == null) {
                 throw new IllegalArgumentException("No dispatcher registered with id: " + dispatcherId);
@@ -65,7 +65,7 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
         /// @param itemTag      The tag key of the item that will trigger the cauldron interaction.
         /// @param interaction  The cauldron interaction to be registered for the specified item tag.
         /// @throws IllegalArgumentException If no dispatcher is found with the given identifier,
-        public synchronized void register(Identifier dispatcherId, TagKey<Item> itemTag, CauldronInteraction interaction) {
+        public void register(Identifier dispatcherId, TagKey<Item> itemTag, CauldronInteraction interaction) {
             CauldronInteraction.Dispatcher dispatcher = idMapper.getValue(dispatcherId.toShortString());
             if (dispatcher == null) {
                 throw new IllegalArgumentException("No dispatcher registered with id: " + dispatcherId);
@@ -77,7 +77,7 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
         ///
         /// @param item        The item that will trigger the cauldron interaction.
         /// @param interaction The cauldron interaction to be registered for the specified item.
-        public synchronized void registerToAll(Item item, CauldronInteraction interaction) {
+        public void registerToAll(Item item, CauldronInteraction interaction) {
             for (CauldronInteraction.Dispatcher dispatcher : idMapper.values()) {
                 dispatcher.put(item, interaction);
             }
@@ -87,7 +87,7 @@ public abstract sealed class RegisterCauldronInteractionEvent extends Event impl
         ///
         /// @param itemTag     The tag key of the items that will trigger the cauldron interaction.
         /// @param interaction The cauldron interaction to be registered for items associated with the specified tag.
-        public synchronized void registerToAll(TagKey<Item> itemTag, CauldronInteraction interaction) {
+        public void registerToAll(TagKey<Item> itemTag, CauldronInteraction interaction) {
             for (CauldronInteraction.Dispatcher dispatcher : idMapper.values()) {
                 dispatcher.put(itemTag, interaction);
             }
