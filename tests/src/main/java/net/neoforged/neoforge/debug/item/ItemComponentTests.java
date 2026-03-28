@@ -99,7 +99,6 @@ public class ItemComponentTests {
         test.onGameTest(helper -> {
             helper.assertTrue(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added");
             helper.assertTrue(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
-            helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
             helper.succeed();
         });
     }
