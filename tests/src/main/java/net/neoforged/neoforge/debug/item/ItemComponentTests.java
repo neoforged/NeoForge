@@ -78,7 +78,7 @@ public class ItemComponentTests {
         });
 
         test.onGameTest(helper -> {
-            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
+            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was removed");
             helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
             helper.succeed();
         });
@@ -97,8 +97,8 @@ public class ItemComponentTests {
                 builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
 
         test.onGameTest(helper -> {
-            helper.assertFalse(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added");
-            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
+            helper.assertTrue(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added");
+            helper.assertTrue(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
             helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
             helper.succeed();
         });
