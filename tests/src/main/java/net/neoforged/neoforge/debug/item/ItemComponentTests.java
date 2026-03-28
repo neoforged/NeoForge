@@ -94,8 +94,7 @@ public class ItemComponentTests {
 
         test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> event.modifyMatching(
                 (item, appliedDefaultComponents) -> appliedDefaultComponents.contains(DataComponents.BASE_COLOR) && item == testItem.asItem(),
-                builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
-        ));
+                builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
 
         test.onGameTest(helper -> {
             helper.assertFalse(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added");

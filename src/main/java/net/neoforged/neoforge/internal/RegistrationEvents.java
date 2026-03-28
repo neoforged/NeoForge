@@ -6,17 +6,14 @@
 package net.neoforged.neoforge.internal;
 
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-
-import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
@@ -27,7 +24,6 @@ import net.neoforged.neoforge.common.world.poi.PoiTypeExtender;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.registries.RegistryManager;
-import org.jspecify.annotations.Nullable;
 
 public class RegistrationEvents {
     private static Map<Item, Consumer<DataComponentMap.Builder>> componentModifiersByItem = new HashMap<>();
