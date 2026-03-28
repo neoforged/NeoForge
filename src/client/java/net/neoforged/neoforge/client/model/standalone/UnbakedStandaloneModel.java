@@ -31,7 +31,7 @@ public interface UnbakedStandaloneModel<T> extends ResolvableModel {
      * Bake this model.
      *
      * @param baker The current model baker.
-     * @param name The debug name of this model currently being baked.
+     * @param name  The debug name of this model currently being baked.
      * @return The fully-baked model.
      */
     T bake(ModelBaker baker, ModelDebugName name);
