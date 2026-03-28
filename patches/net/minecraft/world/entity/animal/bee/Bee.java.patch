@@ -36,7 +36,7 @@
                          if (belowBlock instanceof CropBlock cropBlockBelow) {
                              if (!cropBlockBelow.isMaxAge(belowState)) {
 -                                growState = cropBlockBelow.getStateForAge(cropBlockBelow.getAge(belowState) + 1);
-+                                growState = cropBlockBelow.getStateForAge(level(), belowPos, cropBlockBelow.getAge(belowState) + 1);
++                                growState = cropBlockBelow.getStateForAge(level(), belowPos, belowState, cropBlockBelow.getAge(belowState) + 1);
                              }
                          } else if (belowBlock instanceof StemBlock) {
                              int age = belowState.getValue(StemBlock.AGE);

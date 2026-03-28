@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
+@@ -24,7 +_,7 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+-public class CropBlock extends VegetationBlock implements BonemealableBlock {
++public class CropBlock extends VegetationBlock implements BonemealableBlock, net.neoforged.neoforge.common.extensions.IHarvestableExtension {
+     public static final MapCodec<CropBlock> CODEC = simpleCodec(CropBlock::new);
+     public static final int MAX_AGE = 7;
+     public static final IntegerProperty AGE = BlockStateProperties.AGE_7;
 @@ -62,10 +_,18 @@
          return state.getValue(this.getAgeProperty());
      }
@@ -12,7 +21,7 @@
          return this.defaultBlockState().setValue(this.getAgeProperty(), age);
      }
  
-+    public BlockState getStateForAge(LevelReader level, BlockPos pos, int age){
++    public BlockState getStateForAge(LevelReader level, BlockPos pos, BlockState state, int age){
 +        return getStateForAge(age);
 +    }
 +
@@ -30,9 +39,9 @@
 -                float growthSpeed = getGrowthSpeed(this, level, pos);
 -                if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
 -                    level.setBlock(pos, this.getStateForAge(age + 1), 2);
-+                float f = getGrowthSpeed(state, level, pos);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
-+                    level.setBlock(pos, this.getStateForAge(level, pos, age + 1), 2);
++                float growthSpeed = getGrowthSpeed(state, level, pos);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / growthSpeed) + 1) == 0)) {
++                    level.setBlock(pos, this.getStateForAge(level, pos, state, age + 1), 2);
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
              }
@@ -42,7 +51,7 @@
      public void growCrops(Level level, BlockPos pos, BlockState state) {
          int age = Math.min(this.getMaxAge(), this.getAge(state) + this.getBonemealAgeIncrease(level));
 -        level.setBlock(pos, this.getStateForAge(age), 2);
-+        level.setBlock(pos, this.getStateForAge(level, pos, age), 2);
++        level.setBlock(pos, this.getStateForAge(level, pos, state, age), 2);
      }
  
      protected int getBonemealAgeIncrease(Level level) {
@@ -86,34 +95,9 @@
              serverLevel.destroyBlock(pos, true, entity);
          }
  
-@@ -187,4 +_,30 @@
+@@ -187,4 +_,5 @@
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
          builder.add(AGE);
      }
-+
-+    /**
-+     * Returns list of harvest result for harvesting the crop. Make sure to call
-+     * {@link CropBlock#updateCropAfterHarvest(ServerLevel, RandomSource, BlockPos, BlockState)}
-+     * after realizing the result.
-+     * @return List of loot when harvested. Return empty list if the crop is not ready to be harvested. Return block loot by default.
-+     * */
-+    public java.util.List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @org.jspecify.annotations.Nullable Entity user, ItemStack tool) {
-+        if (getAge(state) < getMaxAge())
-+            return java.util.List.of();
-+        net.minecraft.world.level.storage.loot.LootParams.Builder params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
-+                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.atCenterOf(pos))
-+                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.TOOL, tool)
-+                .withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY, user)
-+                .withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_ENTITY, level.getBlockEntity(pos));
-+        return state.getDrops(params);
-+    }
-+
-+    /**
-+     * Modify the crop after harvesting.
-+     * @return true if custom post-harvesting logic is executed. Otherwise caller should use its own harvest logic.
-+     * */
-+    public boolean updateCropAfterHarvest(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-+        return false;
-+    }
 +
  }
