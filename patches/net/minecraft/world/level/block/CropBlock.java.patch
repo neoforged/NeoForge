@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -24,7 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class CropBlock extends VegetationBlock implements BonemealableBlock {
-+public class CropBlock extends VegetationBlock implements BonemealableBlock, net.neoforged.neoforge.common.extensions.IHarvestableExtension {
-     public static final MapCodec<CropBlock> CODEC = simpleCodec(CropBlock::new);
-     public static final int MAX_AGE = 7;
-     public static final IntegerProperty AGE = BlockStateProperties.AGE_7;
 @@ -62,10 +_,18 @@
          return state.getValue(this.getAgeProperty());
      }
@@ -95,9 +86,15 @@
              serverLevel.destroyBlock(pos, true, entity);
          }
  
-@@ -187,4 +_,5 @@
+@@ -187,4 +_,11 @@
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
          builder.add(AGE);
      }
++
++    public java.util.List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @org.jspecify.annotations.Nullable Entity user, ItemStack tool) {
++        if (getAge(state) < getMaxAge())
++            return java.util.List.of();
++        return net.neoforged.neoforge.common.IHarvestable.super.getHarvestResult(level, random, pos, state, user, tool);
++    }
 +
  }

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.extensions;
+package net.neoforged.neoforge.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,9 +15,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Additional helper methods for {@link CropBlock}.
+ * Additional helper methods for {@link CropBlock}. Applicable for other blocks supporting harvesting
  */
-public interface IHarvestableExtension {
+public interface IHarvestable {
     /**
      * Returns list of harvest result for harvesting the crop. Make sure to call
      * {@link CropBlock#updateCropAfterHarvest(ServerLevel, RandomSource, BlockPos, BlockState)}
