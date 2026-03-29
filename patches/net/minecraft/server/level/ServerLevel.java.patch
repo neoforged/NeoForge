@@ -19,12 +19,14 @@
  
      public ServerLevel(
          MinecraftServer server,
-@@ -234,9 +_,10 @@
+@@ -233,10 +_,12 @@
+         List<CustomSpawner> customSpawners,
          boolean tickTime
      ) {
-         super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
 +        // NeoForge: set seed override asap because things like the chunk cache constructor check level.getSeed()
 +        this.seedOverride = levelStem.seedOverride();
++        biomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(levelStem.seedOverride()).map(net.minecraft.world.level.biome.BiomeManager::obfuscateSeed).orElse(biomeZoomSeed);
+         super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
          this.tickTime = tickTime;
          this.server = server;
 -        this.customSpawners = customSpawners;
