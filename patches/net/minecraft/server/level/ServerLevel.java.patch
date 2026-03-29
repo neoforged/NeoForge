@@ -12,7 +12,7 @@
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
 +    /// NeoForge: If present, this level uses its own seed instead of the server's global seed
 +    private final java.util.OptionalLong seedOverride;
-+    /// {@return java.util.OptionalLong containing the seed override specified in the {@link LevelStem} this level was constructed from}
++    /// {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
 +    public java.util.OptionalLong getSeedOverride() {
 +        return this.seedOverride;
 +    }
