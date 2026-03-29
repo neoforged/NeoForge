@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
 public final class DataComponentModifiers {
     private static final Map<Item, Consumer<DataComponentMap.Builder>> MODIFIERS_BY_ITEM = new HashMap<>();
-    private static final List<Pair<ModifyDefaultComponentsEvent.ItemPredicate, Consumer<DataComponentMap.Builder>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
+    private static final List<Pair<ModifyDefaultComponentsEvent.ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
 
     static void init() {
         ModLoader.postEvent(new ModifyDefaultComponentsEvent(MODIFIERS_BY_ITEM, MODIFIERS_BY_PREDICATE));

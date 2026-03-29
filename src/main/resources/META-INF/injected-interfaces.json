@@ -90,8 +90,7 @@
     "net/neoforged/neoforge/common/extensions/IDataComponentHolderExtension"
   ],
   "net/minecraft/core/component/DataComponentMap$Builder": [
-    "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions",
-    "net/minecraft/core/component/DataComponentGetter"
+    "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
   "net/minecraft/data/loot/LootTableSubProvider": [
     "net/neoforged/neoforge/common/extensions/LootTableSubProviderExtension"
