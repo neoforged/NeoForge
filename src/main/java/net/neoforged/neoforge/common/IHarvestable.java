@@ -12,34 +12,40 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Additional helper methods for {@link CropBlock}. Applicable for other blocks supporting harvesting
- */
-public interface IHarvestable {
-    /**
-     * Returns list of harvest result for harvesting the crop. Make sure to call
-     * {@link CropBlock#updateCropAfterHarvest(ServerLevel, RandomSource, BlockPos, BlockState)}
-     * after realizing the result.
-     *
-     * @return List of loot when harvested. Return empty list if the crop is not ready to be harvested. Return block loot by default.
-     */
-    default java.util.List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @Nullable Entity user, ItemStack tool) {
-        net.minecraft.world.level.storage.loot.LootParams.Builder params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.atCenterOf(pos))
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.TOOL, tool)
-                .withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY, user)
-                .withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_ENTITY, level.getBlockEntity(pos));
-        return state.getDrops(params);
-    }
+import java.util.List;
 
-    /**
-     * Modify the crop after harvesting.
-     *
-     * @return true if custom post-harvesting logic is executed. Otherwise caller should use its own harvest logic.
-     */
-    default boolean updateCropAfterHarvest(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-        return false;
-    }
+/// This interface allow blocks to define custom harvest results and post-harvest block state changes.
+public interface IHarvestable {
+
+	/// Returns list of harvest result for harvesting the crop. Make sure to call
+	/// [#updateCropAfterHarvest(ServerLevel,RandomSource,BlockPos,BlockState)]
+	/// after harvesting.
+	///
+	/// @return List of loot when harvested. Return empty list if the crop is not ready to be harvested. Return block loot by default.
+	default List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @Nullable Entity user, ItemStack tool) {
+		if (this instanceof CropBlock crop) {
+			if (crop.getAge(state) < crop.getMaxAge())
+				return java.util.List.of();
+		}
+		LootParams.Builder params = new LootParams.Builder(level)
+				.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+				.withParameter(LootContextParams.TOOL, tool)
+				.withOptionalParameter(LootContextParams.THIS_ENTITY, user)
+				.withOptionalParameter(LootContextParams.BLOCK_ENTITY, level.getBlockEntity(pos));
+		return state.getDrops(params);
+	}
+
+	/// Modify the crop after harvesting.
+	///
+	/// @return true if custom post-harvesting logic is executed. Otherwise, caller should use its own harvest logic,
+	/// such as removing the block or setting it to age 1 if it's a crop block.
+	default boolean updateCropAfterHarvest(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+		return false;
+	}
+
 }

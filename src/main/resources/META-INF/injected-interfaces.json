@@ -211,6 +211,7 @@
     "net/neoforged/neoforge/common/extensions/IBucketPickupExtension"
   ],
   "net/minecraft/world/level/block/CropBlock": [
+    "net/neoforged/neoforge/common/extensions/ICropBlockExtension",
     "net/neoforged/neoforge/common/IHarvestable"
   ],
   "net/minecraft/world/level/block/DeadBushBlock": [

@@ -1,23 +1,13 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -62,10 +_,18 @@
+@@ -62,6 +_,8 @@
          return state.getValue(this.getAgeProperty());
      }
  
-+    /**
-+     * @deprecated Neo: use overload with level context instead
-+     * */
++    /// @deprecated Neo: use overload with level context instead
 +    @Deprecated
      public BlockState getStateForAge(int age) {
          return this.defaultBlockState().setValue(this.getAgeProperty(), age);
-     }
- 
-+    public BlockState getStateForAge(LevelReader level, BlockPos pos, BlockState state, int age){
-+        return getStateForAge(age);
-+    }
-+
-     public final boolean isMaxAge(BlockState state) {
-         return this.getAge(state) >= this.getMaxAge();
      }
 @@ -77,12 +_,14 @@
  
@@ -86,15 +76,9 @@
              serverLevel.destroyBlock(pos, true, entity);
          }
  
-@@ -187,4 +_,11 @@
+@@ -187,4 +_,5 @@
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
          builder.add(AGE);
      }
-+
-+    public java.util.List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @org.jspecify.annotations.Nullable Entity user, ItemStack tool) {
-+        if (getAge(state) < getMaxAge())
-+            return java.util.List.of();
-+        return net.neoforged.neoforge.common.IHarvestable.super.getHarvestResult(level, random, pos, state, user, tool);
-+    }
 +
  }
