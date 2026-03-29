@@ -13,7 +13,7 @@
 +                    modifier.accept(elementBuilder);
 +                }
 +                for (var pair : net.neoforged.neoforge.internal.RegistrationEvents.getComponentModifiersByPredicate()) {
-+                    if (pair.getFirst().test(item, elementBuilder.getAppliedDefaultComponentTypes())) {
++                    if (pair.getFirst().test(item, elementBuilder.getComponentTypes())) {
 +                        pair.getSecond().accept(elementBuilder);
 +                    }
 +                }
