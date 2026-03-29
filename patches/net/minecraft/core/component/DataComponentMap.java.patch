@@ -1,23 +1,15 @@
 --- a/net/minecraft/core/component/DataComponentMap.java
 +++ b/net/minecraft/core/component/DataComponentMap.java
-@@ -18,6 +_,7 @@
- import java.util.function.Predicate;
- import java.util.stream.Stream;
- import java.util.stream.StreamSupport;
-+
- import org.jspecify.annotations.Nullable;
- 
- public interface DataComponentMap extends Iterable<TypedDataComponent<?>>, DataComponentGetter {
-@@ -127,6 +_,12 @@
-         private Consumer<DataComponentMap> validator = components -> {};
- 
+@@ -129,6 +_,12 @@
          private Builder() {
-+        }
-+
+         }
+ 
 +        /// {@return an unmodifiable view of the stored component types}
 +        @org.jetbrains.annotations.ApiStatus.Internal
 +        public Set<DataComponentType<?>> getComponentTypes() {
 +            return Collections.unmodifiableSet(map.keySet());
-         }
- 
++        }
++
          public <T> DataComponentMap.Builder set(DataComponentType<T> type, @Nullable T value) {
+             this.setUnchecked(type, value);
+             return this;

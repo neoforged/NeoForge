@@ -1,22 +1,13 @@
 --- a/net/minecraft/core/component/DataComponentInitializers.java
 +++ b/net/minecraft/core/component/DataComponentInitializers.java
-@@ -68,6 +_,21 @@
+@@ -68,6 +_,12 @@
          Set<Holder.Reference<T>> elementsWithComponents = Sets.newIdentityHashSet();
          elementBuilders.builders.forEach((elementKey, elementBuilder) -> {
              Holder.Reference<T> element = registry.getOrThrow((ResourceKey<T>)elementKey);
 +
 +            // Neo: Support programmatic customization of the default components for items
 +            if (elementKey.isFor(net.minecraft.core.registries.Registries.ITEM)) {
-+                var item = (net.minecraft.world.item.Item) element.value();
-+                var modifier = net.neoforged.neoforge.internal.RegistrationEvents.getComponentModifiersByItem().get(item);
-+                if (modifier != null) {
-+                    modifier.accept(elementBuilder);
-+                }
-+                for (var pair : net.neoforged.neoforge.internal.RegistrationEvents.getComponentModifiersByPredicate()) {
-+                    if (pair.getFirst().test(item, elementBuilder.getComponentTypes())) {
-+                        pair.getSecond().accept(elementBuilder);
-+                    }
-+                }
++                net.neoforged.neoforge.internal.DataComponentModifiers.apply((net.minecraft.world.item.Item) element.value(), elementBuilder);
 +            }
 +
              DataComponentMap components = elementBuilder.build();

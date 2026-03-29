@@ -40,8 +40,8 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * // Lowest priority listener
  * public void modifyComponentsLow(ModifyDefaultComponentsEvent event) {
- *     event.modifyMatching(item -> item.components().has(DataComponents.FIRE_RESISTANT), builder -> builder
- *             .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire resistant items have a glint
+ *     event.modifyMatching((item, componentTypes) -> componentTypes.contains(DataComponents.FIRE_RESISTANT), builder -> builder
+ *             .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire-resistant items have a glint
  * }
  * }
  */
