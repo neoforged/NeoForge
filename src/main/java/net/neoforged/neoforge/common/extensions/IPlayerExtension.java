@@ -78,15 +78,15 @@ public interface IPlayerExtension {
     /**
      * Determine whether a player is allowed creative flight via game mode or attribute.
      * <p>
-     * Modders are forbidden from setting {@link Abilities#mayfly} directly because it will
-     * no longer control flight due to {@link NeoForgeMod#CREATIVE_FLIGHT} replacing it.
+     * Modders are discouraged from setting {@link Abilities#mayfly} directly.
      *
      * @return true when creative flight is available
      * @see NeoForgeMod#CREATIVE_FLIGHT
      */
     @SuppressWarnings("deprecation")
     default boolean mayFly() {
-        return self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
+        // TODO 1.20.5: consider forcing mods to use the attribute
+        return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
     }
 
     /**
