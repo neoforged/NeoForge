@@ -22,6 +22,13 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
+/// An implementation of vanilla's {@link PalettedPermutations} loader that uses a whole directory instead of just a list of contents.
+/// If you wish to use the PalettedPermutations system for something, using this would be preferred as it allows other mods to also utilize your system to its fullest extent.
+///
+/// The problem with vanilla's system is that if Mod A adds a texture and Mod B adds a palette, the game will not recognize the additions of both and won't generate files for Mod A's texture using mod B's palette.
+/// Because Mod A doesn't list Mod B's materials in their atlas JSON, and Mod B doesn't list Mod A's pattern in their atlas JSON, the 2 don't work together.
+///
+/// This system makes it so only the owner of the atlas needs to create a JSON file, all other mods will be supported by default if they put their textures in the proper directory.
 public record DirectoryPalettedPermutations(String texturePath, Identifier paletteKey, String palettePath) implements SpriteSource {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "directory_paletted_permutations");
     public static final MapCodec<DirectoryPalettedPermutations> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
