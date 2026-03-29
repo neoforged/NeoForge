@@ -8,11 +8,9 @@ package net.neoforged.neoforge.event;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
@@ -47,11 +45,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
     private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
-    private final List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
+    private final List<Pair<ItemPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
 
     @ApiStatus.Internal
     public ModifyDefaultComponentsEvent(Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem,
-            List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
+            List<Pair<ItemPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
         this.modifiersByItem = modifiersByItem;
         this.modifiersByPredicate = modifiersByPredicate;
     }
@@ -74,10 +72,27 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * event listener should use the {@link EventPriority#LOWEST lowest priority} so that {@linkplain #modify(ItemLike, Consumer) other mods' modifications} are
      * already applied.
      *
-     * @param bipredicate the item and its current default components filter
-     * @param patch       the patch to apply
+     * @param predicate the item and its current default components filter
+     * @param patch     the patch to apply
      */
-    public void modifyMatching(BiPredicate<? super Item, Set<DataComponentType<?>>> bipredicate, Consumer<DataComponentMap.Builder> patch) {
-        modifiersByPredicate.add(Pair.of(bipredicate, patch));
+    public void modifyMatching(ItemPredicate predicate, Consumer<DataComponentMap.Builder> patch) {
+        modifiersByPredicate.add(Pair.of(predicate, patch));
+    }
+
+    /**
+     * Evaluates a condition on an {@code Item}
+     * and its associated {@code DataComponentGetter} prior to binding components.
+     */
+    @FunctionalInterface
+    public interface ItemPredicate {
+        /**
+         * Evaluates a condition on the given {@code Item} and its associated
+         * {@code DataComponentGetter} prior to binding components.
+         *
+         * @param item       the item to evaluate
+         * @param components the data component getter for components to be bound
+         * @return Whether the condition is satisfied
+         */
+        boolean test(Item item, DataComponentGetter components);
     }
 }
