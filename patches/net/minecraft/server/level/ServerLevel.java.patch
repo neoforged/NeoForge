@@ -10,7 +10,7 @@
      private final StructureCheck structureCheck;
      private final boolean tickTime;
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
-+    /// NeoForge: If present, this level uses its own seed instead of the server's global seed
++    // NeoForge: If present, this level uses its own seed instead of the server's global seed
 +    private final java.util.OptionalLong seedOverride;
 +    /// {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
 +    public java.util.OptionalLong getSeedOverride() {
