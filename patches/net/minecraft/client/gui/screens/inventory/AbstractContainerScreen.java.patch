@@ -57,7 +57,7 @@
          } else {
 -            boolean cloning = this.minecraft.options.keyPickItem.matchesMouse(event) && this.minecraft.player.hasInfiniteMaterials();
 +            var mouseKey = com.mojang.blaze3d.platform.InputConstants.Type.MOUSE.getOrCreate(event.button());
-+            boolean cloning = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey);
++            boolean cloning = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey) && this.minecraft.player.hasInfiniteMaterials();
              Slot slot = this.getHoveredSlot(event.x(), event.y());
              this.doubleclick = this.lastClickSlot == slot && doubleClick;
              this.skipNextRelease = false;
