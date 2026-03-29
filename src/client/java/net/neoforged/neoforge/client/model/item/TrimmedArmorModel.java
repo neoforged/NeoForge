@@ -56,8 +56,9 @@ import org.jspecify.annotations.Nullable;
 public class TrimmedArmorModel implements ItemModel {
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
+    private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.IDENTITY, TRIM_TRANSFORM);
 
-    private final Object2ObjectMap<Identifier, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<String, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
 
     private final ItemModel baseModel;
     private final Identifier baseTrimTexture;
@@ -85,20 +86,18 @@ public class TrimmedArmorModel implements ItemModel {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
 
-                this.itemsWithTrims.computeIfAbsent(this.baseTrimTexture.withSuffix("_" + suffix), this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
+                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
             }
         }
     }
 
-    private ItemModel createTrimLayer(Identifier key) {
+    private ItemModel createTrimLayer(String suffix) {
         ModelBaker baker = this.bakingContext.blockModelBaker();
         MaterialBaker materials = baker.materials();
-        ModelState state = BlockModelRotation.IDENTITY;
 
-        Material.Baked overlayMat = materials.get(new Material(key), DEBUG_NAME);
+        Material.Baked overlayMat = materials.get(new Material(this.baseTrimTexture.withSuffix("_" + suffix)), DEBUG_NAME);
         ModelRenderProperties overlayRenderProps = new ModelRenderProperties(false, overlayMat, this.itemTransforms);
-        ModelState overlayState = new ComposedModelState(state, TRIM_TRANSFORM);
-        QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, overlayState, 0));
+        QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, TRIM_STATE, 0));
         return new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation);
     }
 

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.data.internal;
 
+import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -15,10 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.block.Block;
 
-import java.util.stream.Stream;
-
 public class VanillaModelProvider extends ModelProvider {
-
     public VanillaModelProvider(PackOutput packOutput) {
         super(packOutput, "minecraft");
     }
