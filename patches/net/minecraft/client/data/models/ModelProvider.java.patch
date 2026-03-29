@@ -102,7 +102,7 @@
                  throw new IllegalStateException("Missing blockstate definitions for: " + missingDefinitions);
              }
 @@ -96,6 +_,17 @@
-     public static class ItemInfoCollector implements ItemModelOutput {
+     private static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
 +        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems;

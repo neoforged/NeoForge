@@ -15,7 +15,6 @@ import java.util.Objects;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
-import net.minecraft.client.renderer.item.CompositeModel;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
@@ -43,28 +42,32 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A dynamic model that applies an armor trim texture on top of an existing model when the trim component exists.
- * <p>
- * NOTE: If multiple mods add a trim material with the same path, only the one that gets loaded last will have its proper colors. <br>
- * Example: if mod A and mod B register a "tin" trim material, and mod B loads after A, mod B's material will be the one used. <br>
- * <b>Mod A's ingot will still work just fine as a trim material, it will just look like whatever mod B defined for theirs!</b> <br>
- * All this means is that if another mod is registering the same material(s) as you and uses this system, your trim colors <i>may</i> not look exactly how you want them to. <br>
- * This issue can be avoided by making your material path more unique. We would encourage you to prefix your material with your mod id or something along those lines.
- */
+/// A dynamic model that applies an armor trim texture on top of an existing model when the trim component exists.
+///
+/// NOTE: If multiple mods add a trim material with the same path, only the one that gets loaded last will have its proper colors.
+///
+/// Example: if mod A and mod B register a "tin" trim material, and mod B loads after A, mod B's material will be the one used.
+///
+/// **Mod A's ingot will still work just fine as a trim material, it will just look like whatever mod B defined for theirs!**
+///
+/// All this means is that if another mod is registering the same material(s) as you and uses this system, your trim colors *may* not look exactly how you want them to.
+///
+/// This issue can be avoided by making your material path more unique. We would encourage you to prefix your material with your mod id or something along those lines.
 public class TrimmedArmorModel implements ItemModel {
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
-    private final Object2ObjectMap<TrimModelKey, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<Identifier, ItemModel> itemsWithTrims = new Object2ObjectOpenHashMap<>();
 
-    private final Unbaked unbakedModel;
+    private final ItemModel baseModel;
+    private final Identifier baseTrimTexture;
     private final BakingContext bakingContext;
     private final Matrix4fc transformation;
     private final ItemTransforms itemTransforms;
 
-    private TrimmedArmorModel(Unbaked unbakedModel, BakingContext bakingContext, Matrix4fc transformation) {
-        this.unbakedModel = unbakedModel;
+    private TrimmedArmorModel(ItemModel baseModel, Identifier baseTrimTexture, BakingContext bakingContext, Matrix4fc transformation) {
+        this.baseModel = baseModel;
+        this.baseTrimTexture = baseTrimTexture;
         this.bakingContext = bakingContext;
         this.transformation = transformation;
         var baseItemModel = bakingContext.blockModelBaker().getModel(Identifier.withDefaultNamespace("item/generated"));
@@ -73,7 +76,7 @@ public class TrimmedArmorModel implements ItemModel {
 
     @Override
     public void update(ItemStackRenderState state, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext context, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
-        TrimModelKey key = null;
+        this.baseModel.update(state, stack, resolver, context, level, owner, seed);
 
         if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
             Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
@@ -82,32 +85,21 @@ public class TrimmedArmorModel implements ItemModel {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
 
-                key = new TrimModelKey(this.unbakedModel.baseModel(), new Material(this.unbakedModel.baseTrimTexture().withSuffix("_" + suffix)));
+                this.itemsWithTrims.computeIfAbsent(this.baseTrimTexture.withSuffix("_" + suffix), this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
             }
         }
-
-        if (key == null) {
-            key = new TrimModelKey(this.unbakedModel.baseModel(), null);
-        }
-
-        this.itemsWithTrims.computeIfAbsent(key, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
     }
 
-    private ItemModel createTrimLayer(TrimModelKey key) {
+    private ItemModel createTrimLayer(Identifier key) {
         ModelBaker baker = this.bakingContext.blockModelBaker();
         MaterialBaker materials = baker.materials();
         ModelState state = BlockModelRotation.IDENTITY;
 
-        ItemModel baseModel = this.unbakedModel.baseModel.bake(this.bakingContext, this.transformation);
-
-        if (key.overlay() != null) {
-            Material.Baked overlayMat = materials.get(key.overlay(), DEBUG_NAME);
-            ModelRenderProperties overlayRenderProps = new ModelRenderProperties(false, overlayMat, this.itemTransforms);
-            ModelState overlayState = new ComposedModelState(state, TRIM_TRANSFORM);
-            QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, overlayState, 0));
-            return new CompositeModel(List.of(baseModel, new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation)));
-        }
-        return baseModel;
+        Material.Baked overlayMat = materials.get(new Material(key), DEBUG_NAME);
+        ModelRenderProperties overlayRenderProps = new ModelRenderProperties(false, overlayMat, this.itemTransforms);
+        ModelState overlayState = new ComposedModelState(state, TRIM_TRANSFORM);
+        QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, overlayState, 0));
+        return new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation);
     }
 
     public record Unbaked(ItemModel.Unbaked baseModel, Identifier baseTrimTexture) implements ItemModel.Unbaked {
@@ -118,7 +110,7 @@ public class TrimmedArmorModel implements ItemModel {
 
         @Override
         public ItemModel bake(BakingContext context, Matrix4fc transformation) {
-            return new TrimmedArmorModel(this, context, transformation);
+            return new TrimmedArmorModel(this.baseModel().bake(context, transformation), this.baseTrimTexture(), context, transformation);
         }
 
         @Override
@@ -131,6 +123,4 @@ public class TrimmedArmorModel implements ItemModel {
             return MAP_CODEC;
         }
     }
-
-    record TrimModelKey(ItemModel.Unbaked base, @Nullable Material overlay) {}
 }
