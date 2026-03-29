@@ -8,14 +8,18 @@
  import org.jspecify.annotations.Nullable;
  
  public interface DataComponentMap extends Iterable<TypedDataComponent<?>>, DataComponentGetter {
-@@ -127,6 +_,10 @@
+@@ -127,6 +_,14 @@
          private Consumer<DataComponentMap> validator = components -> {};
  
          private Builder() {
 +        }
 +
-+        public it.unimi.dsi.fastutil.objects.ReferenceSet<DataComponentType<?>> getAppliedDefaultComponentTypes() {
-+            return map.keySet();
++        /**
++         * @return An unmodifiable set of the stored default component types
++         */
++        @org.jetbrains.annotations.ApiStatus.Internal
++        public Set<DataComponentType<?>> getAppliedDefaultComponentTypes() {
++            return Collections.unmodifiableSet(map.keySet());
          }
  
          public <T> DataComponentMap.Builder set(DataComponentType<T> type, @Nullable T value) {

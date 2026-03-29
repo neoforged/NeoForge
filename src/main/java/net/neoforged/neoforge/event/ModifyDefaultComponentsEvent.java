@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.event;
 
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentMap;
@@ -47,11 +47,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
     private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
-    private final List<Pair<BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
+    private final List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
 
     @ApiStatus.Internal
     public ModifyDefaultComponentsEvent(Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem,
-            List<Pair<BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
+            List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
         this.modifiersByItem = modifiersByItem;
         this.modifiersByPredicate = modifiersByPredicate;
     }
@@ -77,7 +77,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
      * @param bipredicate the item and its current default components filter
      * @param patch       the patch to apply
      */
-    public void modifyMatching(BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>> bipredicate, Consumer<DataComponentMap.Builder> patch) {
+    public void modifyMatching(BiPredicate<? super Item, Set<DataComponentType<?>>> bipredicate, Consumer<DataComponentMap.Builder> patch) {
         modifiersByPredicate.add(Pair.of(bipredicate, patch));
     }
 }

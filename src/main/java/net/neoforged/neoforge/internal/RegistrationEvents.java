@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.internal;
 
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentMap;
@@ -27,7 +27,7 @@ import net.neoforged.neoforge.registries.RegistryManager;
 
 public class RegistrationEvents {
     private static Map<Item, Consumer<DataComponentMap.Builder>> componentModifiersByItem = new HashMap<>();
-    private static List<Pair<BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> componentModifiersByPredicate = new ArrayList<>();
+    private static List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> componentModifiersByPredicate = new ArrayList<>();
 
     static void init() {
         CauldronFluidContent.init(); // must be before capability event
@@ -40,7 +40,7 @@ public class RegistrationEvents {
 
     public static void collectComponentModifiers() {
         var rawComponentModifiersByItem = new HashMap<Item, Consumer<DataComponentMap.Builder>>();
-        var rawComponentModifiersByPredicate = new ArrayList<Pair<BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>>();
+        var rawComponentModifiersByPredicate = new ArrayList<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>>();
 
         ModLoader.postEvent(new ModifyDefaultComponentsEvent(rawComponentModifiersByItem, rawComponentModifiersByPredicate));
 
@@ -52,7 +52,7 @@ public class RegistrationEvents {
         return componentModifiersByItem;
     }
 
-    public static List<Pair<BiPredicate<? super Item, ReferenceSet<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> getComponentModifiersByPredicate() {
+    public static List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> getComponentModifiersByPredicate() {
         return componentModifiersByPredicate;
     }
 }
