@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 /// This event is fired on the [`mod event bus`][ModContainer#getEventBus()].
 ///
 /// Example usage:
-/// {@snippet :
+/// ```java
 ///  import net.minecraft.core.component.DataComponents;
 ///  import net.minecraft.world.item.Items;
 ///  public void modifyComponents(ModifyDefaultComponentsEvent event) {
@@ -38,7 +38,7 @@ import org.jetbrains.annotations.ApiStatus;
 ///      event.modifyMatching((item, componentTypes) -> componentTypes.contains(DataComponents.FIRE_RESISTANT), builder -> builder
 ///              .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire-resistant items have a glint
 ///  }
-///  }
+///  ```
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
     private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
     private final List<Pair<ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
