@@ -52,8 +52,7 @@ public record DirectoryPalettedPermutations(String texturePath, Identifier palet
         FileToIdConverter paletteID = new FileToIdConverter("textures/" + this.palettePath(), ".png");
         paletteID.listMatchingResources(manager).forEach((identifier, resource) -> {
             Identifier id = paletteID.fileToId(identifier).withPrefix(this.palettePath() + "/");
-            String[] pathParts = identifier.getPath().split("/");
-            String path = pathParts[pathParts.length - 1].split("\\.")[0]; //remove .png part
+            String path = paletteID.fileToId(identifier).getPath();
             paletteTextures.put(path, id);
         });
 
