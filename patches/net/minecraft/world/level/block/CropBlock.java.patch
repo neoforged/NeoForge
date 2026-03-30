@@ -4,7 +4,7 @@
          return state.getValue(this.getAgeProperty());
      }
  
-+    /// @deprecated Neo: use overload with level context instead
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.ICropBlockExtension#getStateForAge(LevelReader, BlockPos, BlockState, int)] instead
 +    @Deprecated
      public BlockState getStateForAge(int age) {
          return this.defaultBlockState().setValue(this.getAgeProperty(), age);
@@ -76,9 +76,3 @@
              serverLevel.destroyBlock(pos, true, entity);
          }
  
-@@ -187,4 +_,5 @@
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-         builder.add(AGE);
-     }
-+
- }

@@ -16,7 +16,7 @@ public interface ICropBlockExtension {
         return (CropBlock) this;
     }
 
-    /// state sensitive variant of [#getStateForAge(int)]
+    /// state sensitive variant of [CropBlock#getStateForAge(int)]
     ///
     /// Override if the crop has block state properties other than age.
     default BlockState getStateForAge(LevelReader level, BlockPos pos, BlockState state, int age) {

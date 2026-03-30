@@ -11,11 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /// This interface allow blocks to define custom harvest results and post-harvest block state changes.
@@ -28,14 +26,9 @@ public interface IHarvestable {
     default List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @Nullable Entity user, ItemStack tool) {
         if (this instanceof CropBlock crop) {
             if (crop.getAge(state) < crop.getMaxAge())
-                return java.util.List.of();
+                return List.of();
         }
-        LootParams.Builder params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .withParameter(LootContextParams.TOOL, tool)
-                .withOptionalParameter(LootContextParams.THIS_ENTITY, user)
-                .withOptionalParameter(LootContextParams.BLOCK_ENTITY, level.getBlockEntity(pos));
-        return state.getDrops(params);
+        return Block.getDrops(state, level, pos, level.getBlockEntity(pos), user, tool);
     }
 
     /// Modify the crop after harvesting.
