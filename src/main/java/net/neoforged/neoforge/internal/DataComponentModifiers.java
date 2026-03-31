@@ -10,18 +10,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
 public final class DataComponentModifiers {
     private static final Map<Item, Consumer<DataComponentMap.Builder>> MODIFIERS_BY_ITEM = new HashMap<>();
-    private static final List<Pair<BiPredicate<? super Item, Set<DataComponentType<?>>>, Consumer<DataComponentMap.Builder>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
+    private static final List<Pair<ModifyDefaultComponentsEvent.ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
 
     static void init() {
         ModLoader.postEvent(new ModifyDefaultComponentsEvent(MODIFIERS_BY_ITEM, MODIFIERS_BY_PREDICATE));
@@ -33,7 +30,7 @@ public final class DataComponentModifiers {
             modifier.accept(builder);
         }
         for (var pair : MODIFIERS_BY_PREDICATE) {
-            if (pair.getFirst().test(item, builder.getComponentTypes())) {
+            if (pair.getFirst().test(item, builder)) {
                 pair.getSecond().accept(builder);
             }
         }

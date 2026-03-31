@@ -4,10 +4,10 @@
          private Builder() {
          }
  
-+        /// {@return an unmodifiable view of the stored component types}
-+        @org.jetbrains.annotations.ApiStatus.Internal
-+        public Set<DataComponentType<?>> getComponentTypes() {
-+            return Collections.unmodifiableSet(map.keySet());
++        @SuppressWarnings("unchecked")
++        @Override
++        public @Nullable <T> T get(DataComponentType<? extends T> type) {
++            return (T) map.get(type);
 +        }
 +
          public <T> DataComponentMap.Builder set(DataComponentType<T> type, @Nullable T value) {
