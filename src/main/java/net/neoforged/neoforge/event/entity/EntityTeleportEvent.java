@@ -36,15 +36,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
     protected double targetY;
     protected double targetZ;
 
-    @Deprecated(since = "1.21.11", forRemoval = true)
-    public EntityTeleportEvent(Entity entity, double targetX, double targetY, double targetZ) {
-        super(entity);
-        this.targetLevel = (ServerLevel) entity.level();
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.targetZ = targetZ;
-    }
-
     public EntityTeleportEvent(Entity entity, ServerLevel targetLevel, double targetX, double targetY, double targetZ) {
         super(entity);
         this.targetLevel = targetLevel;
@@ -115,11 +106,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * If this event is canceled, the entity will not be teleported.
      */
     public static class TeleportCommand extends EntityTeleportEvent implements ICancellableEvent {
-        @Deprecated(since = "1.21.11", forRemoval = true)
-        public TeleportCommand(Entity entity, double targetX, double targetY, double targetZ) {
-            super(entity, (ServerLevel) entity.level(), targetX, targetY, targetZ);
-        }
-
         public TeleportCommand(Entity entity, ServerLevel targetLevel, double targetX, double targetY, double targetZ) {
             super(entity, targetLevel, targetX, targetY, targetZ);
         }
@@ -139,11 +125,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * If this event is canceled, the entity will not be teleported.
      */
     public static class SpreadPlayersCommand extends EntityTeleportEvent implements ICancellableEvent {
-        @Deprecated(since = "1.21.11", forRemoval = true)
-        public SpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ) {
-            super(entity, (ServerLevel) entity.level(), targetX, targetY, targetZ);
-        }
-
         public SpreadPlayersCommand(Entity entity, ServerLevel targetLevel, double targetX, double targetY, double targetZ) {
             super(entity, targetLevel, targetX, targetY, targetZ);
         }

@@ -13,7 +13,7 @@
 -                entity.getYRot(),
 -                entity.getXRot(),
 -                true
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity, level,
 +                    (double)Mth.floor(position.x) + 0.5,
 +                    position.getSpawnY(level, maxHeight),
 +                    (double)Mth.floor(position.z) + 0.5

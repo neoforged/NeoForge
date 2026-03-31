@@ -850,22 +850,8 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new LivingConversionEvent.Post(entity, outcome));
     }
 
-    @Deprecated(since = "1.21.11", forRemoval = true)
-    public static EntityTeleportEvent.TeleportCommand onEntityTeleportCommand(Entity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.TeleportCommand event = new EntityTeleportEvent.TeleportCommand(entity, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
     public static EntityTeleportEvent.TeleportCommand onEntityTeleportCommand(Entity entity, ServerLevel targetLevel, double targetX, double targetY, double targetZ) {
         EntityTeleportEvent.TeleportCommand event = new EntityTeleportEvent.TeleportCommand(entity, targetLevel, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
-    @Deprecated(since = "1.21.11", forRemoval = true)
-    public static EntityTeleportEvent.SpreadPlayersCommand onEntityTeleportSpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.SpreadPlayersCommand event = new EntityTeleportEvent.SpreadPlayersCommand(entity, targetX, targetY, targetZ);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
