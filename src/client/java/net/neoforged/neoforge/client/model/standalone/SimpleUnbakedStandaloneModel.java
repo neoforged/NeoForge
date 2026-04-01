@@ -35,7 +35,7 @@ import net.minecraft.resources.Identifier;
  */
 public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneModel<T> {
     private final Identifier modelId;
-    private final BiFunction<ResolvedModel, ModelBaker, T> bake;
+    private final SimpleBaker<T> bake;
 
     /**
      * Construct a new {@link SimpleUnbakedStandaloneModel}.
@@ -43,14 +43,14 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      * @param modelId The id of the model to load.
      * @param bake    The function to bake the model, converting a {@link ResolvedModel} into the required type.
      */
-    public SimpleUnbakedStandaloneModel(Identifier modelId, BiFunction<ResolvedModel, ModelBaker, T> bake) {
+    public SimpleUnbakedStandaloneModel(Identifier modelId, SimpleBaker<T> bake) {
         this.modelId = modelId;
         this.bake = bake;
     }
 
     @Override
     public T bake(ModelBaker baker, ModelDebugName name) {
-        return bake.apply(baker.getModel(modelId), baker);
+        return bake.bake(baker.getModel(modelId), baker, name);
     }
 
     @Override
@@ -63,7 +63,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<BlockStateModelPart> simpleModelWrapper(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY));
+                modelId, (model, baker, _) -> SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY));
     }
 
     /**
@@ -71,7 +71,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<BlockStateModelPart> simpleModelWrapper(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> SimpleModelWrapper.bake(baker, model, modelState));
+                modelId, (model, baker, _) -> SimpleModelWrapper.bake(baker, model, modelState));
     }
 
     /**
@@ -79,7 +79,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY)));
+                modelId, (model, baker, _) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, BlockModelRotation.IDENTITY)));
     }
 
     /**
@@ -87,7 +87,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<BlockStateModel> blockStateModel(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, modelState)));
+                modelId, (model, baker, _) -> new SingleVariant(SimpleModelWrapper.bake(baker, model, modelState)));
     }
 
     /**
@@ -95,7 +95,7 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(Identifier modelId) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, BlockModelRotation.IDENTITY));
+                modelId, (model, baker, _) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, BlockModelRotation.IDENTITY));
     }
 
     /**
@@ -103,6 +103,11 @@ public final class SimpleUnbakedStandaloneModel<T> implements UnbakedStandaloneM
      */
     public static SimpleUnbakedStandaloneModel<QuadCollection> quadCollection(Identifier modelId, ModelState modelState) {
         return new SimpleUnbakedStandaloneModel<>(
-                modelId, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, modelState));
+                modelId, (model, baker, _) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, modelState));
+    }
+
+    @FunctionalInterface
+    public interface SimpleBaker<T> {
+        T bake(ResolvedModel model, ModelBaker baker, ModelDebugName name);
     }
 }
