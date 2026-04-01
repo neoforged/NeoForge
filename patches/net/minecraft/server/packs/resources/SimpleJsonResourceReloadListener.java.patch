@@ -1,27 +1,5 @@
 --- a/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
-@@ -6,11 +_,13 @@
- import com.mojang.serialization.Codec;
- import com.mojang.serialization.DynamicOps;
- import com.mojang.serialization.JsonOps;
-+
- import java.io.IOException;
- import java.io.Reader;
- import java.util.HashMap;
- import java.util.Map;
- import java.util.Map.Entry;
-+
- import net.minecraft.core.HolderLookup;
- import net.minecraft.core.Registry;
- import net.minecraft.resources.FileToIdConverter;
-@@ -18,6 +_,7 @@
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.util.StrictJsonParser;
- import net.minecraft.util.profiling.ProfilerFiller;
-+
- import org.slf4j.Logger;
- 
- public abstract class SimpleJsonResourceReloadListener<T> extends SimplePreparableReloadListener<Map<Identifier, T>> {
 @@ -42,7 +_,8 @@
  
      protected Map<Identifier, T> prepare(ResourceManager manager, ProfilerFiller profiler) {
@@ -32,7 +10,7 @@
          return result;
      }
  
-@@ -52,22 +_,56 @@
+@@ -52,22 +_,55 @@
          scanDirectory(manager, FileToIdConverter.registry(registryKey), ops, codec, result);
      }
  
@@ -61,8 +39,7 @@
 -                        throw new IllegalStateException("Duplicate data file ignored with ID " + id);
 -                    }
 -                }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-+                JsonElement json = com.google.gson.JsonParser.parseReader(reader);
-+                jsons.put(id, json);
++                jsons.put(id, com.google.gson.JsonParser.parseReader(reader));
              } catch (IllegalArgumentException | IOException | JsonParseException var14) {
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
              }
