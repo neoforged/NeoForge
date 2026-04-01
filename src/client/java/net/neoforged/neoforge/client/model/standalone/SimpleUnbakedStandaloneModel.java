@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.model.standalone;
 
-import java.util.function.BiFunction;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
