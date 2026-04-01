@@ -604,7 +604,7 @@ public class Tags {
         public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
         /**
          * For banner patterns to be used in recipes.
-         * This is a backport of 21.6 Minecraft's #minecraft:loom_patterns item tag.
+         * This is a backport of 26.1 Minecraft's #minecraft:loom_patterns item tag.
          */
         public static final TagKey<Item> LOOM_PATTERNS = tag("loom_patterns");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
