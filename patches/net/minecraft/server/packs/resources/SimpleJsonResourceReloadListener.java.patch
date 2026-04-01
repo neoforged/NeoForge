@@ -1,5 +1,27 @@
 --- a/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
+@@ -6,11 +_,13 @@
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.DynamicOps;
+ import com.mojang.serialization.JsonOps;
++
+ import java.io.IOException;
+ import java.io.Reader;
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.Map.Entry;
++
+ import net.minecraft.core.HolderLookup;
+ import net.minecraft.core.Registry;
+ import net.minecraft.resources.FileToIdConverter;
+@@ -18,6 +_,7 @@
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.util.StrictJsonParser;
+ import net.minecraft.util.profiling.ProfilerFiller;
++
+ import org.slf4j.Logger;
+ 
+ public abstract class SimpleJsonResourceReloadListener<T> extends SimplePreparableReloadListener<Map<Identifier, T>> {
 @@ -42,7 +_,8 @@
  
      protected Map<Identifier, T> prepare(ResourceManager manager, ProfilerFiller profiler) {
@@ -10,7 +32,7 @@
          return result;
      }
  
-@@ -52,16 +_,29 @@
+@@ -52,22 +_,56 @@
          scanDirectory(manager, FileToIdConverter.registry(registryKey), ops, codec, result);
      }
  
@@ -27,7 +49,8 @@
      public static <T> void scanDirectory(
          ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result
      ) {
-+        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
++        // Neo: collect JSON resources before parsing
++        Map<Identifier, JsonElement> jsons = new HashMap<>();
          for (Entry<Identifier, Resource> entry : lister.listMatchingResources(manager).entrySet()) {
              Identifier location = entry.getKey();
              Identifier id = lister.fileToId(location);
@@ -35,17 +58,36 @@
              try (Reader reader = entry.getValue().openAsReader()) {
 -                codec.parse(ops, StrictJsonParser.parse(reader)).ifSuccess(parsed -> {
 -                    if (result.putIfAbsent(id, (T)parsed) != null) {
-+                conditionalCodec.parse(ops, com.google.gson.JsonParser.parseReader(reader)).ifSuccess(parsed -> {
-+                    if (parsed.isEmpty()) {
-+                        LOGGER.debug("Skipping loading data file '{}' from '{}' as its conditions were not met", id, location);
-+                    } else if (result.putIfAbsent(id, parsed.get()) != null) {
-                         throw new IllegalStateException("Duplicate data file ignored with ID " + id);
-                     }
-                 }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-@@ -69,5 +_,9 @@
+-                        throw new IllegalStateException("Duplicate data file ignored with ID " + id);
+-                    }
+-                }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
++                JsonElement json = com.google.gson.JsonParser.parseReader(reader);
++                jsons.put(id, json);
+             } catch (IllegalArgumentException | IOException | JsonParseException var14) {
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
              }
          }
++
++        if (ops instanceof net.neoforged.neoforge.common.conditions.ConditionalOps<JsonElement> conditionalOps) {
++            String prefix = lister.prefix();
++            String extension = lister.extension();
++            var event = new net.neoforged.neoforge.data.event.ModifyJsonDataEvent(prefix, extension, conditionalOps.lookupProvider, jsons);
++            net.neoforged.fml.ModLoader.postEventWrapContainerInModOrder(event);
++        }
++
++        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
++        for (Entry<Identifier, JsonElement> entry : jsons.entrySet()) {
++            Identifier id = entry.getKey();
++            JsonElement json = entry.getValue();
++
++            conditionalCodec.parse(ops, json).ifSuccess(parsed -> {
++                if (parsed.isEmpty()) {
++                    LOGGER.debug("Skipping loading data file '{}' as its conditions were not met", id);
++                } else if (result.putIfAbsent(id, parsed.get()) != null) {
++                    throw new IllegalStateException("Duplicate data file ignored with ID " + id);
++                }
++            }).ifError(error -> LOGGER.error("Couldn't parse data file '{}': {}", id, error));
++        }
 +    }
 +
 +    protected Identifier getPreparedPath(Identifier rl) {
