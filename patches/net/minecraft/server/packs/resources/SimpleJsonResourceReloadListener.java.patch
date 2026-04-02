@@ -42,13 +42,14 @@
                          throw new IllegalStateException("Duplicate data file ignored with ID " + id);
                      }
                  }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-@@ -69,5 +_,42 @@
+@@ -69,5 +_,43 @@
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
              }
          }
 +    }
 +
-+    // Neo: overload to collect JSON resources before parsing
++    // Neo: overload that allows modification of the loaded JSON resources before parsing
++    // copied logic to ensure other resources take shorter sequential path
 +    public static <T> void scanDirectory(
 +        ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result, java.util.function.Consumer<Map<Identifier, JsonElement>> jsonConsumer
 +    ) {
