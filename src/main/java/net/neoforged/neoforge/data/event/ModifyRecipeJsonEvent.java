@@ -17,11 +17,17 @@ import net.neoforged.fml.event.IModBusEvent;
 
 public class ModifyRecipeJsonEvent extends Event implements IModBusEvent {
     private final RegistryOps.RegistryInfoLookup registryInfoLookup;
+    private final RegistryOps<JsonElement> ops;
     private final Map<Identifier, JsonElement> recipeJsons;
 
-    public ModifyRecipeJsonEvent(final RegistryOps.RegistryInfoLookup registryInfoLookup, final Map<Identifier, JsonElement> recipeJsons) {
-        this.registryInfoLookup = registryInfoLookup;
+    public ModifyRecipeJsonEvent(final RegistryOps<JsonElement> ops, final Map<Identifier, JsonElement> recipeJsons) {
+        this.registryInfoLookup = ops.lookupProvider;
+        this.ops = ops;
         this.recipeJsons = recipeJsons;
+    }
+
+    private RegistryOps<JsonElement> getOps() {
+        return ops;
     }
 
     public Map<Identifier, JsonElement> getRecipeJsons() {
