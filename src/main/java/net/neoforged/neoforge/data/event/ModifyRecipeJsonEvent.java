@@ -15,29 +15,17 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 
-public class ModifyJsonDataEvent extends Event implements IModBusEvent {
-    private final String prefix;
-    private final String extension;
+public class ModifyRecipeJsonEvent extends Event implements IModBusEvent {
     private final RegistryOps.RegistryInfoLookup registryInfoLookup;
-    private final Map<Identifier, JsonElement> jsonData;
+    private final Map<Identifier, JsonElement> recipeJsons;
 
-    public ModifyJsonDataEvent(final String prefix, final String extension, final RegistryOps.RegistryInfoLookup registryInfoLookup, final Map<Identifier, JsonElement> jsons) {
-        this.prefix = prefix;
-        this.extension = extension;
+    public ModifyRecipeJsonEvent(final RegistryOps.RegistryInfoLookup registryInfoLookup, final Map<Identifier, JsonElement> recipeJsons) {
         this.registryInfoLookup = registryInfoLookup;
-        this.jsonData = jsons;
+        this.recipeJsons = recipeJsons;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public Map<Identifier, JsonElement> getJsonData() {
-        return jsonData;
+    public Map<Identifier, JsonElement> getRecipeJsons() {
+        return recipeJsons;
     }
 
     public <T> Optional<RegistryOps.RegistryInfo<T>> lookup(ResourceKey<? extends Registry<? extends T>> registryKey) {

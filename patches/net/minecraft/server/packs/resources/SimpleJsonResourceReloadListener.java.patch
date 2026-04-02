@@ -10,7 +10,7 @@
          return result;
      }
  
-@@ -52,22 +_,55 @@
+@@ -52,16 +_,29 @@
          scanDirectory(manager, FileToIdConverter.registry(registryKey), ops, codec, result);
      }
  
@@ -27,8 +27,7 @@
      public static <T> void scanDirectory(
          ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result
      ) {
-+        // Neo: collect JSON resources before parsing
-+        Map<Identifier, JsonElement> jsons = new HashMap<>();
++        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
          for (Entry<Identifier, Resource> entry : lister.listMatchingResources(manager).entrySet()) {
              Identifier location = entry.getKey();
              Identifier id = lister.fileToId(location);
@@ -36,21 +35,36 @@
              try (Reader reader = entry.getValue().openAsReader()) {
 -                codec.parse(ops, StrictJsonParser.parse(reader)).ifSuccess(parsed -> {
 -                    if (result.putIfAbsent(id, (T)parsed) != null) {
--                        throw new IllegalStateException("Duplicate data file ignored with ID " + id);
--                    }
--                }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-+                jsons.put(id, com.google.gson.JsonParser.parseReader(reader));
-             } catch (IllegalArgumentException | IOException | JsonParseException var14) {
++                conditionalCodec.parse(ops, com.google.gson.JsonParser.parseReader(reader)).ifSuccess(parsed -> {
++                    if (parsed.isEmpty()) {
++                        LOGGER.debug("Skipping loading data file '{}' from '{}' as its conditions were not met", id, location);
++                    } else if (result.putIfAbsent(id, parsed.get()) != null) {
+                         throw new IllegalStateException("Duplicate data file ignored with ID " + id);
+                     }
+                 }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
+@@ -69,5 +_,42 @@
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
              }
          }
++    }
 +
-+        if (ops instanceof net.neoforged.neoforge.common.conditions.ConditionalOps<JsonElement> conditionalOps) {
-+            String prefix = lister.prefix();
-+            String extension = lister.extension();
-+            var event = new net.neoforged.neoforge.data.event.ModifyJsonDataEvent(prefix, extension, conditionalOps.lookupProvider, jsons);
-+            net.neoforged.fml.ModLoader.postEventWrapContainerInModOrder(event);
++    // Neo: overload to collect JSON resources before parsing
++    public static <T> void scanDirectory(
++        ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result, java.util.function.Consumer<Map<Identifier, JsonElement>> jsonConsumer
++    ) {
++        Map<Identifier, JsonElement> jsons = new HashMap<>();
++        for (Entry<Identifier, Resource> entry : lister.listMatchingResources(manager).entrySet()) {
++            Identifier location = entry.getKey();
++            Identifier id = lister.fileToId(location);
++
++            try (Reader reader = entry.getValue().openAsReader()) {
++                jsons.put(id, com.google.gson.JsonParser.parseReader(reader));
++            } catch (IllegalArgumentException | IOException | JsonParseException var14) {
++                LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
++            }
 +        }
++
++        jsonConsumer.accept(jsons);
 +
 +        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
 +        for (Entry<Identifier, JsonElement> entry : jsons.entrySet()) {
