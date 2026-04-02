@@ -31,6 +31,9 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
     public void addTags(HolderLookup.Provider lookupProvider) {
         copy(Tags.Blocks.BARRELS, Tags.Items.BARRELS);
         copy(Tags.Blocks.BARRELS_WOODEN, Tags.Items.BARRELS_WOODEN);
+        copy(Tags.Blocks.BARS, Tags.Items.BARS);
+        copy(Tags.Blocks.BARS_COPPER, Tags.Items.BARS_COPPER);
+        copy(Tags.Blocks.BARS_IRON, Tags.Items.BARS_IRON);
         tag(Tags.Items.BONES).add(Items.BONE);
         copy(Tags.Blocks.BOOKSHELVES, Tags.Items.BOOKSHELVES);
         tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER, Tags.Items.BRICKS_RESIN);
