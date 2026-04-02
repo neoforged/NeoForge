@@ -17,7 +17,7 @@
          SimpleJsonResourceReloadListener.scanDirectory(
 -            manager, RECIPE_LISTER, this.registries.createSerializationContext(JsonOps.INSTANCE), Recipe.CODEC, recipes
 +            manager, RECIPE_LISTER, conditionalOps, Recipe.CODEC, recipes, recipeJsons -> {
-+                var event = new net.neoforged.neoforge.data.event.ModifyRecipeJsonEvent(conditionalOps, recipeJsons);
++                var event = new net.neoforged.neoforge.event.ModifyRecipeJsonsEvent(conditionalOps, recipeJsons);
 +                net.neoforged.fml.ModLoader.postEventWrapContainerInModOrder(event);
 +            }
          );

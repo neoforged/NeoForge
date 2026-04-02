@@ -11,8 +11,8 @@ import java.util.NoSuchElementException;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.biome.Biomes;
-import net.neoforged.neoforge.data.event.ModifyRecipeJsonEvent;
 import net.neoforged.neoforge.debug.block.BlockTests;
+import net.neoforged.neoforge.event.ModifyRecipeJsonsEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -21,7 +21,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 public class ModifyRecipeJsonEventTest {
     @TestHolder(description = "Tests if the ModifyRecipeJsonEvent exposes a mutable map of recipe JSONs and a registry lookup.")
     public static void mutableMapEvent(final DynamicTest test) {
-        test.framework().modEventBus().addListener((final ModifyRecipeJsonEvent event) -> {
+        test.framework().modEventBus().addListener((final ModifyRecipeJsonsEvent event) -> {
             // Grab the map of recipe JSONs from the event.
             Map<Identifier, JsonElement> recipeJsons = event.getRecipeJsons();
             // Ensure the map is mutable.
