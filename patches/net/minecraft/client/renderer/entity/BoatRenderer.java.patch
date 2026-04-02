@@ -1,5 +1,32 @@
 --- a/net/minecraft/client/renderer/entity/BoatRenderer.java
 +++ b/net/minecraft/client/renderer/entity/BoatRenderer.java
+@@ -37,7 +_,7 @@
+             .collect(
+                 ImmutableMap.toImmutableMap(
+                     p_173938_ -> (Boat.Type)p_173938_,
+-                    p_247941_ -> Pair.of(new ResourceLocation(getTextureLocation(p_247941_, p_234564_)), this.createBoatModel(p_234563_, p_247941_, p_234564_))
++                    p_247941_ -> Pair.of(new ResourceLocation(p_247941_.getName()).withPrefix(getTextureLocation(p_247941_, p_234564_)).withSuffix(".png"), this.createBoatModel(p_234563_, p_247941_, p_234564_))
+                 )
+             );
+     }
+@@ -45,7 +_,7 @@
+     private ListModel<Boat> createBoatModel(EntityRendererProvider.Context p_248834_, Boat.Type p_249317_, boolean p_250093_) {
+         ModelLayerLocation modellayerlocation = p_250093_ ? ModelLayers.createChestBoatModelName(p_249317_) : ModelLayers.createBoatModelName(p_249317_);
+         ModelPart modelpart = p_248834_.bakeLayer(modellayerlocation);
+-        if (p_249317_ == Boat.Type.BAMBOO) {
++        if (p_249317_.isRaft()) {
+             return (ListModel<Boat>)(p_250093_ ? new ChestRaftModel(modelpart) : new RaftModel(modelpart));
+         } else {
+             return (ListModel<Boat>)(p_250093_ ? new ChestBoatModel(modelpart) : new BoatModel(modelpart));
+@@ -53,7 +_,7 @@
+     }
+ 
+     private static String getTextureLocation(Boat.Type p_234566_, boolean p_234567_) {
+-        return p_234567_ ? "textures/entity/chest_boat/" + p_234566_.getName() + ".png" : "textures/entity/boat/" + p_234566_.getName() + ".png";
++        return p_234567_ ? "textures/entity/chest_boat/" : "textures/entity/boat/";
+     }
+ 
+     public void render(Boat p_113929_, float p_113930_, float p_113931_, PoseStack p_113932_, MultiBufferSource p_113933_, int p_113934_) {
 @@ -75,7 +_,7 @@
              p_113932_.mulPose(new Quaternionf().setAngleAxis(p_113929_.getBubbleAngle(p_113931_) * (float) (Math.PI / 180.0), 1.0F, 0.0F, 1.0F));
          }
@@ -9,7 +36,7 @@
          ResourceLocation resourcelocation = pair.getFirst();
          ListModel<Boat> listmodel = pair.getSecond();
          p_113932_.scale(-1.0F, -1.0F, 1.0F);
-@@ -94,7 +_,10 @@
+@@ -94,7 +_,12 @@
          super.render(p_113929_, p_113930_, p_113931_, p_113932_, p_113933_, p_113934_);
      }
  
@@ -17,7 +44,9 @@
      public ResourceLocation getTextureLocation(Boat p_113927_) {
 -        return this.boatResources.get(p_113927_.getVariant()).getFirst();
 +        return getModelWithLocation(p_113927_).getFirst();
-     }
++    }
 +
-+    public Pair<ResourceLocation, ListModel<Boat>> getModelWithLocation(Boat boat) { return this.boatResources.get(boat.getVariant()); }
++    public Pair<ResourceLocation, ListModel<Boat>> getModelWithLocation(Boat boat) {
++        return this.boatResources.get(boat.getVariant());
+     }
  }
