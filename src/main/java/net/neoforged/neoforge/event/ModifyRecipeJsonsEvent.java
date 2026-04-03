@@ -14,7 +14,22 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
 
+/**
+ * Fired after recipe JSON files have been loaded from disk but before deserialization begins.
+ * <p>
+ * This event allows mods to modify the raw JSON data directly, avoiding the need to intercept
+ * and reprocess already-deserialized recipe instances.
+ * <p>
+ * The provided map must be modified in-place to affect the upcoming deserialization process.
+ * Note that at this stage it is not guaranteed that all recipes will be deserialized, as their
+ * conditions have not yet been evaluated. Condition evaluation is performed via
+ * {@link ConditionalOps}, which is exposed for convenience.
+ * <p>
+ * Fired on the logical server via the {@link NeoForge#EVENT_BUS}.
+ */
 public class ModifyRecipeJsonsEvent extends Event implements IModBusEvent {
     private final RegistryOps.RegistryInfoLookup registryInfoLookup;
     private final RegistryOps<JsonElement> ops;
