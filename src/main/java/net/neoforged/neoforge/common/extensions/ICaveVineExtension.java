@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CaveVines;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -29,7 +30,7 @@ public interface ICaveVineExtension extends IHarvestable {
     /// define harvest result from interaction loot table
     @Override
     default List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @Nullable Entity user, ItemStack tool) {
-        if (!state.getValue(CaveVines.BERRIES)) return List.of();
+        if (!CaveVines.hasGlowBerries(state)) return List.of();
         return IHarvestable.getHarvestResultFromInteractionLootTable(level, pos, state, user, tool, BuiltInLootTables.HARVEST_CAVE_VINE);
     }
 
@@ -41,7 +42,7 @@ public interface ICaveVineExtension extends IHarvestable {
             level.playSound(null, pos, SoundEvents.CAVE_VINES_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, pitch);
         }
         BlockState newState = state.setValue(CaveVines.BERRIES, false);
-        level.setBlock(pos, newState, 2);
+        level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
         level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(user, newState));
         return true;
     }

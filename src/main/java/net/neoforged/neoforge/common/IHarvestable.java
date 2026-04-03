@@ -13,7 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -40,10 +39,6 @@ public interface IHarvestable {
     ///
     /// @return List of loot when harvested. Return empty list if the crop is not ready to be harvested. Return block loot by default.
     default List<ItemStack> getHarvestResult(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, @Nullable Entity user, ItemStack tool) {
-        if (this instanceof CropBlock crop) {
-            if (crop.getAge(state) < crop.getMaxAge())
-                return List.of();
-        }
         return Block.getDrops(state, level, pos, level.getBlockEntity(pos), user, tool);
     }
 

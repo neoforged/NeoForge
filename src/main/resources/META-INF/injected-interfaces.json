@@ -214,8 +214,7 @@
     "net/neoforged/neoforge/common/extensions/ICaveVineExtension"
   ],
   "net/minecraft/world/level/block/CropBlock": [
-    "net/neoforged/neoforge/common/extensions/ICropBlockExtension",
-    "net/neoforged/neoforge/common/IHarvestable"
+    "net/neoforged/neoforge/common/extensions/ICropBlockExtension"
   ],
   "net/minecraft/world/level/block/DeadBushBlock": [
     "net/neoforged/neoforge/common/IShearable"
