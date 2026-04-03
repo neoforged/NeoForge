@@ -89,7 +89,7 @@
  
          public void loadFrom(ClockState state) {
              this.totalTicks = state.totalTicks();
-@@ -158,13 +_,12 @@
+@@ -158,8 +_,16 @@
              this.paused = state.paused();
          }
  
@@ -97,18 +97,17 @@
 +        @Deprecated
          public void tick() {
 -            if (!this.paused) {
--                this.partialTick = this.partialTick + this.rate;
--                int fullTicks = Mth.floor(this.partialTick);
--                this.partialTick -= fullTicks;
--                this.totalTicks += fullTicks;
--            }
 +            // Neo: Call the new method with the vanilla value
 +            // Vanilla calls this inside of 'GameRules.ADVANCE_TIME == true' check
 +            this.tick(true);
-         }
- 
-         public ClockState packState() {
-@@ -173,8 +_,24 @@
++        }
++
++        public void tick(boolean advanceTime) {
++            if (this.ticking(advanceTime)) {
+                 this.partialTick = this.partialTick + this.rate;
+                 int fullTicks = Mth.floor(this.partialTick);
+                 this.partialTick -= fullTicks;
+@@ -173,8 +_,15 @@
  
          public ClockNetworkState packNetworkState(MinecraftServer server) {
              boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
@@ -122,15 +121,6 @@
 +            var paused = this.paused || !advanceTime;
 +            var ignoresPausing = this.holder != null && this.holder.is(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSING);
 +            return ignoresPausing || !paused;
-+        }
-+
-+        private void tick(boolean advanceTime) {
-+            if (this.ticking(advanceTime)) {
-+                this.partialTick = this.partialTick + this.rate;
-+                int fullTicks = Mth.floor(this.partialTick);
-+                this.partialTick -= fullTicks;
-+                this.totalTicks += fullTicks;
-+            }
          }
      }
  }
