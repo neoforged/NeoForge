@@ -23,6 +23,10 @@ import net.neoforged.neoforge.common.conditions.ConditionalOps;
  * This event allows mods to modify the raw JSON data directly, avoiding the need to intercept
  * and reprocess already-deserialized recipe instances.
  * <p>
+ * This event exists primarily for mods that need to perform bulk modifications to recipes,
+ * such as for modpack integration in a broadly compatible way. For typical use cases, defining
+ * or overriding recipes via standard JSON files is strongly preferred.
+ * <p>
  * The provided map must be modified in-place to affect the upcoming deserialization process.
  * Note that at this stage it is not guaranteed that all recipes will be deserialized, as their
  * conditions have not yet been evaluated. Condition evaluation is performed via
