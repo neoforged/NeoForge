@@ -1,4 +1,5 @@
 {
+  "commands.time.neoforge.clock_ignores_pausing": "Clock %s disallows pausing",
   "dimension.minecraft.overworld": "Overworld",
   "dimension.minecraft.the_end": "The End",
   "dimension.minecraft.the_nether": "The Nether",
