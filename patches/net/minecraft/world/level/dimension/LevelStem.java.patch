@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/dimension/LevelStem.java
++++ b/net/minecraft/world/level/dimension/LevelStem.java
+@@ -8,11 +_,17 @@
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.world.level.chunk.ChunkGenerator;
+ 
+-public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator) {
++public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator, java.util.OptionalLong seedOverride) { // NeoForge: add neoforge:seed_override field to dimension jsons
+     public static final Codec<LevelStem> CODEC = RecordCodecBuilder.create(
+         i -> i.group(DimensionType.CODEC.fieldOf("type").forGetter(LevelStem::type), ChunkGenerator.CODEC.fieldOf("generator").forGetter(LevelStem::generator))
++                // NeoForge: patch the neoforge:seed_override field into the codec
++                .and(net.minecraft.util.ExtraCodecs.asOptionalLong(Codec.LONG.optionalFieldOf("neoforge:seed_override")).forGetter(LevelStem::seedOverride))
+             .apply(i, i.stable(LevelStem::new))
+     );
++    // NeoForge: add a constructor overload for the vanilla signature which delegates to the patched constructor above
++    public LevelStem(Holder<DimensionType> type, ChunkGenerator generator) {
++        this(type, generator, java.util.OptionalLong.empty());
++    }
+     public static final ResourceKey<LevelStem> OVERWORLD = ResourceKey.create(Registries.LEVEL_STEM, Identifier.withDefaultNamespace("overworld"));
+     public static final ResourceKey<LevelStem> NETHER = ResourceKey.create(Registries.LEVEL_STEM, Identifier.withDefaultNamespace("the_nether"));
+     public static final ResourceKey<LevelStem> END = ResourceKey.create(Registries.LEVEL_STEM, Identifier.withDefaultNamespace("the_end"));

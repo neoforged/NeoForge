@@ -1,0 +1,15 @@
+--- a/net/minecraft/core/component/DataComponentMap.java
++++ b/net/minecraft/core/component/DataComponentMap.java
+@@ -129,6 +_,12 @@
+         private Builder() {
+         }
+ 
++        @SuppressWarnings("unchecked")
++        @Override
++        public @Nullable <T> T get(DataComponentType<? extends T> type) {
++            return (T) map.get(type);
++        }
++
+         public <T> DataComponentMap.Builder set(DataComponentType<T> type, @Nullable T value) {
+             this.setUnchecked(type, value);
+             return this;

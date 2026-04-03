@@ -188,8 +188,6 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Defina como verdadeiro para verificar toda a caixa de colisão da entidade em escadas em vez de apenas o bloco em que estão. Causa diferenças visíveis na mecânica, então o padrão é o comportamento vanilla. Padrão: falso.",
   "neoforge.configgui.handleAmbientOcclusionPerPart": "Manipulação AO bloco por peça",
   "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "Quando ativado, AO será tratado por BlockModelPart em vez de usar a configuração AO da primeira parte.",
-  "neoforge.configgui.logLegacyTagWarnings": "Log de etiquetas legadas",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "Uma opção de configuração principalmente para desenvolvedores. Registra tags modificadas que estão usando o namespace 'forge' quando executado em servidor integrado. O padrão é DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Registrar chaves de configuração não traduzidas",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Uma opção de configuração principalmente para desenvolvedores. Registra os valores de configuração que não têm traduções ao executar um cliente em um ambiente de desenvolvimento.",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "Registrar Tags de Itens Não Traduzidos",
