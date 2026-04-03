@@ -181,7 +181,9 @@ public class RegistryManager {
                     foundMissing = true;
                 } else if (!foundMissing) {
                     // ID mappings must only be added if this registry didn't encounter missing entries before, otherwise certain operations such
-                    // as iterating the registry will crash due to the ID->value list being filled up with nulls to add the next known entry
+                    // as iterating the registry will crash due to the ID->value list being filled up with nulls to add the next known entry.
+                    // Encountering entries unknown to the client in the snapshot sent by the server guarantees that the player will be disconnected
+                    // and the registry reverted to the frozen state, so the incomplete ID mapping registration cannot cause issues later.
                     forgeRegistry.registerIdMapping(key, entry.getIntKey());
                 }
             }
