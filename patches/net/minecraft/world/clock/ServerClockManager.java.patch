@@ -81,7 +81,7 @@
 +            this.holder = holder;
 +        }
 +
-+        /// @deprecated Use [#ClockInstance(Holder)]
++        /// @deprecated Neo: Use [#ClockInstance(Holder)] instead
 +        @Deprecated
 +        public ClockInstance() {
 +            holder = null;
@@ -93,7 +93,7 @@
              this.paused = state.paused();
          }
  
-+        /// @deprecated Use [#tick(boolean)], Passing in if time is advancing
++        /// @deprecated Neo: Use [#tick(boolean)], Passing in if time is advancing
 +        @Deprecated
          public void tick() {
 -            if (!this.paused) {
