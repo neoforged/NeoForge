@@ -42,15 +42,18 @@
                          throw new IllegalStateException("Duplicate data file ignored with ID " + id);
                      }
                  }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-@@ -69,5 +_,43 @@
+@@ -69,5 +_,46 @@
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
              }
          }
 +    }
 +
-+    // Neo: overload that allows modification of the loaded JSON resources before parsing
-+    // copied logic to ensure other resources take shorter sequential path
-+    public static <T> void scanDirectory(
++    /// Neo: Overload of [#scanDirectory(ResourceManager, FileToIdConverter, DynamicOps, Codec, Map)] with support
++    /// for modifying the raw JSON in bulk before it is deserialized.
++    ///
++    /// Implemented as a copy to ensure resources not using the modification support still use the shorter path
++    /// without the intermediate storage.
++    public static <T> void scanDirectoryWithModifier(
 +        ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result, java.util.function.Consumer<Map<Identifier, JsonElement>> jsonConsumer
 +    ) {
 +        Map<Identifier, JsonElement> jsons = new HashMap<>();
