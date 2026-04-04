@@ -7,46 +7,40 @@ package net.neoforged.neoforge.common.loot;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.DynamicOps;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import net.minecraft.resources.FileToIdConverter;
+import java.util.Optional;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonElement> {
+public class LootModifierManager extends SimpleJsonResourceReloadListener<Optional<WithConditions<IGlobalLootModifier>>> {
     public static final Logger LOGGER = LogManager.getLogger();
     private static final String FOLDER = "loot_modifiers";
 
     private Map<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableMap.of();
     private List<IGlobalLootModifier> sortedModifiers = List.of();
 
-    public LootModifierManager() {
-        super(ExtraCodecs.JSON, FileToIdConverter.json(FOLDER));
+    public LootModifierManager(RegistryAccess registries) {
+        super(registries, IGlobalLootModifier.CONDITIONAL_CODEC, ResourceKey.createRegistryKey(Identifier.withDefaultNamespace(FOLDER)));
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
-        DynamicOps<JsonElement> ops = this.makeConditionalOps();
+    protected void apply(Map<Identifier, Optional<WithConditions<IGlobalLootModifier>>> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
         Builder<Identifier, IGlobalLootModifier> builder = ImmutableMap.builder();
-        for (Map.Entry<Identifier, JsonElement> entry : resourceList.entrySet()) {
-            Identifier location = entry.getKey();
-            JsonElement json = entry.getValue();
-            IGlobalLootModifier.CONDITIONAL_CODEC.parse(ops, json)
-                    // log error if parse fails
-                    .resultOrPartial(errorMsg -> LOGGER.warn("Could not decode GlobalLootModifier with json id {} - error: {}", location, errorMsg))
-                    // add loot modifier if parse succeeds
-                    .flatMap(Function.identity())
-                    .ifPresent(carrier -> builder.put(location, carrier.carrier()));
+        for (Map.Entry<Identifier, Optional<WithConditions<IGlobalLootModifier>>> entry : resourceList.entrySet()) {
+            if (entry.getValue().isPresent()) {
+                builder.put(entry.getKey(), entry.getValue().get().carrier());
+            }
         }
+
         this.registeredLootModifiers = builder.build();
         this.sortedModifiers = this.registeredLootModifiers.values().stream()
                 .sorted(Comparator.comparingInt(IGlobalLootModifier::priority))

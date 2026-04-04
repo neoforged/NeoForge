@@ -334,6 +334,33 @@ public class GlobalLootModifiersTest {
     }
 
     @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the silk touch bamboo GLM works, by breaking leaves with bamboo and verifying the leaf block is dropped")
+    static void silkTouchBambooTest(final DynamicTest test) {
+        HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("silk_touch_bamboo", new SilkTouchTestModifier(
+                new LootItemCondition[] {
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)).build(),
+                        new TestEnabledLootCondition(test)
+                },
+                1000)));
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.BAMBOO.getDefaultInstance()))
+
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.OAK_LEAVES.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.PERSISTENT, true)))
+
+                .thenIdle(5)
+                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 2, 1))))
+                .thenIdle(5)
+                // The silk touch bamboo modifier should cause oak leaves to drop the leaf block itself
+                .thenExecute(player -> helper.assertItemEntityCountIsAtLeast(Items.OAK_LEAVES, new BlockPos(1, 2, 1), 1d, 1))
+                .thenExecute(player -> helper.assertItemEntityNotPresent(Items.OAK_SAPLING, new BlockPos(1, 2, 1), 1d))
+
+                .thenSucceed());
+    }
+
+    @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if dungeon loot modifiers work, by rolling the simple_dungeon loot table")
     static void dungeonLootTest(final DynamicTest test) {
