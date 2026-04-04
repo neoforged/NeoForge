@@ -8,6 +8,8 @@ package net.neoforged.neoforge.debug.data;
 import com.google.gson.JsonElement;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import com.google.gson.JsonObject;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.biome.Biomes;
@@ -26,7 +28,13 @@ public class ModifyRecipeJsonEventTest {
             Map<Identifier, JsonElement> recipeJsons = event.getRecipeJsons();
             // Ensure the map is mutable.
             try {
-                recipeJsons.put(Identifier.withDefaultNamespace("test"), recipeJsons.values().iterator().next());
+                var firstRecipe = recipeJsons.values().iterator().next();
+                if (!(firstRecipe instanceof JsonObject firstRecipeObject)) {
+                    test.fail("First recipe is not a JSON object");
+                    return;
+                }
+                firstRecipeObject.addProperty("test", "test");
+                recipeJsons.put(Identifier.withDefaultNamespace("test"), firstRecipe);
             } catch (UnsupportedOperationException e) {
                 test.fail("Map is not mutable");
                 return;
