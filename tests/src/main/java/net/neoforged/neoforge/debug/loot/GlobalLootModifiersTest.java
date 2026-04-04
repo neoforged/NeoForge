@@ -97,8 +97,8 @@ public class GlobalLootModifiersTest {
     private static class SmeltingEnchantmentModifier extends LootModifier {
         public static final Supplier<MapCodec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
 
-        public SmeltingEnchantmentModifier(LootItemCondition[] conditionsIn) {
-            super(conditionsIn);
+        public SmeltingEnchantmentModifier(LootItemCondition[] conditions, int priority) {
+            super(conditions, priority);
         }
 
         @Override
@@ -129,8 +129,8 @@ public class GlobalLootModifiersTest {
     private static class SilkTouchTestModifier extends LootModifier {
         public static final Supplier<MapCodec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
 
-        public SilkTouchTestModifier(LootItemCondition[] conditionsIn) {
-            super(conditionsIn);
+        public SilkTouchTestModifier(LootItemCondition[] conditions, int priority) {
+            super(conditions, priority);
         }
 
         @Override
@@ -174,8 +174,8 @@ public class GlobalLootModifiersTest {
         private final Item itemToCheck;
         private final Item itemReward;
 
-        public WheatSeedsConverterModifier(LootItemCondition[] conditionsIn, int numSeeds, Item itemCheck, Item reward) {
-            super(conditionsIn);
+        public WheatSeedsConverterModifier(LootItemCondition[] conditions, int priority, int numSeeds, Item itemCheck, Item reward) {
+            super(conditions, priority);
             numSeedsToConvert = numSeeds;
             itemToCheck = itemCheck;
             itemReward = reward;
@@ -215,8 +215,8 @@ public class GlobalLootModifiersTest {
 
         private final int multiplicationFactor;
 
-        public DungeonLootEnhancerModifier(final LootItemCondition[] conditionsIn, final int multiplicationFactor) {
-            super(conditionsIn);
+        public DungeonLootEnhancerModifier(LootItemCondition[] conditions, int priority, int multiplicationFactor) {
+            super(conditions, priority);
             this.multiplicationFactor = multiplicationFactor;
         }
 
@@ -259,7 +259,7 @@ public class GlobalLootModifiersTest {
                                                 EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build()))
                                         .build(),
                                 new TestEnabledLootCondition(test)
-                        }));
+                        }, 1000));
             }
 
             @Override
@@ -307,6 +307,7 @@ public class GlobalLootModifiersTest {
                                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
                                 new TestEnabledLootCondition(test)
                         },
+                        1000,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
             }
 
@@ -341,6 +342,7 @@ public class GlobalLootModifiersTest {
                         LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")).build(),
                         new TestEnabledLootCondition(test)
                 },
+                1000,
                 2)));
 
         test.onGameTest(helper -> helper.startSequence()

@@ -39,11 +39,20 @@ public interface IGlobalLootModifier {
      * @param context       the LootContext, identical to what is passed to loot tables
      * @return modified loot drops
      */
-
     ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context);
 
     /**
      * Returns the registered codec for this modifier
      */
     MapCodec<? extends IGlobalLootModifier> codec();
+
+    /**
+     * Returns the priority of this loot modifier. Modifiers with a lower priority will be applied first.
+     * Modifiers with equal priority will be applied in an undefined order.
+     * <p>
+     * The canonical "default" priority value is 1000.
+     * 
+     * @apiNote Do not hardcode this value. This value must be read from your GLM's json file.
+     */
+    int priority();
 }

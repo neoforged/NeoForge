@@ -10,5 +10,6 @@
       "framework": "neotests:tests",
       "test": "glm_dungeonLootTest"
     }
-  ]
+  ],
+  "priority": 1000
 }

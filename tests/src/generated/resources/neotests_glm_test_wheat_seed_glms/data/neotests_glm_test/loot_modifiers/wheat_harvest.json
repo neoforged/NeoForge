@@ -18,6 +18,7 @@
     }
   ],
   "numSeeds": 1,
+  "priority": 1000,
   "replacement": "minecraft:wheat",
   "seedItem": "minecraft:wheat_seeds"
 }
