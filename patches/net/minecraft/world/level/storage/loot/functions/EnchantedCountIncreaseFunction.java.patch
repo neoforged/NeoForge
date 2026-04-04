@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
++++ b/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
+@@ -72,6 +_,10 @@
+         Entity killer = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
+         if (killer instanceof LivingEntity entity) {
+             int level = EnchantmentHelper.getEnchantmentLevel(this.enchantment, entity);
++
++            // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++            level = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(this.enchantment, level, context);
++
+             if (level == 0) {
+                 return itemStack;
+             }
