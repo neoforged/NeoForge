@@ -82,7 +82,7 @@ public interface WorldClockTests {
                         .thenExecute(data -> setPaused(helper, data.clock, true))
                         // idle to allow clock to tick
                         .thenIdle(1)
-                        // validate clock did not tick, we have `ignores_pausing` we should have ticked
+                        // validate clock has ticked, we have `ignores_pausing` we should have ticked
                         .thenExecute(data -> assertClockTicked(helper, data.clock, data.totalTicks))
                         // unpause clock
                         .thenExecute(data -> setPaused(helper, data.clock, false))
