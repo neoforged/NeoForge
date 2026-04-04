@@ -6,10 +6,9 @@
 package net.neoforged.neoforge.debug.data;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import com.google.gson.JsonObject;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.biome.Biomes;
