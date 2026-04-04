@@ -1,5 +1,5 @@
 {
   "values": [
-    "neotests_unpause_clocks_test:unpausable"
+    "neotests_unpause_clocks_test:ignores_pause"
   ]
 }

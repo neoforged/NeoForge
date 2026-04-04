@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.commands.TimeCommand;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -1553,11 +1554,11 @@ public class Tags {
     }
 
     public static class WorldClocks {
-        /// [World Clocks][WorldClock] with this tag are exempt from pausing.
-        ///
-        /// These clocks continue to tick even when global pauses are active,
-        /// such as when [GameRules#ADVANCE_TIME] is `false`
+        /// [World Clocks][WorldClock] are disallowed from being paused via the [TimeCommand].
         public static final TagKey<WorldClock> IGNORES_PAUSING = neoforgeTag("ignores_pausing");
+
+        /// [World Clocks][WorldClock] with this tag are exempt from pausing when [GameRules#ADVANCE_TIME] is disabled.
+        public static final TagKey<WorldClock> IGNORES_ADVANCE_TIME = neoforgeTag("ignores_advance_time");
 
         private static TagKey<WorldClock> neoforgeTag(String name) {
             return TagKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name));
