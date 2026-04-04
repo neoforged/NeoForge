@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.Set;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -66,36 +67,102 @@ public interface WorldClockTests {
             });
         });
 
-        test.onGameTest(helper -> {
-            var originalTimeIP = helper.getLevel().clockManager().getTotalTicks(helper.getHolder(ignoresPause));
-            var originalTimeAT = helper.getLevel().clockManager().getTotalTicks(helper.getHolder(ignoresAdvanceTime));
+        test.onGameTest(helper -> helper.startSequence()
+                // ensure `advance_time` game rule is enabled
+                .thenExecute(() -> setAdvanceTime(helper, true))
 
-            helper.startSequence()
-                    // validate clock still ticks when paused
-                    .thenExecute(() -> assertHasTag(helper, ignoresPause, Tags.WorldClocks.IGNORES_PAUSING))
-                    .thenExecute(() -> helper.getLevel().clockManager().setPaused(helper.getHolder(ignoresPause), true))
-                    .thenIdle(2)
-                    .thenExecute(() -> assertClockChanged(helper, ignoresPause, originalTimeIP, "paused"))
-                    .thenExecute(() -> helper.getLevel().clockManager().setPaused(helper.getHolder(ignoresPause), false))
+                // 'ignores_pause' tests
+                .thenSequence(s -> s
+                        .thenMap(() -> new ClockAndData(helper, helper.getHolder(ignoresPause)))
+                        // validate this clock has `ignores_pausing` but not `ignores_advance_time`
+                        // we should only be bypassing the `paused` state
+                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSING))
+                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME))
+                        // pause clock
+                        .thenExecute(data -> setPaused(helper, data.clock, true))
+                        // idle to allow clock to tick
+                        .thenIdle(1)
+                        // validate clock did not tick, we have `ignores_pausing` we should have ticked
+                        .thenExecute(data -> assertClockTicked(helper, data.clock, data.totalTicks))
+                        // unpause clock
+                        .thenExecute(data -> setPaused(helper, data.clock, false))
+                        // refresh clock data
+                        .thenMap(data -> data.refresh(helper))
+                        // disable `advance_time` game rule
+                        .thenExecute(() -> setAdvanceTime(helper, false))
+                        // idle to allow clock to tick
+                        .thenIdle(1)
+                        // validate clock did not tick, we do not have `ignores_advance_time` we should not have ticked
+                        .thenExecute(clock -> assertClockDidNotTick(helper, clock.clock, clock.totalTicks))
+                        // reenable `advance_time` game rule
+                        .thenExecute(() -> setAdvanceTime(helper, true)))
 
-                    // validate clock still ticks when 'advance_time' is disabled
-                    .thenExecute(() -> assertHasTag(helper, ignoresAdvanceTime, Tags.WorldClocks.IGNORES_ADVANCE_TIME))
-                    .thenMap(() -> helper.getLevel().getGameRules().get(GameRules.ADVANCE_TIME))
-                    .thenExecute(() -> helper.getLevel().getGameRules().set(GameRules.ADVANCE_TIME, false, helper.getLevel().getServer()))
-                    .thenIdle(2)
-                    .thenExecute(() -> assertClockChanged(helper, ignoresAdvanceTime, originalTimeAT, "advance_time"))
-                    .thenExecute(advanceTime -> helper.getLevel().getGameRules().set(GameRules.ADVANCE_TIME, advanceTime, helper.getLevel().getServer()))
+                // 'ignores_advance_time' tests
+                .thenSequence(s -> s
+                        .thenMap(() -> new ClockAndData(helper, helper.getHolder(ignoresAdvanceTime)))
+                        // validate this clock has `ignores_advance_time` but not `ignores_pausing`
+                        // we should only be bypassing the `advance_time` game rule
+                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME))
+                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSING))
+                        // pause clock
+                        .thenExecute(data -> setPaused(helper, data.clock, true))
+                        // idle to allow clock to tick
+                        .thenIdle(1)
+                        // validate clock did not tick, we do not have `ignores_pausing` we should not have ticked
+                        .thenExecute(data -> assertClockDidNotTick(helper, data.clock, data.totalTicks))
+                        // unpause clock
+                        .thenExecute(data -> setPaused(helper, data.clock, false))
+                        // refresh clock data
+                        .thenMap(data -> data.refresh(helper))
+                        // disable `advance_time` game rule
+                        .thenExecute(() -> setAdvanceTime(helper, false))
+                        // idle to allow clock to tick
+                        .thenIdle(1)
+                        // validate clock has ticked, we have `ignores_advance_time` we should have ticked
+                        .thenExecute(clock -> assertClockTicked(helper, clock.clock, clock.totalTicks))
+                        // reenable `advance_time` game rule
+                        .thenExecute(() -> setAdvanceTime(helper, true)))
 
-                    .thenSucceed();
-        });
+                .thenSucceed());
     }
 
-    private static void assertHasTag(ExtendedGameTestHelper helper, ResourceKey<WorldClock> key, TagKey<WorldClock> tag) {
-        helper.assertTrue(helper.getHolder(key).is(tag), "Expected clock '" + key.identifier() + "' to have tag '" + tag.location() + "'");
+    private static void assertHasTag(ExtendedGameTestHelper helper, Holder<WorldClock> clock, TagKey<WorldClock> tag) {
+        helper.assertTrue(clock.is(tag), "Expected clock '" + clock.getRegisteredName() + "' to have tag '" + tag.location() + "'");
     }
 
-    private static void assertClockChanged(ExtendedGameTestHelper helper, ResourceKey<WorldClock> key, long originalTime, String reason) {
-        var actualTime = helper.getLevel().clockManager().getTotalTicks(helper.getHolder(key));
-        helper.assertFalse(originalTime == actualTime, "Expected clock '" + key.identifier() + "' totalTicks to have changed (" + originalTime + " : " + actualTime + ") [" + reason + ']');
+    private static void assertDoesNotHaveTag(ExtendedGameTestHelper helper, Holder<WorldClock> clock, TagKey<WorldClock> tag) {
+        helper.assertTrue(!clock.is(tag), "Expected clock '" + clock.getRegisteredName() + "' to not have tag '" + tag.location() + "'");
+    }
+
+    private static void assertClockTicked(ExtendedGameTestHelper helper, Holder<WorldClock> clock, long originalTotalTicks) {
+        var actualTime = getTotalTicks(helper, clock);
+        helper.assertTrue(originalTotalTicks != actualTime, "Expected clock '" + clock.getRegisteredName() + "' to have ticked (" + originalTotalTicks + " : " + actualTime + ")");
+    }
+
+    private static void assertClockDidNotTick(ExtendedGameTestHelper helper, Holder<WorldClock> clock, long originalTotalTicks) {
+        var actualTime = getTotalTicks(helper, clock);
+        helper.assertTrue(originalTotalTicks == actualTime, "Expected clock '" + clock.getRegisteredName() + "' to not have ticked (" + originalTotalTicks + " : " + actualTime + ")");
+    }
+
+    private static long getTotalTicks(ExtendedGameTestHelper helper, Holder<WorldClock> clock) {
+        return helper.getLevel().clockManager().getTotalTicks(clock);
+    }
+
+    private static void setPaused(ExtendedGameTestHelper helper, Holder<WorldClock> clock, boolean paused) {
+        helper.getLevel().clockManager().setPaused(clock, paused);
+    }
+
+    private static void setAdvanceTime(ExtendedGameTestHelper helper, boolean advanceTime) {
+        helper.getLevel().getGameRules().set(GameRules.ADVANCE_TIME, advanceTime, helper.getLevel().getServer());
+    }
+
+    record ClockAndData(Holder<WorldClock> clock, long totalTicks) {
+        private ClockAndData(ExtendedGameTestHelper helper, Holder<WorldClock> clock) {
+            this(clock, getTotalTicks(helper, clock));
+        }
+
+        public ClockAndData refresh(ExtendedGameTestHelper helper) {
+            return new ClockAndData(clock, getTotalTicks(helper, clock));
+        }
     }
 }
