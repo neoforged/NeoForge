@@ -17,6 +17,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -105,8 +106,12 @@ import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
@@ -119,6 +124,7 @@ import net.neoforged.neoforge.common.util.ClockAdjustment;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
+import net.neoforged.neoforge.event.enchanting.EnchantedBlockLootEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -1150,5 +1156,26 @@ public class EventHooks {
 
     public static <T> void onGameRuleChanged(MinecraftServer server, GameRule<T> gameRule, T newValue) {
         NeoForge.EVENT_BUS.post(new GameRuleChangedEvent(server, gameRule, newValue));
+    }
+
+    /**
+     * Called from {@link ApplyBonusCount} and {@link BonusLevelTableCondition} when blocks rely on enchantments for evaluating loot bonuses.
+     * <p>
+     * If the necessary context is present, this method will fire the {@link EnchantedBlockLootEvent} and return the event-modified level. Otherwise it returns the original level.
+     * 
+     * @param tool      The tool, from {@link LootContextParams#TOOL}.
+     * @param ench      The enchantment being queried.
+     * @param enchLevel The original enchantment level, determined from the item (or possibly {@link GetEnchantmentLevelEvent}).
+     * @param ctx       The loot context for the current block loot evaluation.
+     */
+    public static int getBlockLootEnchantmentLevel(ItemInstance tool, Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
+        BlockState state = ctx.getOptionalParameter(LootContextParams.BLOCK_STATE);
+        Vec3 pos = ctx.getOptionalParameter(LootContextParams.ORIGIN);
+        if (state != null && pos != null) {
+            var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel);
+            NeoForge.EVENT_BUS.post(event);
+            return event.getEnchantmentLevel();
+        }
+        return enchLevel;
     }
 }
