@@ -1,6 +1,7 @@
 {
   "values": [
     "#c:bars/copper",
-    "#c:bars/iron"
+    "#c:bars/iron",
+    "#minecraft:bars"
   ]
 }
