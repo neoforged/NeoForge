@@ -9,11 +9,15 @@ import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.ParameterizedType;
 import java.util.function.BiConsumer;
+import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -78,6 +82,27 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<? extends E, ? extends S>> baseRenderer, BiConsumer<E, S> modifier) {
         ensureParametersMatchBounds(TypeToken.of(baseRenderer));
         RenderStateExtensions.registerEntity(baseRenderer, modifier);
+    }
+
+    /// Convenience method for [AvatarRenderer]s to work around issues with generics inference and type safety with intersection types.
+    /// Registers a render state modifier for [EntityRenderState]s which are run after all vanilla data is
+    /// extracted. Can add custom data to the map using [EntityRenderState#setRenderData(ContextKey, Object)].
+    /// Any subclasses of the passed renderer class will also have this modifier applied.
+    ///
+    /// ```
+    /// event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+    ///     @Override
+    ///     public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
+    ///         . . .
+    ///     }
+    /// });
+    /// ```
+    public void registerAvatarEntityModifier(AvatarRenderStateModifier modifier) {
+        RenderStateExtensions.registerEntity(AvatarRenderer.class, coerce(modifier));
+    }
+
+    private static <T extends Avatar & ClientAvatarEntity> BiConsumer<?, ?> coerce(AvatarRenderStateModifier modifier) {
+        return (BiConsumer<T, AvatarRenderState>) modifier::accept;
     }
 
     /**
