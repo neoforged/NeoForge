@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.resource;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -196,7 +197,13 @@ public class ResourcePackLoader {
     private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
         final PackFormat currentVersion = SharedConstants.getCurrentVersion().packVersion(type);
         try (final PackResources primaryResources = resources.openPrimary(location)) {
-            final PackMetadataSection metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
+            PackMetadataSection metadata;
+            try {
+                metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading optional pack metadata for {}, attempting fallback type", location.id(), exception);
+                metadata = primaryResources.getMetadataSection(PackMetadataSection.FALLBACK_TYPE);
+            }
 
             final FeatureFlagSet flags = Optional.ofNullable(primaryResources.getMetadataSection(FeatureFlagsMetadataSection.TYPE))
                     .map(FeatureFlagsMetadataSection::flags)
