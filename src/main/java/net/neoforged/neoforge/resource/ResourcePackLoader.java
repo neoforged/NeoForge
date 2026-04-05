@@ -127,7 +127,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile));
+                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloadingissue.brokenresources", e.getKey()).withAffectedModFile(modFile));
                         continue;
                     }
                 } else {
@@ -145,7 +145,7 @@ public class ResourcePackLoader {
                 }
             } catch (IOException exception) {
                 LOGGER.error("Failed to read pack.mcmeta file of {}", modFile, exception);
-                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile).withCause(exception));
+                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloadingissue.brokenresources", e.getKey()).withAffectedModFile(modFile).withCause(exception));
             }
         }
 
