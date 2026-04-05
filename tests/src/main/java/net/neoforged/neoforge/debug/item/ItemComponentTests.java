@@ -14,6 +14,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.debug.EventTests;
@@ -78,8 +79,33 @@ public class ItemComponentTests {
         });
 
         test.onGameTest(helper -> {
-            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
+            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was removed");
             helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ModifyDefaultComponentsEvent can modify based on another default component", groups = EventTests.GROUP)
+    static void testModifyDefaultComponentsEventOnDefaultComponentMatching(DynamicTest test, RegistrationHelper reg) {
+        final var testItem = reg.items().registerSimpleItem("test_item_2", props -> props
+                .component(DataComponents.BASE_COLOR, DyeColor.BLUE))
+                .withLang("Test components item 2");
+
+        test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
+            event.modifyMatching(
+                    (item, components) -> components.has(DataComponents.BASE_COLOR) && item == testItem.asItem(),
+                    builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true));
+            event.modifyMatching(
+                    (item, components) -> components.get(DataComponents.BASE_COLOR) == DyeColor.BLUE && item == testItem.asItem(),
+                    builder -> builder.set(DataComponents.RARITY, Rarity.EPIC));
+        });
+
+        test.onGameTest(helper -> {
+            helper.assertTrue(testItem.asItem().components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE), "New default component added from has check");
+            helper.assertTrue(testItem.asItem().components().get(DataComponents.RARITY) == Rarity.EPIC, "New default component added from get check");
+            helper.assertTrue(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
             helper.succeed();
         });
     }

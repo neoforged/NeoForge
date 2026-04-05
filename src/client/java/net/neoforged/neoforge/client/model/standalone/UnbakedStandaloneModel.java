@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.standalone;
 
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ResolvableModel;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -30,7 +31,8 @@ public interface UnbakedStandaloneModel<T> extends ResolvableModel {
      * Bake this model.
      *
      * @param baker The current model baker.
+     * @param name  The debug name of this model currently being baked.
      * @return The fully-baked model.
      */
-    T bake(ModelBaker baker);
+    T bake(ModelBaker baker, ModelDebugName name);
 }

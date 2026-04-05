@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -215,7 +_,7 @@
+@@ -215,11 +_,17 @@
      private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
      private @Nullable EnderDragonFight dragonFight;
@@ -9,7 +9,23 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -236,7 +_,6 @@
+     private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
++    // NeoForge: If present, this level uses its own seed instead of the server's global seed
++    private final java.util.OptionalLong seedOverride;
++    /// {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
++    public java.util.OptionalLong getSeedOverride() {
++        return this.seedOverride;
++    }
+ 
+     public ServerLevel(
+         MinecraftServer server,
+@@ -233,10 +_,12 @@
+         List<CustomSpawner> customSpawners,
+         boolean tickTime
+     ) {
++        // NeoForge: set seed override asap because things like the chunk cache constructor check level.getSeed()
++        this.seedOverride = levelStem.seedOverride();
++        biomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(levelStem.seedOverride()).map(net.minecraft.world.level.biome.BiomeManager::obfuscateSeed).orElse(biomeZoomSeed);
          super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
          this.tickTime = tickTime;
          this.server = server;
@@ -17,6 +33,15 @@
          this.serverLevelData = levelData;
          ChunkGenerator generator = levelStem.generator();
          boolean syncWrites = server.forceSynchronousWrites();
+@@ -279,7 +_,7 @@
+ 
+         WorldGenSettings worldGenSettings = server.getWorldGenSettings();
+         WorldOptions options = worldGenSettings.options();
+-        long seed = options.seed();
++        long seed = seedOverride.orElse(options.seed()); // NeoForge: use the seed override here too
+         this.structureCheck = new StructureCheck(
+             this.chunkSource.chunkScanner(),
+             this.registryAccess(),
 @@ -303,6 +_,11 @@
          this.waypointManager = new ServerWaypointManager();
          this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
@@ -226,6 +251,16 @@
          return this.dragonParts.values();
      }
  
+@@ -1640,7 +_,8 @@
+ 
+     @Override
+     public long getSeed() {
+-        return this.server.getWorldGenSettings().options().seed();
++        // NeoForge: use seed override if present, otherwise default to vanilla global seed
++        return this.getSeedOverride().orElseGet(() -> this.server.getWorldGenSettings().options().seed());
+     }
+ 
+     public @Nullable EnderDragonFight getDragonFight() {
 @@ -1906,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }

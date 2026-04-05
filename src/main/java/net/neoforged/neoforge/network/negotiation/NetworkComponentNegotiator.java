@@ -172,7 +172,15 @@ public class NetworkComponentNegotiator {
 
         //Check if both sides have the same version.
         if (!left.version().equals(right.version())) {
-            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version(), right.version())));
+            String clientVer, serverVer;
+            if (requestingSide.equals("client")) {
+                clientVer = right.version();
+                serverVer = left.version();
+            } else {
+                clientVer = left.version();
+                serverVer = right.version();
+            }
+            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", clientVer, serverVer)));
         }
 
         //This happens when both the ranges are empty.
