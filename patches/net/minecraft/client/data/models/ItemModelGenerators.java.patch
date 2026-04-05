@@ -1,0 +1,52 @@
+--- a/net/minecraft/client/data/models/ItemModelGenerators.java
++++ b/net/minecraft/client/data/models/ItemModelGenerators.java
+@@ -232,6 +_,49 @@
+         this.itemModelOutput.accept(armor, ItemModelUtils.select(new TrimMaterialProperty(), untrimmedModel, cases));
+     }
+ 
++    /// Neo: Generate armor item models with dynamic trim support
++    ///
++    /// @param armor          The armor item to generate the model for
++    /// @param slotTrimPrefix The prefix of the trim overlay texture
++    public void generateDynamicTrimmableItem(Item armor, Identifier slotTrimPrefix) {
++        this.generateDynamicTrimmableItem(armor, ModelLocationUtils.getModelLocation(armor), slotTrimPrefix, -1);
++    }
++
++    /// Neo: Generate armor item models with dynamic trim support
++    ///
++    /// @param armor          The armor item to generate the model for
++    /// @param slotTrimPrefix The prefix of the trim overlay texture
++    /// @param color          The default tint color of the item model
++    public void generateDynamicTrimmableItem(Item armor, Identifier slotTrimPrefix, int color) {
++        this.generateDynamicTrimmableItem(armor, ModelLocationUtils.getModelLocation(armor), slotTrimPrefix, color);
++    }
++
++    /// Neo: Generate armor item models with dynamic trim support
++    ///
++    /// @param armor          The armor item to generate the model for
++    /// @param baseArmorModel The item model to use as a base
++    /// @param slotTrimPrefix The prefix of the trim overlay texture
++    public void generateDynamicTrimmableItem(Item armor, Identifier baseArmorModel, Identifier slotTrimPrefix) {
++        this.generateDynamicTrimmableItem(armor, baseArmorModel, slotTrimPrefix, -1);
++    }
++
++    /// Neo: Generate armor item models with dynamic trim support
++    ///
++    /// @param armor          The armor item to generate the model for
++    /// @param baseArmorModel The item model to use as a base
++    /// @param slotTrimPrefix The prefix of the trim overlay texture
++    /// @param color          The default tint color of the item model
++    public void generateDynamicTrimmableItem(Item armor, Identifier baseArmorModel, Identifier slotTrimPrefix, int color) {
++        ItemModel.Unbaked armorModel;
++        if (color != -1) {
++            armorModel = ItemModelUtils.tintedModel(baseArmorModel, new Dye(color));
++        } else {
++            armorModel = ItemModelUtils.plainModel(baseArmorModel);
++        }
++
++        this.itemModelOutput.accept(armor, new net.neoforged.neoforge.client.model.item.TrimmedArmorModel.Unbaked(armorModel, slotTrimPrefix));
++    }
++
+     public void generateBundleModels(Item bundle) {
+         ItemModel.Unbaked closedModel = ItemModelUtils.plainModel(this.createFlatItemModel(bundle, ModelTemplates.FLAT_ITEM));
+         Identifier openBackCover = this.generateBundleCoverModel(bundle, ModelTemplates.BUNDLE_OPEN_BACK_INVENTORY, "_open_back");

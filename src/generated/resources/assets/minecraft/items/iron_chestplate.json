@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "neoforge:trimmed_armor",
+    "base_model": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/iron_chestplate"
+    },
+    "base_trim_texture": "minecraft:trims/items/chestplate_trim"
+  }
+}
