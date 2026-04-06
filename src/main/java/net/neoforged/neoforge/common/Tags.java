@@ -1555,10 +1555,10 @@ public class Tags {
 
     public static class WorldClocks {
         /// [World Clocks][WorldClock] are disallowed from being paused via the [TimeCommand].
-        public static final TagKey<WorldClock> IGNORES_PAUSING = neoforgeTag("ignores_pausing");
+        public static final TagKey<WorldClock> IGNORES_PAUSE_COMMAND = neoforgeTag("ignores/pause_command");
 
         /// [World Clocks][WorldClock] with this tag are exempt from pausing when [GameRules#ADVANCE_TIME] is disabled.
-        public static final TagKey<WorldClock> IGNORES_ADVANCE_TIME = neoforgeTag("ignores_advance_time");
+        public static final TagKey<WorldClock> IGNORES_ADVANCE_TIME_RULE = neoforgeTag("ignores/advance_time_rule");
 
         private static TagKey<WorldClock> neoforgeTag(String name) {
             return TagKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name));

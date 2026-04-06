@@ -118,9 +118,9 @@
 +        }
 +
 +        private boolean ticking(boolean advanceTime) {
-+            var ignoresAdvanceTime = this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_ADVANCE_TIME);
++            var ignoresAdvanceTime = this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE);
 +
-+            if (this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSING)) {
++            if (this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
 +                return ignoresAdvanceTime || advanceTime;
 +            }
 +

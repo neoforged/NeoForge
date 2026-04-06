@@ -1784,7 +1784,7 @@ public class CommonHooks {
 
     @ApiStatus.Internal
     public static void throwIfIgnoresPausing(Holder<WorldClock> clock) throws CommandSyntaxException {
-        if (clock.is(Tags.WorldClocks.IGNORES_PAUSING)) {
+        if (clock.is(Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
             throw ERROR_IGNORES_PAUSING.create(clock.getRegisteredName());
         }
     }

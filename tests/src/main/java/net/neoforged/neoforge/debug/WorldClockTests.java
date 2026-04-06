@@ -56,8 +56,8 @@ public interface WorldClockTests {
             event.createProvider(output -> new KeyTagProvider<>(output, Registries.WORLD_CLOCK, moddedProviders, modId) {
                 @Override
                 protected void addTags(HolderLookup.Provider registries) {
-                    tag(Tags.WorldClocks.IGNORES_PAUSING).add(ignoresPause);
-                    tag(Tags.WorldClocks.IGNORES_ADVANCE_TIME).add(ignoresAdvanceTime);
+                    tag(Tags.WorldClocks.IGNORES_PAUSE_COMMAND).add(ignoresPause);
+                    tag(Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE).add(ignoresAdvanceTime);
                 }
 
                 @Override
@@ -76,8 +76,8 @@ public interface WorldClockTests {
                         .thenMap(() -> new ClockAndData(helper, helper.getHolder(ignoresPause)))
                         // validate this clock has `ignores_pausing` but not `ignores_advance_time`
                         // we should only be bypassing the `paused` state
-                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSING))
-                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME))
+                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSE_COMMAND))
+                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE))
                         // pause clock
                         .thenExecute(data -> setPaused(helper, data.clock, true))
                         // idle to allow clock to tick
@@ -102,8 +102,8 @@ public interface WorldClockTests {
                         .thenMap(() -> new ClockAndData(helper, helper.getHolder(ignoresAdvanceTime)))
                         // validate this clock has `ignores_advance_time` but not `ignores_pausing`
                         // we should only be bypassing the `advance_time` game rule
-                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME))
-                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSING))
+                        .thenExecute(data -> assertHasTag(helper, data.clock, Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE))
+                        .thenExecute(data -> assertDoesNotHaveTag(helper, data.clock, Tags.WorldClocks.IGNORES_PAUSE_COMMAND))
                         // pause clock
                         .thenExecute(data -> setPaused(helper, data.clock, true))
                         // idle to allow clock to tick
