@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
@@ -24,15 +23,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
 
 /*
@@ -78,21 +73,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default boolean shouldCauseBlockBreakReset(ItemStack newStack) {
         return self().getItem().shouldCauseBlockBreakReset(self(), newStack);
-    }
-
-    /**
-     * Gets the gameplay level of all enchantments on this stack.
-     * <p>
-     * Use in place of {@link ItemStack#getTagEnchantments()} for gameplay logic.
-     * <p>
-     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
-     *
-     * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
-     * @see {@link #getEnchantmentLevel} to get the level of a single enchantment for gameplay purposes
-     */
-    default ItemEnchantments getAllEnchantments(RegistryLookup<Enchantment> lookup) {
-        var enchantments = self().getItem().getAllEnchantments(self(), lookup);
-        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
     /**

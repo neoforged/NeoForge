@@ -1075,7 +1075,7 @@ public class EventHooks {
      * @param stack        The stack being queried against.
      * @return The new enchantment map.
      */
-    public static ItemEnchantments getAllEnchantmentLevels(ItemEnchantments enchantments, ItemStack stack, RegistryLookup<Enchantment> lookup) {
+    public static ItemEnchantments getAllEnchantmentLevels(ItemEnchantments enchantments, ItemInstance stack, RegistryLookup<Enchantment> lookup) {
         var mutableEnchantments = new ItemEnchantments.Mutable(enchantments);
         var event = new GetEnchantmentLevelEvent(stack, mutableEnchantments, null, lookup);
         NeoForge.EVENT_BUS.post(event);

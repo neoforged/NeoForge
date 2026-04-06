@@ -432,10 +432,10 @@ public interface IItemExtension {
      * @param lookup A registry lookup, used to resolve enchantment {@link Holder}s.
      * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel
-     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments}.
+     * @apiNote Call via {@link ItemInstanceExtension#getAllEnchantments}.
      */
     @ApiStatus.OverrideOnly
-    default ItemEnchantments getAllEnchantments(ItemStack stack, RegistryLookup<Enchantment> lookup) {
+    default ItemEnchantments getAllEnchantments(ItemInstance stack, RegistryLookup<Enchantment> lookup) {
         return stack.getTagEnchantments();
     }
 

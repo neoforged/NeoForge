@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -223,6 +224,21 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Gets the gameplay level of all enchantments on this stack.
+     * <p>
+     * Use in place of {@link ItemStack#getTagEnchantments()} for gameplay logic.
+     * <p>
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
+     *
+     * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
+     * @see {@link #getEnchantmentLevel} to get the level of a single enchantment for gameplay purposes
+     */
+    default ItemEnchantments getAllEnchantments(HolderLookup.RegistryLookup<Enchantment> lookup) {
+        var enchantments = self().typeHolder().value().getAllEnchantments(self(), lookup);
+        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *
@@ -234,7 +250,7 @@ public interface ItemInstanceExtension {
     }
 
     /**
-     * Gets all enchantments from NBT. Use {@link ItemStack#getAllEnchantments} for gameplay logic.
+     * Gets all enchantments from NBT. Use {@link ItemInstance#getAllEnchantments} for gameplay logic.
      */
     default ItemEnchantments getTagEnchantments() {
         return self().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
@@ -249,7 +265,7 @@ public interface ItemInstanceExtension {
      *
      * @param enchantment The enchantment being checked for.
      * @return The level of the enchantment, or 0 if not present.
-     * @see {@link IItemStackExtension#getAllEnchantments} to get all gameplay enchantments
+     * @see {@link ItemInstanceExtension#getAllEnchantments} to get all gameplay enchantments
      */
     default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().typeHolder().value().getEnchantmentLevel(self(), enchantment);
