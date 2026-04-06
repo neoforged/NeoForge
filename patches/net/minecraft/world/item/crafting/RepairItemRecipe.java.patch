@@ -1,8 +1,13 @@
 --- a/net/minecraft/world/item/crafting/RepairItemRecipe.java
 +++ b/net/minecraft/world/item/crafting/RepairItemRecipe.java
-@@ -49,7 +_,9 @@
-             && first.has(DataComponents.MAX_DAMAGE)
-             && second.has(DataComponents.MAX_DAMAGE)
+@@ -46,10 +_,12 @@
+         return second.is(first.getItem())
+             && first.getCount() == 1
+             && second.getCount() == 1
+-            && first.has(DataComponents.MAX_DAMAGE)
+-            && second.has(DataComponents.MAX_DAMAGE)
++            && first.isDamageable()
++            && second.isDamageable()
              && first.has(DataComponents.DAMAGE)
 -            && second.has(DataComponents.DAMAGE);
 +            && second.has(DataComponents.DAMAGE)

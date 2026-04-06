@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/enchantment/effects/ChangeItemDamage.java
++++ b/net/minecraft/world/item/enchantment/effects/ChangeItemDamage.java
+@@ -19,7 +_,7 @@
+     @Override
+     public void apply(ServerLevel serverLevel, int enchantmentLevel, EnchantedItemInUse item, Entity entity, Vec3 position) {
+         ItemStack itemStack = item.itemStack();
+-        if (itemStack.has(DataComponents.MAX_DAMAGE) && itemStack.has(DataComponents.DAMAGE)) {
++        if (itemStack.isDamageable() && itemStack.has(DataComponents.DAMAGE)) {
+             ServerPlayer player = item.owner() instanceof ServerPlayer sp ? sp : null;
+             int change = (int)this.amount.calculate(enchantmentLevel);
+             itemStack.hurtAndBreak(change, serverLevel, player, item.onBreak());

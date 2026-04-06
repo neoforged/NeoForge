@@ -239,6 +239,23 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
+     *
+     * @return True if repairable by combining
+     */
+    default boolean isCombineRepairable() {
+        return self().typeHolder().value().isCombineRepairable(self());
+    }
+
+    /**
+     * Used to test if this item can be damaged, but with the ItemStack in question.
+     * Please note that in some cases no ItemStack is available, so the stack-less method will be used.
+     */
+    default boolean isDamageable() {
+        return self().typeHolder().value().isDamageable(self());
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

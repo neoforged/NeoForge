@@ -147,15 +147,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
-     *
-     * @return True if repairable by combining
-     */
-    default boolean isCombineRepairable() {
-        return self().getItem().isCombineRepairable(self());
-    }
-
-    /**
      * Called when an item entity for this stack is destroyed. Note: The {@link ItemStack} can be retrieved from the item entity.
      *
      * @param itemEntity   The item entity that was destroyed.

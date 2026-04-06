@@ -131,7 +131,9 @@ public interface IItemExtension {
      *
      * @return True if repairable by combining
      */
-    boolean isCombineRepairable(ItemStack stack);
+    default boolean isCombineRepairable(ItemInstance stack) {
+        return stack.isDamageable();
+    }
 
     /**
      * Determines the amount of durability the mending enchantment
@@ -600,7 +602,7 @@ public interface IItemExtension {
      *
      * @param stack ItemStack in the Chest slot of the entity.
      */
-    default boolean isDamageable(ItemStack stack) {
+    default boolean isDamageable(ItemInstance stack) {
         return stack.has(DataComponents.MAX_DAMAGE);
     }
 

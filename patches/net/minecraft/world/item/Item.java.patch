@@ -83,8 +83,8 @@
 +    protected final boolean canCombineRepair;
 +
 +    @Override
-+    public boolean isCombineRepairable(ItemStack stack) {
-+        return canCombineRepair && isDamageable(stack);
++    public boolean isCombineRepairable(ItemInstance stack) {
++        return canCombineRepair && stack.isDamageable();
      }
  
      public ItemStack getDefaultInstance() {

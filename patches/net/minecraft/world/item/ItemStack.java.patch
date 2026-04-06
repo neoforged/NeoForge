@@ -40,7 +40,7 @@
              if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
                  player.awardStat(Stats.ITEM_USED.get(usedItem));
              }
-@@ -410,6 +_,12 @@
+@@ -410,28 +_,34 @@
          return result;
      }
  
@@ -53,7 +53,10 @@
      public boolean isStackable() {
          return this.getMaxStackSize() > 1 && (!this.isDamageableItem() || !this.isDamaged());
      }
-@@ -419,19 +_,19 @@
+ 
+     public boolean isDamageableItem() {
+-        return this.has(DataComponents.MAX_DAMAGE) && !this.has(DataComponents.UNBREAKABLE) && this.has(DataComponents.DAMAGE);
++        return isDamageable() && !this.has(DataComponents.UNBREAKABLE) && this.has(DataComponents.DAMAGE);
      }
  
      public boolean isDamaged() {
