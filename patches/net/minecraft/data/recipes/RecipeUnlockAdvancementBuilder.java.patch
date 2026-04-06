@@ -7,7 +7,7 @@
 +        return this.build(output, id, category.getFolderName());
 +    }
 +
-+    public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, @org.jetbrains.annotations.Nullable String category) {
++    public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, @org.jspecify.annotations.Nullable String category) {
          if (this.criteria.isEmpty()) {
              throw new IllegalStateException("No way of obtaining recipe " + id.identifier());
          } else {
