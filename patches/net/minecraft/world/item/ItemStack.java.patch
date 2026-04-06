@@ -219,7 +219,12 @@
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup slot : EquipmentSlotGroup.values()) {
-@@ -980,19 +_,43 @@
+@@ -976,23 +_,48 @@
+         EnchantmentHelper.updateEnchantments(this, enchantments -> enchantments.upgrade(enchantment, level));
+     }
+ 
++    @Override
+     public boolean isEnchanted() {
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  

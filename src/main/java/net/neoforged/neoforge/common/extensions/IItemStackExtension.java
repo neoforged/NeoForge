@@ -16,7 +16,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.Item;
@@ -154,19 +153,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default void onDestroyed(ItemEntity itemEntity, DamageSource damageSource) {
         self().getItem().onDestroyed(itemEntity, damageSource);
-    }
-
-    /**
-     * Whether this stack should be excluded (if possible) when selecting the target hotbar slot of a "pick" action.
-     * By default, this returns true for enchanted stacks.
-     *
-     * @see Inventory#getSuitableHotbarSlot()
-     * @param player        the player performing the picking
-     * @param inventorySlot the inventory slot of the item being up for replacement
-     * @return true to leave this stack in the hotbar if possible
-     */
-    default boolean isNotReplaceableByPickAction(Player player, int inventorySlot) {
-        return self().getItem().isNotReplaceableByPickAction(self(), player, inventorySlot);
     }
 
     @Nullable

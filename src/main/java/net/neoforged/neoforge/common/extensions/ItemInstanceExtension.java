@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
@@ -253,6 +254,24 @@ public interface ItemInstanceExtension {
      */
     default boolean isDamageable() {
         return self().typeHolder().value().isDamageable(self());
+    }
+
+    /**
+     * Whether this stack should be excluded (if possible) when selecting the target hotbar slot of a "pick" action.
+     * By default, this returns true for enchanted stacks.
+     *
+     * @see Inventory#getSuitableHotbarSlot()
+     * @param player        the player performing the picking
+     * @param inventorySlot the inventory slot of the item being up for replacement
+     * @return true to leave this stack in the hotbar if possible
+     */
+    default boolean isNotReplaceableByPickAction(Player player, int inventorySlot) {
+        // TODO: Reimplement this extension, seems to have been lost at somepoint
+        return self().typeHolder().value().isNotReplaceableByPickAction(self(), player, inventorySlot);
+    }
+
+    default boolean isEnchanted() {
+        return !self().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
     }
 
     /**
