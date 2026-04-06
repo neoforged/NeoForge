@@ -14,7 +14,6 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.EventHooks;
@@ -193,18 +191,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default boolean isCombineRepairable() {
         return self().getItem().isCombineRepairable(self());
-    }
-
-    /**
-     * Get a bounding box ({@link AABB}) of a sweep attack.
-     *
-     * @param player the performing the attack the attack.
-     * @param target the entity targeted by the attack.
-     * @return the bounding box.
-     */
-
-    default AABB getSweepHitBox(Player player, Entity target) {
-        return self().getItem().getSweepHitBox(self(), player, target);
     }
 
     /**

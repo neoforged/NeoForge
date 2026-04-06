@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.extensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
@@ -154,6 +156,17 @@ public interface ItemInstanceExtension {
      */
     default boolean canWalkOnPowderedSnow(LivingEntity wearer) {
         return self().typeHolder().value().canWalkOnPowderedSnow(self(), wearer);
+    }
+
+    /**
+     * Get a bounding box ({@link AABB}) of a sweep attack.
+     *
+     * @param player the performing the attack the attack.
+     * @param target the entity targeted by the attack.
+     * @return the bounding box.
+     */
+    default AABB getSweepHitBox(Player player, Entity target) {
+        return self().typeHolder().value().getSweepHitBox(self(), player, target);
     }
 
     /**

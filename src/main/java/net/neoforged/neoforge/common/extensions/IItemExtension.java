@@ -612,8 +612,7 @@ public interface IItemExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-
-    default AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
+    default AABB getSweepHitBox(ItemInstance stack, Player player, Entity target) {
         return target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D);
     }
 
