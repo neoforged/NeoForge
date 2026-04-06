@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -63,6 +64,17 @@ public interface ItemInstanceExtension {
     @Nullable
     default EquipmentSlot getEquipmentSlot() {
         return self().typeHolder().value().getEquipmentSlot(self());
+    }
+
+    /**
+     * Retrieves the normal 'lifespan' of this item when it is dropped on the ground
+     * as a EntityItem. This is in ticks, standard result is 6000, or 5 mins.
+     *
+     * @param level The level the entity is in
+     * @return The normal lifespan in ticks.
+     */
+    default int getEntityLifespan(Level level) {
+        return self().typeHolder().value().getEntityLifespan(self(), level);
     }
 
     /**

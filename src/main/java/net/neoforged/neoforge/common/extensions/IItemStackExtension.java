@@ -136,17 +136,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Retrieves the normal 'lifespan' of this item when it is dropped on the ground
-     * as a EntityItem. This is in ticks, standard result is 6000, or 5 mins.
-     *
-     * @param level The level the entity is in
-     * @return The normal lifespan in ticks.
-     */
-    default int getEntityLifespan(Level level) {
-        return self().getItem().getEntityLifespan(self(), level);
-    }
-
-    /**
      * Called by the default implemetation of EntityItem's onUpdate method, allowing
      * for cleaner control over the update of the item without having to write a
      * subclass.

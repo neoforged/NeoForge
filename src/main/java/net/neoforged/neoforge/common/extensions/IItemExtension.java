@@ -193,8 +193,8 @@ public interface IItemExtension {
      * @param level     The level the entity is in
      * @return The normal lifespan in ticks.
      */
-    default int getEntityLifespan(ItemStack itemStack, Level level) {
-        return 6000;
+    default int getEntityLifespan(ItemInstance itemStack, Level level) {
+        return 6000; // ItemEntity.LIFETIME
     }
 
     /**
