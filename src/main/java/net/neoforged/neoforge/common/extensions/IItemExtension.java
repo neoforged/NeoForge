@@ -671,7 +671,7 @@ public interface IItemExtension {
      * @param stack The stack holding this item
      * @return whether this item can fit inside a container item
      */
-    default boolean canFitInsideContainerItems(ItemStack stack) {
+    default boolean canFitInsideContainerItems(ItemInstance stack) {
         return self().canFitInsideContainerItems();
     }
 }

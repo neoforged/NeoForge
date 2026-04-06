@@ -199,6 +199,16 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Determines whether the item held by this stack can be safely stored inside another container item, optionally
+     * taking this stack's data into account.
+     *
+     * @return whether the item held by this stack can fit inside a container item
+     */
+    default boolean canFitInsideContainerItems() {
+        return self().typeHolder().value().canFitInsideContainerItems(self());
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

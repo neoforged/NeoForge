@@ -92,8 +92,8 @@
      }
  
 +    /**
-+     * @deprecated Neo: call {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#canFitInsideContainerItems()} instead,
-+     *             prefer overriding {@link net.neoforged.neoforge.common.extensions.IItemExtension#canFitInsideContainerItems(ItemStack)}
++     * @deprecated Neo: call {@link net.neoforged.neoforge.common.extensions.ItemInstanceExtension#canFitInsideContainerItems()} instead,
++     *             prefer overriding {@link net.neoforged.neoforge.common.extensions.IItemExtension#canFitInsideContainerItems(ItemInstance)}
 +     * @implNote It is recommended to still override this to ensure mods calling this instead of the extension still behave safely.
 +     */
 +    @Deprecated
