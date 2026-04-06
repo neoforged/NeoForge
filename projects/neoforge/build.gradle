@@ -20,6 +20,11 @@ evaluationDependsOn(":neoforge-coremods")
 
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
+changelog {
+    from '26.1.0'
+    disableAutomaticPublicationRegistration()
+}
+
 sourceSets {
     main {
         java {
@@ -263,6 +268,19 @@ generateAccessTransformers {
             named('net/minecraft/client/renderer/block/BuiltInBlockModels'),
             or(or(nameStartsWith('create'), nameStartsWith('special')), named('combineSpecialAndBlockModels'))
     )
+
+    // Make the CauldronInteraction dispatcher put methods public so mods can add new interactions
+    methodGroup(
+            'CauldronInteraction.Dispatcher put methods', PUBLIC,
+            named('net/minecraft/core/cauldron/CauldronInteraction$Dispatcher'),
+            named('put')
+    )
+
+    methodGroup(
+            'CauldronInteractions helpers', PUBLIC,
+            named('net/minecraft/core/cauldron/CauldronInteractions'),
+            and(methodsReturning('net/minecraft/world/InteractionResult'), not(nameStartsWith('lambda')))
+    )
 }
 
 tasks.register('generateFinalizeSpawnTargets', GenerateFinalizeSpawnTargets.class) {
@@ -463,6 +481,18 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+    changelog {
+        canBeDeclared = false
+        canBeResolved = false
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "changelog"))
+        }
+        // Publish it, but only for release versions
+        if (!rootProject.isPreReleaseVersion) {
+            javaComponent.addVariantsFromConfiguration(it) {}
+        }
+    }
 }
 
 sourcesJar {
@@ -484,6 +514,11 @@ artifacts {
     }
     installerJar(installerJar) {
         setClassifier("installer")
+    }
+    changelog(createChangelog.outputFile) {
+        builtBy(createChangelog)
+        setClassifier("changelog")
+        setExtension("txt")
     }
 }
 

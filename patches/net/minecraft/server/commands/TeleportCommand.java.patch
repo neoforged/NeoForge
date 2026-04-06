@@ -4,7 +4,7 @@
          float xRot,
          @Nullable LookAt lookAt
      ) throws CommandSyntaxException {
-+        net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportCommand(victim, x, y, z);
++        net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportCommand(victim, level,x, y, z);
 +        if (event.isCanceled()) {
 +             return;
 +        }

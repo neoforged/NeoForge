@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/Beardifier.java
 +++ b/net/minecraft/world/level/levelgen/Beardifier.java
-@@ -51,7 +_,11 @@
+@@ -51,7 +_,12 @@
  
                  for (StructurePiece piece : start.getPieces()) {
                      if (piece.isCloseToChunk(chunkPos, 12)) {
@@ -8,6 +8,7 @@
 +                        if (piece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
 +                            if (pieceBeardifierModifier.getTerrainAdjustment() != TerrainAdjustment.NONE) {
 +                                rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
++                                anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, pieceBeardifierModifier.getBeardifierBox());
 +                            }
 +                        } else if (piece instanceof PoolElementStructurePiece poolPiece) {
                              StructureTemplatePool.Projection projection = poolPiece.getElement().getProjection();

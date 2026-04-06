@@ -188,8 +188,6 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "開啟該選項後，可以檢查整個實體的碰撞邊界框以尋找梯子，而不僅僅是它們所在的方塊。這會導致遊戲機制有明顯的不同，因此預設值是遵循原版的遊戲行為。預設值：關閉。",
   "neoforge.configgui.handleAmbientOcclusionPerPart": "按部件處理方塊環境光遮蔽",
   "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "啟用後，環境光遮蔽將依每個區塊模型部件分別處理，而不再統一使用第一個部件的設定。",
-  "neoforge.configgui.logLegacyTagWarnings": "記錄舊版標籤",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "主要供開發人員使用的設定選項。在整合伺服器上執行時，會記錄使用「forge」命名空間的模組標籤。預設值為 DEV_SHORT。",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "記錄未翻譯的設定鍵",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "主要供開發人員使用的設定選項。在開發環境中執行用戶端時，會記錄沒有翻譯的設定值。",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "記錄未翻譯的物品標籤",
