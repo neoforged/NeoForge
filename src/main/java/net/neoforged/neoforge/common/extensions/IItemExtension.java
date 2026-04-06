@@ -47,6 +47,7 @@ import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -248,7 +249,7 @@ public interface IItemExtension {
      * @param pos    Block position in level
      * @param player The Player that is wielding the item
      */
-    default boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
+    default boolean doesSneakBypassUse(ItemInstance stack, LevelReader level, BlockPos pos, Player player) {
         return false;
     }
 

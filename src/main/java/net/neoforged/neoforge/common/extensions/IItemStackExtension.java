@@ -31,6 +31,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
@@ -180,16 +181,9 @@ public interface IItemStackExtension extends ItemInstanceExtension {
         return self().getItem().getHighlightTip(self(), displayName);
     }
 
-    /**
-     *
-     * Should this item, when held, allow sneak-clicks to pass through to the underlying block?
-     *
-     * @param level  The level
-     * @param pos    Block position in level
-     * @param player The Player that is wielding the item
-     */
-    default boolean doesSneakBypassUse(net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
-        return self().isEmpty() || self().getItem().doesSneakBypassUse(self(), level, pos, player);
+    @Override
+    default boolean doesSneakBypassUse(LevelReader level, BlockPos pos, Player player) {
+        return self().isEmpty() || ItemInstanceExtension.super.doesSneakBypassUse(level, pos, player);
     }
 
     /**

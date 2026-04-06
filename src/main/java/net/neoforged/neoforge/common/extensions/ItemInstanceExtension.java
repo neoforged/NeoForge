@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +20,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -95,6 +98,18 @@ public interface ItemInstanceExtension {
      */
     default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
         return self().typeHolder().value().canEquip(self(), armorType, entity);
+    }
+
+    /**
+     *
+     * Should this item, when held, allow sneak-clicks to pass through to the underlying block?
+     *
+     * @param level  The level
+     * @param pos    Block position in level
+     * @param player The Player that is wielding the item
+     */
+    default boolean doesSneakBypassUse(LevelReader level, BlockPos pos, Player player) {
+        return self().typeHolder().value().doesSneakBypassUse(self(), level, pos, player);
     }
 
     /**
