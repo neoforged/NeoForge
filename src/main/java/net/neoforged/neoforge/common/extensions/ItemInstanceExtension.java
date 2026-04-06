@@ -134,6 +134,17 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Whether this {@link Item} can be used to hide player's gaze from Endermen and Creakings.
+     *
+     * @param player The player watching the entity
+     * @param entity The entity the player is looking at, may be null
+     * @return true if this {@link Item} hides the player's gaze from the given entity
+     */
+    default boolean isGazeDisguise(Player player, @Nullable LivingEntity entity) {
+        return self().typeHolder().value().isGazeDisguise(self(), player, entity);
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

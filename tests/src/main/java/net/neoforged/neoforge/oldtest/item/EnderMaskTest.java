@@ -10,7 +10,7 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.bus.api.IEventBus;
@@ -27,7 +27,7 @@ public class EnderMaskTest {
 
     public static DeferredItem<Item> ENDER_MASK = ITEMS.registerItem("ender_mask", props -> new Item(props.humanoidArmor(ArmorMaterials.LEATHER, ArmorType.HELMET)) {
         @Override
-        public boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
+        public boolean isGazeDisguise(ItemInstance stack, Player player, @Nullable LivingEntity entity) {
             return entity instanceof EnderMan && player.experienceLevel > 10;
         }
     });

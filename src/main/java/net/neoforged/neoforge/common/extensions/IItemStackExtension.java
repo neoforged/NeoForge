@@ -196,17 +196,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Whether this {@link Item} can be used to hide player's gaze from Endermen and Creakings.
-     *
-     * @param player The player watching the entity
-     * @param entity The entity the player is looking at, may be null
-     * @return true if this {@link Item} hides the player's gaze from the given entity
-     */
-    default boolean isGazeDisguise(Player player, @Nullable LivingEntity entity) {
-        return self().getItem().isGazeDisguise(self(), player, entity);
-    }
-
-    /**
      * Called by the powdered snow block to check if a living entity wearing this can walk on the snow, granting the same behavior as leather boots.
      * Only affects items worn in the boots slot.
      *

@@ -577,7 +577,7 @@ public interface IItemExtension {
      * @param entity The entity the player is looking at, may be null
      * @return true if this {@link Item} hides the player's gaze from the given entity
      */
-    default boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
+    default boolean isGazeDisguise(ItemInstance stack, Player player, @Nullable LivingEntity entity) {
         return stack.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
     }
 
