@@ -136,7 +136,7 @@ public interface IItemExtension {
      * Determines the amount of durability the mending enchantment
      * will repair, on average, per 0.5 points of experience.
      */
-    default float getXpRepairRatio(ItemStack stack) {
+    default float getXpRepairRatio(ItemInstance stack) {
         return 1f;
     }
 

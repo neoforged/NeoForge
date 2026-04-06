@@ -148,14 +148,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Determines the amount of durability the mending enchantment
-     * will repair, on average, per point of experience.
-     */
-    default float getXpRepairRatio() {
-        return self().getItem().getXpRepairRatio(self());
-    }
-
-    /**
      * Called every tick when this item is {@link DataComponents#EQUIPPABLE equipped} {@link EquipmentSlot#BODY as an armor item} by a {@link Mob} that can wear armor.
      *
      * @param level The level the horse is in

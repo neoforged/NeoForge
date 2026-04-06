@@ -78,6 +78,14 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Determines the amount of durability the mending enchantment
+     * will repair, on average, per point of experience.
+     */
+    default float getXpRepairRatio() {
+        return self().typeHolder().value().getXpRepairRatio(self());
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *
