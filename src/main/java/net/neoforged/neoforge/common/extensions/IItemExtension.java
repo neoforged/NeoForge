@@ -632,7 +632,7 @@ public interface IItemExtension {
     /**
      * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
      */
-    default boolean canGrindstoneRepair(ItemStack stack) {
+    default boolean canGrindstoneRepair(ItemInstance stack) {
         return false;
     }
 

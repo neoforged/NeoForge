@@ -170,6 +170,13 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
+     */
+    default boolean canGrindstoneRepair() {
+        return self().typeHolder().value().canGrindstoneRepair(self());
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

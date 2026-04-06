@@ -216,13 +216,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
         return self().getItem().isNotReplaceableByPickAction(self(), player, inventorySlot);
     }
 
-    /**
-     * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
-     */
-    default boolean canGrindstoneRepair() {
-        return self().getItem().canGrindstoneRepair(self());
-    }
-
     @Nullable
     default <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
         return capability.getCapability(self(), context);
