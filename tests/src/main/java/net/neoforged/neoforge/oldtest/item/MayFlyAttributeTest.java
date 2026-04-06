@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -58,7 +58,7 @@ public class MayFlyAttributeTest {
         }
 
         @Override
-        public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        public ItemAttributeModifiers getDefaultAttributeModifiers(ItemInstance stack) {
             return ItemAttributeModifiers.builder()
                     .add(NeoForgeMod.CREATIVE_FLIGHT, MODIFIER, EquipmentSlotGroup.ANY)
                     .build();

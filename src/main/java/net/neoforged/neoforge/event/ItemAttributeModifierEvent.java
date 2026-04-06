@@ -18,14 +18,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /**
- * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemStack#getAttributeModifiers()}.
+ * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemInstance#getAttributeModifiers()}.
  * <br>
  * This event is fired regardless of if the stack has {@link DataComponents#ATTRIBUTE_MODIFIERS} or not. If your attribute should be
  * ignored when attributes are overridden, you can check for the presence of the component.
@@ -33,12 +33,12 @@ import org.jspecify.annotations.Nullable;
  * This event may be fired on both the logical server and logical client.
  */
 public class ItemAttributeModifierEvent extends Event {
-    private final ItemStack stack;
+    private final ItemInstance stack;
     private final ItemAttributeModifiers defaultModifiers;
     private ItemAttributeModifiersBuilder builder;
 
     @ApiStatus.Internal
-    public ItemAttributeModifierEvent(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
+    public ItemAttributeModifierEvent(ItemInstance stack, ItemAttributeModifiers defaultModifiers) {
         this.stack = stack;
         this.defaultModifiers = defaultModifiers;
     }
@@ -46,7 +46,7 @@ public class ItemAttributeModifierEvent extends Event {
     /**
      * {@return the item stack whose attribute modifiers are being computed}
      */
-    public ItemStack getItemStack() {
+    public ItemInstance getItemStack() {
         return this.stack;
     }
 

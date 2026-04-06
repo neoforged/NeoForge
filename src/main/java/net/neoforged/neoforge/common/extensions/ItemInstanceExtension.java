@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -24,9 +25,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import org.jspecify.annotations.Nullable;
 
 public interface ItemInstanceExtension {
@@ -174,6 +177,25 @@ public interface ItemInstanceExtension {
      */
     default boolean canGrindstoneRepair() {
         return self().typeHolder().value().canGrindstoneRepair(self());
+    }
+
+    /**
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents#ATTRIBUTE_MODIFIERS}
+     * or {@link Item#getDefaultAttributeModifiers(ItemInstance)} when querying attributes for gameplay purposes.
+     * <p>
+     * This method first computes the default modifiers, using {@link DataComponents#ATTRIBUTE_MODIFIERS} if present, otherwise
+     * falling back to {@link Item#getDefaultAttributeModifiers(ItemInstance)}.
+     * <p>
+     * The {@link ItemAttributeModifierEvent} is then fired to allow external adjustments.
+     */
+    default ItemAttributeModifiers getAttributeModifiers() {
+        ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        if (defaultModifiers.modifiers().isEmpty()) {
+            defaultModifiers = self().typeHolder().value().getDefaultAttributeModifiers(self());
+        }
+
+        return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 
     /**
