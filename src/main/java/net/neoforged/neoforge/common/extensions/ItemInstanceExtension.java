@@ -209,6 +209,20 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * @see {@link IItemExtension#isPrimaryItemFor(ItemInstance, Holder)}
+     */
+    default boolean isPrimaryItemFor(Holder<Enchantment> enchantment) {
+        return self().typeHolder().value().isPrimaryItemFor(self(), enchantment);
+    }
+
+    /**
+     * @see {@link IItemExtension#supportsEnchantment(ItemInstance, Holder)}
+     */
+    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
+        return self().typeHolder().value().supportsEnchantment(self(), enchantment);
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

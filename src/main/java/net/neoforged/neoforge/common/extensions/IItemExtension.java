@@ -367,23 +367,23 @@ public interface IItemExtension {
      * either from the enchantment table or other random enchantment mechanisms.
      * As a special case, books are primary items for every enchantment.
      * <p>
-     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemStack, Holder)} instead.
+     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemInstance, Holder)} instead.
      * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag or override that method.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item should be treated as a primary item for the enchantment
-     * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
+     * @apiNote Call via {@link ItemInstanceExtension#isPrimaryItemFor(Holder)}
      * 
-     * @see #supportsEnchantment(ItemStack, Holder)
+     * @see #supportsEnchantment(ItemInstance, Holder)
      */
     @ApiStatus.OverrideOnly
-    default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        if (stack.getItem() == Items.BOOK) {
+    default boolean isPrimaryItemFor(ItemInstance stack, Holder<Enchantment> enchantment) {
+        if (stack.is(Items.BOOK)) {
             return true;
         }
         Optional<HolderSet<Item>> primaryItems = enchantment.value().definition().primaryItems();
-        return this.supportsEnchantment(stack, enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
+        return stack.supportsEnchantment(enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
     }
 
     /**
@@ -397,12 +397,12 @@ public interface IItemExtension {
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item can accept the enchantment
-     * @apiNote Call via {@link IItemStackExtension#supportsEnchantment(Holder)}
+     * @apiNote Call via {@link ItemInstanceExtension#supportsEnchantment(Holder)}
      * 
-     * @see #isPrimaryItemFor(ItemStack, Holder)
+     * @see #isPrimaryItemFor(ItemInstance, Holder)
      */
     @ApiStatus.OverrideOnly
-    default boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+    default boolean supportsEnchantment(ItemInstance stack, Holder<Enchantment> enchantment) {
         return stack.is(Items.ENCHANTED_BOOK) || enchantment.value().isSupportedItem(stack);
     }
 

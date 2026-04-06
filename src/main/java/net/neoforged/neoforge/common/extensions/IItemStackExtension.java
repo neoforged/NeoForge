@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -79,20 +78,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default boolean shouldCauseBlockBreakReset(ItemStack newStack) {
         return self().getItem().shouldCauseBlockBreakReset(self(), newStack);
-    }
-
-    /**
-     * @see {@link IItemExtension#isPrimaryItemFor(ItemStack, Holder)}
-     */
-    default boolean isPrimaryItemFor(Holder<Enchantment> enchantment) {
-        return self().getItem().isPrimaryItemFor(self(), enchantment);
-    }
-
-    /**
-     * @see {@link IItemExtension#supportsEnchantment(ItemStack, Holder)}
-     */
-    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
-        return self().getItem().supportsEnchantment(self(), enchantment);
     }
 
     /**

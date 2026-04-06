@@ -5,20 +5,20 @@
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     * @deprecated Neo: Use {@link ItemInstance#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public HolderSet<Item> getSupportedItems() {
          return this.definition.supportedItems();
      }
-@@ -127,10 +_,20 @@
+@@ -127,11 +_,26 @@
          return this.definition.slots().stream().anyMatch(group -> group.test(slot));
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
++     * @deprecated Neo: Use {@link ItemInstance#isPrimaryItemFor(Holder)}
 +     *
-+     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
++     * This method does not respect {@link ItemInstance#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
 +     */
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack item) {
@@ -26,18 +26,24 @@
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     * @deprecated Neo: Use {@link ItemInstance#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public boolean isSupportedItem(ItemStack item) {
++        return isSupportedItem((ItemInstance) item);
++    }
++
++    /// Neo: [ItemInstance] sensitive version of [#isSupportedItem(ItemStack)]
++    public boolean isSupportedItem(ItemInstance item) {
          return item.is(this.definition.supportedItems);
      }
+ 
 @@ -183,6 +_,10 @@
          return result;
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     * @deprecated Neo: Use {@link ItemInstance#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public boolean canEnchant(ItemStack itemStack) {
