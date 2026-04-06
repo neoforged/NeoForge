@@ -86,6 +86,18 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Determines if the specific ItemStack can be placed in the specified armor
+     * slot, for the entity.
+     *
+     * @param armorType Armor slot to be verified.
+     * @param entity    The entity trying to equip the armor
+     * @return True if the given ItemStack can be inserted in the slot
+     */
+    default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
+        return self().typeHolder().value().canEquip(self(), armorType, entity);
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *

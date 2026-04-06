@@ -158,18 +158,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Determines if the specific ItemStack can be placed in the specified armor
-     * slot, for the entity.
-     *
-     * @param armorType Armor slot to be verified.
-     * @param entity    The entity trying to equip the armor
-     * @return True if the given ItemStack can be inserted in the slot
-     */
-    default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
-        return self().getItem().canEquip(self(), armorType, entity);
-    }
-
-    /**
      * Called when a player drops the item into the world, returning false from this
      * will prevent the item from being removed from the players inventory and
      * spawning in the world

@@ -37,7 +37,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -77,7 +77,7 @@ public class NewModelLoaderTest {
 
     public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
-        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+        public boolean canEquip(ItemInstance stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;
         }
     });

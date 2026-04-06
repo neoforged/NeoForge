@@ -261,7 +261,7 @@ public interface IItemExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+    default boolean canEquip(ItemInstance stack, EquipmentSlot armorType, LivingEntity entity) {
         return entity.isEquippableInSlot(stack, armorType);
     }
 

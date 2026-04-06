@@ -5,13 +5,18 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemInstance;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface ILivingEntityExtension extends IEntityExtension {
     default LivingEntity self() {
@@ -81,4 +86,15 @@ public interface ILivingEntityExtension extends IEntityExtension {
      *                        includes changes made to the damage sequence by events.
      */
     default void onDamageTaken(DamageContainer damageContainer) {}
+
+    /// [ItemInstance] sensetive version of [LivingEntity#isEquippableInSlot(ItemStack, EquipmentSlot)]
+    ///
+    /// Prefer calling via [ItemInstanceExtension#canEquip(EquipmentSlot, LivingEntity)] where possible
+    @ApiStatus.NonExtendable
+    default boolean isEquippableInSlot(ItemInstance item, EquipmentSlot slot) {
+        var equippable = item.get(DataComponents.EQUIPPABLE);
+        return equippable == null
+                ? slot == EquipmentSlot.MAINHAND && self().canUseSlot(EquipmentSlot.MAINHAND)
+                : slot == equippable.slot() && self().canUseSlot(equippable.slot()) && equippable.canBeEquippedBy(self().typeHolder());
+    }
 }
