@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.furnace;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.FuelValues;
@@ -18,22 +19,22 @@ import org.jspecify.annotations.Nullable;
 /**
  * {@link FurnaceFuelBurnTimeEvent} is fired when determining the fuel value for an ItemStack. <br>
  * <br>
- * To set the burn time of your own item, use {@link Item#getBurnTime(ItemStack, RecipeType, FuelValues)} instead.<br>
+ * To set the burn time of your own item, use {@link Item#getBurnTime(ItemInstance, RecipeType, FuelValues)} instead.<br>
  * <br>
- * This event is fired from {@link EventHooks#getItemBurnTime(ItemStack, int, RecipeType, FuelValues)}.<br>
+ * This event is fired from {@link EventHooks#getItemBurnTime(ItemInstance, int, RecipeType, FuelValues)}.<br>
  * <br>
  * This event is {@link ICancellableEvent} to prevent later handlers from changing the value.<br>
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent {
-    private final ItemStack itemStack;
+    private final ItemInstance itemStack;
     @Nullable
     private final RecipeType<?> recipeType;
     private final FuelValues fuelValues;
     private int burnTime;
 
-    public FurnaceFuelBurnTimeEvent(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+    public FurnaceFuelBurnTimeEvent(ItemInstance itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         this.itemStack = itemStack;
         this.burnTime = burnTime;
         this.recipeType = recipeType;
@@ -43,7 +44,7 @@ public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent
     /**
      * Get the ItemStack "fuel" in question.
      */
-    public ItemStack getItemStack() {
+    public ItemInstance getItemStack() {
         return itemStack;
     }
 

@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -25,7 +24,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -51,24 +49,11 @@ public interface IItemStackExtension extends ItemInstanceExtension {
         return (ItemStack) this;
     }
 
-    /**
-     * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
-     * <p>
-     * Will never return a negative value.
-     * 
-     * @return the fuel burn time for this item stack in a furnace.
-     * @apiNote This method by default returns the {@code burn_time} specified in
-     *          the {@code furnace_fuels.json} file.
-     */
+    @Override
     default int getBurnTime(@Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
-        if (self().isEmpty()) {
-            return 0;
-        }
-        int burnTime = self().getItem().getBurnTime(self(), recipeType, fuelValues);
-        if (burnTime < 0) {
-            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
-        }
-        return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
+        // templates do not support empty types so we override here to return 0 when empty
+        // and delegate back to super for non-empty
+        return self().isEmpty() ? 0 : ItemInstanceExtension.super.getBurnTime(recipeType, fuelValues);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {

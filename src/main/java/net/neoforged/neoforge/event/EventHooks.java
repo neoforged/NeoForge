@@ -395,7 +395,7 @@ public class EventHooks {
         return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
-    public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+    public static int getItemBurnTime(ItemInstance itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         FurnaceFuelBurnTimeEvent event = new FurnaceFuelBurnTimeEvent(itemStack, burnTime, recipeType, fuelValues);
         NeoForge.EVENT_BUS.post(event);
         return event.getBurnTime();

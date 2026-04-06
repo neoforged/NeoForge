@@ -529,7 +529,7 @@ public interface IItemExtension {
      *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
      */
     @ApiStatus.OverrideOnly
-    default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+    default int getBurnTime(ItemInstance itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         return fuelValues.burnDuration(itemStack);
     }
 

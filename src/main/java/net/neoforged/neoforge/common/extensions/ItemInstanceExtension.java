@@ -11,9 +11,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
@@ -28,6 +30,23 @@ public interface ItemInstanceExtension {
      */
     default @Nullable ItemStackTemplate getCraftingRemainder() {
         return self().typeHolder().value().getCraftingRemainder(self());
+    }
+
+    /**
+     * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
+     * <p>
+     * Will never return a negative value.
+     *
+     * @return the fuel burn time for this item stack in a furnace.
+     * @apiNote This method by default returns the {@code burn_time} specified in
+     *          the {@code furnace_fuels.json} file.
+     */
+    default int getBurnTime(@Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+        int burnTime = self().typeHolder().value().getBurnTime(self(), recipeType, fuelValues);
+        if (burnTime < 0) {
+            throw new IllegalStateException("Stack of item " + self().typeHolder().getRegisteredName() + " has a negative burn time");
+        }
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
     }
 
     /**
