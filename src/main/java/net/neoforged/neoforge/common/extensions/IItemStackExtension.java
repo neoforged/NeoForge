@@ -52,16 +52,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
-     * Returns a full ItemStack instance of the result.
-     *
-     * @return The resulting ItemStack
-     */
-    default @Nullable ItemStackTemplate getCraftingRemainder() {
-        return self().getItem().getCraftingRemainder(self());
-    }
-
-    /**
      * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
      * <p>
      * Will never return a negative value.

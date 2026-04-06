@@ -67,7 +67,7 @@
          return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
      }
  
-+    /** @deprecated use {@link #getCraftingRemainder(ItemStack)} instead */
++    /** @deprecated use {@link #getCraftingRemainder(ItemInstance)} instead */
 +    @Deprecated
      public final @Nullable ItemStackTemplate getCraftingRemainder() {
          return this.craftingRemainingItem;
