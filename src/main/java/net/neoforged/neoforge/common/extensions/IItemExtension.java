@@ -92,7 +92,7 @@ public interface IItemExtension {
      * @param displayName the name that will be displayed unless it is changed in
      *                    this method.
      */
-    default Component getHighlightTip(ItemStack item, Component displayName) {
+    default Component getHighlightTip(ItemInstance item, Component displayName) {
         return displayName;
     }
 

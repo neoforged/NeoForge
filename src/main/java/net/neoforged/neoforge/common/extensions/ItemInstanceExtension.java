@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -306,6 +307,18 @@ public interface ItemInstanceExtension {
     default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().typeHolder().value().getEnchantmentLevel(self(), enchantment);
         return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
+    }
+
+    /**
+     * Allow the item one last chance to modify its name used for the tool highlight
+     * useful for adding something extra that can't be removed by a user in the
+     * displayed name, such as a mode of operation.
+     *
+     * @param displayName the name that will be displayed unless it is changed in
+     *                    this method.
+     */
+    default Component getHighlightTip(Component displayName) {
+        return self().typeHolder().value().getHighlightTip(self(), displayName);
     }
 
     private ItemInstance self() {

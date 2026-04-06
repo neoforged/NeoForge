@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -126,18 +125,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default boolean onDroppedByPlayer(Player player) {
         return self().getItem().onDroppedByPlayer(self(), player);
-    }
-
-    /**
-     * Allow the item one last chance to modify its name used for the tool highlight
-     * useful for adding something extra that can't be removed by a user in the
-     * displayed name, such as a mode of operation.
-     *
-     * @param displayName the name that will be displayed unless it is changed in
-     *                    this method.
-     */
-    default Component getHighlightTip(Component displayName) {
-        return self().getItem().getHighlightTip(self(), displayName);
     }
 
     @Override
