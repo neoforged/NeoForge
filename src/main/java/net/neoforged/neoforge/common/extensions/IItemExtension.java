@@ -122,7 +122,7 @@ public interface IItemExtension {
      *
      * @return True if piglins are neutral to players wearing this item in an armor slot
      */
-    default boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+    default boolean makesPiglinsNeutral(ItemInstance stack, LivingEntity wearer) {
         return stack.is(ItemTags.PIGLIN_SAFE_ARMOR);
     }
 
