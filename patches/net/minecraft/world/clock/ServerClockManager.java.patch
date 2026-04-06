@@ -107,7 +107,7 @@
                  this.partialTick = this.partialTick + this.rate;
                  int fullTicks = Mth.floor(this.partialTick);
                  this.partialTick -= fullTicks;
-@@ -173,8 +_,23 @@
+@@ -173,8 +_,21 @@
  
          public ClockNetworkState packNetworkState(MinecraftServer server) {
              boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
@@ -118,13 +118,11 @@
 +        }
 +
 +        private boolean ticking(boolean advanceTime) {
-+            var ignoresAdvanceTime = this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE);
-+
-+            if (this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
-+                return ignoresAdvanceTime || advanceTime;
++            if (this.paused && !this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
++                return false;
 +            }
 +
-+            return !this.paused && (ignoresAdvanceTime || advanceTime);
++            return advanceTime || this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE);
 +        }
 +
 +        private boolean hasTag(net.minecraft.tags.TagKey<WorldClock> tag) {
