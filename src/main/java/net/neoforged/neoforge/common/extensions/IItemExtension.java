@@ -110,8 +110,8 @@ public interface IItemExtension {
      *
      * @return True if this item can be used as "currency" by piglins
      */
-    default boolean isPiglinCurrency(ItemStack stack) {
-        return stack.getItem() == PiglinAi.BARTERING_ITEM;
+    default boolean isPiglinCurrency(ItemInstance stack) {
+        return stack.is(PiglinAi.BARTERING_ITEM);
     }
 
     /**

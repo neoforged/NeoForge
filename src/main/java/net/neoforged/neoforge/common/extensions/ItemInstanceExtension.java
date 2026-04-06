@@ -113,6 +113,15 @@ public interface ItemInstanceExtension {
     }
 
     /**
+     * Called by Piglins when checking to see if they will give an item or something in exchange for this item.
+     *
+     * @return True if this item can be used as "currency" by piglins
+     */
+    default boolean isPiglinCurrency() {
+        return self().typeHolder().value().isPiglinCurrency(self());
+    }
+
+    /**
      * Queries if an item can perform the given action.
      * See {@link ItemAbilities} for a description of each stock action
      *
