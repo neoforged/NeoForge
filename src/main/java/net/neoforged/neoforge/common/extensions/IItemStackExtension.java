@@ -196,18 +196,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Called by the powdered snow block to check if a living entity wearing this can walk on the snow, granting the same behavior as leather boots.
-     * Only affects items worn in the boots slot.
-     *
-     * @param wearer The entity wearing this ItemStack
-     *
-     * @return True if the entity can walk on powdered snow
-     */
-    default boolean canWalkOnPowderedSnow(LivingEntity wearer) {
-        return self().getItem().canWalkOnPowderedSnow(self(), wearer);
-    }
-
-    /**
      * Get a bounding box ({@link AABB}) of a sweep attack.
      *
      * @param player the performing the attack the attack.

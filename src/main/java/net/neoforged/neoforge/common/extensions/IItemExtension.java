@@ -590,7 +590,7 @@ public interface IItemExtension {
      *
      * @return True if the entity can walk on powdered snow
      */
-    default boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+    default boolean canWalkOnPowderedSnow(ItemInstance stack, LivingEntity wearer) {
         return stack.is(Items.LEATHER_BOOTS);
     }
 
