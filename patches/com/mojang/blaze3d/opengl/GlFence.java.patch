@@ -5,7 +5,7 @@
              return true;
          } else {
 -            int result = GlStateManager._glClientWaitSync(this.handle, 0, timeoutMs);
-+            // Neo: Ensure commands are synced to avoid a deadlock
++            // Neo: Ensure commands are flushed to avoid a deadlock
 +            int result = GlStateManager._glClientWaitSync(this.handle, org.lwjgl.opengl.GL32.GL_SYNC_FLUSH_COMMANDS_BIT, timeoutMs);
              if (result == 37147) {
                  return false;
