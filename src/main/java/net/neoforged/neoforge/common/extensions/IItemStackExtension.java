@@ -115,20 +115,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Override this to set a non-default armor slot for an ItemStack, but <em>do
-     * not use this to get the armor slot of said stack; for that, use
-     * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}.</em>
-     *
-     * @return the armor slot of the ItemStack, or {@code null} to let the default
-     *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
-     *         decide
-     */
-    @Nullable
-    default EquipmentSlot getEquipmentSlot() {
-        return self().getItem().getEquipmentSlot(self());
-    }
-
-    /**
      * Called when a entity tries to play the 'swing' animation.
      *
      * @param entity The entity swinging the item.

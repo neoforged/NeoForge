@@ -276,7 +276,7 @@ public interface IItemExtension {
      *         decide
      */
     @Nullable
-    default EquipmentSlot getEquipmentSlot(ItemStack stack) {
+    default EquipmentSlot getEquipmentSlot(ItemInstance stack) {
         return null;
     }
 

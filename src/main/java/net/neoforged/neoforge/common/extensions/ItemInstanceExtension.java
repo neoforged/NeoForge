@@ -7,6 +7,8 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
@@ -47,6 +49,20 @@ public interface ItemInstanceExtension {
             throw new IllegalStateException("Stack of item " + self().typeHolder().getRegisteredName() + " has a negative burn time");
         }
         return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
+    }
+
+    /**
+     * Override this to set a non-default armor slot for an ItemStack, but <em>do
+     * not use this to get the armor slot of said stack; for that, use
+     * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}.</em>
+     *
+     * @return the armor slot of the ItemStack, or {@code null} to let the default
+     *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
+     *         decide
+     */
+    @Nullable
+    default EquipmentSlot getEquipmentSlot() {
+        return self().typeHolder().value().getEquipmentSlot(self());
     }
 
     /**
