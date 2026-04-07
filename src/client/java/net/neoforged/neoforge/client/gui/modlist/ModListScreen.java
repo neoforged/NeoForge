@@ -79,7 +79,7 @@ public class ModListScreen extends Screen {
 
     private static final int SIDEBAR_CONTROLS_WIDTH = 150;
     private static final int SIDEBAR_SORT_BUTTON_WIDTH = 50;
-    private static final int SIDEBAR_CONTROLS_HEIGHT = 16;
+    private static final int SIDEBAR_CONTROLS_HEIGHT = Button.DEFAULT_HEIGHT;
     private static final int SIDEBAR_MODS_LIST_WIDTH = 150;
     private static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
