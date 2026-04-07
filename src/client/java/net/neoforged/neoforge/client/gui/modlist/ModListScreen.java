@@ -201,7 +201,7 @@ public class ModListScreen extends Screen {
         footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose()).build());
 
         // Content
-        final GridLayout contentBase = layout.addToContents(new GridLayout()).columnSpacing(0);
+        final GridLayout contentBase = layout.addToContents(new GridLayout()).columnSpacing(-3);
         contentBase.defaultCellSetting().alignVerticallyTop().alignHorizontallyCenter().padding(0);
         final RowHelper contentBaseHelper = contentBase.createRowHelper(3);
 
@@ -526,7 +526,8 @@ public class ModListScreen extends Screen {
             EqualSpacingLayout buttonsLayout = this.mainLayout.addChild(new EqualSpacingLayout(width, BUTTON_PANEL_HEIGHT, EqualSpacingLayout.Orientation.HORIZONTAL));
             buttonsLayout.defaultChildLayoutSetting().alignVerticallyBottom().paddingHorizontal(-INFO_PANEL_FRAME_PADDING);
 
-            final int buttonWidth = 70;
+            final int buttonSpacing = 4;
+            final int buttonWidth = width / 3 - (buttonSpacing / 2);
             final int buttonHeight = Button.DEFAULT_HEIGHT;
 
             this.homepageButton = buttonsLayout.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.homepage"),
