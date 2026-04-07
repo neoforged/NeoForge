@@ -403,9 +403,9 @@ public class ModListScreen extends Screen {
         private final ResizableTextureImageWidget logoWidget;
         private final MultiLineTextWidget displayNameWidget;
         private final MultiLineTextWidget idAndVersionWidget;
+        private final MultiLineTextWidget licenseWidget;
         private final MultiLineTextWidget authorsWidget;
         private final MultiLineTextWidget creditsWidget;
-        private final MultiLineTextWidget licenseWidget;
         private final Button homepageButton;
         private final Button issuesButton;
         private final Button configButton;
@@ -462,6 +462,18 @@ public class ModListScreen extends Screen {
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
+            this.licenseWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
+                    .alwaysShowBorder(false)
+                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
+                    .maxWidth(width)
+                    .build()
+                    .setCentered(false));
+            this.licenseWidget.setComponentClickHandler(style -> {
+                ClickEvent clickEvent = style.getClickEvent();
+                if (clickEvent != null) {
+                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
+                }
+            });
             this.authorsWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
                     .alwaysShowBorder(false)
                     .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
@@ -481,18 +493,6 @@ public class ModListScreen extends Screen {
                     .build()
                     .setCentered(false));
             this.creditsWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
-            this.licenseWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build()
-                    .setCentered(false));
-            this.licenseWidget.setComponentClickHandler(style -> {
                 ClickEvent clickEvent = style.getClickEvent();
                 if (clickEvent != null) {
                     defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
@@ -600,15 +600,15 @@ public class ModListScreen extends Screen {
             this.idAndVersionWidget.setMessage(Component.empty());
             this.idAndVersionWidget.visible = false;
             this.idAndVersionWidget.setHeight(0);
+            this.licenseWidget.setMessage(Component.empty());
+            this.licenseWidget.visible = false;
+            this.licenseWidget.setHeight(0);
             this.authorsWidget.setMessage(Component.empty());
             this.authorsWidget.visible = false;
             this.authorsWidget.setHeight(0);
             this.creditsWidget.setMessage(Component.empty());
             this.creditsWidget.visible = false;
             this.creditsWidget.setHeight(0);
-            this.licenseWidget.setMessage(Component.empty());
-            this.licenseWidget.visible = false;
-            this.licenseWidget.setHeight(0);
 
             this.homepageButton.active = false;
             this.issuesButton.active = false;
@@ -661,6 +661,10 @@ public class ModListScreen extends Screen {
                     .withStyle(ChatFormatting.GRAY));
             this.idAndVersionWidget.visible = true;
 
+            this.licenseWidget.setMessage(Component.translatable(
+                    "neoforge.screen.mods.info.license",
+                    displayInfo.license().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
+            this.licenseWidget.visible = true;
             if (containsText(displayInfo.authors())) {
                 this.authorsWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.authors",
@@ -673,10 +677,6 @@ public class ModListScreen extends Screen {
                         displayInfo.credits().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
                 this.creditsWidget.visible = true;
             }
-            this.licenseWidget.setMessage(Component.translatable(
-                    "neoforge.screen.mods.info.license",
-                    displayInfo.license().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
-            this.licenseWidget.visible = true;
 
             this.homepageButton.active = displayInfo.displayUrl() != null;
             this.issuesButton.active = displayInfo.issuesUrl() != null;
