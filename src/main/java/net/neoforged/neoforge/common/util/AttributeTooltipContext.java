@@ -21,12 +21,6 @@ import org.jspecify.annotations.Nullable;
  */
 public interface AttributeTooltipContext extends Item.TooltipContext {
     /**
-     * {@return the player for whom tooltips are being generated for, if known}
-     */
-    @Nullable
-    Player player();
-
-    /**
      * {@return the tooltip display}
      */
     TooltipDisplay tooltipDisplay();
