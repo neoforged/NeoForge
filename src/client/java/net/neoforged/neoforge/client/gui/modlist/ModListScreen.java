@@ -433,7 +433,10 @@ public class ModListScreen extends Screen {
             // Ensure layout width fills the whole width
             contentLayout.addChild(SpacerElement.width(width));
 
-            this.logoWidget = contentLayout.addChild(new ResizableTextureImageWidget(0, 0, 0, 0, MissingTextureAtlasSprite.getLocation(), 0, 0));
+            this.logoWidget = contentLayout.addChild(
+                    new ResizableTextureImageWidget(0, 0, 0, 0, MissingTextureAtlasSprite.getLocation(), 0, 0),
+                    contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING)
+            );
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
