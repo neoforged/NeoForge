@@ -90,7 +90,7 @@ public class ModListScreen extends Screen {
     private final ConfigurationScreenFactory configFactory;
 
     private final List<ModsList.Entry> allEntries;
-    private SortType currentSort = SortType.DEFAULT;
+    private SortType currentSort = SortType.A_TO_Z;
 
     @Nullable
     private HeaderAndFooterLayout layout;
@@ -707,7 +707,6 @@ public class ModListScreen extends Screen {
     private static final Comparator<ModsList.Entry> COMPARATOR_BY_NAME = Comparator.comparing(c -> c.displayInfo.displayName().getString().toLowerCase(Locale.ROOT));
 
     private enum SortType {
-        DEFAULT("neoforge.screen.mods.sort.default", _ -> {}),
         A_TO_Z("neoforge.screen.mods.sort.a_to_z", list -> list.sort(COMPARATOR_BY_NAME)),
         Z_TO_A("neoforge.screen.mods.sort.z_to_a", list -> list.sort(COMPARATOR_BY_NAME.reversed()));
 
