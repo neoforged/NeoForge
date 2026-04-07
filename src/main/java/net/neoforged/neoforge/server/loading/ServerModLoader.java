@@ -30,7 +30,6 @@ public class ServerModLoader extends CommonModLoader {
         try {
             begin(() -> {}, false);
             load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
-            finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
         } catch (ModLoadingException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly

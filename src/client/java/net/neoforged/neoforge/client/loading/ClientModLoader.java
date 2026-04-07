@@ -58,7 +58,6 @@ public class ClientModLoader extends CommonModLoader {
     public static void finish() {
         try {
             load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
-            finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
             ModLoader.runInitTask("Client network registry lock", ModWorkManager.syncExecutor(), () -> {}, ClientNetworkRegistry::setup);
         } catch (ModLoadingException e) {
             FatalErrorReporting.reportFatalError(e);
