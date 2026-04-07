@@ -205,8 +205,8 @@ public class ModListScreen extends Screen {
         contentBase.defaultCellSetting().alignVerticallyTop().alignHorizontallyCenter().padding(0);
         final RowHelper contentBaseHelper = contentBase.createRowHelper(3);
 
-        final LinearLayout sidebar = contentBaseHelper.addChild(LinearLayout.vertical());
-        sidebar.spacing(2).defaultCellSetting().alignVerticallyTop();
+        final LinearLayout sidebar = contentBaseHelper.addChild(LinearLayout.vertical(), contentBaseHelper.newCellSettings().paddingVertical(-INFO_PANEL_FRAME_PADDING));
+        sidebar.spacing(4).defaultCellSetting().alignVerticallyTop();
         final LinearLayout main = contentBaseHelper.addChild(LinearLayout.vertical(), 2);
 
         this.fixedSidebarLayout = sidebar.addChild(new EqualSpacingLayout(SIDEBAR_CONTROLS_WIDTH, SIDEBAR_CONTROLS_HEIGHT, EqualSpacingLayout.Orientation.HORIZONTAL));
@@ -227,7 +227,7 @@ public class ModListScreen extends Screen {
                 }));
 
         this.fixedSidebarLayout.arrangeElements(); // Arrange to figure out the height
-        this.displayList = sidebar.addChild(new ModsList(this.layout.getContentHeight() - this.fixedSidebarLayout.getHeight()));
+        this.displayList = sidebar.addChild(new ModsList(this.layout.getContentHeight() - this.fixedSidebarLayout.getHeight() - 4));
 
         this.displayPanel = new ModInfoPanel(INFO_PANEL_WIDTH, this.layout.getContentHeight());
         main.addChild(this.displayPanel.getMainLayout());
@@ -249,7 +249,7 @@ public class ModListScreen extends Screen {
         assert this.displayPanel != null;
         assert this.fixedSidebarLayout != null;
         this.displayPanel.updateHeight(this.layout.getContentHeight());
-        this.displayList.updateSizeAndPosition(SIDEBAR_MODS_LIST_WIDTH, this.layout.getContentHeight() - this.fixedSidebarLayout.getHeight(), 0);
+        this.displayList.updateSizeAndPosition(SIDEBAR_MODS_LIST_WIDTH, this.layout.getContentHeight() - this.fixedSidebarLayout.getHeight() - 4, 0);
         this.displayPanel.getMainLayout().arrangeElements();
         this.layout.arrangeElements();
         this.displayList.setScrollAmount(this.displayList.scrollAmount());
