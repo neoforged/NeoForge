@@ -515,8 +515,7 @@ public class ModListScreen extends Screen {
 
             this.separator = contentLayout.addChild(
                     new SolidColorWidget(width - 8, 1).setColor(ARGB.opaque(Objects.requireNonNull(ChatFormatting.GRAY.getColor()))).calculateShadow(),
-                    contentLayout.newCellSettings().paddingVertical(MAIN_PADDING).alignHorizontallyCenter()
-            );
+                    contentLayout.newCellSettings().paddingVertical(MAIN_PADDING).alignHorizontallyCenter());
 
             this.descriptionWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
                     .alwaysShowBorder(false)

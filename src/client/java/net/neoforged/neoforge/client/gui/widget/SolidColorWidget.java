@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.gui.widget;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -80,8 +85,7 @@ public class SolidColorWidget extends AbstractWidget {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput output) {
-    }
+    protected void updateWidgetNarration(NarrationElementOutput output) {}
 
     @Override
     public boolean shouldTakeFocusAfterInteraction() {
