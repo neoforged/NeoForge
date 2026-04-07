@@ -129,7 +129,7 @@ public class ModListScreen extends Screen {
 
                     @Override
                     public Component license() {
-                        return Component.literal("Minecraft End User License Agreement").withStyle(style -> style
+                        return Component.literal("Minecraft EULA").withStyle(style -> style
                                 .withUnderlined(true)
                                 .withClickEvent(new ClickEvent.OpenUrl(CommonLinks.EULA)));
                     }
