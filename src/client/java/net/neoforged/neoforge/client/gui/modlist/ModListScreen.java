@@ -160,11 +160,11 @@ public class ModListScreen extends Screen {
         if (!FMLEnvironment.isProduction()) {
             mods.add(TestingResources.neoPride());
             mods.add(TestingResources.winterFox());
-            mods.add(TestingResources.exercise("exerciseA"));
-            mods.add(TestingResources.exercise("exerciseB"));
-            mods.add(TestingResources.exercise("exerciseC"));
-            mods.add(TestingResources.exercise("exerciseD"));
-            mods.add(TestingResources.exercise("exerciseE"));
+            mods.add(TestingResources.exercise("ZexerciseA"));
+            mods.add(TestingResources.exercise("ZexerciseB"));
+            mods.add(TestingResources.exercise("ZexerciseC"));
+            mods.add(TestingResources.exercise("ZexerciseD"));
+            mods.add(TestingResources.exercise("ZexerciseE"));
         }
 
         ConfigurationScreenFactory configFactory = displayInfo -> {
