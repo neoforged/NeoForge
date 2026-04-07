@@ -526,7 +526,7 @@ public class ModListScreen extends Screen {
             EqualSpacingLayout buttonsLayout = this.mainLayout.addChild(new EqualSpacingLayout(width, BUTTON_PANEL_HEIGHT, EqualSpacingLayout.Orientation.HORIZONTAL));
             buttonsLayout.defaultChildLayoutSetting().alignVerticallyBottom().paddingHorizontal(-INFO_PANEL_FRAME_PADDING);
 
-            final int buttonSpacing = 4;
+            final int buttonSpacing = 3;
             final int buttonWidth = width / 3 - (buttonSpacing / 2);
             final int buttonHeight = Button.DEFAULT_HEIGHT;
 
