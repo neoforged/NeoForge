@@ -509,9 +509,9 @@ public class ModListScreen extends Screen {
             });
 
             this.backgroundWithPipingWidget = this.contentFrame.addChild(new BackgroundWithPipingWidget(
-                            ModListScreen.this.minecraft,
-                            0, 0,
-                            INFO_PANEL_WIDTH + INFO_PANEL_FRAME_PADDING * 2, height - BUTTON_PANEL_HEIGHT + INFO_PANEL_FRAME_PADDING * 2),
+                    ModListScreen.this.minecraft,
+                    0, 0,
+                    INFO_PANEL_WIDTH + INFO_PANEL_FRAME_PADDING * 2, height - BUTTON_PANEL_HEIGHT + INFO_PANEL_FRAME_PADDING * 2),
                     this.contentFrame.newChildLayoutSettings().padding(-INFO_PANEL_FRAME_PADDING));
 
             this.scrollableContentContainer = this.contentFrame.addChild(
@@ -642,15 +642,15 @@ public class ModListScreen extends Screen {
             this.displayNameWidget.setMessage(displayInfo.displayName());
             this.displayNameWidget.visible = true;
             this.idAndVersionWidget.setMessage(Component.translatable(
-                            "neoforge.screen.mods.info.subtitle",
-                            Component.literal(displayInfo.id()).withStyle(style -> style
-                                    .withUnderlined(true)
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.modid.click")))
-                                    .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.id()))),
-                            Component.literal(displayInfo.version()).withStyle(style -> style
-                                    .withUnderlined(true)
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.version.click")))
-                                    .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.version()))))
+                    "neoforge.screen.mods.info.subtitle",
+                    Component.literal(displayInfo.id()).withStyle(style -> style
+                            .withUnderlined(true)
+                            .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.modid.click")))
+                            .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.id()))),
+                    Component.literal(displayInfo.version()).withStyle(style -> style
+                            .withUnderlined(true)
+                            .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.version.click")))
+                            .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.version()))))
                     .withStyle(ChatFormatting.GRAY));
             this.idAndVersionWidget.visible = true;
 

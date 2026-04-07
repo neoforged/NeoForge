@@ -17,7 +17,8 @@ import org.jspecify.annotations.Nullable;
 
 /// An image resource. This is primarily used for [mod display info][ModDisplayInfo].
 public sealed interface ImageResource {
-    @Nullable IoSupplier<InputStream> get(ResourceManager resourceManager);
+    @Nullable
+    IoSupplier<InputStream> get(ResourceManager resourceManager);
 
     static ImageResource packRoot(String packId, String path) {
         return new PackRoot(packId, path);
