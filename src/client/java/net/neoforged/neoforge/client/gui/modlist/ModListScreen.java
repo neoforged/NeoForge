@@ -335,12 +335,12 @@ public class ModListScreen extends Screen {
 
         @Override
         public int getRowWidth() {
-            return this.getWidth() - 24;
+            return this.getWidth() - 16;
         }
 
         @Override
         protected int scrollBarX() {
-            return this.getRowRight() + this.scrollbarWidth();
+            return this.getRight() - this.scrollbarWidth();
         }
 
         @Override
