@@ -58,6 +58,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
 import net.minecraft.util.Util;
@@ -68,6 +69,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
 import net.neoforged.neoforge.client.gui.widget.ResizableTextureImageWidget;
+import net.neoforged.neoforge.client.gui.widget.SolidColorWidget;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
@@ -417,6 +419,7 @@ public class ModListScreen extends Screen {
         private final MultiLineTextWidget licenseWidget;
         private final MultiLineTextWidget authorsWidget;
         private final MultiLineTextWidget creditsWidget;
+        private final SolidColorWidget separator;
         private final Button homepageButton;
         private final Button issuesButton;
         private final Button configButton;
@@ -510,7 +513,10 @@ public class ModListScreen extends Screen {
                 }
             });
 
-            contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
+            this.separator = contentLayout.addChild(
+                    new SolidColorWidget(width - 8, 1).setColor(ARGB.opaque(Objects.requireNonNull(ChatFormatting.GRAY.getColor()))).calculateShadow(),
+                    contentLayout.newCellSettings().paddingVertical(MAIN_PADDING).alignHorizontallyCenter()
+            );
 
             this.descriptionWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
                     .alwaysShowBorder(false)
@@ -625,6 +631,7 @@ public class ModListScreen extends Screen {
             this.issuesButton.active = false;
             this.configScreenFactory = null;
             this.configButton.active = false;
+            this.separator.visible = false;
             this.descriptionWidget.setMessage(Component.empty());
             this.descriptionWidget.visible = false;
             this.descriptionWidget.setHeight(0);
@@ -696,6 +703,7 @@ public class ModListScreen extends Screen {
 
             // Hardcoded case from ModInfo
             if (containsText(displayInfo.description()) && !displayInfo.description().getString().equals("MISSING DESCRIPTION")) {
+                this.separator.visible = true;
                 this.descriptionWidget.setMessage(displayInfo.description());
                 this.descriptionWidget.visible = true;
             }
