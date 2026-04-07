@@ -664,18 +664,18 @@ public class ModListScreen extends Screen {
             if (containsText(displayInfo.authors())) {
                 this.authorsWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.authors",
-                        displayInfo.authors().copy().withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GRAY));
+                        displayInfo.authors().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
                 this.authorsWidget.visible = true;
             }
             if (containsText(displayInfo.credits())) {
                 this.creditsWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.credits",
-                        displayInfo.credits().copy().withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GRAY));
+                        displayInfo.credits().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
                 this.creditsWidget.visible = true;
             }
             this.licenseWidget.setMessage(Component.translatable(
                     "neoforge.screen.mods.info.license",
-                    displayInfo.license().copy().withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GRAY));
+                    displayInfo.license().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
             this.licenseWidget.visible = true;
 
             this.homepageButton.active = displayInfo.displayUrl() != null;
