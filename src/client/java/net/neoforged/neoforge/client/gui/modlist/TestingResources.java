@@ -166,16 +166,16 @@ class TestingResources {
         };
     }
 
-    static ModDisplayInfo exercise() {
+    static ModDisplayInfo exercise(String modId) {
         return new ModDisplayInfo() {
             @Override
             public String id() {
-                return "exercise";
+                return modId;
             }
 
             @Override
             public Component displayName() {
-                return Component.literal("HA".repeat(20));
+                return Component.literal(modId + " " + "HA".repeat(10));
             }
 
             @Override
