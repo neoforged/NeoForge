@@ -267,7 +267,6 @@ public interface ItemInstanceExtension {
      * @return true to leave this stack in the hotbar if possible
      */
     default boolean isNotReplaceableByPickAction(Player player, int inventorySlot) {
-        // TODO: Reimplement this extension, seems to have been lost at somepoint
         return self().typeHolder().value().isNotReplaceableByPickAction(self(), player, inventorySlot);
     }
 
