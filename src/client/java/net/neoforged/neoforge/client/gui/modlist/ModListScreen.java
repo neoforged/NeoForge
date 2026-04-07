@@ -435,8 +435,7 @@ public class ModListScreen extends Screen {
 
             this.logoWidget = contentLayout.addChild(
                     new ResizableTextureImageWidget(0, 0, 0, 0, MissingTextureAtlasSprite.getLocation(), 0, 0),
-                    contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING)
-            );
+                    contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING));
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
