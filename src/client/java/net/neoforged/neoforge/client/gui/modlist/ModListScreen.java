@@ -337,9 +337,20 @@ public class ModListScreen extends Screen {
             this.setSelected(null);
         }
 
+        // Make the entries fit the container, and shrink if the scrollbar is present
+        @Override
+        public int getRowLeft() {
+            return this.getX() + 3;
+        }
+
         @Override
         public int getRowWidth() {
-            return this.getWidth() - 16;
+            int rowWidth = this.getWidth() - 6;
+            if (this.scrollable()) {
+                // Shrink if scrollbar is present
+                rowWidth -= this.scrollbarWidth();
+            }
+            return rowWidth;
         }
 
         @Override
