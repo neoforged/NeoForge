@@ -194,6 +194,15 @@
              return lines;
          }
      }
+@@ -852,6 +_,8 @@
+         Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
+     ) {
+         this.getItem().appendHoverText(this, context, display, builder, tooltipFlag);
++        // Neo: allow for easy addition of Data Component tooltips
++        net.neoforged.neoforge.event.EventHooks.collectDataComponentTooltips(this, player, display, tooltipFlag, context, component -> this.addToTooltip(component, context, display, builder, tooltipFlag));
+         this.addToTooltip(DataComponents.TROPICAL_FISH_PATTERN, context, display, builder, tooltipFlag);
+         this.addToTooltip(DataComponents.INSTRUMENT, context, display, builder, tooltipFlag);
+         this.addToTooltip(DataComponents.MAP_ID, context, display, builder, tooltipFlag);
 @@ -872,7 +_,8 @@
          this.addToTooltip(DataComponents.DYED_COLOR, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.PROFILE, context, display, builder, tooltipFlag);
