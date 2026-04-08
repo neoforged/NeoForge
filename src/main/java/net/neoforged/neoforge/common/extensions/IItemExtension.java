@@ -131,9 +131,7 @@ public interface IItemExtension {
      *
      * @return True if repairable by combining
      */
-    default boolean isCombineRepairable(ItemInstance stack) {
-        return stack.isDamageable();
-    }
+    boolean isCombineRepairable(ItemInstance stack);
 
     /**
      * Determines the amount of durability the mending enchantment
