@@ -61,10 +61,9 @@ class TestingResources {
                 return Component.literal("BSD-0").withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(Component.literal("PLS WORK."))));
             }
 
-            @Nullable
             @Override
             public ImageResource logo() {
-                return null;
+                return ImageResource.packRoot("mod/neoforge", "snowy_boi.png");
             }
 
             @Override

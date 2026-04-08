@@ -86,6 +86,7 @@ public class ModListScreen extends Screen {
     private static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
     private static final int ICON_SIZE = 24;
+    private static final int LOGO_MAX_HEIGHT = 50;
 
     private final ImmutableList<ModDisplayInfo> mods;
     private final Path modsFolder;
@@ -453,7 +454,7 @@ public class ModListScreen extends Screen {
 
             this.logoWidget = contentLayout.addChild(
                     new ResizableTextureImageWidget(0, 0, 0, 0, MissingTextureAtlasSprite.getLocation(), 0, 0),
-                    contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING));
+                    contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING).alignHorizontallyCenter());
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
@@ -655,7 +656,7 @@ public class ModListScreen extends Screen {
                 } else {
                     this.logoData = loadImage("logo", displayInfo.id(), logoResource);
                     if (this.logoData != null) {
-                        float scaleFactor = Math.min(1F, (float) width / this.logoData.width());
+                        float scaleFactor = Math.min(1F, (float) LOGO_MAX_HEIGHT / this.logoData.height());
                         int logoWidth = (int) (this.logoData.width() * scaleFactor);
                         int logoHeight = (int) (this.logoData.height() * scaleFactor);
                         this.logoWidget.updateResource(this.logoData.sprite(), logoWidth, logoHeight);
