@@ -17,9 +17,12 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
-@@ -239,7 +_,7 @@
+@@ -237,9 +_,9 @@
+ 
+     public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(
-             Item.TooltipContext.of(minecraft.level),
+-            Item.TooltipContext.of(minecraft.level),
++            Item.TooltipContext.of(minecraft.level, minecraft.player),
              minecraft.player,
 -            minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL
 +            net.neoforged.neoforge.client.ClientTooltipFlag.of(minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL)

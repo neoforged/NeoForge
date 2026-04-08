@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockQuadOutput;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
@@ -18,6 +19,8 @@ import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.PigRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -29,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -36,6 +40,7 @@ import net.minecraft.world.entity.monster.hoglin.HoglinBase;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
@@ -46,6 +51,7 @@ import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
+import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -157,6 +163,7 @@ public class ClientEventTests {
     static void updateRenderState(final DynamicTest test) {
         var rotationKey = new ContextKey<Float>(Identifier.fromNamespaceAndPath(test.createModId(), "rotation"));
         var numRenderAttachmentKey = new ContextKey<Integer>(Identifier.fromNamespaceAndPath(test.createModId(), "times_to_render"));
+        var avatarTestKey = new ContextKey<Vec3>(Identifier.fromNamespaceAndPath(test.createModId(), "avatar_test"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
             event.registerEntityModifier(PigRenderer.class, (entity, renderState) -> {
@@ -174,6 +181,12 @@ public class ClientEventTests {
                 event.registerEntityModifier(new TestBrokenHoglinRendererTypeToken<>(), (entity, renderState) -> {});
                 test.fail("Unsafe type parameter succeeded. Cannot assume T can be ?.");
             } catch (IllegalArgumentException ignored) {}
+            event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+                @Override
+                public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
+                    renderState.setRenderData(avatarTestKey, avatar.avatarState().deltaMovementOnPreviousTick());
+                }
+            });
         });
         test.whenEnabled(listeners -> {
             BlockDisplayContext blockDisplayContext = BlockDisplayContext.create();
@@ -185,7 +198,11 @@ public class ClientEventTests {
                 }
                 float xRotation = event.getRenderState().getRenderDataOrDefault(rotationKey, 0f);
                 if (event.getRenderer() instanceof PigRenderer && numRender == 0) {
-                    test.fail("Custom render data not set for player");
+                    test.fail("Custom render data not set for pig");
+                    return;
+                }
+                if (event.getRenderer() instanceof AvatarRenderer<?> && event.getRenderState().getRenderData(avatarTestKey) == null) {
+                    test.fail("Avatar test data not set for player/mannequin");
                     return;
                 }
 
