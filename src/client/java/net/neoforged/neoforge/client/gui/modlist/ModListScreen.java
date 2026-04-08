@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -458,78 +459,21 @@ public class ModListScreen extends Screen {
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
-            this.displayNameWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build());
-            this.idAndVersionWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build());
-            this.idAndVersionWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
+            this.displayNameWidget = buildTextWidget(contentLayout).setCentered(true);
+            this.displayNameWidget.setComponentClickHandler(null); // Disallow clicks for the display name
+            this.idAndVersionWidget = buildTextWidget(contentLayout).setCentered(true);
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
-            this.licenseWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build()
-                    .setCentered(false));
-            this.licenseWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
-            this.authorsWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build()
-                    .setCentered(false));
-            this.authorsWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
-            this.creditsWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build()
-                    .setCentered(false));
-            this.creditsWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
+            this.licenseWidget = buildTextWidget(contentLayout);
+            this.authorsWidget = buildTextWidget(contentLayout);
+            this.creditsWidget = buildTextWidget(contentLayout);
 
             this.separator = contentLayout.addChild(
                     new SolidColorWidget(width - 8, 1).setColor(ARGB.opaque(Objects.requireNonNull(ChatFormatting.GRAY.getColor()))).calculateShadow(),
                     contentLayout.newCellSettings().paddingVertical(MAIN_PADDING).alignHorizontallyCenter());
 
-            this.descriptionWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
-                    .alwaysShowBorder(false)
-                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-                    .maxWidth(width)
-                    .build()
-                    .setCentered(false));
-            this.descriptionWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
+            this.descriptionWidget = buildTextWidget(contentLayout);
 
             this.backgroundWithPipingWidget = this.contentFrame.addChild(new BackgroundWithPipingWidget(
                     ModListScreen.this.minecraft,
@@ -575,6 +519,22 @@ public class ModListScreen extends Screen {
             this.reset();
         }
 
+        private MultiLineTextWidget buildTextWidget(LinearLayout layout) {
+            MultiLineTextWidget widget = layout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
+                    .alwaysShowBorder(false)
+                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
+                    .maxWidth(width)
+                    .build()
+                    .setCentered(false));
+            widget.setComponentClickHandler(style -> {
+                ClickEvent clickEvent = style.getClickEvent();
+                if (clickEvent != null) {
+                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
+                }
+            });
+            return widget;
+        }
+
         public LinearLayout getMainLayout() {
             return mainLayout;
         }
@@ -611,32 +571,26 @@ public class ModListScreen extends Screen {
             }
             this.logoWidget.updateResource(MissingTextureAtlasSprite.getLocation(), 0, 0);
 
-            this.displayNameWidget.setMessage(Component.empty());
-            this.displayNameWidget.visible = false;
-            this.displayNameWidget.setHeight(0);
-            this.idAndVersionWidget.setMessage(Component.empty());
-            this.idAndVersionWidget.visible = false;
-            this.idAndVersionWidget.setHeight(0);
-            this.licenseWidget.setMessage(Component.empty());
-            this.licenseWidget.visible = false;
-            this.licenseWidget.setHeight(0);
-            this.authorsWidget.setMessage(Component.empty());
-            this.authorsWidget.visible = false;
-            this.authorsWidget.setHeight(0);
-            this.creditsWidget.setMessage(Component.empty());
-            this.creditsWidget.visible = false;
-            this.creditsWidget.setHeight(0);
+            hideTextWidget(this.displayNameWidget);
+            hideTextWidget(this.idAndVersionWidget);
+            hideTextWidget(this.licenseWidget);
+            hideTextWidget(this.authorsWidget);
+            hideTextWidget(this.creditsWidget);
 
             this.homepageButton.active = false;
             this.issuesButton.active = false;
             this.configScreenFactory = null;
             this.configButton.active = false;
             this.separator.visible = false;
-            this.descriptionWidget.setMessage(Component.empty());
-            this.descriptionWidget.visible = false;
-            this.descriptionWidget.setHeight(0);
+            hideTextWidget(this.descriptionWidget);
 
             this.squirr.visible = false;
+        }
+
+        private void hideTextWidget(AbstractStringWidget widget) {
+            widget.setMessage(Component.empty());
+            widget.visible = false;
+            widget.setHeight(0);
         }
 
         /// Updates the layout based on the selected info.
