@@ -126,7 +126,7 @@
              return this;
          }
  
-@@ -709,7 +_,33 @@
+@@ -709,7 +_,26 @@
  
          boolean isPeaceful();
  
@@ -149,14 +149,7 @@
 +        }
 +
 +        static Item.TooltipContext of(@Nullable Level pLevel, @Nullable Player player) {
-+            Level level;
-+            if (pLevel != null) {
-+                level = pLevel;
-+            } else if (player != null) {
-+                level = player.level();
-+            } else {
-+                level = null;
-+            }
++            Level level = pLevel == null && player != null ? player.level() : pLevel;
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
                  public HolderLookup.Provider registries() {
