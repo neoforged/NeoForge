@@ -14,7 +14,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
+import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforgespi.language.IModFileInfo;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -105,7 +108,9 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
             return ImageResource.packAsset(Identifier.parse(path));
         } else {
             // It's a root resource; get from the mod's resource pack
-            return ImageResource.packRoot("mod/" + id(), path);
+            IModFileInfo modFileInfo = ModList.get().getModFileById(id());
+            String packId = ResourcePackLoader.getPackName(modFileInfo.getFile());
+            return ImageResource.packRoot(packId, path);
         }
     }
 
