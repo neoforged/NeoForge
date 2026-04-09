@@ -1121,7 +1121,11 @@ public class CommonHooks {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
         LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
         for (IGlobalLootModifier mod : man.getSortedModifiers()) {
-            generatedLoot = mod.apply(generatedLoot, context);
+            try {
+                generatedLoot = mod.apply(generatedLoot, context);
+            } catch (Exception e) {
+                LOGGER.error("Error applying global loot modifier %s for loot table %s!".formatted(man.getId(mod), lootTableId), e);
+            }
         }
         return generatedLoot;
     }

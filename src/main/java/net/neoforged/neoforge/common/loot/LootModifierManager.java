@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.common.loot;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableBiMap.Builder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,13 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
 public class LootModifierManager extends SimpleJsonResourceReloadListener<Optional<WithConditions<IGlobalLootModifier>>> {
     public static final Logger LOGGER = LogManager.getLogger();
     private static final String FOLDER = "loot_modifiers";
 
-    private Map<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableMap.of();
+    private BiMap<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableBiMap.of();
     private List<IGlobalLootModifier> sortedModifiers = List.of();
 
     public LootModifierManager(RegistryAccess registries) {
@@ -34,7 +36,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<Option
 
     @Override
     protected void apply(Map<Identifier, Optional<WithConditions<IGlobalLootModifier>>> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
-        Builder<Identifier, IGlobalLootModifier> builder = ImmutableMap.builder();
+        Builder<Identifier, IGlobalLootModifier> builder = ImmutableBiMap.builder();
         for (Map.Entry<Identifier, Optional<WithConditions<IGlobalLootModifier>>> entry : resourceList.entrySet()) {
             if (entry.getValue().isPresent()) {
                 builder.put(entry.getKey(), entry.getValue().get().carrier());
@@ -52,5 +54,13 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<Option
      */
     public Iterable<IGlobalLootModifier> getSortedModifiers() {
         return sortedModifiers;
+    }
+
+    /**
+     * Returns the ID of the given loot modifier, or null if it is not registered.
+     */
+    @Nullable
+    public Identifier getId(IGlobalLootModifier modifier) {
+        return this.registeredLootModifiers.inverse().get(modifier);
     }
 }
