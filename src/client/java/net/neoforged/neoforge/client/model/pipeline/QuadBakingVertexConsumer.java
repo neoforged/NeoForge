@@ -122,6 +122,11 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     }
 
     @SuppressWarnings("deprecation")
+    public void setSprite(Material.Baked material) {
+        setSprite(material, material.forceTranslucent() ? Transparency.TRANSLUCENT : material.sprite().transparency());
+    }
+
+    @SuppressWarnings("deprecation")
     public void setSprite(Material.Baked material, Transparency transparency) {
         RenderType itemRenderType;
         if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {

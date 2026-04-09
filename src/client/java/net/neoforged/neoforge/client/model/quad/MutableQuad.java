@@ -550,6 +550,18 @@ public class MutableQuad {
     }
 
     /**
+     * Changes the material used by this quad and sets the {@link #itemRenderType()} and {@link #chunkLayer()}
+     * based on the material.
+     *
+     * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(Material.Baked, Transparency)}
+     * to change sprites and remap them, {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
+     */
+    public MutableQuad setSprite(Material.Baked material) {
+        return setSprite(material, getTransparency(material));
+    }
+
+    /**
      * Changes the texture atlas sprite used by this quad.
      *
      * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
@@ -580,6 +592,15 @@ public class MutableQuad {
         this.chunkLayer = chunkLayer;
         this.itemRenderType = itemRenderType;
         return this;
+    }
+
+    /**
+     * Changes the sprite and remaps the UV to the new sprites position in the texture atlas.
+     *
+     * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
+     */
+    public MutableQuad setSpriteAndMoveUv(Material.Baked material) {
+        return setSpriteAndMoveUv(material, getTransparency(material));
     }
 
     /**
@@ -1061,5 +1082,13 @@ public class MutableQuad {
         lastSourceQuad = null;
 
         return this;
+    }
+
+    private static Transparency getTransparency(Material.Baked material) {
+        var spriteTransparency = material.sprite().contents().transparency();
+        if (material.forceTranslucent()) {
+            return Transparency.TRANSLUCENT;
+        }
+        return spriteTransparency;
     }
 }
