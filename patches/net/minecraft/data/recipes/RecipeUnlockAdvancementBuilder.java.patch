@@ -1,0 +1,22 @@
+--- a/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
++++ b/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
+@@ -19,6 +_,10 @@
+     }
+ 
+     public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, RecipeCategory category) {
++        return this.build(output, id, category.getFolderName());
++    }
++
++    public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, @org.jspecify.annotations.Nullable String category) {
+         if (this.criteria.isEmpty()) {
+             throw new IllegalStateException("No way of obtaining recipe " + id.identifier());
+         } else {
+@@ -27,7 +_,7 @@
+                 .rewards(AdvancementRewards.Builder.recipe(id))
+                 .requirements(AdvancementRequirements.Strategy.OR);
+             this.criteria.forEach(advancement::addCriterion);
+-            return advancement.build(id.identifier().withPrefix("recipes/" + category.getFolderName() + "/"));
++            return advancement.build(id.identifier().withPrefix("recipes/" + (category != null ? category + "/" : "")));
+         }
+     }
+ }
