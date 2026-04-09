@@ -8,10 +8,12 @@ package net.neoforged.neoforge.common;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.commands.TimeCommand;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 
@@ -1547,6 +1550,18 @@ public class Tags {
 
         private static TagKey<DamageType> neoforgeTag(String name) {
             return TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("neoforge", name));
+        }
+    }
+
+    public static class WorldClocks {
+        /// [World Clocks][WorldClock] are disallowed from being paused via the [TimeCommand].
+        public static final TagKey<WorldClock> IGNORES_PAUSE_COMMAND = neoforgeTag("ignores/pause_command");
+
+        /// [World Clocks][WorldClock] with this tag are exempt from pausing when [GameRules#ADVANCE_TIME] is disabled.
+        public static final TagKey<WorldClock> IGNORES_ADVANCE_TIME_RULE = neoforgeTag("ignores/advance_time_rule");
+
+        private static TagKey<WorldClock> neoforgeTag(String name) {
+            return TagKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name));
         }
     }
 

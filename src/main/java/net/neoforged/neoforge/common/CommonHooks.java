@@ -10,6 +10,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -91,6 +93,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -1773,6 +1776,16 @@ public class CommonHooks {
             throw new IllegalStateException(message.toString());
         } else {
             LOGGER.warn(message);
+        }
+    }
+
+    public static final String ERROR_IGNORES_PAUSING_KEY = "commands.time.neoforge.clock_ignores_pausing";
+    private static final DynamicCommandExceptionType ERROR_IGNORES_PAUSING = new DynamicCommandExceptionType(clock -> Component.translatable(ERROR_IGNORES_PAUSING_KEY, clock));
+
+    @ApiStatus.Internal
+    public static void throwIfIgnoresPausing(Holder<WorldClock> clock) throws CommandSyntaxException {
+        if (clock.is(Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
+            throw ERROR_IGNORES_PAUSING.create(clock.getRegisteredName());
         }
     }
 }

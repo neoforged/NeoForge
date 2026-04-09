@@ -185,7 +185,7 @@
          TooltipFlag.Default originalTooltipStyle = this.minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
          TooltipFlag tooltipStyle = isCreativeSlot ? originalTooltipStyle.asCreative() : originalTooltipStyle;
 -        List<Component> originalLines = itemStack.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, tooltipStyle);
-+        List<Component> originalLines = itemStack.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, net.neoforged.neoforge.client.ClientTooltipFlag.of(tooltipStyle));
++        List<Component> originalLines = itemStack.getTooltipLines(Item.TooltipContext.of(this.minecraft.level, this.minecraft.player), this.minecraft.player, net.neoforged.neoforge.client.ClientTooltipFlag.of(tooltipStyle));
          if (originalLines.isEmpty()) {
              return originalLines;
          } else if (isSingleCategoryTab && isCreativeSlot) {

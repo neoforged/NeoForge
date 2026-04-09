@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/commands/TimeCommand.java
++++ b/net/minecraft/server/commands/TimeCommand.java
+@@ -190,7 +_,9 @@
+         }
+     }
+ 
+-    private static int setPaused(CommandSourceStack source, Holder<WorldClock> clock, boolean paused) {
++    private static int setPaused(CommandSourceStack source, Holder<WorldClock> clock, boolean paused) throws CommandSyntaxException {
++        // Neo: Disallow using 'pause and resume' sub commands if clocks ignore pausing
++        net.neoforged.neoforge.common.CommonHooks.throwIfIgnoresPausing(clock);
+         source.getServer().clockManager().setPaused(clock, paused);
+         source.sendSuccess(() -> Component.translatable(paused ? "commands.time.pause" : "commands.time.resume", clock.getRegisteredName()), true);
+         return 1;
