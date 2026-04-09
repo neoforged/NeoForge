@@ -104,12 +104,12 @@ public class ConcatenatedListView<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return Iterables.unmodifiableIterable(Iterables.concat(lists)).iterator();
+        return Iterables.<T>unmodifiableIterable(Iterables.concat(lists)).iterator();
     }
 
     @Override
     public Spliterator<T> spliterator() {
-        return Iterables.unmodifiableIterable(Iterables.concat(lists)).spliterator();
+        return Iterables.<T>unmodifiableIterable(Iterables.concat(lists)).spliterator();
     }
 
     // Delegate to a concatenated collection

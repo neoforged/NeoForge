@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "neoforge:trimmed_armor",
+    "base_model": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_boots"
+    },
+    "base_trim_texture": "minecraft:trims/items/boots_trim"
+  }
+}

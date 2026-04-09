@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/clock/ServerClockManager.java
 +++ b/net/minecraft/world/clock/ServerClockManager.java
-@@ -61,6 +_,9 @@
+@@ -41,7 +_,7 @@
+         server.registryAccess()
+             .lookupOrThrow(Registries.WORLD_CLOCK)
+             .listElements()
+-            .forEach(definition -> this.clocks.put(definition, new ServerClockManager.ClockInstance()));
++            .forEach(definition -> this.clocks.put(definition, new ServerClockManager.ClockInstance(definition)));
+         server.registryAccess()
+             .lookupOrThrow(Registries.TIMELINE)
+             .listElements()
+@@ -61,9 +_,13 @@
      }
  
      public void tick() {
@@ -8,8 +17,13 @@
 +            return; // Neo: Our JUnit ephemeral testserver has no overworld and getGlobalGameRules() would crash
 +        }
          boolean advanceTime = this.server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
++        // Neo: Custom ticking logic to move the advance time check to be per clock rather than global
++        this.clocks.values().forEach(clock -> clock.tick(advanceTime));
          if (advanceTime) {
-             this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
+-            this.clocks.values().forEach(ServerClockManager.ClockInstance::tick);
+             this.setDirty();
+         }
+     }
 @@ -105,6 +_,21 @@
          this.modifyClock(clock, instance -> instance.paused = paused);
      }
@@ -32,7 +46,7 @@
      public void setRate(Holder<WorldClock> clock, float rate) {
          this.modifyClock(clock, instance -> instance.rate = rate);
      }
-@@ -121,9 +_,22 @@
+@@ -121,11 +_,24 @@
          }
      }
  
@@ -47,11 +61,72 @@
      @Override
      public long getTotalTicks(Holder<WorldClock> definition) {
          return this.getInstance(definition).totalTicks;
-+    }
-+
+     }
+ 
 +    @Override
 +    public float getPartialTick(Holder<WorldClock> definition) {
 +        return this.getInstance(definition).partialTick;
-     }
- 
++    }
++
      public ClientboundSetTimePacket createFullSyncPacket() {
+         return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(this.clocks, clock -> clock.packNetworkState(this.server)));
+     }
+@@ -150,6 +_,17 @@
+         private float partialTick;
+         private float rate = 1.0F;
+         private boolean paused;
++        private final @org.jspecify.annotations.Nullable Holder<WorldClock> holder;
++
++        public ClockInstance(Holder<WorldClock> holder) {
++            this.holder = holder;
++        }
++
++        /// @deprecated Neo: Use [#ClockInstance(Holder)] instead
++        @Deprecated
++        public ClockInstance() {
++            holder = null;
++        }
+ 
+         public void loadFrom(ClockState state) {
+             this.totalTicks = state.totalTicks();
+@@ -158,8 +_,16 @@
+             this.paused = state.paused();
+         }
+ 
++        /// @deprecated Neo: Use [#tick(boolean)], Passing in if time is advancing
++        @Deprecated
+         public void tick() {
+-            if (!this.paused) {
++            // Neo: Call the new method with the vanilla value
++            // Vanilla calls this inside of 'GameRules.ADVANCE_TIME == true' check
++            this.tick(true);
++        }
++
++        public void tick(boolean advanceTime) {
++            if (this.ticking(advanceTime)) {
+                 this.partialTick = this.partialTick + this.rate;
+                 int fullTicks = Mth.floor(this.partialTick);
+                 this.partialTick -= fullTicks;
+@@ -173,8 +_,21 @@
+ 
+         public ClockNetworkState packNetworkState(MinecraftServer server) {
+             boolean advanceTime = server.getGlobalGameRules().get(GameRules.ADVANCE_TIME);
+-            boolean paused = this.paused || !advanceTime;
++            // Neo: Use the corrected pause value
++            boolean paused = !this.ticking(advanceTime);
+             return new ClockNetworkState(this.totalTicks, this.partialTick, paused ? 0.0F : this.rate);
++        }
++
++        private boolean ticking(boolean advanceTime) {
++            if (this.paused && !this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
++                return false;
++            }
++
++            return advanceTime || this.hasTag(net.neoforged.neoforge.common.Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE);
++        }
++
++        private boolean hasTag(net.minecraft.tags.TagKey<WorldClock> tag) {
++            return this.holder != null && this.holder.is(tag);
+         }
+     }
+ }

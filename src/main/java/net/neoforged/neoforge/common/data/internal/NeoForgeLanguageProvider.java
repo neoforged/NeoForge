@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -529,6 +530,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         // Structures
         add(Tags.Structures.HIDDEN_FROM_DISPLAYERS, "Hidden From Displayers");
         add(Tags.Structures.HIDDEN_FROM_LOCATOR_SELECTION, "Hidden From Locator's Selection");
+
+        // Command exceptions
+        add(CommonHooks.ERROR_IGNORES_PAUSING_KEY, "Clock %s disallows pausing");
     }
 
     private <T> void addColored(TagKey<T> baseTagKey, String pattern) {

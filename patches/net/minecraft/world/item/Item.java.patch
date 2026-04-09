@@ -126,7 +126,7 @@
              return this;
          }
  
-@@ -709,6 +_,14 @@
+@@ -709,7 +_,26 @@
  
          boolean isPeaceful();
  
@@ -138,10 +138,22 @@
 +            return null;
 +        }
 +
++        /// Neo: Returns the player for whom tooltips are being generated, if known
++        @Nullable
++        default Player player() {
++            return null;
++        }
++
          static Item.TooltipContext of(@Nullable Level level) {
++            return of(level, null);
++        }
++
++        static Item.TooltipContext of(@Nullable Level pLevel, @Nullable Player player) {
++            Level level = pLevel == null && player != null ? player.level() : pLevel;
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -729,6 +_,11 @@
+                 public HolderLookup.Provider registries() {
+@@ -729,6 +_,17 @@
                  @Override
                  public boolean isPeaceful() {
                      return level.getDifficulty() == Difficulty.PEACEFUL;
@@ -150,6 +162,12 @@
 +                @Override
 +                public Level level() {
 +                    return level;
++                }
++
++                @Nullable
++                @Override
++                public Player player() {
++                    return player;
                  }
              };
          }

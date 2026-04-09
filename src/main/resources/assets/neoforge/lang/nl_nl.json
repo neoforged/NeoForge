@@ -188,8 +188,6 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Zet dit op 'true' om de gehele entiteitsbotsingsdoos voor ladders te controleren, in plaats van alleen het blok waarin ze zich bevinden. Veroorzaakt merkbare verschillen in mechanismen, dus standaard is vanilla gedrag. Standaard: false.",
   "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
   "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
-  "neoforge.configgui.logLegacyTagWarnings": "Verouderde Tags Loggen",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Onvertaalde Configuratie Sleutels Loggen",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "Onvertaalde Item Tags Loggen",

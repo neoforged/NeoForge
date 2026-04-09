@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/equipment/trim/MaterialAssetGroup.java
++++ b/net/minecraft/world/item/equipment/trim/MaterialAssetGroup.java
+@@ -15,6 +_,9 @@
+ import net.minecraft.world.item.equipment.EquipmentAsset;
+ import net.minecraft.world.item.equipment.EquipmentAssets;
+ 
++/// @apiNote It is highly recommended that the {@code suffix} parameter passed to modded {@link AssetInfo}s is prefixed by the mod id to avoid conflicts.
++///
++/// Do note that the suffix is run through {@link Identifier#isValidPath(String)}, so things like colons cannot be used. You may want to separate the mod id and name using an underscore or dash.
+ public record MaterialAssetGroup(MaterialAssetGroup.AssetInfo base, Map<ResourceKey<EquipmentAsset>, MaterialAssetGroup.AssetInfo> overrides) {
+     public static final String SEPARATOR = "_";
+     public static final MapCodec<MaterialAssetGroup> MAP_CODEC = RecordCodecBuilder.mapCodec(

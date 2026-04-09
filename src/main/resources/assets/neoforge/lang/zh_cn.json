@@ -188,8 +188,6 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "启用后，使梯子检查整个实体的碰撞箱，而不仅仅是它们所处的方块。这将导致明显的机制差异，因此默认使用原版行为。默认：false。",
   "neoforge.configgui.handleAmbientOcclusionPerPart": "按部件处理方块环境光遮蔽",
   "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "启用后，环境光遮蔽将按每个区块模型部件分别处理，而不再统一使用第一个部件的设置。",
-  "neoforge.configgui.logLegacyTagWarnings": "记录旧标签",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "一个主要面向开发者的配置选项。在内置服务端上运行时，在日志中记录那些使用“forge”命名空间的模组环境标签。默认值为DEV_SHORT。",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "记录未翻译的配置键",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "一个主要面向开发者的配置选项。在开发环境中运行客户端时，在日志中记录没有翻译的配置值。",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "记录未翻译的物品标签",
