@@ -167,7 +167,7 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -682,6 +_,28 @@
+@@ -682,6 +_,59 @@
      @Override
      public T getMenu() {
          return this.menu;
@@ -193,6 +193,37 @@
 +
 +    public int getImageHeight() {
 +        return imageHeight;
++    }
++
++    /// @deprecated Neo: Use [#getHoveredSlot()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    @org.jspecify.annotations.Nullable
++    public Slot getSlotUnderMouse() {
++        return this.getHoveredSlot();
++    }
++
++    /// @deprecated Neo: Use [#getLeftPos()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getGuiLeft() {
++        return this.getLeftPos();
++    }
++
++    /// @deprecated Neo: Use [#getTopPos()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getGuiTop() {
++        return this.getTopPos();
++    }
++
++    /// @deprecated Neo: Use [#getImageHeight()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getXSize() {
++        return this.getImageWidth();
++    }
++
++    /// @deprecated Neo: Use [#getImageHeight()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getYSize() {
++        return this.getImageHeight();
      }
  
      @Override
