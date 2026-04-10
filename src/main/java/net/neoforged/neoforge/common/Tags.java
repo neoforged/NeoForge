@@ -602,6 +602,11 @@ public class Tags {
          * A pancake with a JUKEBOX_PLAYABLE component attached to play in Jukeboxes as an Easter Egg is not a music disc and would not go in this tag.
          */
         public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
+        /**
+         * For banner patterns to be used in recipes.
+         * This is a backport of 26.1 Minecraft's #minecraft:loom_patterns item tag.
+         */
+        public static final TagKey<Item> LOOM_PATTERNS = tag("loom_patterns");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
         public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");

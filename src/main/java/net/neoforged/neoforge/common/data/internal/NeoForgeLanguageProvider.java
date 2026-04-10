@@ -260,6 +260,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.INGOTS_NETHERITE, "Netherite Ingots");
         add(Tags.Items.LEATHERS, "Leathers");
         add(Tags.Items.MUSIC_DISCS, "Music Discs");
+        add(Tags.Items.LOOM_PATTERNS, "Loom Patterns");
         add(Tags.Items.MUSHROOMS, "Mushrooms");
         add(Tags.Items.NETHER_STARS, "Nether Stars");
         add(Tags.Items.NETHERRACKS, "Netherracks");
