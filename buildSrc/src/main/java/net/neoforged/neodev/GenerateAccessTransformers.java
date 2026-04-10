@@ -171,6 +171,10 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
         return target -> predOne.test(target) || predTwo.test(target);
     }
 
+    public <T extends Named> SerializablePredicate<T> and(SerializablePredicate<T> predOne, SerializablePredicate<T> predTwo) {
+        return target -> predOne.test(target) && predTwo.test(target);
+    }
+
     public record AtGroup(String name, Modifier modifier, SerializablePredicate<ClassInfo> classMatch,
             @Nullable SerializablePredicate<MethodInfo> methodMatch, @Nullable SerializablePredicate<FieldInfo> fieldMatch) implements Serializable {}
 

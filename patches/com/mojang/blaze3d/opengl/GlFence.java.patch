@@ -1,0 +1,12 @@
+--- a/com/mojang/blaze3d/opengl/GlFence.java
++++ b/com/mojang/blaze3d/opengl/GlFence.java
+@@ -21,7 +_,8 @@
+         if (this.handle == 0L) {
+             return true;
+         } else {
+-            int result = GlStateManager._glClientWaitSync(this.handle, 0, timeoutMs);
++            // Neo: Ensure commands are flushed to avoid a deadlock
++            int result = GlStateManager._glClientWaitSync(this.handle, org.lwjgl.opengl.GL32.GL_SYNC_FLUSH_COMMANDS_BIT, timeoutMs);
+             if (result == 37147) {
+                 return false;
+             } else if (result == 37149) {

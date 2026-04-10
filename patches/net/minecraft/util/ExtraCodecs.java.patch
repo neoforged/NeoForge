@@ -1,0 +1,14 @@
+--- a/net/minecraft/util/ExtraCodecs.java
++++ b/net/minecraft/util/ExtraCodecs.java
+@@ -701,6 +_,11 @@
+         public Set<V> values() {
+             return Collections.unmodifiableSet(this.idToValue.values());
+         }
++
++        /// Neo: retrieve a value by ID from this [LateBoundIdMapper]
++        public @Nullable V getValue(I id) {
++            return this.idToValue.get(id);
++        }
+     }
+ 
+     public record StrictUnboundedMapCodec<K, V>(Codec<K> keyCodec, Codec<V> elementCodec) implements BaseMapCodec<K, V>, Codec<Map<K, V>> {
