@@ -121,7 +121,6 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.direction = direction;
     }
 
-    @SuppressWarnings("deprecation")
     public void setSprite(Material.Baked material) {
         setSprite(material, material.forceTranslucent() ? Transparency.TRANSLUCENT : material.sprite().transparency());
     }
