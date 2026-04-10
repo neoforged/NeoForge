@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/levelgen/FlatLevelSource.java
++++ b/net/minecraft/world/level/levelgen/FlatLevelSource.java
+@@ -32,7 +_,8 @@
+     private final FlatLevelGeneratorSettings settings;
+ 
+     public FlatLevelSource(FlatLevelGeneratorSettings generatorSettings) {
+-        super(new FixedBiomeSource(generatorSettings.getBiome()), Util.memoize(generatorSettings::adjustGenerationSettings));
++        // Neo: Do not memorize the generationSettingsGetter, since it may be modified by biome modifiers
++        super(new FixedBiomeSource(generatorSettings.getBiome()), generatorSettings::adjustGenerationSettings);
+         this.settings = generatorSettings;
+     }
+ 
