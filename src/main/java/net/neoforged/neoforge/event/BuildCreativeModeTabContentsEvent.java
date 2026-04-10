@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event;
 
 import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
+import java.util.function.Predicate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -174,6 +175,20 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
         if (isSearchTab(visibility)) {
             searchEntries.remove(existingEntry);
+        }
+    }
+
+    /// Remove all entries that match the given predicate from the tab's content.
+    ///
+    /// @param predicate  the item stack predicate
+    /// @param visibility the target tab visibility
+    public void removeIf(Predicate<? super ItemStack> predicate, CreativeModeTab.TabVisibility visibility) {
+        if (isParentTab(visibility)) {
+            parentEntries.removeIf(predicate);
+        }
+
+        if (isSearchTab(visibility)) {
+            searchEntries.removeIf(predicate);
         }
     }
 
