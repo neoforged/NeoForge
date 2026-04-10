@@ -96,6 +96,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.EGG, Tags.Items.EGGS);
         replace(Items.STRING, Tags.Items.STRINGS);
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
+        replace(Items.LEATHER, Tags.Items.LEATHERS);
 
         exclude(Blocks.GOLD_BLOCK);
         exclude(Items.GOLD_NUGGET);
