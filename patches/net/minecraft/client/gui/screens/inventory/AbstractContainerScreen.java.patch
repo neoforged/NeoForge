@@ -167,18 +167,32 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -683,6 +_,14 @@
+@@ -682,6 +_,28 @@
+     @Override
      public T getMenu() {
          return this.menu;
-     }
++    }
 +
 +    // Neo: Add getters for non-public fields
 +    @org.jspecify.annotations.Nullable
-+    public Slot getHoveredSlot() { return this.hoveredSlot; }
-+    public int getLeftPos() { return leftPos; }
-+    public int getTopPos() { return topPos; }
-+    public int getImageWidth() { return imageWidth; }
-+    public int getImageHeight() { return imageHeight; }
++    public Slot getHoveredSlot() {
++        return this.hoveredSlot;
++    }
++
++    public int getLeftPos() {
++        return leftPos;
++    }
++
++    public int getTopPos() {
++        return topPos;
++    }
++
++    public int getImageWidth() {
++        return imageWidth;
++    }
++
++    public int getImageHeight() {
++        return imageHeight;
+     }
  
      @Override
-     public void onClose() {
