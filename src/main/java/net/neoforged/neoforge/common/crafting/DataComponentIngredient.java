@@ -127,11 +127,6 @@ public class DataComponentIngredient implements ICustomIngredient {
         return exhaustive;
     }
 
-    @Deprecated(forRemoval = true)
-    public boolean isStrict() {
-        return exhaustive;
-    }
-
     /**
      * Creates a new ingredient matching the given item, containing the given components
      */
