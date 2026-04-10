@@ -167,11 +167,10 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -682,6 +_,18 @@
-     @Override
+@@ -683,6 +_,13 @@
      public T getMenu() {
          return this.menu;
-+    }
+     }
 +
 +    @org.jspecify.annotations.Nullable
 +    public Slot getSlotUnderMouse() { return this.hoveredSlot; }
@@ -179,10 +178,6 @@
 +    public int getGuiTop() { return topPos; }
 +    public int getXSize() { return imageWidth; }
 +    public int getYSize() { return imageHeight; }
-+
-+    protected int slotColor = -2130706433;
-+    public int getSlotColor(int index) {
-+        return slotColor;
-     }
  
      @Override
+     public void onClose() {
