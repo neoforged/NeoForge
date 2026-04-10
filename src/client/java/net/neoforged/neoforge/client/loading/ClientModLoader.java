@@ -5,10 +5,15 @@
 
 package net.neoforged.neoforge.client.loading;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.util.NativeModuleLister;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModList;
@@ -56,11 +61,18 @@ public class ClientModLoader extends CommonModLoader {
     }
 
     public static void finish() {
+        Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
         try {
-            load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
-            ModLoader.runInitTask("Client network registry lock", ModWorkManager.syncExecutor(), () -> {}, ClientNetworkRegistry::setup);
+            load(periodicTick);
+            ModLoader.runInitTask("Client network registry lock", ModWorkManager.syncExecutor(), periodicTick, ClientNetworkRegistry::setup);
         } catch (ModLoadingException e) {
-            FatalErrorReporting.reportFatalError(e);
+            File gameDir = Minecraft.getInstance().gameDirectory;
+            CrashReport report = CrashReport.forThrowable(e, "stage");
+            CrashReportCategory category = report.addCategory("Finish mod loading");
+            NativeModuleLister.addCrashSection(category);
+            Minecraft.getInstance().fillReport(report);
+            Minecraft.saveReport(gameDir, report);
+            reportFatalError(e, gameDir.toPath(), report);
         }
         if (earlyLoadingScreen instanceof DisplayWindow displayWindow) {
             displayWindow.close();
@@ -89,5 +101,10 @@ public class ClientModLoader extends CommonModLoader {
             }
         }
         return initialScreensTask;
+    }
+
+    public static void reportFatalError(Throwable error, Path gameDir, CrashReport report) {
+        Path logFile = gameDir.resolve("logs", "latest.log");
+        FatalErrorReporting.reportFatalError(error, gameDir, logFile, report.getSaveFile());
     }
 }

@@ -68,8 +68,9 @@ public abstract class CommonModLoader {
         NeoForge.EVENT_BUS.start();
     }
 
-    protected static void load(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
+    protected static void load(Runnable periodicTask) {
+        Executor syncExecutor = ModWorkManager.syncExecutor();
+        Executor parallelExecutor = ModWorkManager.parallelExecutor();
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
