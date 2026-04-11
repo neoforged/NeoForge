@@ -12,7 +12,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -78,10 +77,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
 
             var pack = Pack.readMetaAndCreate(
                     new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),
-                    BuiltInPackSource.fromName(locationInfo -> {
-                        var contents = modInfo.getOwningFile().getFile().getContents();
-                        return new JarContentsPackResources(locationInfo, contents, prefix);
-                    }),
+                    new JarContentsPackResources.JarContentsResourcesSupplier(modInfo.getOwningFile().getFile().getContents(), prefix),
                     packType,
                     new PackSelectionConfig(alwaysActive, packPosition, false));
 
