@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event;
 
 import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
+import java.util.function.Predicate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,13 +17,11 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Fired when the contents of a specific creative mode tab are being populated in {@link CreativeModeTab#buildContents(CreativeModeTab.ItemDisplayParameters)}.
- * <p>
- * This event may be fired multiple times if the operator status of the local player or enabled feature flags changes.
- * <p>
- * In vanilla, this is only fired on the logical client, but mods may request creative mode tab contents on the server.
- */
+/// Fired when the contents of a specific creative mode tab are being populated in [CreativeModeTab#buildContents(CreativeModeTab.ItemDisplayParameters)].
+///
+/// This event may be fired multiple times if the operator status of the local player or enabled feature flags changes.
+///
+/// In vanilla, this is only fired on the logical client, but mods may request creative mode tab contents on the server.
 public final class BuildCreativeModeTabContentsEvent extends Event implements IModBusEvent, CreativeModeTab.Output {
     private final CreativeModeTab tab;
     private final CreativeModeTab.ItemDisplayParameters parameters;
@@ -39,53 +38,48 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         this.searchEntries = searchEntries;
     }
 
-    /**
-     * {@return the creative mode tab currently populating its contents}
-     */
+    /// {@return the creative mode tab currently populating its contents}
     public CreativeModeTab getTab() {
         return this.tab;
     }
 
-    /**
-     * {@return the key of the creative mode tab currently populating its contents}
-     */
+    /// {@return the key of the creative mode tab currently populating its contents}
     public ResourceKey<CreativeModeTab> getTabKey() {
         return this.tabKey;
     }
 
+    /// {@return the enabled feature flags}
     public FeatureFlagSet getFlags() {
         return this.parameters.enabledFeatures();
     }
 
+    /// {@return the item display parameters}
     public CreativeModeTab.ItemDisplayParameters getParameters() {
         return parameters;
     }
 
+    /// {@return whether the operator-only items should be shown}
+    ///
+    /// @see net.minecraft.world.item.CreativeModeTabs#OP_BLOCKS
     public boolean hasPermissions() {
         return this.parameters.hasPermissions();
     }
 
-    /**
-     * The current immutable ordered set of the parent tab entries in the order to be added to the Creative Menu.
-     * Purely for querying to see what in it. Please use the other event methods for modifications.
-     */
+    /// {@return an unmodifiable view of the ordered set of the parent tab entries, in the order to be added to the creative menu.}
     public ObjectSortedSet<ItemStack> getParentEntries() {
         return ObjectSortedSets.unmodifiable(this.parentEntries);
     }
 
-    /**
-     * The current immutable ordered set of the search tab entries in the order to be added to the Creative Menu.
-     * Purely for querying to see what in it. Please use the other event methods for modifications.
-     */
+    /// {@return an unmodifiable view of the ordered set of the search tab entries, in the order to be added to the creative menu.}
     public ObjectSortedSet<ItemStack> getSearchEntries() {
         return ObjectSortedSets.unmodifiable(this.searchEntries);
     }
 
-    /**
-     * Inserts the new stack at the end of the given tab at this point in time.
-     * 
-     * @throws IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
-     */
+    /// Inserts a new stack at the end of the given tab at this point in time.
+    ///
+    /// @param newEntry   the entry to be added
+    /// @param visibility the target tab visibility
+    /// @throws IllegalArgumentException if the new stack's count is not 1, or the new stack already exists in the tab
     @Override
     public void accept(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
@@ -101,12 +95,12 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         }
     }
 
-    /**
-     * Inserts the new entry after the specified existing entry.
-     *
-     * @throws IllegalArgumentException if the new itemstack's count is not 1 or target does not exist in set
-     *                                  OR if the existing entry is not found in the tab's lists.
-     */
+    /// Inserts a new stack after the specified existing entry.
+    ///
+    /// @param existingEntry the existing entry
+    /// @param newEntry      the stack to be added (after the existing entry)
+    /// @param visibility    the target tab visibility
+    /// @throws IllegalArgumentException if the new stack's count is not 1, or if the new stack already exists in the tab, or if the existing entry is not found in the tab
     public void insertAfter(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
@@ -123,12 +117,12 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         }
     }
 
-    /**
-     * Inserts the new entry before the specified existing entry.
-     *
-     * @throws IllegalArgumentException if the new itemstack's count is not 1 or target does not exist in set
-     *                                  OR if the existing entry is not found in the tab's lists.
-     */
+    /// Inserts the new entry before the specified existing entry.
+    ///
+    /// @param existingEntry the existing entry
+    /// @param newEntry      the stack to be added (before the existing entry)
+    /// @param visibility    the target tab visibility
+    /// @throws IllegalArgumentException if the new stack's count is not 1, or if the new stack already exists in the tab, or if the existing entry is not found in the tab
     public void insertBefore(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
@@ -145,11 +139,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         }
     }
 
-    /**
-     * Inserts the new entry in the front of the tab's content.
-     * 
-     * @throws IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
-     */
+    /// Inserts a new stack at the front of the tab's content.
+    ///
+    /// @param newEntry   the stack to be added
+    /// @param visibility the target tab visibility
+    /// @throws IllegalArgumentException if the new stack's count is not 1, or if the new stack already exists in the tab
     public void insertFirst(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
@@ -164,9 +158,10 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         }
     }
 
-    /**
-     * Removes an entry from the tab's content.
-     */
+    /// Removes an entry from the tab's content.
+    ///
+    /// @param existingEntry the stack to be removed
+    /// @param visibility    the target tab visibility
     public void remove(ItemStack existingEntry, CreativeModeTab.TabVisibility visibility) {
         if (isParentTab(visibility)) {
             parentEntries.remove(existingEntry);
@@ -174,6 +169,20 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
         if (isSearchTab(visibility)) {
             searchEntries.remove(existingEntry);
+        }
+    }
+
+    /// Remove all entries that match the given predicate from the tab's content.
+    ///
+    /// @param predicate  the item stack predicate
+    /// @param visibility the target tab visibility
+    public void removeIf(Predicate<? super ItemStack> predicate, CreativeModeTab.TabVisibility visibility) {
+        if (isParentTab(visibility)) {
+            parentEntries.removeIf(predicate);
+        }
+
+        if (isSearchTab(visibility)) {
+            searchEntries.removeIf(predicate);
         }
     }
 
