@@ -126,7 +126,7 @@ public final class AttachmentSync {
         }
     }
 
-    public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder.AsField holder, AttachmentType<?> type) {
+    public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder holder, AttachmentType<?> type) {
         if (type.syncHandler == null || !(chunk.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }

@@ -42,7 +42,7 @@ public final class AttachmentInternals {
         }
     }
 
-    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
+    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, AttachmentHolder from, AttachmentHolder to) {
         copyAttachments(provider, from, to, type -> true);
     }
 
