@@ -28,47 +28,32 @@
                              }
                          }
                      }
-@@ -476,6 +_,83 @@
+@@ -476,6 +_,63 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
 +
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    @org.jetbrains.annotations.ApiStatus.Internal
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding<ChunkAccess> attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding<>(this, ChunkAccess.class);
 +
-+    @Override
-+    public boolean hasAttachments() {
-+        return getAttachmentHolder().hasAttachments();
-+    }
-+
-+    @Override
-+    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        return getAttachmentHolder().hasData(type);
-+    }
-+
-+    @Override
-+    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getData(type);
-+    }
-+
-+    @Override
-+    @Nullable
-+    public <T> T getExistingDataOrNull(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingDataOrNull(type);
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {
++        return attachments;
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        markUnsaved();
-+        return getAttachmentHolder().setData(type, data);
++        return attachments.setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        markUnsaved();
-+        return getAttachmentHolder().removeData(type);
++        return attachments.removeData(type);
 +    }
 +
 +    /**
@@ -81,7 +66,7 @@
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
-+        getAttachmentHolder().serializeAttachments(tag);
++        attachments.serializeAttachments(tag);
 +        if (!reporter.isEmpty()) throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
 +        return tag.isEmpty() ? null : tag.buildResult();
 +    }
@@ -96,15 +81,10 @@
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
-+        getAttachmentHolder().deserializeInternal(provider, input);
++        attachments.deserializeInternal(provider, input);
 +        if (!reporter.isEmpty()) {
 +            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
 +        }
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
-+        return attachmentHolder;
 +    }
 +
 +    // Neo: Allow for exposing the Level a chunk is tied to if available

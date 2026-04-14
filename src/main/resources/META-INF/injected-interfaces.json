@@ -244,7 +244,7 @@
     "net/neoforged/neoforge/common/extensions/IBlockStateExtension"
   ],
   "net/minecraft/world/level/chunk/ChunkAccess": [
-    "net/neoforged/neoforge/attachment/IAttachmentHolder"
+    "net/neoforged/neoforge/attachment/IForwardingAttachmentHolder"
   ],
   "net/minecraft/world/level/chunk/LevelChunk": [
     "net/neoforged/neoforge/attachment/IAttachmentHolder"
