@@ -28,6 +28,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
@@ -202,7 +203,10 @@ final class ClientPayloadHandler {
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {
-                    AttachmentSync.receiveSyncedDataAttachments(chunk.getAttachmentHolder(), chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
+                    var attachments = chunk.getAttachmentHolder();
+                    if(attachments instanceof AttachmentHolder retypedHolder) {
+                        AttachmentSync.receiveSyncedDataAttachments(retypedHolder, chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
+                    }
                 }
             }
             case SyncAttachmentsPayload.EntityTarget(var entityId) -> {
