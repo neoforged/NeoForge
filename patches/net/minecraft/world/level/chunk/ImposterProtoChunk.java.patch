@@ -18,7 +18,7 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
-+        return wrapped.getAttachmentHolder();
++    public net.neoforged.neoforge.attachment.AttachmentHolder getAttachmentHolder() {
++        return wrapped.attachments;
      }
  }
