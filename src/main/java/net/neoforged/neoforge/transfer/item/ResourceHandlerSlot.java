@@ -22,13 +22,11 @@ import net.neoforged.neoforge.world.inventory.StackCopySlot;
 public class ResourceHandlerSlot extends StackCopySlot {
     private final ResourceHandler<ItemResource> handler;
     private final IndexModifier<ItemResource> slotModifier;
-    private final int index;
 
-    public ResourceHandlerSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
-        super(xPosition, yPosition);
+    public ResourceHandlerSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int handlerSlot, int xPosition, int yPosition) {
+        super(handlerSlot, xPosition, yPosition);
         this.handler = handler;
         this.slotModifier = slotModifier;
-        this.index = index;
     }
 
     @Override
@@ -38,17 +36,17 @@ public class ResourceHandlerSlot extends StackCopySlot {
         // Use isValid as a reasonable estimate.
         // We can't try to insert as we don't want to check the current contents to allow swapping.
         // This method is left for mods to override if this is not sufficient.
-        return handler.isValid(index, ItemResource.of(stack));
+        return handler.isValid(this.getSlotIndex(), ItemResource.of(stack));
     }
 
     @Override
     protected ItemStack getStackCopy() {
-        return handler.getResource(index).toStack(handler.getAmountAsInt(index));
+        return handler.getResource(this.getSlotIndex()).toStack(handler.getAmountAsInt(this.getSlotIndex()));
     }
 
     @Override
     protected void setStackCopy(ItemStack stack) {
-        slotModifier.set(index, ItemResource.of(stack), stack.getCount());
+        slotModifier.set(this.getSlotIndex(), ItemResource.of(stack), stack.getCount());
     }
 
     @Override
@@ -56,23 +54,23 @@ public class ResourceHandlerSlot extends StackCopySlot {
 
     @Override
     public int getMaxStackSize() {
-        return handler.getCapacityAsInt(index, ItemResource.EMPTY);
+        return handler.getCapacityAsInt(this.getSlotIndex(), ItemResource.EMPTY);
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        return handler.getCapacityAsInt(index, ItemResource.of(stack));
+        return handler.getCapacityAsInt(this.getSlotIndex(), ItemResource.of(stack));
     }
 
     @Override
     public boolean mayPickup(Player player) {
-        var resource = handler.getResource(index);
+        var resource = handler.getResource(this.getSlotIndex());
         if (resource.isEmpty()) {
             return false;
         }
         try (var tx = Transaction.openRoot()) {
             // Simulated extraction
-            return handler.extract(index, resource, 1, tx) == 1;
+            return handler.extract(this.getSlotIndex(), resource, 1, tx) == 1;
         }
     }
 
