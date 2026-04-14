@@ -140,6 +140,9 @@
   "net/minecraft/server/players/PlayerList": [
     "net/neoforged/neoforge/common/extensions/IPlayerListExtension"
   ],
+  "net/minecraft/server/MinecraftServer": [
+    "net/neoforged/neoforge/attachment/IForwardingAttachmentHolder"
+  ],
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
   ],
