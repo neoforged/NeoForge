@@ -201,8 +201,11 @@ public final class AttachmentSync {
      */
     @SubscribeEvent
     public static void onChunkSent(ChunkWatchEvent.Sent event) {
+        if(!(event.getChunk().getAttachmentHolder() instanceof AttachmentHolder attachments))
+            return;
+
         List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
-        var chunkPayload = syncInitialAttachments(event.getChunk().getAttachmentHolder(), event.getPlayer());
+        var chunkPayload = syncInitialAttachments(attachments, event.getPlayer());
         if (chunkPayload != null) {
             packets.add(chunkPayload.toVanillaClientbound());
         }
