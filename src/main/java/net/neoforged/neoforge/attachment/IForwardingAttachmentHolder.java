@@ -1,6 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.attachment;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An attachment holder that forwards all non-default implementations from {@link IAttachmentHolder}
@@ -8,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
  * {@link net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding} attachment holders.
  */
 public interface IForwardingAttachmentHolder extends IAttachmentHolder {
-
     IAttachmentHolder getAttachmentHolder();
 
     @Override

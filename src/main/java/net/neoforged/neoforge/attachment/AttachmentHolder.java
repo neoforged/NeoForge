@@ -171,7 +171,6 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * This will forward all calls to the {@link AsField field} implementation.
      */
     public static class Forwarding<T extends IForwardingAttachmentHolder> extends AttachmentHolder {
-
         private final Class<T> forwardingClass;
         private final AsField forwardedHolder;
 

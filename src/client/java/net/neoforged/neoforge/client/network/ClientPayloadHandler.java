@@ -204,7 +204,7 @@ final class ClientPayloadHandler {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {
                     var attachments = chunk.getAttachmentHolder();
-                    if(attachments instanceof AttachmentHolder retypedHolder) {
+                    if (attachments instanceof AttachmentHolder retypedHolder) {
                         AttachmentSync.receiveSyncedDataAttachments(retypedHolder, chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
                     }
                 }

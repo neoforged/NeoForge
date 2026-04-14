@@ -201,7 +201,7 @@ public final class AttachmentSync {
      */
     @SubscribeEvent
     public static void onChunkSent(ChunkWatchEvent.Sent event) {
-        if(!(event.getChunk().getAttachmentHolder() instanceof AttachmentHolder attachments))
+        if (!(event.getChunk().getAttachmentHolder() instanceof AttachmentHolder attachments))
             return;
 
         List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
