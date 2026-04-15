@@ -13,7 +13,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
-import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 
@@ -34,7 +33,7 @@ import net.neoforged.neoforge.common.conditions.ConditionalOps;
  * <p>
  * Fired on the logical server via the {@link NeoForge#EVENT_BUS}.
  */
-public class ModifyRecipeJsonsEvent extends Event implements IModBusEvent {
+public class ModifyRecipeJsonsEvent extends Event {
     private final RegistryOps.RegistryInfoLookup registryInfoLookup;
     private final RegistryOps<JsonElement> ops;
     private final Map<Identifier, JsonElement> recipeJsons;

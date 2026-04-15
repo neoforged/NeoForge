@@ -20,9 +20,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 
 @ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class ModifyRecipeJsonEventTest {
-    @TestHolder(description = "Tests if the ModifyRecipeJsonEvent exposes a mutable map of recipe JSONs and a registry lookup.")
+    @TestHolder(description = "Tests if the ModifyRecipeJsonEvent exposes a mutable map of recipe JSONs and a registry lookup.", enabledByDefault = true)
     public static void mutableMapEvent(final DynamicTest test) {
-        test.framework().modEventBus().addListener((final ModifyRecipeJsonsEvent event) -> {
+        test.eventListeners().forge().addListener((final ModifyRecipeJsonsEvent event) -> {
             // Grab the map of recipe JSONs from the event.
             Map<Identifier, JsonElement> recipeJsons = event.getRecipeJsons();
             // Ensure the map is mutable.

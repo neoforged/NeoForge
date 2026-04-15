@@ -810,12 +810,11 @@ public class ClientHooks {
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
             Function<ChunkSectionLayer, VertexConsumer> getOrCreateBuilder,
             RenderSectionRegion region,
-            ModelBlockRenderer blockRenderer,
-            BlockPos sectionOrigin) {
+            ModelBlockRenderer blockRenderer) {
         if (additionalRenderers.isEmpty()) {
             return;
         }
-        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, blockRenderer, sectionOrigin);
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, blockRenderer);
         for (final var renderer : additionalRenderers) {
             renderer.render(context);
         }
