@@ -125,7 +125,7 @@
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, attachments, type);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, type);
 +    }
 +
      private class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {

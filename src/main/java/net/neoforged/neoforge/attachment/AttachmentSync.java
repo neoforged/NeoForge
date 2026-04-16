@@ -126,11 +126,13 @@ public final class AttachmentSync {
         }
     }
 
-    public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder holder, AttachmentType<?> type) {
+    public static void syncChunkUpdate(LevelChunk chunk, AttachmentType<?> type) {
         if (type.syncHandler == null || !(chunk.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }
-        syncUpdate(holder, type, serverLevel.getChunkSource().chunkMap.getPlayers(chunk.getPos(), false));
+
+        if (chunk.getAttachmentHolder() instanceof AttachmentHolder attachmentHolder)
+            syncUpdate(attachmentHolder, type, serverLevel.getChunkSource().chunkMap.getPlayers(chunk.getPos(), false));
     }
 
     public static void syncEntityUpdate(Entity entity, AttachmentType<?> type) {

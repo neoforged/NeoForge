@@ -275,7 +275,7 @@
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    private final net.neoforged.neoforge.attachment.IAttachmentHolder attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding<>(this, MinecraftServer.class);
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {
 +        return attachments;

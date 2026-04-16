@@ -165,35 +165,6 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     /**
-     * An attachment holder implementation designed to be paired with a class implementing
-     * {@link IForwardingAttachmentHolder} with {@link AsField a field attachment holder}.
-     * <p>
-     * This will forward all calls to the {@link AsField field} implementation.
-     */
-    public static class Forwarding<T extends IForwardingAttachmentHolder> extends AttachmentHolder {
-        private final Class<T> forwardingClass;
-        private final AsField forwardedHolder;
-
-        public Forwarding(T instance, Class<T> forwardingAttachmentHolderClass) {
-            this.forwardedHolder = new AttachmentHolder.AsField(this);
-            this.forwardingClass = forwardingAttachmentHolderClass;
-        }
-
-        public T cast() {
-            return forwardingClass.cast(this);
-        }
-
-        @Override
-        public IAttachmentHolder getExposedHolder() {
-            return forwardedHolder;
-        }
-
-        public void deserializeInternal(HolderLookup.Provider provider, ValueInput tag) {
-            forwardedHolder.deserializeAttachments(tag);
-        }
-    }
-
-    /**
      * Version of the {@link AttachmentHolder} that is suitable for storing in a field.
      * To be used when extending {@link AttachmentHolder} is not possible,
      * for example because the class already has a supertype.

@@ -35,7 +35,7 @@
 +
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    protected final net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding<ChunkAccess> attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding<>(this, ChunkAccess.class);
++    protected final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {

@@ -5,13 +5,16 @@
 
 package net.neoforged.neoforge.attachment;
 
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 /**
  * An attachment holder that forwards all non-default implementations from {@link IAttachmentHolder}
  * to an implementation exposed on the class. Particularly useful when combined with
- * {@link net.neoforged.neoforge.attachment.AttachmentHolder.Forwarding} attachment holders.
+ * {@link net.neoforged.neoforge.attachment.AttachmentHolder.AsField} attachment holders.
  */
+@org.jetbrains.annotations.ApiStatus.OverrideOnly
 public interface IForwardingAttachmentHolder extends IAttachmentHolder {
     IAttachmentHolder getAttachmentHolder();
 
@@ -31,8 +34,8 @@ public interface IForwardingAttachmentHolder extends IAttachmentHolder {
     }
 
     @Override
-    default <T> @Nullable T getExistingDataOrNull(AttachmentType<T> attachmentType) {
-        return getAttachmentHolder().getExistingDataOrNull(attachmentType);
+    default <T> Optional<T> getExistingData(AttachmentType<T> attachmentType) {
+        return getAttachmentHolder().getExistingData(attachmentType);
     }
 
     @Override
@@ -43,5 +46,15 @@ public interface IForwardingAttachmentHolder extends IAttachmentHolder {
     @Override
     default <T> @Nullable T removeData(AttachmentType<T> attachmentType) {
         return getAttachmentHolder().removeData(attachmentType);
+    }
+
+    @Override
+    default <T> @Nullable T getExistingDataOrNull(Supplier<AttachmentType<T>> type) {
+        return getAttachmentHolder().getExistingDataOrNull(type);
+    }
+
+    @Override
+    default <T> T getExistingDataOrNull(AttachmentType<T> attachmentType) {
+        return getAttachmentHolder().getExistingDataOrNull(attachmentType);
     }
 }
