@@ -31,6 +31,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         // Blocks
         add(Tags.Blocks.BARRELS, "Barrels");
         add(Tags.Blocks.BARRELS_WOODEN, "Wooden Barrels");
+        add(Tags.Blocks.BARS, "Bars");
+        add(Tags.Blocks.BARS_COPPER, "Copper Bars");
+        add(Tags.Blocks.BARS_IRON, "Iron Bars");
         add(Tags.Blocks.BOOKSHELVES, "Bookshelves");
         add(Tags.Blocks.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Blocks.BUDS, "Buds");
@@ -146,6 +149,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         // Items
         add(Tags.Items.BARRELS, "Barrels");
         add(Tags.Items.BARRELS_WOODEN, "Wooden Barrels");
+        add(Tags.Items.BARS, "Bars");
+        add(Tags.Items.BARS_COPPER, "Copper Bars");
+        add(Tags.Items.BARS_IRON, "Iron Bars");
         add(Tags.Items.BONES, "Bones");
         add(Tags.Items.BOOKSHELVES, "Bookshelves");
         add(Tags.Items.BRICKS, "Bricks");

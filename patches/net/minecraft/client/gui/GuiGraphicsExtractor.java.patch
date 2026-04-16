@@ -128,7 +128,7 @@
          int y = positionedTooltip.y();
          this.pose.pushMatrix();
 -        TooltipRenderUtil.extractTooltipBackground(this, x, y, textWidth, tempHeight, style);
-+        var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(this.tooltipStack, this, x, y, preEvent.getFont(), lines, style);
++        var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(tooltipStack, this, x, y, preEvent.getFont(), lines, style);
 +        TooltipRenderUtil.extractTooltipBackground(this, x, y, textWidth, tempHeight, textureEvent.getTexture());
          int localY = y;
  

@@ -30,6 +30,9 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
     public void addTags(HolderLookup.Provider registries) {
         tag(Tags.Blocks.BARRELS).addTag(Tags.Blocks.BARRELS_WOODEN);
         tag(Tags.Blocks.BARRELS_WOODEN).add(Blocks.BARREL);
+        tag(Tags.Blocks.BARS).addTags(Tags.Blocks.BARS_COPPER, Tags.Blocks.BARS_IRON, BlockTags.BARS);
+        tag(Tags.Blocks.BARS_COPPER).addAll(Blocks.COPPER_BARS.asList());
+        tag(Tags.Blocks.BARS_IRON).add(Blocks.IRON_BARS);
         tag(Tags.Blocks.BOOKSHELVES).add(Blocks.BOOKSHELF);
         tag(Tags.Blocks.BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
         tag(Tags.Blocks.BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
