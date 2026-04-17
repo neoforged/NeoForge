@@ -223,7 +223,7 @@ final class ClientPayloadHandler {
             }
             case SyncAttachmentsPayload.ServerTarget() -> {
                 final var server = level.getServer();
-                if(server == null) {
+                if (server == null) {
                     LOGGER.warn("Received synced attachments from unknown server");
                 } else {
                     final var attachments = level.getServer().getAttachmentHolder();
