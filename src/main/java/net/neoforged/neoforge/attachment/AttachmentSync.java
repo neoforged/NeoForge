@@ -17,6 +17,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -74,6 +75,7 @@ public final class AttachmentSync {
             case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof LevelChunk chunk -> new SyncAttachmentsPayload.ChunkTarget(chunk.getPos());
             case Entity entity -> new SyncAttachmentsPayload.EntityTarget(entity.getId());
             case Level ignored -> new SyncAttachmentsPayload.LevelTarget();
+            case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof MinecraftServer -> new SyncAttachmentsPayload.ServerTarget();
             default -> throw new UnsupportedOperationException("Attachment holder class is not supported: " + holder);
         };
     }
@@ -155,6 +157,15 @@ public final class AttachmentSync {
             return;
         }
         syncUpdate(level, type, level.players());
+    }
+
+    public static void syncServerUpdate(MinecraftServer server, AttachmentType<?> type) {
+        if (type.syncHandler == null) {
+            return;
+        }
+
+        if (server.getAttachmentHolder() instanceof AttachmentHolder attachmentHolder)
+            syncUpdate(attachmentHolder, type, server.getPlayerList().getPlayers());
     }
 
     /**

@@ -189,28 +189,29 @@ final class ClientPayloadHandler {
     }
 
     private static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
+        final var level = context.player().level();
         switch (payload.target()) {
             case SyncAttachmentsPayload.BlockEntityTarget(var pos) -> {
-                var blockEntity = context.player().level().getBlockEntity(pos);
+                var blockEntity = level.getBlockEntity(pos);
                 if (blockEntity == null) {
                     LOGGER.warn("Received synced attachments from unknown block entity");
                 } else {
-                    AttachmentSync.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
+                    AttachmentSync.receiveSyncedDataAttachments(blockEntity, level.registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
             case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
-                var chunk = context.player().level().getChunk(pos.x(), pos.z(), ChunkStatus.FULL, false);
+                var chunk = level.getChunk(pos.x(), pos.z(), ChunkStatus.FULL, false);
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {
                     var attachments = chunk.getAttachmentHolder();
                     if (attachments instanceof AttachmentHolder retypedHolder) {
-                        AttachmentSync.receiveSyncedDataAttachments(retypedHolder, chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
+                        AttachmentSync.receiveSyncedDataAttachments(retypedHolder, level.registryAccess(), payload.types(), payload.syncPayload());
                     }
                 }
             }
             case SyncAttachmentsPayload.EntityTarget(var entityId) -> {
-                var entity = context.player().level().getEntity(entityId);
+                var entity = level.getEntity(entityId);
                 if (entity == null) {
                     LOGGER.warn("Received synced attachments from unknown entity");
                 } else {
@@ -218,7 +219,18 @@ final class ClientPayloadHandler {
                 }
             }
             case SyncAttachmentsPayload.LevelTarget() -> {
-                AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
+                AttachmentSync.receiveSyncedDataAttachments(level, level.registryAccess(), payload.types(), payload.syncPayload());
+            }
+            case SyncAttachmentsPayload.ServerTarget() -> {
+                final var server = level.getServer();
+                if(server == null) {
+                    LOGGER.warn("Received synced attachments from unknown server");
+                } else {
+                    final var attachments = level.getServer().getAttachmentHolder();
+                    if (attachments instanceof AttachmentHolder retypedHolder) {
+                        AttachmentSync.receiveSyncedDataAttachments(retypedHolder, level.registryAccess(), payload.types(), payload.syncPayload());
+                    }
+                }
             }
         }
     }

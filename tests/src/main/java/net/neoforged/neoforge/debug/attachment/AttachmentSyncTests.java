@@ -174,6 +174,21 @@ public class AttachmentSyncTests {
 
                         player.clearOutboundPackets();
                     })
+                    // Test that players receive updates for changes to the server they're on
+                    .thenExecute(() -> {
+                        var server = helper.getLevel().getServer();
+                        var testValue = helper.randomInt();
+                        server.setData(intAttachment, testValue);
+
+                        var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                        helper.expectTarget(payload, new SyncAttachmentsPayload.ServerTarget());
+
+                        var holder = helper.holder();
+                        holder.readFrom(payload);
+                        holder.assertEqual(intAttachment, testValue);
+
+                        player.clearOutboundPackets();
+                    })
                     // Test that players receive updates for changes to block entities in tracked chunks
                     .thenExecute(() -> {
                         var testValue = 12345;

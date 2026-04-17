@@ -59,6 +59,9 @@ public record SyncAttachmentsPayload(
                         case LevelTarget() -> {
                             buf.writeByte(3);
                         }
+                        case ServerTarget() -> {
+                            buf.writeByte(4);
+                        }
                     }
                 },
                 buf -> {
@@ -76,6 +79,9 @@ public record SyncAttachmentsPayload(
                         case 3 -> {
                             return new LevelTarget();
                         }
+                        case 4 -> {
+                            return new ServerTarget();
+                        }
                         default -> throw new IllegalArgumentException("Unknown target type: " + type);
                     }
                 });
@@ -88,4 +94,6 @@ public record SyncAttachmentsPayload(
     public record EntityTarget(int entity) implements Target {}
 
     public record LevelTarget() implements Target {}
+
+    public record ServerTarget() implements Target {}
 }
