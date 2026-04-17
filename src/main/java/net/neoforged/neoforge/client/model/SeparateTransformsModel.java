@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -52,9 +53,14 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
 
     @Override
     public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+        // If the model itself has a particle texture set, use that; otherwise, use the base model's particle texture if any
+        Material particle = context.getMaterial("particle");
+        if (particle.texture().equals(MissingTextureAtlasSprite.getLocation())) {
+            particle = baseModel.getMaterial("particle");
+        }
         return new Baked(
                 context.useAmbientOcclusion(), context.isGui3d(), context.useBlockLight(),
-                spriteGetter.apply(context.getMaterial("particle")), overrides,
+                spriteGetter.apply(particle), overrides,
                 baseModel.bake(baker, baseModel, spriteGetter, modelState, context.useBlockLight()),
                 ImmutableMap.copyOf(Maps.transformValues(perspectives, value -> {
                     return value.bake(baker, value, spriteGetter, modelState, context.useBlockLight());
