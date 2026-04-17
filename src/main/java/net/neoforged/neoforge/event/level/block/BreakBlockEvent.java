@@ -47,7 +47,7 @@ public class BreakBlockEvent extends BlockEvent implements ICancellableEvent {
     /**
      * Canceling this event will prevent the block from being broken.
      * <p>
-     * When canceled on the server, the client will receive
+     * When canceled on the server, If {@link #shouldNotifyClient()}, the client will receive a {@link ClientboundBlockUpdatePacket}.
      */
     @Override
     public void setCanceled(boolean canceled) {
