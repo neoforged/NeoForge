@@ -143,16 +143,14 @@
              if (absorbedDamage > 0.0F && absorbedDamage < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(absorbedDamage * 10.0F));
              }
-@@ -760,7 +_,9 @@
+@@ -760,6 +_,7 @@
                  }
  
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
 +                this.onDamageTaken(this.damageContainers.peek());
              }
-+            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
          }
      }
- 
 @@ -816,6 +_,8 @@
  
              return InteractionResult.PASS;
