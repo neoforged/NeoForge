@@ -235,10 +235,11 @@
              this.resolveMobResponsibleForDamage(source);
              this.resolvePlayerResponsibleForDamage(source);
              if (tookFullDamage) {
-@@ -1267,6 +_,7 @@
+@@ -1267,6 +_,8 @@
                  CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, damage, damage, blocked);
              }
  
++            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
 +            this.damageContainers.pop();
              return success;
          }
@@ -448,7 +449,7 @@
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
 +                this.onDamageTaken(this.damageContainers.peek());
              }
-+            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
++            // Neo: Note that the LivingDamageEvent.Post is fired from LivingEntity#hurtServer later in the call stack.
          }
      }
  
