@@ -305,7 +305,7 @@ public class LivingEntityEventTests {
         AttachmentType<Float> VALUE_ABSORPTION = reg.attachments().registerSimpleAttachment("absorption_reduction", () -> 0f);
         AttachmentType<Float> VALUE_MOB_EFFECTS = reg.attachments().registerSimpleAttachment("effect_reduction", () -> 0f);
         AttachmentType<Float> VALUE_PRE_POST_DAMAGE = reg.attachments().registerSimpleAttachment("pre_post_damage", () -> 0f);
-        AttachmentType<Float> VALUE_NEW_DAMAGE = reg.attachments().registerSimpleAttachment("new_damage", () -> 0f);
+        AttachmentType<Float> VALUE_HEALTH_DAMAGE = reg.attachments().registerSimpleAttachment("health_damage", () -> 0f);
 
         /* This event listener watches for the first event in the damage sequence.  At this stage we expect to  add our
          * reduction functions and replace the incoming damage amount with a new value. */
@@ -340,7 +340,7 @@ public class LivingEntityEventTests {
         test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
                 player.setData(VALUE_ABSORPTION, event.getReduction(DamageContainer.Reduction.ABSORPTION));
-                player.setData(VALUE_NEW_DAMAGE, event.getNewDamage());
+                player.setData(VALUE_HEALTH_DAMAGE, event.getHealthDamage());
             }
         });
 
@@ -371,8 +371,8 @@ public class LivingEntityEventTests {
                     String playerHealth = formatter.format(player.getHealth());
                     helper.assertTrue(playerHealth.equals("11"), "player health expected 11, actually " + playerHealth);
 
-                    String valueNewDamage = formatter.format(player.getData(VALUE_NEW_DAMAGE));
-                    helper.assertTrue(valueNewDamage.equals("9"), "new damage expected 9, actually " + valueNewDamage);
+                    String valueNewDamage = formatter.format(player.getData(VALUE_HEALTH_DAMAGE));
+                    helper.assertTrue(valueNewDamage.equals("9"), "health damage expected 9, actually " + valueNewDamage);
 
                     String valuePrePostDamage = formatter.format(player.getData(VALUE_PRE_POST_DAMAGE));
                     helper.assertTrue(valuePrePostDamage.equals("9.451"), "damage from sequence before change expected 9.451, actually " + valuePrePostDamage);
