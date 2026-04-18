@@ -167,22 +167,63 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -682,6 +_,18 @@
+@@ -682,6 +_,59 @@
      @Override
      public T getMenu() {
          return this.menu;
 +    }
 +
++    // Neo: Add getters for non-public fields
 +    @org.jspecify.annotations.Nullable
-+    public Slot getSlotUnderMouse() { return this.hoveredSlot; }
-+    public int getGuiLeft() { return leftPos; }
-+    public int getGuiTop() { return topPos; }
-+    public int getXSize() { return imageWidth; }
-+    public int getYSize() { return imageHeight; }
++    public Slot getHoveredSlot() {
++        return this.hoveredSlot;
++    }
 +
-+    protected int slotColor = -2130706433;
-+    public int getSlotColor(int index) {
-+        return slotColor;
++    public int getLeftPos() {
++        return leftPos;
++    }
++
++    public int getTopPos() {
++        return topPos;
++    }
++
++    public int getImageWidth() {
++        return imageWidth;
++    }
++
++    public int getImageHeight() {
++        return imageHeight;
++    }
++
++    /// @deprecated Neo: Use [#getHoveredSlot()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    @org.jspecify.annotations.Nullable
++    public Slot getSlotUnderMouse() {
++        return this.getHoveredSlot();
++    }
++
++    /// @deprecated Neo: Use [#getLeftPos()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getGuiLeft() {
++        return this.getLeftPos();
++    }
++
++    /// @deprecated Neo: Use [#getTopPos()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getGuiTop() {
++        return this.getTopPos();
++    }
++
++    /// @deprecated Neo: Use [#getImageHeight()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getXSize() {
++        return this.getImageWidth();
++    }
++
++    /// @deprecated Neo: Use [#getImageHeight()] instead.
++    @Deprecated(forRemoval = true, since = "26.1.2")
++    public int getYSize() {
++        return this.getImageHeight();
      }
  
      @Override

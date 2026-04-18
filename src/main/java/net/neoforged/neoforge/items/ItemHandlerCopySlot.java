@@ -22,12 +22,12 @@ public class ItemHandlerCopySlot extends StackCopySlot {
     private final SlotItemHandler slotItemHandler;
 
     public ItemHandlerCopySlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-        super(xPosition, yPosition);
+        super(index, xPosition, yPosition);
         slotItemHandler = new SlotItemHandler(itemHandler, index, xPosition, yPosition);
     }
 
     public ItemHandlerCopySlot(SlotItemHandler slotItemHandler) {
-        super(slotItemHandler.x, slotItemHandler.y);
+        super(slotItemHandler.getSlotIndex(), slotItemHandler.x, slotItemHandler.y);
         this.slotItemHandler = slotItemHandler;
     }
 

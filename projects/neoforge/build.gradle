@@ -186,6 +186,7 @@ neoDev {
         gameTestServer {
             type = "gameTestServer"
             loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
+            systemProperty("eventbus.checkTypesOnDispatch", "true")
         }
         data {
             // We perform client and server datagen in a single clientData run to avoid

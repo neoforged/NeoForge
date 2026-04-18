@@ -96,6 +96,7 @@ neoDev {
         }
         gameTestServer {
             type = "gameTestServer"
+            systemProperty("eventbus.checkTypesOnDispatch", "true")
         }
         data {
             clientData()

@@ -65,6 +65,12 @@ public class Tags {
         // `c` tags for common conventions
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
+        /**
+         * Equivalent to the "minecraft:bars" block tag.
+         */
+        public static final TagKey<Block> BARS = tag("bars");
+        public static final TagKey<Block> BARS_COPPER = tag("bars/copper");
+        public static final TagKey<Block> BARS_IRON = tag("bars/iron");
         public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
@@ -381,6 +387,12 @@ public class Tags {
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
+        /**
+         * Equivalent to the "minecraft:bars" item tag.
+         */
+        public static final TagKey<Item> BARS = tag("bars");
+        public static final TagKey<Item> BARS_COPPER = tag("bars/copper");
+        public static final TagKey<Item> BARS_IRON = tag("bars/iron");
         public static final TagKey<Item> BONES = tag("bones");
         public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
         public static final TagKey<Item> BRICKS = tag("bricks");
