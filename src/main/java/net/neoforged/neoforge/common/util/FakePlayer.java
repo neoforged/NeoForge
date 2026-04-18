@@ -64,6 +64,7 @@ import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.network.protocol.game.ServerboundTeleportToEntityPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
@@ -306,6 +307,11 @@ public class FakePlayer extends ServerPlayer {
 
         @Override
         public void handleChatSessionUpdate(ServerboundChatSessionUpdatePacket packet) {}
+
+        @Override
+        public boolean hasChannel(Identifier payloadId) {
+            return false;
+        }
     }
 
     private static final class FakeConnection extends net.minecraft.network.Connection {
