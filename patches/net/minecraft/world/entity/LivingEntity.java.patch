@@ -441,7 +441,7 @@
                  }
  
                  return damage;
-@@ -1896,21 +_,36 @@
+@@ -1896,21 +_,37 @@
  
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
@@ -450,6 +450,7 @@
 -            float var10 = Math.max(dmg - this.getAbsorptionAmount(), 0.0F);
 -            this.setAbsorptionAmount(this.getAbsorptionAmount() - (dmg - var10));
 -            float absorbedDamage = dmg - var10;
++            // Neo (ImplNote): Keep this in-sync with the equivalent patches in Player#actuallyHurt.
 +            // Neo: Primary damage pipeline hooks. Compute the armor and enchantment reductions against the "original" damage, and then fire LivingDamageEvent.Pre
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(source, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(source, this.damageContainers.peek().getNewDamage());

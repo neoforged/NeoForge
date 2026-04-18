@@ -123,7 +123,7 @@
                      if (level.getDifficulty() == Difficulty.PEACEFUL) {
                          damage = 0.0F;
                      }
-@@ -742,11 +_,14 @@
+@@ -742,15 +_,31 @@
      @Override
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
@@ -132,9 +132,21 @@
 -            float var8 = Math.max(dmg - this.getAbsorptionAmount(), 0.0F);
 -            this.setAbsorptionAmount(this.getAbsorptionAmount() - (dmg - var8));
 -            float absorbedDamage = dmg - var8;
++            // Neo (ImplNote): Keep this in-sync with the equivalent patches in LivingEntity#actuallyHurt.
++            // Neo: Primary damage pipeline hooks. Compute the armor and enchantment reductions against the "original" damage, and then fire LivingDamageEvent.Pre
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(source, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(source, this.damageContainers.peek().getNewDamage());
++
++            // LivingDamageEvent.Pre is then able to mutate the container to change the reductions and change the "real" damage that will be inflicted.
 +            float damage = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
++            // Throw an exception if someone kills the entity during Pre. Vanilla is going to kill any entity which isDeadOrDying() when it bubbles back up to hurtServer, so it dying early is invalid.
++            com.google.common.base.Preconditions.checkArgument(!this.dead, "It is invalid to have killed an entity during LivingDamageEvent.Pre. Use LivingIncomingDamageEvent or LivingDamageEvent.Post instead.");
++
++            // Store a copy of the "true" inflicted damage so we can propagate it back to hurtServer.
++            this.damageContainers.peek().captureInflictedDamage();
++
++            // Next we attribute damage to absorption hearts. We record the amount blocked by absorption in the container for later calculations.
++            // Mods reduction functions may adjust the split of damage between absorption and health, so we need to first apply the reductions and then compute the amounts that go to each pool.
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), damage));
 +            float absorbed = Math.min(damage, this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
 +            this.setAbsorptionAmount(Math.max(0, this.getAbsorptionAmount() - absorbed));
@@ -143,14 +155,20 @@
              if (absorbedDamage > 0.0F && absorbedDamage < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(absorbedDamage * 10.0F));
              }
-@@ -760,6 +_,7 @@
-                 }
+ 
++            // Last thing here, inflict damage to the entity's health, based on how much damage is remaining after absorption has been processes.
+             if (var8 != 0.0F) {
+                 this.causeFoodExhaustion(source.getFoodExhaustion());
+                 this.getCombatTracker().recordDamage(source, var8);
+@@ -761,6 +_,8 @@
  
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
-+                this.onDamageTaken(this.damageContainers.peek());
              }
++
++            // Neo: Now we go back to hurtServer, where we'll update various metadata fields, process the side effects of damage (i.e. killing the entity), and firing LivingDamageEvent.Post
          }
      }
+ 
 @@ -816,6 +_,8 @@
  
              return InteractionResult.PASS;
