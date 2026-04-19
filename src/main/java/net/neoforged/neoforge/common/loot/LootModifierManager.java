@@ -5,95 +5,62 @@
 
 package net.neoforged.neoforge.common.loot;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.DynamicOps;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableBiMap.Builder;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import net.minecraft.resources.FileToIdConverter;
+import java.util.Optional;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
-public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonElement> {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+public class LootModifierManager extends SimpleJsonResourceReloadListener<Optional<WithConditions<IGlobalLootModifier>>> {
     public static final Logger LOGGER = LogManager.getLogger();
+    private static final String FOLDER = "loot_modifiers";
 
-    private Map<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableMap.of();
-    private static final String folder = "loot_modifiers";
+    private BiMap<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableBiMap.of();
+    private List<IGlobalLootModifier> sortedModifiers = List.of();
 
-    public LootModifierManager() {
-        super(ExtraCodecs.JSON, FileToIdConverter.json(folder));
+    public LootModifierManager(RegistryAccess registries) {
+        super(registries, IGlobalLootModifier.CONDITIONAL_CODEC, ResourceKey.createRegistryKey(Identifier.withDefaultNamespace(FOLDER)));
     }
 
     @Override
-    protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        Map<Identifier, JsonElement> map = super.prepare(resourceManager, profilerFiller);
-        List<Identifier> finalLocations = new ArrayList<>();
-        Identifier resourceLocation = Identifier.fromNamespaceAndPath("neoforge", "loot_modifiers/global_loot_modifiers.json");
-        //read in all data files from neoforge:loot_modifiers/global_loot_modifiers in order to do layering
-        for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
-            try (Reader reader = resource.openAsReader()) {
-                JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-                boolean replace = GsonHelper.getAsBoolean(jsonobject, "replace", false);
-                if (replace)
-                    finalLocations.clear();
-                JsonArray entries = GsonHelper.getAsJsonArray(jsonobject, "entries");
-                for (int i = 0; i < entries.size(); i++) {
-                    Identifier loc = Identifier.parse(GsonHelper.convertToString(entries.get(i), "entries[" + i + "]"));
-                    finalLocations.remove(loc); //remove and re-add if needed, to update the ordering.
-                    finalLocations.add(loc);
-                }
-            } catch (RuntimeException | IOException ioexception) {
-                LOGGER.error("Couldn't read global loot modifier list {} in data pack {}", resourceLocation, resource.sourcePackId(), ioexception);
+    protected void apply(Map<Identifier, Optional<WithConditions<IGlobalLootModifier>>> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
+        Builder<Identifier, IGlobalLootModifier> builder = ImmutableBiMap.builder();
+        for (Map.Entry<Identifier, Optional<WithConditions<IGlobalLootModifier>>> entry : resourceList.entrySet()) {
+            if (entry.getValue().isPresent()) {
+                builder.put(entry.getKey(), entry.getValue().get().carrier());
             }
         }
-        Map<Identifier, JsonElement> finalMap = new HashMap<>();
-        //use layered config to fetch modifier data files (modifiers missing from config are disabled)
-        for (Identifier location : finalLocations) {
-            finalMap.put(location, map.get(location));
-        }
-        return finalMap;
-    }
 
-    @Override
-    protected void apply(Map<Identifier, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
-        DynamicOps<JsonElement> ops = this.makeConditionalOps();
-        Builder<Identifier, IGlobalLootModifier> builder = ImmutableMap.builder();
-        for (Map.Entry<Identifier, JsonElement> entry : resourceList.entrySet()) {
-            Identifier location = entry.getKey();
-            JsonElement json = entry.getValue();
-            IGlobalLootModifier.CONDITIONAL_CODEC.parse(ops, json)
-                    // log error if parse fails
-                    .resultOrPartial(errorMsg -> LOGGER.warn("Could not decode GlobalLootModifier with json id {} - error: {}", location, errorMsg))
-                    // add loot modifier if parse succeeds
-                    .flatMap(Function.identity())
-                    .ifPresent(carrier -> builder.put(location, carrier.carrier()));
-        }
         this.registeredLootModifiers = builder.build();
+        this.sortedModifiers = this.registeredLootModifiers.values().stream()
+                .sorted(Comparator.comparingInt(glm -> -glm.priority())) // Use negative priority so higher priority executes first.
+                .toList();
     }
 
     /**
-     * An immutable collection of the registered loot modifiers in layered order.
+     * Returns an iterable view of all loot modifiers, sorted in the order they should be applied.
      */
-    public Collection<IGlobalLootModifier> getAllLootMods() {
-        return registeredLootModifiers.values();
+    public Iterable<IGlobalLootModifier> getSortedModifiers() {
+        return sortedModifiers;
+    }
+
+    /**
+     * Returns the ID of the given loot modifier, or null if it is not registered.
+     */
+    @Nullable
+    public Identifier getId(IGlobalLootModifier modifier) {
+        return this.registeredLootModifiers.inverse().get(modifier);
     }
 }

@@ -1121,8 +1121,12 @@ public class CommonHooks {
     public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
         LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
-        for (IGlobalLootModifier mod : man.getAllLootMods()) {
-            generatedLoot = mod.apply(generatedLoot, context);
+        for (IGlobalLootModifier mod : man.getSortedModifiers()) {
+            try {
+                generatedLoot = mod.apply(generatedLoot, context);
+            } catch (Exception e) {
+                LOGGER.error("Error applying global loot modifier %s for loot table %s!".formatted(man.getId(mod), lootTableId), e);
+            }
         }
         return generatedLoot;
     }

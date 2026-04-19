@@ -154,7 +154,7 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onResourceReload(AddServerReloadListenersEvent event) {
-        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
+        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager(event.getRegistryAccess()));
         event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
         event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());

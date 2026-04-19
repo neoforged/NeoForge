@@ -1,0 +1,16 @@
+{
+  "type": "neotests_glm_test:silk_touch_bamboo",
+  "conditions": [
+    {
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "items": "minecraft:bamboo"
+      }
+    },
+    {
+      "condition": "testframework:test_enabled",
+      "framework": "neotests:tests",
+      "test": "glm_silkTouchBambooTest"
+    }
+  ]
+}
