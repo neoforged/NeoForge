@@ -54,7 +54,7 @@
                          registry.listElements()
 -                            .<CompletableFuture<?>>map(e -> dumpValue(pathProvider.json(e.key().identifier()), cache, writeOps, v.elementCodec(), e.value()))
 +                            .filter(holder -> this.namespacePredicate.test(holder.key().identifier().getNamespace()))
-+                            .map(e -> dumpValue(pathProvider.json(e.key().identifier()), cache, writeOps, conditionalCodec, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(e.key(), java.util.List.of()), e.value()))))
++                            .map(e -> (CompletableFuture<Object>) dumpValue(pathProvider.json(e.key().identifier()), cache, writeOps, conditionalCodec, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(e.key(), java.util.List.of()), e.value()))))
                              .toArray(CompletableFuture[]::new)
                      );
                  }

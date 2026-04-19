@@ -259,7 +259,7 @@ public class GlobalLootModifiersTest {
                                                 EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build()))
                                         .build(),
                                 new TestEnabledLootCondition(test)
-                        }, 1000));
+                        }, IGlobalLootModifier.DEFAULT_PRIORITY));
             }
 
             @Override
@@ -307,7 +307,7 @@ public class GlobalLootModifiersTest {
                                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
                                 new TestEnabledLootCondition(test)
                         },
-                        1000,
+                        IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
             }
 
@@ -342,7 +342,7 @@ public class GlobalLootModifiersTest {
                         MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)).build(),
                         new TestEnabledLootCondition(test)
                 },
-                1000)));
+                IGlobalLootModifier.DEFAULT_PRIORITY)));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.BAMBOO.getDefaultInstance()))
@@ -369,7 +369,7 @@ public class GlobalLootModifiersTest {
                         LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")).build(),
                         new TestEnabledLootCondition(test)
                 },
-                1000,
+                IGlobalLootModifier.DEFAULT_PRIORITY,
                 2)));
 
         test.onGameTest(helper -> helper.startSequence()

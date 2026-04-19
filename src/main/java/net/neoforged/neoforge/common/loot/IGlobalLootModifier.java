@@ -35,7 +35,7 @@ public interface IGlobalLootModifier {
      * The "default" priority for a loot modifier. See {@link #priority()} for more info.
      */
     int DEFAULT_PRIORITY = 1000;
-    
+
     /**
      * Applies the modifier to the list of generated loot. This function needs to be responsible for
      * checking ILootConditions as well.
