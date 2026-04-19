@@ -67,7 +67,7 @@ public abstract class DataMapProvider implements DataProvider {
             return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
                 DataMapType<?, ?> type = entry.getKey();
                 final Path path = this.pathProvider.json(type.id().withPrefix(DataMapLoader.getFolderLocation(type.registryKey().identifier()) + "/"));
-                return generate(path, cache, entry.getValue(), dynamicOps);
+                return (CompletableFuture<Object>) generate(path, cache, entry.getValue(), dynamicOps);
             }).toArray(CompletableFuture[]::new));
         });
     }
