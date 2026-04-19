@@ -12,6 +12,5 @@
       "framework": "neotests:tests",
       "test": "glm_silkTouchBambooTest"
     }
-  ],
-  "priority": 1000
+  ]
 }

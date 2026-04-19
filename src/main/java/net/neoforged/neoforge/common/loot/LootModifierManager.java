@@ -45,7 +45,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<Option
 
         this.registeredLootModifiers = builder.build();
         this.sortedModifiers = this.registeredLootModifiers.values().stream()
-                .sorted(Comparator.comparingInt(IGlobalLootModifier::priority))
+                .sorted(Comparator.comparingInt(glm -> -glm.priority())) // Use negative priority so higher priority executes first.
                 .toList();
     }
 

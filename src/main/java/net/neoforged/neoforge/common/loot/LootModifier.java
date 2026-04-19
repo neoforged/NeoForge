@@ -39,7 +39,7 @@ public abstract class LootModifier implements IGlobalLootModifier {
     protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, LootItemCondition[], Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
                 LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
-                Codec.INT.fieldOf("priority").forGetter(lm -> lm.priority));
+                Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(lm -> lm.priority));
     }
 
     /**

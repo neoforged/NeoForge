@@ -21,6 +21,5 @@
       "framework": "neotests:tests",
       "test": "glm_smeltingModifierTest"
     }
-  ],
-  "priority": 1000
+  ]
 }

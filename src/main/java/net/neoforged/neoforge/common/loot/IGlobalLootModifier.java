@@ -32,6 +32,11 @@ public interface IGlobalLootModifier {
     Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemCondition.DIRECT_CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
 
     /**
+     * The "default" priority for a loot modifier. See {@link #priority()} for more info.
+     */
+    int DEFAULT_PRIORITY = 1000;
+    
+    /**
      * Applies the modifier to the list of generated loot. This function needs to be responsible for
      * checking ILootConditions as well.
      * 
@@ -47,10 +52,10 @@ public interface IGlobalLootModifier {
     MapCodec<? extends IGlobalLootModifier> codec();
 
     /**
-     * Returns the priority of this loot modifier. Modifiers with a lower priority will be applied first.
+     * Returns the priority of this loot modifier. Modifiers with a higher priority will be applied first.
      * Modifiers with equal priority will be applied in an undefined order.
      * <p>
-     * The canonical "default" priority value is 1000.
+     * The canonical "default" priority value is 1000, per {@link #DEFAULT_PRIORITY}.
      * 
      * @apiNote Do not hardcode this value. This value must be read from your GLM's json file.
      */
