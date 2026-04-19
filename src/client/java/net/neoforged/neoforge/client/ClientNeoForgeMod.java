@@ -50,7 +50,6 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.internal.SelfTestClient;
-import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.client.model.CompositeUnbakedModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
@@ -190,11 +189,9 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterReloadListeners(AddClientReloadListenersEvent event) {
-        event.addListener(NeoForgeReloadListeners.CLIENT_MOD_LOADING, ClientModLoader::onResourceReload);
         event.addListener(NeoForgeReloadListeners.BRANDING, BrandingControl.resourceManagerReloadListener());
 
         // These run before vanilla reload listeners.
-        event.addDependency(NeoForgeReloadListeners.CLIENT_MOD_LOADING, NeoForgeReloadListeners.BRANDING);
         event.addDependency(NeoForgeReloadListeners.BRANDING, VanillaClientListeners.FIRST);
 
         event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjLoader.INSTANCE);

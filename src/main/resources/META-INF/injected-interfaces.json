@@ -1,7 +1,4 @@
 {
-  "com/mojang/blaze3d/opengl/GlDevice": [
-    "net/neoforged/neoforge/client/extensions/blaze3d/GlDeviceExtension"
-  ],
   "com/mojang/blaze3d/vertex/VertexConsumer": [
     "net/neoforged/neoforge/client/extensions/IVertexConsumerExtension"
   ],

@@ -56,9 +56,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -119,7 +117,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
-import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.sounds.Music;
 import net.minecraft.util.ARGB;
@@ -144,8 +141,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
-import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
@@ -196,7 +191,6 @@ import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -958,16 +952,6 @@ public class ClientHooks {
     public static TextureFormat getStencilFormat() {
         var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
         return reducedPrecision ? TextureFormat.DEPTH24_STENCIL8 : TextureFormat.DEPTH32_STENCIL8;
-    }
-
-    @ApiStatus.Internal
-    public static Overlay createLoadingOverlay(Minecraft minecraft, ReloadInstance reloadInstance, Consumer<Optional<Throwable>> errorHandler, boolean fadeIn) {
-        // If our own early loading screen is in use, we use a loading overlay that draws on top of that cooperatively
-        if (EarlyLoadingScreenController.current() instanceof DisplayWindow displayWindow) {
-            return new NeoForgeLoadingOverlay(minecraft, reloadInstance, errorHandler, displayWindow);
-        } else {
-            return new LoadingOverlay(minecraft, reloadInstance, errorHandler, fadeIn);
-        }
     }
 
     private static final HashSet<MetadataSectionType<?>> DEFAULT_METADATA_SECTION_TYPES = new HashSet<>();
