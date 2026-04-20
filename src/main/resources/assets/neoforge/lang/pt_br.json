@@ -232,7 +232,7 @@
   "neoforge.network.negotiation.failure.version.client.missing": "O cliente quer a versão do payload: %s, mas o servidor não suporta isso!",
   "neoforge.network.negotiation.failure.version.server.missing": "O servidor quer que o payload seja a versão: %s, mas o cliente não o suporta!",
   "neoforge.network.negotiation.failure.version.mismatch": "O cliente quer que o payload seja a versão: %s, mas o servidor quer que seja a versão: %s!",
-  "neoforge.network.invalid_flow": "Failed to process a payload that was send with an invalid flow: %s",
+  "neoforge.network.invalid_flow": "Falha ao processar uma carga útil que foi enviada com um fluxo inválido: %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Você está tentando se conectar a um servidor que está executando o NeoForge, mas você não está. Instale o NeoForge Versão: %s para se conectar a este servidor.",
   "neoforge.network.negotiation.failure.vanilla.server.not_supported": "Você está tentando se conectar a um servidor que não está executando NeoForge, mas você tem mods que exigem. Não foi possível estabelecer uma conexão.",
   "neoforge.network.packet_splitter.unknown": "Tentou dividir um pacote sem dividir pacotes!",
