@@ -17,7 +17,7 @@ import net.minecraft.tags.TagKey;
  * The {@link HolderSet.Named} returned by {@link PendingTags#lookup()} is not safe to read from until {@link PendingTags#apply()}
  * has been called. So to counteract that, we have to forward the underlying pending contents.
  */
-public interface IPendingTagsExtension<T> {
+public interface PendingTagsExtension<T> {
     /**
      * {@return the tag contents collected during load, keyed by tag}
      * This is the raw data before {@link PendingTags#apply()} binds it to the registry's holders.

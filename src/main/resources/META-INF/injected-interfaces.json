@@ -81,7 +81,7 @@
     "net/neoforged/neoforge/registries/IRegistryExtension<T>"
   ],
   "net/minecraft/core/Registry$PendingTags": [
-    "net/neoforged/neoforge/common/extensions/IPendingTagsExtension<T>"
+    "net/neoforged/neoforge/common/extensions/PendingTagsExtension<T>"
   ],
   "net/minecraft/core/RegistrySetBuilder$UniversalLookup": [
     "net/minecraft/core/HolderLookup<java.lang.Object>"
