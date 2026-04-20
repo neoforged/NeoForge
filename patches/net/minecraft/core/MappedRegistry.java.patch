@@ -146,7 +146,7 @@
 +                // Neo: Make the underlying staged tag contents accessible for loading condition evaluation.
 +                @Override
 +                public Map<TagKey<T>, List<Holder<T>>> contents() {
-+                    return pendingContents;
++                    return Collections.unmodifiableMap(pendingContents);
 +                }
 +
                  @Override
