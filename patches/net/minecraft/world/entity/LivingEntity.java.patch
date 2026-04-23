@@ -642,6 +642,45 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
+@@ -3573,6 +_,8 @@
+         boolean ok = false;
+         BlockPos pos = BlockPos.containing(xx, yy, zz);
+         Level level = this.level();
++        // Neo: Store whether we actually did a teleport to the target, to know when not to teleport back to the same back
++        boolean teleported = false;
+         if (level.hasChunkAt(pos)) {
+             boolean landed = false;
+ 
+@@ -3588,15 +_,29 @@
+             }
+ 
+             if (landed) {
++                // Neo: Hook here for EnderMan's teleport, to get the actual final position being teleported to
++                var doTeleport = true;
++                if (this instanceof net.minecraft.world.entity.monster.EnderMan) {
++                    var event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, xx, y, zz);
++                    doTeleport = !event.isCanceled();
++                    xx = event.getTargetX();
++                    y = event.getTargetY();
++                    zz = event.getTargetZ();
++                }
++                if (doTeleport) {
++                teleported = true;
+                 this.teleportTo(xx, y, zz);
+                 if (level.noCollision(this) && !level.containsAnyLiquid(this.getBoundingBox())) {
+                     ok = true;
+                 }
++                }
+             }
+         }
+ 
+         if (!ok) {
++            if (teleported) { // Neo: Teleport back to original only if we teleported away and need to revert
+             this.teleportTo(xo, yo, zo);
++            }
+             return false;
+         } else {
+             if (showParticles) {
 @@ -3676,8 +_,8 @@
          }
  
