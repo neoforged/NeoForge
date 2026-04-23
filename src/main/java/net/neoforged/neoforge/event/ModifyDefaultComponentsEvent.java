@@ -8,9 +8,8 @@ package net.neoforged.neoforge.event;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
@@ -40,12 +39,12 @@ import org.jetbrains.annotations.ApiStatus;
 ///  }
 ///  ```
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
-    private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
-    private final List<Pair<ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
+    private final Map<Item, DataComponentInitializers.Initializer<Item>> modifiersByItem;
+    private final List<Pair<ItemWithComponentsPredicate, DataComponentInitializers.Initializer<Item>>> modifiersByPredicate;
 
     @ApiStatus.Internal
-    public ModifyDefaultComponentsEvent(Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem,
-            List<Pair<ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
+    public ModifyDefaultComponentsEvent(Map<Item, DataComponentInitializers.Initializer<Item>> modifiersByItem,
+            List<Pair<ItemWithComponentsPredicate, DataComponentInitializers.Initializer<Item>>> modifiersByPredicate) {
         this.modifiersByItem = modifiersByItem;
         this.modifiersByPredicate = modifiersByPredicate;
     }
@@ -54,20 +53,20 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
     ///
     /// @param item  the item to modify the default components for
     /// @param patch the patch to apply
-    public void modify(ItemLike item, Consumer<DataComponentMap.Builder> patch) {
-        modifiersByItem.merge(item.asItem(), patch, Consumer::andThen);
+    public void modify(ItemLike item, DataComponentInitializers.Initializer<Item> patch) {
+        modifiersByItem.merge(item.asItem(), patch, DataComponentInitializers.Initializer::andThen);
     }
 
     /// Patches the default components of all items matching the given `bipredicate`
     /// based on item and/or its currently applied default components.
     ///
     /// If this method is used to modify components based on the item's current default components, the
-    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Consumer)] are
+    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, DataComponentInitializers.Initializer)] are
     /// already applied.
     ///
     /// @param predicate the item and its current default components filter
     /// @param patch     the patch to apply
-    public void modifyMatching(ItemWithComponentsPredicate predicate, Consumer<DataComponentMap.Builder> patch) {
+    public void modifyMatching(ItemWithComponentsPredicate predicate, DataComponentInitializers.Initializer<Item> patch) {
         modifiersByPredicate.add(Pair.of(predicate, patch));
     }
 

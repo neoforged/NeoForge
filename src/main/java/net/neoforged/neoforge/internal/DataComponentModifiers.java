@@ -10,28 +10,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
 public final class DataComponentModifiers {
-    private static final Map<Item, Consumer<DataComponentMap.Builder>> MODIFIERS_BY_ITEM = new HashMap<>();
-    private static final List<Pair<ModifyDefaultComponentsEvent.ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
+    private static final Map<Item, DataComponentInitializers.Initializer<Item>> MODIFIERS_BY_ITEM = new HashMap<>();
+    private static final List<Pair<ModifyDefaultComponentsEvent.ItemWithComponentsPredicate, DataComponentInitializers.Initializer<Item>>> MODIFIERS_BY_PREDICATE = new ArrayList<>();
 
     static void init() {
         ModLoader.postEvent(new ModifyDefaultComponentsEvent(MODIFIERS_BY_ITEM, MODIFIERS_BY_PREDICATE));
     }
 
-    public static void apply(Item item, DataComponentMap.Builder builder) {
-        Consumer<DataComponentMap.Builder> modifier = MODIFIERS_BY_ITEM.get(item);
+    public static void apply(HolderLookup.Provider context, Item item, ResourceKey<Item> key, DataComponentMap.Builder builder) {
+        var modifier = MODIFIERS_BY_ITEM.get(item);
         if (modifier != null) {
-            modifier.accept(builder);
+            modifier.run(builder, context, key);
         }
         for (var pair : MODIFIERS_BY_PREDICATE) {
             if (pair.getFirst().test(item, builder)) {
-                pair.getSecond().accept(builder);
+                pair.getSecond().run(builder, context, key);
             }
         }
     }
