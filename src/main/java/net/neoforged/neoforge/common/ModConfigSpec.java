@@ -132,6 +132,21 @@ public class ModConfigSpec implements IConfigSpec {
                 throw new IllegalArgumentException("Configuration value " + String.join(".", configValue.getPath())
                         + " defined in config " + config.getFileName() + " has restart of type " + configValue.getSpec().restartType() + " which cannot be used for configs of type " + config.getType());
             }
+            // Check that the spec's validator accepts its own default value
+            if (!configValue.getSpec().test(configValue.getDefault())) {
+                // TODO(26.2): Make this throw in dev and in production
+                if (FMLEnvironment.isProduction()) {
+                    LOGGER.warn("Configuration value {} defined in config {} has a validator that does not accept its own default value; this will be an exception in a future Minecraft version",
+                            String.join(".", configValue.getPath()),
+                            config.getFileName());
+                } else {
+                    throw new IllegalArgumentException("Configuration value "
+                            + String.join(".", configValue.getPath())
+                            + " defined in config "
+                            + config.getFileName()
+                            + " has a validator that does not accept its own default value");
+                }
+            }
         });
     }
 
