@@ -63,6 +63,7 @@ import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
@@ -1795,7 +1796,8 @@ public class CommonHooks {
         }
     }
 
-    public static void onCustomClickAction(ServerPlayer player, ServerboundCustomClickActionPacket packet) {
-        NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, packet.id(), packet.payload().orElse(null)));
+    @ApiStatus.Internal
+    public static boolean onCustomClickAction(@Nullable Player player, Identifier id, Optional<Tag> payload) {
+        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, id, payload.orElse(null))).isCanceled();
     }
 }
