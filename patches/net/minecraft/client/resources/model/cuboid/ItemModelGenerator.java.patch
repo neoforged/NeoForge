@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
++++ b/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
+@@ -210,8 +_,10 @@
+     public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) implements ModelBaker.SharedOperationKey<QuadCollection> {
+         public QuadCollection compute(ModelBaker modelBakery) {
+             QuadCollection.Builder builder = new QuadCollection.Builder();
++            var faceData = this.material.extraFaceData();
+             BakedQuad.MaterialInfo materialInfo = modelBakery.interner()
+-                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, 0));
++                    // Neo: Forward additional face data properties to the BakedQuad$MaterialInfo for generated item models.
++                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion()));
+             ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo);
+             return builder.build();
+         }

@@ -152,6 +152,16 @@
      ) {
          final Multimap<String, Identifier> missingSprites = Multimaps.synchronizedMultimap(HashMultimap.create());
          final Multimap<String, String> missingReferences = Multimaps.synchronizedMultimap(HashMultimap.create());
+@@ -250,7 +_,8 @@
+ 
+             private Material.@Nullable Baked bakeForAtlas(Material material, SpriteLoader.Preparations atlas) {
+                 TextureAtlasSprite sprite = atlas.getSprite(material.sprite());
+-                return sprite != null ? new Material.Baked(sprite, material.forceTranslucent()) : null;
++                // Neo: Forward the extra face data from Material to Material$Baked
++                return sprite != null ? new Material.Baked(sprite, material.forceTranslucent(), material.extraFaceData()) : null;
+             }
+ 
+             @Override
 @@ -261,7 +_,7 @@
          };
          CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);

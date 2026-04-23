@@ -1,0 +1,51 @@
+--- a/net/minecraft/client/resources/model/sprite/Material.java
++++ b/net/minecraft/client/resources/model/sprite/Material.java
+@@ -9,27 +_,43 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record Material(Identifier sprite, boolean forceTranslucent) {
++public record Material(Identifier sprite, boolean forceTranslucent, net.neoforged.neoforge.client.model.ExtraFaceData extraFaceData) {
+     private static final Codec<Material> SIMPLE_CODEC = Identifier.CODEC.xmap(Material::new, Material::sprite);
+     private static final Codec<Material> FULL_CODEC = RecordCodecBuilder.create(
+         i -> i.group(
+                 Identifier.CODEC.fieldOf("sprite").forGetter(Material::sprite),
+-                Codec.BOOL.optionalFieldOf("force_translucent", false).forGetter(Material::forceTranslucent)
++                Codec.BOOL.optionalFieldOf("force_translucent", false).forGetter(Material::forceTranslucent),
++                net.neoforged.neoforge.client.model.ExtraFaceData.CODEC.optionalFieldOf("neoforge_data", net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT).forGetter(Material::extraFaceData)
+             )
+             .apply(i, Material::new)
+     );
+     public static final Codec<Material> CODEC = Codec.either(SIMPLE_CODEC, FULL_CODEC)
+-        .xmap(Either::unwrap, material -> material.forceTranslucent ? Either.right(material) : Either.left(material));
++        .xmap(Either::unwrap, material -> (material.forceTranslucent || !net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(material.extraFaceData)) ? Either.right(material) : Either.left(material));
+ 
+     public Material(Identifier sprite) {
+         this(sprite, false);
+     }
+ 
++    // Neo: Backwards-compatible constructor supplying a default face data.
++    public Material(Identifier sprite, boolean forceTranslucent) {
++        this(sprite, forceTranslucent, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
+     public Material withForceTranslucent(boolean forceTranslucent) {
+-        return new Material(this.sprite, forceTranslucent);
++        // Neo: Augment this method to forward face data to the cloned Material
++        return new Material(this.sprite, forceTranslucent, this.extraFaceData);
++    }
++
++    /// Creates a copy of this Material with the same sprite and forced translucency, but with the given face data.
++    public Material withExtraFaceData(net.neoforged.neoforge.client.model.ExtraFaceData extraFaceData) {
++        return new Material(this.sprite, this.forceTranslucent, extraFaceData);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public record Baked(TextureAtlasSprite sprite, boolean forceTranslucent) {
++    public record Baked(TextureAtlasSprite sprite, boolean forceTranslucent, net.neoforged.neoforge.client.model.ExtraFaceData extraFaceData) {
++        // Neo: Backwards-compatible constructor supplying a default face data.
++        public Baked(TextureAtlasSprite sprite, boolean forceTranslucent) {
++            this(sprite, forceTranslucent, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++        }
+     }
+ }

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "emissive_elements_test:item/glow_item"
+  }
+}
