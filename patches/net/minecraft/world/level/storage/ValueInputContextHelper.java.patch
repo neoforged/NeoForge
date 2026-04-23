@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/storage/ValueInputContextHelper.java
++++ b/net/minecraft/world/level/storage/ValueInputContextHelper.java
+@@ -163,6 +_,11 @@
+         public Optional<int[]> getIntArray(String name) {
+             return Optional.empty();
+         }
++
++        @Override
++        public java.util.Set<String> keySet() {
++            return java.util.Set.of();
++        }
+     };
+ 
+     public ValueInputContextHelper(HolderLookup.Provider lookup, DynamicOps<Tag> ops) {
