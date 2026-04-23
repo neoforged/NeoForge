@@ -15,11 +15,13 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// This event is fired when a player sends a {@link ServerboundCustomClickActionPacket} to the server.
+/// This event is fired when a player sends a [ServerboundCustomClickActionPacket] to the server or when a sign with the custom click event action is clicked.
 /// 
-/// This packet is sent by the client when a {@link ClickEvent.Custom} is clicked, be it from a component or a dialog.
+/// This packet is sent by the client when a [ClickEvent.Custom] is clicked, be it from a component or a dialog.
 /// 
 /// This event is fired only on the logical server.
+/// 
+/// This event should be cancelled when handled
 public class CustomClickActionEvent extends Event implements ICancellableEvent {
     @Nullable
     private final Player player;
@@ -34,7 +36,7 @@ public class CustomClickActionEvent extends Event implements ICancellableEvent {
         this.payload = payload;
     }
 
-    /// {@return the player who clicked this custom click event}
+    /// {@return the player who clicked this custom click event or null if the custom click event is received during configuration}
     @Nullable
     public Player getPlayer() {
         return player;
