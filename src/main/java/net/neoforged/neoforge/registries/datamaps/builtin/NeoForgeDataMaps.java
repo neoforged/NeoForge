@@ -118,6 +118,20 @@ public class NeoForgeDataMaps {
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
 
     /**
+     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code stripped_block} - the stripped equivalent of the block after being right-clicked on by an axe.</li>
+     * </ul>
+     *
+     * Note that, upon stripping, all common properties will be copied from the unstripped state to the stripped state.
+     * If you want more advanced behavior, see {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)} and {@link BlockToolModificationEvent}.
+     */
+    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
+
+    /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/game_event/vibration_frequencies.json}, and the values are objects with 1 field:
@@ -168,6 +182,7 @@ public class NeoForgeDataMaps {
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
+        event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
