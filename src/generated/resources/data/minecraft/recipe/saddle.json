@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": "#c:ingots/iron",
-    "X": "minecraft:leather"
+    "X": "#c:leathers"
   },
   "pattern": [
     " X ",
