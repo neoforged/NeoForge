@@ -658,7 +658,7 @@
          boolean ok = false;
          BlockPos pos = BlockPos.containing(xx, yy, zz);
          Level level = this.level();
-+        // Neo: Store whether we actually did a teleport to the target, to know when not to teleport back to the same back
++        // Neo: Store whether we actually did a teleport to the target, to avoid teleporting the entity back to its original position if it didn't teleport away
 +        boolean teleported = false;
          if (level.hasChunkAt(pos)) {
              boolean landed = false;
