@@ -138,7 +138,8 @@ public class ModConfigSpec implements IConfigSpec {
                         + String.join(".", configValue.getPath())
                         + " defined in config "
                         + config.getFileName()
-                        + " has a validator that does not accept its own default value");
+                        + " has a validator that does not accept its own default value of "
+                        + configValue.getDefault());
             }
         });
     }
