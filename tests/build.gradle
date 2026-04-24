@@ -115,6 +115,7 @@ neoDev {
                     '--mod', 'structure_modifiers_test',
                     '--mod', 'custom_preset_editor_test',
                     '--mod', 'custom_predicate_test',
+                    '--mod', 'emissive_elements_test',
                     '--mod', 'neotests',
                     '--existing', project.file("src/main/resources").absolutePath,
                     '--output', project.file("src/generated/resources").absolutePath

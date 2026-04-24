@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": {
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "light_emission": 15
+      },
+      "sprite": "minecraft:item/redstone"
+    }
+  }
+}

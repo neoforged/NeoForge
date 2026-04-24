@@ -55,7 +55,7 @@ public final class UnbakedElementsHelper {
         BakedQuad.MaterialInfo outMaterialInfo = interner.materialInfo(materialModifier.apply(BakedQuad.MaterialInfo.of(outputMaterial, outputMaterial.sprite().transparency(), layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion())));
 
         // TODO 26.1: why are the side faces included at all?
-        ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskMaterialInfo);
+        ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskMaterialInfo, faceData);
 
         SpriteContents spriteContents = maskMaterial.sprite().contents();
         int width = spriteContents.width();
