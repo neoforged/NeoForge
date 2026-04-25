@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +45,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
@@ -810,5 +812,22 @@ public interface IBlockStateExtension {
      */
     default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
         return self().getBlock().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
+    }
+
+    /// Determines whether a block can be relocated, given some region of one or more blocks being relocated.
+    /// "Relocation" here means a region of blocks being cut or copied,
+    /// and then pasted in a different area, possibly with a translation, rotation, and/or mirror.
+    ///
+    /// A multiblock which is relocatable if and only if the entire multiblock is being relocated
+    /// (such as a bed or a door) may override {@link IBlockExtension#isRelocatable} to define such restrictions.
+    ///
+    /// Blocks which are not relocatable under any circumstances should be added to
+    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case isRelocatable does not need to be overridden.
+    ///
+    /// @param level LevelReader where blocks are being relocated from.
+    /// @param thisPos BlockPos of this specific blockstate being relocated.
+    /// @param relocatingPositions Set of all BlockPos where blocks are being relocated from, which must include thisPos.
+    default boolean isRelocatable(LevelReader level, BlockPos thisPos, Set<BlockPos> relocatingPositions) {
+        return self().getBlock().isRelocatable(level, thisPos, self(), relocatingPositions);
     }
 }

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -40,10 +41,12 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.LevelData;
@@ -263,6 +266,65 @@ public class BlockTests {
                 }
             }
             test.pass();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if double blocks correctly implement the isRelocatable block extension")
+    static void areDoubleBlocksRelocatable(final DynamicTest test, final RegistrationHelper reg) {
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            BlockPos origin = BlockPos.ZERO;
+            BlockPos lowerPos = origin.above();
+            BlockPos abovePos = lowerPos.above();
+            // set some dirt so we can place a plant on it
+            helper.setBlock(origin, Blocks.DIRT.defaultBlockState());
+            // test vertical double blocks
+            for (Block doubleBlock : new Block[] { Blocks.OAK_DOOR, Blocks.ROSE_BUSH }) {
+                BlockState lowerState = doubleBlock.defaultBlockState();
+                helper.setBlock(lowerPos, lowerState);
+                // setPlacedBy places the other half
+                lowerState.getBlock().setPlacedBy(level, helper.absolutePos(lowerPos), lowerState, null, new ItemStack(doubleBlock));
+                BlockState upperState = helper.getBlockState(abovePos);
+                // validate individual halves are not relocatable but both halves are
+                helper.assertFalse(lowerState.isRelocatable(level, lowerPos, Set.of(lowerPos)), lowerState + " incorrectly relocatable without upper half");
+                helper.assertFalse(upperState.isRelocatable(level, abovePos, Set.of(abovePos)), upperState + " incorrectly relocatable without lower half");
+                helper.assertTrue(lowerState.isRelocatable(level, lowerPos, Set.of(lowerPos, abovePos)), lowerState + " incorrectly non-relocatable with whole multiblock");
+                helper.assertTrue(upperState.isRelocatable(level, abovePos, Set.of(lowerPos, abovePos)), upperState + " incorrectly non-relocatable with whole multiblock");
+            }
+
+            // test beds
+            BlockState bedFoot = Blocks.WHITE_BED.defaultBlockState();
+            Direction directionToHead = BedBlock.getConnectedDirection(bedFoot);
+            BlockPos headPos = lowerPos.relative(directionToHead);
+            // do beds need support? can't remember, just place dirt under where the head will be too
+            helper.setBlock(origin.relative(directionToHead), Blocks.DIRT.defaultBlockState());
+            helper.setBlock(lowerPos, bedFoot);
+            bedFoot.getBlock().setPlacedBy(level, helper.absolutePos(lowerPos), bedFoot, null, new ItemStack(bedFoot.getBlock()));
+            BlockState bedHead = helper.getBlockState(headPos);
+            helper.assertFalse(bedFoot.isRelocatable(level, lowerPos, Set.of(lowerPos)), "Bed foot " + bedFoot + " incorrectly relocatable without head");
+            helper.assertFalse(bedHead.isRelocatable(level, headPos, Set.of(headPos)), "Bed head " + bedHead + " incorrectly relocatable without foot");
+            helper.assertTrue(bedFoot.isRelocatable(level, lowerPos, Set.of(lowerPos, headPos)), "Bed foot " + bedFoot + " incorrectly non-relocatable with whole bed");
+            helper.assertTrue(bedHead.isRelocatable(level, headPos, Set.of(lowerPos, headPos)), "Bed head " + bedHead + " incorrectly non-relocatable with whole bed");
+
+            // finally, check pistons
+            // unextended pistons are always relocatable
+            // extended pistons are relocatable if and only if both halves are being relocated
+            BlockState unextendedPiston = Blocks.PISTON.defaultBlockState().setValue(PistonBaseBlock.FACING, Direction.UP);
+            helper.setBlock(lowerPos, unextendedPiston);
+            helper.assertTrue(unextendedPiston.isRelocatable(level, lowerPos, Set.of(lowerPos)), "Unextended piston " + unextendedPiston + " incorrectly non-relocatable");
+            helper.setBlock(headPos, Blocks.REDSTONE_BLOCK);
+            helper.startSequence()
+                    .thenExecuteAfter(3, () -> {
+                        BlockState pistonBase = helper.getBlockState(lowerPos);
+                        BlockState pistonHead = helper.getBlockState(abovePos);
+                        helper.assertFalse(pistonBase.isRelocatable(level, lowerPos, Set.of(lowerPos)), "Piston base " + pistonBase + " incorrectly relocatable without head");
+                        helper.assertFalse(pistonHead.isRelocatable(level, abovePos, Set.of(abovePos)), "Piston head " + pistonHead + " incorrectly relocatable without base");
+                        helper.assertTrue(pistonBase.isRelocatable(level, lowerPos, Set.of(lowerPos, abovePos)), "Piston base " + pistonBase + " incorrectly non-relocatable with head");
+                        helper.assertTrue(pistonHead.isRelocatable(level, abovePos, Set.of(lowerPos, abovePos)), "Piston head " + pistonHead + " incorrectly non-relocatable with base");
+                    })
+                    .thenSucceed();
         });
     }
 }

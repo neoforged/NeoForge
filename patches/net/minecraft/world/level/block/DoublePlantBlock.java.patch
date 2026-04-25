@@ -8,3 +8,16 @@
              return belowState.is(this) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER;
          }
      }
+@@ -132,5 +_,12 @@
+     @Override
+     protected long getSeed(BlockState state, BlockPos pos) {
+         return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
++    }
++
++    // Neoforge: Relocatable if and only if both halves are being relocated
++    @Override
++    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
++        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
++            && relocatingPositions.contains(thisPos.relative(thisState.getValue(HALF).getDirectionToOther()));
+     }
+ }

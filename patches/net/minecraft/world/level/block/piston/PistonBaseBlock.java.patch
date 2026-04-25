@@ -34,14 +34,27 @@
                  toUpdate[updateIndex++] = state;
              }
  
-@@ -360,6 +_,10 @@
-     @Override
-     protected BlockState rotate(BlockState state, Rotation rotation) {
+@@ -362,6 +_,10 @@
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-+    }
-+
-+    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
-+         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
      }
  
++    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
++         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
++    }
++
      @Override
+     protected BlockState mirror(BlockState state, Mirror mirror) {
+         return state.rotate(mirror.getRotation(state.getValue(FACING)));
+@@ -380,5 +_,12 @@
+     @Override
+     protected boolean isPathfindable(BlockState state, PathComputationType type) {
+         return false;
++    }
++
++    // Neoforge: If piston is extended, can be relocated if and only if both halves are being relocated
++    @Override
++    public boolean isRelocatable(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
++        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
++            && (!thisState.getValue(EXTENDED) || relocatingPositions.contains(thisPos.relative(thisState.getValue(FACING))));
+     }
+ }

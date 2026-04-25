@@ -9,3 +9,17 @@
              DoublePlantBlock.preventDropFromBottomPart(level, pos, state, player);
          }
  
+@@ -270,5 +_,13 @@
+ 
+     public static boolean isWoodenDoor(BlockState state) {
+         return state.getBlock() instanceof DoorBlock door && door.type().canOpenByHand();
++    }
++
++    // Neoforge: Doors are relocatable if and only if both halves are being relocated
++    @Override
++    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
++        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
++            && relocatingPositions.contains(thisPos.relative(thisState.getValue(HALF).getDirectionToOther()));
++
+     }
+ }

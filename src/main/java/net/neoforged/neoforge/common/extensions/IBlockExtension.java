@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -79,6 +80,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
@@ -1076,5 +1078,24 @@ public interface IBlockExtension {
      */
     default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
         return state.getFluidState().getType().isSame(adjacentFluid.getType());
+    }
+
+    /// Determines whether a block can be relocated, given some region of one or more blocks being relocated.
+    /// "Relocation" here means a region of blocks being cut or copied,
+    /// and then pasted in a different area, possibly with a translation, rotation, and/or mirror.
+    ///
+    /// A multiblock which is relocatable if and only if the entire multiblock is being relocated
+    /// (such as a bed or a door) may override this method to define such restrictions.
+    ///
+    /// Blocks which are not relocatable under any circumstances should be added to
+    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case this method does not need to be overridden.
+    ///
+    /// @param level LevelReader where blocks are being relocated from.
+    /// @param thisPos BlockPos of this specific block being relocated.
+    /// @param thisState BlockState of this specific block being relocated. Must exist at thisPos in the given level.
+    /// @param relocatingPositions Set of all BlockPos where blocks are being relocated from.
+    /// Must include thisPos, and implementors may assume thisPos is contained within relocatingPositions.
+    default boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, Set<BlockPos> relocatingPositions) {
+        return !thisState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED);
     }
 }

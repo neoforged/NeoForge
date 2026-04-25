@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
++++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
+@@ -143,4 +_,11 @@
+     protected boolean isPathfindable(BlockState state, PathComputationType type) {
+         return false;
+     }
++
++    // Neoforge: Can be relocated if and only if both halves are being relocated
++    @Override
++    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
++        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
++            && (relocatingPositions.contains(thisPos.relative(thisState.getValue(FACING).getOpposite()))); // facing points toward head, opposite points toward base
++    }
+ }
