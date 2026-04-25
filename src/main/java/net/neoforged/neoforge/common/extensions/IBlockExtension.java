@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -1093,9 +1093,9 @@ public interface IBlockExtension {
     /// @param level LevelReader where blocks are being relocated from.
     /// @param thisPos BlockPos of this specific block being relocated.
     /// @param thisState BlockState of this specific block being relocated. Must exist at thisPos in the given level.
-    /// @param relocatingPositions Set of all BlockPos where blocks are being relocated from.
-    /// Must include thisPos, and implementors may assume thisPos is contained within relocatingPositions.
-    default boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, Set<BlockPos> relocatingPositions) {
+    /// @param containsPosition Predicate for testing whether some other blockpos is being relocated.
+    /// Must be true for thisPos.
+    default boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, Predicate<BlockPos> containsPosition) {
         return !thisState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED);
     }
 }

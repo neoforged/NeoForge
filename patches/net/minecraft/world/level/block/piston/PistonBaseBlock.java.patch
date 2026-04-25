@@ -53,8 +53,8 @@
 +
 +    // Neoforge: If piston is extended, can be relocated if and only if both halves are being relocated
 +    @Override
-+    public boolean isRelocatable(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
-+        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
-+            && (!thisState.getValue(EXTENDED) || relocatingPositions.contains(thisPos.relative(thisState.getValue(FACING))));
++    public boolean isRelocatable(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
++        return super.isRelocatable(level, thisPos, thisState, containsPosition)
++            && (!thisState.getValue(EXTENDED) || containsPosition.test(thisPos.relative(thisState.getValue(FACING))));
      }
  }

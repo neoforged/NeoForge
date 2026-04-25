@@ -7,8 +7,8 @@
 +
 +    // Neoforge: beds are relocatable if and only if both halves are being relocated
 +    @Override
-+    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.Set<BlockPos> relocatingPositions) {
-+        return super.isRelocatable(level, thisPos, thisState, relocatingPositions)
-+            && relocatingPositions.contains(thisPos.relative(getConnectedDirection(thisState))); // getConnectedDirection points to the other half
++    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
++        return super.isRelocatable(level, thisPos, thisState, containsPosition)
++            && containsPosition.test(thisPos.relative(getConnectedDirection(thisState))); // getConnectedDirection points to the other half
 +    }
  }
