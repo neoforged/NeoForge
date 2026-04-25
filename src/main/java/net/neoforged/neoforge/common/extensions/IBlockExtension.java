@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -70,6 +71,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -1093,7 +1095,8 @@ public interface IBlockExtension {
     /// @param level LevelReader where blocks are being relocated from.
     /// @param thisPos BlockPos of this specific block being relocated.
     /// @param thisState BlockState of this specific block being relocated. Must exist at thisPos in the given level.
-    /// @param containsPosition Predicate for testing whether some other blockpos is being relocated.
+    /// @param containsPosition Predicate for testing whether some other blockpos is being relocated,
+    /// e.g. {@link BoundingBox#isInside(Vec3i)} for cuboid regions.
     /// Must be true for thisPos.
     default boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, Predicate<BlockPos> containsPosition) {
         return !thisState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED);
