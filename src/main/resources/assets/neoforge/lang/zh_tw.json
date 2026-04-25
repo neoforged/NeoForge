@@ -206,6 +206,8 @@
   "neoforge.configgui.showLoadWarnings.tooltip": "若啟用，NeoForge 將顯示在載入過程中發生的任何警告。",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "使用合併的 DEPTH_STENCIL 附件",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "開啟該選項後，即可使用合併的 DEPTH_STENCIL 附件，而不是兩個獨立的附件。",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Skip modded splashes if vanilla splashes are modified",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "When enabled, modded splash texts are skipped from loading if the vanilla splash text file is modified.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
