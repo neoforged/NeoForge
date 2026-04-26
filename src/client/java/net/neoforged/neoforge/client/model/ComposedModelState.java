@@ -10,21 +10,11 @@ import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.core.Direction;
 import org.joml.Matrix4fc;
 
-/**
- * Implementation of {@link ModelState} which prepends an additional transform onto the incoming {@link ModelState}.
- */
-public final class ComposedModelState implements ModelState {
-    private final ModelState parent;
-    private final Transformation transformation;
-
+/// Implementation of [ModelState] which prepends an additional transform onto the incoming [ModelState].
+public record ComposedModelState(ModelState parent, Transformation transformation) implements ModelState {
     public ComposedModelState(ModelState parent, Transformation transformation) {
         this.parent = parent;
         this.transformation = parent.transformation().compose(transformation);
-    }
-
-    @Override
-    public Transformation transformation() {
-        return transformation;
     }
 
     @Override
