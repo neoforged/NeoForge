@@ -8,7 +8,7 @@
              return belowState.is(this) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER;
          }
      }
-@@ -132,5 +_,12 @@
+@@ -132,5 +_,20 @@
      @Override
      protected long getSeed(BlockState state, BlockPos pos) {
          return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
@@ -17,7 +17,15 @@
 +    // Neoforge: Relocatable if and only if both halves are being relocated
 +    @Override
 +    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
-+        return super.isRelocatable(level, thisPos, thisState, containsPosition)
-+            && containsPosition.test(thisPos.relative(thisState.getValue(HALF).getDirectionToOther()));
++        if (!super.isRelocatable(level, thisPos, thisState, containsPosition))
++            return false;
++        // verify the other half exists; if not, don't deny relocation
++        DoubleBlockHalf thisHalf = thisState.getValue(HALF);
++        BlockPos neighborPos = thisPos.relative(thisHalf.getDirectionToOther());
++        BlockState neighborState = level.getBlockState(neighborPos);
++        BlockState expectedState = thisState.setValue(HALF, thisHalf.getOtherHalf());
++        if (neighborState != expectedState)
++            return true;
++        return containsPosition.test(thisPos.relative(thisState.getValue(HALF).getDirectionToOther()));
      }
  }

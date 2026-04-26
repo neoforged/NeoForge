@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BedBlock.java
 +++ b/net/minecraft/world/level/block/BedBlock.java
-@@ -334,4 +_,11 @@
+@@ -334,4 +_,20 @@
      private static int[][] bedAboveStandUpOffsets(Direction forward) {
          return new int[][]{{0, 0}, {-forward.getStepX(), -forward.getStepZ()}};
      }
@@ -8,7 +8,16 @@
 +    // Neoforge: beds are relocatable if and only if both halves are being relocated
 +    @Override
 +    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
-+        return super.isRelocatable(level, thisPos, thisState, containsPosition)
-+            && containsPosition.test(thisPos.relative(getConnectedDirection(thisState))); // getConnectedDirection points to the other half
++        if (!super.isRelocatable(level, thisPos, thisState, containsPosition))
++            return false;
++        Direction facing = thisState.getValue(FACING);
++        BedPart thisPart = thisState.getValue(PART);
++        BlockPos neighborPos = thisPos.relative(getConnectedDirection(thisState)); // getConnectedDirection points to the other half
++        BlockState neighborState = level.getBlockState(neighborPos);
++        BlockState expectedState = thisState.setValue(PART, thisPart == BedPart.HEAD ? BedPart.FOOT : BedPart.HEAD);
++        // if this is only half a bed / the other half doesn't exist, no point in denying the relocation
++        if (neighborState != expectedState)
++            return true;
++        return containsPosition.test(neighborPos);
 +    }
  }
