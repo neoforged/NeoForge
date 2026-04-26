@@ -30,8 +30,8 @@ import org.jetbrains.annotations.ApiStatus;
  * Internal class for handling the steps of mod loading that are common for client, data and server runs.
  *
  * <p><ul>
- * <li>Client runs {@link #begin}, {@link #load} and {@link #finish} at different timings, see {@code ClientModLoader}.</li>
- * <li>Server runs all 3 consecutively.</li>
+ * <li>Client runs {@link #begin} and {@link #load} at different timings, see {@code ClientModLoader}.</li>
+ * <li>Server runs both consecutively.</li>
  * <li>Datagen only runs {@link #begin}.</li>
  * </ul>
  */
@@ -68,18 +68,15 @@ public abstract class CommonModLoader {
         NeoForge.EVENT_BUS.start();
     }
 
-    protected static void load(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
+    protected static void load(Runnable periodicTask) {
+        Executor syncExecutor = ModWorkManager.syncExecutor();
+        Executor parallelExecutor = ModWorkManager.parallelExecutor();
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
                 FMLEnvironment.getDist().isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
 
         ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
-    }
-
-    protected static void finish(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
 
         ModLoader.dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
         ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);

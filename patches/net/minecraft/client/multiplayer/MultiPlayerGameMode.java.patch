@@ -1,5 +1,27 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
+@@ -114,12 +_,20 @@
+     }
+ 
+     public boolean destroyBlock(BlockPos pos) {
++        // Neo: Fire the BlockBreakEvent. Unlike the server path, ignoring ItemStack#canDestroyBlock is done below because the vanilla code checks things in a different order here.
++        BlockState state = this.minecraft.level.getBlockState(pos);
++        var event = net.neoforged.neoforge.common.CommonHooks.fireBlockBreak(this.minecraft.level, this.localPlayerMode, this.minecraft.player, pos, state);
++        if (event.isCanceled()) {
++            return false;
++        }
++
+         if (this.minecraft.player.blockActionRestricted(this.minecraft.level, pos, this.localPlayerMode)) {
+             return false;
+         } else {
+             Level level = this.minecraft.level;
+             BlockState oldState = level.getBlockState(pos);
+-            if (!this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
++            // Neo: Ignore this condition, as it is handled by fireBlockBreak and the event is expected to be able to override it.
++            if (false && !this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
+                 return false;
+             } else {
+                 Block oldBlock = oldState.getBlock();
 @@ -128,11 +_,12 @@
                  } else if (oldState.isAir()) {
                      return false;

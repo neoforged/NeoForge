@@ -132,6 +132,15 @@ public class ModConfigSpec implements IConfigSpec {
                 throw new IllegalArgumentException("Configuration value " + String.join(".", configValue.getPath())
                         + " defined in config " + config.getFileName() + " has restart of type " + configValue.getSpec().restartType() + " which cannot be used for configs of type " + config.getType());
             }
+            // Check that the spec's validator accepts its own default value
+            if (!configValue.getSpec().test(configValue.getDefault())) {
+                throw new IllegalArgumentException("Configuration value "
+                        + String.join(".", configValue.getPath())
+                        + " defined in config "
+                        + config.getFileName()
+                        + " has a validator that does not accept its own default value of "
+                        + configValue.getDefault());
+            }
         });
     }
 

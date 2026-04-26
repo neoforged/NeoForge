@@ -134,14 +134,6 @@
                  if (this.checkTabClicked(tab, xm, ym)) {
                      this.selectTab(tab);
                      return true;
-@@ -534,6 +_,7 @@
-     private void selectTab(CreativeModeTab tab) {
-         CreativeModeTab oldTab = selectedTab;
-         selectedTab = tab;
-+        slotColor = tab.getSlotColor();
-         this.quickCraftSlots.clear();
-         this.menu.items.clear();
-         this.clearDraggingState();
 @@ -610,13 +_,15 @@
              this.originalSlots = null;
          }

@@ -420,23 +420,6 @@ public class DeferredRegister<T> {
         /**
          * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
          *
-         * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param func  A factory for the new block. The factory should not cache the created block.
-         * @param props The properties for the created block.
-         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
-         * @see #registerBlock(String, Function)
-         * @see #registerSimpleBlock(String, BlockBehaviour.Properties)
-         * @see #registerSimpleBlock(String)
-         * @deprecated Use {@link #registerBlock(String, Function, Supplier)} or {@link #registerBlock(String, Function, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
-            return this.registerBlock(name, func, () -> props);
-        }
-
-        /**
-         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
-         *
          * @param name       The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param func       A factory for the new block. The factory should not cache the created block.
          * @param properties The supplied properties for the created block.
@@ -483,22 +466,6 @@ public class DeferredRegister<T> {
          */
         public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func) {
             return this.registerBlock(name, func, UnaryOperator.identity());
-        }
-
-        /**
-         * Adds a new simple {@link Block} with the given {@link BlockBehaviour.Properties properties} to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
-         *
-         * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param props The properties for the created block.
-         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
-         * @see #registerBlock(String, Function, BlockBehaviour.Properties)
-         * @see #registerBlock(String, Function)
-         * @see #registerSimpleBlock(String)
-         * @deprecated Use {@link #registerSimpleBlock(String, Supplier)} or {@link #registerSimpleBlock(String, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public DeferredBlock<Block> registerSimpleBlock(String name, BlockBehaviour.Properties props) {
-            return this.registerBlock(name, Block::new, () -> props);
         }
 
         /**
@@ -595,24 +562,6 @@ public class DeferredRegister<T> {
          *
          * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param block      The supplier for the block to create a {@link BlockItem} for.
-         * @param properties The properties for the created {@link BlockItem}.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerSimpleBlockItem(String, Supplier)
-         * @see #registerSimpleBlockItem(Holder, Item.Properties)
-         * @see #registerSimpleBlockItem(Holder)
-         * @deprecated Use {@link #registerSimpleBlockItem(String, Supplier, Supplier)} or {@link #registerSimpleBlockItem(String, Supplier, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-            return this.registerSimpleBlockItem(name, block, () -> properties);
-        }
-
-        /**
-         * Adds a new simple {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
-         * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         *
-         * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param block      The supplier for the block to create a {@link BlockItem} for.
          * @param properties The supplied properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerSimpleBlockItem(String, Supplier, UnaryOperator)
@@ -659,24 +608,6 @@ public class DeferredRegister<T> {
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block) {
             return this.registerSimpleBlockItem(name, block, UnaryOperator.identity());
-        }
-
-        /**
-         * Adds a new simple {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
-         * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         * Where the name is determined by the name of the given block.
-         *
-         * @param block      The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
-         * @param properties The properties for the created {@link BlockItem}.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerSimpleBlockItem(String, Supplier, Item.Properties)
-         * @see #registerSimpleBlockItem(String, Supplier)
-         * @see #registerSimpleBlockItem(Holder)
-         * @deprecated Use {@link #registerSimpleBlockItem(Holder, Supplier)} or {@link #registerSimpleBlockItem(Holder, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public DeferredItem<BlockItem> registerSimpleBlockItem(Holder<Block> block, Item.Properties properties) {
-            return this.registerSimpleBlockItem(block, () -> properties);
         }
 
         /**
@@ -735,23 +666,6 @@ public class DeferredRegister<T> {
         /**
          * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
          *
-         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param func  A factory for the new item. The factory should not cache the created item.
-         * @param props The properties for the created item.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerItem(String, Function)
-         * @see #registerSimpleItem(String, Item.Properties)
-         * @see #registerSimpleItem(String)
-         * @deprecated Use {@link #registerItem(String, Function, Supplier)} or {@link #registerItem(String, Function, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
-            return this.registerItem(name, func, () -> props);
-        }
-
-        /**
-         * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
-         *
          * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param func       A factory for the new item. The factory should not cache the created item.
          * @param properties The supplied properties for the created item.
@@ -798,23 +712,6 @@ public class DeferredRegister<T> {
          */
         public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func) {
             return this.registerItem(name, func, UnaryOperator.identity());
-        }
-
-        /**
-         * Adds a new simple {@link Item} with the given {@link Item.Properties properties} to the list of entries to be registered and
-         * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         *
-         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param props A factory for the new item. The factory should not cache the created item.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerItem(String, Function, Item.Properties)
-         * @see #registerItem(String, Function)
-         * @see #registerSimpleItem(String)
-         * @deprecated Use {@link #registerSimpleItem(String, Supplier)} or {@link #registerSimpleItem(String, UnaryOperator)} instead.
-         */
-        @Deprecated(since = "1.21.10", forRemoval = true)
-        public DeferredItem<Item> registerSimpleItem(String name, Item.Properties props) {
-            return this.registerItem(name, Item::new, props);
         }
 
         /**

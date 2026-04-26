@@ -26,8 +26,6 @@ public class NeoForgeReloadListeners {
     public static final Identifier CREATIVE_TABS = key("creative_tabs");
 
     // Client Listeners
-    public static final Identifier CLIENT_MOD_LOADING = key("client_mod_loading");
-
     public static final Identifier BRANDING = key("branding");
 
     public static final Identifier OBJ_LOADER = key("obj_loader");

@@ -24,7 +24,7 @@
              }
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, blockRenderer, minPos);
++        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, blockRenderer);
          for (Entry<ChunkSectionLayer, BufferBuilder> entry : startedLayers.entrySet()) {
              ChunkSectionLayer layer = entry.getKey();
              MeshData mesh = entry.getValue().build();

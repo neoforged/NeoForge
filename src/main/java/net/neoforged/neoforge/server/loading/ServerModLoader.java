@@ -10,7 +10,6 @@ import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
-import net.neoforged.fml.ModWorkManager;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -29,8 +28,7 @@ public class ServerModLoader extends CommonModLoader {
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(() -> {}, false);
-            load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
-            finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
+            load(() -> {});
         } catch (ModLoadingException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly

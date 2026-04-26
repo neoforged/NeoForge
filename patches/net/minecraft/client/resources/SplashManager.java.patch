@@ -5,7 +5,7 @@
      protected List<Component> prepare(ResourceManager manager, ProfilerFiller profiler) {
          try {
 +            var splashes = Minecraft.getInstance().getResourceManager().getResourceOrThrow(SPLASHES_LOCATION);
-+            if (splashes.sourcePackId().equals("vanilla"))
++            if (splashes.sourcePackId().equals("vanilla") || !net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.skipModdedSplashesIfVanillaModified.getAsBoolean())
 +                return net.neoforged.neoforge.client.resources.NeoForgeSplashHooks.loadSplashes(manager);
 +
              List var4;

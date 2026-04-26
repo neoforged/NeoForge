@@ -214,6 +214,7 @@ import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
@@ -575,7 +576,7 @@ public class CommonHooks {
      * @param state    The state of the block being broken
      * @return The event
      */
-    public static BlockEvent.BreakEvent fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
+    public static BreakBlockEvent fireBlockBreak(Level level, GameType gameType, Player player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
 
         ItemStack itemstack = player.getMainHandItem();
@@ -591,14 +592,13 @@ public class CommonHooks {
             preCancelEvent = true;
         }
 
-        // Post the block break event
-        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
+        var event = new BreakBlockEvent(level, pos, state, player);
         event.setCanceled(preCancelEvent);
         NeoForge.EVENT_BUS.post(event);
 
-        // If the event is canceled, let the client know the block still exists
-        if (event.isCanceled()) {
-            player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
+        // If the event is canceled on the server, let the client know the block still exists
+        if (event.isCanceled() && event.shouldNotifyClient() && player instanceof ServerPlayer sp) {
+            sp.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
 
         return event;
@@ -1120,8 +1120,12 @@ public class CommonHooks {
     public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
         LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
-        for (IGlobalLootModifier mod : man.getAllLootMods()) {
-            generatedLoot = mod.apply(generatedLoot, context);
+        for (IGlobalLootModifier mod : man.getSortedModifiers()) {
+            try {
+                generatedLoot = mod.apply(generatedLoot, context);
+            } catch (Exception e) {
+                LOGGER.error("Error applying global loot modifier %s for loot table %s!".formatted(man.getId(mod), lootTableId), e);
+            }
         }
         return generatedLoot;
     }

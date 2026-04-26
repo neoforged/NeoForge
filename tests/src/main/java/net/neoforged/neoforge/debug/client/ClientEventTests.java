@@ -101,7 +101,7 @@ public class ClientEventTests {
         });
     }
 
-    @TestHolder(description = { "Tests if adding custom geometry to chunks works", "When the message \"diamond block\" is sent in chat, this should render a fake diamond block above the player's position" })
+    @TestHolder(description = { "Tests if adding custom geometry to chunks works", "When the message \"diamond block\" is sent in chat, this should render a fake diamond block above the player's position" }, enabledByDefault = true)
     static void addSectionGeometryTest(final ClientChatEvent chatEvent, final DynamicTest test) {
         if (chatEvent.getMessage().equalsIgnoreCase("diamond block")) {
             var player = Minecraft.getInstance().player;
@@ -111,12 +111,6 @@ public class ClientEventTests {
             NeoForge.EVENT_BUS.addListener((final AddSectionGeometryEvent event) -> {
                 if (event.getSectionOrigin().equals(sectionOrigin)) {
                     event.addRenderer(context -> {
-                        var poseStack = context.getPoseStack();
-                        poseStack.pushPose();
-                        poseStack.translate(
-                                testBlockAt.getX() - sectionOrigin.getX(),
-                                testBlockAt.getY() - sectionOrigin.getY(),
-                                testBlockAt.getZ() - sectionOrigin.getZ());
                         BlockQuadOutput quadOutput = (x, y, z, quad, instance) -> {
                             VertexConsumer builder = context.getOrCreateChunkBuffer(quad.materialInfo().layer());
                             builder.putBlockBakedQuad(x, y, z, quad, instance);
@@ -131,7 +125,6 @@ public class ClientEventTests {
                                 Blocks.DIAMOND_BLOCK.defaultBlockState(),
                                 Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(Blocks.DIAMOND_BLOCK.defaultBlockState()),
                                 0);
-                        poseStack.popPose();
                     });
                 }
             });
