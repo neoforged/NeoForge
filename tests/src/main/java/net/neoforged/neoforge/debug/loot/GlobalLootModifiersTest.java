@@ -54,6 +54,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -303,12 +305,22 @@ public class GlobalLootModifiersTest {
             protected void start() {
                 this.add("wheat_harvest", new WheatSeedsConverterModifier(
                         new LootItemCondition[] {
-                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Items.SHEARS)).build(),
+                                // Check shear tool tag to ensure GLMs can resolve tags during loading
+                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Tags.Items.TOOLS_SHEAR)).build(),
                                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
                                 new TestEnabledLootCondition(test)
                         },
                         IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
+
+                // Ensure loading conditions work on GLMs
+                this.add("wheat_harvest_disabled", new WheatSeedsConverterModifier(
+                        new LootItemCondition[] {
+                                LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
+                                new TestEnabledLootCondition(test)
+                        },
+                        IGlobalLootModifier.DEFAULT_PRIORITY - 100,
+                        1, Items.WHEAT, Items.BAMBOO), NeoForgeConditions.never());
             }
 
             @Override
