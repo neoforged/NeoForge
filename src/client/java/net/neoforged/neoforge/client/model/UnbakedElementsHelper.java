@@ -49,15 +49,23 @@ public final class UnbakedElementsHelper {
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the mask texture uses.
      */
     public static QuadCollection bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData, UnaryOperator<BakedQuad.MaterialInfo> materialModifier) {
-        QuadCollection.Builder builder = new QuadCollection.Builder();
         ModelBaker.Interner interner = baker.interner();
-        BakedQuad.MaterialInfo maskMaterialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(maskMaterial, maskMaterial.sprite().transparency(), layerIndex, true, 0, true));
         BakedQuad.MaterialInfo outMaterialInfo = interner.materialInfo(materialModifier.apply(BakedQuad.MaterialInfo.of(outputMaterial, outputMaterial.sprite().transparency(), layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion())));
+        return bakeItemMaskQuads(baker, maskMaterial, outMaterialInfo, modelState, faceData);
+    }
+
+    /// Bakes quads in the shape of the specified mask texture with the specified output texture applied to them.
+    ///
+    /// The [Direction#NORTH] and [Direction#SOUTH] faces take up only the pixels the mask texture uses.
+    public static QuadCollection bakeItemMaskQuads(ModelBaker baker, Material.Baked maskMaterial, BakedQuad.MaterialInfo outMaterialInfo, ModelState modelState, ExtraFaceData faceData) {
+        ModelBaker.Interner interner = baker.interner();
+        QuadCollection.Builder builder = new QuadCollection.Builder();
+        BakedQuad.MaterialInfo maskMaterialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(maskMaterial, maskMaterial.sprite().transparency(), -1, true, 0, true));
 
         // TODO 26.1: why are the side faces included at all?
         ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskMaterialInfo);
 
-        SpriteContents spriteContents = maskMaterial.sprite().contents();
+        SpriteContents spriteContents = maskMaterialInfo.sprite().contents();
         int width = spriteContents.width();
         int height = spriteContents.height();
         BitSet bits = new BitSet(width * height);
