@@ -15,6 +15,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.time.Month;
 import java.time.MonthDay;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -66,12 +68,16 @@ import net.minecraft.util.SpecialDates;
 import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
 import net.neoforged.neoforge.client.gui.widget.ResizableTextureImageWidget;
 import net.neoforged.neoforge.client.gui.widget.SolidColorWidget;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
@@ -93,6 +99,7 @@ public class ModListScreen extends Screen {
     private final ImmutableList<ModDisplayInfo> mods;
     private final Path modsFolder;
     private final ConfigurationScreenFactory configFactory;
+    private final VersionCheckResultSupplier versionCheck;
 
     private final List<ModsList.Entry> allEntries;
     private SortType currentSort = SortType.A_TO_Z;
@@ -182,15 +189,22 @@ public class ModListScreen extends Screen {
             return parentScreen -> factory.createScreen(container, parentScreen);
         };
 
-        return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), configFactory);
+        VersionCheckResultSupplier versionCheck = modId -> ModList.get().getModContainerById(modId)
+                .map(ModContainer::getModInfo)
+                .map(VersionChecker::getResult)
+                .filter(result -> result.status() == VersionChecker.Status.OUTDATED || result.status() == VersionChecker.Status.BETA_OUTDATED)
+                .orElse(null);
+
+        return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), configFactory, versionCheck);
     }
 
-    public ModListScreen(ImmutableList<ModDisplayInfo> mods, Path modsFolder, ConfigurationScreenFactory configFactory) {
+    public ModListScreen(ImmutableList<ModDisplayInfo> mods, Path modsFolder, ConfigurationScreenFactory configFactory, VersionCheckResultSupplier versionCheck) {
         super(translatable("neoforge.screen.mods.title"));
         this.mods = mods;
         this.modsFolder = modsFolder;
         this.allEntries = new ArrayList<>(mods.size());
         this.configFactory = configFactory;
+        this.versionCheck = versionCheck;
     }
 
     @Override
@@ -241,7 +255,7 @@ public class ModListScreen extends Screen {
 
         this.allEntries.clear();
         for (ModDisplayInfo mod : mods) {
-            this.allEntries.add(this.displayList.new Entry(mod));
+            this.allEntries.add(this.displayList.new Entry(this.versionCheck.get(mod.id()), mod));
         }
         this.updateModsList();
 
@@ -327,6 +341,12 @@ public class ModListScreen extends Screen {
         UnaryOperator<Screen> create(ModDisplayInfo displayInfo);
     }
 
+    @VisibleForTesting
+    @FunctionalInterface
+    public interface VersionCheckResultSupplier {
+        VersionChecker.@Nullable CheckResult get(String modId);
+    }
+
     private class ModsList extends ObjectSelectionList<ModsList.Entry> {
         public ModsList(int height) {
             // minecraft, width, height, y, itemHeight
@@ -369,11 +389,14 @@ public class ModListScreen extends Screen {
         }
 
         class Entry extends ObjectSelectionList.Entry<ModsList.Entry> {
+            private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+            final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
             @Nullable
             final ImageData iconData;
 
-            Entry(ModDisplayInfo displayInfo) {
+            Entry(VersionChecker.@Nullable CheckResult checkResult, ModDisplayInfo displayInfo) {
+                this.checkResult = checkResult;
                 this.displayInfo = displayInfo;
                 if (displayInfo.icon() != null) {
                     this.iconData = ModListScreen.this.loadImage("icon", displayInfo.id(), Objects.requireNonNull(displayInfo.icon()));
@@ -397,9 +420,24 @@ public class ModListScreen extends Screen {
                     graphics.blit(RenderPipelines.GUI_TEXTURED, iconData.sprite, left, top, 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
                     textLeft += ICON_SIZE + 4;
                 }
+                int maxTextWidth = getRowWidth() - textLeft + left - 4;
+
+                if (checkResult != null && checkResult.status().shouldDraw() && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+                    graphics.blit(
+                            RenderPipelines.GUI_TEXTURED,
+                            VERSION_CHECK_ICONS,
+                            this.getContentRight() - 10,
+                            this.getContentYMiddle() - (8 / 2),
+                            checkResult.status().getSheetOffset() * 8,
+                            (checkResult.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0,
+                            8,
+                            8,
+                            64,
+                            16);
+                    maxTextWidth -= 14;
+                }
 
                 top += 4; // padding
-                int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
                 final Language language = Language.getInstance();
                 graphics.text(ModListScreen.this.font, language.getVisualOrder(ModListScreen.this.font.ellipsize(displayInfo.displayName(), maxTextWidth)), textLeft, top, 0xFFFFFFFF);
@@ -417,6 +455,8 @@ public class ModListScreen extends Screen {
         private final ResizableTextureImageWidget logoWidget;
         private final MultiLineTextWidget displayNameWidget;
         private final MultiLineTextWidget idAndVersionWidget;
+        private final MultiLineTextWidget newerVersionWidget;
+        private final Button newerVersionButton;
         private final MultiLineTextWidget licenseWidget;
         private final MultiLineTextWidget authorsWidget;
         private final MultiLineTextWidget creditsWidget;
@@ -461,6 +501,27 @@ public class ModListScreen extends Screen {
             this.displayNameWidget = buildTextWidget(contentLayout).setCentered(true);
             this.displayNameWidget.setComponentClickHandler(null); // Disallow clicks for the display name
             this.idAndVersionWidget = buildTextWidget(contentLayout).setCentered(true);
+
+            this.newerVersionWidget = contentLayout.addChild(FocusableTextWidget.builder(Component.empty(), font, 2)
+                    .alwaysShowBorder(false)
+                    .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
+                    .maxWidth(width)
+                    .build()
+                    .setCentered(true),
+                    contentLayout.newCellSettings().paddingVertical(3));
+            this.newerVersionWidget.setComponentClickHandler(style -> {
+                ClickEvent clickEvent = style.getClickEvent();
+                if (clickEvent != null) {
+                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
+                }
+            });
+            this.newerVersionButton = contentLayout.addChild(Button.builder(translatable("Open update changelog"),
+                    _ -> {
+                        if (this.selected != null && this.selected.checkResult != null) {
+                            this.openChangelogScreen(this.selected.checkResult);
+                        }
+                    }).build(),
+                    contentLayout.newCellSettings().alignHorizontallyCenter());
 
             contentLayout.addChild(SpacerElement.height(MAIN_PADDING));
 
@@ -572,6 +633,9 @@ public class ModListScreen extends Screen {
 
             hideTextWidget(this.displayNameWidget);
             hideTextWidget(this.idAndVersionWidget);
+            hideTextWidget(this.newerVersionWidget);
+            this.newerVersionButton.visible = this.newerVersionButton.active = false;
+            this.newerVersionButton.setHeight(0);
             hideTextWidget(this.licenseWidget);
             hideTextWidget(this.authorsWidget);
             hideTextWidget(this.creditsWidget);
@@ -632,6 +696,18 @@ public class ModListScreen extends Screen {
                             .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.version()))))
                     .withStyle(ChatFormatting.GRAY));
             this.idAndVersionWidget.visible = true;
+            VersionChecker.CheckResult checkResult = this.selected.checkResult;
+            if (checkResult != null) {
+                this.newerVersionWidget.setMessage(Component.translatable(
+                        "neoforge.screen.mods.info.update",
+                        Component.literal(checkResult.target().toString())
+                                .withStyle(style -> style.withItalic(false)))
+                        .withStyle(style -> style.withItalic(true)));
+                this.newerVersionWidget.visible = true;
+
+                this.newerVersionButton.setHeight(Button.DEFAULT_HEIGHT);
+                this.newerVersionButton.visible = this.newerVersionButton.active = true;
+            }
 
             this.licenseWidget.setMessage(Component.translatable(
                     "neoforge.screen.mods.info.license",
@@ -667,6 +743,10 @@ public class ModListScreen extends Screen {
             }
         }
 
+        private void openChangelogScreen(VersionChecker.CheckResult checkResult) {
+            ModListScreen.this.minecraft.setScreen(new ChangelogScreen(ModListScreen.this, displayInfo(), checkResult));
+        }
+
         private static boolean containsText(Component component) {
             return !component.getContents().equals(PlainTextContents.EMPTY) && !component.getString().isEmpty();
         }
@@ -674,6 +754,88 @@ public class ModListScreen extends Screen {
         @Override
         public void close() {
             this.reset();
+        }
+    }
+
+    private static class ChangelogScreen extends Screen {
+        private final @Nullable Screen lastScreen;
+        private final ModDisplayInfo info;
+        private final VersionChecker.CheckResult checkResult;
+
+        @Nullable
+        private HeaderAndFooterLayout layout;
+
+        protected ChangelogScreen(@Nullable Screen lastScreen, ModDisplayInfo info, VersionChecker.CheckResult checkResult) {
+            super(Component.translatable("neoforge.screen.mods.changelog.title", info.displayName()));
+            this.lastScreen = lastScreen;
+            this.info = info;
+            this.checkResult = checkResult;
+        }
+
+        @Override
+        protected void init() {
+            super.init();
+
+            this.layout = new HeaderAndFooterLayout(this);
+            this.layout.addTitleHeader(Component.translatable("neoforge.screen.mods.changelog.title", info.displayName()), this.font);
+
+            // Footer
+            final LinearLayout footer = layout.addToFooter(new LinearLayout(0, 0, Orientation.HORIZONTAL));
+            footer.spacing(4).defaultCellSetting().paddingTop(5);
+
+            final Button updateSiteButton = footer.addChild(Button.builder(translatable("neoforge.screen.mods._changelog.open_site"),
+                    _ -> clickUrlAction(minecraft, this, URI.create(this.checkResult.url()))).build());
+            updateSiteButton.active = false;
+            if (checkResult.url() != null) {
+                String rawUrl = checkResult.url();
+                try {
+                    new URI(rawUrl);
+                    updateSiteButton.active = true;
+                } catch (URISyntaxException exception) {
+                    LOGGER.warn("Failed to create update site URI for mod {} update checker: {}", info.id(), rawUrl);
+                }
+            }
+            footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> this.onClose()).build());
+
+            // Contents
+            final LinearLayout body = new LinearLayout(0, 0, Orientation.VERTICAL).spacing(4);
+
+            if (checkResult.changes().isEmpty()) {
+                body.addChild(FocusableTextWidget.builder(Component.translatable("neoforge.screen.mods.changelog.no_changelog").withStyle(ChatFormatting.ITALIC), this.font)
+                        .alwaysShowBorder(false)
+                        .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
+                        .maxWidth(310)
+                        .build()
+                        .setCentered(false));
+            } else {
+                for (Map.Entry<ComparableVersion, String> updateEntry : checkResult.changes().entrySet()) {
+                    body.addChild(FocusableTextWidget.builder(Component.translatable("neoforge.screen.mods.changelog.entry",
+                            Component.literal(updateEntry.getKey().toString()).withStyle(ChatFormatting.BOLD),
+                            Component.literal(updateEntry.getValue())),
+                            this.font)
+                            .alwaysShowBorder(false)
+                            .backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
+                            .maxWidth(310)
+                            .build()
+                            .setCentered(false));
+                }
+            }
+
+            layout.addToContents(new ScrollableLayout(this.minecraft, body, this.layout.getContentHeight())).setMinWidth(310);
+
+            this.layout.visitWidgets(this::addRenderableWidget);
+            this.repositionElements();
+        }
+
+        @Override
+        protected void repositionElements() {
+            assert this.layout != null;
+            this.layout.arrangeElements();
+        }
+
+        @Override
+        public void onClose() {
+            this.minecraft.setScreen(lastScreen);
         }
     }
 
