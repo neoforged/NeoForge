@@ -70,7 +70,6 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
 import net.neoforged.neoforge.client.gui.widget.ResizableTextureImageWidget;
 import net.neoforged.neoforge.client.gui.widget.SolidColorWidget;
@@ -175,23 +174,7 @@ public class ModListScreen extends Screen {
             mods.add(TestingResources.exercise("ZexerciseE"));
         }
 
-        ConfigurationScreenFactory configFactory = displayInfo -> {
-            final ModContainer container = ModList.get().getModContainerById(displayInfo.id()).orElse(null);
-            if (container == null) return null;
-
-            final IConfigScreenFactory factory = container.getCustomExtension(IConfigScreenFactory.class).orElse(null);
-            if (factory == null) return null;
-
-            return parentScreen -> factory.createScreen(container, parentScreen);
-        };
-
-        VersionCheckResultSupplier versionCheck = modId -> ModList.get().getModContainerById(modId)
-                .map(ModContainer::getModInfo)
-                .map(VersionChecker::getResult)
-                .filter(result -> result.status() == VersionChecker.Status.OUTDATED || result.status() == VersionChecker.Status.BETA_OUTDATED)
-                .orElse(null);
-
-        return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), configFactory, versionCheck);
+        return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), ConfigurationScreenFactory.DEFAULT, VersionCheckResultSupplier.DEFAULT);
     }
 
     private ModListScreen(ImmutableList<ModDisplayInfo> mods, Path modsFolder, ConfigurationScreenFactory configFactory, VersionCheckResultSupplier versionCheck) {
