@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -61,5 +64,18 @@ public class BackgroundWithPipingWidget extends AbstractWidget {
     @Override
     protected void updateWidgetNarration(NarrationElementOutput output) {
         // No-op
+    }
+
+    @Override
+    public void playDownSound(SoundManager soundManager) {}
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
+    public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent navigationEvent) {
+        return null;
     }
 }
