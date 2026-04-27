@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.client;
 
+import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -30,8 +31,6 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.stream.Stream;
 
 /**
  * Test mod that demos emissivity on "elements" models and on item layer textures.
@@ -86,6 +85,6 @@ public class EmissiveElementsTest {
             });
         }
 
-        private DatagenHandler() { }
+        private DatagenHandler() {}
     }
 }
