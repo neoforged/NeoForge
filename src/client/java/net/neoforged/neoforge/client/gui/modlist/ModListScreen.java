@@ -622,13 +622,10 @@ public class ModListScreen extends Screen {
             this.idAndVersionWidget.setMessage(Component.translatable(
                     "neoforge.screen.mods.info.subtitle",
                     Component.literal(displayInfo.id()).withStyle(style -> style
-                            .withColor(ChatFormatting.WHITE)
-                            .withUnderlined(true)
+                            .withItalic(true)
                             .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.modid.click")))
                             .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.id()))),
                     Component.literal(displayInfo.version()).withStyle(style -> style
-                            .withColor(ChatFormatting.WHITE)
-                            .withUnderlined(true)
                             .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.list.subtitle.version.click")))
                             .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.version()))))
                     .withStyle(ChatFormatting.GRAY));

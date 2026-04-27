@@ -55,7 +55,7 @@
   "neoforge.screen.mods.sort.z_to_a": "Z-A",
   "neoforge.screen.mods.search": "Search",
   "neoforge.screen.mods.list.narration": "Mod %s with version %s",
-  "neoforge.screen.mods.info.subtitle": "mod ID %s, version %s",
+  "neoforge.screen.mods.info.subtitle": "%s %s",
   "neoforge.screen.mods.list.subtitle.modid.click": "Click to copy mod ID",
   "neoforge.screen.mods.list.subtitle.version.click": "Click to copy version",
   "neoforge.screen.mods.info.authors": "Authors: %s",
