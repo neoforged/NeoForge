@@ -37,6 +37,7 @@ import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.ScrollableLayout;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.EqualSpacingLayout;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -225,6 +226,7 @@ public class ModListScreen extends Screen {
         this.fixedSidebarLayout.addChild(CycleButton.builder(SortType::getName, this.currentSort)
                 .displayOnlyValue()
                 .withValues(SortType.values())
+                .withTooltip(sort -> Tooltip.create(sort.getHover()))
                 // 20 is the default button height
                 .create(0, 0, SIDEBAR_SORT_BUTTON_WIDTH, SIDEBAR_CONTROLS_HEIGHT, translatable("neoforge.screen.mods.button.sort"), (_, newValue) -> {
                     this.currentSort = newValue;
@@ -691,6 +693,10 @@ public class ModListScreen extends Screen {
 
         public Component getName() {
             return Component.translatable(this.translationKey);
+        }
+
+        public Component getHover() {
+            return Component.translatable(this.translationKey + ".hover");
         }
 
         public void sort(List<ModsList.Entry> list) {
