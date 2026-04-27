@@ -244,7 +244,7 @@ public class GlobalLootModifiersTest {
     static void smeltingModifierTest(final DynamicTest test) {
         var registrySetBuilder = new RegistrySetBuilder()
                 .add(Registries.ENCHANTMENT, boot -> boot
-                        .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.registryLookup(Registries.ITEM).orElseThrow().getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
+                        .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.holderLookup(Registries.ITEM).orElseThrow().getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
                                 .build(SMELT.identifier())));
 
         var subpack = HELPER.registerSubpack("smelt_glms");
