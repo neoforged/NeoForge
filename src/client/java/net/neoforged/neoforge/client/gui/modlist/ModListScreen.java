@@ -195,10 +195,7 @@ public class ModListScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.layout = new HeaderAndFooterLayout(this, 33, 38);
-
-        // Header
-        layout.addTitleHeader(Component.translatable("neoforge.screen.mods.title"), this.font);
+        this.layout = new HeaderAndFooterLayout(this, 8, 38);
 
         // Footer
         final LinearLayout footer = layout.addToFooter(new LinearLayout(0, 0, Orientation.HORIZONTAL));
