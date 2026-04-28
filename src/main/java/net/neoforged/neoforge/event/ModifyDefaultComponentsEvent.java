@@ -8,14 +8,18 @@ package net.neoforged.neoforge.event;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentInitializers;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.ApiStatus;
 
 /// The event used to modify the default [components][Item#components()] of an item.
@@ -39,12 +43,12 @@ import org.jetbrains.annotations.ApiStatus;
 ///  }
 ///  ```
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
-    private final Map<Item, DataComponentInitializers.Initializer<Item>> modifiersByItem;
-    private final List<Pair<ItemWithComponentsPredicate, DataComponentInitializers.Initializer<Item>>> modifiersByPredicate;
+    private final Map<Item, Initializer> modifiersByItem;
+    private final List<Pair<ItemWithComponentsPredicate, Initializer>> modifiersByPredicate;
 
     @ApiStatus.Internal
-    public ModifyDefaultComponentsEvent(Map<Item, DataComponentInitializers.Initializer<Item>> modifiersByItem,
-            List<Pair<ItemWithComponentsPredicate, DataComponentInitializers.Initializer<Item>>> modifiersByPredicate) {
+    public ModifyDefaultComponentsEvent(Map<Item, Initializer> modifiersByItem,
+            List<Pair<ItemWithComponentsPredicate, Initializer>> modifiersByPredicate) {
         this.modifiersByItem = modifiersByItem;
         this.modifiersByPredicate = modifiersByPredicate;
     }
@@ -53,20 +57,20 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
     ///
     /// @param item  the item to modify the default components for
     /// @param patch the patch to apply
-    public void modify(ItemLike item, DataComponentInitializers.Initializer<Item> patch) {
-        modifiersByItem.merge(item.asItem(), patch, DataComponentInitializers.Initializer::andThen);
+    public void modify(ItemLike item, Initializer patch) {
+        modifiersByItem.merge(item.asItem(), patch, Initializer::andThen);
     }
 
     /// Patches the default components of all items matching the given `bipredicate`
     /// based on item and/or its currently applied default components.
     ///
     /// If this method is used to modify components based on the item's current default components, the
-    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, DataComponentInitializers.Initializer)] are
+    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
     /// already applied.
     ///
     /// @param predicate the item and its current default components filter
     /// @param patch     the patch to apply
-    public void modifyMatching(ItemWithComponentsPredicate predicate, DataComponentInitializers.Initializer<Item> patch) {
+    public void modifyMatching(ItemWithComponentsPredicate predicate, Initializer patch) {
         modifiersByPredicate.add(Pair.of(predicate, patch));
     }
 
@@ -81,5 +85,33 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         /// @param components the data component getter for components to be bound
         /// @return Whether the condition is satisfied
         boolean test(Item item, DataComponentGetter components);
+    }
+
+    /// A alternate version of [DataComponentInitializers.Initializer] which receives the item whose components being initialized.
+    @FunctionalInterface
+    public interface Initializer {
+        void run(DataComponentMap.Builder components, HolderLookup.Provider context, Item item);
+
+        /// {@return a composed initializer that first runs this initializer, and then runs the given initializer}
+        ///
+        /// @param other the initializer to apply after this initializer is run
+        default Initializer andThen(Initializer other) {
+            return (components, context, key) -> {
+                this.run(components, context, key);
+                other.run(components, context, key);
+            };
+        }
+
+        /// {@return a composed initializer that runs this initializer and then adds the given data component and it svalue}
+        ///
+        /// @param <C> the value type of the data component
+        /// @param type the data component
+        /// @param value the value of the data component
+        ///
+        /// @see #andThen(Initializer)
+        default <C> Initializer add(DataComponentType<C> type, C value) {
+            CommonHooks.validateComponent(value);
+            return this.andThen((components, _, _) -> components.set(type, value));
+        }
     }
 }
