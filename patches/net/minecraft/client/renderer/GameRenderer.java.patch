@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -301,19 +_,46 @@
+@@ -301,19 +_,45 @@
  
      public void checkEntityPostEffect(@Nullable Entity p_109107_) {
          if (this.postEffect != null) {
@@ -8,7 +8,7 @@
 +            this.togglePostChainEffect(null, net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
          }
  
-         this.postEffect = null;
+-        this.postEffect = null;
          if (p_109107_ instanceof Creeper) {
 -            this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/creeper.json"));
 +            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/creeper.json"), net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
