@@ -59,4 +59,9 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<IGloba
     public Identifier getId(IGlobalLootModifier modifier) {
         return this.registeredLootModifiers.inverse().get(modifier);
     }
+
+    @Nullable
+    public IGlobalLootModifier getModifier(Identifier id) {
+        return this.registeredLootModifiers.get(id);
+    }
 }
