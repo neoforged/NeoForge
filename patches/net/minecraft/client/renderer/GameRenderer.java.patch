@@ -1,34 +1,26 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -77,6 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import net.neoforged.api.distmarker.Dist;
- import net.neoforged.api.distmarker.OnlyIn;
-+import net.neoforged.neoforge.client.PostChainGroup;
- import org.joml.Matrix4f;
- import org.joml.Matrix4fStack;
- import org.joml.Quaternionf;
 @@ -301,19 +_,46 @@
  
      public void checkEntityPostEffect(@Nullable Entity p_109107_) {
          if (this.postEffect != null) {
 -            this.postEffect.close();
-+            this.togglePostChainEffect(null, PostChainGroup.ENTITY_SHADERS);
++            this.togglePostChainEffect(null, net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
          }
  
          this.postEffect = null;
          if (p_109107_ instanceof Creeper) {
 -            this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/creeper.json"));
-+            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/creeper.json"), PostChainGroup.ENTITY_SHADERS);
++            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/creeper.json"), net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
          } else if (p_109107_ instanceof Spider) {
 -            this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/spider.json"));
-+            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/spider.json"), PostChainGroup.ENTITY_SHADERS);
++            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/spider.json"), net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
          } else if (p_109107_ instanceof EnderMan) {
 -            this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/invert.json"));
 -        }
 -    }
 -
-+            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/invert.json"), PostChainGroup.ENTITY_SHADERS);
++            this.togglePostChainEffect(ResourceLocation.withDefaultNamespace("shaders/post/invert.json"), net.neoforged.neoforge.client.PostChainGroup.ENTITY_SHADERS);
 +        } else {
 +            net.neoforged.neoforge.client.ClientHooks.loadEntityShader(p_109107_, this);
 +        }
@@ -42,7 +34,7 @@
 +     * @param postEffect post-effect. Null to remove it
 +     * @param group      effect group. Used for priority and mutual exclusivity.
 +     */
-+    public void togglePostChainEffect(@Nullable ResourceLocation postEffect, PostChainGroup group) {
++    public void togglePostChainEffect(@Nullable ResourceLocation postEffect, net.neoforged.neoforge.client.PostChainGroup group) {
 +        try {
 +            this.postEffect = PostChain.refreshComposite(this.postEffect, postEffect, group);
 +            this.effectActive = this.postEffect != null;
