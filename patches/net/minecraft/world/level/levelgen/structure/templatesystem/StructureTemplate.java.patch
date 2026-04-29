@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
+@@ -209,7 +_,7 @@
+                         new StructureTemplate.StructureBlockInfo(
+                             calculateRelativePosition(settings, blockInfo.pos()).offset(position),
+                             blockInfo.state.rotate(settings.getRotation()),
+-                            blockInfo.nbt
++                            net.neoforged.neoforge.common.CommonHooks.captureStructureRotation(blockInfo.nbt, rotation)
+                         )
+                     )
+                 );
+@@ -228,7 +_,7 @@
+             for (StructureTemplate.StructureBlockInfo blockInfo : settings.getRandomPalette(this.palettes, position).blocks(block)) {
+                 BlockPos blockPos = absolute ? calculateRelativePosition(settings, blockInfo.pos).offset(position) : blockInfo.pos;
+                 if (boundingBox == null || boundingBox.isInside(blockPos)) {
+-                    result.add(new StructureTemplate.StructureBlockInfo(blockPos, blockInfo.state.rotate(settings.getRotation()), blockInfo.nbt));
++                    result.add(new StructureTemplate.StructureBlockInfo(blockPos, blockInfo.state.rotate(settings.getRotation()), net.neoforged.neoforge.common.CommonHooks.captureStructureRotation(blockInfo.nbt, settings.getRotation())));
+                 }
+             }
+ 
 @@ -246,6 +_,10 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
@@ -20,6 +38,14 @@
  
                  try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
                      for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
+@@ -302,6 +_,7 @@
+                                         blockEntity.loadWithComponents(
+                                             TagValueInput.create(reporter.forChild(blockEntity.problemPath()), level.registryAccess(), blockInfo.nbt)
+                                         );
++                                        net.neoforged.neoforge.common.CommonHooks.applyStructureRotation(blockEntity, blockInfo.nbt, settings);
+                                     }
+                                 }
+ 
 @@ -387,16 +_,7 @@
                      }
  
