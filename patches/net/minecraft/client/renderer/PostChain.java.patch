@@ -72,7 +72,7 @@
          this.customRenderTargets.put(p_110039_, rendertarget);
          if (p_110040_ == this.screenWidth && p_110041_ == this.screenHeight) {
              this.fullSizedTargets.add(rendertarget);
-@@ -346,6 +_,124 @@
+@@ -346,6 +_,134 @@
              return null;
          } else {
              return p_110050_.equals("minecraft:main") ? this.screenTarget : this.customRenderTargets.get(p_110050_);
@@ -98,13 +98,23 @@
 +        private final Map<PostChainGroup, PostChain> chainsPerGroup = new HashMap<>();
 +
 +        //prevent it from loading normally
-+        @Override
-+        protected void load(TextureManager textureManager, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
-+        }
-+
 +        private ComposedPostChain(TextureManager textureManager, ResourceProvider resourceProvider,
 +                                  RenderTarget screenTarget, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
 +            super(textureManager, resourceProvider, screenTarget, resourceLocation);
++        }
++
++        @Override
++        public void close() {
++            super.close();
++            for (PostChain postChain : chainsPerGroup.values()){
++                try {
++                    postChain.close();
++                } catch (Exception ignored){}
++            }
++        }
++
++        @Override
++        protected void load(TextureManager textureManager, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
 +        }
 +
 +        private static ComposedPostChain wrap(PostChain vanillaChain, PostChainGroup group) throws IOException {
