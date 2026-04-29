@@ -126,7 +126,8 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
     @Override
     @Nullable
     public URI issuesUrl() {
-        return container.getModInfo().getOwningFile().getConfig().<String>getConfigElement("issueTrackerURL")
+        return container.getModInfo().getConfig().<String>getConfigElement("issueTrackerURL")
+                .or(() -> container.getModInfo().getOwningFile().getConfig().getConfigElement("issueTrackerURL"))
                 .map(URI::create)
                 .orElse(null);
     }
