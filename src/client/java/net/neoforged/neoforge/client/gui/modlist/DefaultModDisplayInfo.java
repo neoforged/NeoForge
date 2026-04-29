@@ -118,6 +118,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
     @Nullable
     public URI displayUrl() {
         return container.getModInfo().getConfig().<String>getConfigElement("displayURL")
+                .or(() -> container.getModInfo().getConfig().getConfigElement("modUrl"))
                 .map(URI::create)
                 .orElse(null);
     }
