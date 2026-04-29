@@ -1,5 +1,59 @@
 --- a/net/minecraft/client/renderer/PostChain.java
 +++ b/net/minecraft/client/renderer/PostChain.java
+@@ -12,6 +_,7 @@
+ import com.mojang.blaze3d.systems.RenderSystem;
+ import java.io.IOException;
+ import java.io.Reader;
++import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+ import javax.annotation.Nullable;
+@@ -21,26 +_,29 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.ChainedJsonException;
+ import net.minecraft.server.packs.resources.Resource;
++import net.minecraft.server.packs.resources.ResourceManager;
+ import net.minecraft.server.packs.resources.ResourceProvider;
+ import net.minecraft.util.GsonHelper;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import net.neoforged.neoforge.client.PostChainGroup;
++import org.jetbrains.annotations.ApiStatus;
+ import org.joml.Matrix4f;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class PostChain implements AutoCloseable {
+     private static final String MAIN_RENDER_TARGET = "minecraft:main";
+-    private final RenderTarget screenTarget;
++    protected final RenderTarget screenTarget;
+     private final ResourceProvider resourceProvider;
+     private final String name;
+-    private final List<PostPass> passes = Lists.newArrayList();
+-    private final Map<String, RenderTarget> customRenderTargets = Maps.newHashMap();
+-    private final List<RenderTarget> fullSizedTargets = Lists.newArrayList();
+-    private Matrix4f shaderOrthoMatrix;
++    protected final List<PostPass> passes = Lists.newArrayList();
++    protected final Map<String, RenderTarget> customRenderTargets = Maps.newHashMap();
++    protected final List<RenderTarget> fullSizedTargets = Lists.newArrayList();
++    protected Matrix4f shaderOrthoMatrix;
+     private int screenWidth;
+     private int screenHeight;
+-    private float time;
+-    private float lastStamp;
++    protected float time;
++    protected float lastStamp;
+ 
+     public PostChain(TextureManager p_110018_, ResourceProvider p_330592_, RenderTarget p_110020_, ResourceLocation p_110021_) throws IOException, JsonSyntaxException {
+         this.resourceProvider = p_330592_;
+@@ -54,7 +_,7 @@
+         this.load(p_110018_, p_110021_);
+     }
+ 
+-    private void load(TextureManager p_110034_, ResourceLocation p_110035_) throws IOException, JsonSyntaxException {
++    protected void load(TextureManager p_110034_, ResourceLocation p_110035_) throws IOException, JsonSyntaxException {
+         Resource resource = this.resourceProvider.getResourceOrThrow(p_110035_);
+ 
+         try {
 @@ -156,7 +_,8 @@
                                  throw new ChainedJsonException("Render target '" + s4 + "' can't be used as depth buffer");
                              }
@@ -18,3 +72,128 @@
          this.customRenderTargets.put(p_110039_, rendertarget);
          if (p_110040_ == this.screenWidth && p_110041_ == this.screenHeight) {
              this.fullSizedTargets.add(rendertarget);
+@@ -346,6 +_,124 @@
+             return null;
+         } else {
+             return p_110050_.equals("minecraft:main") ? this.screenTarget : this.customRenderTargets.get(p_110050_);
++        }
++    }
++
++    @ApiStatus.Internal
++    public static @Nullable PostChain refreshComposite(@Nullable PostChain currentChain, @Nullable ResourceLocation newPost, PostChainGroup group) throws IOException {
++        PostChain newChain;
++        if (currentChain == null) {
++            if (newPost == null) return null;
++            newChain = ComposedPostChain.create(newPost, group);
++        } else if (currentChain instanceof ComposedPostChain cpc) {
++            newChain = cpc.with(newPost, group);
++        } else {
++            newChain = ComposedPostChain.wrap(currentChain, PostChainGroup.DEFAULT);
++        }
++        return newChain;
++    }
++
++    private static final class ComposedPostChain extends PostChain {
++
++        private final Map<PostChainGroup, PostChain> chainsPerGroup = new HashMap<>();
++
++        //prevent it from loading normally
++        @Override
++        protected void load(TextureManager textureManager, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
++        }
++
++        private ComposedPostChain(TextureManager textureManager, ResourceProvider resourceProvider,
++                                  RenderTarget screenTarget, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
++            super(textureManager, resourceProvider, screenTarget, resourceLocation);
++        }
++
++        private static ComposedPostChain wrap(PostChain vanillaChain, PostChainGroup group) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            TextureManager tm = mc.getTextureManager();
++            ResourceManager rm = mc.getResourceManager();
++            var cc = new ComposedPostChain(tm, rm, vanillaChain.screenTarget, ResourceLocation.parse(vanillaChain.getName()));
++            cc.addSubChain(vanillaChain, group);
++            return cc;
++        }
++
++        private static ComposedPostChain create(ResourceLocation postEffect, PostChainGroup group) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            TextureManager tm = mc.getTextureManager();
++            ResourceManager rm = mc.getResourceManager();
++            PostChain vanillaChain = new PostChain(tm, rm, mc.getMainRenderTarget(), postEffect);
++            vanillaChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
++            return wrap(vanillaChain, group);
++        }
++
++        private @Nullable ComposedPostChain with(@Nullable ResourceLocation newEffect, PostChainGroup group) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            TextureManager tm = mc.getTextureManager();
++            ResourceManager rm = mc.getResourceManager();
++
++            //check if it's already good
++            if (newEffect != null) {
++                PostChain existing = this.chainsPerGroup.get(group);
++                if (existing != null && existing.getName().equals(newEffect.toString())) {
++                    return this;
++                }
++            }
++            // copy existing groups
++            Map<PostChainGroup, PostChain> newGroups = new HashMap<>(this.chainsPerGroup);
++            if (newEffect == null) {
++                PostChain removed = newGroups.remove(group);
++                if (removed != null) removed.close();
++                if (newGroups.isEmpty()) {
++                    // if no groups left, return null to indicate no post-chain needed
++                    return null;
++                }
++            } else {
++                PostChain newChain = new PostChain(tm, rm, this.screenTarget, newEffect);
++                newChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
++                newGroups.put(group, newChain);
++            }
++
++            // sort groups by priority
++            List<Map.Entry<PostChainGroup, PostChain>> ordered =
++                    newGroups.entrySet().stream()
++                            .sorted((a, b) -> Integer.compare(a.getKey().priority(), b.getKey().priority()))
++                            .toList();
++
++            ResourceLocation newName = ordered.size() == 1 ?
++                    ResourceLocation.parse(ordered.getFirst().getValue().getName()) :
++                    ResourceLocation.withDefaultNamespace("composed/" +
++                            ordered.stream()
++                            .map(e -> e.getValue().getName()
++                                      .replace(":", "_"))
++                            .reduce((a, b) -> a + "_" + b).orElse("empty"));
++
++            // create new composed chain (empty base)
++            ComposedPostChain result = new ComposedPostChain(
++                    tm, rm,
++                    this.screenTarget,
++                    newName // reuse same name
++            );
++            // rebuild passes + targets in order
++            for (var entry : ordered) {
++                PostChain pc = entry.getValue();
++                result.addSubChain(pc, entry.getKey());
++            }
++
++            return result;
++
++        }
++
++        private void addSubChain(PostChain chain, PostChainGroup group) {
++            this.chainsPerGroup.put(group, chain);
++
++            this.passes.addAll(chain.passes);
++            this.customRenderTargets.putAll(chain.customRenderTargets);
++            this.fullSizedTargets.addAll(chain.fullSizedTargets);
++
++            for (PostPass postPass : this.passes) {
++                postPass.setOrthoMatrix(this.shaderOrthoMatrix);
++            }
++            this.time = chain.time;
++            this.lastStamp = chain.lastStamp;
+         }
+     }
+ }
