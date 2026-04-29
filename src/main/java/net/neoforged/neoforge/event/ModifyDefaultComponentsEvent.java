@@ -12,14 +12,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.ApiStatus;
 
 /// The event used to modify the default [components][Item#components()] of an item.
@@ -100,18 +98,6 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
                 this.run(components, context, key);
                 other.run(components, context, key);
             };
-        }
-
-        /// {@return a composed initializer that runs this initializer and then adds the given data component and it svalue}
-        ///
-        /// @param <C> the value type of the data component
-        /// @param type the data component
-        /// @param value the value of the data component
-        ///
-        /// @see #andThen(Initializer)
-        default <C> Initializer add(DataComponentType<C> type, C value) {
-            CommonHooks.validateComponent(value);
-            return this.andThen((components, _, _) -> components.set(type, value));
         }
     }
 }
