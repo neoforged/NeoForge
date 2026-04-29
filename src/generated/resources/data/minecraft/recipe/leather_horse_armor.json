@@ -2,15 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
     "X": "#c:leathers"
   },
   "pattern": [
-    "###",
-    "#X#",
-    "###"
+    "X X",
+    "XXX",
+    "X X"
   ],
   "result": {
-    "id": "minecraft:item_frame"
+    "id": "minecraft:leather_horse_armor"
   }
 }
