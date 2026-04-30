@@ -41,6 +41,16 @@ public abstract class CompositeHolderSet<T> implements ICustomHolderSet<T> {
         }
     }
 
+    @Override
+    public boolean isImmediatelyResolvable() {
+        for (HolderSet<T> component : getComponents()) {
+            if (component instanceof ICustomHolderSet<T> custom && !custom.isImmediatelyResolvable()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * {@return immutable Set of Holders given this composite holderset's component holdersets}
      */
