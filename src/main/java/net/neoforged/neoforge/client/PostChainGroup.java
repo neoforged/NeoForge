@@ -9,9 +9,9 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * A group identifies a set of post-shader which is mutually exclusive.
- * The priority field controls in which order the various groups are applied
+ * The priority field controls in which order the various groups are applied, starting from low priority to high priority
  */
-public record PostChainGroup(ResourceLocation resourceLocation, int priority) {
+public record PostChainGroup(ResourceLocation resourceLocation, float priority) {
     /**
      * Default post-effect group. Unused
      */

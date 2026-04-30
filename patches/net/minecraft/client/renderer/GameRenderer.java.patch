@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -301,19 +_,45 @@
+@@ -301,19 +_,46 @@
  
      public void checkEntityPostEffect(@Nullable Entity p_109107_) {
          if (this.postEffect != null) {
@@ -36,7 +36,8 @@
 +     */
 +    public void togglePostChainEffect(@Nullable ResourceLocation postEffect, net.neoforged.neoforge.client.PostChainGroup group) {
 +        try {
-+            this.postEffect = PostChain.refreshComposite(this.postEffect, postEffect, group);
++            var target = this.postEffect != null ? this.postEffect.screenTarget : Minecraft.getInstance().getMainRenderTarget();
++            this.postEffect = PostChain.refreshComposite(this.postEffect, postEffect, group, target);
 +            this.effectActive = this.postEffect != null;
 +        } catch (IOException ioexception) {
 +            LOGGER.warn("Failed to load shader: {}", postEffect, ioexception);

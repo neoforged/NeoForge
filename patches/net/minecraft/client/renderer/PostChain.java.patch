@@ -52,18 +52,18 @@
          this.customRenderTargets.put(p_110039_, rendertarget);
          if (p_110040_ == this.screenWidth && p_110041_ == this.screenHeight) {
              this.fullSizedTargets.add(rendertarget);
-@@ -346,6 +_,132 @@
+@@ -346,6 +_,130 @@
              return null;
          } else {
              return p_110050_.equals("minecraft:main") ? this.screenTarget : this.customRenderTargets.get(p_110050_);
 +        }
 +    }
 +
-+    public static @Nullable PostChain refreshComposite(@Nullable PostChain currentChain, @Nullable ResourceLocation newPost, net.neoforged.neoforge.client.PostChainGroup group) throws IOException {
++    public static @Nullable PostChain refreshComposite(@Nullable PostChain currentChain, @Nullable ResourceLocation newPost, net.neoforged.neoforge.client.PostChainGroup group, RenderTarget mainTarget) throws IOException {
 +        PostChain newChain;
 +        if (currentChain == null) {
 +            if (newPost == null) return null;
-+            newChain = ComposedPostChain.create(newPost, group);
++            newChain = ComposedPostChain.create(newPost, group, mainTarget);
 +        } else if (currentChain instanceof ComposedPostChain cpc) {
 +            newChain = cpc.with(newPost, group);
 +        } else {
@@ -105,12 +105,12 @@
 +            return cc;
 +        }
 +
-+        private static ComposedPostChain create(ResourceLocation postEffect, net.neoforged.neoforge.client.PostChainGroup group) throws IOException {
++        private static ComposedPostChain create(ResourceLocation postEffect, net.neoforged.neoforge.client.PostChainGroup group, RenderTarget mainTarget) throws IOException {
 +            Minecraft mc = Minecraft.getInstance();
 +            var tm = mc.getTextureManager();
 +            var rm = mc.getResourceManager();
-+            PostChain vanillaChain = new PostChain(tm, rm, mc.getMainRenderTarget(), postEffect);
-+            vanillaChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
++            PostChain vanillaChain = new PostChain(tm, rm, mainTarget, postEffect);
++            vanillaChain.resize(mainTarget.width, mainTarget.height);
 +            return wrap(vanillaChain, group);
 +        }
 +
@@ -137,7 +137,7 @@
 +                }
 +            } else {
 +                PostChain newChain = new PostChain(tm, rm, this.screenTarget, newEffect);
-+                newChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
++                newChain.resize(this.screenTarget.width, this.screenTarget.height);
 +                newGroups.put(group, newChain);
 +            }
 +
@@ -165,6 +165,7 @@
 +                PostChain pc = entry.getValue();
 +                result.addSubChain(pc, entry.getKey());
 +            }
++            this.resize(this.screenTarget.width, this.screenTarget.height);
 +
 +            return result;
 +
@@ -177,9 +178,6 @@
 +            this.customRenderTargets.putAll(chain.customRenderTargets);
 +            this.fullSizedTargets.addAll(chain.fullSizedTargets);
 +
-+            for (PostPass postPass : this.passes) {
-+                postPass.setOrthoMatrix(this.shaderOrthoMatrix);
-+            }
 +            this.time = chain.time;
 +            this.lastStamp = chain.lastStamp;
          }

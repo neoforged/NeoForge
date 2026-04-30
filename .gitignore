@@ -45,3 +45,16 @@ build
 **/runs/
 
 **/out/
+
+# MixinMCP auto-injected rules
+.cursor/rules/minecraft-mod-project.mdc
+.cursor/skills/mixin-writing/SKILL.md
+.cursor/skills/mixin-writing/references/at-reference.md
+.cursor/skills/mixin-writing/references/expressions-language.md
+.cursor/skills/mixinmcp-tools/SKILL.md
+.cursor/skills/mixinmcp-tools/references/toolchains.md
+.claude/skills/mixin-writing/SKILL.md
+.claude/skills/mixin-writing/references/at-reference.md
+.claude/skills/mixin-writing/references/expressions-language.md
+.claude/skills/mixinmcp-tools/SKILL.md
+.claude/skills/mixinmcp-tools/references/toolchains.md
