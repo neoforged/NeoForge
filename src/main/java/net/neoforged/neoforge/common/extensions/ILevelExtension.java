@@ -12,11 +12,13 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.attachment.capability.AttachmentHolderCapabilityExtension;
+import net.neoforged.neoforge.attachment.storage.AttachmentDataStorage;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.model.data.ModelDataManager;
 import org.jspecify.annotations.Nullable;
 
-public interface ILevelExtension {
+public interface ILevelExtension extends AttachmentHolderCapabilityExtension {
     /**
      * Prefix used for all dimension based translations
      * <p>
@@ -156,5 +158,10 @@ public interface ILevelExtension {
      */
     default Component getDescription() {
         return Component.translatableWithFallback(getDescriptionKey(), self().dimension().identifier().toString());
+    }
+
+    @Override
+    default AttachmentDataStorage attachmentDataStorage() {
+        return self();
     }
 }

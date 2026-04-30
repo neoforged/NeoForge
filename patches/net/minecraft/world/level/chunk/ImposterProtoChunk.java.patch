@@ -18,7 +18,7 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.attachment.AttachmentHolder getAttachmentHolder() {
++    public net.neoforged.neoforge.attachment.AttachmentHolder attachmentDataStorage() {
 +        return wrapped.attachments;
      }
  }

@@ -28,17 +28,17 @@
                              }
                          }
                      }
-@@ -476,6 +_,63 @@
+@@ -476,6 +_,64 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
 +
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    protected final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    protected final net.neoforged.neoforge.attachment.AttachmentHolder attachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {
++    public net.neoforged.neoforge.attachment.storage.AttachmentDataStorage attachmentDataStorage() {
 +        return attachments;
 +    }
 +
@@ -81,7 +81,8 @@
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
-+        attachments.deserializeInternal(provider, input);
++        if(attachments.attachmentPersistenceHandler() instanceof net.neoforged.neoforge.attachment.persistence.AttachmentHolderPersistenceHandler persist)
++            persist.deserialize(input);
 +        if (!reporter.isEmpty()) {
 +            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
 +        }

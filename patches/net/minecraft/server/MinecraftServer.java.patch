@@ -275,15 +275,15 @@
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachments = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    private final net.neoforged.neoforge.attachment.vanilla.ServerAttachmentHolder attachments = new net.neoforged.neoforge.attachment.vanilla.ServerAttachmentHolder(this);
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {
 +        return attachments;
 +    }
 +
 +    @Override
-+    public void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncServerUpdate(this, type);
++    public net.neoforged.neoforge.attachment.storage.AttachmentDataStorage attachmentDataStorage() {
++        return attachments;
 +    }
 +
      public void dumpServerProperties(Path path) throws IOException {

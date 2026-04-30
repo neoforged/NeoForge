@@ -141,7 +141,7 @@
     "net/neoforged/neoforge/common/extensions/IPlayerListExtension"
   ],
   "net/minecraft/server/MinecraftServer": [
-    "net/neoforged/neoforge/attachment/IForwardingAttachmentHolder"
+    "net/neoforged/neoforge/attachment/capability/AttachmentHolderCapabilityExtension"
   ],
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
@@ -244,7 +244,7 @@
     "net/neoforged/neoforge/common/extensions/IBlockStateExtension"
   ],
   "net/minecraft/world/level/chunk/ChunkAccess": [
-    "net/neoforged/neoforge/attachment/IForwardingAttachmentHolder"
+    "net/neoforged/neoforge/attachment/capability/AttachmentHolderCapabilityExtension"
   ],
   "net/minecraft/world/level/material/Fluid": [
     "net/neoforged/neoforge/common/extensions/IFluidExtension"
