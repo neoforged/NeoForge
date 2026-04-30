@@ -14,7 +14,9 @@ import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class NeoForgeSplashHooks {
     public static List<Component> loadSplashes(ResourceManager resourceManager) {
         List<Component> list = Lists.newArrayList();

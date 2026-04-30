@@ -39,6 +39,8 @@ public final class NeoForgeClientConfig {
 
     public final ModConfigSpec.BooleanValue enableB3DValidationLayer;
 
+    public final ModConfigSpec.BooleanValue skipModdedSplashesIfVanillaModified;
+
     private NeoForgeClientConfig(ModConfigSpec.Builder builder) {
         enhancedLighting = builder
                 .comment("Enable the enhanced block model lighting pipeline - fixes the lighting of custom models, as well as many vanilla bugs.")
@@ -74,6 +76,11 @@ public final class NeoForgeClientConfig {
                 .comment("When enabled, all usage of Blaze3D will be validated against allowed usage")
                 .translation("neoforge.configgui.enableB3DValidationLayer")
                 .define("enableB3DValidationLayer", !FMLEnvironment.isProduction());
+
+        skipModdedSplashesIfVanillaModified = builder
+                .comment("When enabled, modded splashes will not be loaded if the vanilla splash text is modified.")
+                .translation("neoforge.configgui.skipModdedSplashesIfVanillaModified")
+                .define("skipModdedSplashesIfVanillaModified", true);
     }
 
     @SubscribeEvent

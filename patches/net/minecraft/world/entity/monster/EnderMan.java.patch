@@ -25,18 +25,6 @@
      }
  
      @Override
-@@ -285,8 +_,10 @@
-         boolean couldStandOn = blockState.blocksMotion();
-         boolean isWet = blockState.getFluidState().is(FluidTags.WATER);
-         if (couldStandOn && !isWet) {
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, x, y, z);
-+            if (event.isCanceled()) return false;
-             Vec3 oldPos = this.position();
--            boolean result = this.randomTeleport(x, y, z, true);
-+            boolean result = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
-             if (result) {
-                 this.level().gameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Context.of(this));
-                 if (!this.isSilent()) {
 @@ -441,7 +_,7 @@
              if (this.enderman.getCarriedBlock() == null) {
                  return false;
