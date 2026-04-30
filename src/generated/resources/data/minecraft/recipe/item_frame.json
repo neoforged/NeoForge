@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": "#c:rods/wooden",
-    "X": "minecraft:leather"
+    "X": "#c:leathers"
   },
   "pattern": [
     "###",

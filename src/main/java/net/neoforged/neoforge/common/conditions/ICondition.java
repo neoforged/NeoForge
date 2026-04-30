@@ -12,10 +12,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry.PendingTags;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
@@ -89,12 +92,27 @@ public interface ICondition {
             public <T> boolean isTagLoaded(TagKey<T> key) {
                 throw new UnsupportedOperationException("Usage of tag-based conditions is not permitted in this context!");
             }
+
+            @Override
+            public <T> Collection<Holder<T>> getTag(TagKey<T> key) {
+                throw new UnsupportedOperationException("Usage of tag-based conditions is not permitted in this context!");
+            }
         };
 
         /**
          * Returns {@code true} if the requested tag is available.
+         * This method does not require that the loaded tag have any elements, only that it be present at all.
          */
         <T> boolean isTagLoaded(TagKey<T> key);
+
+        /**
+         * Returns the contents of the requested tag as loaded from data packs, or an empty collection if
+         * the tag is not loaded. The returned holders are safe to inspect even though the tag has not yet
+         * been bound to its registry (i.e. {@link PendingTags#apply()} has not yet run).
+         */
+        default <T> Collection<Holder<T>> getTag(TagKey<T> key) {
+            return List.of();
+        }
 
         default RegistryAccess registryAccess() {
             return RegistryAccess.EMPTY;

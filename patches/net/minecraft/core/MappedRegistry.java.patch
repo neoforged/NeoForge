@@ -139,6 +139,19 @@
                  } else {
                      List<Identifier> unboundTags = this.frozenTags
                          .entrySet()
+@@ -452,6 +_,12 @@
+                     return patchedHolder;
+                 }
+ 
++                // Neo: Make the underlying staged tag contents accessible for loading condition evaluation.
++                @Override
++                public Map<TagKey<T>, List<Holder<T>>> contents() {
++                    return Collections.unmodifiableMap(pendingContents);
++                }
++
+                 @Override
+                 public void apply() {
+                     pendingTags.forEach((id, tag) -> {
 @@ -463,6 +_,55 @@
                  }
              };

@@ -1,7 +1,4 @@
 {
-  "com/mojang/blaze3d/opengl/GlDevice": [
-    "net/neoforged/neoforge/client/extensions/blaze3d/GlDeviceExtension"
-  ],
   "com/mojang/blaze3d/vertex/VertexConsumer": [
     "net/neoforged/neoforge/client/extensions/IVertexConsumerExtension"
   ],
@@ -82,6 +79,9 @@
   ],
   "net/minecraft/core/Registry": [
     "net/neoforged/neoforge/registries/IRegistryExtension<T>"
+  ],
+  "net/minecraft/core/Registry$PendingTags": [
+    "net/neoforged/neoforge/common/extensions/PendingTagsExtension<T>"
   ],
   "net/minecraft/core/RegistrySetBuilder$UniversalLookup": [
     "net/minecraft/core/HolderLookup<java.lang.Object>"

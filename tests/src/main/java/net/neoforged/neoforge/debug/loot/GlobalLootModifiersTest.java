@@ -97,8 +97,8 @@ public class GlobalLootModifiersTest {
     private static class SmeltingEnchantmentModifier extends LootModifier {
         public static final Supplier<MapCodec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
 
-        public SmeltingEnchantmentModifier(LootItemCondition[] conditionsIn) {
-            super(conditionsIn);
+        public SmeltingEnchantmentModifier(LootItemCondition[] conditions, int priority) {
+            super(conditions, priority);
         }
 
         @Override
@@ -129,8 +129,8 @@ public class GlobalLootModifiersTest {
     private static class SilkTouchTestModifier extends LootModifier {
         public static final Supplier<MapCodec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
 
-        public SilkTouchTestModifier(LootItemCondition[] conditionsIn) {
-            super(conditionsIn);
+        public SilkTouchTestModifier(LootItemCondition[] conditions, int priority) {
+            super(conditions, priority);
         }
 
         @Override
@@ -174,8 +174,8 @@ public class GlobalLootModifiersTest {
         private final Item itemToCheck;
         private final Item itemReward;
 
-        public WheatSeedsConverterModifier(LootItemCondition[] conditionsIn, int numSeeds, Item itemCheck, Item reward) {
-            super(conditionsIn);
+        public WheatSeedsConverterModifier(LootItemCondition[] conditions, int priority, int numSeeds, Item itemCheck, Item reward) {
+            super(conditions, priority);
             numSeedsToConvert = numSeeds;
             itemToCheck = itemCheck;
             itemReward = reward;
@@ -215,8 +215,8 @@ public class GlobalLootModifiersTest {
 
         private final int multiplicationFactor;
 
-        public DungeonLootEnhancerModifier(final LootItemCondition[] conditionsIn, final int multiplicationFactor) {
-            super(conditionsIn);
+        public DungeonLootEnhancerModifier(LootItemCondition[] conditions, int priority, int multiplicationFactor) {
+            super(conditions, priority);
             this.multiplicationFactor = multiplicationFactor;
         }
 
@@ -259,7 +259,7 @@ public class GlobalLootModifiersTest {
                                                 EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build()))
                                         .build(),
                                 new TestEnabledLootCondition(test)
-                        }));
+                        }, IGlobalLootModifier.DEFAULT_PRIORITY));
             }
 
             @Override
@@ -307,6 +307,7 @@ public class GlobalLootModifiersTest {
                                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
                                 new TestEnabledLootCondition(test)
                         },
+                        IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
             }
 
@@ -333,6 +334,33 @@ public class GlobalLootModifiersTest {
     }
 
     @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the silk touch bamboo GLM works, by breaking leaves with bamboo and verifying the leaf block is dropped")
+    static void silkTouchBambooTest(final DynamicTest test) {
+        HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("silk_touch_bamboo", new SilkTouchTestModifier(
+                new LootItemCondition[] {
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)).build(),
+                        new TestEnabledLootCondition(test)
+                },
+                IGlobalLootModifier.DEFAULT_PRIORITY)));
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.BAMBOO.getDefaultInstance()))
+
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.OAK_LEAVES.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.PERSISTENT, true)))
+
+                .thenIdle(5)
+                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 2, 1))))
+                .thenIdle(5)
+                // The silk touch bamboo modifier should cause oak leaves to drop the leaf block itself
+                .thenExecute(player -> helper.assertItemEntityCountIsAtLeast(Items.OAK_LEAVES, new BlockPos(1, 2, 1), 1d, 1))
+                .thenExecute(player -> helper.assertItemEntityNotPresent(Items.OAK_SAPLING, new BlockPos(1, 2, 1), 1d))
+
+                .thenSucceed());
+    }
+
+    @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if dungeon loot modifiers work, by rolling the simple_dungeon loot table")
     static void dungeonLootTest(final DynamicTest test) {
@@ -341,6 +369,7 @@ public class GlobalLootModifiersTest {
                         LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")).build(),
                         new TestEnabledLootCondition(test)
                 },
+                IGlobalLootModifier.DEFAULT_PRIORITY,
                 2)));
 
         test.onGameTest(helper -> helper.startSequence()

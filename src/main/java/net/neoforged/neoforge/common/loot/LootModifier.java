@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.loot;
 
 import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
  */
 public abstract class LootModifier implements IGlobalLootModifier {
     protected final LootItemCondition[] conditions;
+    protected final int priority;
     private final Predicate<LootContext> combinedConditions;
 
     /**
@@ -34,8 +36,10 @@ public abstract class LootModifier implements IGlobalLootModifier {
      * Otherwise can follow this with #and() to add more fields.
      * Examples: Forge Test Subclasses or {@link BendingTrunkPlacer#CODEC}
      */
-    protected static <T extends LootModifier> Products.P1<RecordCodecBuilder.Mu<T>, LootItemCondition[]> codecStart(RecordCodecBuilder.Instance<T> instance) {
-        return instance.group(LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions));
+    protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, LootItemCondition[], Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
+        return instance.group(
+                LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
+                Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(lm -> lm.priority));
     }
 
     /**
@@ -43,14 +47,20 @@ public abstract class LootModifier implements IGlobalLootModifier {
      * 
      * @param conditionsIn the ILootConditions that need to be matched before the loot is modified.
      */
-    protected LootModifier(LootItemCondition[] conditionsIn) {
-        this.conditions = conditionsIn;
-        this.combinedConditions = AllOfCondition.allOf(List.of(conditionsIn));
+    protected LootModifier(LootItemCondition[] conditions, int priority) {
+        this.conditions = conditions;
+        this.combinedConditions = AllOfCondition.allOf(List.of(conditions));
+        this.priority = priority;
     }
 
     @Override
     public final ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         return this.combinedConditions.test(context) ? this.doApply(generatedLoot, context) : generatedLoot;
+    }
+
+    @Override
+    public int priority() {
+        return this.priority;
     }
 
     /**

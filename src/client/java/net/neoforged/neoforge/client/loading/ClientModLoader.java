@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.client.loading;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.util.NativeModuleLister;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModList;
@@ -22,12 +22,13 @@ import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
+import net.neoforged.fml.startup.FatalErrorReporting;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
 import net.neoforged.neoforge.internal.CommonModLoader;
-import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
@@ -38,67 +39,44 @@ import org.jspecify.annotations.Nullable;
 @ApiStatus.Internal
 public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static boolean loading;
-    private static boolean loadingComplete;
     @Nullable
-    private static ModLoadingException error;
+    private static EarlyLoadingScreenController earlyLoadingScreen;
 
     public static void begin() {
         // force log4j to shutdown logging in a shutdown hook. This is because we disable default shutdown hook so the server properly logs it's shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(LogManager::shutdown));
-        var earlyLoadingScreen = EarlyLoadingScreenController.current();
+        earlyLoadingScreen = EarlyLoadingScreenController.current();
         if (earlyLoadingScreen != null) {
             earlyLoadingScreen.updateProgress("Loading mods");
         }
-        loading = true;
         LanguageHook.loadBuiltinLanguages();
 
         Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
         begin(periodicTick, false);
     }
 
-    public static void finish(final PackRepository defaultResourcePacks, final ReloadableResourceManager mcResourceManager) {
-        if (error == null) {
-            ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES, false);
-            DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
-        }
+    public static void setupModResourcePacks(PackRepository repository) {
+        ResourcePackLoader.populatePackRepository(repository, PackType.CLIENT_RESOURCES, false);
+        DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
     }
 
-    /**
-     * This method can be bound as a method reference to {@link PreparableReloadListener}.
-     * <p>
-     * It is used as the entrypoint for client mod loading, which starts when {@link Minecraft} triggers the first resource reload.
-     */
-    public static CompletableFuture<Void> onResourceReload(PreparableReloadListener.SharedState sharedState, Executor asyncExecutor, PreparableReloadListener.PreparationBarrier stage, Executor syncExecutor) {
-        return CompletableFuture.runAsync(() -> startModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor())
-                .thenCompose(stage::wait)
-                .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());
-    }
-
-    private static void catchLoadingException(Runnable r) {
-        // Don't load again on subsequent reloads
-        if (loadingComplete) return;
-        // If the mod loading state is invalid, skip further mod initialization
-        if (ModLoader.hasErrors()) return;
-
+    public static void finish() {
+        Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
         try {
-            r.run();
+            load(periodicTick);
+            ModLoader.runInitTask("Client network registry lock", ModWorkManager.syncExecutor(), periodicTick, ClientNetworkRegistry::setup);
         } catch (ModLoadingException e) {
-            if (error == null) error = e;
+            File gameDir = Minecraft.getInstance().gameDirectory;
+            CrashReport report = CrashReport.forThrowable(e, "stage");
+            CrashReportCategory category = report.addCategory("Finish mod loading");
+            NativeModuleLister.addCrashSection(category);
+            Minecraft.getInstance().fillReport(report);
+            Minecraft.saveReport(gameDir, report);
+            reportFatalError(e, gameDir.toPath(), report);
         }
-    }
-
-    private static void startModLoading(Executor syncExecutor, Executor parallelExecutor) {
-        catchLoadingException(() -> load(syncExecutor, parallelExecutor));
-    }
-
-    private static void finishModLoading(Executor syncExecutor, Executor parallelExecutor) {
-        catchLoadingException(() -> {
-            finish(syncExecutor, parallelExecutor);
-            ModLoader.runInitTask("Client network registry lock", syncExecutor, () -> {}, ClientNetworkRegistry::setup);
-        });
-        loading = false;
-        loadingComplete = true;
+        if (earlyLoadingScreen instanceof DisplayWindow displayWindow) {
+            displayWindow.close();
+        }
     }
 
     public static VersionChecker.Status checkForUpdates() {
@@ -111,23 +89,8 @@ public class ClientModLoader extends CommonModLoader {
 
     public static Runnable completeModLoading(Runnable initialScreensTask) {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
-        boolean showWarnings = true;
-        try {
-            showWarnings = NeoForgeClientConfig.INSTANCE.showLoadWarnings.get();
-        } catch (NullPointerException | IllegalStateException e) {
-            // We're in an early error state, config is not available. Assume true.
-        }
-
-        if (error != null) {
-            // Double check we have the langs loaded for forge
-            LanguageHook.loadBuiltinLanguages();
-            File dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), Minecraft.getInstance().gameDirectory);
-            // Ignore incoming initial screens task, the subsequent screens are unreachable in an error state
-            return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
-        }
-
         if (!warnings.isEmpty()) {
-            if (showWarnings) {
+            if (NeoForgeClientConfig.INSTANCE.showLoadWarnings.get()) {
                 return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
 
@@ -140,7 +103,8 @@ public class ClientModLoader extends CommonModLoader {
         return initialScreensTask;
     }
 
-    public static boolean isLoading() {
-        return loading;
+    public static void reportFatalError(Throwable error, Path gameDir, CrashReport report) {
+        Path logFile = gameDir.resolve("logs", "latest.log");
+        FatalErrorReporting.reportFatalError(error, gameDir, logFile, report.getSaveFile());
     }
 }

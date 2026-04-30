@@ -30,9 +30,11 @@
                      blockState.attack(this.level, pos, this.player);
                      progress = blockState.getDestroyProgress(this.player, this.player.level(), pos);
                  }
-@@ -259,7 +_,8 @@
+@@ -258,8 +_,10 @@
+     }
  
      public boolean destroyBlock(BlockPos pos) {
++        // Neo: Fire the BlockBreakEvent, and ignore the original ItemStack#canDestroyBlock check since the break event manages the status of it.
          BlockState state = this.level.getBlockState(pos);
 -        if (!this.player.getMainHandItem().canDestroyBlock(state, this.level, pos, this.player)) {
 +        var event = net.neoforged.neoforge.common.CommonHooks.fireBlockBreak(level, gameModeForPlayer, player, pos, state);
