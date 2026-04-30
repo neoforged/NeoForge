@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentInitializers;
@@ -59,6 +60,17 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         modifiersByItem.merge(item.asItem(), patch, Initializer::andThen);
     }
 
+    /// Patches the default components of the given `item`.
+    ///
+    /// @param item  the item to modify the default components for
+    /// @param patch the patch to apply
+    ///
+    /// @deprecated Use [#modify(ItemLike, Initializer)] instead, which provides more contextual information.
+    @Deprecated(forRemoval = true, since = "26.1.2")
+    public void modify(ItemLike item, Consumer<DataComponentMap.Builder> patch) {
+        this.modify(item, (components, _, _) -> patch.accept(components));
+    }
+
     /// Patches the default components of all items matching the given `bipredicate`
     /// based on item and/or its currently applied default components.
     ///
@@ -70,6 +82,22 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
     /// @param patch     the patch to apply
     public void modifyMatching(ItemWithComponentsPredicate predicate, Initializer patch) {
         modifiersByPredicate.add(Pair.of(predicate, patch));
+    }
+
+    /// Patches the default components of all items matching the given `bipredicate`
+    /// based on item and/or its currently applied default components.
+    ///
+    /// If this method is used to modify components based on the item's current default components, the
+    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
+    /// already applied.
+    ///
+    /// @param predicate the item and its current default components filter
+    /// @param patch     the patch to apply
+    ///
+    /// @deprecated Use [#modifyMatching(ItemWithComponentsPredicate, Initializer)] instead, which provides more contextual information.
+    @Deprecated(forRemoval = true, since = "26.1.2")
+    public void modifyMatching(ItemWithComponentsPredicate predicate, Consumer<DataComponentMap.Builder> patch) {
+        this.modifyMatching(predicate, ((components, _, _) -> patch.accept(components)));
     }
 
     /// Evaluates a condition on an `Item`
