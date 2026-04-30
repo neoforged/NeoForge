@@ -71,7 +71,7 @@ public class NotHolderSet<T> implements ICustomHolderSet<T> {
 
     @Override
     public boolean isImmediatelyResolvable() {
-        return !(value instanceof ICustomHolderSet<T> custom) || custom.isImmediatelyResolvable();
+        return value.isImmediatelyResolvable();
     }
 
     @Override

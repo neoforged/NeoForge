@@ -20,9 +20,4 @@ public interface ICustomHolderSet<T> extends HolderSet<T> {
     default SerializationType serializationType() {
         return SerializationType.OBJECT;
     }
-
-    ///Determines whether this custom holderset can be immediately resolved to the contents it contains or if it must wait for tags to be loaded.
-    default boolean isImmediatelyResolvable() {
-        return true;
-    }
 }

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.HolderSet.ListBacked;
 
 public interface IHolderSetExtension<T> {
@@ -41,6 +42,12 @@ public interface IHolderSetExtension<T> {
                                         value -> SerializationType.OBJECT)
                                 : SerializationType.LIST)
                 : SerializationType.UNKNOWN; // unsupported holderset impl, could be anything
+    }
+
+
+    ///Determines whether this holderset can be immediately resolved to the contents it contains or if it must wait for tags to be loaded.
+    default boolean isImmediatelyResolvable() {
+        return !(this instanceof HolderSet.Named);
     }
 
     /**

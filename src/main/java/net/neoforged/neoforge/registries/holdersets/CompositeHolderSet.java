@@ -43,12 +43,7 @@ public abstract class CompositeHolderSet<T> implements ICustomHolderSet<T> {
 
     @Override
     public boolean isImmediatelyResolvable() {
-        for (HolderSet<T> component : getComponents()) {
-            if (component instanceof ICustomHolderSet<T> custom && !custom.isImmediatelyResolvable()) {
-                return false;
-            }
-        }
-        return true;
+        return getComponents().stream().allMatch(HolderSet::isImmediatelyResolvable);
     }
 
     /**
