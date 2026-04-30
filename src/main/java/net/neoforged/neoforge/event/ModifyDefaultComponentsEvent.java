@@ -52,7 +52,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         this.modifiersByPredicate = modifiersByPredicate;
     }
 
-    /// Patches the default components of the given `item`.
+    /// Patches the default components of the given item.
     ///
     /// @param item  the item to modify the default components for
     /// @param patch the patch to apply
@@ -60,7 +60,7 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         modifiersByItem.merge(item.asItem(), patch, Initializer::andThen);
     }
 
-    /// Patches the default components of the given `item`.
+    /// Patches the default components of the given item.
     ///
     /// @param item  the item to modify the default components for
     /// @param patch the patch to apply
@@ -71,11 +71,11 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         this.modify(item, (components, _, _) -> patch.accept(components));
     }
 
-    /// Patches the default components of all items matching the given `bipredicate`
+    /// Patches the default components of all items matching the given predicate
     /// based on item and/or its currently applied default components.
     ///
     /// If this method is used to modify components based on the item's current default components, the
-    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
+    /// event listener should use the [lowest priority][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
     /// already applied.
     ///
     /// @param predicate the item and its current default components filter
@@ -84,11 +84,11 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         modifiersByPredicate.add(Pair.of(predicate, patch));
     }
 
-    /// Patches the default components of all items matching the given `bipredicate`
+    /// Patches the default components of all items matching the given predicate
     /// based on item and/or its currently applied default components.
     ///
     /// If this method is used to modify components based on the item's current default components, the
-    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
+    /// event listener should use the [lowest priority][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
     /// already applied.
     ///
     /// @param predicate the item and its current default components filter
@@ -116,6 +116,11 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
     /// A alternate version of [DataComponentInitializers.Initializer] which receives the item whose components being initialized.
     @FunctionalInterface
     public interface Initializer {
+        /// Initializes or modifies the default components of a given item.
+        ///
+        /// @param components the default components of the item
+        /// @param context the registry context
+        /// @param item the item
         void run(DataComponentMap.Builder components, HolderLookup.Provider context, Item item);
 
         /// {@return a composed initializer that first runs this initializer, and then runs the given initializer}
