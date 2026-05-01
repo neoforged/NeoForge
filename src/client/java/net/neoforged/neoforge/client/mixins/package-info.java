@@ -4,6 +4,6 @@
  */
 
 @NullMarked
-package net.neoforged.neoforge.mixins.client;
+package net.neoforged.neoforge.client.mixins;
 
 import org.jspecify.annotations.NullMarked;

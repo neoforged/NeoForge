@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "net.neoforged.neoforge.client.mixins",
+  "mixins": [],
+  "client": [
+    "DebugScreenEntriesAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

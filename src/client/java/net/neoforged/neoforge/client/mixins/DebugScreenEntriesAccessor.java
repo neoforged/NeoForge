@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.mixins.client;
+package net.neoforged.neoforge.client.mixins;
 
 import java.util.Map;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;

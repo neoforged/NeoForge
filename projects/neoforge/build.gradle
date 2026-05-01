@@ -38,6 +38,9 @@ sourceSets {
         java {
             srcDirs rootProject.file('src/client/java')
         }
+        resources {
+            srcDirs rootProject.file('src/client/resources')
+        }
     }
 }
 

@@ -20,7 +20,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.mixins.client.DebugScreenEntriesAccessor;
+import net.neoforged.neoforge.client.mixins.DebugScreenEntriesAccessor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
