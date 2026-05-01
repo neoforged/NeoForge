@@ -166,6 +166,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
+import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -201,6 +202,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.NeoForgeVersionCheck;
+import net.neoforged.neoforge.mixins.client.DebugScreenEntriesAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -851,6 +853,7 @@ public class ClientHooks {
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
+        registerModdedDebugEntries();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup
@@ -1059,5 +1062,11 @@ public class ClientHooks {
             }
         }
         return Map.copyOf(models);
+    }
+
+    private static void registerModdedDebugEntries() {
+        var event = new RegisterDebugEntriesEvent();
+        ModLoader.postEvent(event);
+        DebugScreenEntriesAccessor.neoforge$setProfiles(event.validateProfiles());
     }
 }

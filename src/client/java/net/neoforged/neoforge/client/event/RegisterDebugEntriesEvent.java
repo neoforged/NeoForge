@@ -20,6 +20,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.mixins.client.DebugScreenEntriesAccessor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -34,16 +35,15 @@ import org.jspecify.annotations.Nullable;
  * This event is fired on the mod event bus.
  */
 public final class RegisterDebugEntriesEvent extends Event implements IModBusEvent {
-    private final Map<Identifier, DebugScreenEntry> entries;
+    private final Map<Identifier, DebugScreenEntry> entries = DebugScreenEntriesAccessor.neoforge$getEntriesById();
     private final Map<Identifier, DebugScreenEntryStatus> defaultProfile;
     private final Map<Identifier, DebugScreenEntryStatus> performanceProfile;
 
     @ApiStatus.Internal
-    public RegisterDebugEntriesEvent(Map<Identifier, DebugScreenEntry> entries, Map<Identifier, DebugScreenEntryStatus> defaultProfile, Map<Identifier, DebugScreenEntryStatus> performanceProfile) {
-        this.entries = entries;
+    public RegisterDebugEntriesEvent() {
         // These are immutable in vanilla, we make them mutable to allow custom entry inclusion
-        this.defaultProfile = new HashMap<>(defaultProfile);
-        this.performanceProfile = new HashMap<>(performanceProfile);
+        this.defaultProfile = new HashMap<>(DebugScreenEntries.PROFILES.get(DebugScreenProfile.DEFAULT));
+        this.performanceProfile = new HashMap<>(DebugScreenEntries.PROFILES.get(DebugScreenProfile.PERFORMANCE));
     }
 
     /**

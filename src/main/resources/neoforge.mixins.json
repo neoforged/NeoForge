@@ -5,7 +5,9 @@
     "BlockEntityTypeAccessor",
     "MappedRegistryAccessor"
   ],
-  "client": [],
+  "client": [
+    "client.DebugScreenEntriesAccessor"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
