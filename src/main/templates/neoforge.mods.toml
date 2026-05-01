@@ -18,8 +18,6 @@ license="LGPL v2.1"
 
 [[mixins]]
     config = "neoforge.mixins.json"
-[[mixins]]
-    config="neoforge-client.mixins.json"
 
 [[accessTransformers]]
     file="META-INF/accesstransformer.cfg"

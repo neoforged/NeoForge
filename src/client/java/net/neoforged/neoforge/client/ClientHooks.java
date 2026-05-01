@@ -166,7 +166,6 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
-import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -192,7 +191,6 @@ import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.mixins.DebugScreenEntriesAccessor;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -1064,9 +1062,14 @@ public class ClientHooks {
         return Map.copyOf(models);
     }
 
+    private static boolean registerModdedDebugEntries = false;
+
     private static void registerModdedDebugEntries() {
-        var event = new RegisterDebugEntriesEvent();
-        ModLoader.postEvent(event);
-        DebugScreenEntriesAccessor.neoforge$setProfiles(event.validateProfiles());
+        DebugScreenEntries.registerModdedDebugEntries();
+        registerModdedDebugEntries = true;
+    }
+
+    public static boolean registeredModdedDebugEntries() {
+        return registerModdedDebugEntries;
     }
 }
