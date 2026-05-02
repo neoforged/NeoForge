@@ -7,17 +7,17 @@
 +
 +    // Neoforge: beds are relocatable if and only if both halves are being relocated
 +    @Override
-+    public boolean isRelocatable(LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
-+        if (!super.isRelocatable(level, thisPos, thisState, containsPosition))
-+            return false;
-+        Direction facing = thisState.getValue(FACING);
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(LevelReader level, BlockPos thisPos, BlockState thisState) {
++        if (thisState.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.Never.INSTANCE;
++        }
++        // verify the other half exists; if not, don't deny relocation
 +        BedPart thisPart = thisState.getValue(PART);
 +        BlockPos neighborPos = thisPos.relative(getConnectedDirection(thisState)); // getConnectedDirection points to the other half
 +        BlockState neighborState = level.getBlockState(neighborPos);
 +        BlockState expectedState = thisState.setValue(PART, thisPart == BedPart.HEAD ? BedPart.FOOT : BedPart.HEAD);
-+        // if this is only half a bed / the other half doesn't exist, no point in denying the relocation
 +        if (neighborState != expectedState)
-+            return true;
-+        return containsPosition.test(neighborPos);
++            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.CuboidMultiblock(net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(thisPos, neighborPos));
 +    }
  }

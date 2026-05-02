@@ -45,7 +45,7 @@
      @Override
      protected BlockState mirror(BlockState state, Mirror mirror) {
          return state.rotate(mirror.getRotation(state.getValue(FACING)));
-@@ -380,5 +_,21 @@
+@@ -380,5 +_,22 @@
      @Override
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;
@@ -53,17 +53,18 @@
 +
 +    // Neoforge: Extended piston multiblock can be relocated if and only if both halves are being relocated
 +    @Override
-+    public boolean isRelocatable(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState, java.util.function.Predicate<BlockPos> containsPosition) {
-+        if (!super.isRelocatable(level, thisPos, thisState, containsPosition))
-+            return false;
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState) {
++        if (thisState.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.Never.INSTANCE;
++        }
 +        if (!thisState.getValue(EXTENDED))
-+            return true;
++            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
 +        Direction facing = thisState.getValue(FACING);
 +        BlockPos neighborPos = thisPos.relative(facing);
 +        BlockState neighborState = level.getBlockState(neighborPos);
 +        // if this is extended but somebody already cut the block in half, no point in denying the relocation
 +        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
-+            return true;
-+        return containsPosition.test(neighborPos);
++            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.CuboidMultiblock(net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(thisPos, neighborPos));
      }
  }

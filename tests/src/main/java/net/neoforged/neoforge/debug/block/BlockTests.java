@@ -290,10 +290,10 @@ public class BlockTests {
                 level.setBlock(lowerPos, lowerState, 0);
                 level.setBlock(abovePos, upperState, 0);
                 // validate individual halves are not relocatable but both halves are
-                helper.assertFalse(lowerState.isRelocatable(level, lowerPos, Set.of(lowerPos)::contains), lowerState + " incorrectly relocatable without upper half");
-                helper.assertFalse(upperState.isRelocatable(level, abovePos, Set.of(abovePos)::contains), upperState + " incorrectly relocatable without lower half");
-                helper.assertTrue(lowerState.isRelocatable(level, lowerPos, Set.of(lowerPos, abovePos)::contains), lowerState + " incorrectly non-relocatable with whole multiblock");
-                helper.assertTrue(upperState.isRelocatable(level, abovePos, Set.of(lowerPos, abovePos)::contains), upperState + " incorrectly non-relocatable with whole multiblock");
+                helper.assertFalse(lowerState.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), lowerState + " incorrectly relocatable without upper half");
+                helper.assertFalse(upperState.getRelocability(level, abovePos).isRelocatable(Set.of(abovePos)), upperState + " incorrectly relocatable without lower half");
+                helper.assertTrue(lowerState.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, abovePos)), lowerState + " incorrectly non-relocatable with whole multiblock");
+                helper.assertTrue(upperState.getRelocability(level, abovePos).isRelocatable(Set.of(lowerPos, abovePos)), upperState + " incorrectly non-relocatable with whole multiblock");
                 // clean up blocks or rose bush nukes itself from shape updates
                 level.setBlock(lowerPos, Blocks.AIR.defaultBlockState(), 0);
                 level.setBlock(abovePos, Blocks.AIR.defaultBlockState(), 0);
@@ -308,26 +308,26 @@ public class BlockTests {
             level.setBlock(floorCenter.relative(directionToHead), Blocks.DIRT.defaultBlockState(), 0);
             level.setBlock(lowerPos, bedFoot, 0);
             level.setBlock(headPos, bedHead, 0);
-            helper.assertFalse(bedFoot.isRelocatable(level, lowerPos, Set.of(lowerPos)::contains), "Bed foot " + bedFoot + " incorrectly relocatable without head");
-            helper.assertFalse(bedHead.isRelocatable(level, headPos, Set.of(headPos)::contains), "Bed head " + bedHead + " incorrectly relocatable without foot");
-            helper.assertTrue(bedFoot.isRelocatable(level, lowerPos, Set.of(lowerPos, headPos)::contains), "Bed foot " + bedFoot + " incorrectly non-relocatable with whole bed");
-            helper.assertTrue(bedHead.isRelocatable(level, headPos, Set.of(lowerPos, headPos)::contains), "Bed head " + bedHead + " incorrectly non-relocatable with whole bed");
+            helper.assertFalse(bedFoot.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Bed foot " + bedFoot + " incorrectly relocatable without head");
+            helper.assertFalse(bedHead.getRelocability(level, headPos).isRelocatable(Set.of(headPos)), "Bed head " + bedHead + " incorrectly relocatable without foot");
+            helper.assertTrue(bedFoot.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, headPos)), "Bed foot " + bedFoot + " incorrectly non-relocatable with whole bed");
+            helper.assertTrue(bedHead.getRelocability(level, headPos).isRelocatable(Set.of(lowerPos, headPos)), "Bed head " + bedHead + " incorrectly non-relocatable with whole bed");
 
             // finally, check pistons
             // unextended pistons are always relocatable
             // extended pistons are relocatable if and only if both halves are being relocated
             BlockState unextendedPiston = Blocks.PISTON.defaultBlockState().setValue(PistonBaseBlock.FACING, Direction.UP);
             level.setBlock(lowerPos, unextendedPiston, 0);
-            helper.assertTrue(unextendedPiston.isRelocatable(level, lowerPos, Set.of(lowerPos)::contains), "Unextended piston " + unextendedPiston + " incorrectly non-relocatable");
+            helper.assertTrue(unextendedPiston.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Unextended piston " + unextendedPiston + " incorrectly non-relocatable");
             level.setBlock(headPos, Blocks.REDSTONE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
             helper.startSequence()
                     .thenExecuteAfter(3, () -> {
                         BlockState pistonBase = level.getBlockState(lowerPos);
                         BlockState pistonHead = level.getBlockState(abovePos);
-                        helper.assertFalse(pistonBase.isRelocatable(level, lowerPos, Set.of(lowerPos)::contains), "Piston base " + pistonBase + " incorrectly relocatable without head");
-                        helper.assertFalse(pistonHead.isRelocatable(level, abovePos, Set.of(abovePos)::contains), "Piston head " + pistonHead + " incorrectly relocatable without base");
-                        helper.assertTrue(pistonBase.isRelocatable(level, lowerPos, Set.of(lowerPos, abovePos)::contains), "Piston base " + pistonBase + " incorrectly non-relocatable with head");
-                        helper.assertTrue(pistonHead.isRelocatable(level, abovePos, Set.of(lowerPos, abovePos)::contains), "Piston head " + pistonHead + " incorrectly non-relocatable with base");
+                        helper.assertFalse(pistonBase.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Piston base " + pistonBase + " incorrectly relocatable without head");
+                        helper.assertFalse(pistonHead.getRelocability(level, abovePos).isRelocatable(Set.of(abovePos)), "Piston head " + pistonHead + " incorrectly relocatable without base");
+                        helper.assertTrue(pistonBase.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, abovePos)), "Piston base " + pistonBase + " incorrectly non-relocatable with head");
+                        helper.assertTrue(pistonHead.getRelocability(level, abovePos).isRelocatable(Set.of(lowerPos, abovePos)), "Piston head " + pistonHead + " incorrectly non-relocatable with base");
                     })
                     .thenSucceed();
         });

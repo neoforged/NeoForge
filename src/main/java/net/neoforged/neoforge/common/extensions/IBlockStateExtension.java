@@ -47,6 +47,7 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
@@ -814,20 +815,20 @@ public interface IBlockStateExtension {
         return self().getBlock().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
     }
 
-    /// Determines whether a block can be relocated, given some region of one or more blocks being relocated.
+    /// Declares whether a block may be relocated and under what circumstances.
     /// "Relocation" here means a region of blocks being cut or copied,
-    /// and then pasted in a different area, possibly with a translation, rotation, and/or mirror.
+    /// and pasted somewhere else, with a translation and possibly a rotation or mirror,
+    /// also copying any blockentity data to the new position(s).
     ///
     /// A multiblock which is relocatable if and only if the entire multiblock is being relocated
-    /// (such as a bed or a door) may override {@link IBlockExtension#isRelocatable} to define such restrictions.
+    /// (e.g. a bed, a door, a 3x3 machine) may override {@link IBlockExtension#getRelocability} to define such behavior.
     ///
-    /// Blocks which are not relocatable under any circumstances should be added to
-    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case isRelocatable does not need to be overridden.
+    /// Blocks which may never be relocated should be added to
+    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case getRelocability does not need to be overridden.
     ///
-    /// @param level LevelReader where blocks are being relocated from.
-    /// @param thisPos BlockPos of this specific blockstate being relocated.
-    /// @param containsPosition Predicate for testing whether other positions are being relocated; must be true for thisPos.
-    default boolean isRelocatable(LevelReader level, BlockPos thisPos, Predicate<BlockPos> containsPosition) {
-        return self().getBlock().isRelocatable(level, thisPos, self(), containsPosition);
+    /// @param level LevelReader where this blockstate is being relocated from
+    /// @param thisPos BlockPos of this blockstate being relocated
+    default BlockRelocability getRelocability(LevelReader level, BlockPos thisPos) {
+        return self().getBlock().getRelocability(level, thisPos, self());
     }
 }
