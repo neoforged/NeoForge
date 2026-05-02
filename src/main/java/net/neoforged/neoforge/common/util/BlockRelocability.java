@@ -19,6 +19,7 @@ import java.util.Set;
 public sealed interface BlockRelocability permits BlockRelocability.Never, BlockRelocability.Always, BlockRelocability.Multiblock {
 
 	/// {@return true if the block is relocatable from a given Set of block positions, false otherwise}
+	/// @param relocatingPositions Set of positions blocks are being relocated from
 	public abstract boolean isRelocatable(Set<BlockPos> relocatingPositions);
 
 	/// BlockRelocability indicating some block may never be relocated.
@@ -26,7 +27,7 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
 	/// will always return false for isRelocatable; it does not imply that the relevant block
 	/// will always produce a Never instance in any context.
 	public static enum Never implements BlockRelocability {
-		/// singleton instance
+		/// Singleton instance.
 		INSTANCE;
 
 		@Override
@@ -40,7 +41,7 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
 	/// will always return true for isRelocatable; it does not imply that the relevant block
 	/// will always produce an Always instance in any context.
 	public static enum Always implements BlockRelocability {
-		/// singleton instance
+		/// Singleton instance.
 		INSTANCE;
 
 		@Override
