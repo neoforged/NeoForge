@@ -12,11 +12,7 @@ import java.util.Set;
 /// and including any blockentity data.
 ///
 /// Relocator mechanics may query {@link IBlockStateExtension#getRelocability} for each block in some area being moved.
-public sealed interface BlockRelocability permits BlockRelocability.Never, BlockRelocability.Always, BlockRelocability.CuboidMultiblock, BlockRelocability.AmorphousMultiblock {
-
-	/// {@return true if the block is relocatable from a given BoundingBox, false otherwise}
-	/// @param relocatingArea BoundingBox of the block positions being relocated
-	public abstract boolean isRelocatable(BoundingBox relocatingArea);
+public sealed interface BlockRelocability permits BlockRelocability.Never, BlockRelocability.Always, BlockRelocability.Multiblock {
 
 	/// {@return true if the block is relocatable from a given Set of block positions, false otherwise}
 	public abstract boolean isRelocatable(Set<BlockPos> relocatingPositions);
@@ -28,11 +24,6 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
 	public static enum Never implements BlockRelocability {
 		/// singleton instance
 		INSTANCE;
-
-		@Override
-		public boolean isRelocatable(BoundingBox relocatingArea) {
-			return false;
-		}
 
 		@Override
 		public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
@@ -49,35 +40,8 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
 		INSTANCE;
 
 		@Override
-		public boolean isRelocatable(BoundingBox relocatingArea) {
-			return true;
-		}
-
-		@Override
 		public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
 			return true;
-		}
-	}
-
-	/// BlockRelocability indicating some block is movable if and only if a given region of blocks is being moved with it.
-	/// This may be provided by blocks such as beds, doors, 3x3 furnaces, etc.
-	///
-	/// @param requiredArea BoundingBox of block positions which must be moved with this block to allow moving it.
-	public static record CuboidMultiblock(BoundingBox requiredArea) implements BlockRelocability {
-		@Override
-		public boolean isRelocatable(BoundingBox relocatingArea) {
-			return relocatingArea.minX() <= this.requiredArea.minX()
-				&& relocatingArea.minY() <= this.requiredArea.minY()
-				&& relocatingArea.minZ() <= this.requiredArea.minZ()
-				&& relocatingArea.maxX() >= this.requiredArea.maxX()
-				&& relocatingArea.maxY() >= this.requiredArea.maxY()
-				&& relocatingArea.maxZ() >= this.requiredArea.maxZ();
-		}
-
-		@Override
-		public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
-			return BlockPos.betweenClosedStream(this.requiredArea)
-				.allMatch(relocatingPositions::contains);
 		}
 	}
 	/// BlockRelocability indicating a block may be moved if and only if some set of other block positions is being
@@ -87,17 +51,7 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
 	/// only require themselves and the core, and having the core block require all non-core positions.
 	///
 	/// @param requiredPositions Set of block positions which must be moved with this block to allow moving it.
-	public static record AmorphousMultiblock(Set<BlockPos> requiredPositions) implements BlockRelocability {
-		@Override
-		public boolean isRelocatable(BoundingBox relocatingArea) {
-			for (BlockPos pos : requiredPositions) {
-				if (!relocatingArea.isInside(pos)) {
-					return false;
-				}
-			}
-			return true;
-		}
-
+	public static record Multiblock(Set<BlockPos> requiredPositions) implements BlockRelocability {
 		@Override
 		public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
 			for (BlockPos pos : requiredPositions) {

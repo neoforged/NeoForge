@@ -65,6 +65,6 @@
 +        // if this is extended but somebody already cut the block in half, no point in denying the relocation
 +        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
 +            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
-+        return new net.neoforged.neoforge.common.util.BlockRelocability.CuboidMultiblock(net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(thisPos, neighborPos));
++        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(thisPos, neighborPos));
      }
  }
