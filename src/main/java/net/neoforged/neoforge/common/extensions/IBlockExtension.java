@@ -6,12 +6,9 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -72,7 +69,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -1100,7 +1096,7 @@ public interface IBlockExtension {
     /// @param thisState BlockState of the block being relocated
     default BlockRelocability getRelocability(LevelReader level, BlockPos thisPos, BlockState thisState) {
         return thisState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
-            ? BlockRelocability.Never.INSTANCE
-            : BlockRelocability.Always.INSTANCE;
+                ? BlockRelocability.Never.INSTANCE
+                : BlockRelocability.Always.INSTANCE;
     }
 }
