@@ -121,6 +121,10 @@ public interface IBlockEntityExtension {
 
     /// React to the rotation and mirroring applied by a structure to the block this BE belongs to.
     ///
+    /// This method may be called in a worldgen context on a worker thread where this BE has no [Level]
+    /// set yet. Implementations of this method may only mutate the BE's internal state and access
+    /// neither the BE's level nor any other non-thread-safe data storage.
+    ///
     /// @param mirror   The mirroring applied to this BE's host block
     /// @param rotation The rotation applied to this BE's host block
     default void applyStructureRotation(Mirror mirror, Rotation rotation) {}

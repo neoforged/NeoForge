@@ -1795,10 +1795,12 @@ public class CommonHooks {
         }
     }
 
+    private static final String STRUCTURE_ROTATION_KEY = "neoforge:structure_rotation";
+
     @Nullable
     public static CompoundTag captureStructureRotation(@Nullable CompoundTag blockEntityNbt, Rotation rotation) {
         if (blockEntityNbt != null && rotation != Rotation.NONE) {
-            Optional<Rotation> prevRotation = blockEntityNbt.read("neoforge:structure_rotation", Rotation.CODEC);
+            Optional<Rotation> prevRotation = blockEntityNbt.read(STRUCTURE_ROTATION_KEY, Rotation.CODEC);
             if (prevRotation.isPresent()) {
                 rotation = rotation.getRotated(prevRotation.get());
             }
@@ -1806,9 +1808,9 @@ public class CommonHooks {
             blockEntityNbt = blockEntityNbt.copy();
 
             if (rotation != Rotation.NONE) {
-                blockEntityNbt.store("neoforge:structure_rotation", Rotation.CODEC, rotation);
+                blockEntityNbt.store(STRUCTURE_ROTATION_KEY, Rotation.CODEC, rotation);
             } else {
-                blockEntityNbt.remove("neoforge:structure_rotation");
+                blockEntityNbt.remove(STRUCTURE_ROTATION_KEY);
             }
         }
         return blockEntityNbt;
@@ -1816,7 +1818,7 @@ public class CommonHooks {
 
     public static void applyStructureRotation(BlockEntity blockEntity, CompoundTag blockEntityNbt, StructurePlaceSettings settings) {
         Rotation rotation = settings.getRotation();
-        Optional<Rotation> prevRotation = blockEntityNbt.read("neoforge:structure_rotation", Rotation.CODEC);
+        Optional<Rotation> prevRotation = blockEntityNbt.read(STRUCTURE_ROTATION_KEY, Rotation.CODEC);
         if (prevRotation.isPresent()) {
             rotation = rotation.getRotated(prevRotation.get());
         }
