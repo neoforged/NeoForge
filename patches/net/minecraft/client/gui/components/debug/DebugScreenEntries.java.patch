@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -56,6 +_,11 @@
+@@ -56,6 +_,13 @@
      public static final Identifier VISUALIZE_SKY_LIGHT_SECTIONS = register("visualize_sky_light_sections", new DebugEntryNoop());
      public static final Identifier CHUNK_SECTION_VISIBILITY = register("chunk_section_visibility", new DebugEntryNoop());
      public static final Map<DebugScreenProfile, Map<Identifier, DebugScreenEntryStatus>> PROFILES;
@@ -9,10 +9,12 @@
 +    // this has to be below 'PROFILES' otherwise
 +    // it complains thinking we are making 'PROFILES' private
 +    private static final Map<DebugScreenProfile, Map<Identifier, DebugScreenEntryStatus>> PROFILES_MUTABLE;
++    // Neo: Flag to disallow bad actors invoking 'registerModdedDebugEntries'
++    private static boolean MODDED_ENTRIES_REGISTERED = false;
  
      private static Identifier register(String id, DebugScreenEntry entry) {
          return register(Identifier.withDefaultNamespace(id), entry);
-@@ -107,6 +_,22 @@
+@@ -107,6 +_,23 @@
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_OVERLAY
          );
@@ -27,12 +29,13 @@
 +    // Neo: Register modded debug entries and profile inclusions
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void registerModdedDebugEntries() {
-+        if (net.neoforged.neoforge.client.ClientHooks.registeredModdedDebugEntries()) {
++        if (MODDED_ENTRIES_REGISTERED) {
 +            throw new IllegalStateException("Already registered modded debug entries!");
 +        }
 +
 +        var event = new net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent(ENTRIES_BY_ID, PROFILES_MUTABLE);
 +        net.neoforged.fml.ModLoader.postEvent(event);
 +        PROFILES_MUTABLE.putAll(event.validateProfiles());
++        MODDED_ENTRIES_REGISTERED = true;
      }
  }

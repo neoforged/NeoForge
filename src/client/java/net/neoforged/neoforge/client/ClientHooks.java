@@ -851,7 +851,7 @@ public class ClientHooks {
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
-        registerModdedDebugEntries();
+        DebugScreenEntries.registerModdedDebugEntries();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup
@@ -1060,16 +1060,5 @@ public class ClientHooks {
             }
         }
         return Map.copyOf(models);
-    }
-
-    private static boolean registerModdedDebugEntries = false;
-
-    private static void registerModdedDebugEntries() {
-        DebugScreenEntries.registerModdedDebugEntries();
-        registerModdedDebugEntries = true;
-    }
-
-    public static boolean registeredModdedDebugEntries() {
-        return registerModdedDebugEntries;
     }
 }
