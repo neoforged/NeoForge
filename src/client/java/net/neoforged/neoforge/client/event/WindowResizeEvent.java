@@ -9,11 +9,9 @@ import com.mojang.blaze3d.platform.Window;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Fired when the Minecraft GUI is resizing, including GUI scale changes.
- *
- * @see net.minecraft.client.Minecraft#resizeGui()
- */
+/// Fired when the Minecraft window is resizing, including GUI scale changes, game switches fullscreen mode, and the unicode font option is changed.
+///
+/// @see net.minecraft.client.Minecraft#resizeGui()
 public class WindowResizeEvent extends Event {
     private final Window window;
 
@@ -22,6 +20,7 @@ public class WindowResizeEvent extends Event {
         this.window = window;
     }
 
+    /// {@return the window}
     public Window getWindow() {
         return window;
     }
