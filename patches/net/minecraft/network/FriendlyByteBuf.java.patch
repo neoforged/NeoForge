@@ -1,12 +1,31 @@
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -1611,4 +_,9 @@
+@@ -122,7 +_,7 @@
+ 
+     public <T, C extends Collection<T>> C readCollection(IntFunction<C> ctor, StreamDecoder<? super FriendlyByteBuf, T> elementDecoder) {
+         int count = this.readVarInt();
+-        C result = (C)ctor.apply(count);
++        C result = (C)ctor.apply(Math.min(count, net.minecraft.network.codec.ByteBufCodecs.MAX_INITIAL_COLLECTION_SIZE));
+ 
+         for (int i = 0; i < count; i++) {
+             result.add(elementDecoder.decode(this));
+@@ -163,7 +_,7 @@
+         IntFunction<M> ctor, StreamDecoder<? super FriendlyByteBuf, K> keyDecoder, StreamDecoder<? super FriendlyByteBuf, V> valueDecoder
+     ) {
+         int count = this.readVarInt();
+-        M result = (M)ctor.apply(count);
++        M result = (M)ctor.apply(Math.min(count, net.minecraft.network.codec.ByteBufCodecs.MAX_INITIAL_COLLECTION_SIZE));
+ 
+         for (int i = 0; i < count; i++) {
+             K key = keyDecoder.decode(this);
+@@ -1610,5 +_,10 @@
+     @Override
      public boolean release(int decrement) {
          return this.source.release(decrement);
-     }
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public ByteBuf getSource() {
 +        return this.source;
-+    }
+     }
  }
