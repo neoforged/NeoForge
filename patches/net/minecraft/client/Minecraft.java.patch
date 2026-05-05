@@ -408,6 +408,14 @@
      }
  
      public void clearDownloadedResourcePacks() {
+@@ -2254,6 +_,7 @@
+         try {
+             this.setScreenAndShow(screen);
+             this.gui.onDisconnected();
++            if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
+             this.level = null;
+             this.updateLevelInEngines(null);
+             this.player = null;
 @@ -2372,6 +_,7 @@
  
      private void pickBlockOrEntity() {
