@@ -54,10 +54,14 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -303,12 +307,22 @@ public class GlobalLootModifiersTest {
             protected void start() {
                 this.add("wheat_harvest", new WheatSeedsConverterModifier(
                         new LootItemCondition[] {
-                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Items.SHEARS)).build(),
+                                // Check shear tool tag to ensure GLMs can resolve tags during loading
+                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Tags.Items.TOOLS_SHEAR)).build(),
                                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
                                 new TestEnabledLootCondition(test)
                         },
                         IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
+
+                // Ensure loading conditions work on GLMs
+                this.add("wheat_harvest_disabled", new WheatSeedsConverterModifier(
+                        new LootItemCondition[] {
+                                LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
+                                new TestEnabledLootCondition(test)
+                        },
+                        IGlobalLootModifier.DEFAULT_PRIORITY - 100,
+                        1, Items.WHEAT, Items.BAMBOO), NeoForgeConditions.never());
             }
 
             @Override
@@ -317,20 +331,27 @@ public class GlobalLootModifiersTest {
             }
         });
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
-                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.SHEARS.getDefaultInstance()))
+        test.onGameTest(helper -> {
+            LootModifierManager lootModManager = NeoForgeEventHandler.getLootModifierManager();
+            if (lootModManager.getModifier(Identifier.fromNamespaceAndPath(HELPER.modId(), "wheat_harvest_disabled")) != null) {
+                helper.fail("GLM disabled by condition was loaded");
+            }
 
-                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.FARMLAND))
-                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7)))
+            helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
+                    .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.SHEARS.getDefaultInstance()))
 
-                .thenIdle(5)
-                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 2, 1))))
-                .thenIdle(5)
-                // At least one seed will be dropped (which will be converted to wheat), and one wheat
-                .thenExecute(player -> helper.assertItemEntityCountIsAtLeast(Items.WHEAT, new BlockPos(1, 2, 1), 1d, 2))
-                .thenExecute(player -> helper.assertItemEntityNotPresent(Items.WHEAT_SEEDS, new BlockPos(1, 2, 1), 1d))
+                    .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.FARMLAND))
+                    .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7)))
 
-                .thenSucceed());
+                    .thenIdle(5)
+                    .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 2, 1))))
+                    .thenIdle(5)
+                    // At least one seed will be dropped (which will be converted to wheat), and one wheat
+                    .thenExecute(player -> helper.assertItemEntityCountIsAtLeast(Items.WHEAT, new BlockPos(1, 2, 1), 1d, 2))
+                    .thenExecute(player -> helper.assertItemEntityNotPresent(Items.WHEAT_SEEDS, new BlockPos(1, 2, 1), 1d))
+
+                    .thenSucceed();
+        });
     }
 
     @GameTest

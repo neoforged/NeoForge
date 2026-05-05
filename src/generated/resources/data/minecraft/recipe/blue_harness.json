@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "harness",
+  "key": {
+    "#": "minecraft:blue_wool",
+    "G": "minecraft:glass",
+    "L": "#c:leathers"
+  },
+  "pattern": [
+    "LLL",
+    "G#G"
+  ],
+  "result": {
+    "id": "minecraft:blue_harness"
+  }
+}

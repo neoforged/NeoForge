@@ -5,12 +5,14 @@
 
 package net.neoforged.neoforge.event;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import net.neoforged.neoforge.resource.VanillaServerListeners;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -47,12 +49,14 @@ public class AddServerReloadListenersEvent extends SortedReloadListenerEvent {
         return serverResources.getConditionContext();
     }
 
-    /**
-     * Provides access to the loaded registries associated with these server resources.
-     * All built-in and dynamic registries are loaded and frozen by this point.
-     * 
-     * @return The RegistryAccess context for the currently active reload.
-     */
+    /// Provides access to the loaded registries associated with these server resources.
+    /// All built-in and dynamic registries are loaded and frozen by this point.
+    ///
+    /// @apiNote The returned [RegistryAccess] does NOT provide access to the tags loaded during the active reload.
+    /// To resolve tags the [HolderLookup.Provider] provided via [ContextAwareReloadListener#getRegistryLookup()]
+    /// must be used instead.
+    ///
+    /// @return The [RegistryAccess] context for the currently active reload.
     public RegistryAccess getRegistryAccess() {
         return registryAccess;
     }

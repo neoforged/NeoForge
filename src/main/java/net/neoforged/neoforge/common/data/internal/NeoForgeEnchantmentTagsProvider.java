@@ -43,5 +43,6 @@ public final class NeoForgeEnchantmentTagsProvider extends EnchantmentTagsProvid
                 .add(Enchantments.FIRE_PROTECTION)
                 .add(Enchantments.RESPIRATION)
                 .add(Enchantments.FEATHER_FALLING);
+        tag(Tags.Enchantments.HIDDEN_FROM_RECIPE_VIEWERS);
     }
 }

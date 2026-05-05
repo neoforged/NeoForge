@@ -206,6 +206,8 @@
   "neoforge.configgui.showLoadWarnings.tooltip": "Pokud je zapnuto, NeoForge zobrazí jakákoliv upozornění, která se vyskytla při načítání.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Používejte kombinovaný doplněk DEPTH_STENCIL",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Zapněte toto nastavení pro použití kombinovaného doplňku DEPTH_STENCIL místo dvou samostatných.",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Skip modded splashes if vanilla splashes are modified",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "When enabled, modded splash texts are skipped from loading if the vanilla splash text file is modified.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",

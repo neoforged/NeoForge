@@ -7,7 +7,7 @@
 +
 +            // Neo: Support programmatic customization of the default components for items
 +            if (elementKey.isFor(net.minecraft.core.registries.Registries.ITEM)) {
-+                net.neoforged.neoforge.internal.DataComponentModifiers.apply((net.minecraft.world.item.Item) element.value(), elementBuilder);
++                net.neoforged.neoforge.internal.DataComponentModifiers.apply(context, (net.minecraft.world.item.Item) element.value(), elementBuilder);
 +            }
 +
              DataComponentMap components = elementBuilder.build();

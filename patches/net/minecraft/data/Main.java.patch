@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -74,10 +_,13 @@
+@@ -74,10 +_,14 @@
          OptionSpec<Void> serverOption = parser.accepts("server", "Include server generators");
          OptionSpec<Void> devOption = parser.accepts("dev", "Include development tools");
          OptionSpec<Void> reportsOption = parser.accepts("reports", "Include data reports");
@@ -12,10 +12,11 @@
 +        OptionSpec<String> existing = parser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
 +        OptionSpec<String> mod = parser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
 +        OptionSpec<Void> flat = parser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
++        OptionSpec<Void> uncachedSpec = parser.accepts("uncached", "Disables cached data generation");
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
-@@ -86,11 +_,18 @@
+@@ -86,11 +_,19 @@
              boolean dev = allOptions || optionSet.has(devOption);
              boolean reports = allOptions || optionSet.has(reportsOption);
              Collection<Path> input = optionSet.valuesOf(inputOption).stream().map(x$0 -> Paths.get(x$0)).toList();
@@ -23,7 +24,8 @@
 +            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
 +            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
 +            boolean validate = optionSet.has(validateSpec);
-+            DataGenerator generator = new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
++            boolean uncached = optionSet.has(uncachedSpec);
++            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
 +            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addServerDefinitionProviders(generator, server, reports);
@@ -31,7 +33,7 @@
 -            generator.run();
              Util.shutdownExecutors();
 +            }
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, dev, reports, validate, isFlat, () -> {},
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
 +                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {});
          } else {
              parser.printHelpOn(System.out);

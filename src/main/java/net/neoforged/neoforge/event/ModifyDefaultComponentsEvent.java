@@ -9,7 +9,9 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -40,35 +42,62 @@ import org.jetbrains.annotations.ApiStatus;
 ///  }
 ///  ```
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
-    private final Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem;
-    private final List<Pair<ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate;
+    private final Map<Item, Initializer> modifiersByItem;
+    private final List<Pair<ItemWithComponentsPredicate, Initializer>> modifiersByPredicate;
 
     @ApiStatus.Internal
-    public ModifyDefaultComponentsEvent(Map<Item, Consumer<DataComponentMap.Builder>> modifiersByItem,
-            List<Pair<ItemWithComponentsPredicate, Consumer<DataComponentMap.Builder>>> modifiersByPredicate) {
+    public ModifyDefaultComponentsEvent(Map<Item, Initializer> modifiersByItem,
+            List<Pair<ItemWithComponentsPredicate, Initializer>> modifiersByPredicate) {
         this.modifiersByItem = modifiersByItem;
         this.modifiersByPredicate = modifiersByPredicate;
     }
 
-    /// Patches the default components of the given `item`.
+    /// Patches the default components of the given item.
     ///
     /// @param item  the item to modify the default components for
     /// @param patch the patch to apply
-    public void modify(ItemLike item, Consumer<DataComponentMap.Builder> patch) {
-        modifiersByItem.merge(item.asItem(), patch, Consumer::andThen);
+    public void modify(ItemLike item, Initializer patch) {
+        modifiersByItem.merge(item.asItem(), patch, Initializer::andThen);
     }
 
-    /// Patches the default components of all items matching the given `bipredicate`
+    /// Patches the default components of the given item.
+    ///
+    /// @param item  the item to modify the default components for
+    /// @param patch the patch to apply
+    ///
+    /// @deprecated Use [#modify(ItemLike, Initializer)] instead, which provides more contextual information.
+    @Deprecated(forRemoval = true, since = "26.1.2")
+    public void modify(ItemLike item, Consumer<DataComponentMap.Builder> patch) {
+        this.modify(item, (components, _, _) -> patch.accept(components));
+    }
+
+    /// Patches the default components of all items matching the given predicate
     /// based on item and/or its currently applied default components.
     ///
     /// If this method is used to modify components based on the item's current default components, the
-    /// event listener should use the [`lowest priority`][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Consumer)] are
+    /// event listener should use the [lowest priority][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
     /// already applied.
     ///
     /// @param predicate the item and its current default components filter
     /// @param patch     the patch to apply
-    public void modifyMatching(ItemWithComponentsPredicate predicate, Consumer<DataComponentMap.Builder> patch) {
+    public void modifyMatching(ItemWithComponentsPredicate predicate, Initializer patch) {
         modifiersByPredicate.add(Pair.of(predicate, patch));
+    }
+
+    /// Patches the default components of all items matching the given predicate
+    /// based on item and/or its currently applied default components.
+    ///
+    /// If this method is used to modify components based on the item's current default components, the
+    /// event listener should use the [lowest priority][EventPriority#LOWEST] so that [other mods' modifications][#modify(ItemLike, Initializer)] are
+    /// already applied.
+    ///
+    /// @param predicate the item and its current default components filter
+    /// @param patch     the patch to apply
+    ///
+    /// @deprecated Use [#modifyMatching(ItemWithComponentsPredicate, Initializer)] instead, which provides more contextual information.
+    @Deprecated(forRemoval = true, since = "26.1.2")
+    public void modifyMatching(ItemWithComponentsPredicate predicate, Consumer<DataComponentMap.Builder> patch) {
+        this.modifyMatching(predicate, ((components, _, _) -> patch.accept(components)));
     }
 
     /// Evaluates a condition on an `Item`
@@ -82,5 +111,26 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         /// @param components the data component getter for components to be bound
         /// @return Whether the condition is satisfied
         boolean test(Item item, DataComponentGetter components);
+    }
+
+    /// A alternate version of [DataComponentInitializers.Initializer] which receives the item whose components being initialized.
+    @FunctionalInterface
+    public interface Initializer {
+        /// Initializes or modifies the default components of a given item.
+        ///
+        /// @param components the default components of the item
+        /// @param context the registry context
+        /// @param item the item
+        void run(DataComponentMap.Builder components, HolderLookup.Provider context, Item item);
+
+        /// {@return a composed initializer that first runs this initializer, and then runs the given initializer}
+        ///
+        /// @param other the initializer to apply after this initializer is run
+        default Initializer andThen(Initializer other) {
+            return (components, context, key) -> {
+                this.run(components, context, key);
+                other.run(components, context, key);
+            };
+        }
     }
 }

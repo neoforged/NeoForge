@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -23,16 +_,18 @@
+@@ -23,18 +_,21 @@
  import net.minecraft.world.level.ItemLike;
  
  public final class Ingredient implements Predicate<ItemStack>, StackedContents.IngredientInfo<Holder<Item>> {
@@ -24,7 +24,10 @@
 +    private java.util.@org.jspecify.annotations.Nullable List<Holder<Item>> customIngredientValues;
  
      private Ingredient(HolderSet<Item> values) {
++        if (values.isImmediatelyResolvable())//Neo: Skip validating holderset contents for holdersets if they are not immediately resolvable
          values.unwrap().ifRight(directValues -> {
+             if (directValues.isEmpty()) {
+                 throw new UnsupportedOperationException("Ingredients can't be empty");
 @@ -45,30 +_,95 @@
          this.values = values;
      }

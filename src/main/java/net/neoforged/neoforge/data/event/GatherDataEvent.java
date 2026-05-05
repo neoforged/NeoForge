@@ -170,8 +170,8 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             return flat || getMods().size() == 1;
         }
 
-        public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer) {
-            final DataGenerator generator = new DataGenerator.Cached(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
+        public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer, boolean uncached) {
+            final DataGenerator generator = uncached ? new DataGenerator.Uncached(pathEnhancer.apply(path)) : new DataGenerator.Cached(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
             generators.add(generator);
             return generator;
         }

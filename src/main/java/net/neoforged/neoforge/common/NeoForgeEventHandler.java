@@ -48,6 +48,7 @@ import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
@@ -154,13 +155,14 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onResourceReload(AddServerReloadListenersEvent event) {
-        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager(event.getRegistryAccess()));
+        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
         event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
-        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getRegistryAccess()));
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
     }
 
-    static LootModifierManager getLootModifierManager() {
+    @VisibleForTesting
+    public static LootModifierManager getLootModifierManager() {
         if (LOOT_MODIFIER_MANAGER == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
         return LOOT_MODIFIER_MANAGER;

@@ -7,9 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.minecart.MinecartFurnace;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import org.jspecify.annotations.Nullable;
@@ -50,29 +48,6 @@ public interface IBaseRailBlockExtension {
      * @return The direction.
      */
     RailShape getRailDirection(BlockState state, BlockGetter level, BlockPos pos, @Nullable AbstractMinecart cart);
-
-    /**
-     * Returns the max speed of the rail at the specified position.
-     * 
-     * @param level The level.
-     * @param cart  The cart on the rail, may be null.
-     * @param pos   Block's position in level
-     * @return The max speed of the current rail.
-     */
-    default float getRailMaxSpeed(BlockState state, Level level, BlockPos pos, AbstractMinecart cart) {
-        if (cart instanceof MinecartFurnace) return cart.isInWater() ? 0.15f : 0.2f;
-        else return cart.isInWater() ? 0.2f : 0.4f;
-    }
-
-    /**
-     * This function is called by any minecart that passes over this rail.
-     * It is called once per update tick that the minecart is on the rail.
-     * 
-     * @param level The level.
-     * @param cart  The cart on the rail.
-     * @param pos   Block's position in level
-     */
-    default void onMinecartPass(BlockState state, Level level, BlockPos pos, AbstractMinecart cart) {}
 
     /**
      * Returns true if the given {@link RailShape} is valid for this rail block.

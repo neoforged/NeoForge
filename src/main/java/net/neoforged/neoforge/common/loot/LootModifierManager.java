@@ -11,36 +11,32 @@ import com.google.common.collect.ImmutableBiMap.Builder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
-public class LootModifierManager extends SimpleJsonResourceReloadListener<Optional<WithConditions<IGlobalLootModifier>>> {
+public class LootModifierManager extends SimpleJsonResourceReloadListener<IGlobalLootModifier> {
     public static final Logger LOGGER = LogManager.getLogger();
     private static final String FOLDER = "loot_modifiers";
 
     private BiMap<Identifier, IGlobalLootModifier> registeredLootModifiers = ImmutableBiMap.of();
     private List<IGlobalLootModifier> sortedModifiers = List.of();
 
-    public LootModifierManager(RegistryAccess registries) {
-        super(registries, IGlobalLootModifier.CONDITIONAL_CODEC, ResourceKey.createRegistryKey(Identifier.withDefaultNamespace(FOLDER)));
+    public LootModifierManager() {
+        super(IGlobalLootModifier.DIRECT_CODEC, FileToIdConverter.registry(ResourceKey.createRegistryKey(Identifier.withDefaultNamespace(FOLDER))));
     }
 
     @Override
-    protected void apply(Map<Identifier, Optional<WithConditions<IGlobalLootModifier>>> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
+    protected void apply(Map<Identifier, IGlobalLootModifier> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
         Builder<Identifier, IGlobalLootModifier> builder = ImmutableBiMap.builder();
-        for (Map.Entry<Identifier, Optional<WithConditions<IGlobalLootModifier>>> entry : resourceList.entrySet()) {
-            if (entry.getValue().isPresent()) {
-                builder.put(entry.getKey(), entry.getValue().get().carrier());
-            }
+        for (Map.Entry<Identifier, IGlobalLootModifier> entry : resourceList.entrySet()) {
+            builder.put(entry.getKey(), entry.getValue());
         }
 
         this.registeredLootModifiers = builder.build();
@@ -62,5 +58,10 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<Option
     @Nullable
     public Identifier getId(IGlobalLootModifier modifier) {
         return this.registeredLootModifiers.inverse().get(modifier);
+    }
+
+    @Nullable
+    public IGlobalLootModifier getModifier(Identifier id) {
+        return this.registeredLootModifiers.get(id);
     }
 }

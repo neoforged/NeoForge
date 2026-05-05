@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.JsonOps;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -26,32 +25,28 @@ import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import org.slf4j.Logger;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DataMapLoader implements PreparableReloadListener {
+public class DataMapLoader extends ContextAwareReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String PATH = "data_maps";
     private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> results;
-    private final ICondition.IContext conditionContext;
     private final RegistryAccess registryAccess;
 
-    public DataMapLoader(ICondition.IContext conditionContext, RegistryAccess registryAccess) {
-        this.conditionContext = conditionContext;
+    public DataMapLoader(RegistryAccess registryAccess) {
         this.registryAccess = registryAccess;
     }
 
@@ -140,15 +135,15 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private CompletableFuture<Map<ResourceKey<? extends Registry<?>>, LoadResult<?>>> load(ResourceManager manager, Executor executor, ProfilerFiller profiler) {
-        return CompletableFuture.supplyAsync(() -> load(manager, profiler, registryAccess, conditionContext), executor);
+        return CompletableFuture.supplyAsync(() -> load(manager, profiler), executor);
     }
 
-    private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
-        final RegistryOps<JsonElement> ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, access), context);
+    private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler) {
+        final RegistryOps<JsonElement> ops = makeConditionalOps();
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
-        access.registries().forEach(registryEntry -> {
-            final var registryKey = registryEntry.key();
+        getRegistryLookup().listRegistries().forEach(registryLookup -> {
+            final var registryKey = registryLookup.key();
             profiler.push("registry_data_maps/" + registryKey.identifier() + "/locating");
             final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.identifier()));
             for (Map.Entry<Identifier, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {

@@ -15,13 +15,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.CompositeModel;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
@@ -131,9 +131,12 @@ public class DynamicFluidContainerModel implements ItemModel {
             Material.Baked templateSprite = materials.get(fluidMaskLocation, DEBUG_NAME);
             // Fluid layer
             ModelState transformedState = new ComposedModelState(state, FLUID_TRANSFORM);
+            boolean opaque = unbakedModel.forceOpaqueFluid;
             boolean emissive = unbakedModel.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
-            UnaryOperator<BakedQuad.MaterialInfo> materialModifier = emissive ? DynamicFluidContainerModel::setMaxEmissivity : UnaryOperator.identity();
-            QuadCollection quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, 0, templateSprite, fluidSprite, transformedState, ExtraFaceData.DEFAULT, materialModifier); // Use template as mask
+            ModelBaker.Interner interner = baker.interner();
+            BakedQuad.MaterialInfo fluidInfo = interner.materialInfo(new BakedQuad.MaterialInfo(
+                    fluidSprite.sprite(), ChunkSectionLayer.SOLID, computeFluidItemRenderType(fluidSprite, opaque, emissive), 0, !emissive, emissive ? Level.MAX_BRIGHTNESS : 0, !emissive));
+            QuadCollection quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, templateSprite, fluidInfo, transformedState, ExtraFaceData.DEFAULT); // Use template as mask
 
             subModels.add(new CuboidItemModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, transformation));
         }
@@ -149,27 +152,22 @@ public class DynamicFluidContainerModel implements ItemModel {
         return new CompositeModel(subModels);
     }
 
-    private static BakedQuad.MaterialInfo setMaxEmissivity(BakedQuad.MaterialInfo materialInfo) {
-        RenderType itemRenderType;
-        if (materialInfo.itemRenderType() == Sheets.cutoutBlockItemSheet()) {
-            itemRenderType = RENDER_TYPE_CUTOUT_UNLIT_BLOCK;
-        } else if (materialInfo.itemRenderType() == Sheets.cutoutItemSheet()) {
-            itemRenderType = RENDER_TYPE_CUTOUT_UNLIT_ITEM;
-        } else if (materialInfo.itemRenderType() == Sheets.translucentBlockItemSheet()) {
-            itemRenderType = RENDER_TYPE_TRANSLUCENT_UNLIT_BLOCK;
-        } else if (materialInfo.itemRenderType() == Sheets.translucentItemSheet()) {
-            itemRenderType = RENDER_TYPE_TRANSLUCENT_UNLIT_ITEM;
+    // Force all fluids into cutout to avoid blending issues with block atlas sprites being rendered in front of item atlas sprites (unless the model opts out of it)
+    private static RenderType computeFluidItemRenderType(Material.Baked material, boolean forceOpaque, boolean emissive) {
+        boolean translucent = !forceOpaque && (material.forceTranslucent() || material.sprite().transparency().hasTranslucent());
+        if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            if (translucent) {
+                return emissive ? RENDER_TYPE_TRANSLUCENT_UNLIT_BLOCK : Sheets.translucentBlockItemSheet();
+            } else {
+                return emissive ? RENDER_TYPE_CUTOUT_UNLIT_BLOCK : Sheets.cutoutBlockItemSheet();
+            }
         } else {
-            itemRenderType = materialInfo.itemRenderType();
+            if (translucent) {
+                return emissive ? RENDER_TYPE_TRANSLUCENT_UNLIT_ITEM : Sheets.translucentItemSheet();
+            } else {
+                return emissive ? RENDER_TYPE_CUTOUT_UNLIT_ITEM : Sheets.cutoutItemSheet();
+            }
         }
-        return new BakedQuad.MaterialInfo(
-                materialInfo.sprite(),
-                materialInfo.layer(),
-                itemRenderType,
-                materialInfo.tintIndex(),
-                materialInfo.shade(),
-                Level.MAX_BRIGHTNESS,
-                materialInfo.ambientOcclusion());
     }
 
     @Override
@@ -202,7 +200,9 @@ public class DynamicFluidContainerModel implements ItemModel {
                 });
     }
 
-    public record Unbaked(Textures textures, Fluid fluid, boolean flipGas, boolean coverIsMask, boolean applyFluidLuminosity) implements ItemModel.Unbaked {
+    /// @param forceOpaqueFluid Whether the fluid should always be rendered opaque regardless of its actual translucency. Disabling this may cause issues with translucent fluids
+    ///                         on top of a base texture stitched to the item atlas
+    public record Unbaked(Textures textures, Fluid fluid, boolean flipGas, boolean coverIsMask, boolean applyFluidLuminosity, boolean forceOpaqueFluid) implements ItemModel.Unbaked {
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(
                 instance -> instance
                         .group(
@@ -210,8 +210,13 @@ public class DynamicFluidContainerModel implements ItemModel {
                                 BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid").forGetter(Unbaked::fluid),
                                 Codec.BOOL.optionalFieldOf("flip_gas", false).forGetter(Unbaked::flipGas),
                                 Codec.BOOL.optionalFieldOf("cover_is_mask", true).forGetter(Unbaked::coverIsMask),
-                                Codec.BOOL.optionalFieldOf("apply_fluid_luminosity", true).forGetter(Unbaked::applyFluidLuminosity))
+                                Codec.BOOL.optionalFieldOf("apply_fluid_luminosity", true).forGetter(Unbaked::applyFluidLuminosity),
+                                Codec.BOOL.optionalFieldOf("force_opaque_fluid", true).forGetter(Unbaked::forceOpaqueFluid))
                         .apply(instance, Unbaked::new));
+
+        public Unbaked(Textures textures, Fluid fluid, boolean flipGas, boolean coverIsMask, boolean applyFluidLuminosity) {
+            this(textures, fluid, flipGas, coverIsMask, applyFluidLuminosity, true);
+        }
 
         @Override
         public MapCodec<? extends ItemModel.Unbaked> type() {

@@ -429,6 +429,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENTS, "Entity Speed Enhancements");
         add(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENTS, "Entity Auxiliary Movement Enhancements");
         add(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENTS, "Entity Defense Enhancements");
+        add(Tags.Enchantments.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
+
+        // Potions
+        add(Tags.Potions.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
 
         // Biomes
         add(Tags.Biomes.NO_DEFAULT_MONSTERS, "No Default Monsters");
