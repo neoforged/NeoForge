@@ -135,3 +135,12 @@
          return (SlotDisplay)this.values
              .unwrap()
              .map(SlotDisplay.TagSlotDisplay::new, l -> new SlotDisplay.Composite(l.stream().map(Ingredient::displayForSingleItem).toList()));
+@@ -99,7 +_,7 @@
+ 
+     public static SlotDisplay displayForSingleItem(Holder<Item> item) {
+         SlotDisplay inputDisplay = new SlotDisplay.ItemSlotDisplay(item);
+-        ItemStackTemplate remainderStack = item.value().getCraftingRemainder();
++        ItemStackTemplate remainderStack = new ItemStack(item).getCraftingRemainder();
+         if (remainderStack != null) {
+             SlotDisplay remainderDisplay = new SlotDisplay.ItemStackSlotDisplay(remainderStack);
+             return new SlotDisplay.WithRemainder(inputDisplay, remainderDisplay);
