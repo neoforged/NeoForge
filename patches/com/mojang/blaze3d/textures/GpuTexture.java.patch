@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/textures/GpuTexture.java
++++ b/com/mojang/blaze3d/textures/GpuTexture.java
+@@ -70,6 +_,7 @@
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(flagsFromClass = GpuTexture.class)
+     public @interface Usage {
+     }
+ }

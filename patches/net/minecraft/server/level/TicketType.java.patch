@@ -13,3 +13,11 @@
      public static final long NO_TIMEOUT = 0L;
      public static final int FLAG_PERSIST = 1;
      public static final int FLAG_LOADING = 2;
+@@ -54,6 +_,7 @@
+ 
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
++    @org.intellij.lang.annotations.MagicConstant(flagsFromClass = TicketType.class)
+     public @interface Flags {
+     }
+ }

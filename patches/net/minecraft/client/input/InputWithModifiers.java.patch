@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/input/InputWithModifiers.java
++++ b/net/minecraft/client/input/InputWithModifiers.java
+@@ -90,6 +_,7 @@
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(flags = {InputConstants.MOD_SHIFT, InputConstants.MOD_CONTROL, InputConstants.MOD_ALT, InputConstants.MOD_SUPER, InputConstants.MOD_CAPS_LOCK, InputConstants.MOD_NUM_LOCK} )
+     public @interface Modifiers {
+     }
+ }

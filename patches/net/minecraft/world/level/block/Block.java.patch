@@ -147,3 +147,11 @@
      @Deprecated
      public Holder.Reference<Block> builtInRegistryHolder() {
          return this.builtInRegistryHolder;
+@@ -603,6 +_,7 @@
+ 
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
++    @org.intellij.lang.annotations.MagicConstant(flags = {UPDATE_NEIGHBORS, UPDATE_CLIENTS, UPDATE_INVISIBLE, UPDATE_IMMEDIATE, UPDATE_KNOWN_SHAPE, UPDATE_SUPPRESS_DROPS, UPDATE_MOVE_BY_PISTON, UPDATE_SKIP_SHAPE_UPDATE_ON_WIRE, UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS, UPDATE_SKIP_ON_PLACE })
+     public @interface UpdateFlags {
+     }
+ }

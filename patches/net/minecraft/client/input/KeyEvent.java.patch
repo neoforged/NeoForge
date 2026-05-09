@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/input/KeyEvent.java
++++ b/net/minecraft/client/input/KeyEvent.java
+@@ -18,6 +_,7 @@
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(intValues = {InputConstants.PRESS, InputConstants.RELEASE, InputConstants.REPEAT})
+     public @interface Action {
+     }
+ }

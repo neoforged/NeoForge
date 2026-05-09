@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/input/MouseButtonInfo.java
++++ b/net/minecraft/client/input/MouseButtonInfo.java
+@@ -18,12 +_,14 @@
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(intValues = {com.mojang.blaze3d.platform.InputConstants.PRESS, com.mojang.blaze3d.platform.InputConstants.RELEASE})
+     public @interface Action {
+     }
+ 
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(intValues = {com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_MIDDLE, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_4, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_5, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_6, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_7, com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_8})
+     public @interface MouseButton {
+     }
+ }

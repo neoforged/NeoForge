@@ -20,7 +20,11 @@
      public Vector3fc position(int vertex) {
          return switch (vertex) {
              case 0 -> this.position0;
-@@ -59,9 +_,24 @@
+@@ -56,12 +_,28 @@
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
+     @OnlyIn(Dist.CLIENT)
++    @org.intellij.lang.annotations.MagicConstant(flagsFromClass = BakedQuad.class)
      public @interface MaterialFlags {
      }
  

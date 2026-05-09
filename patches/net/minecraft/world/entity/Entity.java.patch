@@ -243,12 +243,10 @@
      }
  
      public void checkDespawn() {
-@@ -3868,6 +_,90 @@
- 
-     public boolean mayInteract(ServerLevel level, BlockPos pos) {
+@@ -3870,6 +_,90 @@
          return true;
-+    }
-+
+     }
+ 
 +    /**
 +     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
 +     * <p>
@@ -331,6 +329,16 @@
 +    @Nullable
 +    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, @org.jspecify.annotations.Nullable Void> capability) {
 +        return capability.getCapability(this, null);
++    }
++
+     public boolean isFlyingVehicle() {
+         return false;
+     }
+@@ -4000,6 +_,7 @@
+ 
+     @Retention(RetentionPolicy.CLASS)
+     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE_USE})
++    @org.intellij.lang.annotations.MagicConstant(flags = { FLAG_ONFIRE, FLAG_SHIFT_KEY_DOWN, FLAG_SPRINTING, FLAG_SWIMMING, FLAG_INVISIBLE, FLAG_GLOWING, FLAG_FALL_FLYING })
+     public @interface Flags {
      }
  
-     public boolean isFlyingVehicle() {
