@@ -9,6 +9,27 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
+@@ -99,13 +_,13 @@
+     public static final int UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS = 256;
+     public static final int UPDATE_SKIP_ON_PLACE = 512;
+     @Block.UpdateFlags
+-    public static final int UPDATE_NONE = 260;
+-    @Block.UpdateFlags
+-    public static final int UPDATE_ALL = 3;
+-    @Block.UpdateFlags
+-    public static final int UPDATE_ALL_IMMEDIATE = 11;
+-    @Block.UpdateFlags
+-    public static final int UPDATE_SKIP_ALL_SIDEEFFECTS = 816;
++    public static final int UPDATE_NONE = UPDATE_INVISIBLE | UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS;
++    @Block.UpdateFlags
++    public static final int UPDATE_ALL = UPDATE_NEIGHBORS | UPDATE_CLIENTS;
++    @Block.UpdateFlags
++    public static final int UPDATE_ALL_IMMEDIATE = UPDATE_ALL | UPDATE_IMMEDIATE;
++    @Block.UpdateFlags
++    public static final int UPDATE_SKIP_ALL_SIDEEFFECTS = UPDATE_KNOWN_SHAPE | UPDATE_SUPPRESS_DROPS | UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS | UPDATE_SKIP_ON_PLACE;
+     public static final float INDESTRUCTIBLE = -1.0F;
+     public static final float INSTANT = 0.0F;
+     public static final int UPDATE_LIMIT = 512;
 @@ -238,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
