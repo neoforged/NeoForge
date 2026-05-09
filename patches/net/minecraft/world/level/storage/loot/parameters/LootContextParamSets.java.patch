@@ -18,3 +18,18 @@
      );
      public static final ContextKeySet ENTITY = register(
          "entity",
+@@ -140,10 +_,13 @@
+     );
+ 
+     private static ContextKeySet register(String name, Consumer<ContextKeySet.Builder> consumer) {
++        return register(Identifier.withDefaultNamespace(name),  consumer);
++    }
++
++    public static ContextKeySet register(Identifier id, Consumer<ContextKeySet.Builder> consumer) {
+         ContextKeySet.Builder builder = new ContextKeySet.Builder();
+         consumer.accept(builder);
+         ContextKeySet result = builder.build();
+-        Identifier id = Identifier.withDefaultNamespace(name);
+         ContextKeySet prev = REGISTRY.put(id, result);
+         if (prev != null) {
+             throw new IllegalStateException("Loot table parameter set " + id + " is already registered");
