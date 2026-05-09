@@ -61,13 +61,14 @@ public interface IClientItemExtensions {
     }
 
     /**
-     * This method returns an ArmPose that can be defined using the {@link net.minecraft.client.model.HumanoidModel.ArmPose#create(String, boolean, IArmPoseTransformer)} method.
+     * This method returns an ArmPose that can be defined using an enum extension defined using a json file referenced in your neoforge.mods.toml.
      * This allows for creating custom item use animations.
      *
      * @param entityLiving The entity holding the item
      * @param hand         The hand the ArmPose will be applied to
      * @param itemStack    The stack being held
      * @return A custom ArmPose that can be used to define movement of the arm
+     * @see <a href="https://docs.neoforged.net/docs/advanced/extensibleenums/">Enum Extensions Documentation</a>
      */
     default HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
         return null;
