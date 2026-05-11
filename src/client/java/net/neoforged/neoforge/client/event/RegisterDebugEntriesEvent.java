@@ -39,11 +39,11 @@ public final class RegisterDebugEntriesEvent extends Event implements IModBusEve
     private final Map<Identifier, DebugScreenEntryStatus> performanceProfile;
 
     @ApiStatus.Internal
-    public RegisterDebugEntriesEvent(Map<Identifier, DebugScreenEntry> entries, Map<Identifier, DebugScreenEntryStatus> defaultProfile, Map<Identifier, DebugScreenEntryStatus> performanceProfile) {
+    public RegisterDebugEntriesEvent(Map<Identifier, DebugScreenEntry> entries, Map<DebugScreenProfile, Map<Identifier, DebugScreenEntryStatus>> profiles) {
         this.entries = entries;
         // These are immutable in vanilla, we make them mutable to allow custom entry inclusion
-        this.defaultProfile = new HashMap<>(defaultProfile);
-        this.performanceProfile = new HashMap<>(performanceProfile);
+        this.defaultProfile = new HashMap<>(profiles.get(DebugScreenProfile.DEFAULT));
+        this.performanceProfile = new HashMap<>(profiles.get(DebugScreenProfile.PERFORMANCE));
     }
 
     /**
