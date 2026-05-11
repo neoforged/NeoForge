@@ -1,12 +1,31 @@
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -1589,4 +_,9 @@
+@@ -122,7 +_,7 @@
+ 
+     public <T, C extends Collection<T>> C readCollection(IntFunction<C> p_236839_, StreamDecoder<? super FriendlyByteBuf, T> p_320606_) {
+         int i = this.readVarInt();
+-        C c = (C)p_236839_.apply(i);
++        C c = (C)p_236839_.apply(Math.min(i, net.minecraft.network.codec.ByteBufCodecs.MAX_INITIAL_COLLECTION_SIZE));
+ 
+         for (int j = 0; j < i; j++) {
+             c.add(p_320606_.decode(this));
+@@ -163,7 +_,7 @@
+         IntFunction<M> p_236842_, StreamDecoder<? super FriendlyByteBuf, K> p_320803_, StreamDecoder<? super FriendlyByteBuf, V> p_320748_
+     ) {
+         int i = this.readVarInt();
+-        M m = (M)p_236842_.apply(i);
++        M m = (M)p_236842_.apply(Math.min(i, net.minecraft.network.codec.ByteBufCodecs.MAX_INITIAL_COLLECTION_SIZE));
+ 
+         for (int j = 0; j < i; j++) {
+             K k = p_320803_.decode(this);
+@@ -1588,5 +_,10 @@
+     @Override
      public boolean release(int p_130347_) {
          return this.source.release(p_130347_);
-     }
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public ByteBuf getSource() {
 +        return this.source;
-+    }
+     }
  }
