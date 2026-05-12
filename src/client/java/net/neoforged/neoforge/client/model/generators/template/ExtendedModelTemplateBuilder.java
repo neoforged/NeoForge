@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,6 +36,7 @@ public class ExtendedModelTemplateBuilder {
     @Nullable
     CustomLoaderBuilder customLoader = null;
     final RootTransformsBuilder rootTransforms = new RootTransformsBuilder();
+    Map<String, Boolean> partVisibilities = Collections.emptyMap();
     @Nullable
     Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
     UnbakedModel.@Nullable GuiLight guiLight = null;
@@ -53,6 +55,7 @@ public class ExtendedModelTemplateBuilder {
             builder.ambientOcclusion = ext.ambientOcclusion;
             builder.guiLight = ext.guiLight;
             builder.itemLayerFaceData.putAll(ext.itemLayerFaceData);
+            builder.partVisibilities = ext.partVisibilities;
         }
         return builder;
     }
@@ -194,6 +197,27 @@ public class ExtendedModelTemplateBuilder {
         Preconditions.checkArgument(ItemModelGenerator.LAYERS.contains(layer), "Invalid item layer key %s", layer);
         Preconditions.checkState(requiredSlots.stream().anyMatch(slot -> slot.getId().equals(layer)), "Item layer key %s must be declared as a required texture slot");
         this.itemLayerFaceData.put(layer, faceData);
+        return this;
+    }
+
+    /**
+     * @return Map of visibilities. Default is visible unless specified as false here. Null when unset (all visible).
+     */
+    public Map<String, Boolean> partVisibilities() {
+        return partVisibilities;
+    }
+
+    /**
+     * Set part visibility overrides.
+     *
+     * @param partVisibilities Map of visibilities. Default is visible unless specified as false here.
+     * @return the custom loader builder
+     */
+    public ExtendedModelTemplateBuilder setPartVisibilities(Map<String, Boolean> partVisibilities) {
+        if (partVisibilities.isEmpty()) {
+            partVisibilities = Collections.emptyMap();
+        }
+        this.partVisibilities = partVisibilities;
         return this;
     }
 

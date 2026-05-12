@@ -33,6 +33,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     @Nullable
     final CustomLoaderBuilder customLoader;
     final RootTransformsBuilder rootTransforms;
+    final Map<String, Boolean> partVisibilities;
     @Nullable
     final Boolean ambientOcclusion;
     final UnbakedModel.@Nullable GuiLight guiLight;
@@ -44,6 +45,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         this.elements = List.copyOf(builder.elements);
         this.customLoader = builder.customLoader;
         this.rootTransforms = builder.rootTransforms;
+        this.partVisibilities = builder.partVisibilities;
         this.ambientOcclusion = builder.ambientOcclusion;
         this.guiLight = builder.guiLight;
         this.itemLayerFaceData = builder.itemLayerFaceData;
@@ -190,6 +192,14 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                 }
                 texObject.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow());
             });
+        }
+
+        if (!partVisibilities.isEmpty()) {
+            JsonObject visibilityJson = new JsonObject();
+            for (Map.Entry<String, Boolean> entry : partVisibilities.entrySet()) {
+                visibilityJson.addProperty(entry.getKey(), entry.getValue());
+            }
+            root.add("visibility", visibilityJson);
         }
 
         if (customLoader != null)
