@@ -72,7 +72,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
