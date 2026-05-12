@@ -44,9 +44,7 @@ public interface ICommandSourceStackExtension {
         return self().getLevel();
     }
 
-    /**
-     * @return the game profile of the command source if available
-     */
+    /// {@return the game profile of the command source, if available}
     default Optional<GameProfile> getSourceProfile() {
         return self().source.getGameProfile();
     }
