@@ -199,9 +199,7 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
-    /**
-     * @return Map of visibilities. Default is visible unless specified as false here.
-     */
+    /// @return Map of visibilities. Default is visible unless specified as false here.
     public Map<String, Boolean> partVisibilities() {
         return partVisibilities;
     }
