@@ -12,6 +12,8 @@ import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +49,8 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
     };
 
     private final Multimap<String, ModelGroup> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
+    @Nullable
+    private Set<String> allComponentNames = null;
 
     private final List<Vector3f> positions = Lists.newArrayList();
     private final List<Vec2> texCoords = Lists.newArrayList();
@@ -282,6 +286,19 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         parts.values().stream().filter(part -> partVisibility.getOrDefault(part.name(), true))
                 .forEach(part -> part.addQuads(builder, textureSlots, baker, state, debugName, additionalProperties));
         return builder.build();
+    }
+
+    public Set<String> getRootComponentNames() {
+        return Collections.unmodifiableSet(parts.keySet());
+    }
+
+    public Set<String> getConfigurableComponentNames() {
+        if (allComponentNames != null)
+            return allComponentNames;
+        var names = new HashSet<String>();
+        for (var group : parts.values())
+            group.addNamesRecursively(names);
+        return allComponentNames = Collections.unmodifiableSet(names);
     }
 
     private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
