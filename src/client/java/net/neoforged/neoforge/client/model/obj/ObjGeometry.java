@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -301,6 +302,10 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         for (var group : parts.values())
             group.addNamesRecursively(names);
         return allComponentNames = Collections.unmodifiableSet(names);
+    }
+
+    public Collection<ModelObject> getRootParts() {
+        return Collections.unmodifiableCollection(parts.values());
     }
 
     private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
