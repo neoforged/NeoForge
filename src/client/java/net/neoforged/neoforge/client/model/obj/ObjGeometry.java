@@ -288,10 +288,12 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return builder.build();
     }
 
+    /// Retrieve an unmodifiable set of the root part names, for use with [NeoForgeModelProperties#PART_VISIBILITY]
     public Set<String> getRootComponentNames() {
         return Collections.unmodifiableSet(parts.keySet());
     }
 
+    /// Retrieve an unmodifiable set of all component names, for use with [NeoForgeModelProperties#PART_VISIBILITY]
     public Set<String> getConfigurableComponentNames() {
         if (allComponentNames != null)
             return allComponentNames;
