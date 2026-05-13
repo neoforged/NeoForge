@@ -308,7 +308,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return Collections.unmodifiableCollection(parts.values());
     }
 
-    private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
+    private Pair<BakedQuad, @Nullable Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -506,7 +506,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
             var transform = rootTransform.isIdentity() ? state.transformation() : state.transformation().compose(rootTransform);
             for (int[][] face : faces) {
-                Pair<BakedQuad, Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
+                Pair<BakedQuad, @Nullable Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
                 if (quad.getRight() == null)
                     builder.addUnculledFace(quad.getLeft());
                 else
