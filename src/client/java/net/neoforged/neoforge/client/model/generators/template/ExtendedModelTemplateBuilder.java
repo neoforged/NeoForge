@@ -36,7 +36,7 @@ public class ExtendedModelTemplateBuilder {
     @Nullable
     CustomLoaderBuilder customLoader = null;
     final RootTransformsBuilder rootTransforms = new RootTransformsBuilder();
-    Map<String, Boolean> partVisibilities = Collections.emptyMap();
+    final Map<String, Boolean> partVisibilities = new HashMap<>();
     @Nullable
     Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
     UnbakedModel.@Nullable GuiLight guiLight = null;
@@ -55,7 +55,7 @@ public class ExtendedModelTemplateBuilder {
             builder.ambientOcclusion = ext.ambientOcclusion;
             builder.guiLight = ext.guiLight;
             builder.itemLayerFaceData.putAll(ext.itemLayerFaceData);
-            builder.partVisibilities = ext.partVisibilities;
+            builder.partVisibilities.putAll(ext.partVisibilities);
         }
         return builder;
     }
@@ -201,23 +201,17 @@ public class ExtendedModelTemplateBuilder {
     }
 
     /**
-     * @return Map of visibilities. Default is visible unless specified as false here. Null when unset (all visible).
+     * @return Map of visibilities. Default is visible unless specified as false here.
      */
     public Map<String, Boolean> partVisibilities() {
         return partVisibilities;
     }
 
-    /**
-     * Set part visibility overrides.
-     *
-     * @param partVisibilities Map of visibilities. Default is visible unless specified as false here.
-     * @return the custom loader builder
-     */
-    public ExtendedModelTemplateBuilder setPartVisibilities(Map<String, Boolean> partVisibilities) {
-        if (partVisibilities.isEmpty()) {
-            partVisibilities = Collections.emptyMap();
-        }
-        this.partVisibilities = partVisibilities;
+    /// Set a model part's visibility.
+    ///
+    /// Unless overriding a parent model's part visibility, setting an entry to true is not necessary.
+    public ExtendedModelTemplateBuilder partVisibility(String part, boolean visible) {
+        partVisibilities.put(part, visible);
         return this;
     }
 
