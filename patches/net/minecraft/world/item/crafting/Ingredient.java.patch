@@ -140,7 +140,7 @@
      public static SlotDisplay displayForSingleItem(Holder<Item> item) {
          SlotDisplay inputDisplay = new SlotDisplay.ItemSlotDisplay(item);
 -        ItemStackTemplate remainderStack = item.value().getCraftingRemainder();
-+        ItemStackTemplate remainderStack = new ItemStack(item).getCraftingRemainder();
++        ItemStackTemplate remainderStack = new ItemStackTemplate(item).getCraftingRemainder();
          if (remainderStack != null) {
              SlotDisplay remainderDisplay = new SlotDisplay.ItemStackSlotDisplay(remainderStack);
              return new SlotDisplay.WithRemainder(inputDisplay, remainderDisplay);
