@@ -199,9 +199,13 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
-    /// @return Map of visibilities. Default is visible unless specified as false here.
-    public Map<String, Boolean> partVisibilities() {
-        return partVisibilities;
+    /// Replace all the stored visibilities with a copy of the supplied map.
+    /// 
+    /// Existing values are cleared.
+    public ExtendedModelTemplateBuilder partVisibilities(Map<String, Boolean> newVisibilities) {
+        this.partVisibilities.clear();
+        this.partVisibilities.putAll(newVisibilities);
+        return this;
     }
 
     /// Set a model part's visibility.
