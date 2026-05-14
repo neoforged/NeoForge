@@ -14,15 +14,13 @@ import org.jetbrains.annotations.ApiStatus;
 /// Fired when tags are updated on either server or client. This event can be used to refresh data that depends on tags.
 ///
 /// Listeners intending to use this event to update static data guarded by [#shouldUpdateStaticData()] should listen to
-/// the root event. Listeners interested the side-specific notification or the side-specific context should listen to
+/// the root event. Listeners interested in the side-specific notification or the side-specific context should listen to
 /// the [TagsUpdatedEvent.ServerDataLoad] and [TagsUpdatedEvent.ClientPacketReceived] subclasses instead.
 public sealed class TagsUpdatedEvent extends Event {
     private final RegistryAccess registries;
-    private final UpdateCause updateCause;
 
-    protected TagsUpdatedEvent(RegistryAccess registries, boolean fromClientPacket) {
+    protected TagsUpdatedEvent(RegistryAccess registries) {
         this.registries = registries;
-        this.updateCause = fromClientPacket ? UpdateCause.CLIENT_PACKET_RECEIVED : UpdateCause.SERVER_DATA_LOAD;
     }
 
     /// {@return the registries that have had their tags rebound}
@@ -43,7 +41,7 @@ public sealed class TagsUpdatedEvent extends Event {
     /// @deprecated Subscribe to subclasses instead
     @Deprecated(forRemoval = true, since = "26.1.2")
     public UpdateCause getUpdateCause() {
-        return updateCause;
+        return UpdateCause.SERVER_DATA_LOAD;
     }
 
     /// Whether static data (which in single player is shared between server and client thread) should be updated as a
@@ -58,7 +56,7 @@ public sealed class TagsUpdatedEvent extends Event {
 
         @ApiStatus.Internal
         public ServerDataLoad(ReloadableServerResources serverResources, RegistryAccess registries) {
-            super(registries, false);
+            super(registries);
             this.serverResources = serverResources;
         }
 
@@ -74,8 +72,14 @@ public sealed class TagsUpdatedEvent extends Event {
 
         @ApiStatus.Internal
         public ClientPacketReceived(RegistryAccess registries, boolean isIntegratedServerConnection) {
-            super(registries, true);
+            super(registries);
             this.integratedServer = isIntegratedServerConnection;
+        }
+
+        @Override
+        @Deprecated(forRemoval = true, since = "26.1.2")
+        public UpdateCause getUpdateCause() {
+            return UpdateCause.CLIENT_PACKET_RECEIVED;
         }
 
         @Override
