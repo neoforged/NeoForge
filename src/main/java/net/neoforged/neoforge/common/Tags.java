@@ -139,6 +139,8 @@ public class Tags {
          * Equivalent to the "minecraft:flowers" block tag.
          */
         public static final TagKey<Block> FLOWERS = tag("flowers");
+        /// Light-emitting blocks created when a Frog eats a Magma Cube.
+        public static final TagKey<Block> FROGLIGHTS = tag("froglights");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
@@ -653,6 +655,8 @@ public class Tags {
          * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
          */
         public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
+        /// Light-emitting blocks created when a Frog eats a Magma Cube.
+        public static final TagKey<Item> FROGLIGHTS = tag("froglights");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import com.mojang.authlib.GameProfile;
+import java.util.Optional;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.Identifier;
@@ -40,5 +42,10 @@ public interface ICommandSourceStackExtension {
      */
     default Level getUnsidedLevel() {
         return self().getLevel();
+    }
+
+    /// {@return the game profile of the command source, if available}
+    default Optional<GameProfile> getSourceProfile() {
+        return self().source.getGameProfile();
     }
 }

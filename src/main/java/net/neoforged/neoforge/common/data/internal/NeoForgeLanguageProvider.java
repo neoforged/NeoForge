@@ -61,6 +61,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.FLOWERS_SMALL, "Small Flowers");
         add(Tags.Blocks.FLOWERS_TALL, "Tall Flowers");
         add(Tags.Blocks.FLOWERS, "Flowers");
+        add(Tags.Blocks.FROGLIGHTS, "Froglights");
         add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_CHEAP, "Silica Glass Blocks");
@@ -257,6 +258,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_SOUP, "Soups");
         add(Tags.Items.FOODS_VEGETABLE, "Vegetables");
         add(Tags.Items.ANIMAL_FOODS, "Animal Foods");
+        add(Tags.Items.FROGLIGHTS, "Froglights");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");

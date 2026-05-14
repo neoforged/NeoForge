@@ -1,13 +1,14 @@
 --- a/net/minecraft/client/resources/model/cuboid/CuboidModel.java
 +++ b/net/minecraft/client/resources/model/cuboid/CuboidModel.java
-@@ -28,21 +_,44 @@
+@@ -28,21 +_,46 @@
      @Nullable Boolean ambientOcclusion,
      @Nullable ItemTransforms transforms,
      TextureSlots.Data textureSlots,
 -    @Nullable Identifier parent
 +    @Nullable Identifier parent,
 +    com.mojang.math.@Nullable Transformation rootTransform,
-+    java.util.Map<String, Boolean> partVisibility
++    java.util.Map<String, Boolean> partVisibility,
++    it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.neoforged.neoforge.client.model.ExtraFaceData> itemLayerFaceData
  ) implements UnbakedModel {
      @VisibleForTesting
      public static final Gson GSON = new GsonBuilder()
@@ -34,26 +35,28 @@
 +            TextureSlots.Data textureSlots,
 +            @Nullable Identifier parent
 +    ) {
-+        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of());
++        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of(), it.unimi.dsi.fastutil.ints.Int2ObjectMaps.emptyMap());
 +    }
 +
 +    @Override
 +    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
 +        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.rootTransform);
 +        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.partVisibility);
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillItemLayerFaceData(propertiesBuilder, this.itemLayerFaceData);
 +    }
 +
      @OnlyIn(Dist.CLIENT)
      public static class Deserializer implements JsonDeserializer<CuboidModel> {
          public CuboidModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-@@ -63,7 +_,9 @@
+@@ -63,7 +_,10 @@
              }
  
              Identifier parentLocation = parentName.isEmpty() ? null : Identifier.parse(parentName);
 -            return new CuboidModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation);
 +            var rootTransform = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRootTransform(object, context);
 +            var partVisibility = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializePartVisibility(object);
-+            return new CuboidModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, partVisibility);
++            var itemLayerFaceData = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeItemLayerFaceData(object);
++            return new CuboidModel(elements, guiLight, hasAmbientOcclusion, transforms, textureMap, parentLocation, rootTransform, partVisibility, itemLayerFaceData);
          }
  
          private TextureSlots.Data getTextureMap(JsonObject object) {

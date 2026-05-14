@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,8 +20,10 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.neoforged.neoforge.client.model.ExtraFaceData;
 import org.jspecify.annotations.Nullable;
 
 public class ExtendedModelTemplateBuilder {
@@ -35,6 +38,7 @@ public class ExtendedModelTemplateBuilder {
     @Nullable
     Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
     UnbakedModel.@Nullable GuiLight guiLight = null;
+    final Map<String, ExtraFaceData> itemLayerFaceData = new HashMap<>();
 
     public static ExtendedModelTemplateBuilder of(ModelTemplate template) {
         ExtendedModelTemplateBuilder builder = new ExtendedModelTemplateBuilder();
@@ -48,6 +52,7 @@ public class ExtendedModelTemplateBuilder {
             builder.rootTransforms.copyFrom(ext.rootTransforms);
             builder.ambientOcclusion = ext.ambientOcclusion;
             builder.guiLight = ext.guiLight;
+            builder.itemLayerFaceData.putAll(ext.itemLayerFaceData);
         }
         return builder;
     }
@@ -178,6 +183,17 @@ public class ExtendedModelTemplateBuilder {
      */
     public ExtendedModelTemplateBuilder rootTransforms(Consumer<RootTransformsBuilder> action) {
         action.accept(rootTransforms);
+        return this;
+    }
+
+    /// Specify the provided [ExtraFaceData] for the given layer.
+    ///
+    /// The provided layer must be one of [ItemModelGenerator#LAYERS] and must be declared as a [required texture slot][#requiredTextureSlot(TextureSlot)].
+    public ExtendedModelTemplateBuilder itemLayerFaceData(String layer, ExtraFaceData faceData) {
+        Preconditions.checkState(elements.isEmpty(), "Cannot specify item layer face data in an elements model");
+        Preconditions.checkArgument(ItemModelGenerator.LAYERS.contains(layer), "Invalid item layer key %s", layer);
+        Preconditions.checkState(requiredSlots.stream().anyMatch(slot -> slot.getId().equals(layer)), "Item layer key %s must be declared as a required texture slot");
+        this.itemLayerFaceData.put(layer, faceData);
         return this;
     }
 

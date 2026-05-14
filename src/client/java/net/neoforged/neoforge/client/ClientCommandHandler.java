@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -15,6 +16,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -130,6 +132,11 @@ public class ClientCommandHandler {
             @Override
             public void sendSystemMessage(Component message) {
                 Minecraft.getInstance().gui.getChat().addClientSystemMessage(message);
+            }
+
+            @Override
+            public Optional<GameProfile> getGameProfile() {
+                return Optional.of(player.getGameProfile());
             }
         };
         return new ClientCommandSourceStack(commandSource, player.position(), player.getRotationVector(), player.permissions(),

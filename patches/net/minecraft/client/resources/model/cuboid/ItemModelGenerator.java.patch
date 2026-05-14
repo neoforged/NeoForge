@@ -1,0 +1,99 @@
+--- a/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
++++ b/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
+@@ -40,7 +_,7 @@
+ 
+     @Override
+     public UnbakedGeometry geometry() {
+-        return ItemModelGenerator::bake;
++        return (net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry) ItemModelGenerator::bake;
+     }
+ 
+     @Override
+@@ -48,7 +_,13 @@
+         return UnbakedModel.GuiLight.FRONT;
+     }
+ 
++    /// @deprecated Neo: use [#bake(TextureSlots, ModelBaker, ModelState, ModelDebugName, net.minecraft.util.context.ContextMap)] instead
++    @Deprecated
+     private static QuadCollection bake(TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName name) {
++        return bake(textureSlots, modelBaker, modelState, name, net.minecraft.util.context.ContextMap.EMPTY);
++    }
++
++    private static QuadCollection bake(TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName name, net.minecraft.util.context.ContextMap additionalProperties) {
+         QuadCollection singleResult = null;
+         QuadCollection.Builder builder = null;
+ 
+@@ -60,7 +_,8 @@
+             }
+ 
+             Material.Baked bakedMaterial = modelBaker.materials().get(material, name);
+-            QuadCollection bakedLayer = modelBaker.compute(new ItemModelGenerator.ItemLayerKey(bakedMaterial, modelState, layerIndex));
++            var faceData = net.neoforged.neoforge.client.model.NeoForgeModelProperties.getItemLayerFaceData(additionalProperties, layerIndex);
++            QuadCollection bakedLayer = modelBaker.compute(new ItemModelGenerator.ItemLayerKey(bakedMaterial, modelState, layerIndex, faceData));
+             if (builder != null) {
+                 builder.addAll(bakedLayer);
+             } else if (singleResult != null) {
+@@ -80,17 +_,31 @@
+         }
+     }
+ 
++    /// @deprecated Neo: use [#bakeExtrudedSprite(QuadCollection.Builder, ModelBaker.Interner, ModelState, BakedQuad.MaterialInfo, net.neoforged.neoforge.client.model.ExtraFaceData)] instead
++    @Deprecated
+     private static void bakeExtrudedSprite(
+         QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo
+     ) {
++        bakeExtrudedSprite(builder, interner, modelState, materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
++    private static void bakeExtrudedSprite(
++            QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData faceData
++    ) {
+         Vector3f from = new Vector3f(0.0F, 0.0F, 7.5F);
+         Vector3f to = new Vector3f(16.0F, 16.0F, 8.5F);
+-        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, SOUTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.SOUTH, modelState, null));
+-        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, NORTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.NORTH, modelState, null));
+-        bakeSideFaces(builder, interner, modelState, materialInfo);
++        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, SOUTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.SOUTH, modelState, null, faceData));
++        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, NORTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.NORTH, modelState, null, faceData));
++        bakeSideFaces(builder, interner, modelState, materialInfo, faceData);
+     }
+ 
++    /// @deprecated Neo: use [#bakeSideFaces(QuadCollection.Builder, ModelBaker.Interner, ModelState, BakedQuad.MaterialInfo, net.neoforged.neoforge.client.model.ExtraFaceData)] instead
++    @Deprecated
+     public static void bakeSideFaces(QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo) {
++        bakeSideFaces(builder, interner, modelState, materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
++    public static void bakeSideFaces(QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
+         SpriteContents sprite = materialInfo.sprite().contents();
+         float xScale = 16.0F / sprite.width();
+         float yScale = 16.0F / sprite.height();
+@@ -163,7 +_,7 @@
+             }
+ 
+             CuboidFace.UVs uvs = new CuboidFace.UVs(u0 * xScale, v0 * yScale, u1 * xScale, v1 * yScale);
+-            builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, uvs, Quadrant.R0, materialInfo, sideDirection.getDirection(), modelState, null));
++            builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, uvs, Quadrant.R0, materialInfo, sideDirection.getDirection(), modelState, null, faceData));
+         }
+     }
+ 
+@@ -207,12 +_,16 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) implements ModelBaker.SharedOperationKey<QuadCollection> {
++    public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex, net.neoforged.neoforge.client.model.ExtraFaceData faceData) implements ModelBaker.SharedOperationKey<QuadCollection> {
++        public ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) {
++            this(material, modelState, layerIndex, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++        }
++
+         public QuadCollection compute(ModelBaker modelBakery) {
+             QuadCollection.Builder builder = new QuadCollection.Builder();
+             BakedQuad.MaterialInfo materialInfo = modelBakery.interner()
+-                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, 0));
+-            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo);
++                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion()));
++            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo, faceData);
+             return builder.build();
+         }
+     }

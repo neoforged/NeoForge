@@ -65,6 +65,9 @@
   "net/minecraft/client/resources/model/geometry/UnbakedGeometry": [
     "net/neoforged/neoforge/client/extensions/UnbakedGeometryExtension"
   ],
+  "net/minecraft/commands/CommandSource": [
+    "net/neoforged/neoforge/common/extensions/ICommandSourceExtension"
+  ],
   "net/minecraft/commands/CommandSourceStack": [
     "net/neoforged/neoforge/common/extensions/ICommandSourceStackExtension"
   ],
