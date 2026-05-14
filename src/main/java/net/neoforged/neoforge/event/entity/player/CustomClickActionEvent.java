@@ -7,30 +7,30 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// This event is fired when a player sends a [ServerboundCustomClickActionPacket] to the server or when a sign with the custom click event action is clicked.
+/// Fired when a component's [custom click action][ClickEvent.Custom] is triggered by a player. 
+/// This may be due to clicking a sign, or a component in a dialog box or screen.
 /// 
-/// This packet is sent by the client when a [ClickEvent.Custom] is clicked, be it from a component or a dialog.
+/// If an event handler receives this and performs its own custom action, that event handler **must cancel** this event.
 /// 
 /// This event is fired only on the logical server.
 /// 
-/// This event should be cancelled when handled
+/// This event is [cancelable][ICancellableEvent]. If canceled, vanilla's processing of the custom click payload is skipped.
 public class CustomClickActionEvent extends Event implements ICancellableEvent {
     @Nullable
-    private final Player player;
+    private final ServerPlayer player;
     private final Identifier identifier;
     @Nullable
     private final Tag payload;
 
     @ApiStatus.Internal
-    public CustomClickActionEvent(@Nullable Player player, Identifier identifier, @Nullable Tag payload) {
+    public CustomClickActionEvent(@Nullable ServerPlayer player, Identifier identifier, @Nullable Tag payload) {
         this.player = player;
         this.identifier = identifier;
         this.payload = payload;
@@ -38,7 +38,7 @@ public class CustomClickActionEvent extends Event implements ICancellableEvent {
 
     /// {@return the player who clicked this custom click event or null if the custom click event is received during configuration}
     @Nullable
-    public Player getPlayer() {
+    public ServerPlayer getPlayer() {
         return player;
     }
 

@@ -288,15 +288,16 @@
      public RegistryAccess.Frozen registryAccess() {
          return this.registries.compositeAccess();
      }
-@@ -2080,6 +_,12 @@
+@@ -2080,6 +_,13 @@
          return true;
      }
  
-+    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, Player player) {
++    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, ServerPlayer player) {
 +        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, id, payload))
 +            handleCustomClickAction(id, payload);
 +    }
 +
++    /// @deprecated Neo: Use the overload that has the player context and triggers the appropriate event.
 +    @Deprecated
      public void handleCustomClickAction(Identifier id, Optional<Tag> payload) {
          LOGGER.debug("Received custom click action {} with payload {}", id, payload.orElse(null));
