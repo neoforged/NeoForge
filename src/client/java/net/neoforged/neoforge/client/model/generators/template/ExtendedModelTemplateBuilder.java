@@ -200,7 +200,7 @@ public class ExtendedModelTemplateBuilder {
     }
 
     /// Replace all the stored visibilities with a copy of the supplied map.
-    /// 
+    ///
     /// Existing values are cleared.
     public ExtendedModelTemplateBuilder partVisibilities(Map<String, Boolean> newVisibilities) {
         this.partVisibilities.clear();
