@@ -6,27 +6,35 @@
 package net.neoforged.neoforge.event;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.ReloadableServerResources;
 import net.neoforged.bus.api.Event;
 
 /**
  * Fired when tags are updated on either server or client. This event can be used to refresh data that depends on tags.
  */
-public class TagsUpdatedEvent extends Event {
-    private final HolderLookup.Provider lookupProvider;
+public sealed class TagsUpdatedEvent extends Event {
+    private final RegistryAccess registries;
     private final UpdateCause updateCause;
     private final boolean integratedServer;
 
-    public TagsUpdatedEvent(HolderLookup.Provider lookupProvider, boolean fromClientPacket, boolean isIntegratedServerConnection) {
-        this.lookupProvider = lookupProvider;
+    protected TagsUpdatedEvent(RegistryAccess registries, boolean fromClientPacket, boolean isIntegratedServerConnection) {
+        this.registries = registries;
         this.updateCause = fromClientPacket ? UpdateCause.CLIENT_PACKET_RECEIVED : UpdateCause.SERVER_DATA_LOAD;
         this.integratedServer = isIntegratedServerConnection;
     }
 
-    /**
-     * @return The dynamic registries that have had their tags rebound.
-     */
+    /// {@return the registries that have had their tags rebound}
+    public RegistryAccess getRegistries() {
+        return registries;
+    }
+
+    /// @return The dynamic registries that have had their tags rebound.
+    ///
+    /// @deprecated Use [#getRegistries()] instead
+    @Deprecated
     public HolderLookup.Provider getLookupProvider() {
-        return lookupProvider;
+        return registries;
     }
 
     /**
@@ -42,6 +50,28 @@ public class TagsUpdatedEvent extends Event {
      */
     public boolean shouldUpdateStaticData() {
         return updateCause == UpdateCause.SERVER_DATA_LOAD || !integratedServer;
+    }
+
+    /// Fired when tags are updated following a server datapack (re)load
+    public static final class ServerDataLoad extends TagsUpdatedEvent {
+        private final ReloadableServerResources serverResources;
+
+        public ServerDataLoad(ReloadableServerResources serverResources, RegistryAccess registries) {
+            super(registries, false, false);
+            this.serverResources = serverResources;
+        }
+
+        /// {@return the server resources which triggered this tag update}
+        public ReloadableServerResources getServerResources() {
+            return serverResources;
+        }
+    }
+
+    /// Fired when tags are updated by the client receiving tag data from the server
+    public static final class ClientPacketReceived extends TagsUpdatedEvent {
+        public ClientPacketReceived(RegistryAccess registries, boolean isIntegratedServerConnection) {
+            super(registries, true, isIntegratedServerConnection);
+        }
     }
 
     /**

@@ -44,11 +44,6 @@ public class DataMapLoader extends ContextAwareReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String PATH = "data_maps";
     private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> results;
-    private final RegistryAccess registryAccess;
-
-    public DataMapLoader(RegistryAccess registryAccess) {
-        this.registryAccess = registryAccess;
-    }
 
     @Override
     public CompletableFuture<Void> reload(SharedState sharedState, Executor backgroundExecutor, PreparationBarrier preparationBarrier, Executor gameExecutor) {
@@ -57,14 +52,14 @@ public class DataMapLoader extends ContextAwareReloadListener {
                 .thenAcceptAsync(values -> this.results = values, gameExecutor);
     }
 
-    public void apply() {
-        results.forEach((key, result) -> this.apply((BaseMappedRegistry) registryAccess.lookupOrThrow(key), result));
+    public void apply(RegistryAccess registryAccess) {
+        results.forEach((key, result) -> this.apply(registryAccess, (BaseMappedRegistry) registryAccess.lookupOrThrow(key), result));
 
         // Clear the intermediary maps and objects
         results = null;
     }
 
-    private <T> void apply(BaseMappedRegistry<T> registry, LoadResult<T> result) {
+    private <T> void apply(RegistryAccess registryAccess, BaseMappedRegistry<T> registry, LoadResult<T> result) {
         registry.dataMaps.clear();
         result.results().forEach((key, entries) -> registry.dataMaps.put(
                 key, this.buildDataMap(registry, key, (List) entries)));

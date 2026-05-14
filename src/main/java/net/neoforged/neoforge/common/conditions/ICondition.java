@@ -122,6 +122,9 @@ public interface ICondition {
         /// must be used instead.
         ///
         /// @return The [RegistryAccess] context for the currently active reload.
+        ///
+        /// @deprecated Use [ContextAwareReloadListener#getRegistryLookup()] instead
+        @Deprecated(forRemoval = true, since = "26.1.2")
         default RegistryAccess registryAccess() {
             return RegistryAccess.EMPTY;
         }
