@@ -40,7 +40,7 @@ public class EnchantedBlockLootEvent extends BlockEvent {
     }
 
     /**
-     * Returns the tool used to break the block, from {@link LootContextParams#TOOL}.
+     * {@return the tool used to break the block, from {@link LootContextParams#TOOL}}
      */
     public ItemInstance getTool() {
         return tool;
@@ -54,6 +54,11 @@ public class EnchantedBlockLootEvent extends BlockEvent {
         return this.enchantmentLevel;
     }
 
+    /**
+     * Sets the new enchantment level.
+     * 
+     * @throws IllegalArgumentException if the enchantment level is negative.
+     */
     public void setEnchantmentLevel(int enchantmentLevel) {
         Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
         this.enchantmentLevel = enchantmentLevel;

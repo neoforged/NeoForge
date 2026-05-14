@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.enchanting;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +61,13 @@ public class EnchantedEntityLootEvent extends LivingEvent {
         return this.enchantmentLevel;
     }
 
+    /**
+     * Sets the new enchantment level.
+     * 
+     * @throws IllegalArgumentException if the enchantment level is negative.
+     */
     public void setEnchantmentLevel(int enchantmentLevel) {
+        Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
         this.enchantmentLevel = enchantmentLevel;
     }
 }
