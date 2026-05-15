@@ -46,6 +46,8 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
 
     private final ArrayList<T> snapshots = new ArrayList<>();
 
+    private boolean hasOngoingTransaction = false;
+
     @Nullable
     private T originalState = null;
 
@@ -100,6 +102,15 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     protected void onRootCommit(T originalState) {}
 
     /**
+     * Signifies whenever this journal is part of any ongoing transaction.
+     *
+     * @return whenever this journal is part of any ongoing transaction
+     */
+    public final boolean hasOngoingTransaction() {
+        return hasOngoingTransaction;
+    }
+
+    /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
      * committed or rolled back.
      * This function should be called every time the journal is about to change its internal state as part of a transaction.
@@ -115,12 +126,14 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         }
 
         if (snapshots.get(currentDepth) == NO_SNAPSHOT) {
-            snapshots.set(currentDepth, createSnapshot());
-
             // This is a special case where we need to cast to access internal Transaction methods.
             // You should never, however, cast to call commit or close!
             var transactionImpl = (Transaction) transaction;
             transactionImpl.validateOpen();
+
+            hasOngoingTransaction = true;
+            snapshots.set(currentDepth, createSnapshot());
+
             transactionImpl.journalsToClose.add(this);
         }
     }
@@ -138,7 +151,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
-        } else if (currentDepth <= 0) {
+        } else if (currentDepth == 0) {
             // The transaction is the root.
             if (originalState == null) {
                 originalState = snapshot;
@@ -157,6 +170,23 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         } else {
             // There is already an older snapshot at the depth above, just release the newer one.
             releaseSnapshot(snapshot);
+        }
+
+        // perform callbacks before declaring this snapshot being no longer part of ongoing transaction
+        if (currentDepth == 0) {
+            // root
+            hasOngoingTransaction = false;
+        } else {
+            // snapshot list may have gaps, so we must walk upwards until we hit valid snapshot
+            for (int i = currentDepth - 1; i >= 0; i--) {
+                if (snapshots.get(i) != NO_SNAPSHOT) {
+                    hasOngoingTransaction = true;
+                    return;
+                }
+            }
+
+            // no snapshot state, we don't belong to a transaction
+            hasOngoingTransaction = false;
         }
     }
 
