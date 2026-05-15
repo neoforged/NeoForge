@@ -158,6 +158,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                         ItemTags.GOAT_FOOD, ItemTags.HOGLIN_FOOD, ItemTags.HORSE_FOOD, ItemTags.LLAMA_FOOD, ItemTags.OCELOT_FOOD,
                         ItemTags.PANDA_FOOD, ItemTags.PARROT_FOOD, ItemTags.PIG_FOOD, ItemTags.PIGLIN_FOOD, ItemTags.RABBIT_FOOD,
                         ItemTags.SHEEP_FOOD, ItemTags.SNIFFER_FOOD, ItemTags.STRIDER_FOOD, ItemTags.TURTLE_FOOD, ItemTags.WOLF_FOOD);
+        copy(Tags.Blocks.FROGLIGHTS, Tags.Items.FROGLIGHTS);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);

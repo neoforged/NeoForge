@@ -43,13 +43,15 @@ public class SimpleFluidIngredient extends FluidIngredient {
     private final HolderSet<Fluid> values;
 
     public SimpleFluidIngredient(HolderSet<Fluid> values) {
-        values.unwrap().ifRight(list -> {
-            if (list.isEmpty()) {
-                throw new UnsupportedOperationException("Fluid ingredients can't be empty!");
-            } else if (list.contains(Fluids.EMPTY.builtInRegistryHolder())) {
-                throw new UnsupportedOperationException("Fluid ingredients can't contain the empty fluid");
-            }
-        });
+        if (values.isImmediatelyResolvable()) {
+            values.unwrap().ifRight(list -> {
+                if (list.isEmpty()) {
+                    throw new UnsupportedOperationException("Fluid ingredients can't be empty!");
+                } else if (list.contains(Fluids.EMPTY.builtInRegistryHolder())) {
+                    throw new UnsupportedOperationException("Fluid ingredients can't contain the empty fluid");
+                }
+            });
+        }
         this.values = values;
     }
 

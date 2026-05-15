@@ -41,6 +41,11 @@ public abstract class CompositeHolderSet<T> implements ICustomHolderSet<T> {
         }
     }
 
+    @Override
+    public boolean isImmediatelyResolvable() {
+        return getComponents().stream().allMatch(HolderSet::isImmediatelyResolvable);
+    }
+
     /**
      * {@return immutable Set of Holders given this composite holderset's component holdersets}
      */

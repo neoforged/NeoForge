@@ -73,7 +73,7 @@ public class ItemComponentTests {
                 .component(DataComponents.BASE_COLOR, DyeColor.BLUE))
                 .withLang("Test components item");
         test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
-            event.modify(testItem, builder -> builder
+            event.modify(testItem, (builder, _, _) -> builder
                     .set(DataComponents.BASE_COLOR, null)
                     .set(DataComponents.MAX_STACK_SIZE, 5));
         });
@@ -96,10 +96,10 @@ public class ItemComponentTests {
         test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
             event.modifyMatching(
                     (item, components) -> components.has(DataComponents.BASE_COLOR) && item == testItem.asItem(),
-                    builder -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true));
+                    (builder, _, _) -> builder.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true));
             event.modifyMatching(
                     (item, components) -> components.get(DataComponents.BASE_COLOR) == DyeColor.BLUE && item == testItem.asItem(),
-                    builder -> builder.set(DataComponents.RARITY, Rarity.EPIC));
+                    (builder, _, _) -> builder.set(DataComponents.RARITY, Rarity.EPIC));
         });
 
         test.onGameTest(helper -> {

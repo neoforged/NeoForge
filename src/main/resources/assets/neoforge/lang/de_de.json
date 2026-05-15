@@ -206,6 +206,8 @@
   "neoforge.configgui.showLoadWarnings.tooltip": "Wenn aktiviert, zeigt NeoForge alle Warnungen an, die beim Laden aufgetreten sind.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Kombinierten DEPTH_STENCIL-Aufsatz verwenden",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Aktiviere diese Option, um einen kombinierten DEPTH_STENCIL-Aufsatz zu verwenden anstelle von zwei einzelnen.",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Splash-Texte von Modifikationen überspringen, wenn Vanilla-Splash-Texte bearbeitet wurden",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "Wenn aktiviert, werden Splash-Texte von Modifikationen nicht geladen, wenn die Vanilla-Splash-Textdatei bearbeitet wurde.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "STRG + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",

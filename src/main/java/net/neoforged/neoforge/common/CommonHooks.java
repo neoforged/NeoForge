@@ -145,12 +145,14 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -1791,5 +1793,35 @@ public class CommonHooks {
         if (clock.is(Tags.WorldClocks.IGNORES_PAUSE_COMMAND)) {
             throw ERROR_IGNORES_PAUSING.create(clock.getRegisteredName());
         }
+    }
+
+    private static final String STRUCTURE_ROTATION_KEY = "neoforge:structure_rotation";
+
+    @Nullable
+    public static CompoundTag captureStructureRotation(@Nullable CompoundTag blockEntityNbt, Rotation rotation) {
+        if (blockEntityNbt != null && rotation != Rotation.NONE) {
+            Optional<Rotation> prevRotation = blockEntityNbt.read(STRUCTURE_ROTATION_KEY, Rotation.CODEC);
+            if (prevRotation.isPresent()) {
+                rotation = rotation.getRotated(prevRotation.get());
+            }
+
+            blockEntityNbt = blockEntityNbt.copy();
+
+            if (rotation != Rotation.NONE) {
+                blockEntityNbt.store(STRUCTURE_ROTATION_KEY, Rotation.CODEC, rotation);
+            } else {
+                blockEntityNbt.remove(STRUCTURE_ROTATION_KEY);
+            }
+        }
+        return blockEntityNbt;
+    }
+
+    public static void applyStructureRotation(BlockEntity blockEntity, CompoundTag blockEntityNbt, StructurePlaceSettings settings) {
+        Rotation rotation = settings.getRotation();
+        Optional<Rotation> prevRotation = blockEntityNbt.read(STRUCTURE_ROTATION_KEY, Rotation.CODEC);
+        if (prevRotation.isPresent()) {
+            rotation = rotation.getRotated(prevRotation.get());
+        }
+        blockEntity.applyStructureRotation(settings.getMirror(), rotation);
     }
 }

@@ -125,7 +125,6 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeMod
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.NeoForgeAttributeTypes;
 import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
-import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
@@ -215,11 +214,6 @@ public class NeoForgeMod {
      * Stock loot modifier type that adds loot from a subtable to the final loot.
      */
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddTableLootModifier>> ADD_TABLE_LOOT_MODIFIER_TYPE = GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("add_table", () -> AddTableLootModifier.CODEC);
-
-    /**
-     * Noop biome modifier. Can be used in a biome modifier json with "type": "neoforge:none".
-     */
-    public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneBiomeModifier.INSTANCE));
 
     /**
      * Stock biome modifier for adding features to biomes.

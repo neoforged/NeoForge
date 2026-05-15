@@ -152,6 +152,18 @@
      ) {
          final Multimap<String, Identifier> missingSprites = Multimaps.synchronizedMultimap(HashMultimap.create());
          final Multimap<String, String> missingReferences = Multimaps.synchronizedMultimap(HashMultimap.create());
+@@ -244,8 +_,9 @@
+             }
+ 
+             private Material.@Nullable Baked bake(Material material) {
+-                Material.Baked itemMaterial = this.bakeForAtlas(material, itemAtlas);
+-                return itemMaterial != null ? itemMaterial : this.bakeForAtlas(material, blockAtlas);
++                // Neo: fix missing block model rendering "random" texture (MC-307221)
++                Material.Baked blockMaterial = this.bakeForAtlas(material, blockAtlas);
++                return blockMaterial != null ? blockMaterial : this.bakeForAtlas(material, itemAtlas);
+             }
+ 
+             private Material.@Nullable Baked bakeForAtlas(Material material, SpriteLoader.Preparations atlas) {
 @@ -261,7 +_,7 @@
          };
          CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);

@@ -10,15 +10,20 @@
          }
  
          public TagKey<T> key() {
-@@ -215,6 +_,11 @@
+@@ -215,6 +_,16 @@
          @Override
          public boolean canSerializeIn(HolderOwner<T> context) {
              return this.owner.canSerializeIn(context);
 +        }
 +        // FORGE: Keep a list of invalidation callbacks so they can be run when tags rebind
 +        private List<Runnable> invalidationCallbacks = new java.util.ArrayList<>();
++        @Override
 +        public void addInvalidationListener(Runnable runnable) {
 +            invalidationCallbacks.add(runnable);
++        }
++        @Override
++        public boolean isImmediatelyResolvable() {
++            return false;
          }
      }
  }

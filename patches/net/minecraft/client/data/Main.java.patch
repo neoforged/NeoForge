@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -28,17 +_,35 @@
+@@ -28,17 +_,37 @@
          OptionSpec<Void> clientOption = parser.accepts("client", "Include client generators");
          OptionSpec<Void> allOption = parser.accepts("all", "Include all generators");
          OptionSpec<String> outputOption = parser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
@@ -10,6 +10,7 @@
 +        OptionSpec<String> assetIndex = parser.accepts("assetIndex").withRequiredArg();
 +        OptionSpec<java.io.File> assetsDir = parser.accepts("assetsDir").withRequiredArg().ofType(java.io.File.class);
 +        OptionSpec<Void> validateSpec = parser.accepts("validate", "Validate inputs");
++        OptionSpec<Void> uncachedSpec = parser.accepts("uncached", "Disables cached data generation");
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
@@ -22,7 +23,8 @@
 +            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
 +            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
 +            boolean validate = optionSet.has(validateSpec);
-+            DataGenerator generator = new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
++            boolean uncached = optionSet.has(uncachedSpec);
++            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addClientProviders(generator, client);
 -            generator.run();
@@ -30,7 +32,7 @@
 +            }
 +            java.io.File assetsDirValue = optionSet.valueOf(assetsDir);
 +            String assetIndexValue = optionSet.valueOf(assetIndex);
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, java.util.List.of(), existingPacks, false, false, validate, isFlat, () -> {
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, java.util.List.of(), existingPacks, false, false, validate, isFlat, uncached, () -> {
 +                ClientBootstrap.bootstrap();
 +                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
 +            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, generator, packConsumer -> {

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.math.Quadrant;
 import com.mojang.serialization.JsonOps;
@@ -32,9 +33,11 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     @Nullable
     final CustomLoaderBuilder customLoader;
     final RootTransformsBuilder rootTransforms;
+    final Map<String, Boolean> partVisibilities;
     @Nullable
     final Boolean ambientOcclusion;
     final UnbakedModel.@Nullable GuiLight guiLight;
+    final Map<String, ExtraFaceData> itemLayerFaceData;
 
     ExtendedModelTemplate(ExtendedModelTemplateBuilder builder) {
         super(builder.parent, builder.suffix, builder.requiredSlots.toArray(TextureSlot[]::new));
@@ -42,8 +45,10 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         this.elements = List.copyOf(builder.elements);
         this.customLoader = builder.customLoader;
         this.rootTransforms = builder.rootTransforms;
+        this.partVisibilities = builder.partVisibilities;
         this.ambientOcclusion = builder.ambientOcclusion;
         this.guiLight = builder.guiLight;
+        this.itemLayerFaceData = builder.itemLayerFaceData;
     }
 
     @Override
@@ -164,6 +169,37 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         JsonObject transform = rootTransforms.toJson();
         if (!transform.isEmpty()) {
             root.add("transform", transform);
+        }
+
+        if (!this.itemLayerFaceData.isEmpty()) {
+            JsonObject textures = root.getAsJsonObject("textures");
+            this.itemLayerFaceData.forEach((layer, data) -> {
+                if (data.equals(ExtraFaceData.DEFAULT)) {
+                    return;
+                }
+                if (!textures.has(layer)) {
+                    throw new IllegalStateException("Cannot serialize item layer face data for missing item model layer '" + layer + "'");
+                }
+
+                JsonElement texEntry = textures.get(layer);
+                JsonObject texObject;
+                if (texEntry.isJsonObject()) {
+                    texObject = (JsonObject) texEntry;
+                } else {
+                    texObject = new JsonObject();
+                    texObject.addProperty("sprite", texEntry.getAsString());
+                    textures.add(layer, texObject);
+                }
+                texObject.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow());
+            });
+        }
+
+        if (!partVisibilities.isEmpty()) {
+            JsonObject visibilityJson = new JsonObject();
+            for (Map.Entry<String, Boolean> entry : partVisibilities.entrySet()) {
+                visibilityJson.addProperty(entry.getKey(), entry.getValue());
+            }
+            root.add("visibility", visibilityJson);
         }
 
         if (customLoader != null)

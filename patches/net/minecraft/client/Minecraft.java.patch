@@ -231,8 +231,11 @@
          profiler.push("present");
          if (!this.gameRenderer.getGameRenderState().windowRenderState.isMinimized) {
              this.mainRenderTarget.blitToScreen();
-@@ -1450,6 +_,7 @@
+@@ -1448,8 +_,10 @@
+     public void resizeGui() {
+         int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
          this.window.setGuiScale(guiScale);
++        net.neoforged.neoforge.client.ClientHooks.fireWindowResize(this.window);
          if (this.screen != null) {
              this.screen.resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
 +            net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -408,6 +411,14 @@
      }
  
      public void clearDownloadedResourcePacks() {
+@@ -2254,6 +_,7 @@
+         try {
+             this.setScreenAndShow(screen);
+             this.gui.onDisconnected();
++            if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
+             this.level = null;
+             this.updateLevelInEngines(null);
+             this.player = null;
 @@ -2372,6 +_,7 @@
  
      private void pickBlockOrEntity() {

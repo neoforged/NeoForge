@@ -36,7 +36,12 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * }
  * </pre>
  */
-public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) implements ICustomHolderSet<T> {
+public record AnyHolderSet<T>(ResourceKey<? extends Registry<T>> registryKey, HolderLookup<T> registryLookup) implements ICustomHolderSet<T> {
+    @SuppressWarnings("unchecked")
+    public AnyHolderSet(HolderLookup.RegistryLookup<T> registryLookup) {
+        this((ResourceKey<? extends Registry<T>>) registryLookup.key(), registryLookup);
+    }
+
     @Override
     public HolderSetType type() {
         return NeoForgeMod.ANY_HOLDER_SET.value();
@@ -72,7 +77,7 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
         List<Holder<T>> holders = this.stream().toList();
         Holder<T> holder = i >= holders.size() ? null : holders.get(i);
         if (holder == null)
-            throw new NoSuchElementException("No element " + i + " in registry " + this.registryLookup.key());
+            throw new NoSuchElementException("No element " + i + " in registry " + this.registryKey);
 
         return holder;
     }
@@ -100,14 +105,14 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
 
     @Override
     public String toString() {
-        return "AnySet(" + this.registryLookup.key() + ")";
+        return "AnySet(" + this.registryKey + ")";
     }
 
     public static class Type implements HolderSetType {
         @Override
         public <T> MapCodec<? extends ICustomHolderSet<T>> makeCodec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
             return RegistryOps.retrieveRegistryLookup(registryKey)
-                    .xmap(AnyHolderSet::new, AnyHolderSet::registryLookup);
+                    .xmap(lookup -> new AnyHolderSet<>(registryKey, lookup), set -> null); // Normally null would get us into trouble with codecs, but the ops resolver we're xmapping back to discards this result.
         }
 
         @Override
@@ -115,12 +120,12 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
             return new StreamCodec<RegistryFriendlyByteBuf, AnyHolderSet<T>>() {
                 @Override
                 public AnyHolderSet<T> decode(RegistryFriendlyByteBuf buf) {
-                    return new AnyHolderSet<>(buf.registryAccess().lookupOrThrow(registryKey));
+                    return new AnyHolderSet<>(registryKey, buf.registryAccess().lookupOrThrow(registryKey));
                 }
 
                 @Override
                 public void encode(RegistryFriendlyByteBuf buf, AnyHolderSet<T> holderSet) {
-                    final var registryKeyIn = holderSet.registryLookup.key();
+                    final var registryKeyIn = holderSet.registryKey;
                     if (!registryKey.equals(registryKeyIn)) {
                         throw new IllegalStateException("Can not encode " + holderSet
                                 + ", expected registry: "

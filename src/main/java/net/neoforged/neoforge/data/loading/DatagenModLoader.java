@@ -43,6 +43,7 @@ public class DatagenModLoader extends CommonModLoader {
             final boolean reportsGenerator,
             final boolean structureValidator,
             final boolean flat,
+            boolean uncached,
             Runnable setup,
             GatherDataEvent.GatherDataEventGenerator eventGenerator,
             DataGenerator vanillaGenerator,
@@ -60,7 +61,7 @@ public class DatagenModLoader extends CommonModLoader {
         // Only fire the event for mods that have their generators enabled
         for (ModContainer mod : ModList.get().getSortedMods()) {
             if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
-                var generator = dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mod.getModId()));
+                var generator = dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mod.getModId()), uncached);
                 var event = eventGenerator.create(mod, generator, dataGeneratorConfig);
                 mod.acceptEvent(event);
             }

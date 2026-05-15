@@ -1,22 +1,31 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -47,6 +_,9 @@
+@@ -30,6 +_,10 @@
+     private final ServerFunctionLibrary functionLibrary;
+     private final List<Registry.PendingTags<?>> postponedTags;
+     private final List<DataComponentInitializers.PendingComponents<?>> newComponents;
++    // Neo: Store registries and condition context object
++    private final net.minecraft.core.RegistryAccess registryAccess;
++    private final HolderLookup.Provider loadingContext;
++    private final net.neoforged.neoforge.common.conditions.ConditionContext context;
+ 
+     private ReloadableServerResources(
+         LayeredRegistryAccess<RegistryLayer> fullLayers,
+@@ -47,6 +_,10 @@
          this.commands = new Commands(commandSelection, CommandBuildContext.simple(loadingContext, enabledFeatures));
          this.advancements = new ServerAdvancementManager(loadingContext);
          this.functionLibrary = new ServerFunctionLibrary(functionCompilationPermissions, this.commands.getDispatcher());
 +        // Neo: Store registries and create context object
-+        this.registryLookup = loadingContext;
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, fullLayers.compositeAccess(), enabledFeatures);
++        this.registryAccess = fullLayers.compositeAccess();
++        this.loadingContext = loadingContext;
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, registryAccess, enabledFeatures);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -73,6 +_,25 @@
+@@ -73,6 +_,22 @@
          return List.of(this.recipes, this.functionLibrary, this.advancements);
      }
  
-+    private final HolderLookup.Provider registryLookup;
-+    private final net.neoforged.neoforge.common.conditions.ConditionContext context;
-+
 +    /**
 +     * Exposes the current condition context for usage in other reload listeners.<br>
 +     * This is not useful outside the reloading stage.
@@ -30,7 +39,7 @@
 +      * {@return the lookup provider access for the currently active reload}
 +      */
 +    public HolderLookup.Provider getRegistryLookup() {
-+        return this.registryLookup;
++        return this.loadingContext;
 +    }
 +
      public static CompletableFuture<ReloadableServerResources> loadResources(
@@ -47,7 +56,7 @@
 +                            // Neo: Inject the ConditionContext and RegistryLookup to any resource listener that requests it.
 +                            for (PreparableReloadListener rl : listeners) {
 +                                if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener carl) {
-+                                    carl.injectContext(result.context, result.registryLookup);
++                                    carl.injectContext(result.context, result.loadingContext);
 +                                }
 +                            }
 +
@@ -77,7 +86,7 @@
  
      public void updateComponentsAndStaticRegistryTags() {
          this.postponedTags.forEach(Registry.PendingTags::apply);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(registryLookup, false, false));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent.ServerDataLoad(this, this.registryAccess));
          this.newComponents.forEach(DataComponentInitializers.PendingComponents::apply);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent(false, false));
      }

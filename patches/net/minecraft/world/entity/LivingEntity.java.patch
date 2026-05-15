@@ -642,6 +642,60 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
+@@ -3566,6 +_,11 @@
+     }
+ 
+     public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles) {
++        return randomTeleport(xx, yy, zz, showParticles, ItemStack.EMPTY);
++    }
++
++    // Neo: Add overload with the consumed item causing the random teleport
++    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, ItemStack consumedStack) {
+         double xo = this.getX();
+         double yo = this.getY();
+         double zo = this.getZ();
+@@ -3573,6 +_,8 @@
+         boolean ok = false;
+         BlockPos pos = BlockPos.containing(xx, yy, zz);
+         Level level = this.level();
++        // Neo: Store whether we actually did a teleport to the target, to avoid teleporting the entity back to its original position if it didn't teleport away
++        boolean teleported = false;
+         if (level.hasChunkAt(pos)) {
+             boolean landed = false;
+ 
+@@ -3588,15 +_,32 @@
+             }
+ 
+             if (landed) {
++                // Neo: Fire event for either item consumption or EnderMan teleport, to get the actual final position being teleported to
++                net.neoforged.neoforge.event.entity.EntityTeleportEvent event = null;
++                if (!consumedStack.isEmpty()) {
++                    event = net.neoforged.neoforge.event.EventHooks.onItemConsumptionTeleport(this, consumedStack, xx, y, zz);
++                } else if (this instanceof net.minecraft.world.entity.monster.EnderMan) {
++                    event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, xx, y, zz);
++                }
++                if (event != null) {
++                    xx = event.getTargetX();
++                    y = event.getTargetY();
++                    zz = event.getTargetZ();
++                }
++                if (event == null || !event.isCanceled()) {
++                teleported = true;
+                 this.teleportTo(xx, y, zz);
+                 if (level.noCollision(this) && !level.containsAnyLiquid(this.getBoundingBox())) {
+                     ok = true;
+                 }
++                }
+             }
+         }
+ 
+         if (!ok) {
++            if (teleported) { // Neo: Teleport back to original only if we teleported away and need to revert
+             this.teleportTo(xo, yo, zo);
++            }
+             return false;
+         } else {
+             if (showParticles) {
 @@ -3676,8 +_,8 @@
          }
  

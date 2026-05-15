@@ -44,6 +44,34 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
+@@ -339,7 +_,12 @@
+                             if (filteredEffect.enchanted() == EnchantmentTarget.VICTIM
+                                 && filteredEffect.affected() == EnchantmentTarget.VICTIM
+                                 && filteredEffect.matches(context)) {
+-                                modifiedChance.setValue(filteredEffect.effect().process(level, random, modifiedChance.floatValue()));
++
++                                // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++                                int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
++                                if (realLevel == 0) return;
++
++                                modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
+                             }
+                         }
+                     );
+@@ -357,7 +_,12 @@
+                                 if (filteredEffect.enchanted() == EnchantmentTarget.ATTACKER
+                                     && filteredEffect.affected() == EnchantmentTarget.VICTIM
+                                     && filteredEffect.matches(context)) {
+-                                    modifiedChance.setValue(filteredEffect.effect().process(level, random, modifiedChance.floatValue()));
++
++                                    // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++                                    int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
++                                    if (realLevel == 0) return;
++
++                                    modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
+                                 }
+                             }
+                         );
 @@ -420,6 +_,12 @@
      public static boolean hasTag(ItemStack item, TagKey<Enchantment> tag) {
          ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);

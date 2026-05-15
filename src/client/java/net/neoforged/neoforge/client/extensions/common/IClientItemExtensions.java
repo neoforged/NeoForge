@@ -28,7 +28,6 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.IArmPoseTransformer;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -60,15 +59,14 @@ public interface IClientItemExtensions {
         return null;
     }
 
-    /**
-     * This method returns an ArmPose that can be defined using the {@link net.minecraft.client.model.HumanoidModel.ArmPose#create(String, boolean, IArmPoseTransformer)} method.
-     * This allows for creating custom item use animations.
-     *
-     * @param entityLiving The entity holding the item
-     * @param hand         The hand the ArmPose will be applied to
-     * @param itemStack    The stack being held
-     * @return A custom ArmPose that can be used to define movement of the arm
-     */
+    /// This method returns an [ArmPose][net.minecraft.client.model.HumanoidModel.ArmPose] that will be used when arms holding this item are rendered.
+    /// Vanilla ones can be used to mimic vanilla behaviour, or custom ones can be defined using enum extensions.
+    ///
+    /// @param entityLiving The entity holding the item
+    /// @param hand         The hand the ArmPose will be applied to
+    /// @param itemStack    The stack being held
+    /// @return A custom ArmPose that can be used to define movement of the arm
+    /// @see <a href="https://docs.neoforged.net/docs/advanced/extensibleenums/">Enum Extensions Documentation</a>
     default HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
         return null;
     }

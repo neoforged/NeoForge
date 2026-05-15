@@ -73,6 +73,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgePotionTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
@@ -166,6 +167,7 @@ public class ClientNeoForgeMod {
         event.createProvider(NeoForgeEntityTypeTagsProvider::new);
         event.createProvider(NeoForgeFluidTagsProvider::new);
         event.createProvider(NeoForgeEnchantmentTagsProvider::new);
+        event.createProvider(NeoForgePotionTagsProvider::new);
         event.createProvider(NeoForgeRecipeProvider.Runner::new);
         event.createProvider(NeoForgeLootTableProvider::new);
         event.createProvider(NeoForgeBiomeTagsProvider::new);
