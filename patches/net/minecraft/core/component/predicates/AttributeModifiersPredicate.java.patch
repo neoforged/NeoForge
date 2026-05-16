@@ -6,7 +6,7 @@
  
 +    @Override
 +    public boolean matches(net.minecraft.core.component.DataComponentGetter getter) {
-+        if (getter instanceof net.minecraft.world.item.ItemStack stack) {
++        if (getter instanceof net.minecraft.world.item.ItemInstance stack) {
 +            return this.matches(stack.getAttributeModifiers());
 +        }
 +        return SingleComponentItemPredicate.super.matches(getter);

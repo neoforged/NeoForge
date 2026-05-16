@@ -5,7 +5,7 @@
      }
  
 +    /**
-+     * @deprecated Neo: use {@link ItemStack#getBurnTime(net.minecraft.world.item.crafting.RecipeType, FuelValues)} instead
++     * @deprecated Neo: use {@link net.minecraft.world.item.ItemInstance#getBurnTime(net.minecraft.world.item.crafting.RecipeType, FuelValues)} instead
 +     */
 +    @Deprecated
      public int burnDuration(ItemStack itemStack) {
@@ -24,3 +24,17 @@
              .add(Items.LAVA_BUCKET, baseUnit * 100)
              .add(Blocks.COAL_BLOCK, baseUnit * 8 * 10)
              .add(Items.BLAZE_ROD, baseUnit * 12)
+@@ -107,6 +_,13 @@
+             .add(Blocks.LEAF_LITTER, baseUnit / 2)
+             .remove(ItemTags.NON_FLAMMABLE_WOOD)
+             .build();
++    }
++
++    /// Neo: Allow looking up fuel values for [net.minecraft.world.item.ItemInstance] types
++    ///
++    /// Prefer using [net.minecraft.world.item.ItemInstance#getBurnTime(net.minecraft.world.item.crafting.RecipeType, FuelValues)] where possible
++    public int burnDuration(net.minecraft.world.item.ItemInstance item) {
++        return this.values.getInt(item.typeHolder().value());
+     }
+ 
+     public static class Builder {

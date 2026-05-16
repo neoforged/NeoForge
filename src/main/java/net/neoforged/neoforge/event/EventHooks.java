@@ -405,7 +405,7 @@ public class EventHooks {
         return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
-    public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+    public static int getItemBurnTime(ItemInstance itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         FurnaceFuelBurnTimeEvent event = new FurnaceFuelBurnTimeEvent(itemStack, burnTime, recipeType, fuelValues);
         NeoForge.EVENT_BUS.post(event);
         return event.getBurnTime();
@@ -1085,7 +1085,7 @@ public class EventHooks {
      * @param stack        The stack being queried against.
      * @return The new enchantment map.
      */
-    public static ItemEnchantments getAllEnchantmentLevels(ItemEnchantments enchantments, ItemStack stack, RegistryLookup<Enchantment> lookup) {
+    public static ItemEnchantments getAllEnchantmentLevels(ItemEnchantments enchantments, ItemInstance stack, RegistryLookup<Enchantment> lookup) {
         var mutableEnchantments = new ItemEnchantments.Mutable(enchantments);
         var event = new GetEnchantmentLevelEvent(stack, mutableEnchantments, null, lookup);
         NeoForge.EVENT_BUS.post(event);

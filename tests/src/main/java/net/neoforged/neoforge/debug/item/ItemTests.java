@@ -36,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
@@ -210,7 +211,7 @@ public class ItemTests {
 
         final var snowBoots = reg.items().registerItem("snow_boots", props -> new Item(props.humanoidArmor(ArmorMaterials.DIAMOND, ArmorType.BOOTS)) {
             @Override
-            public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+            public boolean canWalkOnPowderedSnow(ItemInstance stack, LivingEntity wearer) {
                 return wearer.getHealth() < wearer.getMaxHealth() / 2;
             }
         }).withLang("Snow Boots").tab(CreativeModeTabs.TOOLS_AND_UTILITIES);

@@ -101,7 +101,7 @@ public class DataComponentIngredient implements ICustomIngredient {
                 .<SlotDisplay>map(item -> {
                     var template = new ItemStackTemplate(item, 1, components);
                     var display = new SlotDisplay.ItemStackSlotDisplay(template);
-                    var remainder = item.value().getCraftingRemainder(template);
+                    var remainder = template.getCraftingRemainder();
                     if (remainder != null) {
                         SlotDisplay remainderDisplay = new SlotDisplay.ItemStackSlotDisplay(remainder);
                         return new SlotDisplay.WithRemainder(display, remainderDisplay);

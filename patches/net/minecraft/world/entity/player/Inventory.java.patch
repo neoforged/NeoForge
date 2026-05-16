@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
+@@ -169,7 +_,7 @@
+ 
+         for (int slotx = 0; slotx < 9; slotx++) {
+             int index = (this.selected + slotx) % 9;
+-            if (!this.items.get(index).isEnchanted()) {
++            if (!this.items.get(index).isNotReplaceableByPickAction(this.player, index)) {
+                 return index;
+             }
+         }
 @@ -290,6 +_,8 @@
              } catch (Throwable var6) {
                  CrashReport report = CrashReport.forThrowable(var6, "Adding item to inventory");

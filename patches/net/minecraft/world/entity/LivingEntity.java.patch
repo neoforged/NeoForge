@@ -748,7 +748,7 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3781,6 +_,8 @@
+@@ -3781,11 +_,22 @@
      }
  
      public final EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
@@ -757,3 +757,17 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
+ 
++    /// @deprecated Neo: Use [#isEquippableInSlot(ItemInstance, EquipmentSlot)] instead
++    @Deprecated
+     public final boolean isEquippableInSlot(ItemStack itemStack, EquipmentSlot slot) {
++        return isEquippableInSlot((ItemInstance) itemStack, slot);
++    }
++
++    /// [ItemInstance] sensetive version of [#isEquippableInSlot(ItemStack, EquipmentSlot)]
++    ///
++    /// Prefer calling via [net.neoforged.neoforge.common.extensions.ItemInstanceExtension#canEquip(EquipmentSlot, LivingEntity)] where possible
++    public final boolean isEquippableInSlot(ItemInstance itemStack, EquipmentSlot slot) {
+         Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
+         return equippable == null
+             ? slot == EquipmentSlot.MAINHAND && this.canUseSlot(EquipmentSlot.MAINHAND)

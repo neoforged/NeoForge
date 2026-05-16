@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * This event is fired whenever the enchantment level of a particular item is requested for gameplay purposes.<br>
- * It is called from {@link ItemInstanceExtension#getEnchantmentLevel(Holder)} and {@link IItemStackExtension#getAllEnchantments(RegistryLookup)}.
+ * It is called from {@link ItemInstanceExtension#getEnchantmentLevel(Holder)} and {@link ItemInstanceExtension#getAllEnchantments(RegistryLookup)}.
  * <p>
  * It is not fired for interactions with NBT, which means these changes will not reflect in the item tooltip.
  */

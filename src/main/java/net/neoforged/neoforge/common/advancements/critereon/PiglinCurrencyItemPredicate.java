@@ -9,7 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 
 public class PiglinCurrencyItemPredicate implements DataComponentPredicate {
     public static final PiglinCurrencyItemPredicate INSTANCE = new PiglinCurrencyItemPredicate();
@@ -20,6 +20,6 @@ public class PiglinCurrencyItemPredicate implements DataComponentPredicate {
 
     @Override
     public boolean matches(DataComponentGetter dataComponentGetter) {
-        return dataComponentGetter instanceof ItemStack itemStack && itemStack.isPiglinCurrency();
+        return dataComponentGetter instanceof ItemInstance item && item.isPiglinCurrency();
     }
 }

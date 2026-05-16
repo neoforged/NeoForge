@@ -47,6 +47,7 @@ import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -63,10 +64,10 @@ public interface IItemExtension {
     /**
      * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
      * 
-     * @see IItemStackExtension#getAttributeModifiers() IItemStackExtension#getAttributeModifiers() for querying effective attribute modifiers.
+     * @see ItemInstanceExtension#getAttributeModifiers() ItemInstanceExtension#getAttributeModifiers() for querying effective attribute modifiers.
      */
     @SuppressWarnings("deprecation")
-    default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+    default ItemAttributeModifiers getDefaultAttributeModifiers(ItemInstance stack) {
         return ItemAttributeModifiers.EMPTY;
     }
 
@@ -91,7 +92,7 @@ public interface IItemExtension {
      * @param displayName the name that will be displayed unless it is changed in
      *                    this method.
      */
-    default Component getHighlightTip(ItemStack item, Component displayName) {
+    default Component getHighlightTip(ItemInstance item, Component displayName) {
         return displayName;
     }
 
@@ -109,8 +110,8 @@ public interface IItemExtension {
      *
      * @return True if this item can be used as "currency" by piglins
      */
-    default boolean isPiglinCurrency(ItemStack stack) {
-        return stack.getItem() == PiglinAi.BARTERING_ITEM;
+    default boolean isPiglinCurrency(ItemInstance stack) {
+        return stack.is(PiglinAi.BARTERING_ITEM);
     }
 
     /**
@@ -121,7 +122,7 @@ public interface IItemExtension {
      *
      * @return True if piglins are neutral to players wearing this item in an armor slot
      */
-    default boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+    default boolean makesPiglinsNeutral(ItemInstance stack, LivingEntity wearer) {
         return stack.is(ItemTags.PIGLIN_SAFE_ARMOR);
     }
 
@@ -130,13 +131,13 @@ public interface IItemExtension {
      *
      * @return True if repairable by combining
      */
-    boolean isCombineRepairable(ItemStack stack);
+    boolean isCombineRepairable(ItemInstance stack);
 
     /**
      * Determines the amount of durability the mending enchantment
      * will repair, on average, per 0.5 points of experience.
      */
-    default float getXpRepairRatio(ItemStack stack) {
+    default float getXpRepairRatio(ItemInstance stack) {
         return 1f;
     }
 
@@ -193,8 +194,8 @@ public interface IItemExtension {
      * @param level     The level the entity is in
      * @return The normal lifespan in ticks.
      */
-    default int getEntityLifespan(ItemStack itemStack, Level level) {
-        return 6000;
+    default int getEntityLifespan(ItemInstance itemStack, Level level) {
+        return 6000; // ItemEntity.LIFETIME
     }
 
     /**
@@ -248,7 +249,7 @@ public interface IItemExtension {
      * @param pos    Block position in level
      * @param player The Player that is wielding the item
      */
-    default boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
+    default boolean doesSneakBypassUse(ItemInstance stack, LevelReader level, BlockPos pos, Player player) {
         return false;
     }
 
@@ -261,7 +262,7 @@ public interface IItemExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+    default boolean canEquip(ItemInstance stack, EquipmentSlot armorType, LivingEntity entity) {
         return entity.isEquippableInSlot(stack, armorType);
     }
 
@@ -276,7 +277,7 @@ public interface IItemExtension {
      *         decide
      */
     @Nullable
-    default EquipmentSlot getEquipmentSlot(ItemStack stack) {
+    default EquipmentSlot getEquipmentSlot(ItemInstance stack) {
         return null;
     }
 
@@ -366,23 +367,23 @@ public interface IItemExtension {
      * either from the enchantment table or other random enchantment mechanisms.
      * As a special case, books are primary items for every enchantment.
      * <p>
-     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemStack, Holder)} instead.
+     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemInstance, Holder)} instead.
      * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag or override that method.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item should be treated as a primary item for the enchantment
-     * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
+     * @apiNote Call via {@link ItemInstanceExtension#isPrimaryItemFor(Holder)}
      * 
-     * @see #supportsEnchantment(ItemStack, Holder)
+     * @see #supportsEnchantment(ItemInstance, Holder)
      */
     @ApiStatus.OverrideOnly
-    default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        if (stack.getItem() == Items.BOOK) {
+    default boolean isPrimaryItemFor(ItemInstance stack, Holder<Enchantment> enchantment) {
+        if (stack.is(Items.BOOK)) {
             return true;
         }
         Optional<HolderSet<Item>> primaryItems = enchantment.value().definition().primaryItems();
-        return this.supportsEnchantment(stack, enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
+        return stack.supportsEnchantment(enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
     }
 
     /**
@@ -396,12 +397,12 @@ public interface IItemExtension {
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item can accept the enchantment
-     * @apiNote Call via {@link IItemStackExtension#supportsEnchantment(Holder)}
+     * @apiNote Call via {@link ItemInstanceExtension#supportsEnchantment(Holder)}
      * 
-     * @see #isPrimaryItemFor(ItemStack, Holder)
+     * @see #isPrimaryItemFor(ItemInstance, Holder)
      */
     @ApiStatus.OverrideOnly
-    default boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+    default boolean supportsEnchantment(ItemInstance stack, Holder<Enchantment> enchantment) {
         return stack.is(Items.ENCHANTED_BOOK) || enchantment.value().isSupportedItem(stack);
     }
 
@@ -431,10 +432,10 @@ public interface IItemExtension {
      * @param lookup A registry lookup, used to resolve enchantment {@link Holder}s.
      * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel
-     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments}.
+     * @apiNote Call via {@link ItemInstanceExtension#getAllEnchantments}.
      */
     @ApiStatus.OverrideOnly
-    default ItemEnchantments getAllEnchantments(ItemStack stack, RegistryLookup<Enchantment> lookup) {
+    default ItemEnchantments getAllEnchantments(ItemInstance stack, RegistryLookup<Enchantment> lookup) {
         return stack.getTagEnchantments();
     }
 
@@ -529,7 +530,7 @@ public interface IItemExtension {
      *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
      */
     @ApiStatus.OverrideOnly
-    default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
+    default int getBurnTime(ItemInstance itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         return fuelValues.burnDuration(itemStack);
     }
 
@@ -576,7 +577,7 @@ public interface IItemExtension {
      * @param entity The entity the player is looking at, may be null
      * @return true if this {@link Item} hides the player's gaze from the given entity
      */
-    default boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
+    default boolean isGazeDisguise(ItemInstance stack, Player player, @Nullable LivingEntity entity) {
         return stack.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
     }
 
@@ -589,7 +590,7 @@ public interface IItemExtension {
      *
      * @return True if the entity can walk on powdered snow
      */
-    default boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+    default boolean canWalkOnPowderedSnow(ItemInstance stack, LivingEntity wearer) {
         return stack.is(Items.LEATHER_BOOTS);
     }
 
@@ -599,7 +600,7 @@ public interface IItemExtension {
      *
      * @param stack ItemStack in the Chest slot of the entity.
      */
-    default boolean isDamageable(ItemStack stack) {
+    default boolean isDamageable(ItemInstance stack) {
         return stack.has(DataComponents.MAX_DAMAGE);
     }
 
@@ -611,8 +612,7 @@ public interface IItemExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-
-    default AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
+    default AABB getSweepHitBox(ItemInstance stack, Player player, Entity target) {
         return target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D);
     }
 
@@ -625,14 +625,14 @@ public interface IItemExtension {
      * @param inventorySlot the inventory slot of the item being up for replacement
      * @return true to leave this stack in the hotbar if possible
      */
-    default boolean isNotReplaceableByPickAction(ItemStack stack, Player player, int inventorySlot) {
+    default boolean isNotReplaceableByPickAction(ItemInstance stack, Player player, int inventorySlot) {
         return stack.isEnchanted();
     }
 
     /**
      * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
      */
-    default boolean canGrindstoneRepair(ItemStack stack) {
+    default boolean canGrindstoneRepair(ItemInstance stack) {
         return false;
     }
 
@@ -671,7 +671,7 @@ public interface IItemExtension {
      * @param stack The stack holding this item
      * @return whether this item can fit inside a container item
      */
-    default boolean canFitInsideContainerItems(ItemStack stack) {
+    default boolean canFitInsideContainerItems(ItemInstance stack) {
         return self().canFitInsideContainerItems();
     }
 }

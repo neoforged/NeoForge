@@ -121,6 +121,7 @@ import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
@@ -994,7 +995,7 @@ public class CommonHooks {
     /**
      * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
-    public static ItemAttributeModifiers computeModifiedAttributes(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
+    public static ItemAttributeModifiers computeModifiedAttributes(ItemInstance stack, ItemAttributeModifiers defaultModifiers) {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, defaultModifiers);
         NeoForge.EVENT_BUS.post(event);
         return event.build();
