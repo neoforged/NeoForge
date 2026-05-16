@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
+@@ -13,7 +_,6 @@
+ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+ import com.mojang.blaze3d.TracyFrameCapture;
+ import com.mojang.blaze3d.opengl.GlBackend;
+-import com.mojang.blaze3d.pipeline.MainTarget;
+ import com.mojang.blaze3d.pipeline.RenderTarget;
+ import com.mojang.blaze3d.platform.BackendOptions;
+ import com.mojang.blaze3d.platform.ClientShutdownWatchdog;
 @@ -432,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -378,6 +386,19 @@
      }
  
      private boolean isLevelRunningNormally() {
+@@ -1948,7 +_,12 @@
+                 if (this.player.isSpectator()) {
+                     this.gui.getSpectatorGui().onHotbarSelected(i);
+                 } else if (!this.player.hasInfiniteMaterials() || this.screen != null || !loadPressed && !savePressed) {
++                    int oldSlotIndex = this.player.getInventory().getSelectedSlot();
+                     this.player.getInventory().setSelectedSlot(i);
++
++                    if (oldSlotIndex != i) {
++                        net.neoforged.neoforge.common.CommonHooks.onClientSwitchHotbarSlot(this.player, oldSlotIndex, i);
++                    }
+                 } else {
+                     CreativeModeInventoryScreen.handleHotbarLoadOrSave(this, i, loadPressed, savePressed);
+                 }
 @@ -2138,6 +_,7 @@
      }
  

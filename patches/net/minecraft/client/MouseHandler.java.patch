@@ -80,6 +80,21 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-wheel);
+@@ -220,9 +_,11 @@
+                         }
+                     } else {
+                         Inventory inventory = this.minecraft.player.getInventory();
+-                        inventory.setSelectedSlot(
+-                            ScrollWheelHandler.getNextScrollWheelSelection(wheel, inventory.getSelectedSlot(), Inventory.getSelectionSize())
+-                        );
++                        int oldSlotIndex = inventory.getSelectedSlot();
++                        int newSlotIndex = ScrollWheelHandler.getNextScrollWheelSelection(wheel, oldSlotIndex, Inventory.getSelectionSize());
++                        inventory.setSelectedSlot(newSlotIndex);
++
++                        net.neoforged.neoforge.common.CommonHooks.onClientSwitchHotbarSlot(this.minecraft.player, oldSlotIndex, newSlotIndex);
+                     }
+                 }
+             }
 @@ -317,7 +_,12 @@
                      double dy = getScaledYPos(window, this.accumulatedDY);
  

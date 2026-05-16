@@ -206,13 +206,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
@@ -872,6 +866,14 @@ public class CommonHooks {
 
     public static void onEmptyLeftClick(Player player) {
         NeoForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
+    }
+
+    public static void onClientSwitchHotbarSlot(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Client(player, oldSlotIndex, newSlotIndex));
+    }
+
+    public static void onServerSwitchHotbarSlot(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Server(player, oldSlotIndex, newSlotIndex));
     }
 
     /**
