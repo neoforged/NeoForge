@@ -55,7 +55,7 @@ class ChangelogScreen extends Screen {
         final LinearLayout footer = layout.addToFooter(new LinearLayout(0, 0, LinearLayout.Orientation.HORIZONTAL));
         footer.spacing(4).defaultCellSetting().paddingTop(5);
 
-        final Button updateSiteButton = footer.addChild(Button.builder(translatable("neoforge.screen.mods._changelog.open_site"),
+        final Button updateSiteButton = footer.addChild(Button.builder(translatable("neoforge.screen.mods.changelog.open_site"),
                 _ -> clickUrlAction(minecraft, this, URI.create(this.checkResult.url()))).build());
         updateSiteButton.active = false;
         if (checkResult.url() != null) {
