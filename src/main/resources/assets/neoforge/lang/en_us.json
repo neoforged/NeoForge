@@ -27,7 +27,6 @@
 
   "neoforge.screen.mods.button.open_folder": "Open Mods Folder",
   "neoforge.screen.mods.button.sort": "Sort",
-  "neoforge.screen.mods.sort.default": "Default",
   "neoforge.screen.mods.sort.a_to_z": "A-Z",
   "neoforge.screen.mods.sort.a_to_z.hover": "In alphabetical order by display name.",
   "neoforge.screen.mods.sort.z_to_a": "Z-A",
