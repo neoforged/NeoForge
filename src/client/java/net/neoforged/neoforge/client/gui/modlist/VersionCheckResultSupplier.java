@@ -9,10 +9,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
 
+/// Version check result supplier used by the mod list screen. For internal use only.
 @FunctionalInterface
 @ApiStatus.Internal
+@VisibleForTesting
 public interface VersionCheckResultSupplier {
     VersionChecker.@Nullable CheckResult get(String modId);
 

@@ -86,10 +86,10 @@ public class ModListScreen extends Screen {
     private static final int SIDEBAR_SORT_BUTTON_WIDTH = 50;
     private static final int SIDEBAR_CONTROLS_HEIGHT = Button.DEFAULT_HEIGHT;
     private static final int SIDEBAR_MODS_LIST_WIDTH = 150;
-    private static final int INFO_PANEL_WIDTH = 250;
+    static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
-    private static final int ICON_SIZE = 24;
-    private static final int LOGO_HEIGHT = 50;
+    static final int ICON_SIZE = 24;
+    static final int LOGO_HEIGHT = 50;
 
     private final ImmutableList<ModDisplayInfo> mods;
     private final Path modsFolder;

@@ -18,9 +18,11 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.locating.IModFile;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
+/// The default implementation of [ModDisplayInfo].
 public class DefaultModDisplayInfo implements ModDisplayInfo {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -30,21 +32,25 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         this.container = container;
     }
 
+    /// {@inheritDoc}
     @Override
     public String id() {
         return container.getModId();
     }
 
+    /// {@inheritDoc}
     @Override
     public Component displayName() {
         return Component.literal(container.getModInfo().getDisplayName());
     }
 
+    /// {@inheritDoc}
     @Override
     public String version() {
         return container.getModInfo().getVersion().toString();
     }
 
+    /// {@inheritDoc} This pulls from the `authors` key of the mod info.
     @Override
     public Component authors() {
         return container.getModInfo().getConfig().<String>getConfigElement("authors")
@@ -52,6 +58,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
                 .orElseGet(Component::empty);
     }
 
+    /// {@inheritDoc} This pulls from the `credits` key of the mod info.
     @Override
     public Component credits() {
         return container.getModInfo().getConfig().<String>getConfigElement("credits")
@@ -59,12 +66,14 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
                 .orElseGet(Component::empty);
     }
 
+    /// {@inheritDoc} This uses the translation key `neoforge.screen.mods.info.description.[modid]` if available, where `[modid]` is the [mod ID][#id()], with a fallback to the `description` key of the mod info.
     @Override
     public Component description() {
         //noinspection UnstableApiUsage
         return Component.translatable(FMLTranslations.getPattern("neoforge.screen.mods.info.description." + id(), container.getModInfo()::getDescription));
     }
 
+    /// {@inheritDoc} This uses the `license` key of the mod file info. If the `licenseURL` key of the mod file info is set and is a valid URL, then this component has an [open URL click action][ClickEvent.Action#OPEN_URL] with that URL.
     @Override
     public Component license() {
         MutableComponent licenseText = Component.literal(container.getModInfo().getOwningFile().getLicense());
@@ -81,12 +90,18 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return licenseText;
     }
 
+    /// {@inheritDoc} This uses the `logoFile` key of the mod file info or, if not available, the mod info.
+    ///
+    /// @see #convertPath(String)
     @Override
     @Nullable
     public ImageResource logo() {
         return container.getModInfo().getLogoFile().map(this::convertPath).orElse(null);
     }
 
+    /// {@inheritDoc} This uses the `iconFile` key of the mod file info or, if not available, the mod info.
+    ///
+    /// @see #convertPath(String)
     @Override
     @Nullable
     public ImageResource icon() {
@@ -98,7 +113,16 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return null;
     }
 
-    private ImageResource convertPath(String path) {
+    /// Converts a given path string into an [ImageResource].
+    ///
+    /// The logic for converting a path is as follows, in order:
+    /// - If the path contains a pound sign (`#`), it is taken as a [root resource][ImageResource#packRoot(String, String)] with the parts before and after the pound sign taken as the pack ID and the resource path, respectively.
+    /// - If the path has a colon (`:`), is it taken as a [pack asset][ImageResource#packAsset(Identifier)].
+    /// - Otherwise, it is assumed to be a root resource with the mod's resource pack as determined by [ResourcePackLoader#getPackName(IModFile)].
+    ///
+    /// @param path the path to convert
+    /// @return the image resource
+    public ImageResource convertPath(String path) {
         if (path.indexOf('#') > 0) {
             // Contains a pound sign -- it's a root resource, with parts of "<pack ID>#<path>"
             String[] split = path.split("#", 2);
@@ -114,6 +138,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         }
     }
 
+    /// {@inheritDoc} This uses the `displayURL` or, if not available, the `modUrl` key from the mod info.
     @Override
     @Nullable
     public URI displayUrl() {
@@ -123,6 +148,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
                 .orElse(null);
     }
 
+    /// {@inheritDoc} This uses the `issueTrackerURL` key of the mod file info or, if not available, the mod info.
     @Override
     @Nullable
     public URI issuesUrl() {

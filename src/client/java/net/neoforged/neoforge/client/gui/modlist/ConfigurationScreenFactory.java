@@ -11,10 +11,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
 
+/// Configuration screen factory used by the mod list screen. For internal use only.
 @FunctionalInterface
 @ApiStatus.Internal
+@VisibleForTesting
 public interface ConfigurationScreenFactory {
     // unary operator takes in previous screen (to return to later)
     @Nullable
