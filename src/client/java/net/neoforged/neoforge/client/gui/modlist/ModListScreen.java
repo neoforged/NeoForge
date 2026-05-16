@@ -163,17 +163,6 @@ public class ModListScreen extends Screen {
             mods.add(displayInfo);
         }
 
-        // TODO: remove before publish
-        if (!FMLEnvironment.isProduction()) {
-            mods.add(TestingResources.neoPride());
-            mods.add(TestingResources.winterFox());
-            mods.add(TestingResources.exercise("ZexerciseA"));
-            mods.add(TestingResources.exercise("ZexerciseB"));
-            mods.add(TestingResources.exercise("ZexerciseC"));
-            mods.add(TestingResources.exercise("ZexerciseD"));
-            mods.add(TestingResources.exercise("ZexerciseE"));
-        }
-
         return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), ConfigurationScreenFactory.DEFAULT, VersionCheckResultSupplier.DEFAULT);
     }
 
