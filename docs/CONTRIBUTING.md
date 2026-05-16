@@ -31,11 +31,9 @@ Contributing to NeoForge
 13. Commit & Push
 14. Make PR
 
-## Porting
+## Addition Policies
 
-If you are interested in how NeoForge is ported to new Minecraft versions, see [the porting workflow][Porting].
-Please note that currently  only maintainers can use all the needed tools.
-Please do not open a porting PR without prior coordination.
+- `c` tags are to be a standard between loaders with Fabric being our main partner in this effort. This means that `c` tags in 1.21+ NeoForge should be kept in sync with Fabric's `c` tags as close as possible. New `c` tags or changes to existing `c` tag should by ran by Fabric to ensure they will agree to make the same changes. This can be done by opening an issue report or PR on Fabric repository and link the NeoForge issue or PR to it. Only when Fabric agrees to merge the change, the corresponding NeoForge PR can then be merged.
 
 Contributor License Agreement
 =============================
@@ -45,3 +43,4 @@ Contributor License Agreement
 This is intended as a **legally binding copyright assignment** to the NeoForged project for contributions under the patches codebase. However you retain your copyright for all other contributions.
 
 [Porting]: ../docs/PORTING.md
+[Maintainers]: ../docs/MAINTAINERS.md
