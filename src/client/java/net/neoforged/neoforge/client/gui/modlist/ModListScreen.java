@@ -469,7 +469,7 @@ public class ModListScreen extends Screen {
                     defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
                 }
             });
-            this.newerVersionButton = contentLayout.addChild(Button.builder(translatable("Open update changelog"),
+            this.newerVersionButton = contentLayout.addChild(Button.builder(translatable("neoforge.screen.mods.button.changelog"),
                     _ -> {
                         if (this.selected != null && this.selected.checkResult != null) {
                             this.openChangelogScreen(this.selected.checkResult);
