@@ -269,9 +269,12 @@ public class ModListScreen extends Screen {
         }
         final ModsList.Entry selected = this.displayList.getSelected();
         this.displayList.replaceEntries(entries);
-        // Reselect the previously-selected if possible
         if (entries.contains(selected)) {
+            // Reselect the previously-selected if possible
             this.displayList.setSelected(selected);
+        } else if (entries.size() == 1) {
+            // If there is only one entry, select that
+            this.displayList.setSelected(entries.getFirst());
         }
     }
 
