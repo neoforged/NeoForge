@@ -20,7 +20,7 @@
      }
  
      private void close() {
-@@ -93,6 +_,32 @@
+@@ -93,12 +_,38 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -50,6 +50,13 @@
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, packet);
 +            return;
 +        }
+     }
+ 
+     @Override
+     public void handleCustomClickAction(ServerboundCustomClickActionPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
+-        this.server.handleCustomClickAction(packet.id(), packet.payload());
++        this.server.handleCustomClickAction(packet.id(), packet.payload(), this instanceof ServerGamePacketListenerImpl gamePacketListener ? gamePacketListener.getPlayer() : null);
      }
  
      @Override

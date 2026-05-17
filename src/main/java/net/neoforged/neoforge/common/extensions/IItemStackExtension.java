@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -49,16 +48,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     // Helpers for accessing Item data
     private ItemStack self() {
         return (ItemStack) this;
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
-     * Returns a full ItemStack instance of the result.
-     *
-     * @return The resulting ItemStack
-     */
-    default @Nullable ItemStackTemplate getCraftingRemainder() {
-        return self().getItem().getCraftingRemainder(self());
     }
 
     /**

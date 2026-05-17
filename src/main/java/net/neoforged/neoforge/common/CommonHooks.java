@@ -63,6 +63,7 @@ import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
@@ -206,7 +207,15 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.*;
+import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.CustomClickActionEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSwitchHotbarSlotEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
@@ -217,7 +226,9 @@ import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1123,7 +1134,10 @@ public class CommonHooks {
      */
     public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
-        LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
+        LootModifierManager man = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+                .getServerResources()
+                .managers()
+                .getListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY);
         for (IGlobalLootModifier mod : man.getSortedModifiers()) {
             try {
                 generatedLoot = mod.apply(generatedLoot, context);
@@ -1825,5 +1839,10 @@ public class CommonHooks {
             rotation = rotation.getRotated(prevRotation.get());
         }
         blockEntity.applyStructureRotation(settings.getMirror(), rotation);
+    }
+
+    @ApiStatus.Internal
+    public static boolean onCustomClickAction(@Nullable ServerPlayer player, Identifier id, Optional<Tag> payload) {
+        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, id, payload.orElse(null))).isCanceled();
     }
 }
