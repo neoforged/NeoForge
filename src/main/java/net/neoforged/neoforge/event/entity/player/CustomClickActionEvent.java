@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.resources.Identifier;
@@ -19,27 +20,36 @@ import org.jspecify.annotations.Nullable;
 /// 
 /// If an event handler receives this and performs its own custom action, that event handler **must cancel** this event.
 /// 
+/// During the configuration phase, the player is not yet in the world, so [#getProfile()] must be used to obtain sender context.
+/// 
 /// This event is fired only on the logical server.
 /// 
 /// This event is [cancelable][ICancellableEvent]. If canceled, vanilla's processing of the custom click payload is skipped.
 public class CustomClickActionEvent extends Event implements ICancellableEvent {
     @Nullable
     private final ServerPlayer player;
+    private final GameProfile profile;
     private final Identifier identifier;
     @Nullable
     private final Tag payload;
 
     @ApiStatus.Internal
-    public CustomClickActionEvent(@Nullable ServerPlayer player, Identifier identifier, @Nullable Tag payload) {
+    public CustomClickActionEvent(@Nullable ServerPlayer player, GameProfile profile, Identifier identifier, @Nullable Tag payload) {
         this.player = player;
+        this.profile = profile;
         this.identifier = identifier;
         this.payload = payload;
     }
 
-    /// {@return the player who clicked this custom click event or null if the custom click event is received during configuration}
+    /// {@return the player who clicked this custom click event, or `null` if it was received during configuration}
     @Nullable
     public ServerPlayer getPlayer() {
         return player;
+    }
+
+    /// {@return the profile of the player that sent this custom click action}
+    public GameProfile getProfile() {
+        return profile;
     }
 
     /// {@return the custom click event's identifier}

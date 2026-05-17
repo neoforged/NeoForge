@@ -288,12 +288,16 @@
      public RegistryAccess.Frozen registryAccess() {
          return this.registries.compositeAccess();
      }
-@@ -2080,6 +_,13 @@
+@@ -2080,6 +_,17 @@
          return true;
      }
  
 +    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, ServerPlayer player) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, id, payload))
++        handleCustomClickAction(id, payload, player, player.getGameProfile());
++    }
++
++    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, @Nullable ServerPlayer player, GameProfile profile) {
++        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload))
 +            handleCustomClickAction(id, payload);
 +    }
 +

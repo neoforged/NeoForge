@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
@@ -1833,7 +1834,7 @@ public class CommonHooks {
     }
 
     @ApiStatus.Internal
-    public static boolean onCustomClickAction(@Nullable ServerPlayer player, Identifier id, Optional<Tag> payload) {
-        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, id, payload.orElse(null))).isCanceled();
+    public static boolean onCustomClickAction(@Nullable ServerPlayer player, GameProfile profile, Identifier id, Optional<Tag> payload) {
+        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, profile, id, payload.orElse(null))).isCanceled();
     }
 }

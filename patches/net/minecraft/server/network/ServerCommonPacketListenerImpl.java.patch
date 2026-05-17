@@ -56,7 +56,7 @@
      public void handleCustomClickAction(ServerboundCustomClickActionPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
 -        this.server.handleCustomClickAction(packet.id(), packet.payload());
-+        this.server.handleCustomClickAction(packet.id(), packet.payload(), this instanceof ServerGamePacketListenerImpl gamePacketListener ? gamePacketListener.getPlayer() : null);
++        this.server.handleCustomClickAction(packet.id(), packet.payload(), this instanceof ServerGamePacketListenerImpl gamePacketListener ? gamePacketListener.getPlayer() : null, this.playerProfile());
      }
  
      @Override
