@@ -61,12 +61,19 @@
          ContainerHelper.saveAllItems(output, this.items);
          output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
      }
-@@ -214,7 +_,7 @@
+@@ -211,10 +_,14 @@
+     }
+ 
+     private static void consumeFuel(NonNullList<ItemStack> items, ItemStack fuel) {
++        // Neo: Copy fuel stack to allow stack based crafting remainder
++        // the stack is modified and potentially emptied via the shrink call
++        // but we require the original stack to obtain the correct crafting remainder
++        ItemStack originalFuel = fuel.copy();
          Item fuelItem = fuel.getItem();
          fuel.shrink(1);
          if (fuel.isEmpty()) {
 -            ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
-+            ItemStackTemplate remainder = fuel.getCraftingRemainder();
++            ItemStackTemplate remainder = originalFuel.getCraftingRemainder();
              items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
          }
      }

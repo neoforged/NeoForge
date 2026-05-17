@@ -1,14 +1,18 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -174,6 +_,7 @@
+@@ -174,15 +_,21 @@
      }
  
      private static void doBrew(Level level, BlockPos pos, NonNullList<ItemStack> items) {
 +        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(items)) return;
          ItemStack ingredient = items.get(3);
++        // Neo: Copy ingredient stack to allow stack based crafting remainder
++        // the stack is modified and potentially emptied via the shrink call
++        // but we require the original stack to obtain the correct crafting remainder
++        ItemStack originalIngredient = ingredient.copy();
          PotionBrewing potionBrewing = level.potionBrewing();
  
-@@ -181,8 +_,9 @@
+         for (int dest = 0; dest < 3; dest++) {
              items.set(dest, potionBrewing.mix(ingredient, items.get(dest)));
          }
  
