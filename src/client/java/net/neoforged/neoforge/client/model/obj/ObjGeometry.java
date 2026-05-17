@@ -467,19 +467,15 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             super.addQuads(builder, slots, baker, state, debugName, additionalProperties);
 
             Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
-            parts.values().stream().filter(part -> partVisibility.getOrDefault(formatChildName(part.name()), true))
+            parts.values().stream().filter(part -> partVisibility.getOrDefault(part.name(), true))
                     .forEach(part -> part.addQuads(builder, slots, baker, state, debugName, additionalProperties));
         }
 
         @Override
         protected void addNamesRecursively(Set<String> names) {
             super.addNamesRecursively(names);
-            var childNames = new HashSet<String>();
             for (ModelObject object : parts.values()) {
-                object.addNamesRecursively(childNames);
-            }
-            for (String childName : childNames) {
-                names.add(formatChildName(childName));
+                object.addNamesRecursively(names);
             }
         }
     }
