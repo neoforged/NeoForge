@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -13,7 +_,6 @@
- import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
- import com.mojang.blaze3d.TracyFrameCapture;
- import com.mojang.blaze3d.opengl.GlBackend;
--import com.mojang.blaze3d.pipeline.MainTarget;
- import com.mojang.blaze3d.pipeline.RenderTarget;
- import com.mojang.blaze3d.platform.BackendOptions;
- import com.mojang.blaze3d.platform.ClientShutdownWatchdog;
 @@ -432,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());

@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -27,6 +_,7 @@
- import net.minecraft.world.entity.InterpolationHandler;
- import net.minecraft.world.entity.MoverType;
- import net.minecraft.world.entity.item.ItemEntity;
-+import net.minecraft.world.entity.player.Inventory;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.Items;
 @@ -50,7 +_,9 @@
  
  public class FishingHook extends Projectile {
@@ -69,7 +61,7 @@
 -                if (this.life >= 1200) {
 +        } else {
 +            if (this.fishingRodSlot >= 0) {
-+                Inventory inventory = owner.getInventory();
++                net.minecraft.world.entity.player.Inventory inventory = owner.getInventory();
 +                if (this.fishingRodSlot != inventory.getSelectedSlot() || !inventory.getItem(inventory.getSelectedSlot()).is(Items.FISHING_ROD)) {
                      this.discard();
                      return;
