@@ -458,10 +458,6 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             super(name);
         }
 
-        private String formatChildName(String childName) {
-            return "%s.%s".formatted(name(), childName);
-        }
-
         @Override
         public void addQuads(QuadCollection.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, ModelDebugName debugName, ContextMap additionalProperties) {
             super.addQuads(builder, slots, baker, state, debugName, additionalProperties);
