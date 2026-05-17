@@ -11,11 +11,13 @@
      private boolean biting;
      private int outOfWaterTime;
      private static final int MAX_OUT_OF_WATER_TIME = 10;
-@@ -68,18 +_,19 @@
-     private final int lureSpeed;
+@@ -69,17 +_,26 @@
      private final InterpolationHandler interpolationHandler = new InterpolationHandler(this);
  
--    private FishingHook(EntityType<? extends FishingHook> type, Level level, int luck, int lureSpeed) {
+     private FishingHook(EntityType<? extends FishingHook> type, Level level, int luck, int lureSpeed) {
++        this(type, level, luck, lureSpeed, -2);
++    }
++
 +    private FishingHook(EntityType<? extends FishingHook> type, Level level, int luck, int lureSpeed, int fishingRodSlot) {
          super(type, level);
          this.luck = Math.max(0, luck);
@@ -28,8 +30,11 @@
 +        this(type, level, 0, 0, -2);
      }
  
--    public FishingHook(Player player, Level level, int luck, int lureSpeed) {
+     public FishingHook(Player player, Level level, int luck, int lureSpeed) {
 -        this(EntityType.FISHING_BOBBER, level, luck, lureSpeed);
++        this(player, level, luck, lureSpeed, -2);
++    }
++
 +    public FishingHook(Player player, Level level, int luck, int lureSpeed, int fishingRodSlot) {
 +        this(EntityType.FISHING_BOBBER, level, luck, lureSpeed, fishingRodSlot);
          this.setOwner(player);
