@@ -19,7 +19,7 @@
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
          ingredient.shrink(1);
 -        ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
-+        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
++        ItemStackTemplate remainder = originalIngredient.getCraftingRemainder();
          if (remainder != null) {
              if (ingredient.isEmpty()) {
                  ingredient = remainder.create();
