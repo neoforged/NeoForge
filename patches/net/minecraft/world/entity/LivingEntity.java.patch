@@ -560,6 +560,23 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
+@@ -2907,6 +_,16 @@
+             this.lastEquipmentItems.put(EquipmentSlot.MAINHAND, currentMainHand.copy());
+             this.lastEquipmentItems.put(EquipmentSlot.OFFHAND, currentOffHand.copy());
+         }
++
++        if (this instanceof Player player) {
++            if (player.fishing != null) {
++                if (currentOffHand != null && currentMainHand != null && currentOffHand.is(Items.FISHING_ROD) && currentMainHand.is(Items.FISHING_ROD)) {
++                    player.fishing.discard();
++                } else if (player.fishing.getFishingRodSlot() >= 0) {
++                    player.fishing.setFishingRodSlot(player.getInventory().getSelectedSlot());
++                }
++            }
++        }
+     }
+ 
+     private void handleEquipmentChanges(Map<EquipmentSlot, ItemStack> changedItems) {
 @@ -3006,10 +_,10 @@
                          this.noJumpDelay = 10;
                      }

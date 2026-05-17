@@ -12,6 +12,16 @@
              }
  
              level.playSound(
+@@ -52,7 +_,8 @@
+             if (level instanceof ServerLevel serverLevel) {
+                 int lureSpeed = (int)(EnchantmentHelper.getFishingTimeReduction(serverLevel, itemStack, player) * 20.0F);
+                 int luck = EnchantmentHelper.getFishingLuckBonus(serverLevel, itemStack, player);
+-                Projectile.spawnProjectile(new FishingHook(player, level, luck, lureSpeed), serverLevel, itemStack);
++                int fishingRodSlot = hand == InteractionHand.OFF_HAND ? -1 : player.getInventory().getSelectedSlot();
++                Projectile.spawnProjectile(new FishingHook(player, level, luck, lureSpeed, fishingRodSlot), serverLevel, itemStack);
+             }
+ 
+             player.awardStat(Stats.ITEM_USED.get(this));
 @@ -60,5 +_,10 @@
          }
  
