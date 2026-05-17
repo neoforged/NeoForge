@@ -7,14 +7,17 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
+import org.jspecify.annotations.Nullable;
 
 public interface ItemInstanceExtension {
     private ItemInstance self() {
@@ -53,5 +56,15 @@ public interface ItemInstanceExtension {
     default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().typeHolder().value().getEnchantmentLevel(self(), enchantment);
         return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
+    }
+
+    /**
+     * ItemInstance sensitive version of {@link Item#getCraftingRemainder()}.
+     * Returns a full ItemStackTemplate instance of the result.
+     *
+     * @return The resulting ItemStackTemplate
+     */
+    default @Nullable ItemStackTemplate getCraftingRemainder() {
+        return self().typeHolder().value().getCraftingRemainder(self());
     }
 }

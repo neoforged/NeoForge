@@ -54,7 +54,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeEventHandler;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
@@ -66,6 +65,7 @@ import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -332,7 +332,11 @@ public class GlobalLootModifiersTest {
         });
 
         test.onGameTest(helper -> {
-            LootModifierManager lootModManager = NeoForgeEventHandler.getLootModifierManager();
+            LootModifierManager lootModManager = helper.getLevel()
+                    .getServer()
+                    .getServerResources()
+                    .managers()
+                    .getListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY);
             if (lootModManager.getModifier(Identifier.fromNamespaceAndPath(HELPER.modId(), "wheat_harvest_disabled")) != null) {
                 helper.fail("GLM disabled by condition was loaded");
             }
