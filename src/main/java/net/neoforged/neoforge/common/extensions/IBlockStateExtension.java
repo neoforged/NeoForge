@@ -815,19 +815,12 @@ public interface IBlockStateExtension {
     }
 
     /// Declares whether a block may be relocated and under what circumstances.
-    /// "Relocation" here means a region of blocks being cut or copied,
-    /// and pasted somewhere else, with a translation and possibly a rotation or mirror,
-    /// also copying any blockentity data to the new position(s).
-    ///
-    /// A multiblock which is relocatable if and only if the entire multiblock is being relocated
-    /// (e.g. a bed, a door, a 3x3 machine) may override {@link IBlockExtension#getRelocability} to define such behavior.
-    ///
-    /// Blocks which may never be relocated should be added to
-    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case getRelocability does not need to be overridden.
     ///
     /// @param level LevelReader where this blockstate is being relocated from
-    /// @param thisPos BlockPos of this blockstate being relocated
-    default BlockRelocability getRelocability(LevelReader level, BlockPos thisPos) {
-        return self().getBlock().getRelocability(level, thisPos, self());
+    /// @param pos BlockPos of this blockstate being relocated
+    /// @return BlockRelocability declaring whether the block may be relocated
+    /// @see IBlockExtension#getRelocability
+    default BlockRelocability getRelocability(LevelReader level, BlockPos pos) {
+        return self().getBlock().getRelocability(level, pos, self());
     }
 }

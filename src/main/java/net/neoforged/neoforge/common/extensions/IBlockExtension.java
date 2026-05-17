@@ -1092,10 +1092,11 @@ public interface IBlockExtension {
     /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case this method does not need to be overridden.
     ///
     /// @param level LevelReader which the block is being relocated from
-    /// @param thisPos BlockPos which the block is being relocated from
-    /// @param thisState BlockState of the block being relocated
-    default BlockRelocability getRelocability(LevelReader level, BlockPos thisPos, BlockState thisState) {
-        return thisState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
+    /// @param pos BlockPos which the block is being relocated from
+    /// @param state BlockState of the block being relocated
+    /// @return BlockRelocability declaring whether the block may be relocated
+    default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
+        return state.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
                 ? BlockRelocability.Never.INSTANCE
                 : BlockRelocability.Always.INSTANCE;
     }
