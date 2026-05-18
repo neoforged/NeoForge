@@ -66,7 +66,7 @@
      private static void consumeFuel(NonNullList<ItemStack> items, ItemStack fuel) {
          Item fuelItem = fuel.getItem();
 +        // Neo: Need to query for the crafting remainder prior to stack mutation (shrink) in order to grab the correct value
-+        ItemStackTemplate remainder = fuelItem.getCraftingRemainder(fuel);
++        ItemStackTemplate remainder = fuel.getCraftingRemainder();
          fuel.shrink(1);
          if (fuel.isEmpty()) {
 -            ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
