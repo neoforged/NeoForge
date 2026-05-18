@@ -13,7 +13,7 @@
 +
 +            @Override
 +            public TagAppender<ResourceKey<T>, T> replace(boolean value) {
-+                builder.replace(value);
++                builder.setReplace(value);
 +                return this;
 +            }
 +
