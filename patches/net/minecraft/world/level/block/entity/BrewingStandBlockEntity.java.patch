@@ -14,7 +14,7 @@
  
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
 +        // Neo: Need to query for the crafting remainder prior to stack mutation (shrink) in order to grab the correct value
-+        ItemStackTemplate remainder = items.get(INGREDIENT_SLOT).getCraftingRemainder();
++        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
          ingredient.shrink(1);
 -        ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
          if (remainder != null) {
