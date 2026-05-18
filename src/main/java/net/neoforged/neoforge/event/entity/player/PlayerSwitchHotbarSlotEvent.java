@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -49,8 +50,15 @@ public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
      * the hotbar slot and the switching logic is actually performed.
      */
     public static non-sealed class Server extends PlayerSwitchHotbarSlotEvent {
-        public Server(Player player, int oldSlotIndex, int newSlotIndex) {
+        private final ServerGamePacketListener packetListener;
+
+        public Server(ServerGamePacketListener packetListener, Player player, int oldSlotIndex, int newSlotIndex) {
             super(player, oldSlotIndex, newSlotIndex);
+            this.packetListener = packetListener;
+        }
+
+        public ServerGamePacketListener getPacketListener() {
+            return packetListener;
         }
     }
 }

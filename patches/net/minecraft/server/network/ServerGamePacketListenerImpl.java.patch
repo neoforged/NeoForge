@@ -115,7 +115,7 @@
              this.player.resetLastActionTime();
 +
 +            if (oldSlotIndex != newSlotIndex) {
-+                net.neoforged.neoforge.common.CommonHooks.onServerSwitchHotbarSlot(this.player, oldSlotIndex, newSlotIndex);
++                net.neoforged.neoforge.common.CommonHooks.onServerSwitchHotbarSlot(this, this.player, oldSlotIndex, newSlotIndex);
 +            }
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());

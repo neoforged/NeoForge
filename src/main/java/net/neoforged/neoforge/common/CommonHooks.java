@@ -73,6 +73,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -883,8 +884,8 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Client(player, oldSlotIndex, newSlotIndex));
     }
 
-    public static void onServerSwitchHotbarSlot(Player player, int oldSlotIndex, int newSlotIndex) {
-        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Server(player, oldSlotIndex, newSlotIndex));
+    public static void onServerSwitchHotbarSlot(ServerGamePacketListener packetListener, Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Server(packetListener, player, oldSlotIndex, newSlotIndex));
     }
 
     /**
