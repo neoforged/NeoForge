@@ -8,14 +8,15 @@
          ItemStack ingredient = items.get(3);
          PotionBrewing potionBrewing = level.potionBrewing();
  
-@@ -181,8 +_,9 @@
+@@ -181,8 +_,10 @@
              items.set(dest, potionBrewing.mix(ingredient, items.get(dest)));
          }
  
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
++        // Neo: Query the crafting remainder prior to stack mutation (shrink) in order to grab the correct value
++        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
          ingredient.shrink(1);
 -        ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
-+        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
          if (remainder != null) {
              if (ingredient.isEmpty()) {
                  ingredient = remainder.create();
