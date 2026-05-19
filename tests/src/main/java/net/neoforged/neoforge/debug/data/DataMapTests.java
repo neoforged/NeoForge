@@ -245,8 +245,7 @@ public class DataMapTests {
         // This is to make sure that sync work
         test.eventListeners().forge().addListener((final UseItemOnBlockEvent event) -> {
             if (event.getLevel().isClientSide() && event.getHand() == InteractionHand.MAIN_HAND) {
-                event.getPlayer().sendOverlayMessage(Component.literal("Attachment value: " + event.getItemStack().typeHolder()
-                        .getData(someData)));
+                event.getPlayer().sendOverlayMessage(Component.literal("Attachment value: " + event.getItemStack().getData(someData)));
             }
         });
 
