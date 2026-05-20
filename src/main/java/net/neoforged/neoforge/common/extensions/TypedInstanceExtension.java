@@ -11,13 +11,13 @@ import net.neoforged.neoforge.registries.datamaps.IWithData;
 import org.jspecify.annotations.Nullable;
 
 public interface TypedInstanceExtension<T> extends IWithData<T> {
-    private TypedInstance<T> self() {
-        return (TypedInstance<T>) this;
-    }
-
     @Nullable
     @Override
     default <D> D getData(DataMapType<T, D> type) {
         return self().typeHolder().getData(type);
+    }
+
+    private TypedInstance<T> self() {
+        return (TypedInstance<T>) this;
     }
 }
