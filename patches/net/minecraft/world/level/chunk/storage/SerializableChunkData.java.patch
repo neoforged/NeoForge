@@ -171,11 +171,11 @@
 +     * @return A set of the chunk status's heightmaps alongside _WG heightmaps for worldgen-only chunk statuses
 +     */
 +    private static java.util.Set<Heightmap.Types> GetWorldgenSafeHeightmaps(ChunkStatus chunkStatus){
-+        java.util.Set<Heightmap.Types> heightmapsToParse = new java.util.HashSet<>(chunkStatus.heightmapsAfter());
++        java.util.Set<Heightmap.Types> heightmaps = new java.util.HashSet<>(chunkStatus.heightmapsAfter());
 +        if (chunkStatus.getChunkType() != ChunkType.LEVELCHUNK) {
-+            heightmapsToParse.add(Heightmap.Types.WORLD_SURFACE_WG);
-+            heightmapsToParse.add(Heightmap.Types.OCEAN_FLOOR_WG);
++            heightmaps.add(Heightmap.Types.WORLD_SURFACE_WG);
++            heightmaps.add(Heightmap.Types.OCEAN_FLOOR_WG);
 +        }
-+        return heightmapsToParse;
++        return heightmaps;
      }
  }
