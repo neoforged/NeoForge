@@ -5,7 +5,7 @@
                      break;
                  case ClickEvent.Custom custom:
 -                    level.getServer().handleCustomClickAction(custom.id(), custom.payload());
-+                    level.getServer().handleCustomClickAction(custom.id(), custom.payload(), (net.minecraft.server.level.ServerPlayer) player);
++                    level.getServer().handleCustomClickAction(custom.id(), custom.payload(), (net.minecraft.server.level.ServerPlayer) player, player.getGameProfile());
                      hasAnyClickCommand = true;
                      break;
                  case null:

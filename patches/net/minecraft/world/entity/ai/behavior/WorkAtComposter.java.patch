@@ -14,7 +14,7 @@
              ItemStack itemStack = inventory.getItem(i);
 -            int itemIndex = COMPOSTABLE_ITEMS.indexOf(itemStack.getItem());
 -            if (itemIndex != -1) {
-+            var compostable = itemStack.typeHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
++            var compostable = itemStack.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
 +            if (compostable != null && compostable.canVillagerCompost()) {
                  int stackSize = itemStack.getCount();
 -                int totalItemCount = itemsSeenSoFar[itemIndex] + stackSize;

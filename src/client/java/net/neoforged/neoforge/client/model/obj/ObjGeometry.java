@@ -12,6 +12,9 @@ import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +50,8 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
     };
 
     private final Multimap<String, ModelGroup> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
+    @Nullable
+    private Set<String> allComponentNames = null;
 
     private final List<Vector3f> positions = Lists.newArrayList();
     private final List<Vec2> texCoords = Lists.newArrayList();
@@ -284,7 +289,26 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return builder.build();
     }
 
-    private Pair<BakedQuad, Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
+    /// Retrieve an unmodifiable set of the root part names, for use with [NeoForgeModelProperties#PART_VISIBILITY]
+    public Set<String> getRootComponentNames() {
+        return Collections.unmodifiableSet(parts.keySet());
+    }
+
+    /// Retrieve an unmodifiable set of all component names, for use with [NeoForgeModelProperties#PART_VISIBILITY]
+    public Set<String> getConfigurableComponentNames() {
+        if (allComponentNames != null)
+            return allComponentNames;
+        var names = new HashSet<String>();
+        for (var group : parts.values())
+            group.addNamesRecursively(names);
+        return allComponentNames = Collections.unmodifiableSet(names);
+    }
+
+    public Collection<ModelObject> getRootParts() {
+        return Collections.unmodifiableCollection(parts.values());
+    }
+
+    private Pair<BakedQuad, @Nullable Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -439,15 +463,16 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             super.addQuads(builder, slots, baker, state, debugName, additionalProperties);
 
             Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
-            parts.values().stream().filter(part -> partVisibility.getOrDefault("%s.%s".formatted(name(), part.name()), true))
+            parts.values().stream().filter(part -> partVisibility.getOrDefault(part.name(), true))
                     .forEach(part -> part.addQuads(builder, slots, baker, state, debugName, additionalProperties));
         }
 
         @Override
         protected void addNamesRecursively(Set<String> names) {
             super.addNamesRecursively(names);
-            for (ModelObject object : parts.values())
+            for (ModelObject object : parts.values()) {
                 object.addNamesRecursively(names);
+            }
         }
     }
 
@@ -473,7 +498,7 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
             var transform = rootTransform.isIdentity() ? state.transformation() : state.transformation().compose(rootTransform);
             for (int[][] face : faces) {
-                Pair<BakedQuad, Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
+                Pair<BakedQuad, @Nullable Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
                 if (quad.getRight() == null)
                     builder.addUnculledFace(quad.getLeft());
                 else

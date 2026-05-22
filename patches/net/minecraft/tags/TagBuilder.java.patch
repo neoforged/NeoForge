@@ -1,43 +1,35 @@
 --- a/net/minecraft/tags/TagBuilder.java
 +++ b/net/minecraft/tags/TagBuilder.java
-@@ -5,8 +_,17 @@
- import net.minecraft.resources.Identifier;
- 
+@@ -7,6 +_,8 @@
  public class TagBuilder implements net.neoforged.neoforge.common.extensions.ITagBuilderExtension {
--    private final List<TagEntry> entries = new ArrayList<>();
-+    // FORGE: Remove entries are used for datagen.
-+    private final List<TagEntry> removeEntries = new ArrayList<>();
-+    public java.util.stream.Stream<TagEntry> getRemoveEntries() { return this.removeEntries.stream(); }
-+    // FORGE: Add an entry to be removed from this tag in datagen.
-+    public TagBuilder remove(final TagEntry entry) {
-+        this.removeEntries.add(entry);
-+        return this;
-+    }
-+    // FORGE: is this tag set to replace or not?
+     private final List<TagEntry> entries = new ArrayList<>();
      private boolean replace = false;
-+    private final List<TagEntry> entries = new ArrayList<>();
++    /// Neo: Entries to be removed from this tag
++    private final List<TagEntry> removeEntries = new ArrayList<>();
  
      public static TagBuilder create() {
          return new TagBuilder();
-@@ -44,5 +_,21 @@
+@@ -44,5 +_,23 @@
  
      public TagBuilder addOptionalTag(Identifier id) {
          return this.add(TagEntry.optionalTag(id));
 +    }
 +
-+    // FORGE: Set the replace property of this tag.
-+    public TagBuilder replace(boolean value) {
-+        this.replace = value;
++    /// Neo: Add an entry to be removed from this tag in datagen.
++    ///
++    /// @param entry The entry to be removed
++    public TagBuilder remove(TagEntry entry) {
++        this.removeEntries.add(entry);
 +        return this;
 +    }
 +
-+    // FORGE: Shorthand version of replace(true)
++    /// Neo: Shorthand for `setReplace(true)`.
 +    public TagBuilder replace() {
-+        return replace(true);
++        return setReplace(true);
 +    }
 +
-+    // FORGE: Is this tag set to replace or not?
-+    public boolean isReplace() {
-+        return this.replace;
++    /// Neo: Returns the entries to be removed from this tag.
++    public java.util.stream.Stream<TagEntry> getRemoveEntries() {
++        return this.removeEntries.stream();
      }
  }

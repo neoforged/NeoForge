@@ -48,14 +48,14 @@
  
 +    @org.jspecify.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
-+        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        var strippable = originalState.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
 +
      private Optional<BlockState> getStripped(BlockState state) {
-+        var strippable = state.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        var strippable = state.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) {
 +            return Optional.of(strippable.strippedBlock().withPropertiesOf(state));
 +        }

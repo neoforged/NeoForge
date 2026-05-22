@@ -5,7 +5,7 @@
      private static final Predicate<Mob> NOT_PARROT_PREDICATE = new Predicate<Mob>() {
          public boolean test(@Nullable Mob input) {
 -            return input != null && Parrot.MOB_SOUND_MAP.containsKey(input.getType());
-+            return input != null && (Parrot.MOB_SOUND_MAP.containsKey(input.getType()) || input.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
++            return input != null && (Parrot.MOB_SOUND_MAP.containsKey(input.getType()) || input.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
          }
      };
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */

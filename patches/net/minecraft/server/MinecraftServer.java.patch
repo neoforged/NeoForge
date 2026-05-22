@@ -292,8 +292,8 @@
          return true;
      }
  
-+    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, ServerPlayer player) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, id, payload))
++    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, @Nullable ServerPlayer player, GameProfile profile) {
++        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload))
 +            handleCustomClickAction(id, payload);
 +    }
 +

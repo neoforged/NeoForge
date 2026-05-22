@@ -83,6 +83,9 @@
   "net/minecraft/core/Registry": [
     "net/neoforged/neoforge/registries/IRegistryExtension<T>"
   ],
+  "net/minecraft/core/TypedInstance": [
+    "net/neoforged/neoforge/common/extensions/TypedInstanceExtension<T>"
+  ],
   "net/minecraft/core/Registry$PendingTags": [
     "net/neoforged/neoforge/common/extensions/PendingTagsExtension<T>"
   ],

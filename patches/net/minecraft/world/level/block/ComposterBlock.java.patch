@@ -68,7 +68,7 @@
 +    }
 +
 +    public static float getValue(ItemStack item) {
-+        var value = item.typeHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
++        var value = item.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
 +        if (value != null) return value.chance();
 +        return -1f;
      }
