@@ -45,19 +45,12 @@
      public static SerializableChunkData parse(LevelHeightAccessor levelHeight, PalettedContainerFactory containerFactory, CompoundTag chunkData) {
          if (chunkData.getString("Status").isEmpty()) {
              return null;
-@@ -122,7 +_,14 @@
+@@ -122,7 +_,7 @@
              long[] carvingMask = chunkData.getLongArray("carving_mask").orElse(null);
              Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
              chunkData.getCompound("Heightmaps").ifPresent(heightmapsTag -> {
 -                for (Heightmap.Types type : status.heightmapsAfter()) {
-+                // Neo: Patch to fix [MC-308222](https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-308222)
-+                // Makes loading a non-fully generated chunk from disk keep worldgen heightmap data for structures and features to heightmap snap properly again.
-+                java.util.Set<Heightmap.Types> heightmapsToParse = new java.util.HashSet<>(status.heightmapsAfter());
-+                if (status != ChunkStatus.FULL) {
-+                    heightmapsToParse.add(Heightmap.Types.WORLD_SURFACE_WG);
-+                    heightmapsToParse.add(Heightmap.Types.OCEAN_FLOOR_WG);
-+                }
-+                for (Heightmap.Types type : heightmapsToParse) {
++                for (Heightmap.Types type : GetWorldgenSafeHeightmaps(status)) {
                      heightmapsTag.getLongArray(type.getSerializationKey()).ifPresent(longs -> heightmaps.put(type, longs));
                  }
              });
@@ -92,19 +85,12 @@
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> fluidTicks = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -284,7 +_,14 @@
+@@ -284,7 +_,7 @@
          chunk.setLightCorrect(this.lightCorrect);
          EnumSet<Heightmap.Types> toPrime = EnumSet.noneOf(Heightmap.Types.class);
  
 -        for (Heightmap.Types type : chunk.getPersistedStatus().heightmapsAfter()) {
-+        // Neo: Patch to fix [MC-308222](https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-308222)
-+        // Makes loading a non-fully generated chunk from disk keep worldgen heightmap data for structures and features to heightmap snap properly again.
-+        java.util.Set<Heightmap.Types> heightmapsToPrime = new java.util.HashSet<>(chunk.getPersistedStatus().heightmapsAfter());
-+        if (chunk.getPersistedStatus() != ChunkStatus.FULL) {
-+            heightmapsToPrime.add(Heightmap.Types.WORLD_SURFACE_WG);
-+            heightmapsToPrime.add(Heightmap.Types.OCEAN_FLOOR_WG);
-+        }
-+        for (Heightmap.Types type : heightmapsToPrime) {
++        for (Heightmap.Types type : GetWorldgenSafeHeightmaps(chunk.getPersistedStatus())) {
              long[] heightmap = this.heightmaps.get(type);
              if (heightmap != null) {
                  chunk.setHeightmap(type, heightmap);
@@ -119,19 +105,12 @@
          if (chunkType == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunk, false);
          } else {
-@@ -374,7 +_,14 @@
+@@ -374,7 +_,7 @@
              Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
  
              for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
 -                if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
-+                // Neo: Patch to fix [MC-308222](https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-308222)
-+                // Makes loading a non-fully generated chunk from disk keep worldgen heightmap data for structures and features to heightmap snap properly again.
-+                java.util.Set<Heightmap.Types> heightmapsToCopy = new java.util.HashSet<>(chunk.getPersistedStatus().heightmapsAfter());
-+                if (chunk.getPersistedStatus() != ChunkStatus.FULL) {
-+                    heightmapsToCopy.add(Heightmap.Types.WORLD_SURFACE_WG);
-+                    heightmapsToCopy.add(Heightmap.Types.OCEAN_FLOOR_WG);
-+                }
-+                if (heightmapsToCopy.contains(entry.getKey())) {
++                if (GetWorldgenSafeHeightmaps(chunk.getPersistedStatus()).contains(entry.getKey())) {
                      long[] data = entry.getValue().getRawData();
                      heightmaps.put(entry.getKey(), (long[])data.clone());
                  }
@@ -180,3 +159,23 @@
          return tag;
      }
  
+@@ -610,5 +_,19 @@
+     }
+ 
+     public record SectionData(int y, @Nullable LevelChunkSection chunkSection, @Nullable DataLayer blockLight, @Nullable DataLayer skyLight) {
++    }
++
++    /**
++     * Neo: Patch to fix [MC-308222](https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-308222)
++     * Makes loading a non-fully generated chunk from disk keep worldgen heightmap data for structures and features to heightmap snap properly again.
++     * @return A set of the chunk status's heightmaps alongside _WG heightmaps for worldgen-only chunk statuses
++     */
++    private static java.util.Set<Heightmap.Types> GetWorldgenSafeHeightmaps(ChunkStatus chunkStatus){
++        java.util.Set<Heightmap.Types> heightmapsToParse = new java.util.HashSet<>(chunkStatus.heightmapsAfter());
++        if (chunkStatus.getChunkType() != ChunkType.LEVELCHUNK) {
++            heightmapsToParse.add(Heightmap.Types.WORLD_SURFACE_WG);
++            heightmapsToParse.add(Heightmap.Types.OCEAN_FLOOR_WG);
++        }
++        return heightmapsToParse;
+     }
+ }
