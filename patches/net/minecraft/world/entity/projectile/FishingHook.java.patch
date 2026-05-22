@@ -1,18 +1,11 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -50,7 +_,9 @@
- 
- public class FishingHook extends Projectile {
-     private static final Logger LOGGER = LogUtils.getLogger();
--    private final RandomSource syncronizedRandom = RandomSource.create();
-+    private final RandomSource synchronizedRandom = RandomSource.create();
+@@ -67,19 +_,30 @@
+     private final int luck;
+     private final int lureSpeed;
+     private final InterpolationHandler interpolationHandler = new InterpolationHandler(this);
 +    // 0~8: Main hand slots; -1: Offhand; -2: Spawned
 +    private int fishingRodSlot;
-     private boolean biting;
-     private int outOfWaterTime;
-     private static final int MAX_OUT_OF_WATER_TIME = 10;
-@@ -69,17 +_,26 @@
-     private final InterpolationHandler interpolationHandler = new InterpolationHandler(this);
  
      private FishingHook(EntityType<? extends FishingHook> type, Level level, int luck, int lureSpeed) {
 +        this(type, level, luck, lureSpeed, -2);
@@ -40,219 +33,35 @@
          this.setOwner(player);
          float xRot1 = player.getXRot();
          float yRot1 = player.getYRot();
-@@ -131,7 +_,7 @@
-         if (DATA_BITING.equals(accessor)) {
-             this.biting = this.getEntityData().get(DATA_BITING);
-             if (this.biting) {
--                this.setDeltaMovement(this.getDeltaMovement().x, -0.4F * Mth.nextFloat(this.syncronizedRandom, 0.6F, 1.0F), this.getDeltaMovement().z);
-+                this.setDeltaMovement(this.getDeltaMovement().x, -0.4F * Mth.nextFloat(this.synchronizedRandom, 0.6F, 1.0F), this.getDeltaMovement().z);
-             }
-         }
- 
-@@ -146,106 +_,115 @@
- 
-     @Override
-     public void tick() {
--        this.syncronizedRandom.setSeed(this.getUUID().getLeastSignificantBits() ^ this.level().getGameTime());
-+        this.synchronizedRandom.setSeed(this.getUUID().getLeastSignificantBits() ^ this.level().getGameTime());
-         this.getInterpolation().interpolate();
-         super.tick();
+@@ -152,7 +_,18 @@
          Player owner = this.getPlayerOwner();
          if (owner == null) {
              this.discard();
 -        } else if (this.level().isClientSide() || !this.shouldStopFishing(owner)) {
--            if (this.onGround()) {
--                this.life++;
--                if (this.life >= 1200) {
-+        } else {
-+            if (this.fishingRodSlot >= 0) {
-+                net.minecraft.world.entity.player.Inventory inventory = owner.getInventory();
-+                if (this.fishingRodSlot != inventory.getSelectedSlot() || !inventory.getItem(inventory.getSelectedSlot()).is(Items.FISHING_ROD)) {
-                     this.discard();
-                     return;
-                 }
--            } else {
--                this.life = 0;
--            }
--
--            float liquidHeight = 0.0F;
--            BlockPos blockPos = this.blockPosition();
--            FluidState fluidState = this.level().getFluidState(blockPos);
--            if (fluidState.is(FluidTags.WATER)) {
--                liquidHeight = fluidState.getHeight(this.level(), blockPos);
--            }
--
--            boolean isInWater = liquidHeight > 0.0F;
--            if (this.currentState == FishingHook.FishHookState.FLYING) {
--                if (this.hookedIn != null) {
--                    this.setDeltaMovement(Vec3.ZERO);
--                    this.currentState = FishingHook.FishHookState.HOOKED_IN_ENTITY;
--                    return;
--                }
--
--                if (isInWater) {
--                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.3, 0.2, 0.3));
--                    this.currentState = FishingHook.FishHookState.BOBBING;
--                    return;
--                }
--
--                this.checkCollision();
--            } else {
--                if (this.currentState == FishingHook.FishHookState.HOOKED_IN_ENTITY) {
++            return;
++        }
++
++        if (this.fishingRodSlot >= 0) {
++            net.minecraft.world.entity.player.Inventory inventory = owner.getInventory();
++            if (this.fishingRodSlot != inventory.getSelectedSlot() || !inventory.getItem(inventory.getSelectedSlot()).canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST)) {
++                this.discard();
++                return;
 +            }
-+            if (this.level().isClientSide() || !this.shouldStopFishing(owner)) {
-+                if (this.onGround()) {
-+                    this.life++;
-+                    if (this.life >= 1200) {
-+                        this.discard();
-+                        return;
-+                    }
-+                } else {
-+                    this.life = 0;
-+                }
++        }
 +
-+                float liquidHeight = 0.0F;
-+                BlockPos blockPos = this.blockPosition();
-+                FluidState fluidState = this.level().getFluidState(blockPos);
-+                if (fluidState.is(FluidTags.WATER)) {
-+                    liquidHeight = fluidState.getHeight(this.level(), blockPos);
-+                }
-+
-+                boolean isInWater = liquidHeight > 0.0F;
-+                if (this.currentState == FishingHook.FishHookState.FLYING) {
-                     if (this.hookedIn != null) {
--                        if (!this.hookedIn.isRemoved() && this.hookedIn.canInteractWithLevel() && this.hookedIn.level().dimension() == this.level().dimension()
--                            )
--                         {
--                            this.setPos(this.hookedIn.getX(), this.hookedIn.getY(0.8), this.hookedIn.getZ());
--                        } else {
--                            this.setHookedEntity(null);
--                            this.currentState = FishingHook.FishHookState.FLYING;
--                        }
--                    }
--
--                    return;
--                }
--
--                if (this.currentState == FishingHook.FishHookState.BOBBING) {
--                    Vec3 movement = this.getDeltaMovement();
--                    double force = this.getY() + movement.y - blockPos.getY() - liquidHeight;
--                    if (Math.abs(force) < 0.01) {
--                        force += Math.signum(force) * 0.1;
--                    }
--
--                    this.setDeltaMovement(movement.x * 0.9, movement.y - force * this.random.nextFloat() * 0.2, movement.z * 0.9);
--                    if (this.nibble <= 0 && this.timeUntilHooked <= 0) {
--                        this.openWater = true;
--                    } else {
--                        this.openWater = this.openWater && this.outOfWaterTime < 10 && this.calculateOpenWater(blockPos);
-+                        this.setDeltaMovement(Vec3.ZERO);
-+                        this.currentState = FishingHook.FishHookState.HOOKED_IN_ENTITY;
-+                        return;
-                     }
++        if (this.level().isClientSide() || !this.shouldStopFishing(owner)) {
+             if (this.onGround()) {
+                 this.life++;
+                 if (this.life >= 1200) {
+@@ -244,7 +_,7 @@
+             }
  
-                     if (isInWater) {
--                        this.outOfWaterTime = Math.max(0, this.outOfWaterTime - 1);
--                        if (this.biting) {
--                            this.setDeltaMovement(
--                                this.getDeltaMovement().add(0.0, -0.1 * this.syncronizedRandom.nextFloat() * this.syncronizedRandom.nextFloat(), 0.0)
--                            );
--                        }
--
--                        if (!this.level().isClientSide()) {
--                            this.catchingFish(blockPos);
--                        }
--                    } else {
--                        this.outOfWaterTime = Math.min(10, this.outOfWaterTime + 1);
--                    }
--                }
--            }
--
--            if (!fluidState.is(FluidTags.WATER) && !this.onGround() && this.hookedIn == null) {
--                this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
--            }
--
--            this.move(MoverType.SELF, this.getDeltaMovement());
--            this.applyEffectsFromBlocks();
--            this.updateRotation();
--            if (this.currentState == FishingHook.FishHookState.FLYING && (this.onGround() || this.horizontalCollision)) {
--                this.setDeltaMovement(Vec3.ZERO);
--            }
--
--            double inertia = 0.92;
+             double inertia = 0.92;
 -            this.setDeltaMovement(this.getDeltaMovement().scale(0.92));
--            this.reapplyPosition();
-+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.3, 0.2, 0.3));
-+                        this.currentState = FishingHook.FishHookState.BOBBING;
-+                        return;
-+                    }
-+
-+                    this.checkCollision();
-+                } else {
-+                    if (this.currentState == FishingHook.FishHookState.HOOKED_IN_ENTITY) {
-+                        if (this.hookedIn != null) {
-+                            if (!this.hookedIn.isRemoved() && this.hookedIn.canInteractWithLevel() && this.hookedIn.level().dimension() == this.level().dimension()
-+                            )
-+                            {
-+                                this.setPos(this.hookedIn.getX(), this.hookedIn.getY(0.8), this.hookedIn.getZ());
-+                            } else {
-+                                this.setHookedEntity(null);
-+                                this.currentState = FishingHook.FishHookState.FLYING;
-+                            }
-+                        }
-+
-+                        return;
-+                    }
-+
-+                    if (this.currentState == FishingHook.FishHookState.BOBBING) {
-+                        Vec3 movement = this.getDeltaMovement();
-+                        double force = this.getY() + movement.y - blockPos.getY() - liquidHeight;
-+                        if (Math.abs(force) < 0.01) {
-+                            force += Math.signum(force) * 0.1;
-+                        }
-+
-+                        this.setDeltaMovement(movement.x * 0.9, movement.y - force * this.random.nextFloat() * 0.2, movement.z * 0.9);
-+                        if (this.nibble <= 0 && this.timeUntilHooked <= 0) {
-+                            this.openWater = true;
-+                        } else {
-+                            this.openWater = this.openWater && this.outOfWaterTime < 10 && this.calculateOpenWater(blockPos);
-+                        }
-+
-+                        if (isInWater) {
-+                            this.outOfWaterTime = Math.max(0, this.outOfWaterTime - 1);
-+                            if (this.biting) {
-+                                this.setDeltaMovement(
-+                                        this.getDeltaMovement().add(0.0, -0.1 * this.synchronizedRandom.nextFloat() * this.synchronizedRandom.nextFloat(), 0.0)
-+                                );
-+                            }
-+
-+                            if (!this.level().isClientSide()) {
-+                                this.catchingFish(blockPos);
-+                            }
-+                        } else {
-+                            this.outOfWaterTime = Math.min(10, this.outOfWaterTime + 1);
-+                        }
-+                    }
-+                }
-+
-+                if (!fluidState.is(FluidTags.WATER) && !this.onGround() && this.hookedIn == null) {
-+                    this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
-+                }
-+
-+                this.move(MoverType.SELF, this.getDeltaMovement());
-+                this.applyEffectsFromBlocks();
-+                this.updateRotation();
-+                if (this.currentState == FishingHook.FishHookState.FLYING && (this.onGround() || this.horizontalCollision)) {
-+                    this.setDeltaMovement(Vec3.ZERO);
-+                }
-+
-+                double inertia = 0.92;
-+                this.setDeltaMovement(this.getDeltaMovement().scale(inertia));
-+                this.reapplyPosition();
-+            }
++            this.setDeltaMovement(this.getDeltaMovement().scale(inertia));
+             this.reapplyPosition();
          }
      }
- 
 @@ -253,8 +_,8 @@
          if (owner.canInteractWithLevel()) {
              ItemStack selectedItem = owner.getMainHandItem();

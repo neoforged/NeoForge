@@ -5,15 +5,17 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
- * The two subclasses of PlayerSwitchHotbarSlotEvent are fired when a player
- * switches the hotbar slot either by mouse scroll or keyboard input.
+ * Fired when a player switches the hotbar slot either by
+ * mouse scroll or keyboard input. If the server doesn't
+ * receive the packet, neither of the two events will be
+ * fired.
  *
- * @see PlayerSwitchHotbarSlotEvent.Client
- * @see PlayerSwitchHotbarSlotEvent.Server
+ * @see PlayerSwitchHotbarSlotEvent.Pre
+ * @see PlayerSwitchHotbarSlotEvent.Post
  */
 public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
     private final int oldSlotIndex;
@@ -34,31 +36,42 @@ public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
     }
 
     /**
-     * This event is fired when a player attempts to switch the hotbar slot on
-     * the client side. If the packet is not successfully sent to the server
-     * side, the {@link PlayerSwitchHotbarSlotEvent.Server} event will not be
-     * fired after this event.
+     * Fired after the server receives the packet and is about to perform
+     * the slot switching logic. If you cancel this event, you will be
+     * expected to handle the logic yourself.
+     * <p>
+     * Vanilla logic is shown as follows:
+     * <pre>{@code
+     * if (newSlotIndex >= 0 && newSlotIndex <= Inventory.getSelectionSize()) {
+     *     if (oldSlotIndex != newSlotIndex
+     *      && player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+     *         player.stopUsingItem();
+     *     }
+     *     player.getInventory().setSelectedSlot(newSlotIndex);
+     *     player.resetLastActionTime();
+     * } else {
+     *     // Invalid newSlotIndex, either warn in the logger, or throw an exception
+     * }
+     * }</pre>
      */
-    public static non-sealed class Client extends PlayerSwitchHotbarSlotEvent {
-        public Client(Player player, int oldSlotIndex, int newSlotIndex) {
+    public static non-sealed class Pre extends PlayerSwitchHotbarSlotEvent implements ICancellableEvent {
+        public Pre(Player player, int oldSlotIndex, int newSlotIndex) {
             super(player, oldSlotIndex, newSlotIndex);
+        }
+
+        @Override
+        public void setCanceled(boolean canceled) {
+            ICancellableEvent.super.setCanceled(canceled);
         }
     }
 
     /**
-     * This event is fired when the server side receives a packet of switching
-     * the hotbar slot and the switching logic is actually performed.
+     * Fired after all the slot switching logic is successfully
+     * performed.
      */
-    public static non-sealed class Server extends PlayerSwitchHotbarSlotEvent {
-        private final ServerGamePacketListener packetListener;
-
-        public Server(ServerGamePacketListener packetListener, Player player, int oldSlotIndex, int newSlotIndex) {
+    public static non-sealed class Post extends PlayerSwitchHotbarSlotEvent {
+        public Post(Player player, int oldSlotIndex, int newSlotIndex) {
             super(player, oldSlotIndex, newSlotIndex);
-            this.packetListener = packetListener;
-        }
-
-        public ServerGamePacketListener getPacketListener() {
-            return packetListener;
         }
     }
 }

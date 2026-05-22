@@ -880,12 +880,13 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
     }
 
-    public static void onClientSwitchHotbarSlot(Player player, int oldSlotIndex, int newSlotIndex) {
-        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Client(player, oldSlotIndex, newSlotIndex));
+    public static PlayerSwitchHotbarSlotEvent.Pre onSwitchHotbarSlotPre(Player player, int oldSlotIndex, int newSlotIndex) {
+        var preEvent = new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex);
+        return NeoForge.EVENT_BUS.post(preEvent);
     }
 
-    public static void onServerSwitchHotbarSlot(ServerGamePacketListener packetListener, Player player, int oldSlotIndex, int newSlotIndex) {
-        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Server(packetListener, player, oldSlotIndex, newSlotIndex));
+    public static void onSwitchHotbarSlotPost(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Post(player, oldSlotIndex, newSlotIndex));
     }
 
     /**

@@ -96,26 +96,24 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
-@@ -1478,13 +_,20 @@
+@@ -1478,6 +_,10 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
--        if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
--            if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
-+        int oldSlotIndex = this.player.getInventory().getSelectedSlot();
-+        int newSlotIndex = packet.getSlot();
 +
-+        if (newSlotIndex >= 0 && newSlotIndex < Inventory.getSelectionSize()) {
-+            if (oldSlotIndex != newSlotIndex && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
++        var preEvent = net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
++        if (preEvent.isCanceled()) return;
++
+         if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
+             if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
                  this.player.stopUsingItem();
-             }
+@@ -1485,6 +_,10 @@
  
--            this.player.getInventory().setSelectedSlot(packet.getSlot());
-+            this.player.getInventory().setSelectedSlot(newSlotIndex);
+             this.player.getInventory().setSelectedSlot(packet.getSlot());
              this.player.resetLastActionTime();
 +
-+            if (oldSlotIndex != newSlotIndex) {
-+                net.neoforged.neoforge.common.CommonHooks.onServerSwitchHotbarSlot(this, this.player, oldSlotIndex, newSlotIndex);
++            if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
++                net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPost(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
 +            }
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());

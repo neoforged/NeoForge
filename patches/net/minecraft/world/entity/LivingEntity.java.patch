@@ -567,7 +567,7 @@
 +
 +        if (this instanceof Player player) {
 +            if (player.fishing != null) {
-+                if (currentOffHand != null && currentMainHand != null && currentOffHand.is(Items.FISHING_ROD) && currentMainHand.is(Items.FISHING_ROD)) {
++                if (currentOffHand != null && currentMainHand != null && currentOffHand.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST) && currentMainHand.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST)) {
 +                    player.fishing.discard();
 +                } else if (player.fishing.getFishingRodSlot() >= 0) {
 +                    player.fishing.setFishingRodSlot(player.getInventory().getSelectedSlot());
