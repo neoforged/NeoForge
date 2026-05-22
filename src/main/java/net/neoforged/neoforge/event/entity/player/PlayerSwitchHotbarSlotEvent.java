@@ -41,10 +41,11 @@ public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
      * expected to handle the logic yourself.
      * <p>
      * Vanilla logic is shown as follows:
+     *
      * <pre>{@code
      * if (newSlotIndex >= 0 && newSlotIndex <= Inventory.getSelectionSize()) {
      *     if (oldSlotIndex != newSlotIndex
-     *      && player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+     *             && player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
      *         player.stopUsingItem();
      *     }
      *     player.getInventory().setSelectedSlot(newSlotIndex);
