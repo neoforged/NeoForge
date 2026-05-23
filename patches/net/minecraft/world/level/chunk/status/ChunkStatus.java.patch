@@ -5,7 +5,7 @@
          this.heightmapsAfter = heightmapsAfter;
          this.index = parent == null ? 0 : parent.getIndex() + 1;
 +
-+        java.util.Set<Heightmap.Types> chunkSaveHeightmaps = new java.util.HashSet<>(this.heightmapsAfter);
++        EnumSet<Heightmap.Types> chunkSaveHeightmaps = EnumSet.copyOf(this.heightmapsAfter);
 +        if (this.chunkType != ChunkType.LEVELCHUNK) {
 +            chunkSaveHeightmaps.add(Heightmap.Types.WORLD_SURFACE_WG);
 +            chunkSaveHeightmaps.add(Heightmap.Types.OCEAN_FLOOR_WG);
@@ -26,8 +26,8 @@
 +     * structures and features to heightmap snap properly again.
 +     * @return A set of the chunk status's heightmaps alongside _WG heightmaps for worldgen-only chunk statuses
 +     */
-+    public java.util.Set<Heightmap.Types> getChunkSaveHeightmaps() {
++    public EnumSet<Heightmap.Types> getChunkSaveHeightmaps() {
 +        return this.chunkSaveHeightmaps;
 +    }
-+    private final java.util.Set<Heightmap.Types> chunkSaveHeightmaps;
++    private final EnumSet<Heightmap.Types> chunkSaveHeightmaps;
  }
