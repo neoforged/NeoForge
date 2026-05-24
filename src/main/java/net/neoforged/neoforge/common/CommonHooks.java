@@ -803,12 +803,13 @@ public class CommonHooks {
         return true;
     }
 
-    private static ThreadLocal<Player> craftingPlayer = new ThreadLocal<Player>();
+    private static final ThreadLocal<@Nullable Player> craftingPlayer = new ThreadLocal<>();
 
-    public static void setCraftingPlayer(Player player) {
+    public static void setCraftingPlayer(@Nullable Player player) {
         craftingPlayer.set(player);
     }
 
+    @Nullable
     public static Player getCraftingPlayer() {
         return craftingPlayer.get();
     }
