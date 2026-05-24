@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.unittest.transfer;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
@@ -22,11 +26,6 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConsumableItemAccessTest {
     @Test
@@ -64,13 +63,10 @@ public class ConsumableItemAccessTest {
     @Mod(TestMod.MOD_ID)
     public static class TestMod {
         public static final String MOD_ID = "consumable_item_access_test";
-        private static final DeferredRegister.DataComponents COMPONENTS
-                = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
-        public static final Supplier<DataComponentType<SimpleFluidContent>> STORED_FLUID
-                = COMPONENTS.registerComponentType("stored_fluid", builder -> builder
+        private static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
+        public static final Supplier<DataComponentType<SimpleFluidContent>> STORED_FLUID = COMPONENTS.registerComponentType("stored_fluid", builder -> builder
                 .persistent(SimpleFluidContent.CODEC)
-                .networkSynchronized(SimpleFluidContent.STREAM_CODEC)
-        );
+                .networkSynchronized(SimpleFluidContent.STREAM_CODEC));
 
         public TestMod(IEventBus modBus) {
             COMPONENTS.register(modBus);
