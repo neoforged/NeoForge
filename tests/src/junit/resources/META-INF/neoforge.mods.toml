@@ -16,3 +16,5 @@ modId="startup_config_test"
 [[mods]]
 modId="custom_feature_flags_test"
 featureFlags="feature_flags.json"
+[[mods]]
+modId="consumable_item_access_test"

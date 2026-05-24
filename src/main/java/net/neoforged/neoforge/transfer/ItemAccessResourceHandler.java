@@ -10,6 +10,7 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.resource.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base implementation of a {@link ResourceHandler} backed by an {@link ItemAccess}.
@@ -55,11 +56,12 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
      * @param newResource    the new resource, <strong>never empty</strong>: empty is indicated by a 0 amount
      * @param newAmount      the new amount
      * @return {@code accessResource} updated with the new resource and amount,
-     *         or {@link ItemResource#EMPTY} if the new resource or amount cannot be stored
+     *         or {@link ItemResource#EMPTY} if the new resource or amount cannot be stored,
+     *         or {@code null} if the container items should be consumed instead of replaced
      * @implNote This function <strong>should not</strong> mutate the {@linkplain #itemAccess item access},
      *           that will be done by the calling code based on the results of this function.
      */
-    // TODO: we could allow returning null when the resource/amount should be deleted, to allow for "consumable" implementations with minimal effort
+    @Nullable
     protected abstract ItemResource update(ItemResource accessResource, int index, T newResource, int newAmount);
 
     /**
@@ -137,7 +139,9 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
             if (insertedPerItem > 0) {
                 ItemResource filledResource = update(accessResource, index, resource, insertedPerItem + currentAmountPerItem);
 
-                if (!filledResource.isEmpty()) {
+                if (filledResource == null) {
+                    return insertedPerItem * itemAccess.extract(itemAccess.getResource(), accessAmount, transaction);
+                } else if (!filledResource.isEmpty()) {
                     return insertedPerItem * itemAccess.exchange(filledResource, accessAmount, transaction);
                 }
             }
@@ -166,7 +170,9 @@ public abstract class ItemAccessResourceHandler<T extends Resource> implements R
             if (extractedPerItem > 0) {
                 ItemResource emptiedResource = update(accessResource, index, resource, currentAmountPerItem - extractedPerItem);
 
-                if (!emptiedResource.isEmpty()) {
+                if (emptiedResource == null) {
+                    return extractedPerItem * itemAccess.extract(itemAccess.getResource(), accessAmount, transaction);
+                } else if (!emptiedResource.isEmpty()) {
                     return extractedPerItem * itemAccess.exchange(emptiedResource, accessAmount, transaction);
                 }
             }
