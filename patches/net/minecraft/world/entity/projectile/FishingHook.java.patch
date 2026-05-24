@@ -53,15 +53,6 @@
              if (this.onGround()) {
                  this.life++;
                  if (this.life >= 1200) {
-@@ -244,7 +_,7 @@
-             }
- 
-             double inertia = 0.92;
--            this.setDeltaMovement(this.getDeltaMovement().scale(0.92));
-+            this.setDeltaMovement(this.getDeltaMovement().scale(inertia));
-             this.reapplyPosition();
-         }
-     }
 @@ -253,8 +_,8 @@
          if (owner.canInteractWithLevel()) {
              ItemStack selectedItem = owner.getMainHandItem();
