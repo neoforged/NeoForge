@@ -1,0 +1,11 @@
+name: Test Build
+
+on:
+  workflow_dispatch: # این یعنی فقط با زدن دکمه دستی اجرا شود
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say Hello
+        run: echo "Everything is working, Niima!"
