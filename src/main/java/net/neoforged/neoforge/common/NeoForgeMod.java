@@ -53,9 +53,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
@@ -698,8 +700,12 @@ public class NeoForgeMod {
     private static final AttributeModifier GLIDER_COMPONENT_FLIGHT_MODIFIER = new AttributeModifier(Identifier.fromNamespaceAndPath("neoforge", "glider_component_flight"), 1D, AttributeModifier.Operation.ADD_VALUE);
 
     public void onItemAttributeModifiers(ItemAttributeModifierEvent event) {
-        if (event.getItemStack().has(DataComponents.GLIDER)) {
-            event.addModifier(GLIDING_FLIGHT, GLIDER_COMPONENT_FLIGHT_MODIFIER, EquipmentSlotGroup.ANY);
+        ItemStack stack = event.getItemStack();
+        // Mirror the logic in LivingEntity#canGlideUsing for the minecraft:glider item component
+        if (stack.has(DataComponents.GLIDER)
+                && !stack.nextDamageWillBreak()
+                && stack.get(DataComponents.EQUIPPABLE) instanceof Equippable equippable) {
+            event.addModifier(GLIDING_FLIGHT, GLIDER_COMPONENT_FLIGHT_MODIFIER, EquipmentSlotGroup.bySlot(equippable.slot()));
         }
     }
 }
