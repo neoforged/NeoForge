@@ -57,12 +57,7 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
     public static record Multiblock(Set<BlockPos> requiredPositions) implements BlockRelocability {
         @Override
         public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
-            for (BlockPos pos : requiredPositions) {
-                if (!relocatingPositions.contains(pos)) {
-                    return false;
-                }
-            }
-            return true;
+            return relocatingPositions.containsAll(requiredPositions);
         }
     }
 }
