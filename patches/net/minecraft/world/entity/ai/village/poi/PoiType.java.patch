@@ -3,9 +3,9 @@
 @@ -9,7 +_,7 @@
      public static final Predicate<Holder<PoiType>> NONE = poiType -> false;
  
-     public PoiType(Set<BlockState> matchingStates, int maxTickets, int validRange) {
+     public PoiType {
 -        matchingStates = Set.copyOf(matchingStates);
 +        matchingStates = new net.neoforged.neoforge.common.world.poi.PoiStateSet(matchingStates);
-         this.matchingStates = matchingStates;
-         this.maxTickets = maxTickets;
-         this.validRange = validRange;
+     }
+ 
+     public boolean is(BlockState state) {

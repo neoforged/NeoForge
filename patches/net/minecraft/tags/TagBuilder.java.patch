@@ -1,7 +1,7 @@
 --- a/net/minecraft/tags/TagBuilder.java
 +++ b/net/minecraft/tags/TagBuilder.java
-@@ -7,6 +_,8 @@
- public class TagBuilder implements net.neoforged.neoforge.common.extensions.ITagBuilderExtension {
+@@ -9,6 +_,8 @@
+ public class TagBuilder implements ITagBuilderExtension {
      private final List<TagEntry> entries = new ArrayList<>();
      private boolean replace = false;
 +    /// Neo: Entries to be removed from this tag
@@ -9,7 +9,7 @@
  
      public static TagBuilder create() {
          return new TagBuilder();
-@@ -44,5 +_,23 @@
+@@ -46,5 +_,23 @@
  
      public TagBuilder addOptionalTag(Identifier id) {
          return this.add(TagEntry.optionalTag(id));

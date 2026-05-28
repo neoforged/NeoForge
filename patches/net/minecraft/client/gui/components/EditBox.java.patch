@@ -6,9 +6,9 @@
      private int textY;
 +    private java.util.function.Predicate<String> filter = _ -> true; // Neo: Add back text input filtering
  
-     public EditBox(Font font, int width, int height, Component narration) {
-         this(font, 0, 0, width, height, narration);
-@@ -94,6 +_,8 @@
+     public EditBox(Font font, Component narration) {
+         this(font, 150, 20, narration);
+@@ -98,6 +_,8 @@
      }
  
      public void setValue(String value) {
@@ -17,7 +17,7 @@
          if (value.length() > this.maxLength) {
              this.value = value.substring(0, this.maxLength);
          } else {
-@@ -127,6 +_,14 @@
+@@ -131,6 +_,14 @@
          this.updateTextPosition();
      }
  
@@ -32,7 +32,7 @@
      public void insertText(String input) {
          int start = Math.min(this.cursorPos, this.highlightPos);
          int end = Math.max(this.cursorPos, this.highlightPos);
-@@ -143,6 +_,7 @@
+@@ -147,6 +_,7 @@
                  insertionLength = maxInsertionLength;
              }
  
@@ -40,10 +40,10 @@
              this.value = new StringBuilder(this.value).replace(start, end, text).toString();
              this.setCursorPosition(start + insertionLength);
              this.setHighlightPos(this.cursorPos);
-@@ -622,6 +_,10 @@
+@@ -628,6 +_,10 @@
      public void setHint(Component hint) {
          boolean hasNoStyle = hint.getStyle().equals(Style.EMPTY);
-         this.hint = (Component)(hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint);
+         this.hint = hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint;
 +    }
 +
 +    public boolean getTextShadow() {

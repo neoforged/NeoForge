@@ -39,7 +39,7 @@ public class PistonTests {
         test.registerGameTestTemplate(() -> StructureTemplateBuilder.withSize(3, 5, 3)
                 .placeFloorLever(1, 1, 1, false)
                 .set(1, 0, 2, Blocks.PISTON.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.UP))
-                .set(1, 1, 2, Blocks.BLACK_WOOL.defaultBlockState())
+                .set(1, 1, 2, Blocks.WOOL.black().defaultBlockState())
                 .set(1, 2, 2, shiftOnPistonMove.get().defaultBlockState())
 
                 .set(2, 0, 1, Blocks.STICKY_PISTON.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.UP))
@@ -57,7 +57,7 @@ public class PistonTests {
                 if (pistonHelper.resolve()) {
                     for (BlockPos newPos : pistonHelper.getToPush()) {
                         final BlockState state = event.getLevel().getBlockState(newPos);
-                        if (state.getBlock() == Blocks.BLACK_WOOL) {
+                        if (state.getBlock() == Blocks.WOOL.black()) {
                             Block.dropResources(state, level, newPos);
                             level.setBlockAndUpdate(newPos, Blocks.AIR.defaultBlockState());
                         }

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import java.util.List;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.EventHooks;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * This event is fired whenever a mob is removed and splits into multiple children. It only fires on the logical server.
  * <p>
- * In vanilla, this event is fired by Slimes and Magma Cubes on death, from {@link Slime#remove(RemovalReason)}.
+ * In vanilla, this event is fired by Slimes and Magma Cubes on death, from {@link AbstractCubeMob#remove(RemovalReason)}.
  * <p>
  * Mods may elect to fire this event for any mob that splits on removal.
  */

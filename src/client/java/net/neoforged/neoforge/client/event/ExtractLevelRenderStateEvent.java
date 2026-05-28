@@ -10,6 +10,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.bus.api.Event;
@@ -31,37 +32,34 @@ import org.jetbrains.annotations.ApiStatus;
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
 public final class ExtractLevelRenderStateEvent extends Event {
-    private final LevelRenderer levelRenderer;
+    private final LevelExtractor levelExtractor;
     private final LevelRenderState renderState;
     private final ClientLevel level;
     private final Camera camera;
     private final Frustum frustum;
     private final DeltaTracker deltaTracker;
-    private final int renderTick;
 
     @ApiStatus.Internal
     public ExtractLevelRenderStateEvent(
-            LevelRenderer levelRenderer,
+            LevelExtractor levelExtractor,
             LevelRenderState renderState,
             ClientLevel level,
             Camera camera,
             Frustum frustum,
-            DeltaTracker deltaTracker,
-            int renderTick) {
-        this.levelRenderer = levelRenderer;
+            DeltaTracker deltaTracker) {
+        this.levelExtractor = levelExtractor;
         this.renderState = renderState;
         this.level = level;
         this.camera = camera;
         this.frustum = frustum;
         this.deltaTracker = deltaTracker;
-        this.renderTick = renderTick;
     }
 
     /**
-     * {@return the {@link LevelRenderer} performing the extraction}
+     * {@return the {@link LevelExtractor} performing the extraction}
      */
-    public LevelRenderer getLevelRenderer() {
-        return levelRenderer;
+    public LevelExtractor getLevelExtractor() {
+        return levelExtractor;
     }
 
     /**
@@ -97,12 +95,5 @@ public final class ExtractLevelRenderStateEvent extends Event {
      */
     public DeltaTracker getDeltaTracker() {
         return deltaTracker;
-    }
-
-    /**
-     * {@return the current "ticks" value in the {@link LevelRenderer}}
-     */
-    public int getRenderTick() {
-        return this.renderTick;
     }
 }

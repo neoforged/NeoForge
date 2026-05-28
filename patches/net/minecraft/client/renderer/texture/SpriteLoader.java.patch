@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/SpriteLoader.java
 +++ b/net/minecraft/client/renderer/texture/SpriteLoader.java
-@@ -129,7 +_,7 @@
+@@ -126,7 +_,7 @@
          ResourceManager manager, Identifier atlasInfoLocation, int maxMipmapLevels, Executor taskExecutor, Set<MetadataSectionType<?>> additionalMetadata
      ) {
          SpriteResourceLoader spriteResourceLoader = SpriteResourceLoader.create(additionalMetadata);

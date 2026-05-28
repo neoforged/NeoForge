@@ -11,8 +11,11 @@ import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -63,13 +66,8 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         copy(Tags.Blocks.COBBLESTONES_MOSSY, Tags.Items.COBBLESTONES_MOSSY);
         copy(Tags.Blocks.COBBLESTONES_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
         copy(Tags.Blocks.CONCRETES, Tags.Items.CONCRETES);
-        tag(Tags.Items.CONCRETE_POWDERS)
-                .add(Items.WHITE_CONCRETE_POWDER).add(Items.ORANGE_CONCRETE_POWDER).add(Items.MAGENTA_CONCRETE_POWDER)
-                .add(Items.LIGHT_BLUE_CONCRETE_POWDER).add(Items.YELLOW_CONCRETE_POWDER).add(Items.LIME_CONCRETE_POWDER)
-                .add(Items.PINK_CONCRETE_POWDER).add(Items.GRAY_CONCRETE_POWDER).add(Items.LIGHT_GRAY_CONCRETE_POWDER)
-                .add(Items.CYAN_CONCRETE_POWDER).add(Items.PURPLE_CONCRETE_POWDER).add(Items.BLUE_CONCRETE_POWDER)
-                .add(Items.BROWN_CONCRETE_POWDER).add(Items.GREEN_CONCRETE_POWDER).add(Items.RED_CONCRETE_POWDER)
-                .add(Items.BLACK_CONCRETE_POWDER);
+        var concretePowder = tag(Tags.Items.CONCRETE_POWDERS);
+        Items.CONCRETE_POWDER.forEach(concretePowder::add);
         tag(Tags.Items.CROPS).addTags(
                 Tags.Items.CROPS_BEETROOT, Tags.Items.CROPS_CACTUS, Tags.Items.CROPS_CARROT,
                 Tags.Items.CROPS_COCOA_BEAN, Tags.Items.CROPS_MELON, Tags.Items.CROPS_NETHER_WART,
@@ -258,13 +256,8 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SKELETON_USABLE_BOWS).addTag(Tags.Items.TOOLS_BOW);
         tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL);
-        tag(Tags.Items.SHULKER_BOXES)
-                .add(Items.SHULKER_BOX).add(Items.WHITE_SHULKER_BOX).add(Items.ORANGE_SHULKER_BOX)
-                .add(Items.MAGENTA_SHULKER_BOX).add(Items.LIGHT_BLUE_SHULKER_BOX).add(Items.YELLOW_SHULKER_BOX)
-                .add(Items.LIME_SHULKER_BOX).add(Items.PINK_SHULKER_BOX).add(Items.GRAY_SHULKER_BOX)
-                .add(Items.LIGHT_GRAY_SHULKER_BOX).add(Items.CYAN_SHULKER_BOX).add(Items.PURPLE_SHULKER_BOX)
-                .add(Items.BLUE_SHULKER_BOX).add(Items.BROWN_SHULKER_BOX).add(Items.GREEN_SHULKER_BOX)
-                .add(Items.RED_SHULKER_BOX).add(Items.BLACK_SHULKER_BOX);
+        var shulker = tag(Tags.Items.SHULKER_BOXES).add(Items.SHULKER_BOX);
+        Items.DYED_SHULKER_BOX.forEach(shulker::add);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
         copy(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, Tags.Items.STORAGE_BLOCKS_BONE_MEAL);
@@ -348,6 +341,68 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                 .addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
 
         tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.MELEE_WEAPON_ENCHANTABLE, ItemTags.SHARP_WEAPON_ENCHANTABLE, ItemTags.SWEEPING_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);
+    }
+
+    protected record Appender(TagAppender<Item> app) implements TagAppender<Item> {
+        @Override
+        public Appender add(ResourceKey<Item> element) {
+            app.add(element);
+            return this;
+        }
+
+        @Override
+        public Appender addOptional(ResourceKey<Item> element) {
+            app.addOptional(element);
+            return this;
+        }
+
+        @Override
+        public Appender addTag(TagKey<Item> tag) {
+            app.addTag(tag);
+            return this;
+        }
+
+        @Override
+        public Appender addOptionalTag(TagKey<Item> tag) {
+            app.addOptionalTag(tag);
+            return this;
+        }
+
+        @Override
+        public Appender add(TagEntry entry) {
+            app.add(entry);
+            return this;
+        }
+
+        @Override
+        public Appender replace(boolean value) {
+            app.replace(value);
+            return this;
+        }
+
+        @Override
+        public Appender remove(ResourceKey<Item> element) {
+            app.remove(element);
+            return this;
+        }
+
+        @Override
+        public Appender remove(TagKey<Item> tag) {
+            app.remove(tag);
+            return this;
+        }
+
+        public Appender add(Item... items) {
+            for (Item item : items) {
+                add(BuiltInRegistries.ITEM.wrapAsHolder(item).getKey());
+            }
+            return this;
+        }
+    }
+
+    @Override
+    protected Appender tag(TagKey<Item> tag) {
+        return new Appender(super.tag(tag));
     }
 
     private void addColored(TagKey<Item> group, String pattern) {

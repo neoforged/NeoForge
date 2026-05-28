@@ -9,12 +9,15 @@
      private static final Map<ResourceKey<VillagerProfession>, ResourceKey<LootTable>> GIFTS = ImmutableMap.<ResourceKey<VillagerProfession>, ResourceKey<LootTable>>builder()
          .put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT)
          .put(VillagerProfession.BUTCHER, BuiltInLootTables.BUTCHER_GIFT)
-@@ -108,6 +_,8 @@
+@@ -107,6 +_,11 @@
+     private static ResourceKey<LootTable> getLootTableToThrow(Villager villager) {
          if (villager.isBaby()) {
              return BuiltInLootTables.BABY_VILLAGER_GIFT;
-         } else {
-+            var gift = villager.getVillagerData().profession().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
-+            if (gift != null) return gift.lootTable();
-             Optional<ResourceKey<VillagerProfession>> profession = villager.getVillagerData().profession().unwrapKey();
-             return profession.isEmpty() ? BuiltInLootTables.UNEMPLOYED_GIFT : GIFTS.getOrDefault(profession.get(), BuiltInLootTables.UNEMPLOYED_GIFT);
++        }
++
++        var gift = villager.getVillagerData().profession().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
++        if (gift != null) {
++            return gift.lootTable();
          }
+ 
+         Optional<ResourceKey<VillagerProfession>> profession = villager.getVillagerData().profession().unwrapKey();

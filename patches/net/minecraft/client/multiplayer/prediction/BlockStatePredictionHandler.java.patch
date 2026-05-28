@@ -15,7 +15,7 @@
              }
          }
      }
-@@ -75,8 +_,20 @@
+@@ -75,7 +_,19 @@
          return this.isPredicting;
      }
  
@@ -27,7 +27,6 @@
 +        this.serverVerifiedStates.get(pos.asLong()).snapshot = snapshot;
 +    }
 +
-     @OnlyIn(Dist.CLIENT)
      private static class ServerVerifiedState {
 +        /**
 +         * Neo: Used to hold all data necessary for clientside restoration during break denial.

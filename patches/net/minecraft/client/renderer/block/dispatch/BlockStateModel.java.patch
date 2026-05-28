@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
 +++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModel.java
-@@ -22,13 +_,21 @@
+@@ -23,12 +_,20 @@
  
  @OnlyIn(Dist.CLIENT)
- public interface BlockStateModel extends net.neoforged.neoforge.client.extensions.BlockStateModelExtension {
+ public interface BlockStateModel extends BlockStateModelExtension {
 +    /// @deprecated Neo: Use [#collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, RandomSource, List)].
 +    @Deprecated
      void collectParts(RandomSource random, List<BlockStateModelPart> output);
@@ -14,15 +14,14 @@
  
 +    /// @deprecated Neo: Use [#materialFlags(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState)] instead
 +    @Deprecated
-     @BakedQuad.MaterialFlags
-     int materialFlags();
+     @BakedQuad.MaterialFlags int materialFlags();
  
 +    /// @deprecated Neo: Use [#hasMaterialFlag(net.minecraft.client.renderer.block.BlockAndTintGetter, net.minecraft.core.BlockPos, BlockState, int)] instead
 +    @Deprecated
      default boolean hasMaterialFlag(@BakedQuad.MaterialFlags int flag) {
          return (this.materialFlags() & flag) != 0;
      }
-@@ -72,30 +_,41 @@
+@@ -66,30 +_,41 @@
              i -> i.group(Variant.MAP_CODEC.forGetter(Weighted::value), ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Weighted::weight))
                  .apply(i, Weighted::new)
          );

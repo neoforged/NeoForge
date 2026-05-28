@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.common.advancements.critereon;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.advancements.criterion.EntitySubPredicate;
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
@@ -15,14 +16,9 @@ import org.jspecify.annotations.Nullable;
 
 public class TridentEntityPredicate implements EntitySubPredicate {
     public static final TridentEntityPredicate INSTANCE = new TridentEntityPredicate();
-    public static final MapCodec<TridentEntityPredicate> CODEC = MapCodec.unit(INSTANCE);
+    public static final Codec<TridentEntityPredicate> CODEC = MapCodec.unitCodec(INSTANCE);
 
     private TridentEntityPredicate() {}
-
-    @Override
-    public MapCodec<TridentEntityPredicate> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean matches(Entity entity, ServerLevel level, @Nullable Vec3 position) {

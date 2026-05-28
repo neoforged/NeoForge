@@ -4,8 +4,8 @@
      }
  
      protected void doUnderWaterConversion(ServerLevel level) {
-+        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) return;
-         this.convertToZombieType(level, EntityType.DROWNED);
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.DROWNED, (timer) -> this.conversionTime = timer)) return;
+         this.convertToZombieType(level, EntityTypes.DROWNED);
          if (!this.isSilent()) {
              level.levelEvent(null, 1040, this.blockPosition(), 0);
 @@ -248,9 +_,10 @@
@@ -22,7 +22,7 @@
          );
      }
  
-@@ -267,6 +_,7 @@
+@@ -268,6 +_,7 @@
                  zombie.setGossips(villager.getGossips().copy());
                  zombie.setTradeOffers(villager.getOffers().copy());
                  zombie.setVillagerXp(villager.getVillagerXp());
@@ -30,12 +30,12 @@
                  if (!this.isSilent()) {
                      level.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -424,7 +_,7 @@
+@@ -423,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel level, LivingEntity entity, DamageSource source) {
          boolean perished = super.killedEntity(level, entity, source);
 -        if ((level.getDifficulty() == Difficulty.NORMAL || level.getDifficulty() == Difficulty.HARD) && entity instanceof Villager villager) {
-+        if ((level.getDifficulty() == Difficulty.NORMAL || level.getDifficulty() == Difficulty.HARD) && entity instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(entity, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
++        if ((level.getDifficulty() == Difficulty.NORMAL || level.getDifficulty() == Difficulty.HARD) && entity instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(entity, EntityTypes.ZOMBIE_VILLAGER, (timer) -> {})) {
              if (level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                  return perished;
              }

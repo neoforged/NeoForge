@@ -1,14 +1,15 @@
 --- a/com/mojang/blaze3d/pipeline/TextureTarget.java
 +++ b/com/mojang/blaze3d/pipeline/TextureTarget.java
-@@ -8,7 +_,10 @@
+@@ -9,7 +_,11 @@
  @OnlyIn(Dist.CLIENT)
  public class TextureTarget extends RenderTarget {
-     public TextureTarget(@Nullable String label, int width, int height, boolean useDepth) {
--        super(label, useDepth);
-+        this(label, width, height, useDepth, false);
+     public TextureTarget(@Nullable String label, int width, int height, boolean useDepth, GpuFormat format) {
+-        super(label, useDepth, format);
++        this(label, width, height, useDepth, false, format);
 +    }
-+    public TextureTarget(@Nullable String label, int width, int height, boolean useDepth, boolean enableStencil) {
-+        super(label, useDepth, enableStencil);
++
++    public TextureTarget(@Nullable String label, int width, int height, boolean useDepth, boolean useStencil, GpuFormat format) {
++        super(label, useDepth, useStencil, format);
          RenderSystem.assertOnRenderThread();
          this.resize(width, height);
      }

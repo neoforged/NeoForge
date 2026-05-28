@@ -317,7 +317,7 @@ public class DataMapTests {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(effectGrant)
-                        .add(Blocks.COPPER_BLOCK.getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.NAUSEA, 100), false);
+                        .add(Blocks.COPPER_BLOCK.weathering().unaffected().getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.NAUSEA, 100), false);
             }
         });
 
@@ -332,7 +332,7 @@ public class DataMapTests {
 
         test.onGameTest(helper -> {
             final Player player = helper.makeMockPlayer();
-            helper.useBlock(new BlockPos(0, 1, 0), player, Blocks.COPPER_BLOCK.asItem().getDefaultInstance());
+            helper.useBlock(new BlockPos(0, 1, 0), player, Blocks.COPPER_BLOCK.weathering().unaffected().asItem().getDefaultInstance());
             helper.assertMobEffectPresent(player, MobEffects.NAUSEA, Component.literal("has nausea"));
             helper.succeed();
         });
@@ -448,22 +448,22 @@ public class DataMapTests {
 
             // -------------- Test vanilla blocks -------------- \\
             // Test Block of Copper -> Exposed Copper
-            helper.setBlock(blockPos, Blocks.COPPER_BLOCK);
-            if (DataMapHooks.getNextOxidizedStage(Blocks.COPPER_BLOCK) == null)
+            helper.setBlock(blockPos, Blocks.COPPER_BLOCK.weathering().unaffected());
+            if (DataMapHooks.getNextOxidizedStage(Blocks.COPPER_BLOCK.weathering().unaffected()) == null)
                 helper.fail("Next oxidization state for copper block was null!");
-            helper.setBlock(blockPos, DataMapHooks.getNextOxidizedStage(Blocks.COPPER_BLOCK));
-            helper.assertBlock(blockPos, Blocks.EXPOSED_COPPER::equals, "Wanted: Exposed Copper but found something else!");
+            helper.setBlock(blockPos, DataMapHooks.getNextOxidizedStage(Blocks.COPPER_BLOCK.weathering().unaffected()));
+            helper.assertBlock(blockPos, Blocks.COPPER_BLOCK.weathering().exposed()::equals, "Wanted: Exposed Copper but found something else!");
 
             // Test Block of Copper -> Waxed Block of Copper
-            helper.setBlock(blockPos, Blocks.COPPER_BLOCK);
-            if (DataMapHooks.getBlockWaxed(Blocks.COPPER_BLOCK) == null)
+            helper.setBlock(blockPos, Blocks.COPPER_BLOCK.weathering().unaffected());
+            if (DataMapHooks.getBlockWaxed(Blocks.COPPER_BLOCK.weathering().unaffected()) == null)
                 helper.fail("Waxed state for block of copper was null!");
-            helper.setBlock(blockPos, DataMapHooks.getBlockWaxed(Blocks.COPPER_BLOCK));
-            helper.assertBlock(blockPos, Blocks.WAXED_COPPER_BLOCK::equals, "Wanted: Waxed Copper of Block but found something else!");
+            helper.setBlock(blockPos, DataMapHooks.getBlockWaxed(Blocks.COPPER_BLOCK.weathering().unaffected()));
+            helper.assertBlock(blockPos, Blocks.COPPER_BLOCK.waxed().unaffected()::equals, "Wanted: Waxed Copper of Block but found something else!");
 
             // Test Waxed Block of Copper -> Block of Copper
             helper.useOn(blockPos, Items.IRON_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
-            helper.assertBlock(blockPos, Blocks.COPPER_BLOCK::equals, "Wanted: Block of Copper but found something else!");
+            helper.assertBlock(blockPos, Blocks.COPPER_BLOCK.weathering().unaffected()::equals, "Wanted: Block of Copper but found something else!");
 
             // Test vanilla stuff
             WeatheringCopper.NEXT_BY_BLOCK.get().forEach((before, after) -> {

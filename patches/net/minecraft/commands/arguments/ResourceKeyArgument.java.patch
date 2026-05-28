@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/ResourceKeyArgument.java
 +++ b/net/minecraft/commands/arguments/ResourceKeyArgument.java
-@@ -50,6 +_,9 @@
+@@ -49,6 +_,9 @@
      private static final DynamicCommandExceptionType ERROR_INVALID_ADVANCEMENT = new DynamicCommandExceptionType(
          value -> Component.translatableEscape("advancement.advancementNotFound", value)
      );
@@ -10,7 +10,7 @@
      private final ResourceKey<? extends Registry<T>> registryKey;
  
      public ResourceKeyArgument(ResourceKey<? extends Registry<T>> registryKey) {
-@@ -92,6 +_,9 @@
+@@ -91,6 +_,9 @@
      }
  
      public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
@@ -20,7 +20,7 @@
          RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
          ResourceKey<Recipe<?>> key = getRegistryKey(context, name, Registries.RECIPE, ERROR_INVALID_RECIPE);
          return recipeManager.byKey(key).orElseThrow(() -> ERROR_INVALID_RECIPE.create(key.identifier()));
-@@ -99,7 +_,7 @@
+@@ -98,7 +_,7 @@
  
      public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
          ResourceKey<Advancement> key = getRegistryKey(context, name, Registries.ADVANCEMENT, ERROR_INVALID_ADVANCEMENT);

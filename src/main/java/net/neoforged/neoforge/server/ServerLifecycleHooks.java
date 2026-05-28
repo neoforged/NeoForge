@@ -25,6 +25,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.Biome;
@@ -185,7 +186,7 @@ public class ServerLifecycleHooks {
                 for (Weighted<MobSpawnSettings.SpawnerData> spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
                     if (spawnerData.value().type().getCategory() != mobCategory) {
                         // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
-                        boolean isVanillaBug = spawnerData.value().type() == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
+                        boolean isVanillaBug = spawnerData.value().type() == EntityTypes.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
                         if (!isVanillaBug) {
                             LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
                                     "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",

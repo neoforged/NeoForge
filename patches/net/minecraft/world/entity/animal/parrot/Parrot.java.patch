@@ -11,8 +11,8 @@
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */
 +    @Deprecated
      private static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), map -> {
-         map.put(EntityType.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
-         map.put(EntityType.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED);
+         map.put(EntityTypes.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
+         map.put(EntityTypes.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED);
 @@ -268,7 +_,7 @@
              }
  

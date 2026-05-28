@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
-@@ -74,7 +_,7 @@
- 
+@@ -61,7 +_,7 @@
+         this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
              @Override
              public boolean mayPlace(ItemStack itemStack) {
 -                return itemStack.is(Items.LAPIS_LAZULI);
@@ -9,7 +9,7 @@
              }
  
              @Override
-@@ -102,23 +_,24 @@
+@@ -89,23 +_,24 @@
              if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
                  this.access.execute((level, pos) -> {
                      IdMap<Holder<Enchantment>> holders = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).asHolderIdMap();
@@ -37,26 +37,26 @@
                      }
  
                      for (int ix = 0; ix < 3; ix++) {
-@@ -162,14 +_,11 @@
-                     List<EnchantmentInstance> newEnchantment = this.getEnchantmentList(level.registryAccess(), itemStack, buttonId, this.costs[buttonId]);
-                     if (!newEnchantment.isEmpty()) {
-                         player.onEnchantmentPerformed(itemStack, enchantmentCost);
--                        if (itemStack.is(Items.BOOK)) {
--                            enchantmentItem = itemStack.transmuteCopy(Items.ENCHANTED_BOOK);
--                            this.enchantSlots.setItem(0, enchantmentItem);
--                        }
-+                        // Neo: Allow items to transform themselves when enchanted, instead of relying on hardcoded transformations for Items.BOOK
-+                        enchantmentItem = itemStack.getItem().applyEnchantments(itemStack, newEnchantment);
-+                        this.enchantSlots.setItem(0, enchantmentItem);
-+                        net.neoforged.neoforge.common.CommonHooks.onPlayerEnchantItem(player, enchantmentItem, newEnchantment);
+@@ -152,14 +_,10 @@
+                 List<EnchantmentInstance> newEnchantment = this.getEnchantmentList(level.registryAccess(), enchantmentItem, buttonId, this.costs[buttonId]);
+                 if (!newEnchantment.isEmpty()) {
+                     player.onEnchantmentPerformed(enchantmentItem, enchantmentCost);
+-                    if (enchantmentItem.is(Items.BOOK)) {
+-                        enchantmentItem = itemStack.transmuteCopy(Items.ENCHANTED_BOOK);
+-                        this.enchantSlots.setItem(0, enchantmentItem);
+-                    }
+-
+-                    for (EnchantmentInstance enchantment : newEnchantment) {
+-                        enchantmentItem.enchant(enchantment.enchantment(), enchantment.level());
+-                    }
++                    // Neo: Allow items to transform themselves when enchanted, instead of relying on hardcoded transformations for Items.BOOK
++                    enchantmentItem = itemStack.getItem().applyEnchantments(itemStack, newEnchantment);
++                    this.enchantSlots.setItem(0, enchantmentItem);
++                    net.neoforged.neoforge.common.CommonHooks.onPlayerEnchantItem(player, enchantmentItem, newEnchantment);
  
--                        for (EnchantmentInstance enchantment : newEnchantment) {
--                            enchantmentItem.enchant(enchantment.enchantment(), enchantment.level());
--                        }
- 
-                         currency.consume(enchantmentCost, player);
-                         if (currency.isEmpty()) {
-@@ -245,7 +_,7 @@
+                     currency.consume(enchantmentCost, player);
+                     if (currency.isEmpty()) {
+@@ -234,7 +_,7 @@
                  if (!this.moveItemStackTo(stack, 2, 38, true)) {
                      return ItemStack.EMPTY;
                  }

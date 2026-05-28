@@ -52,7 +52,7 @@
 +            };
              for (Direction direction : DIRECTIONS) {
                  int cacheMask = 1 << direction.ordinal();
-                 boolean validCacheForDirection = (cacheValid & cacheMask) == 1;
+                 boolean validCacheForDirection = (cacheValid & cacheMask) != 0;
 @@ -105,7 +_,7 @@
                      List<BakedQuad> culledQuads = part.getQuads(direction);
                      if (!culledQuads.isEmpty()) {

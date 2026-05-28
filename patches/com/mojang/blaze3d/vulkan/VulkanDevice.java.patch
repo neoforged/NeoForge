@@ -1,0 +1,26 @@
+--- a/com/mojang/blaze3d/vulkan/VulkanDevice.java
++++ b/com/mojang/blaze3d/vulkan/VulkanDevice.java
+@@ -279,12 +_,12 @@
+         );
+         if (vertexShader == IntermediaryShaderModule.INVALID) {
+             LOGGER.error("Couldn't compile pipeline {}: vertex shader {} was invalid", pipeline.getLocation(), pipeline.getVertexShader());
+-            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
++            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
+         }
+ 
+         if (fragmentShader == IntermediaryShaderModule.INVALID) {
+             LOGGER.error("Couldn't compile pipeline {}: fragment shader {} was invalid", pipeline.getLocation(), pipeline.getFragmentShader());
+-            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
++            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
+         }
+ 
+         try {
+@@ -292,7 +_,7 @@
+             return VulkanRenderPipeline.compile(this, modules.layout(), pipeline, modules.vertex(), modules.fragment());
+         } catch (ShaderCompileException e) {
+             LOGGER.error("Couldn't compile pipeline {}: {}", pipeline.getLocation(), e.getMessage());
+-            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
++            return new VulkanRenderPipeline(pipeline, this, 0L, 0L, 0L, 0L, VulkanBindGroupLayout.INVALID_LAYOUT, 0L, 0L);
+         }
+     }
+ 

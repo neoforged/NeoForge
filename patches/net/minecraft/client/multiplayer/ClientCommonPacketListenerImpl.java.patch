@@ -20,7 +20,7 @@
      }
  
      public ServerLinks serverLinks() {
-@@ -157,6 +_,33 @@
+@@ -158,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket packet) {
@@ -54,7 +54,7 @@
          CustomPacketPayload payload = packet.payload();
          if (!(payload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
-@@ -347,6 +_,8 @@
+@@ -348,6 +_,8 @@
      }
  
      public void send(Packet<?> packet) {
@@ -63,8 +63,8 @@
          this.connection.send(packet);
      }
  
-@@ -504,5 +_,15 @@
-         @OnlyIn(Dist.CLIENT)
+@@ -495,5 +_,15 @@
+ 
          private record PendingRequest(UUID id, URL url, String hash) {
          }
 +    }

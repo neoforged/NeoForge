@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/fog/FogRenderer.java
 +++ b/net/minecraft/client/renderer/fog/FogRenderer.java
-@@ -151,7 +_,7 @@
-                 fogBlue = Mth.lerp(brightenFactor, fogBlue, fogBlue * targetScale);
-             }
- 
--            dest.set(fogRed, fogGreen, fogBlue, 1.0F);
-+            net.neoforged.neoforge.client.ClientHooks.getFogColor(camera, partialTicks, level, renderDistance, darkenWorldAmount, fogRed, fogGreen, fogBlue, dest);
+@@ -157,7 +_,7 @@
+             fogBlue = Mth.lerp(brightenFactor, fogBlue, fogBlue * scale);
          }
+ 
+-        dest.set(fogRed, fogGreen, fogBlue, 1.0F);
++        net.neoforged.neoforge.client.ClientHooks.getFogColor(camera, partialTicks, level, renderDistance, darkenWorldAmount, fogRed, fogGreen, fogBlue, dest);
      }
  
-@@ -167,9 +_,11 @@
+     public static boolean toggleFog() {
+@@ -172,9 +_,11 @@
          FogData fog = new FogData();
          this.computeFogColor(camera, partialTickTime, level, renderDistanceInChunks, darkenWorldAmount, fog.color);
  
@@ -21,7 +21,7 @@
                  break;
              }
          }
-@@ -177,6 +_,7 @@
+@@ -182,6 +_,7 @@
          float renderDistanceFogSpan = Mth.clamp(renderDistanceInBlocks / 10.0F, 4.0F, 64.0F);
          fog.renderDistanceStart = renderDistanceInBlocks - renderDistanceFogSpan;
          fog.renderDistanceEnd = renderDistanceInBlocks;

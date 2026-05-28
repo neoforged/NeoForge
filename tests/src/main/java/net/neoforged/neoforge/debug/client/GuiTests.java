@@ -5,15 +5,16 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
@@ -21,7 +22,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -58,13 +59,13 @@ public class GuiTests {
     static void testGuiLayering(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ScreenEvent.Init.Post event) -> {
             if (event.getScreen() instanceof AbstractContainerScreen) {
-                event.addListener(Button.builder(Component.literal("Test Gui Layering"), btn -> {
-                    Minecraft.getInstance().pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
+                event.addListener(Button.builder(Component.literal("Test Gui Layering"), _ -> {
+                    Minecraft.getInstance().gui.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
                     test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Did the layered GUIs work?"));
                 }).pos(2, 2).size(150, 20).build());
 
-                event.addListener(Button.builder(Component.literal("Test Gui Normal"), btn -> {
-                    Minecraft.getInstance().setScreen(new TestLayer(Component.literal("LayerScreen")));
+                event.addListener(Button.builder(Component.literal("Test Gui Normal"), _ -> {
+                    Minecraft.getInstance().gui.setScreen(new TestLayer(Component.literal("LayerScreen")));
                     test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Did the layered GUIs work?"));
                 }).pos(2, 25).size(150, 20).build());
             }
@@ -123,15 +124,15 @@ public class GuiTests {
         }
 
         private void closeStack(Button button) {
-            this.minecraft.setScreen(null);
+            this.minecraft.gui.setScreen(null);
         }
 
         private void popLayerButton(Button button) {
-            this.minecraft.popGuiLayer();
+            this.minecraft.gui.popGuiLayer();
         }
 
         private void pushLayerButton(Button button) {
-            this.minecraft.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
+            this.minecraft.gui.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
         }
     }
 
@@ -160,34 +161,34 @@ public class GuiTests {
     }
 
     private static GuiLayer makeRightOverlay(DynamicTest test, int height, int color) {
-        return (guiGraphics, partialTick) -> {
+        return (guiGraphics, _) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
             }
-            var gui = Minecraft.getInstance().gui;
+            Hud hud = Minecraft.getInstance().gui.hud;
             guiGraphics.fill(
                     guiGraphics.guiWidth() / 2 + 91 - 80,
-                    guiGraphics.guiHeight() - gui.rightHeight + 9 - height,
+                    guiGraphics.guiHeight() - hud.rightHeight + 9 - height,
                     guiGraphics.guiWidth() / 2 + 91,
-                    guiGraphics.guiHeight() - gui.rightHeight + 9,
+                    guiGraphics.guiHeight() - hud.rightHeight + 9,
                     color);
-            gui.rightHeight += height + 1;
+            hud.rightHeight += height + 1;
         };
     }
 
     private static GuiLayer makeLeftOverlay(DynamicTest test, int height, int color) {
-        return (guiGraphics, partialTick) -> {
+        return (guiGraphics, _) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
             }
-            var gui = Minecraft.getInstance().gui;
+            Hud hud = Minecraft.getInstance().gui.hud;
             guiGraphics.fill(
                     guiGraphics.guiWidth() / 2 - 91,
-                    guiGraphics.guiHeight() - gui.leftHeight + 9 - height,
+                    guiGraphics.guiHeight() - hud.leftHeight + 9 - height,
                     guiGraphics.guiWidth() / 2 - 91 + 80,
-                    guiGraphics.guiHeight() - gui.leftHeight + 9,
+                    guiGraphics.guiHeight() - hud.leftHeight + 9,
                     color);
-            gui.leftHeight += height + 1;
+            hud.leftHeight += height + 1;
         };
     }
 
@@ -274,12 +275,14 @@ public class GuiTests {
     static void testNonQuadUiGeometry(DynamicTest test) {
         String modId = test.createModId();
 
-        RenderPipeline triStripPipeline = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        RenderPipeline triStripPipeline = RenderPipeline.builder()
                 .withLocation(Identifier.fromNamespaceAndPath(modId, "tri_strip"))
                 .withVertexShader("core/position_color")
                 .withFragmentShader("core/position_color")
+                .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
                 .withCull(false)
-                .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
+                .withPrimitiveTopology(PrimitiveTopology.TRIANGLE_FAN)
                 .build();
 
         record CircleGuiElementRenderState(

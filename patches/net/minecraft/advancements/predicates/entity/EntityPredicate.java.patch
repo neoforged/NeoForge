@@ -1,0 +1,27 @@
+--- a/net/minecraft/advancements/predicates/entity/EntityPredicate.java
++++ b/net/minecraft/advancements/predicates/entity/EntityPredicate.java
+@@ -91,6 +_,11 @@
+         return entity == null ? false : this.combinedPart.matches(entity, level, position);
+     }
+ 
++    @Nullable
++    public <T extends EntitySubPredicate> T getPartIfExists(Codec<T> type) {
++        return (T) parts.get(type);
++    }
++
+     public static LootContext createContext(ServerPlayer player, Entity entity) {
+         LootParams lootParams = new LootParams.Builder(player.level())
+             .withParameter(LootContextParams.THIS_ENTITY, entity)
+@@ -140,6 +_,12 @@
+ 
+         public static EntityPredicate.Builder entity() {
+             return new EntityPredicate.Builder();
++        }
++
++        public static EntityPredicate.Builder from(EntityPredicate predicate) {
++            var builder = new Builder();
++            builder.parts.putAll(predicate.parts);
++            return builder;
+         }
+ 
+         public <T extends EntitySubPredicate> EntityPredicate.Builder put(Codec<T> key, T predicate) {

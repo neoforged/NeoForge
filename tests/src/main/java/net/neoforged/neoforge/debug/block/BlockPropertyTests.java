@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
@@ -97,7 +98,7 @@ public class BlockPropertyTests {
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(new BlockPos(4, 6, 4), resistantBlock.get().defaultBlockState().setValue(BlockStateProperties.AGE_7, 5)))
                 .thenExecute(() -> helper.setBlock(new BlockPos(4, 4, 7), resistantBlock.get().defaultBlockState().setValue(BlockStateProperties.AGE_7, 3)))
-                .thenExecuteAfter(2, () -> helper.getLevel().explode(null, null, null, helper.absoluteVec(new BlockPos(4, 5, 4).getCenter()), 4, false, Level.ExplosionInteraction.BLOCK))
+                .thenExecuteAfter(2, () -> helper.getLevel().explode(null, null, null, helper.absoluteVec(Vec3.atCenterOf(new BlockPos(4, 5, 4))), 4, false, Level.ExplosionInteraction.BLOCK))
 
                 .thenIdle(15)
 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -77,6 +_,9 @@
+@@ -71,6 +_,9 @@
      private @Nullable BlockModelSet blockModelSet;
      private @Nullable FluidStateModelSet fluidStateModelSet;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
@@ -10,7 +10,7 @@
  
      public ModelManager(BlockColors blockColors, AtlasManager atlasManager, PlayerSkinRenderCache playerSkinRenderCache) {
          this.blockColors = blockColors;
-@@ -85,7 +_,14 @@
+@@ -79,7 +_,14 @@
      }
  
      public ItemModel getItemModel(Identifier id) {
@@ -26,7 +26,7 @@
      }
  
      public ClientItem.Properties getItemProperties(Identifier id) {
-@@ -119,8 +_,10 @@
+@@ -113,8 +_,10 @@
              () -> BuiltInBlockModels.createBlockModels(this.blockColors), taskExecutor
          );
          CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemStackModels = ClientItemInfoLoader.scheduleLoad(manager, taskExecutor);
@@ -39,15 +39,15 @@
          CompletableFuture<Object2IntMap<BlockState>> modelGroups = blockStateModels.thenApplyAsync(
              models -> buildModelGroups(this.blockColors, models), taskExecutor
          );
-@@ -129,6 +_,7 @@
+@@ -123,6 +_,7 @@
          CompletableFuture<SpriteLoader.Preparations> pendingItemAtlasSprites = pendingStitches.get(AtlasIds.ITEMS);
          CompletableFuture<LoadedBlockModels> blockModels = CompletableFuture.allOf(blockModelContents, entityModelSet)
-             .thenApplyAsync(var3 -> new LoadedBlockModels(blockModelContents.join(), entityModelSet.join(), this.atlasManager, this.playerSkinRenderCache));
+             .thenApply(var3 -> new LoadedBlockModels(blockModelContents.join(), entityModelSet.join(), this.atlasManager, this.playerSkinRenderCache));
 +        var pendingAnimations = currentReload.get(net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.STATE_KEY);
          return CompletableFuture.allOf(
                  pendingBlockAtlasSprites,
                  pendingItemAtlasSprites,
-@@ -138,7 +_,8 @@
+@@ -132,7 +_,8 @@
                  itemStackModels,
                  entityModelSet,
                  blockModels,
@@ -57,7 +57,7 @@
              )
              .thenComposeAsync(
                  var11x -> {
-@@ -162,8 +_,11 @@
+@@ -156,8 +_,11 @@
                          itemStackModels.join().contents(),
                          resolvedModels.models(),
                          resolvedModels.missing()
@@ -70,7 +70,7 @@
                  },
                  taskExecutor
              )
-@@ -175,7 +_,7 @@
+@@ -169,14 +_,14 @@
          return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> MODEL_LISTER.listMatchingResources(manager), executor)
              .thenCompose(
                  resources -> {
@@ -79,22 +79,19 @@
  
                      for (Entry<Identifier, Resource> resource : resources.entrySet()) {
                          result.add(CompletableFuture.supplyAsync(() -> {
-@@ -184,7 +_,7 @@
-                             try {
-                                 Pair t$;
-                                 try (Reader reader = resource.getValue().openAsReader()) {
--                                    t$ = Pair.of(modelId, CuboidModel.fromStream(reader));
-+                                    t$ = Pair.of(modelId, net.neoforged.neoforge.client.model.UnbakedModelParser.parse(reader));
-                                 }
+                             Identifier modelId = MODEL_LISTER.fileToId(resource.getKey());
  
-                                 return t$;
-@@ -201,29 +_,55 @@
+                             try (Reader reader = resource.getValue().openAsReader()) {
+-                                return Pair.of(modelId, CuboidModel.fromStream(reader));
++                                return Pair.of(modelId, net.neoforged.neoforge.client.model.UnbakedModelParser.parse(reader));
+                             } catch (Exception e) {
+                                 LOGGER.error("Failed to load model {}", resource.getKey(), e);
+                                 return null;
+@@ -190,18 +_,29 @@
              );
      }
  
-+    /**
-+     * @deprecated Neo: use {@link #discoverModelDependencies(Map, BlockStateModelLoader.LoadedModels, ClientItemInfoLoader.LoadedClientInfos, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels)} instead
-+     */
++    /// @deprecated Neo: use [#discoverModelDependencies(Map, BlockStateModelLoader.LoadedModels, ClientItemInfoLoader.LoadedClientInfos, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels)] instead
 +    @Deprecated
      private static ModelManager.ResolvedModels discoverModelDependencies(
          Map<Identifier, UnbakedModel> allModels, BlockStateModelLoader.LoadedModels blockStateModels, ClientItemInfoLoader.LoadedClientInfos itemInfos
@@ -103,40 +100,27 @@
 +    }
 +
 +    private static ModelManager.ResolvedModels discoverModelDependencies(
-+            Map<Identifier, UnbakedModel> allModels, BlockStateModelLoader.LoadedModels blockStateModels, ClientItemInfoLoader.LoadedClientInfos itemInfos, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels
++        Map<Identifier, UnbakedModel> allModels, BlockStateModelLoader.LoadedModels blockStateModels, ClientItemInfoLoader.LoadedClientInfos itemInfos, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels
 +    ) {
-         ModelManager.ResolvedModels var5;
          try (Zone ignored = Profiler.get().zone("dependencies")) {
              ModelDiscovery result = new ModelDiscovery(allModels, MissingCuboidModel.missingModel());
              result.addSpecialModel(ItemModelGenerator.GENERATED_ITEM_MODEL_ID, new ItemModelGenerator());
              blockStateModels.models().values().forEach(result::addRoot);
              itemInfos.contents().values().forEach(info -> result.addRoot(info.model()));
 +            standaloneModels.models().values().forEach(result::addRoot);
-             var5 = new ModelManager.ResolvedModels(result.missingModel(), result.resolve());
+             return new ModelManager.ResolvedModels(result.missingModel(), result.resolve());
          }
- 
-         return var5;
      }
  
--    private static CompletableFuture<ModelManager.ReloadState> loadModels(
--        SpriteLoader.Preparations blockAtlas,
--        SpriteLoader.Preparations itemAtlas,
--        ModelBakery bakery,
--        LoadedBlockModels blockModels,
--        Object2IntMap<BlockState> modelGroups,
--        EntityModelSet entityModelSet,
--        Executor taskExecutor
 +    /// @deprecated Neo: use [#loadModels(SpriteLoader.Preparations, SpriteLoader.Preparations, ModelBakery, LoadedBlockModels, Object2IntMap, EntityModelSet, Executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
 +    @Deprecated
-+    private static CompletableFuture<ModelManager.ReloadState> loadModels(
-+        SpriteLoader.Preparations blockAtlas,
-+        SpriteLoader.Preparations itemAtlas,
-+        ModelBakery bakery,
-+        LoadedBlockModels blockModels,
-+        Object2IntMap<BlockState> modelGroups,
-+        EntityModelSet entityModelSet,
-+        Executor taskExecutor
-+    ) {
+     private static CompletableFuture<ModelManager.ReloadState> loadModels(
+         SpriteLoader.Preparations blockAtlas,
+         SpriteLoader.Preparations itemAtlas,
+@@ -211,11 +_,24 @@
+         EntityModelSet entityModelSet,
+         Executor taskExecutor
+     ) {
 +        return loadModels(blockAtlas, itemAtlas, bakery, blockModels, modelGroups, entityModelSet, taskExecutor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +    }
 +
@@ -147,43 +131,29 @@
 +        LoadedBlockModels blockModels,
 +        Object2IntMap<BlockState> modelGroups,
 +        EntityModelSet entityModelSet,
-+        Executor taskExecutor
-+        , net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
-     ) {
-         final Multimap<String, Identifier> missingSprites = Multimaps.synchronizedMultimap(HashMultimap.create());
-         final Multimap<String, String> missingReferences = Multimaps.synchronizedMultimap(HashMultimap.create());
-@@ -244,8 +_,9 @@
-             }
- 
-             private Material.@Nullable Baked bake(Material material) {
--                Material.Baked itemMaterial = this.bakeForAtlas(material, itemAtlas);
--                return itemMaterial != null ? itemMaterial : this.bakeForAtlas(material, blockAtlas);
-+                // Neo: fix missing block model rendering "random" texture (MC-307221)
-+                Material.Baked blockMaterial = this.bakeForAtlas(material, blockAtlas);
-+                return blockMaterial != null ? blockMaterial : this.bakeForAtlas(material, itemAtlas);
-             }
- 
-             private Material.@Nullable Baked bakeForAtlas(Material material, SpriteLoader.Preparations atlas) {
-@@ -261,7 +_,7 @@
-         };
-         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);
++        Executor taskExecutor,
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++    ) {
+         MaterialBaker blockItemMaterialBaker = new ModelManager.CombinedBlockItemMaterialBaker(blockAtlas, itemAtlas);
+         MaterialBaker blockOnlyMaterialBaker = new ModelManager.BlockOnlyMaterialBaker(blockAtlas);
+         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(blockItemMaterialBaker, taskExecutor);
          CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
 -            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
 +            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
          );
          return bakedStateResults.thenCombine(
              bakedModelsFuture,
-@@ -283,6 +_,9 @@
-                             references.stream().sorted().map(reference -> "    " + reference).collect(Collectors.joining("\n"))
-                         )
-                     );
+@@ -223,6 +_,9 @@
+                 blockItemMaterialBaker.logMissingTextures();
+                 Map<Fluid, FluidModel> fluidModels = FluidStateModelSet.bake(blockOnlyMaterialBaker);
+                 blockOnlyMaterialBaker.logMissingTextures();
 +                try (Zone ignored = Profiler.get().zone("neoforge_modify_baking_result")) {
 +                    net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(bakingResult, blockAtlas, bakery);
 +                }
                  Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                      bakingResult.blockStateModels(), bakingResult.missingModels().block()
                  );
-@@ -331,6 +_,9 @@
+@@ -265,6 +_,9 @@
          this.blockModelSet = new BlockModelSet(this.blockStateModelSet, preparations.blockModels, this.blockColors);
          this.fluidStateModelSet = new FluidStateModelSet(preparations.fluidModels, this.missingModels.fluid());
          this.entityModelSet = preparations.entityModelSet;
@@ -193,7 +163,7 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -353,6 +_,15 @@
+@@ -287,6 +_,15 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;
@@ -203,9 +173,9 @@
 +        return this.modelBakery.get();
 +    }
 +
-+    @org.jspecify.annotations.Nullable
++    @Nullable
 +    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
 +        return this.bakedStandaloneModels.get(modelKey);
      }
  
-     @OnlyIn(Dist.CLIENT)
+     private static class BlockOnlyMaterialBaker extends MaterialBaker {

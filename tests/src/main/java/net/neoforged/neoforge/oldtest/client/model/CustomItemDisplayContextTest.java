@@ -266,7 +266,7 @@ public class CustomItemDisplayContextTest {
 
         @Override
         public Vec3 position() {
-            return getBlockPos().getCenter();
+            return Vec3.atCenterOf(getBlockPos());
         }
 
         @Override

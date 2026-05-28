@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
 +++ b/net/minecraft/client/renderer/block/dispatch/WeightedVariants.java
-@@ -47,9 +_,31 @@
+@@ -46,9 +_,31 @@
          return this.materialFlags;
      }
  
@@ -34,4 +34,4 @@
 +        return flags;
      }
  
-     @OnlyIn(Dist.CLIENT)
+     public record Unbaked(WeightedList<BlockStateModel.Unbaked> entries) implements BlockStateModel.Unbaked {

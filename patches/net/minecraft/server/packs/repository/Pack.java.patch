@@ -52,11 +52,12 @@
          this.location = location;
          this.resources = resources;
          this.metadata = metadata;
-@@ -64,7 +_,14 @@
+@@ -61,7 +_,15 @@
                  PackCompatibility packCompatibility = PackCompatibility.forVersion(meta.supportedFormats(), currentPackVersion);
                  OverlayMetadataSection overlays = pack.getMetadataSection(OverlayMetadataSection.forPackType(type));
                  List<String> overlaySet = overlays != null ? overlays.overlaysForVersion(currentPackVersion) : List.of();
--                var11 = new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet);
+-                return new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet);
++
 +                // Neo: add `neoforge:overlays` overlays as well
 +                var neoOverlays = pack.getMetadataSection(OverlayMetadataSection.forPackTypeNeoForge(type));
 +                if (neoOverlays != null) {
@@ -64,11 +65,11 @@
 +                    overlaySet.addAll(neoOverlays.overlaysForVersion(currentPackVersion));
 +                    overlaySet = List.copyOf(overlaySet);
 +                }
-+                var11 = new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet, pack.isHidden());
++                return new Pack.Metadata(meta.description(), packCompatibility, requiredFlags, overlaySet, pack.isHidden());
              }
- 
-             return var11;
-@@ -126,6 +_,38 @@
+         } catch (Exception e) {
+             LOGGER.warn("Failed to read pack {} metadata", location.id(), e);
+@@ -121,6 +_,38 @@
          return this.location.source();
      }
  
@@ -107,7 +108,7 @@
      @Override
      public boolean equals(Object o) {
          if (this == o) {
-@@ -140,7 +_,12 @@
+@@ -135,7 +_,12 @@
          return this.location.hashCode();
      }
  
@@ -120,4 +121,4 @@
 +        }
      }
  
-     public static enum Position {
+     public enum Position {

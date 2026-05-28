@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
@@ -43,7 +43,8 @@ public class ShaderResourcesTest {
                 .withLocation(Identifier.fromNamespaceAndPath(MODID, "pipeline/vertex_cubemap"))
                 .withVertexShader(Identifier.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
                 .withFragmentShader(Identifier.fromNamespaceAndPath(MODID, "core/vertex_cubemap"))
-                .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION)
+                .withPrimitiveTopology(PrimitiveTopology.QUADS)
                 .build();
         private static boolean checked = false;
 

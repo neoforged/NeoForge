@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
++++ b/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
+@@ -55,6 +_,8 @@
+         this.featureRenderers.put(QuadParticleFeatureRenderer.TYPE, new QuadParticleFeatureRenderer());
+         this.featureRenderers.put(ShapeOutlineFeatureRenderer.TYPE, new ShapeOutlineFeatureRenderer());
+         this.featureRenderers.put(GizmoFeatureRenderer.TYPE, new GizmoFeatureRenderer());
++        this.featureRenderers.put(net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer.TYPE, new net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer());
++        // TODO 26.2: add registration event
+     }
+ 
+     public FeatureRenderDispatcher.PreparedFrame prepareFrame(SubmitNodeStorage submitNodeStorage) {

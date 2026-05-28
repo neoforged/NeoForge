@@ -1,6 +1,6 @@
 --- a/com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.java
 +++ b/com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.java
-@@ -131,7 +_,7 @@
+@@ -123,7 +_,7 @@
      private void extractIcons(GuiGraphicsExtractor graphics) {
          int pendingInvitesCount = this.numberOfPendingInvites;
          int spacing = 24;

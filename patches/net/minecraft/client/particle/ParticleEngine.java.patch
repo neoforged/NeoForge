@@ -34,7 +34,7 @@
 +        } else if (this.particleGroupFactories.containsKey(type)) {
 +            return this.particleGroupFactories.get(type).apply(this);
          } else {
-             return (ParticleGroup<?>)(type == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, type));
+             return type == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, type);
          }
 @@ -117,7 +_,7 @@
      }

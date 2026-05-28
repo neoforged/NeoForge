@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
+@@ -19,7 +_,7 @@
+     private static final int POST_HEIGHT = 14;
+     private static final Vector3fc TEXT_SCALE = new Vector3f(0.9765628F, 0.9765628F, 0.9765628F);
+     private final int displayedHeight;
+-    private final Identifier texture = Identifier.withDefaultNamespace("textures/gui/signs/" + this.woodType.name() + ".png");
++    private final Identifier texture = Identifier.parse(this.woodType.name() + ".png").withPrefix("textures/gui/signs/");
+ 
+     public SignEditScreen(SignBlockEntity sign, boolean isFrontText, boolean shouldFilter) {
+         super(sign, isFrontText, shouldFilter);

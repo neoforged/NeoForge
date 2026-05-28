@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -56,6 +_,9 @@
+@@ -55,6 +_,9 @@
      private @Nullable KnownPacksManager knownPacks;
      protected ChatComponent.@Nullable State chatState;
      private boolean seenCodeOfConduct;
@@ -10,7 +10,7 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft minecraft, Connection connection, CommonListenerCookie cookie) {
          super(minecraft, connection, cookie);
-@@ -95,6 +_,11 @@
+@@ -94,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket packet) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(packet.features());
@@ -22,7 +22,7 @@
      }
  
      @Override
-@@ -164,7 +_,7 @@
+@@ -160,7 +_,7 @@
  
          this.connection
              .setupInboundProtocol(
@@ -31,7 +31,7 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -182,13 +_,21 @@
+@@ -178,13 +_,21 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -51,11 +51,11 @@
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
          this.connection
 -            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries), new GameProtocols.Context() {
-+            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, connectionType), new GameProtocols.Context() {
-                 {
-                     Objects.requireNonNull(ClientConfigurationPacketListenerImpl.this);
-                 }
-@@ -214,6 +_,53 @@
++                .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, connectionType), new GameProtocols.Context() {
+                 @Override
+                 public boolean hasInfiniteMaterials() {
+                     return true;
+@@ -206,6 +_,53 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();

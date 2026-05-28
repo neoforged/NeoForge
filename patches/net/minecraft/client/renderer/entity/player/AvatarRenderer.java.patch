@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/player/AvatarRenderer.java
 +++ b/net/minecraft/client/renderer/entity/player/AvatarRenderer.java
-@@ -94,6 +_,11 @@
+@@ -94,6 +_,12 @@
      }
  
      private static HumanoidModel.ArmPose getArmPose(Avatar avatar, ItemStack itemInHand, InteractionHand hand) {
@@ -9,10 +9,11 @@
 +        if (armPose != null) {
 +            return armPose;
 +        }
++
          if (itemInHand.isEmpty()) {
              return HumanoidModel.ArmPose.EMPTY;
-         } else if (!avatar.swinging && itemInHand.is(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)) {
-@@ -152,6 +_,13 @@
+         }
+@@ -154,6 +_,13 @@
          poseStack.scale(0.9375F, 0.9375F, 0.9375F);
      }
  
@@ -26,7 +27,7 @@
      protected void submitNameDisplay(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
          poseStack.pushPose();
          int offset = state.showExtraEars ? -10 : 0;
-@@ -188,7 +_,7 @@
+@@ -190,7 +_,7 @@
          state.heldOnHead.clear();
          if (state.isUsingItem) {
              ItemStack useItem = entity.getItemInHand(state.useItemHand);
@@ -35,7 +36,7 @@
                  this.itemModelResolver.updateForLiving(state.heldOnHead, useItem, ItemDisplayContext.HEAD, entity);
              }
          }
-@@ -234,12 +_,30 @@
+@@ -236,12 +_,30 @@
          state.capeFlap = state.capeFlap + Mth.sin(walkDistance * 6.0F) * 32.0F * pow;
      }
  

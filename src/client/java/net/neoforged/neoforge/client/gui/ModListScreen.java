@@ -304,7 +304,7 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(selected.getContainer(), this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(selected.getContainer(), this)).ifPresent(this.minecraft.gui::setScreen);
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -478,6 +478,6 @@ public class ModListScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parentScreen);
+        this.minecraft.gui.setScreen(this.parentScreen);
     }
 }

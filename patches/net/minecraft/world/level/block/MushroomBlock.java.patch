@@ -21,4 +21,4 @@
 +
          if (feature.isEmpty()) {
              return false;
-         } else {
+         }

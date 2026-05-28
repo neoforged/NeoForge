@@ -206,7 +206,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 PackRepository pack,
                 WorldStem stem,
                 Path tempDir) {
-            super(thread, access, pack, stem, Optional.of(TEST_GAME_RULES), Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer(), true);
+            super(thread, access, pack, stem, Optional.of(TEST_GAME_RULES), Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer(), true, new NotificationManager());
             this.tempDir = tempDir;
         }
 
@@ -291,6 +291,16 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
 
         @Override
         public int getRateLimitPacketsPerSecond() {
+            return 0;
+        }
+
+        @Override
+        public int getCommandSpamThresholdSeconds() {
+            return 0;
+        }
+
+        @Override
+        public int getChatSpamThresholdSeconds() {
             return 0;
         }
 

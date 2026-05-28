@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
-@@ -86,7 +_,8 @@
-             return null;
-         } else {
-             BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
--            if (belowState.is(BlockTags.SUPPORTS_BAMBOO)) {
-+            var soilDecision = belowState.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
-+            if (soilDecision.isDefault() ? belowState.is(BlockTags.SUPPORTS_BAMBOO) : soilDecision.isTrue()) {
-                 if (belowState.is(Blocks.BAMBOO_SAPLING)) {
-                     return this.defaultBlockState().setValue(AGE, 0);
-                 } else if (belowState.is(Blocks.BAMBOO)) {
+@@ -87,7 +_,8 @@
+         }
+ 
+         BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
+-        if (belowState.is(BlockTags.SUPPORTS_BAMBOO)) {
++        var soilDecision = belowState.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
++        if (soilDecision.isDefault() ? belowState.is(BlockTags.SUPPORTS_BAMBOO) : soilDecision.isTrue()) {
+             if (belowState.is(Blocks.BAMBOO_SAPLING)) {
+                 return this.defaultBlockState().setValue(AGE, 0);
+             } else if (belowState.is(Blocks.BAMBOO)) {
 @@ -119,10 +_,11 @@
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {

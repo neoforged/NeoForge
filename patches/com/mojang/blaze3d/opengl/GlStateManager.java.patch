@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlStateManager.java
 +++ b/com/mojang/blaze3d/opengl/GlStateManager.java
-@@ -34,6 +_,7 @@
+@@ -29,6 +_,7 @@
      private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
      private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
      private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
@@ -8,7 +8,7 @@
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
      private static final int TEXTURE_COUNT = 12;
-@@ -589,4 +_,119 @@
+@@ -625,4 +_,119 @@
      private static class TextureState {
          public int binding;
      }
@@ -33,7 +33,7 @@
 +            STENCIL.backFunc = func;
 +            STENCIL.backRef = ref;
 +            STENCIL.backReadMask = readMask;
-+            GL32.glStencilFuncSeparate(GL32.GL_FRONT_AND_BACK, func, ref, readMask);
++            GL33C.glStencilFuncSeparate(GL33C.GL_FRONT_AND_BACK, func, ref, readMask);
 +        }
 +    }
 +
@@ -43,7 +43,7 @@
 +            STENCIL.frontFunc = func;
 +            STENCIL.frontRef = ref;
 +            STENCIL.frontReadMask = readMask;
-+            GL32.glStencilFuncSeparate(GL32.GL_FRONT, func, ref, readMask);
++            GL33C.glStencilFuncSeparate(GL33C.GL_FRONT, func, ref, readMask);
 +        }
 +    }
 +
@@ -53,7 +53,7 @@
 +            STENCIL.backFunc = func;
 +            STENCIL.backRef = ref;
 +            STENCIL.backReadMask = readMask;
-+            GL32.glStencilFuncSeparate(GL32.GL_BACK, func, ref, readMask);
++            GL33C.glStencilFuncSeparate(GL33C.GL_BACK, func, ref, readMask);
 +        }
 +    }
 +
@@ -61,7 +61,7 @@
 +        RenderSystem.assertOnRenderThread();
 +        if (mask != STENCIL.writeMask) {
 +            STENCIL.writeMask = mask;
-+            GL11.glStencilMask(mask);
++            GL33C.glStencilMask(mask);
 +        }
 +    }
 +
@@ -80,7 +80,7 @@
 +            STENCIL.backStencilFail = stencilFail;
 +            STENCIL.backDepthFail = depthFail;
 +            STENCIL.backPass = pass;
-+            GL32.glStencilOpSeparate(GL32.GL_FRONT_AND_BACK, stencilFail, depthFail, pass);
++            GL33C.glStencilOpSeparate(GL33C.GL_FRONT_AND_BACK, stencilFail, depthFail, pass);
 +        }
 +    }
 +
@@ -93,7 +93,7 @@
 +            STENCIL.frontStencilFail = stencilFail;
 +            STENCIL.frontDepthFail = depthFail;
 +            STENCIL.frontPass= pass;
-+            GL32.glStencilOpSeparate(GL32.GL_FRONT, stencilFail, depthFail, pass);
++            GL33C.glStencilOpSeparate(GL33C.GL_FRONT, stencilFail, depthFail, pass);
 +        }
 +    }
 +
@@ -106,25 +106,25 @@
 +            STENCIL.backStencilFail = stencilFail;
 +            STENCIL.backDepthFail = depthFail;
 +            STENCIL.backPass = pass;
-+            GL32.glStencilOpSeparate(GL32.GL_BACK, stencilFail, depthFail, pass);
++            GL33C.glStencilOpSeparate(GL33C.GL_BACK, stencilFail, depthFail, pass);
 +        }
 +    }
 +
 +    @OnlyIn(Dist.CLIENT)
 +    static class StencilState {
-+        public final GlStateManager.BooleanState mode = new GlStateManager.BooleanState(GL11.GL_STENCIL_TEST);
-+        public int frontFunc = GL11.GL_ALWAYS;
++        public final GlStateManager.BooleanState mode = new GlStateManager.BooleanState(GL33C.GL_STENCIL_TEST);
++        public int frontFunc = GL33C.GL_ALWAYS;
 +        public int frontRef;
 +        public int frontReadMask = -1;
-+        public int backFunc = GL11.GL_ALWAYS;
++        public int backFunc = GL33C.GL_ALWAYS;
 +        public int backRef;
 +        public int backReadMask = -1;
 +        public int writeMask = -1;
-+        public int frontStencilFail = GL11.GL_KEEP;
-+        public int frontDepthFail = GL11.GL_KEEP;
-+        public int frontPass = GL11.GL_KEEP;
-+        public int backStencilFail = GL11.GL_KEEP;
-+        public int backDepthFail = GL11.GL_KEEP;
-+        public int backPass = GL11.GL_KEEP;
++        public int frontStencilFail = GL33C.GL_KEEP;
++        public int frontDepthFail = GL33C.GL_KEEP;
++        public int frontPass = GL33C.GL_KEEP;
++        public int backStencilFail = GL33C.GL_KEEP;
++        public int backDepthFail = GL33C.GL_KEEP;
++        public int backPass = GL33C.GL_KEEP;
 +     }
  }

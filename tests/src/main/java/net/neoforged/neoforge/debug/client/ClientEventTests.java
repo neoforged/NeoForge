@@ -6,10 +6,8 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.google.common.reflect.TypeToken;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
@@ -24,8 +22,6 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
@@ -42,11 +38,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
-import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
@@ -76,31 +70,6 @@ public class ClientEventTests {
         test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Did you just change your game mode from " + event.getCurrentGameType() + " to " + event.getNewGameType() + "?"));
     }
 
-    @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired and whether the registered render buffer is represented within a fixed render buffer map" }, enabledByDefault = true)
-    static void registerRenderBuffersEvent(final DynamicTest test) {
-        test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
-            event.registerRenderBuffer(RenderTypes.lightning());
-        });
-        test.framework().modEventBus().addListener((final AddClientReloadListenersEvent event) -> {
-            try {
-                var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-                var field = bufferSource.getClass().getDeclaredField("fixedBuffers");
-
-                field.setAccessible(true);
-
-                var fixedBuffers = (Map<RenderType, BufferBuilder>) field.get(bufferSource);
-
-                if (fixedBuffers != null && fixedBuffers.containsKey(RenderTypes.lightning())) {
-                    test.pass();
-                } else {
-                    test.fail("The render buffer for the specified render type was not registered");
-                }
-            } catch (Exception e) {
-                test.fail("Failed to access fixed buffers map");
-            }
-        });
-    }
-
     @TestHolder(description = { "Tests if adding custom geometry to chunks works", "When the message \"diamond block\" is sent in chat, this should render a fake diamond block above the player's position" }, enabledByDefault = true)
     static void addSectionGeometryTest(final ClientChatEvent chatEvent, final DynamicTest test) {
         if (chatEvent.getMessage().equalsIgnoreCase("diamond block")) {
@@ -128,7 +97,7 @@ public class ClientEventTests {
                     });
                 }
             });
-            Minecraft.getInstance().levelRenderer.setSectionDirty(section.x(), section.y(), section.z());
+            Minecraft.getInstance().levelExtractor.setSectionDirty(section.x(), section.y(), section.z());
             test.requestConfirmation(player, Component.literal("Is a diamond block rendered above you?"));
         }
     }

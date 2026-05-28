@@ -26,7 +26,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.random.Weighted;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
@@ -100,7 +100,7 @@ public class BiomeModifierTest {
 
                 context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
                         badlandsTag,
-                        new Weighted<>(new SpawnerData(EntityType.MAGMA_CUBE, 1, 4), 100)));
+                        new Weighted<>(new SpawnerData(EntityTypes.MAGMA_CUBE, 1, 4), 100)));
 
                 context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
                         badlandsTag,

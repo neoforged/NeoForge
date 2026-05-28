@@ -80,4 +80,4 @@
 +        return net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchTree(key).join();
      }
  
-     @OnlyIn(Dist.CLIENT)
+     public static class Key {

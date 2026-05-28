@@ -1,17 +1,17 @@
 --- a/net/minecraft/data/tags/EntityTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/EntityTypeTagsProvider.java
-@@ -8,8 +_,13 @@
- import net.minecraft.world.entity.EntityType;
+@@ -9,8 +_,13 @@
+ import net.minecraft.world.entity.EntityTypeIds;
  
- public class EntityTypeTagsProvider extends IntrinsicHolderTagsProvider<EntityType<?>> {
+ public class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
 +    /** @deprecated Forge: Use the {@linkplain #EntityTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public EntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
--        super(output, Registries.ENTITY_TYPE, lookupProvider, e -> e.builtInRegistryHolder().key());
+-        super(output, Registries.ENTITY_TYPE, lookupProvider);
 +        this(output, lookupProvider, "vanilla");
 +    }
 +    public EntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
-+        super(output, Registries.ENTITY_TYPE, lookupProvider, e -> e.builtInRegistryHolder().key(), modId);
++        super(output, Registries.ENTITY_TYPE, lookupProvider, modId);
      }
  
      @Override

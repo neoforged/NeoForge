@@ -30,6 +30,7 @@ import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
@@ -51,13 +52,13 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     public GameTestPlayer moveToCorner() {
-        snapTo(helper.absoluteVec(new BlockPos(0, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, 0).getCenter()).subtract(0, 0.5, 0));
+        snapTo(helper.absoluteVec(Vec3.atCenterOf(new BlockPos(0, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, 0))).subtract(0, 0.5, 0));
         return this;
     }
 
     public GameTestPlayer moveToCentre() {
         Vec3i size = helper.testInfo.getTestInstanceBlockEntity().getSize();
-        snapTo(helper.absoluteVec(new BlockPos(size.getX() / 2, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, size.getX() / 2).getCenter()).subtract(0, 0.5, 0));
+        snapTo(helper.absoluteVec(Vec3.atCenterOf(new BlockPos(size.getX() / 2, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, size.getX() / 2))).subtract(0, 0.5, 0));
         return this;
     }
 

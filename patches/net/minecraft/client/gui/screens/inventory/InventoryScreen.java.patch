@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
-@@ -109,6 +_,13 @@
+@@ -111,6 +_,13 @@
          float centerY = (y0 + y1) / 2.0F;
          float xAngle = (float)Math.atan((centerX - mouseX) / 40.0F);
          float yAngle = (float)Math.atan((centerY - mouseY) / 40.0F);

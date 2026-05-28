@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/ValueInputContextHelper.java
 +++ b/net/minecraft/world/level/storage/ValueInputContextHelper.java
-@@ -163,6 +_,11 @@
+@@ -150,6 +_,11 @@
          public Optional<int[]> getIntArray(String name) {
              return Optional.empty();
          }

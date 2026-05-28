@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/SpriteContents.java
 +++ b/net/minecraft/client/renderer/texture/SpriteContents.java
-@@ -85,6 +_,10 @@
+@@ -84,6 +_,10 @@
          this.transparency = image.computeTransparency();
      }
  

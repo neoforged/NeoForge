@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -530,7 +_,7 @@
+@@ -533,7 +_,7 @@
              int ravagersSpawned = 0;
  
              for (int i = 0; i < numSpawns; i++) {
@@ -9,17 +9,17 @@
                  if (raider == null) {
                      break;
                  }
-@@ -542,7 +_,7 @@
+@@ -545,7 +_,7 @@
                  }
  
                  this.joinRaid(level, groupNumber, raider, pos, false);
--                if (raiderType.entityType == EntityType.RAVAGER) {
-+                if (raiderType.entityTypeSupplier.get() == EntityType.RAVAGER) {
+-                if (raiderType.entityType == EntityTypes.RAVAGER) {
++                if (raiderType.entityTypeSupplier.get() == EntityTypes.RAVAGER) {
                      Raider ridingRaider = null;
                      if (groupNumber == this.getNumGroups(Difficulty.NORMAL)) {
-                         ridingRaider = EntityType.PILLAGER.create(level, EntitySpawnReason.EVENT);
-@@ -835,12 +_,26 @@
-         RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
+                         ridingRaider = EntityTypes.PILLAGER.create(level, EntitySpawnReason.EVENT);
+@@ -838,12 +_,26 @@
+         RAVAGER(EntityTypes.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  
          private static final Raid.RaiderType[] VALUES = values();
 +        @Deprecated // Neo: null for custom types, use the supplier instead
@@ -28,7 +28,7 @@
 +        final java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier;
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         private RaiderType(EntityType<? extends Raider> entityType, int[] spawnsPerWaveBeforeBonus) {
+         RaiderType(EntityType<? extends Raider> entityType, int[] spawnsPerWaveBeforeBonus) {
              this.entityType = entityType;
              this.spawnsPerWaveBeforeBonus = spawnsPerWaveBeforeBonus;
 +            this.entityTypeSupplier = () -> entityType;

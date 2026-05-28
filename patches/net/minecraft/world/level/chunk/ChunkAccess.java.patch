@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -318,10 +_,14 @@
+@@ -320,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
@@ -16,7 +16,7 @@
          BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
  
          for (int sectionY = this.getMinSectionY(); sectionY <= this.getMaxSectionY(); sectionY++) {
-@@ -333,8 +_,9 @@
+@@ -335,8 +_,9 @@
                      for (int z = 0; z < 16; z++) {
                          for (int x = 0; x < 16; x++) {
                              BlockState state = section.getBlockState(x, y, z);
@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -476,6 +_,83 @@
+@@ -484,6 +_,83 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
