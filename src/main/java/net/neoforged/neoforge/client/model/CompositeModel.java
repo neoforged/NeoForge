@@ -86,8 +86,11 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         var itemPassesBuilder = ImmutableList.<BakedModel>builder();
         for (String name : this.itemPasses) {
             var model = bakedParts.get(name);
-            if (model == null)
+            if (model == null) {
+                if (!context.isComponentVisible(name, true))
+                    continue;
                 throw new IllegalStateException("Specified \"" + name + "\" in \"item_render_order\", but that is not a child of this model.");
+            }
             itemPassesBuilder.add(model);
         }
 

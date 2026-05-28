@@ -352,6 +352,14 @@
      }
  
      public void clearDownloadedResourcePacks() {
+@@ -2145,6 +_,7 @@
+         this.clientLevelTeardownInProgress = true;
+ 
+         try {
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
+             this.updateScreenAndTick(p_294558_);
+             this.gui.onDisconnected();
+             this.level = null;
 @@ -2258,6 +_,7 @@
  
      private void pickBlock() {
