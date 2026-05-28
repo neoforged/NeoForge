@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
-import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -71,24 +70,7 @@ public class CreativeModeTabTest {
                     .build());
 
             helper.register(Identifier.fromNamespaceAndPath(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
-                    .displayItems((_, output) -> {
-                        output.accept(Items.WHITE_DYE);
-                        output.accept(Items.ORANGE_DYE);
-                        output.accept(Items.MAGENTA_DYE);
-                        output.accept(Items.LIGHT_BLUE_DYE);
-                        output.accept(Items.YELLOW_DYE);
-                        output.accept(Items.LIME_DYE);
-                        output.accept(Items.PINK_DYE);
-                        output.accept(Items.GRAY_DYE);
-                        output.accept(Items.LIGHT_GRAY_DYE);
-                        output.accept(Items.CYAN_DYE);
-                        output.accept(Items.PURPLE_DYE);
-                        output.accept(Items.BLUE_DYE);
-                        output.accept(Items.BROWN_DYE);
-                        output.accept(Items.GREEN_DYE);
-                        output.accept(Items.RED_DYE);
-                        output.accept(Items.BLACK_DYE);
-                    })
+                    .displayItems((_, output) -> Items.DYE.forEach(output::accept))
                     .withTabFactory(CreativeModeColorTab::new)
                     .withTabsBefore(CreativeModeTabs.COLORED_BLOCKS)
                     .build());
@@ -165,23 +147,7 @@ public class CreativeModeTabTest {
         @Override
         public ItemStack getIconItem() {
             if (iconItems == null) {
-                iconItems = Stream.of(
-                        Items.WHITE_DYE,
-                        Items.ORANGE_DYE,
-                        Items.MAGENTA_DYE,
-                        Items.LIGHT_BLUE_DYE,
-                        Items.YELLOW_DYE,
-                        Items.LIME_DYE,
-                        Items.PINK_DYE,
-                        Items.GRAY_DYE,
-                        Items.LIGHT_GRAY_DYE,
-                        Items.CYAN_DYE,
-                        Items.PURPLE_DYE,
-                        Items.BLUE_DYE,
-                        Items.BROWN_DYE,
-                        Items.GREEN_DYE,
-                        Items.RED_DYE,
-                        Items.BLACK_DYE)
+                iconItems = Items.DYE.asList().stream()
                         .map(ItemStack::new)
                         .toArray(ItemStack[]::new);
             }

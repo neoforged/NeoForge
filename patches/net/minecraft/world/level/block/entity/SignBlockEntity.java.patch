@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
-@@ -201,7 +_,7 @@
+@@ -202,7 +_,7 @@
                      hasAnyClickCommand = true;
                      break;
                  case ClickEvent.Custom custom:

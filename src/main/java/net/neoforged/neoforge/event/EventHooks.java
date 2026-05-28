@@ -685,6 +685,7 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new CanContinueSleepingEvent(sleeper, problem)).mayContinueSleeping();
     }
 
+    @Nullable
     public static InteractionResult onArrowNock(ItemStack item, Level level, Player player, InteractionHand hand, boolean hasAmmo) {
         ArrowNockEvent event = new ArrowNockEvent(player, item, hand, level, hasAmmo);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())

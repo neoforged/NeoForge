@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -36,7 +37,7 @@ public final class NeoForgeRenderPipelines {
             .withLocation(Identifier.parse("neoforge:pipeline/entity_unlit_translucent"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
             .withShaderDefine("NO_CARDINAL_LIGHTING")
-            .withSampler("Sampler1")
+            .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
             .withCull(false)
             .build();
@@ -44,14 +45,14 @@ public final class NeoForgeRenderPipelines {
     public static final RenderPipeline ENTITY_TRANSLUCENT_CULL = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
             .withLocation(Identifier.parse("neoforge:pipeline/entity_translucent_cull"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-            .withSampler("Sampler1")
+            .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
             .build();
     // Duplicate of RenderPipelines.ENTITY_SMOOTH_CUTOUT with backface culling enabled
     public static final RenderPipeline ENTITY_SMOOTH_CUTOUT_CULL = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
             .withLocation(Identifier.parse("neoforge:pipeline/entity_smooth_cutout_cull"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-            .withSampler("Sampler1")
+            .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
             .build();
 
     @SubscribeEvent

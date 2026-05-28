@@ -27,12 +27,12 @@
          this(from, to, faces, null, true, 0);
      }
 @@ -71,7 +_,8 @@
-                     }
                  }
- 
--                return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission);
-+                var faceData = net.neoforged.neoforge.client.model.ExtraFaceData.read(object.get("neoforge_data"), net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
-+                return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission, faceData);
              }
+ 
+-            return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission);
++            var faceData = net.neoforged.neoforge.client.model.ExtraFaceData.read(object.get("neoforge_data"), net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++            return new CuboidModelElement(from, to, faces, rotation, shade, lightEmission, faceData);
          }
  
+         private @Nullable CuboidRotation getRotation(JsonObject object) {

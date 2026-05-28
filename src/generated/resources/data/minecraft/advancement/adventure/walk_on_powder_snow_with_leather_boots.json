@@ -8,13 +8,15 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "stepping_on": {
+              "minecraft:equipment": {
+                "feet": {
+                  "items": "minecraft:leather_boots"
+                }
+              },
+              "minecraft:stepping_on": {
                 "block": {
                   "blocks": "minecraft:powder_snow"
                 }
-              },
-              "type_specific": {
-                "type": "neoforge:snow_boots"
               }
             }
           }

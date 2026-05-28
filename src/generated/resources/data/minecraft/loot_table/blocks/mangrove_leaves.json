@@ -54,7 +54,6 @@
               ],
               "functions": [
                 {
-                  "add": false,
                   "count": {
                     "type": "minecraft:uniform",
                     "max": 2.0,

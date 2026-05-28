@@ -44,7 +44,7 @@
          return switch (type) {
              case THIRD_PERSON_LEFT_HAND -> this.thirdPersonLeftHand;
              case THIRD_PERSON_RIGHT_HAND -> this.thirdPersonRightHand;
-@@ -70,8 +_,24 @@
+@@ -69,8 +_,24 @@
              ItemTransform ground = this.getTransform(context, object, ItemDisplayContext.GROUND);
              ItemTransform fixed = this.getTransform(context, object, ItemDisplayContext.FIXED);
              ItemTransform fixedFromBottom = this.getTransform(context, object, ItemDisplayContext.ON_SHELF);

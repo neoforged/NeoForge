@@ -38,7 +38,6 @@ public final class FrameGraphSetupEvent extends Event {
     private final Matrix4fc modelViewMatrix;
     private final DeltaTracker deltaTracker;
     private final ProfilerFiller profiler;
-    private boolean enableOutline;
 
     @ApiStatus.Internal
     public FrameGraphSetupEvent(
@@ -113,19 +112,5 @@ public final class FrameGraphSetupEvent extends Event {
      */
     public ProfilerFiller getProfiler() {
         return profiler;
-    }
-
-    /**
-     * Enables the entity outline post-processing shader regardless of any entities having active outlines
-     */
-    public void enableOutlineProcessing() {
-        this.enableOutline = true;
-    }
-
-    /**
-     * {@return whether the entity outline post-processing shader will be enabled regardless of entities using it}
-     */
-    public boolean isOutlineProcessingEnabled() {
-        return enableOutline;
     }
 }

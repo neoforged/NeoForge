@@ -1,32 +1,29 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -194,14 +_,20 @@
-     private static final int CURRENT_IMPULSE_CONTEXT_RESET_GRACE_TIME_TICKS = 40;
-     private static final int DEFAULT_CURRENT_IMPULSE_CONTEXT_RESET_GRACE_TIME = 0;
+@@ -211,7 +_,8 @@
+     public static final float ELYTRA_VERTICAL_AIR_DRAG = 0.98F;
+     public static final float BASE_SWIM_SPEED = 0.02F;
      private int currentImpulseContextResetGraceTime = 0;
 -    public static final Predicate<LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM = livingEntity -> {
 +    // Neo: Support IItemExtension#isGazeDisguise
 +    public static final java.util.function.BiPredicate<LivingEntity, @org.jspecify.annotations.Nullable LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET = (livingEntity, target) -> {
          if (livingEntity instanceof Player player) {
              ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
--            return !helmet.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
-+            return !helmet.isGazeDisguise(player, target);
-         } else {
+             return !helmet.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
+@@ -219,6 +_,9 @@
              return true;
          }
      };
 +    /** @deprecated Neo: use {@link #PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET} with target info instead */
 +    @Deprecated
-+    public static final Predicate<LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM = livingEntity -> {
-+        return PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(livingEntity, null);
-+     };
++    public static final Predicate<LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM = livingEntity -> PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(livingEntity, null);
      private final AttributeMap attributes;
      private final CombatTracker combatTracker = new CombatTracker(this);
      private final Map<Holder<MobEffect>, MobEffectInstance> activeEffects = Maps.newHashMap();
-@@ -268,6 +_,13 @@
+@@ -284,6 +_,13 @@
+     protected final EntityEquipment equipment;
      private Waypoint.Icon locatorBarIcon = new Waypoint.Icon();
      public @Nullable Vec3 currentImpulseImpactPos;
-     public @Nullable Entity currentExplosionCause;
 +    /**
 +     * This field stores information about damage dealt to this entity.
 +     * a new {@link net.neoforged.neoforge.common.damagesource.DamageContainer} is instantiated
@@ -37,25 +34,23 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -337,13 +_,15 @@
-             .add(Attributes.MOVEMENT_EFFICIENCY)
-             .add(Attributes.ATTACK_KNOCKBACK)
-             .add(Attributes.CAMERA_DISTANCE)
--            .add(Attributes.WAYPOINT_TRANSMIT_RANGE);
-+            .add(Attributes.WAYPOINT_TRANSMIT_RANGE)
+@@ -358,12 +_,15 @@
+             .add(Attributes.AIR_DRAG_MODIFIER)
+             .add(Attributes.FRICTION_MODIFIER)
+             .add(Attributes.NAME_TAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED)
-+            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE);
++            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE)
+             .add(Attributes.BELOW_NAME_DISTANCE);
      }
  
      @Override
      protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
          if (!this.isInWater()) {
--            this.updateFluidInteraction();
-+            this.updateFluidInteraction(); // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
++            // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
+             this.updateFluidInteraction();
          }
  
-         if (this.level() instanceof ServerLevel level && onGround && this.fallDistance > 0.0) {
-@@ -364,7 +_,8 @@
+@@ -385,7 +_,8 @@
  
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
                  int particles = (int)(150.0 * scale);
@@ -65,7 +60,7 @@
              }
          }
  
-@@ -374,6 +_,7 @@
+@@ -395,6 +_,7 @@
          }
      }
  
@@ -73,20 +68,20 @@
      public boolean canBreatheUnderwater() {
          return this.is(EntityTypeTags.CAN_BREATHE_UNDER_WATER);
      }
-@@ -763,7 +_,11 @@
-         } else {
-             ItemEntity entity = this.createItemStackToDrop(itemStack, randomly, thrownFromHand);
-             if (entity != null) {
--                this.level().addFreshEntity(entity);
-+                if (captureDrops() != null) {
-+                    captureDrops().add(entity);
-+                } else {
-+                    this.level().addFreshEntity(entity);
-+                }
-             }
+@@ -790,7 +_,11 @@
  
-             return entity;
-@@ -831,8 +_,10 @@
+         ItemEntity entity = this.createItemStackToDrop(itemStack, randomly, thrownFromHand);
+         if (entity != null) {
+-            this.level().addFreshEntity(entity);
++            if (captureDrops() != null) {
++                captureDrops().add(entity);
++            } else {
++                this.level().addFreshEntity(entity);
++            }
+         }
+ 
+         return entity;
+@@ -856,8 +_,10 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
                      if (!effect.tickServer(serverLevel, this, () -> this.onEffectUpdated(effect, true, null))) {
@@ -97,7 +92,7 @@
                      } else if (effect.getDuration() % 600 == 0) {
                          this.onEffectUpdated(effect, false, null);
                      }
-@@ -879,8 +_,9 @@
+@@ -904,8 +_,9 @@
          List<ParticleOptions> visibleEffectParticles = this.activeEffects
              .values()
              .stream()
@@ -109,7 +104,7 @@
              .toList();
          this.entityData.set(DATA_EFFECT_PARTICLES, visibleEffectParticles);
          this.entityData.set(DATA_EFFECT_AMBIENCE_ID, areAllEffectsAmbient(this.activeEffects.values()));
-@@ -919,6 +_,7 @@
+@@ -944,6 +_,7 @@
              }
          }
  
@@ -117,40 +112,41 @@
          return visibilityPercent;
      }
  
-@@ -954,9 +_,14 @@
-         } else if (this.activeEffects.isEmpty()) {
+@@ -982,9 +_,14 @@
              return false;
-         } else {
--            Map<Holder<MobEffect>, MobEffectInstance> copy = Maps.newHashMap(this.activeEffects);
--            this.activeEffects.clear();
--            this.onEffectsRemoved(copy.values());
-+            Map<Holder<MobEffect>, MobEffectInstance> map = new java.util.HashMap<>(this.activeEffects.size());
-+            for (Map.Entry<Holder<MobEffect>, MobEffectInstance> entry : this.activeEffects.entrySet()) {
-+                if (!net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, entry.getValue())) {
-+                    map.put(entry.getKey(), entry.getValue());
-+                }
-+            }
-+            map.keySet().forEach(this.activeEffects::remove);
-+            this.onEffectsRemoved(map.values());
-             return true;
          }
+ 
+-        Map<Holder<MobEffect>, MobEffectInstance> copy = Maps.newHashMap(this.activeEffects);
+-        this.activeEffects.clear();
+-        this.onEffectsRemoved(copy.values());
++        Map<Holder<MobEffect>, MobEffectInstance> map = new java.util.HashMap<>(this.activeEffects.size());
++        for (Map.Entry<Holder<MobEffect>, MobEffectInstance> entry : this.activeEffects.entrySet()) {
++            if (!net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, entry.getValue())) {
++                map.put(entry.getKey(), entry.getValue());
++            }
++        }
++        map.keySet().forEach(this.activeEffects::remove);
++        this.onEffectsRemoved(map.values());
+         return true;
      }
-@@ -987,11 +_,12 @@
+ 
+@@ -1014,12 +_,13 @@
      }
  
      public boolean addEffect(MobEffectInstance newEffect, @Nullable Entity source) {
 -        if (!this.canBeAffected(newEffect)) {
 +        if (!net.neoforged.neoforge.common.CommonHooks.canMobEffectBeApplied(this, newEffect, source)) {
              return false;
-         } else {
-             MobEffectInstance effect = this.activeEffects.get(newEffect.getEffect());
-             boolean changed = false;
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Added(this, effect, newEffect, source));
-             if (effect == null) {
-                 this.activeEffects.put(newEffect.getEffect(), newEffect);
-                 this.onEffectAdded(newEffect, source);
-@@ -1007,6 +_,14 @@
          }
+ 
+         MobEffectInstance effect = this.activeEffects.get(newEffect.getEffect());
+         boolean changed = false;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Added(this, effect, newEffect, source));
+         if (effect == null) {
+             this.activeEffects.put(newEffect.getEffect(), newEffect);
+             this.onEffectAdded(newEffect, source);
+@@ -1034,6 +_,14 @@
+         return changed;
      }
  
 +    /**
@@ -164,7 +160,7 @@
      public boolean canBeAffected(MobEffectInstance newEffect) {
          if (this.is(EntityTypeTags.IMMUNE_TO_INFESTED)) {
              return !newEffect.is(MobEffects.INFESTED);
-@@ -1018,7 +_,7 @@
+@@ -1045,7 +_,7 @@
      }
  
      public void forceAddEffect(MobEffectInstance newEffect, @Nullable Entity source) {
@@ -173,7 +169,7 @@
              MobEffectInstance previousEffect = this.activeEffects.put(newEffect.getEffect(), newEffect);
              if (previousEffect == null) {
                  this.onEffectAdded(newEffect, source);
-@@ -1038,6 +_,7 @@
+@@ -1065,6 +_,7 @@
      }
  
      public boolean removeEffect(Holder<MobEffect> effect) {
@@ -181,7 +177,7 @@
          MobEffectInstance effectInstance = this.removeEffectNoUpdate(effect);
          if (effectInstance != null) {
              this.onEffectsRemoved(List.of(effectInstance));
-@@ -1129,6 +_,8 @@
+@@ -1156,6 +_,8 @@
      }
  
      public void heal(float heal) {
@@ -190,94 +186,105 @@
          float health = this.getHealth();
          if (health > 0.0F) {
              this.setHealth(health + heal);
-@@ -1156,11 +_,18 @@
-         } else if (source.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+@@ -1188,11 +_,18 @@
              return false;
-         } else {
-+            this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage));
-+            if (net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) {
-+                this.damageContainers.pop();
-+                return false;
-+            }
-+
-             if (this.isSleeping()) {
-                 this.stopSleeping();
-             }
- 
-             this.noActionTime = 0;
-+            damage = this.damageContainers.peek().getNewDamage(); // Neo: enforce damage container as source of truth for damage amount
-             if (damage < 0.0F) {
-                 damage = 0.0F;
-             }
-@@ -1181,20 +_,29 @@
-             if (Float.isNaN(damage) || Float.isInfinite(damage)) {
-                 damage = Float.MAX_VALUE;
-             }
-+            this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
- 
-             boolean tookFullDamage = true;
-             if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
-                 if (damage <= this.lastHurt) {
-+                    // Neo: Pop the container when vanilla would abort the incoming damage due to the invulnerability ticks.
-+                    this.damageContainers.pop();
-                     return false;
-                 }
- 
-+                // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
-+                this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
-+                this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
-                 this.actuallyHurt(level, source, damage - this.lastHurt);
--                this.lastHurt = damage;
-+                // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
-+                // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
-+                this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
-+                this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
-                 tookFullDamage = false;
-             } else {
--                this.lastHurt = damage;
--                this.invulnerableTime = 20;
-                 this.actuallyHurt(level, source, damage);
-+                this.lastHurt = damage;
-+                this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
-                 this.hurtDuration = 10;
-                 this.hurtTime = this.hurtDuration;
-             }
-@@ -1267,6 +_,10 @@
-                 CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, damage, damage, blocked);
-             }
- 
-+            // Neo: Fire our post-damage event hooks. As usual, fire the extension method first, then the event version.
-+            this.onDamageTaken(this.damageContainers.peek());
-+            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
-+            this.damageContainers.pop();
-             return success;
          }
+ 
++        this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage));
++        if (net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) {
++            this.damageContainers.pop();
++            return false;
++        }
++
+         if (this.isSleeping()) {
+             this.stopSleeping();
+         }
+ 
+         this.noActionTime = 0;
++        damage = this.damageContainers.peek().getNewDamage(); // Neo: enforce damage container as source of truth for damage amount
+         if (damage < 0.0F) {
+             damage = 0.0F;
+         }
+@@ -1214,24 +_,39 @@
+         if (Float.isNaN(damage) || Float.isInfinite(damage)) {
+             damage = Float.MAX_VALUE;
+         }
++        this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
+ 
+         boolean tookFullDamage = true;
+         if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+             if (damage <= this.lastHurt) {
++                // Neo: Pop the container when vanilla would abort the incoming damage due to the invulnerability ticks.
++                this.damageContainers.pop();
+                 return false;
+             }
++
++            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
++            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
+ 
+             this.actuallyHurt(level, source, damage - this.lastHurt);
+-            this.lastHurt = damage;
++            // Vanilla updates lastHurt to the local var `damage`, but we throw an event in actuallyHurt that might mess with the damage.
++            // Also, since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
++            this.lastHurt = java.lang.Math.max(this.lastHurt, this.damageContainers.peek().getInflictedDamage());
++            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
+             tookFullDamage = false;
+         } else {
+-            this.lastHurt = damage;
+-            this.invulnerableTime = 20;
+             this.actuallyHurt(level, source, damage);
++            this.lastHurt = this.damageContainers.peek().getInflictedDamage();
++            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
+             this.hurtDuration = 10;
+             this.hurtTime = this.hurtDuration;
+         }
+ 
++        // Neo: Note that we don't update the local tookFullDamage.
++        //      Its name doesn't really mean that, and it is instead used to track if we're inside the invuln block above.
++        //      Also, we need to update the `damage` local with the post-Pre-event value.
++        damage = this.damageContainers.peek().getInflictedDamage();
++
+         this.resolveMobResponsibleForDamage(source);
+         this.resolvePlayerResponsibleForDamage(source);
+         if (tookFullDamage) {
+@@ -1286,6 +_,10 @@
+             CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, originalDamage, damage, blocked);
+         }
+ 
++        // Neo: Fire our post-damage event hooks. As usual, fire the extension method first, then the event version.
++        this.onDamageTaken(this.damageContainers.peek());
++        net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
++        this.damageContainers.pop();
+         return success;
      }
-@@ -1280,7 +_,7 @@
+ 
+@@ -1318,7 +_,7 @@
+         }
+ 
+         BlocksAttacks blocksAttacks = blockingWith.get(DataComponents.BLOCKS_ATTACKS);
+-        if (blocksAttacks != null && !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false)) {
++        if (blocksAttacks != null) {
+             if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
                  return 0.0F;
              } else {
-                 BlocksAttacks blocksAttacks = blockingWith.get(DataComponents.BLOCKS_ATTACKS);
--                if (blocksAttacks != null && !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false)) {
-+                if (blocksAttacks != null) {
-                     if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
-                         return 0.0F;
-                     } else {
-@@ -1296,7 +_,13 @@
-                         }
+@@ -1334,7 +_,14 @@
+                 }
  
-                         float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
--                        blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
+                 float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
+-                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
 +
-+                        var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
-+                        if (!ev.getBlocked()) return 0.0F;
++                var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
++                if (!ev.getBlocked()) return 0.0F;
 +
-+                        damageBlocked = ev.getBlockedDamage();
-+                        this.damageContainers.peek().setBlockedDamage(ev);
-+                        blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, ev.shieldDamage());
-                         if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
-                             this.blockUsingItem(level, livingEntity);
-                         }
-@@ -1329,9 +_,9 @@
++                damageBlocked = ev.getBlockedDamage();
++                this.damageContainers.peek().setBlockedDamage(ev);
++                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, ev.shieldDamage());
++
+                 if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
+                     this.blockUsingItem(level, livingEntity, source, damage);
+                 }
+@@ -1365,9 +_,9 @@
          Entity sourceEntity = source.getEntity();
          if (sourceEntity instanceof Player playerSource) {
              this.setLastHurtByPlayer(playerSource, 100);
@@ -290,16 +297,16 @@
              } else {
                  this.lastHurtByPlayer = null;
                  this.lastHurtByPlayerMemoryTime = 0;
-@@ -1359,7 +_,7 @@
-             for (InteractionHand hand : InteractionHand.values()) {
-                 ItemStack itemStack = this.getItemInHand(hand);
-                 protection = itemStack.get(DataComponents.DEATH_PROTECTION);
--                if (protection != null) {
-+                if (protection != null && net.neoforged.neoforge.common.CommonHooks.onLivingUseTotem(this, killingDamage, itemStack, hand)) {
-                     protectionItem = itemStack.copy();
-                     itemStack.shrink(1);
-                     break;
-@@ -1416,6 +_,8 @@
+@@ -1396,7 +_,7 @@
+         for (InteractionHand hand : InteractionHand.values()) {
+             ItemStack itemStack = this.getItemInHand(hand);
+             protection = itemStack.get(DataComponents.DEATH_PROTECTION);
+-            if (protection != null) {
++            if (protection != null && net.neoforged.neoforge.common.CommonHooks.onLivingUseTotem(this, killingDamage, itemStack, hand)) {
+                 protectionItem = itemStack.copy();
+                 itemStack.shrink(1);
+                 break;
+@@ -1452,6 +_,8 @@
  
      public void die(DamageSource source) {
          if (!this.isRemoved() && !this.dead) {
@@ -308,7 +315,7 @@
              Entity sourceEntity = source.getEntity();
              LivingEntity killer = this.getKillCredit();
              if (killer != null) {
-@@ -1451,7 +_,7 @@
+@@ -1491,7 +_,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              boolean var6 = false;
              if (killer instanceof WitherBoss) {
@@ -317,7 +324,7 @@
                      BlockPos pos = this.blockPosition();
                      BlockState state = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(pos).isAir() && state.canSurvive(this.level(), pos)) {
-@@ -1469,6 +_,7 @@
+@@ -1509,6 +_,7 @@
      }
  
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
@@ -325,7 +332,7 @@
          boolean playerKilled = this.lastHurtByPlayerMemoryTime > 0;
          if (this.shouldDropLoot(level)) {
              this.dropFromLootTable(level, source, playerKilled);
-@@ -1477,6 +_,10 @@
+@@ -1517,6 +_,10 @@
  
          this.dropEquipment(level);
          this.dropExperience(level, source.getEntity());
@@ -336,7 +343,7 @@
      }
  
      protected void dropEquipment(ServerLevel level) {
-@@ -1488,7 +_,8 @@
+@@ -1528,7 +_,8 @@
                  this.isAlwaysExperienceDropper()
                      || this.lastHurtByPlayerMemoryTime > 0 && this.shouldDropExperience() && level.getGameRules().get(GameRules.MOB_DROPS)
              )) {
@@ -346,19 +353,20 @@
          }
      }
  
-@@ -1588,6 +_,11 @@
+@@ -1628,6 +_,12 @@
      }
  
-     public void knockback(double power, double xd, double zd) {
+     public void knockback(double power, double xd, double zd, DamageSource source, float damage) {
 +        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) power, xd, zd);
-+        if(event.isCanceled()) return;
++        if (event.isCanceled()) return;
 +        power = event.getStrength();
 +        xd = event.getRatioX();
 +        zd = event.getRatioZ();
++
          power *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(power <= 0.0)) {
              this.needsSync = true;
-@@ -1669,17 +_,11 @@
+@@ -1709,17 +_,11 @@
          } else {
              BlockPos ladderCheckPos = this.blockPosition();
              BlockState state = this.getInBlockState();
@@ -381,7 +389,7 @@
          }
      }
  
-@@ -1740,6 +_,11 @@
+@@ -1780,6 +_,11 @@
              effectiveFallDistance = fallDistance;
          }
  
@@ -393,7 +401,7 @@
          boolean damaged = super.causeFallDamage(effectiveFallDistance, damageModifier, damageSource);
          int dmg = this.calculateFallDamage(effectiveFallDistance, damageModifier);
          if (dmg > 0) {
-@@ -1804,10 +_,10 @@
+@@ -1843,10 +_,10 @@
              int xx = Mth.floor(this.getX());
              int yy = Mth.floor(this.getY() - 0.2F);
              int zz = Mth.floor(this.getZ());
@@ -407,7 +415,7 @@
              }
          }
      }
-@@ -1832,6 +_,8 @@
+@@ -1871,6 +_,8 @@
          if (!(damage <= 0.0F)) {
              int durabilityDamage = (int)Math.max(1.0F, damage / 4.0F);
  
@@ -416,31 +424,32 @@
              for (EquipmentSlot slot : slots) {
                  ItemStack itemStack = this.getItemBySlot(slot);
                  Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
-@@ -1865,6 +_,7 @@
-                 damage = Math.max(v / 25.0F, 0.0F);
-                 float damageResisted = oldDamage - damage;
-                 if (damageResisted > 0.0F && damageResisted < 3.4028235E37F) {
-+                    this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.MOB_EFFECTS, damageResisted);
-                     if (this instanceof ServerPlayer) {
-                         ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(damageResisted * 10.0F));
-                     } else if (damageSource.getEntity() instanceof ServerPlayer) {
-@@ -1887,6 +_,7 @@
+@@ -1905,6 +_,7 @@
+             damage = Math.max(v / 25.0F, 0.0F);
+             float damageResisted = oldDamage - damage;
+             if (damageResisted > 0.0F && damageResisted < 3.4028235E37F) {
++                this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.MOB_EFFECTS, damageResisted);
+                 if (this instanceof ServerPlayer serverPlayer) {
+                     serverPlayer.awardStat(Stats.DAMAGE_RESISTED, Math.round(damageResisted * 10.0F));
+                 } else if (damageSource.getEntity() instanceof ServerPlayer) {
+@@ -1930,6 +_,7 @@
  
-                 if (enchantmentArmor > 0.0F) {
-                     damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
-+                    this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - damage);
-                 }
+         if (enchantmentArmor > 0.0F) {
+             damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - damage);
+         }
  
-                 return damage;
-@@ -1896,21 +_,37 @@
+         return damage;
+@@ -1937,22 +_,37 @@
  
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
 -            dmg = this.getDamageAfterArmorAbsorb(source, dmg);
 -            dmg = this.getDamageAfterMagicAbsorb(source, dmg);
--            float var10 = Math.max(dmg - this.getAbsorptionAmount(), 0.0F);
--            this.setAbsorptionAmount(this.getAbsorptionAmount() - (dmg - var10));
--            float absorbedDamage = dmg - var10;
+-            float originalDamage = dmg;
+-            dmg = Math.max(dmg - this.getAbsorptionAmount(), 0.0F);
+-            this.setAbsorptionAmount(this.getAbsorptionAmount() - (originalDamage - dmg));
+-            float absorbedDamage = originalDamage - dmg;
 +            // Neo (ImplNote): Keep this in-sync with the equivalent patches in Player#actuallyHurt.
 +            // Neo: Primary damage pipeline hooks. Compute the armor and enchantment reductions against the "original" damage, and then fire LivingDamageEvent.Pre
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(source, this.damageContainers.peek().getNewDamage()));
@@ -459,24 +468,24 @@
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), damage));
 +            float absorbedDamage = Math.min(damage, this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
 +            this.setAbsorptionAmount(Math.max(0, this.getAbsorptionAmount() - absorbedDamage));
-+            float var10 = this.damageContainers.peek().getNewDamage();
++            dmg = this.damageContainers.peek().getNewDamage();
++
              if (absorbedDamage > 0.0F && absorbedDamage < 3.4028235E37F && source.getEntity() instanceof ServerPlayer serverPlayer) {
                  serverPlayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(absorbedDamage * 10.0F));
              }
  
 +            // Last thing here, inflict damage to the entity's health, based on how much damage is remaining after absorption has been processes.
-             if (var10 != 0.0F) {
-                 this.getCombatTracker().recordDamage(source, var10);
-                 this.setHealth(this.getHealth() - var10);
--                this.setAbsorptionAmount(this.getAbsorptionAmount() - var10);
+             if (dmg != 0.0F) {
+                 this.getCombatTracker().recordDamage(source, dmg);
+                 this.setHealth(this.getHealth() - dmg);
+-                this.setAbsorptionAmount(this.getAbsorptionAmount() - dmg);
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
              }
-+
 +            // Neo: Now we go back to hurtServer, where we'll update various metadata fields, process the side effects of damage (i.e. killing the entity), and firing LivingDamageEvent.Post
          }
      }
  
-@@ -1968,6 +_,8 @@
+@@ -2010,6 +_,8 @@
      }
  
      public void swing(InteractionHand hand, boolean sendToSwingingEntity) {
@@ -485,7 +494,7 @@
          if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
              this.swingTime = -1;
              this.swinging = true;
-@@ -2110,8 +_,10 @@
+@@ -2152,8 +_,10 @@
  
      private void swapHandItems() {
          ItemStack tmp = this.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -498,7 +507,7 @@
      }
  
      @Override
-@@ -2223,7 +_,13 @@
+@@ -2270,7 +_,13 @@
      }
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
@@ -513,7 +522,7 @@
      }
  
      public float getArmorCoverPercentage() {
-@@ -2328,15 +_,18 @@
+@@ -2375,15 +_,18 @@
              }
  
              this.needsSync = true;
@@ -534,24 +543,24 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2397,7 +_,7 @@
- 
-     private void travelInAir(Vec3 input) {
+@@ -2447,7 +_,7 @@
          BlockPos posBelow = this.getBlockPosBelowThatAffectsMyMovement();
--        float blockFriction = this.onGround() ? this.level().getBlockState(posBelow).getBlock().getFriction() : 1.0F;
-+        float blockFriction = this.onGround() ? this.level().getBlockState(posBelow).getFriction(this.level(), posBelow, this) : 1.0F;
-         float friction = blockFriction * 0.91F;
+         float blockFriction = this.onGround()
+             ? computeModifiedFriction(
+-                this.level().getBlockState(posBelow).getBlock().getFriction(), (float)this.getAttributeValue(Attributes.FRICTION_MODIFIER)
++                this.level().getBlockState(posBelow).getFriction(this.level(), posBelow, this), (float)this.getAttributeValue(Attributes.FRICTION_MODIFIER)
+             )
+             : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-         double movementY = movement.y;
-@@ -2420,7 +_,15 @@
-         }
+@@ -2479,7 +_,15 @@
+         return computeModifiedFriction(this.omnidirectionalAirMover() ? 0.91F : 0.98F, (float)this.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
      }
  
 +    /**
 +     * @deprecated Neo: use {@link #travelInFluid(Vec3, FluidState)} instead
 +     */
 +    @Deprecated
-     private void travelInFluid(Vec3 input) {
+     protected void travelInFluid(Vec3 input) {
 +        travelInFluid(input, net.minecraft.world.level.material.Fluids.EMPTY.defaultFluidState());
 +    }
 +
@@ -559,15 +568,15 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
-@@ -2449,6 +_,7 @@
+@@ -2508,6 +_,7 @@
              slowDown = 0.96F;
          }
  
 +        speed *= (float)this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED);
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
-         Vec3 ladderMovement = this.getDeltaMovement();
-@@ -2622,7 +_,7 @@
+         Vec3 movement = this.getDeltaMovement();
+@@ -2685,7 +_,7 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);
              double yd = Math.max(delta.y, -0.15F);
@@ -576,15 +585,15 @@
                  yd = 0.0;
              }
  
-@@ -2856,6 +_,7 @@
-             ItemStack previous = this.lastEquipmentItems.get(slot);
+@@ -2926,6 +_,7 @@
+             ItemStack previous = lastEquipmentItems.get(slot);
              ItemStack current = this.getItemBySlot(slot);
              if (this.equipmentHasChanged(previous, current)) {
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent(this, slot, previous, current));
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3006,10 +_,10 @@
+@@ -3076,10 +_,10 @@
                          this.noJumpDelay = 10;
                      }
                  } else {
@@ -597,7 +606,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3327,8 +_,11 @@
+@@ -3396,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -611,7 +620,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3371,8 +_,11 @@
+@@ -3440,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -624,7 +633,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3400,8 +_,10 @@
+@@ -3469,8 +_,10 @@
      public void startUsingItem(InteractionHand hand) {
          ItemStack itemStack = this.getItemInHand(hand);
          if (!itemStack.isEmpty() && !this.isUsingItem()) {
@@ -636,7 +645,7 @@
              if (!this.level().isClientSide()) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -3471,7 +_,8 @@
+@@ -3540,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -646,7 +655,7 @@
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
-@@ -3505,7 +_,11 @@
+@@ -3574,7 +_,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
@@ -658,7 +667,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3515,6 +_,7 @@
+@@ -3584,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -666,7 +675,7 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3566,6 +_,11 @@
+@@ -3635,6 +_,11 @@
      }
  
      public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles) {
@@ -678,16 +687,16 @@
          double xo = this.getX();
          double yo = this.getY();
          double zo = this.getZ();
-@@ -3573,6 +_,8 @@
+@@ -3642,6 +_,8 @@
          boolean ok = false;
-         BlockPos pos = BlockPos.containing(xx, yy, zz);
+         BlockPos pos = BlockPos.containing(xx, y, zz);
          Level level = this.level();
 +        // Neo: Store whether we actually did a teleport to the target, to avoid teleporting the entity back to its original position if it didn't teleport away
 +        boolean teleported = false;
          if (level.hasChunkAt(pos)) {
              boolean landed = false;
  
-@@ -3588,15 +_,32 @@
+@@ -3657,14 +_,30 @@
              }
  
              if (landed) {
@@ -714,13 +723,11 @@
          }
  
          if (!ok) {
-+            if (teleported) { // Neo: Teleport back to original only if we teleported away and need to revert
++            if (teleported) // Neo: Teleport back to original only if we teleported away and need to revert
              this.teleportTo(xo, yo, zo);
-+            }
              return false;
-         } else {
-             if (showParticles) {
-@@ -3676,8 +_,8 @@
+         }
+@@ -3745,8 +_,8 @@
          }
  
          BlockState blockState = this.level().getBlockState(bedPosition);
@@ -731,7 +738,7 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3692,15 +_,17 @@
+@@ -3761,15 +_,17 @@
      }
  
      private boolean checkBedExists() {
@@ -752,7 +759,7 @@
                  Vec3 standUp = BedBlock.findStandUpPosition(this.getType(), this.level(), bedPosition, facing, this.getYRot()).orElseGet(() -> {
                      BlockPos above = bedPosition.above();
                      return new Vec3(above.getX() + 0.5, above.getY() + 0.1, above.getZ() + 0.5);
-@@ -3720,7 +_,9 @@
+@@ -3789,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {
          BlockPos bedPos = this.getSleepingPos().orElse(null);
@@ -763,7 +770,7 @@
      }
  
      @Override
-@@ -3729,7 +_,7 @@
+@@ -3798,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack heldWeapon) {
@@ -772,10 +779,10 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3781,6 +_,8 @@
+@@ -3850,6 +_,8 @@
      }
  
-     public final EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
+     public EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
 +        final EquipmentSlot slot = itemStack.getEquipmentSlot();
 +        if (slot != null) return slot; // FORGE: Allow modders to set a non-default equipment slot for a stack; e.g. a non-armor chestplate-slot item
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);

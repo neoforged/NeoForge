@@ -187,8 +187,8 @@ public class CreativeTabOrderTest {
                 event.insertAfter(i(Blocks.STONE), i(Blocks.TUFF), vis);
                 event.insertAfter(i(Blocks.DIORITE), i(Blocks.CALCITE), vis);
                 event.insertBefore(i(Blocks.CALCITE), i(Blocks.BLACKSTONE), vis);
-                event.accept(i(Blocks.CYAN_CONCRETE), vis);
-                event.remove(i(Blocks.CYAN_CONCRETE), vis);
+                event.accept(i(Blocks.CONCRETE.cyan()), vis);
+                event.remove(i(Blocks.CONCRETE.cyan()), vis);
                 event.insertFirst(i(Blocks.BASALT), vis);
 
                 catchSpecificExceptionForAction(

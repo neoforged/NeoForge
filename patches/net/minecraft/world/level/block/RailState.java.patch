@@ -19,7 +19,7 @@
          this.updateConnections(direction);
      }
  
-@@ -176,7 +_,7 @@
+@@ -177,7 +_,7 @@
              }
          }
  
@@ -28,7 +28,7 @@
              if (BaseRailBlock.isRail(this.level, north.above())) {
                  shape = RailShape.ASCENDING_NORTH;
              }
-@@ -186,7 +_,7 @@
+@@ -187,7 +_,7 @@
              }
          }
  
@@ -37,7 +37,7 @@
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }
-@@ -200,6 +_,10 @@
+@@ -201,6 +_,10 @@
              shape = RailShape.NORTH_SOUTH;
          }
  
@@ -48,7 +48,7 @@
          this.state = this.state.setValue(this.block.getShapeProperty(), shape);
          this.level.setBlock(this.pos, this.state, 3);
      }
-@@ -302,7 +_,7 @@
+@@ -303,7 +_,7 @@
              }
          }
  
@@ -57,7 +57,7 @@
              if (BaseRailBlock.isRail(this.level, north.above())) {
                  shape = RailShape.ASCENDING_NORTH;
              }
-@@ -312,7 +_,7 @@
+@@ -313,7 +_,7 @@
              }
          }
  
@@ -66,7 +66,7 @@
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }
-@@ -322,7 +_,7 @@
+@@ -323,7 +_,7 @@
              }
          }
  

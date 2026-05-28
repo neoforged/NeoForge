@@ -37,7 +37,7 @@ public enum NeoForgeRenderTypes {
     ITEM_UNLIT_TRANSLUCENT(() -> getUnlitTranslucent(TextureAtlas.LOCATION_ITEMS)),
     ITEM_UNSORTED_UNLIT_TRANSLUCENT(() -> getUnlitUnsortedTranslucent(TextureAtlas.LOCATION_ITEMS));
 
-    /// Solid equivalent to [Sheets#cutoutBlockSheet()] and [Sheets#translucentBlockSheet()]
+    /// Solid equivalent to [Sheets#cutoutBlockItemSheet()] and [Sheets#translucentBlockItemSheet()]
     public static final RenderType SOLID_BLOCK_SHEET = RenderTypes.entitySolid(TextureAtlas.LOCATION_BLOCKS);
 
     // TODO 1.21.11: Some render types previously enabled linear filtering, this intends to be equivalent, but was not checked. Also check the mipmap flag.
@@ -168,6 +168,7 @@ public enum NeoForgeRenderTypes {
             RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_CUTOUT_UNLIT)
                     .withTexture("Sampler0", texture)
                     .useLightmap()
+                    .useOverlay()
                     .affectsCrumbling()
                     .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
                     .createRenderSetup();
@@ -179,6 +180,7 @@ public enum NeoForgeRenderTypes {
                     .withTexture("Sampler0", texture)
                     .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
                     .useLightmap()
+                    .useOverlay()
                     .affectsCrumbling()
                     .sortOnUpload()
                     .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
@@ -281,7 +283,7 @@ public enum NeoForgeRenderTypes {
         public static Function<Identifier, RenderType> TEXT_INTENSITY_FILTERED = Util.memoize(Internal::getTextIntensityFiltered);
 
         private static RenderType getTextIntensityFiltered(Identifier locationIn) {
-            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_INTENSITY)
+            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_GRAYSCALE)
                     .withTexture("Sampler0", locationIn, LINEAR_FILTERING_SAMPLER) // TODO 1.21.11: This disabled mip-mapping before, no idea how to force that now
                     .useLightmap()
                     .createRenderSetup();
@@ -301,7 +303,7 @@ public enum NeoForgeRenderTypes {
         public static Function<Identifier, RenderType> TEXT_INTENSITY_POLYGON_OFFSET_FILTERED = Util.memoize(Internal::getTextIntensityPolygonOffsetFiltered);
 
         private static RenderType getTextIntensityPolygonOffsetFiltered(Identifier locationIn) {
-            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_INTENSITY)
+            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_GRAYSCALE)
                     .withTexture("Sampler0", locationIn, LINEAR_FILTERING_SAMPLER) // TODO 1.21.11: This disabled mip-mapping before, no idea how to force that now
                     .useLightmap()
                     .createRenderSetup();
@@ -321,7 +323,7 @@ public enum NeoForgeRenderTypes {
         public static Function<Identifier, RenderType> TEXT_INTENSITY_SEETHROUGH_FILTERED = Util.memoize(Internal::getTextIntensitySeeThroughFiltered);
 
         private static RenderType getTextIntensitySeeThroughFiltered(Identifier locationIn) {
-            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_INTENSITY_SEE_THROUGH)
+            var rendertype$state = RenderSetup.builder(RenderPipelines.TEXT_GRAYSCALE_SEE_THROUGH)
                     .withTexture("Sampler0", locationIn, LINEAR_FILTERING_SAMPLER) // TODO 1.21.11: This disabled mip-mapping before, no idea how to force that now
                     .useLightmap()
                     .createRenderSetup();

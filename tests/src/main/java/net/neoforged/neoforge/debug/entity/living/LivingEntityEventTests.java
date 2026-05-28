@@ -25,12 +25,12 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
@@ -79,7 +79,7 @@ public class LivingEntityEventTests {
             test.pass();
         });
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.ALLAY, 1, 2, 1))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityTypes.ALLAY, 1, 2, 1))
                 .thenExecute(allay -> allay.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.ACACIA_BOAT)))
                 .thenExecute(allay -> allay.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.APPLE)))
 
@@ -110,8 +110,8 @@ public class LivingEntityEventTests {
         });
 
         test.onGameTest(helper -> {
-            final var converting = helper.spawnWithNoFreeWill(EntityType.ZOMBIE_VILLAGER, 1, 2, 0);
-            final var nonConverting = helper.spawnWithNoFreeWill(EntityType.ZOMBIE_VILLAGER, 1, 2, 2);
+            final var converting = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE_VILLAGER, 1, 2, 0);
+            final var nonConverting = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE_VILLAGER, 1, 2, 2);
             nonConverting.setData(shouldConvert, false);
 
             final var startConvertingMethod = helper.catchException(() -> ObfuscationReflectionHelper.findMethod(ZombieVillager.class, "startConverting", UUID.class, int.class));
@@ -125,11 +125,11 @@ public class LivingEntityEventTests {
                     .thenIdle(5)
 
                     // The one with the attachment set to false shouldn't have converted
-                    .thenExecute(() -> helper.assertEntityPresent(EntityType.ZOMBIE_VILLAGER, 1, 2, 2))
+                    .thenExecute(() -> helper.assertEntityPresent(EntityTypes.ZOMBIE_VILLAGER, 1, 2, 2))
 
                     // But the one with the attachment set to true should have
-                    .thenMap(() -> helper.requireEntityAt(EntityType.VILLAGER, 1, 2, 0))
-                    .thenExecute(() -> helper.assertEntityNotPresent(EntityType.ZOMBIE_VILLAGER, 1, 2, 0))
+                    .thenMap(() -> helper.requireEntityAt(EntityTypes.VILLAGER, 1, 2, 0))
+                    .thenExecute(() -> helper.assertEntityNotPresent(EntityTypes.ZOMBIE_VILLAGER, 1, 2, 0))
 
                     .thenExecute(villager -> helper.assertLivingEntityHasMobEffect(
                             villager, MobEffects.LUCK, 0))
@@ -150,8 +150,8 @@ public class LivingEntityEventTests {
         });
 
         test.onGameTest(helper -> {
-            final var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
-            final var pig = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 2);
+            final var skelly = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 2, 0);
+            final var pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 2);
             skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
             skelly.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 10));
             skelly.setData(shootsFireRes, true);
@@ -177,7 +177,7 @@ public class LivingEntityEventTests {
             }
         });
         test.onGameTest(helper -> {
-            final var zombie = helper.spawn(EntityType.ZOMBIE, 4, 2, 4);
+            final var zombie = helper.spawn(EntityTypes.ZOMBIE, 4, 2, 4);
             helper.knockbackResistant(zombie);
             zombie.setData(specialAggro, true);
 
@@ -217,18 +217,18 @@ public class LivingEntityEventTests {
             }
         });
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.knockbackResistant(helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 1, 2, 2)))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.knockbackResistant(helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 1, 2, 2)))
                 .thenExecute(zombie -> zombie.setCustomName(Component.literal("shieldblock")))
                 .thenExecute(zombie -> zombie.setYHeadRot(180)) // Face the zombie towards the skeleton so it can block
 
                 .thenExecute(zombie -> zombie.setItemInHand(InteractionHand.MAIN_HAND, Items.SHIELD.getDefaultInstance()))
                 .thenExecute(zombie -> zombie.startUsingItem(InteractionHand.MAIN_HAND))
                 .thenExecuteAfter(10, zombie -> {
-                    var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
+                    var skelly = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 2, 0);
                     skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
                     skelly.performRangedAttack(zombie, 1f);
                 })
-                .thenWaitUntil(() -> helper.assertEntityIsHolding(new BlockPos(1, 2, 2), EntityType.ZOMBIE, Items.STONE))
+                .thenWaitUntil(() -> helper.assertEntityIsHolding(new BlockPos(1, 2, 2), EntityTypes.ZOMBIE, Items.STONE))
                 .thenSucceed());
     }
 
@@ -266,7 +266,7 @@ public class LivingEntityEventTests {
         });
 
         test.onGameTest(helper -> {
-            Slime slime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
+            Slime slime = helper.spawnWithNoFreeWill(EntityTypes.SLIME, 1, 1, 1);
 
             // Test basic event functionality
             slime.getPersistentData().putString("test.something", "whatever");
@@ -280,7 +280,7 @@ public class LivingEntityEventTests {
                 s.kill(helper.getLevel());
             }
 
-            Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
+            Slime childlessSlime = helper.spawnWithNoFreeWill(EntityTypes.SLIME, 1, 1, 1);
 
             // Test cancellation functionality
             childlessSlime.getPersistentData().putBoolean("test.no_split_slime", true);

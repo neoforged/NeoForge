@@ -3,7 +3,7 @@
 @@ -12,8 +_,13 @@
  import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
  
- public class BiomeTagsProvider extends KeyTagProvider<Biome> {
+ public class BiomeTagsProvider extends TagsProvider<Biome> {
 +    /** @deprecated Forge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public BiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/FluidRenderer.java
 +++ b/net/minecraft/client/renderer/block/FluidRenderer.java
-@@ -36,6 +_,10 @@
+@@ -35,6 +_,10 @@
          return neighborFluidState.getType().isSame(fluidState.getType());
      }
  
@@ -11,7 +11,7 @@
      private static boolean isFaceOccludedByState(Direction direction, float height, BlockState state) {
          VoxelShape occluder = state.getFaceOcclusionShape(direction.getOpposite());
          if (occluder == Shapes.empty()) {
-@@ -57,10 +_,16 @@
+@@ -56,10 +_,16 @@
          return isFaceOccludedByState(direction.getOpposite(), 1.0F, state);
      }
  
@@ -28,7 +28,7 @@
      public void tesselate(BlockAndTintGetter level, BlockPos pos, FluidRenderer.Output output, BlockState blockState, FluidState fluidState) {
          BlockState blockStateDown = level.getBlockState(pos.relative(Direction.DOWN));
          FluidState fluidStateDown = blockStateDown.getFluidState();
-@@ -75,16 +_,16 @@
+@@ -74,16 +_,16 @@
          BlockState blockStateEast = level.getBlockState(pos.relative(Direction.EAST));
          FluidState fluidStateEast = blockStateEast.getFluidState();
          boolean renderUp = !isNeighborSameFluid(fluidState, fluidStateUp);
@@ -51,7 +51,7 @@
              CardinalLighting cardinalLighting = level.cardinalLighting();
              Fluid type = fluidState.getType();
              float heightSelf = this.getHeight(level, type, pos, blockState, fluidState);
-@@ -290,8 +_,7 @@
+@@ -289,8 +_,7 @@
                      TextureAtlasSprite sprite = model.flowingMaterial().sprite();
                      boolean isOverlay = false;
                      if (model.overlayMaterial() != null) {

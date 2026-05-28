@@ -77,10 +77,10 @@
          }
      }
  
-@@ -207,12 +_,16 @@
+@@ -206,12 +_,16 @@
+         return x >= 0 && y >= 0 && x < width && y < height ? sprite.isTransparent(frame, x, y) : true;
      }
  
-     @OnlyIn(Dist.CLIENT)
 -    public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) implements ModelBaker.SharedOperationKey<QuadCollection> {
 +    public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex, net.neoforged.neoforge.client.model.ExtraFaceData faceData) implements ModelBaker.SharedOperationKey<QuadCollection> {
 +        public ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) {

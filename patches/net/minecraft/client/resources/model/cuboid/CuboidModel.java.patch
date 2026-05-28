@@ -45,10 +45,10 @@
 +        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillItemLayerFaceData(propertiesBuilder, this.itemLayerFaceData);
 +    }
 +
-     @OnlyIn(Dist.CLIENT)
      public static class Deserializer implements JsonDeserializer<CuboidModel> {
          public CuboidModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-@@ -63,7 +_,10 @@
+             JsonObject object = json.getAsJsonObject();
+@@ -62,7 +_,10 @@
              }
  
              Identifier parentLocation = parentName.isEmpty() ? null : Identifier.parse(parentName);

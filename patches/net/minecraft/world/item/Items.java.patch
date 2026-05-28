@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -2358,11 +_,19 @@
+@@ -2099,11 +_,19 @@
      }
  
-     private static Item registerBlock(Block block, Block... alternatives) {
--        Item item = registerBlock(block);
+     private static Item registerBlock(BlockItemId id, Block block, Block... alternatives) {
+-        Item item = registerBlock(id, block);
 -
 -        for (Block alternative : alternatives) {
 -            Item.BY_BLOCK.put(alternative, item);
 -        }
 +        Item item = registerItem(
-+                blockIdToItemId(block.builtInRegistryHolder().key()),
++                ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, block.builtInRegistryHolder().key().identifier()),
 +                p -> new BlockItem(block, p) {
 +                    @Override
 +                    public void registerBlocks(java.util.Map<Block, Item> map, Item self) {

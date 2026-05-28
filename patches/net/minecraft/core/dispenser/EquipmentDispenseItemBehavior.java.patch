@@ -1,11 +1,11 @@
 --- a/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
-@@ -25,6 +_,8 @@
-         } else {
-             LivingEntity target = entities.getFirst();
-             EquipmentSlot slot = target.getEquipmentSlotForItem(dispensed);
-+            // Neo: Respect IItemExtension#canEquip in dispenseArmor
-+            if (!dispensed.canEquip(slot, target)) return false;
-             ItemStack equip = dispensed.split(1);
-             target.setItemSlot(slot, equip);
-             if (target instanceof Mob targetMob) {
+@@ -26,6 +_,8 @@
+ 
+         LivingEntity target = entities.getFirst();
+         EquipmentSlot slot = target.getEquipmentSlotForItem(dispensed);
++        // Neo: Respect IItemExtension#canEquip in dispenseArmor
++        if (!dispensed.canEquip(slot, target)) return false;
+         ItemStack equip = dispensed.split(1);
+         target.setItemSlot(slot, equip);
+         if (target instanceof Mob targetMob) {

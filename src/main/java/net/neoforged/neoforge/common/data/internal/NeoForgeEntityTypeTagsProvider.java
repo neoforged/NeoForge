@@ -10,7 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypeIds;
 import net.neoforged.neoforge.common.Tags;
 
 public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
@@ -20,21 +20,21 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
-        tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
-        tag(Tags.EntityTypes.MINECARTS).add(EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART, EntityType.COMMAND_BLOCK_MINECART);
+        tag(Tags.EntityTypes.BOSSES).add(EntityTypeIds.ENDER_DRAGON, EntityTypeIds.WITHER);
+        tag(Tags.EntityTypes.MINECARTS).add(EntityTypeIds.MINECART, EntityTypeIds.CHEST_MINECART, EntityTypeIds.FURNACE_MINECART, EntityTypeIds.HOPPER_MINECART, EntityTypeIds.SPAWNER_MINECART, EntityTypeIds.TNT_MINECART, EntityTypeIds.COMMAND_BLOCK_MINECART);
         tag(Tags.EntityTypes.BOATS).addTag(EntityTypeTags.BOAT)
                 .add(
-                        EntityType.OAK_CHEST_BOAT,
-                        EntityType.SPRUCE_CHEST_BOAT,
-                        EntityType.BIRCH_CHEST_BOAT,
-                        EntityType.JUNGLE_CHEST_BOAT,
-                        EntityType.ACACIA_CHEST_BOAT,
-                        EntityType.CHERRY_CHEST_BOAT,
-                        EntityType.PALE_OAK_CHEST_BOAT,
-                        EntityType.DARK_OAK_CHEST_BOAT,
-                        EntityType.MANGROVE_CHEST_BOAT,
-                        EntityType.BAMBOO_CHEST_RAFT);
-        tag(Tags.EntityTypes.ITEM_FRAMES).add(EntityType.ITEM_FRAME, EntityType.GLOW_ITEM_FRAME);
+                        EntityTypeIds.OAK_CHEST_BOAT,
+                        EntityTypeIds.SPRUCE_CHEST_BOAT,
+                        EntityTypeIds.BIRCH_CHEST_BOAT,
+                        EntityTypeIds.JUNGLE_CHEST_BOAT,
+                        EntityTypeIds.ACACIA_CHEST_BOAT,
+                        EntityTypeIds.CHERRY_CHEST_BOAT,
+                        EntityTypeIds.PALE_OAK_CHEST_BOAT,
+                        EntityTypeIds.DARK_OAK_CHEST_BOAT,
+                        EntityTypeIds.MANGROVE_CHEST_BOAT,
+                        EntityTypeIds.BAMBOO_CHEST_RAFT);
+        tag(Tags.EntityTypes.ITEM_FRAMES).add(EntityTypeIds.ITEM_FRAME, EntityTypeIds.GLOW_ITEM_FRAME);
         tag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED);
         tag(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED);
     }

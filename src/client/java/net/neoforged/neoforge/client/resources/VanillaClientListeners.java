@@ -12,10 +12,10 @@ import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.CloudRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DryFoliageColorReloadListener;
 import net.minecraft.client.resources.FoliageColorReloadListener;
@@ -77,7 +77,7 @@ public class VanillaClientListeners {
 
     public static final Identifier WAYPOINT_STYLES = key(WaypointStyleManager.class);
 
-    public static final Identifier LEVEL_RENDERER = key(LevelRenderer.class);
+    public static final Identifier LEVEL_EXTRACTOR = key(LevelExtractor.class);
 
     public static final Identifier CLOUD_RENDERER = key(CloudRenderer.class);
 

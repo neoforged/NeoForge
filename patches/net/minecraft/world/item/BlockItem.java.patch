@@ -1,29 +1,27 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -76,9 +_,9 @@
-                         }
-                     }
- 
--                    SoundType soundType = placedState.getSoundType();
-+                    SoundType soundType = placedState.getSoundType(level, pos, placeContext.getPlayer());
-                     level.playSound(
--                        player, pos, this.getPlaceSound(placedState), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F
-+                        player, pos, this.getPlaceSound(placedState, level, pos, placeContext.getPlayer()), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F
-                     );
-                     level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, placedState));
-                     itemStack.consume(1, player);
-@@ -88,8 +_,14 @@
+@@ -83,15 +_,22 @@
+             }
          }
+ 
+-        SoundType soundType = placedState.getSoundType();
+-        level.playSound(player, pos, this.getPlaceSound(placedState), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
++        SoundType soundType = placedState.getSoundType(level, pos, placeContext.getPlayer());
++        level.playSound(player, pos, this.getPlaceSound(placedState, level, pos, placeContext.getPlayer()), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
+         level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, placedState));
+         itemStack.consume(1, player);
+         return InteractionResult.SUCCESS;
      }
  
-+    @Deprecated //Forge: Use more sensitive version {@link BlockItem#getPlaceSound(BlockState, IBlockReader, BlockPos, Entity) }
++    /// Neo: use [#getPlaceSound(BlockState, Level, BlockPos, Player)]
++    @Deprecated
      protected SoundEvent getPlaceSound(BlockState blockState) {
          return blockState.getSoundType().getPlaceSound();
 +    }
 +
-+    //Forge: Sensitive version of BlockItem#getPlaceSound
-+    protected SoundEvent getPlaceSound(BlockState state, Level world, BlockPos pos, Player entity) {
-+        return state.getSoundType(world, pos, entity).getPlaceSound();
++    /// Neo: level-sensitive version of [#getPlaceSound(BlockState)]
++    protected SoundEvent getPlaceSound(BlockState state, Level level, BlockPos pos, Player entity) {
++        return state.getSoundType(level, pos, entity).getPlaceSound();
      }
  
      public @Nullable BlockPlaceContext updatePlacementContext(BlockPlaceContext context) {

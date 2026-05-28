@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -205,6 +_,10 @@
+@@ -208,6 +_,10 @@
          return Optional.empty();
      }
  
@@ -8,6 +8,6 @@
 +        return new Vec3(this.x, this.y, this.z);
 +    }
 +
-     @OnlyIn(Dist.CLIENT)
      public record LifetimeAlpha(float startAlpha, float endAlpha, float startAtNormalizedAge, float endAtNormalizedAge) {
          public static final Particle.LifetimeAlpha ALWAYS_OPAQUE = new Particle.LifetimeAlpha(1.0F, 1.0F, 0.0F, 1.0F);
+ 

@@ -14,7 +14,9 @@ import net.minecraft.network.chat.FormattedText;
 public interface IFontExtension {
     FormattedText ELLIPSIS = FormattedText.of("...");
 
-    Font self();
+    private Font self() {
+        return (Font) this;
+    }
 
     /**
      * If the width of the text exceeds {@code maxWidth}, an ellipse is added and the text is substringed.

@@ -23,7 +23,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +37,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
@@ -117,17 +118,17 @@ public class PlayerEventTests {
     @TestHolder(description = "Tests if the on entity interact event is fired")
     static void entityInteractEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final PlayerInteractEvent.EntityInteractSpecific event) -> {
-            if (event.getTarget().getType() == EntityType.ILLUSIONER) {
+            if (event.getTarget().getType() == EntityTypes.ILLUSIONER) {
                 String oldName = event.getTarget().getName().getString();
                 event.getTarget().setCustomName(Component.literal(oldName + " entityInteractEventTest"));
             }
         });
 
         test.onGameTest(helper -> {
-            Mob illusioner = helper.spawnWithNoFreeWill(EntityType.ILLUSIONER, 1, 1, 1);
+            Mob illusioner = helper.spawnWithNoFreeWill(EntityTypes.ILLUSIONER, 1, 1, 1);
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                    .thenExecute(player -> player.connection.handleInteract(new ServerboundInteractPacket(illusioner.getId(), InteractionHand.MAIN_HAND, helper.absoluteVec(new BlockPos(1, 1, 1).getCenter()), player.isShiftKeyDown())))
-                    .thenExecute(player -> helper.assertTrue(illusioner.getName().getString().contains("entityInteractEventTest"), "Illager name did not get changed on player interact"))
+                    .thenExecute(player -> player.connection.handleInteract(new ServerboundInteractPacket(illusioner.getId(), InteractionHand.MAIN_HAND, helper.absoluteVec(Vec3.atCenterOf(new BlockPos(1, 1, 1))), player.isShiftKeyDown())))
+                    .thenExecute(_ -> helper.assertTrue(illusioner.getName().getString().contains("entityInteractEventTest"), "Illager name did not get changed on player interact"))
                     .thenSucceed();
         });
     }
@@ -298,7 +299,7 @@ public class PlayerEventTests {
                     player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(GlobalPos.of(dimension, helper.absolutePos(new BlockPos(0, 1, 0))), 0, 0), false), true);
                 })
                 .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
+                .thenExecute(() -> helper.assertEntityPresent(EntityTypes.PLAYER, new BlockPos(0, 1, 1)))
                 .thenSucceed());
     }
 
@@ -317,7 +318,7 @@ public class PlayerEventTests {
                     player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(GlobalPos.of(dimension, helper.absolutePos(new BlockPos(0, 1, 1))), 0, 0), true), true);
                 })
                 .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
-                .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
+                .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityTypes.PLAYER, Items.APPLE))
                 .thenSucceed());
     }
 }

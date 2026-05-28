@@ -6,9 +6,7 @@
         "damage": {
           "type": {
             "direct_entity": {
-              "type_specific": {
-                "type": "neoforge:is_trident"
-              }
+              "minecraft:entity_type": "minecraft:trident"
             },
             "tags": [
               {

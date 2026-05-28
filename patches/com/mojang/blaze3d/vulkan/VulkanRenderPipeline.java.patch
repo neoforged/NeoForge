@@ -1,0 +1,53 @@
+--- a/com/mojang/blaze3d/vulkan/VulkanRenderPipeline.java
++++ b/com/mojang/blaze3d/vulkan/VulkanRenderPipeline.java
+@@ -36,6 +_,7 @@
+ public record VulkanRenderPipeline(
+     RenderPipeline info,
+     VulkanDevice device,
++    long withDepthStencilPipeline,
+     long withDepthPipeline,
+     long withoutDepthPipeline,
+     long pipelineLayout,
+@@ -152,6 +_,27 @@
+                 depthStencilState.depthCompareOp(VulkanConst.toVk(pipeline.getDepthStencilState().depthTest()));
+             }
+ 
++            if (pipeline.getStencilTest().isPresent()) {
++                final var stencilTest = pipeline.getStencilTest().get();
++                depthStencilState.stencilTestEnable(true);
++                final var frontState = depthStencilState.front();
++                frontState.failOp(VulkanConst.toVk(stencilTest.front().fail()));
++                frontState.passOp(VulkanConst.toVk(stencilTest.front().pass()));
++                frontState.depthFailOp(VulkanConst.toVk(stencilTest.front().depthFail()));
++                frontState.compareOp(VulkanConst.toVk(stencilTest.front().compare()));
++                frontState.compareMask(stencilTest.readMask());
++                frontState.writeMask(stencilTest.writeMask());
++                frontState.reference(stencilTest.referenceValue());
++                final var backState = depthStencilState.front();
++                backState.failOp(VulkanConst.toVk(stencilTest.front().fail()));
++                backState.passOp(VulkanConst.toVk(stencilTest.front().pass()));
++                backState.depthFailOp(VulkanConst.toVk(stencilTest.front().depthFail()));
++                backState.compareOp(VulkanConst.toVk(stencilTest.front().compare()));
++                backState.compareMask(stencilTest.readMask());
++                backState.writeMask(stencilTest.writeMask());
++                backState.reference(stencilTest.referenceValue()); // note: must match front unless portability feature is required and checked for (if on portability device)
++            }
++
+             ColorTargetState[] colorTargetStates = pipeline.getColorTargetStates();
+             org.lwjgl.vulkan.VkPipelineColorBlendAttachmentState.Buffer blendAttachments = VkPipelineColorBlendAttachmentState.calloc(
+                 colorTargetStates.length, stack
+@@ -219,8 +_,13 @@
+             } else {
+                 withoutDepthPipeline = 0L;
+             }
++            renderingInfo.depthAttachmentFormat(VK12.VK_FORMAT_D32_SFLOAT_S8_UINT);
++            renderingInfo.stencilAttachmentFormat(VK12.VK_FORMAT_D32_SFLOAT_S8_UINT);
++            VulkanUtils.crashIfFailure(device, VK12.vkCreateGraphicsPipelines(device.vkDevice(), 0L, createInfo, null, pointer), "Can't compile pipeline " + pipeline.getLocation());
++            final long withDepthStencilPipeline = pointer.get(0);
++            device.instance().debug().setObjectName(device.vkDevice(), VK12.VK_OBJECT_TYPE_PIPELINE, withDepthStencilPipeline, () -> "Pipeline " + pipeline.getLocation());
+ 
+-            return new VulkanRenderPipeline(pipeline, device, withDepthPipeline, withoutDepthPipeline, pipelineLayout, layout, vertexModule, fragmentModule);
++            return new VulkanRenderPipeline(pipeline, device, withDepthStencilPipeline, withDepthPipeline, withoutDepthPipeline, pipelineLayout, layout, vertexModule, fragmentModule);
+         }
+     }
+ 

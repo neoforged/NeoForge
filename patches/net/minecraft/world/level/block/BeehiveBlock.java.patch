@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/net/minecraft/world/level/block/BeehiveBlock.java
-@@ -140,7 +_,7 @@
+@@ -141,7 +_,7 @@
          boolean hiveEmptied = false;
          if (honeyLevel >= 5) {
              Item item = itemStack.getItem();

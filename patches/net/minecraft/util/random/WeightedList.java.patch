@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/random/WeightedList.java
 +++ b/net/minecraft/util/random/WeightedList.java
-@@ -144,7 +_,7 @@
+@@ -154,7 +_,7 @@
      }
  
      public static class Builder<E> {
@@ -9,7 +9,7 @@
  
          public WeightedList.Builder<E> add(E item) {
              return this.add(item, 1);
-@@ -155,8 +_,41 @@
+@@ -165,8 +_,41 @@
              return this;
          }
  

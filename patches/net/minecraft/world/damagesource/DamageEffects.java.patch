@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/damagesource/DamageEffects.java
 +++ b/net/minecraft/world/damagesource/DamageEffects.java
-@@ -5,6 +_,8 @@
- import net.minecraft.sounds.SoundEvents;
- import net.minecraft.util.StringRepresentable;
+@@ -7,6 +_,8 @@
+ 
+ import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
  
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
- public enum DamageEffects implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum DamageEffects implements StringRepresentable, IExtensibleEnum {
      HURT("hurt", SoundEvents.PLAYER_HURT),
      THORNS("thorns", SoundEvents.PLAYER_HURT),
-@@ -15,11 +_,33 @@
+@@ -17,11 +_,33 @@
  
      public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);
      private final String id;
@@ -18,7 +18,7 @@
 +    private final java.util.function.Supplier<SoundEvent> soundSupplier;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-     private DamageEffects(String id, SoundEvent sound) {
+     DamageEffects(String id, SoundEvent sound) {
 +        this(id, () -> sound);
 +    }
 +
@@ -44,7 +44,7 @@
      }
  
      @Override
-@@ -28,6 +_,10 @@
+@@ -30,6 +_,10 @@
      }
  
      public SoundEvent sound() {

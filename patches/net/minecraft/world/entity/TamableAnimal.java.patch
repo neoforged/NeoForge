@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/TamableAnimal.java
 +++ b/net/minecraft/world/entity/TamableAnimal.java
-@@ -138,6 +_,8 @@
+@@ -137,6 +_,8 @@
          this.usePlayerItem(player, hand, itemStack);
          this.heal(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
          this.playEatingSound();
@@ -9,7 +9,7 @@
      }
  
      public boolean isInSittingPose() {
-@@ -222,13 +_,16 @@
+@@ -221,13 +_,16 @@
  
      @Override
      public void die(DamageSource source) {

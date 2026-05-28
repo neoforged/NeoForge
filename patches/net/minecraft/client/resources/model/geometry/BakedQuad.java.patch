@@ -20,15 +20,14 @@
      public Vector3fc position(int vertex) {
          return switch (vertex) {
              case 0 -> this.position0;
-@@ -59,9 +_,24 @@
+@@ -59,8 +_,23 @@
      public @interface MaterialFlags {
      }
  
+-    public record MaterialInfo(TextureAtlasSprite sprite, ChunkSectionLayer layer, RenderType itemRenderType, int tintIndex, boolean shade, int lightEmission) {
 +    /// @param ambientOcclusion `false` to force-disable AO for this quad
 +    ///                            or `true` to use the behavior dictated by
 +    ///                            [net.neoforged.neoforge.client.extensions.BlockStateModelPartExtension#ambientOcclusion].
-     @OnlyIn(Dist.CLIENT)
--    public record MaterialInfo(TextureAtlasSprite sprite, ChunkSectionLayer layer, RenderType itemRenderType, int tintIndex, boolean shade, int lightEmission) {
 +    public record MaterialInfo(TextureAtlasSprite sprite, ChunkSectionLayer layer, RenderType itemRenderType, int tintIndex, boolean shade, int lightEmission, boolean ambientOcclusion) {
 +        /// @deprecated Neo: use [#MaterialInfo(TextureAtlasSprite, ChunkSectionLayer, RenderType, int, boolean, int, boolean)] instead
 +        @Deprecated
@@ -46,7 +45,7 @@
              ChunkSectionLayer layer = ChunkSectionLayer.byTransparency(transparency);
              RenderType itemRenderType;
              if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
-@@ -70,7 +_,7 @@
+@@ -69,7 +_,7 @@
                  itemRenderType = transparency.hasTranslucent() ? Sheets.translucentItemSheet() : Sheets.cutoutItemSheet();
              }
  

@@ -1,13 +1,13 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -389,6 +_,7 @@
-                 this.modified = true;
-             }
- 
-+            net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(this.level, node, oldLevel, level, chunk);
-             return chunk;
+@@ -390,6 +_,7 @@
+             this.modified = true;
          }
+ 
++        net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(this.level, node, oldLevel, level, chunk);
+         return chunk;
      }
+ 
 @@ -524,9 +_,13 @@
  
                      this.save(chunk);
@@ -31,14 +31,14 @@
                      return chunk;
                  } else {
 @@ -759,6 +_,7 @@
-                 Profiler.get().incrementCounter("chunkSave");
-                 this.activeChunkWrites.incrementAndGet();
-                 SerializableChunkData data = SerializableChunkData.copyOf(this.level, chunk);
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(chunk, this.level, data));
-                 CompletableFuture<CompoundTag> encodedData = CompletableFuture.supplyAsync(data::write, Util.backgroundExecutor());
-                 this.write(pos, encodedData::join).handle((ignored, throwable) -> {
-                     if (throwable != null) {
-@@ -825,9 +_,11 @@
+             Profiler.get().incrementCounter("chunkSave");
+             this.activeChunkWrites.incrementAndGet();
+             SerializableChunkData data = SerializableChunkData.copyOf(this.level, chunk);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(chunk, this.level, data));
+             CompletableFuture<CompoundTag> encodedData = CompletableFuture.supplyAsync(data::write, Util.backgroundExecutor());
+             this.write(pos, encodedData::join).handle((ignored, throwable) -> {
+                 if (throwable != null) {
+@@ -824,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer player, LevelChunk chunk) {
          player.connection.chunkSender.markChunkPendingToSend(chunk);
@@ -50,7 +50,7 @@
          player.connection.chunkSender.dropChunk(player, pos);
      }
  
-@@ -935,7 +_,7 @@
+@@ -934,7 +_,7 @@
              ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
              if (holder != null) {
                  LevelChunk chunk = holder.getTickingChunk();
@@ -59,7 +59,7 @@
                      output.add(chunk);
                  }
              }
-@@ -959,6 +_,19 @@
+@@ -958,6 +_,19 @@
          return triState == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(pos) : triState.toBoolean(true);
      }
  
@@ -76,10 +76,10 @@
 +//        }
 +//    }
 +
-     boolean anyPlayerCloseEnoughTo(BlockPos pos, int maxDistance) {
+     public boolean anyPlayerCloseEnoughTo(BlockPos pos, int maxDistance) {
          Vec3 target = new Vec3(pos);
  
-@@ -1088,6 +_,7 @@
+@@ -1087,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(player);
              }
  
@@ -87,7 +87,7 @@
              this.updateChunkTracking(player);
          }
      }
-@@ -1132,7 +_,7 @@
+@@ -1135,7 +_,7 @@
      }
  
      protected void addEntity(Entity entity) {
@@ -96,7 +96,7 @@
              EntityType<?> type = entity.getType();
              int range = type.clientTrackingRange() * 16;
              if (range != 0) {
-@@ -1291,6 +_,20 @@
+@@ -1293,6 +_,20 @@
          }
      }
  
@@ -116,8 +116,8 @@
 +
      private class DistanceManager extends net.minecraft.server.level.DistanceManager {
          protected DistanceManager(TicketStorage ticketStorage, Executor executor, Executor mainThreadExecutor) {
-             Objects.requireNonNull(ChunkMap.this);
-@@ -1426,5 +_,20 @@
+             super(ticketStorage, executor, mainThreadExecutor);
+@@ -1424,5 +_,20 @@
                  this.updatePlayer(player);
              }
          }

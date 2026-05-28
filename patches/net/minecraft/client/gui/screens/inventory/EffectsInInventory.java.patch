@@ -30,7 +30,7 @@
 +            if (!renderer.renderInventoryText(effect, screen, graphics, x0, y0, 0))
 +            this.renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
 +            if (!renderer.renderInventoryIcon(effect, screen, graphics, x0 + 7, y0, 0))
-             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
+             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
 @@ -85,9 +_,15 @@

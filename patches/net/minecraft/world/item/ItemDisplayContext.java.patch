@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/ItemDisplayContext.java
 +++ b/net/minecraft/world/item/ItemDisplayContext.java
-@@ -5,6 +_,9 @@
- import net.minecraft.util.ByIdMap;
- import net.minecraft.util.StringRepresentable;
+@@ -7,6 +_,9 @@
+ 
+ import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
  
 +@net.neoforged.fml.common.asm.enumextension.IndexedEnum
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum(1)
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
- public enum ItemDisplayContext implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum ItemDisplayContext implements StringRepresentable, IExtensibleEnum {
      NONE(0, "none"),
      THIRD_PERSON_LEFT_HAND(1, "thirdperson_lefthand"),
-@@ -21,10 +_,22 @@
+@@ -23,10 +_,22 @@
      public static final IntFunction<ItemDisplayContext> BY_ID = ByIdMap.continuous(ItemDisplayContext::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
      private final byte id;
      private final String name;
@@ -18,7 +18,7 @@
 +    private final java.util.function.Supplier<ItemDisplayContext> fallback;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-     private ItemDisplayContext(int id, String name) {
+     ItemDisplayContext(int id, String name) {
          this.name = name;
          this.id = (byte)id;
 +        this.isModded = false;
@@ -33,7 +33,7 @@
      }
  
      @Override
-@@ -37,10 +_,23 @@
+@@ -39,10 +_,23 @@
      }
  
      public boolean firstPerson() {

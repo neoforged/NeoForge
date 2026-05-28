@@ -1,43 +1,44 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -60,19 +_,21 @@
+@@ -59,20 +_,22 @@
+         PoseStack poseStack = new PoseStack();
          Player player = this.minecraft.player;
          if (isFirstPerson && !isSleeping) {
-             if (!player.noPhysics) {
--                BlockState blockState = getViewBlockingState(player);
--                if (blockState != null) {
--                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(blockState).sprite(), poseStack, this.bufferSource);
-+                org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
-+                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
-+                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
-                 }
+-            BlockState blockState = getViewBlockingState(player);
+-            if (blockState != null) {
++            var overlay = getViewBlockingStateAndPos(player);
++            if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, submitNodeCollector)) {
+                 BlockStateModelSet blockStateModelSet = this.minecraft.getModelManager().getBlockStateModelSet();
+-                TextureAtlasSprite sprite = blockStateModelSet.getParticleMaterial(blockState).sprite();
++                TextureAtlasSprite sprite = blockStateModelSet.getParticleMaterial(overlay.getLeft()).sprite();
+                 submitBlockSprite(sprite, poseStack, submitNodeCollector, -15132391);
              }
  
              if (!this.minecraft.player.isSpectator()) {
                  if (this.minecraft.player.isEyeInFluid(FluidTags.WATER)) {
-+                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, bufferSource))
-                     renderWater(this.minecraft, poseStack, this.bufferSource);
++                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, submitNodeCollector))
+                     submitWater(this.minecraft, poseStack, submitNodeCollector);
                  }
  
                  if (this.minecraft.player.isOnFire()) {
                      TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
-+                    if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, poseStack, this.sprites, bufferSource))
-                     renderFire(poseStack, this.bufferSource, fireSprite);
++                    if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, poseStack, this.sprites, submitNodeCollector))
+                     submitFire(poseStack, submitNodeCollector, fireSprite);
                  }
              }
 @@ -122,6 +_,10 @@
      }
  
      private static @Nullable BlockState getViewBlockingState(Player player) {
-+        return getOverlayBlock(player).getLeft();
++        return net.minecraft.Optionull.map(getViewBlockingStateAndPos(player), org.apache.commons.lang3.tuple.Pair::getLeft);
 +    }
 +
-+    private static org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos> getOverlayBlock(Player player) {
-         BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
- 
-         for (int i = 0; i < 8; i++) {
-@@ -131,7 +_,7 @@
-             testPos.set(xo, yo, zo);
++    private static org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos> getViewBlockingStateAndPos(Player player) {
+         if (player.noPhysics) {
+             return null;
+         }
+@@ -136,7 +_,7 @@
+             );
              BlockState blockState = player.level().getBlockState(testPos);
              if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos)) {
 -                return blockState;
@@ -45,23 +46,22 @@
              }
          }
  
-@@ -159,6 +_,10 @@
+@@ -152,13 +_,17 @@
      }
  
-     private static void renderWater(Minecraft minecraft, PoseStack poseStack, MultiBufferSource bufferSource) {
-+        renderFluid(minecraft, poseStack, bufferSource, UNDERWATER_LOCATION);
+     private static void submitWater(Minecraft minecraft, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
++        submitFluid(minecraft, poseStack, submitNodeCollector, UNDERWATER_LOCATION);
 +    }
 +
-+    public static void renderFluid(Minecraft minecraft, PoseStack poseStack, MultiBufferSource bufferSource, Identifier texture) {
-         BlockPos pos = BlockPos.containing(minecraft.player.getX(), minecraft.player.getEyeY(), minecraft.player.getZ());
-         float br = Lightmap.getBrightness(minecraft.player.level().dimensionType(), minecraft.player.level().getMaxLocalRawBrightness(pos));
-         int color = ARGB.colorFromFloat(0.1F, br, br, br);
-@@ -171,7 +_,7 @@
-         float uo = -minecraft.player.getYRot() / 64.0F;
-         float vo = minecraft.player.getXRot() / 64.0F;
-         Matrix4f pose = poseStack.last().pose();
--        VertexConsumer builder = bufferSource.getBuffer(RenderTypes.blockScreenEffect(UNDERWATER_LOCATION));
-+        VertexConsumer builder = bufferSource.getBuffer(RenderTypes.blockScreenEffect(texture));
-         builder.addVertex(pose, -1.0F, -1.0F, -0.5F).setUv(4.0F + uo, 4.0F + vo).setColor(color);
-         builder.addVertex(pose, 1.0F, -1.0F, -0.5F).setUv(0.0F + uo, 4.0F + vo).setColor(color);
-         builder.addVertex(pose, 1.0F, 1.0F, -0.5F).setUv(0.0F + uo, 0.0F + vo).setColor(color);
++    public static void submitFluid(Minecraft minecraft, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Identifier texture) {
+         LocalPlayer player = minecraft.player;
+         BlockPos pos = BlockPos.containing(player.getEyePosition());
+         float brightness = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(pos));
+         int color = ARGB.colorFromFloat(0.1F, brightness, brightness, brightness);
+         float u0 = -player.getYRot() / 64.0F;
+         float v0 = player.getXRot() / 64.0F;
+-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.blockScreenEffect(UNDERWATER_LOCATION), (pose, builder) -> {
++        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.blockScreenEffect(texture), (pose, builder) -> {
+             float uvSize = 4.0F;
+             buildQuad(builder, pose.pose(), -1.0F, -1.0F, 1.0F, 1.0F, -0.5F, u0 + 4.0F, v0 + 4.0F, u0, v0, color);
+         });

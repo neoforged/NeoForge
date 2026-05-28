@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -235,8 +_,10 @@
+@@ -236,8 +_,10 @@
      }
  
      private void ageUp() {
-+        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.FROG, (timer) -> {})) return;
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.FROG, (timer) -> {})) return;
          if (this.level() instanceof ServerLevel serverLevel) {
-             this.convertTo(EntityType.FROG, ConversionParams.single(this, false, false), frog -> {
+             this.convertTo(EntityTypes.FROG, ConversionParams.single(this, false, false), frog -> {
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, frog);
                  frog.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(frog.blockPosition()), EntitySpawnReason.CONVERSION, null);
                  frog.setPersistenceRequired();

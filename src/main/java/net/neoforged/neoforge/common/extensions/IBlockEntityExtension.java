@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -107,16 +106,6 @@ public interface IBlockEntityExtension {
         Level level = be.getLevel();
         if (level != null)
             level.invalidateCapabilities(be.getBlockPos());
-    }
-
-    /**
-     * Returns whether this {@link BlockEntity} has custom outline rendering behavior.
-     *
-     * @param player the local player currently viewing this {@code BlockEntity}
-     * @return {@code true} to enable outline processing
-     */
-    default boolean hasCustomOutlineRendering(Player player) {
-        return false;
     }
 
     /// React to the rotation and mirroring applied by a structure to the block this BE belongs to.

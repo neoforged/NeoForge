@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
-@@ -163,6 +_,8 @@
+@@ -162,6 +_,8 @@
      }
  
      public boolean award(AdvancementHolder holder, String criterion) {
@@ -9,7 +9,7 @@
          boolean result = false;
          AdvancementProgress progress = this.getOrStartProgress(holder);
          boolean wasDone = progress.isDone();
-@@ -170,12 +_,14 @@
+@@ -169,12 +_,14 @@
              this.unregisterListeners(holder);
              this.progressChanged.add(holder);
              result = true;
@@ -24,7 +24,7 @@
                  });
              }
          }
-@@ -195,6 +_,7 @@
+@@ -194,6 +_,7 @@
              this.registerListeners(advancement);
              this.progressChanged.add(advancement);
              result = true;

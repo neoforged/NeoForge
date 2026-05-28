@@ -1,7 +1,7 @@
 --- a/net/minecraft/commands/ArgumentVisitor.java
 +++ b/net/minecraft/commands/ArgumentVisitor.java
 @@ -15,7 +_,8 @@
-         visitNodeArguments(rootContext, output);
+         visitNodeArguments(context, output);
  
          CommandContextBuilder<S> child;
 -        while ((child = context.getChild()) != null && (!rejectRootRedirects || child.getRootNode() != rootContext.getRootNode())) {

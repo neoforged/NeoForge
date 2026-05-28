@@ -1,0 +1,11 @@
+--- a/net/minecraft/util/LightCoordsUtil.java
++++ b/net/minecraft/util/LightCoordsUtil.java
+@@ -104,7 +_,7 @@
+ 
+         int packedBrightness = brightnessGetter.packedBrightness(level, pos);
+         int block = block(packedBrightness);
+-        int blockSelfEmission = state.getLightEmission();
++        int blockSelfEmission = state.getLightEmission(level, pos);
+         return block < blockSelfEmission ? withBlock(packedBrightness, blockSelfEmission) : packedBrightness;
+     }
+ 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -389,6 +_,9 @@
+@@ -391,6 +_,9 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, true, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
@@ -10,7 +10,7 @@
          }
      }
  
-@@ -434,6 +_,9 @@
+@@ -436,6 +_,9 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, false, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
@@ -20,14 +20,14 @@
          }
      }
  
-@@ -518,9 +_,20 @@
+@@ -519,9 +_,20 @@
          private final boolean twoHanded;
          private final boolean affectsOffhandPose;
  
 +        private final net.neoforged.neoforge.client.@org.jspecify.annotations.Nullable IArmPoseTransformer forgeArmPose;
 +
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         private ArmPose(boolean twoHanded, boolean affectsOffhandPose) {
+         ArmPose(boolean twoHanded, boolean affectsOffhandPose) {
              this.twoHanded = twoHanded;
              this.affectsOffhandPose = affectsOffhandPose;
 +            this.forgeArmPose = null;
@@ -41,7 +41,7 @@
          }
  
          public boolean isTwoHanded() {
-@@ -529,6 +_,14 @@
+@@ -530,6 +_,14 @@
  
          public boolean affectsOffhandPose() {
              return this.affectsOffhandPose;

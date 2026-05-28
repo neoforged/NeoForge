@@ -1,14 +1,11 @@
 --- a/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -139,7 +_,10 @@
-                 this.handleChatInput(this.input.getValue(), true);
-                 if (this.closeOnSubmit) {
-                     this.exitReason = ChatScreen.ExitReason.DONE;
--                    this.minecraft.setScreen(null);
-+                    // FORGE: Prevent closing the screen if another screen has been opened.
-+                    if (minecraft.screen == this) {
-+                        this.minecraft.setScreen(null);
-+                    }
-                 } else {
-                     this.input.setValue("");
-                     this.minecraft.gui.getChat().resetChatScroll();
+@@ -141,6 +_,8 @@
+             this.handleChatInput(this.input.getValue(), true);
+             if (this.closeOnSubmit) {
+                 this.exitReason = ChatScreen.ExitReason.DONE;
++                // Neo: Prevent closing the screen if another screen has been opened.
++                if (this.minecraft.gui.screen() == this)
+                 this.minecraft.gui.setScreen(null);
+             } else {
+                 this.input.setValue("");

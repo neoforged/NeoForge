@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentMap.java
 +++ b/net/minecraft/core/component/DataComponentMap.java
-@@ -129,6 +_,12 @@
+@@ -127,6 +_,12 @@
          private Builder() {
          }
  

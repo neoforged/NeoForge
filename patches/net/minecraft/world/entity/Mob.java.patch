@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -139,6 +_,11 @@
+@@ -144,6 +_,11 @@
      private Leashable.@Nullable LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
      private int homeRadius = -1;
@@ -12,7 +12,7 @@
  
      protected Mob(EntityType<? extends Mob> type, Level level) {
          super(type, level);
-@@ -244,7 +_,11 @@
+@@ -249,7 +_,11 @@
      }
  
      public void setTarget(@Nullable LivingEntity target) {
@@ -25,7 +25,7 @@
      }
  
      @Override
-@@ -340,6 +_,12 @@
+@@ -345,6 +_,12 @@
          if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
              this.updateControlFlags();
          }
@@ -38,7 +38,7 @@
      }
  
      protected void updateControlFlags() {
-@@ -383,6 +_,9 @@
+@@ -388,6 +_,9 @@
          if (this.isNoAi()) {
              output.putBoolean("NoAI", this.isNoAi());
          }
@@ -48,7 +48,7 @@
      }
  
      @Override
-@@ -401,6 +_,14 @@
+@@ -406,6 +_,14 @@
          this.lootTable = input.read("DeathLootTable", LootTable.KEY_CODEC);
          this.lootTableSeed = input.getLongOr("DeathLootTableSeed", 0L);
          this.setNoAi(input.getBooleanOr("NoAI", false));
@@ -63,7 +63,7 @@
      }
  
      @Override
-@@ -459,7 +_,7 @@
+@@ -464,7 +_,7 @@
              && this.canPickUpLoot()
              && this.isAlive()
              && !this.dead
@@ -72,7 +72,7 @@
              Vec3i pickupReach = this.getPickupReach();
  
              for (ItemEntity entity : this.level()
-@@ -614,6 +_,8 @@
+@@ -646,6 +_,8 @@
      private double getApproximateAttributeWith(ItemStack itemStack, Holder<Attribute> attribute, EquipmentSlot slot) {
          double baseValue = this.getAttributes().hasAttribute(attribute) ? this.getAttributeBaseValue(attribute) : 0.0;
          ItemAttributeModifiers attributeModifiers = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -81,7 +81,7 @@
          return attributeModifiers.compute(attribute, baseValue, slot);
      }
  
-@@ -653,6 +_,7 @@
+@@ -685,6 +_,7 @@
  
      @Override
      public void checkDespawn() {
@@ -89,7 +89,7 @@
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-@@ -1054,6 +_,11 @@
+@@ -1078,6 +_,11 @@
          }
      }
  
@@ -101,7 +101,7 @@
      public @Nullable SpawnGroupData finalizeSpawn(
          ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData
      ) {
-@@ -1066,6 +_,7 @@
+@@ -1090,6 +_,7 @@
          }
  
          this.setLeftHanded(random.nextFloat() < 0.05F);
@@ -109,15 +109,15 @@
          return groupData;
      }
  
-@@ -1212,6 +_,7 @@
-             } else {
-                 params.type().convert(this, newMob, params);
-                 afterConversion.finalizeConversion(newMob);
-+                if (!preventConversionSpawns)
-                 if (this.level() instanceof ServerLevel serverLevel) {
-                     serverLevel.addFreshEntity(newMob);
-                 }
-@@ -1375,14 +_,24 @@
+@@ -1238,6 +_,7 @@
+ 
+         params.type().convert(this, newMob, params);
+         afterConversion.finalizeConversion(newMob);
++        if (!preventConversionSpawns)
+         if (this.level() instanceof ServerLevel serverLevel) {
+             serverLevel.addFreshEntity(newMob);
+         }
+@@ -1399,14 +_,24 @@
      }
  
      @Override
@@ -143,7 +143,7 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(goal -> true);
-@@ -1442,5 +_,40 @@
+@@ -1472,5 +_,40 @@
  
      public float chargeSpeedModifier() {
          return 1.0F;

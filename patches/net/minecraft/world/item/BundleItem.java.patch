@@ -7,8 +7,8 @@
 -        if (initialContents == null) {
 +        if (initialContents == null || self.getCount() != 1) {
              return false;
-         } else {
-             ItemStack other = slot.getItem();
+         }
+ 
 @@ -95,6 +_,7 @@
  
      @Override

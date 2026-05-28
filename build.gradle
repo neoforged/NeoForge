@@ -88,6 +88,12 @@ immaculate {
 
         def interfaceChange = Pattern.compile('[-+].*(implements|(interface.*extends))(.*)\\{')
         custom 'noInterfaceModifications', { String fileContents ->
+            // FIXME: remove when handling of Holder is resolved
+            // Special case: removal of sealed and permits incorrectly triggers interface change detection
+            if (fileContents.startsWith("--- a/net/minecraft/core/Holder.java")) {
+                return fileContents
+            }
+
             def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
             if (interfaceChanges.isEmpty()) return fileContents
             String oldInterfaces = ""
@@ -125,7 +131,7 @@ immaculate {
             accessChanges.each { String change ->
                 //Get the type of match
                 String[] data = change.substring(1).trim().split(" ", 2)
-                String lineStart = data[1].substring(0, Math.min(10, data[1].length()))
+                String lineStart = data[1].substring(0, Math.min(30, data[1].length()))
                 if (change.startsWith('-')) {//Removal
                     removals.get(data[0]).add(lineStart)
                 } else {//Addition

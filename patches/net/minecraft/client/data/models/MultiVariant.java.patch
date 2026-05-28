@@ -1,31 +1,24 @@
 --- a/net/minecraft/client/data/models/MultiVariant.java
 +++ b/net/minecraft/client/data/models/MultiVariant.java
-@@ -12,20 +_,67 @@
+@@ -11,19 +_,59 @@
+ import net.neoforged.api.distmarker.Dist;
  import net.neoforged.api.distmarker.OnlyIn;
  
++/// @param customBlockStateModels Neo-added parameter to allow using custom blockstate models with MultiVariantGenerator and MultiPartGenerator (only used during datagen)
  @OnlyIn(Dist.CLIENT)
 -public record MultiVariant(WeightedList<Variant> variants) {
--    public MultiVariant(WeightedList<Variant> variants) {
 +public record MultiVariant(WeightedList<Variant> variants, WeightedList<net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder> customBlockStateModels) {
-+    /**
-+     * @param customBlockStateModels Neo-added parameter to allow using custom blockstate models with MultiVariantGenerator and MultiPartGenerator (only used during datagen)
-+     */
-+    public MultiVariant(WeightedList<Variant> variants, WeightedList<net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder> customBlockStateModels) {
+     public MultiVariant {
 +        if (!customBlockStateModels.isEmpty()) {
 +            if (!variants.isEmpty()) {
 +                throw new IllegalArgumentException("Cannot specify both a variant list and a custom blockstate model");
 +            }
-+            this.variants = variants;
-+            this.customBlockStateModels = customBlockStateModels;
 +        } else
          if (variants.isEmpty()) {
              throw new IllegalArgumentException("Variant list must contain at least one element");
-         } else {
-             this.variants = variants;
-+            this.customBlockStateModels = customBlockStateModels;
          }
-+    }
-+
+     }
+ 
 +    public MultiVariant(WeightedList<Variant> variants) {
 +        this(variants, WeightedList.of());
 +    }
@@ -37,8 +30,8 @@
 +
 +    public static MultiVariant of(net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder customBlockStateModel) {
 +        return new MultiVariant(WeightedList.of(), WeightedList.of(customBlockStateModel));
-     }
- 
++    }
++
      public MultiVariant with(VariantMutator mutator) {
 +        if (!this.customBlockStateModels.isEmpty()) {
 +            return new MultiVariant(this.variants, this.customBlockStateModels.map(model -> model.with(mutator)));
@@ -46,12 +39,10 @@
          return new MultiVariant(this.variants.map(mutator));
      }
  
-+    /**
-+     * Applies the given unbaked mutator.
-+     * <p>
-+     * If this multi variant consists of plain Vanilla {@linkplain Variant variants}, each variant will be
-+     * temporarily converted to a {@link SingleVariant.Unbaked}, mutated and then converted back to a plain variant.
-+     */
++    /// Applies the given unbaked mutator.
++    ///
++    /// If this multi variant consists of plain Vanilla [variants][Variant], each variant will be
++    /// temporarily converted to a [SingleVariant.Unbaked], mutated and then converted back to a plain variant.
 +    public MultiVariant with(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator mutator) {
 +        if (!this.customBlockStateModels.isEmpty()) {
 +            return new MultiVariant(this.variants, this.customBlockStateModels.map(model -> model.with(mutator)));
@@ -68,5 +59,5 @@
 +            return new WeightedVariants.Unbaked(this.customBlockStateModels.map(net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder::toUnbaked));
 +        }
          List<Weighted<Variant>> entries = this.variants.unwrap();
-         return (BlockStateModel.Unbaked)(entries.size() == 1
+         return entries.size() == 1
              ? new SingleVariant.Unbaked(entries.getFirst().value())

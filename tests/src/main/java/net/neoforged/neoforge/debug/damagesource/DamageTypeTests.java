@@ -23,7 +23,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DeathMessageType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
@@ -103,7 +103,7 @@ public class DamageTypeTests {
                 Set.of(reg.modId())));
 
         test.onGameTest(helper -> {
-            Skeleton target = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 1, 1);
+            Skeleton target = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 1, 1);
 
             Player attacker = helper.makeMockPlayer(GameType.SURVIVAL);
             attacker.snapTo(helper.absoluteVec(new Vec3(2, 1, 1)));

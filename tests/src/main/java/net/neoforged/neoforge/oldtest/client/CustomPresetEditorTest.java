@@ -114,7 +114,7 @@ public class CustomPresetEditorTest {
         private OnPress onPressBiomeButton(ResourceKey<Biome> biomeKey) {
             return button -> {
                 this.parent.getUiState().updateDimensions(singleBiomeDimension(biomeKey));
-                this.minecraft.setScreen(this.parent);
+                this.minecraft.gui.setScreen(this.parent);
             };
         }
 

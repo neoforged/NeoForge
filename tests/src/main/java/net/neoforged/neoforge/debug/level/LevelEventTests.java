@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -99,7 +99,7 @@ public class LevelEventTests {
             }
         });
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.SHEEP, new BlockPos(1, 2, 1)))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityTypes.SHEEP, new BlockPos(1, 2, 1)))
                 .thenExecute(sheep -> sheep.setColor(DyeColor.BLACK))
                 .thenExecute(sheep -> sheep.setSheared(false))
 
@@ -112,7 +112,7 @@ public class LevelEventTests {
                 .thenIdle(5)
                 .thenExecute(sheep -> Items.SHEARS.getDefaultInstance().interactLivingEntity(
                         helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND)) // Make a player shear the sheep
-                .thenExecute(() -> helper.assertItemEntityPresent(Items.BLACK_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.WOOL.black(), new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
                 .thenExecute(sheep -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", 8f - 3f)) // player did it, so hurt by 3
 
                 .thenExecuteAfter(5, sheep -> {
@@ -125,7 +125,7 @@ public class LevelEventTests {
                 // Power the dispenser
                 .thenExecute(() -> helper.setBlock(2, 1, 1, Blocks.REDSTONE_BLOCK))
                 .thenIdle(5)
-                .thenExecute(() -> helper.assertItemEntityPresent(Items.BLUE_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.WOOL.blue(), new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
                 .thenExecute(sheep -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", (8f - 3f) - 1f)) // dispenser did it, so hurt by 1
 
                 .thenIdle(5)

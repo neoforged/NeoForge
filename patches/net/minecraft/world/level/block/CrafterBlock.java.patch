@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -182,7 +_,8 @@
+@@ -183,7 +_,8 @@
  
      private void dispenseItem(ServerLevel level, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack results, BlockState blockState, RecipeHolder<?> recipe) {
          Direction direction = blockState.getValue(ORIENTATION).front();
@@ -10,7 +10,7 @@
          ItemStack remaining = results.copy();
          if (into != null && (into instanceof CrafterBlockEntity || results.getCount() > into.getMaxStackSize(results))) {
              while (!remaining.isEmpty()) {
-@@ -194,10 +_,14 @@
+@@ -195,10 +_,14 @@
  
                  remaining.shrink(1);
              }

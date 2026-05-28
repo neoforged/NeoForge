@@ -21,16 +21,16 @@
      }
  
      static FeatureFlagSet create(FeatureFlagUniverse universe, Collection<FeatureFlag> flags) {
-@@ -21,7 +_,8 @@
-             return EMPTY;
-         } else {
-             long mask = computeMask(universe, 0L, flags);
--            return new FeatureFlagSet(universe, mask);
-+            long[] extMask = computeExtendedMask(universe, 0, 0L, flags);
-+            return new FeatureFlagSet(universe, mask, extMask);
+@@ -22,7 +_,8 @@
          }
+ 
+         long mask = computeMask(universe, 0L, flags);
+-        return new FeatureFlagSet(universe, mask);
++        long[] extMask = computeExtendedMask(universe, 0, 0L, flags);
++        return new FeatureFlagSet(universe, mask, extMask);
      }
  
+     public static FeatureFlagSet of() {
 @@ -30,16 +_,19 @@
      }
  
@@ -147,21 +147,20 @@
          }
      }
  
-@@ -89,17 +_,29 @@
-             throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + other.universe + "'");
-         } else {
-             long newMask = this.mask & ~other.mask;
--            return newMask == 0L ? EMPTY : new FeatureFlagSet(this.universe, newMask);
-+            long[] extMask = EMPTY_EXT_MASK;
-+            if (this.extendedMask.length > 0 || other.extendedMask.length > 0) {
-+                extMask = new long[this.extendedMask.length];
-+                for (int idx = 0; idx < extMask.length; idx++) {
-+                    long otherMask = idx < other.extendedMask.length ? other.extendedMask[idx] : 0L;
-+                    extMask[idx] = this.extendedMask[idx] & ~otherMask;
-+                }
-+            }
-+            return newMask == 0L && extMask.length == 0 ? EMPTY : new FeatureFlagSet(this.universe, newMask, extMask);
+@@ -92,16 +_,28 @@
          }
+ 
+         long newMask = this.mask & ~other.mask;
+-        return newMask == 0L ? EMPTY : new FeatureFlagSet(this.universe, newMask);
++        long[] extMask = EMPTY_EXT_MASK;
++        if (this.extendedMask.length > 0 || other.extendedMask.length > 0) {
++            extMask = new long[this.extendedMask.length];
++            for (int idx = 0; idx < extMask.length; idx++) {
++                long otherMask = idx < other.extendedMask.length ? other.extendedMask[idx] : 0L;
++                extMask[idx] = this.extendedMask[idx] & ~otherMask;
++            }
++        }
++        return newMask == 0L && extMask.length == 0 ? EMPTY : new FeatureFlagSet(this.universe, newMask, extMask);
      }
  
      @Override
