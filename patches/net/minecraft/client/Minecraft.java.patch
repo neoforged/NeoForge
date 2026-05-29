@@ -356,7 +356,7 @@
          this.clientLevelTeardownInProgress = true;
  
          try {
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++            if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
              this.updateScreenAndTick(p_294558_);
              this.gui.onDisconnected();
              this.level = null;
