@@ -33,6 +33,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Util;
 import net.neoforged.fml.ModList;
@@ -249,9 +250,9 @@ public class ModMismatchDisconnectedScreen extends Screen {
                 int color = styleColor != null ? styleColor.getValue() : 0xFFFFFFFF;
                 //Only indent the given name if a version string is present. This makes it easier to distinguish table section headers and mod entries
                 int nameLeft = left + border + (reasons == null ? 0 : nameIndent);
-                guiGraphics.text(font, name, nameLeft, relativeY + i * ROW_HEIGHT, color, false);
+                guiGraphics.text(font, name, nameLeft, relativeY + i * ROW_HEIGHT, ARGB.opaque(color), false);
                 if (reasons != null) {
-                    guiGraphics.text(font, reasons, left + border + nameIndent + nameWidth, relativeY + i * ROW_HEIGHT, color, false);
+                    guiGraphics.text(font, reasons, left + border + nameIndent + nameWidth, relativeY + i * ROW_HEIGHT, ARGB.opaque(color), false);
                 }
 
                 i++;
