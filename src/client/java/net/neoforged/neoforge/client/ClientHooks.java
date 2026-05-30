@@ -159,6 +159,7 @@ import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.FlipFrameEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.InitializeClientRegistriesEvent;
@@ -914,6 +915,10 @@ public class ClientHooks {
 
     public static void fireWindowResize(Window window) {
         NeoForge.EVENT_BUS.post(new WindowResizeEvent(window));
+    }
+
+    public static void fireFlipFrame() {
+        NeoForge.EVENT_BUS.post(new FlipFrameEvent());
     }
 
     /**
