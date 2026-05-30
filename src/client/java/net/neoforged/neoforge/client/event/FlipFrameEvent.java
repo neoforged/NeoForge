@@ -12,7 +12,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * This event can be used to reset per-frame GPU resources, or rotate custom {@link DynamicUniformStorage dynamic uniforms}.
+ * This event can be used to manage per-frame GPU resources, or rotate custom {@link DynamicUniformStorage dynamic uniforms}.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}</p>
  *
