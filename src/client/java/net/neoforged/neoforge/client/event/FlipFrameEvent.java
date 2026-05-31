@@ -11,14 +11,12 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 
-/**
- * This event can be used to manage per-frame GPU resources, or rotate custom {@link DynamicUniformStorage dynamic uniforms}.
- *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}</p>
- *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main NeoForge event bus}, only on the
- * {@linkplain LogicalSide#CLIENT logical client}.</p>
- */
+/// This event can be used to manage per-frame GPU resources, or rotate custom [`dynamic uniforms`][DynamicUniformStorage].
+///
+/// This event is not [cancellable][ICancellableEvent]
+///
+/// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS], only on the
+/// [logical client][LogicalSide#CLIENT].
 public class FlipFrameEvent extends Event {
 
 }
