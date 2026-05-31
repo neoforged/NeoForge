@@ -11,6 +11,8 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 
+/// Fired when the frame [`flipped`][com.mojang.blaze3d.systems.RenderSystem#flipFrame(com.mojang.blaze3d.TracyFrameCapture)].
+///
 /// This event can be used to manage per-frame GPU resources, or rotate custom [`dynamic uniforms`][DynamicUniformStorage].
 ///
 /// This event is not [cancellable][ICancellableEvent]
