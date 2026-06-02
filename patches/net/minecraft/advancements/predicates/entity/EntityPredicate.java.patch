@@ -12,15 +12,22 @@
      public static LootContext createContext(ServerPlayer player, Entity entity) {
          LootParams lootParams = new LootParams.Builder(player.level())
              .withParameter(LootContextParams.THIS_ENTITY, entity)
-@@ -140,6 +_,12 @@
+@@ -140,6 +_,19 @@
  
          public static EntityPredicate.Builder entity() {
              return new EntityPredicate.Builder();
 +        }
 +
-+        public static EntityPredicate.Builder from(EntityPredicate predicate) {
++        /**
++         * Neo: create a builder that inherits all sub-predicates from the given {@code predicate}, that match the given {@code filter}.
++         */
++        public static EntityPredicate.Builder from(EntityPredicate predicate, java.util.function.Predicate<Codec<? extends EntitySubPredicate>> filter) {
 +            var builder = new Builder();
-+            builder.parts.putAll(predicate.parts);
++            predicate.parts.forEach((key, value) -> {
++                if (filter.test(key)) {
++                    builder.parts.put(key, value);
++                }
++            });
 +            return builder;
          }
  

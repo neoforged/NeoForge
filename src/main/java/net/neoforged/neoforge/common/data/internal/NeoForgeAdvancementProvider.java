@@ -12,7 +12,9 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -91,14 +93,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 }
                 return predicate.feet().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent();
             })) {
-                helper.replaceSubPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE);
+                helper.addSubPredicate(PiglinNeutralArmorEntityPredicate.CODEC, PiglinNeutralArmorEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
         }));
         criteriaReplacers.add(replacePlayerHurtEntityCriteria(helper -> {
             if (helper.clearTypeIfMatches(EntityTypes.TRIDENT)) {
-                helper.replaceSubPredicate(TridentEntityPredicate.INSTANCE);
+                helper.addSubPredicate(TridentEntityPredicate.CODEC, TridentEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
@@ -106,7 +108,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         //Walk on powdered snow
         criteriaReplacers.add(replaceLootEntityPredicate(helper -> {
             if (helper.clearEquipmentIfMatches(predicate -> predicate.feet().filter(item -> predicateMatches(item, Items.LEATHER_BOOTS)).isPresent())) {
-                helper.replaceSubPredicate(SnowBootsEntityPredicate.INSTANCE);
+                helper.addSubPredicate(SnowBootsEntityPredicate.CODEC, SnowBootsEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
@@ -368,6 +370,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private static class EntityPredicateReplacementHelper {
         private final EntityPredicate source;
+        private final Map<Codec<? extends EntitySubPredicate>, EntitySubPredicate> extra = new HashMap<>();
         private Optional<EntityTypePredicate> entityType;
         private Optional<EntityEquipmentPredicate> equipment;
 
@@ -393,22 +396,20 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             return false;
         }
 
-        public void replaceSubPredicate(EntitySubPredicate predicate) {
-            // TODO 26.2: fix
-//            if (subPredicate.isPresent()) {
-//                throw new IllegalStateException("Attempting to replace an entity predicate that already has a sub predicate");
-//            }
-//            subPredicate = Optional.of(predicate);
+        public <T extends EntitySubPredicate> void addSubPredicate(Codec<T> key, T predicate) {
+            extra.put(key, predicate);
         }
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public EntityPredicate create() {
-            var builder = EntityPredicate.Builder.from(source);
+            var builder = EntityPredicate.Builder.from(source, c -> c != EntityEquipmentPredicate.CODEC && c != EntityTypePredicate.CODEC);
             if (entityType.isPresent()) {
                 builder.entityType(entityType.orElseThrow());
             }
             if (equipment.isPresent()) {
                 builder.equipment(equipment.orElseThrow());
             }
+            extra.forEach((k, v) -> builder.put((Codec) k, v));
             return builder.build();
         }
     }

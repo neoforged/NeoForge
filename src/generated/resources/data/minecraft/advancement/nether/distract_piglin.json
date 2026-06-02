@@ -25,11 +25,7 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "minecraft:equipment": {
-                  "head": {
-                    "items": "#minecraft:piglin_safe_armor"
-                  }
-                }
+                "neoforge:piglin_neutral_armor": {}
               }
             }
           }
@@ -63,11 +59,7 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "minecraft:equipment": {
-                  "head": {
-                    "items": "#minecraft:piglin_safe_armor"
-                  }
-                }
+                "neoforge:piglin_neutral_armor": {}
               }
             }
           }
