@@ -1,5 +1,5 @@
 [
-  "net.minecraft.gametest.framework.GameTestHelper",
+  "net.minecraft.gametest.framework.GameTestEntityBuilder",
   "net.minecraft.server.commands.RaidCommand",
   "net.minecraft.server.commands.SummonCommand",
   "net.minecraft.world.entity.EntityType",
