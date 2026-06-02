@@ -13,7 +13,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 
-/// Fired when the frame [`flipped`][RenderSystem#flipFrame(TracyFrameCapture)].
+/// Fired when the frame is [`flipped`][RenderSystem#flipFrame(TracyFrameCapture)].
 ///
 /// This event can be used to manage per-frame GPU resources, or rotate custom [`dynamic uniforms`][DynamicUniformStorage].
 ///
