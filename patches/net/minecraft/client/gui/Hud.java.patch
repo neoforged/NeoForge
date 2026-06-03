@@ -156,7 +156,7 @@
                          }
                      }
  
-+                    if (renderer.renderGuiIcon(instance, this, graphics, x, y, 0, alpha)) continue;
++                    if (renderer.extractHudIcon(instance, this, graphics, x + 3, y + 3, 18, 18, ARGB.white(alpha))) continue;
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
