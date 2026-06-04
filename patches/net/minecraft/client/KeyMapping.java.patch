@@ -145,7 +145,7 @@
          return this.key.equals(that.key);
      }
  
-@@ -177,11 +_,13 @@
+@@ -181,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -160,7 +160,7 @@
      }
  
      public String saveString() {
-@@ -193,7 +_,7 @@
+@@ -197,7 +_,7 @@
      }
  
      private void registerMapping(InputConstants.Key key) {
@@ -169,7 +169,7 @@
      }
  
      public static @Nullable KeyMapping get(String name) {
-@@ -215,6 +_,10 @@
+@@ -219,6 +_,10 @@
              return register(Identifier.withDefaultNamespace(name));
          }
  

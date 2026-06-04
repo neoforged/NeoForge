@@ -1,32 +1,32 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -501,7 +_,11 @@
-             if (screen != null) {
-                 try {
-                     if (action != 1 && action != 2) {
--                        if (action == 0 && screen.keyReleased(event)) {
-+                        if (action == 0 && (
-+                            net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, event) ||
-+                            screen.keyReleased(event) ||
-+                            net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, event))
-+                        ) {
-                             if (options.keyDebugModifier.matches(event)) {
-                                 this.usedDebugKeyAsModifier = false;
+@@ -478,7 +_,11 @@
+                 if (screen != null) {
+                     try {
+                         if (action != 1 && action != 2) {
+-                            if (action == 0 && screen.keyReleased(event)) {
++                            if (action == 0 && (
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, event) ||
++                                screen.keyReleased(event) ||
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, event))
++                            ) {
+                                 if (options.keyDebugModifier.matches(event)) {
+                                     this.usedDebugKeyAsModifier = false;
+                                 }
+@@ -487,7 +_,11 @@
                              }
-@@ -510,7 +_,11 @@
-                         }
-                     } else {
-                         screen.afterKeyboardAction();
--                        if (screen.keyPressed(event)) {
-+                        if (
-+                            net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, event) ||
-+                            screen.keyPressed(event) ||
-+                            net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, event)
-+                        ) {
-                             if (this.minecraft.gui.screen() == null) {
-                                 InputConstants.Key key = InputConstants.getKey(event);
-                                 KeyMapping.set(key, false);
-@@ -582,6 +_,7 @@
+                         } else {
+                             screen.afterKeyboardAction();
+-                            if (screen.keyPressed(event)) {
++                            if (
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, event) ||
++                                screen.keyPressed(event) ||
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, event)
++                            ) {
+                                 if (this.minecraft.gui.screen() == null) {
+                                     InputConstants.Key key = InputConstants.getKey(event);
+                                     KeyMapping.set(key, false);
+@@ -562,6 +_,7 @@
                      }
                  }
              }
@@ -34,7 +34,7 @@
          }
      }
  
-@@ -590,7 +_,9 @@
+@@ -570,7 +_,9 @@
              Screen screen = this.minecraft.gui.screen();
              if (screen != null && this.minecraft.gui.overlay() == null) {
                  try {

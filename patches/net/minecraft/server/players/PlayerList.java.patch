@@ -103,7 +103,7 @@
          if (this.ops.remove(nameAndId)) {
              ServerPlayer player = this.getPlayer(nameAndId.id());
              if (player != null) {
-@@ -652,6 +_,7 @@
+@@ -654,6 +_,7 @@
  
          player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
          this.server.tickRateManager().updateJoiningPlayer(player);
@@ -111,7 +111,7 @@
      }
  
      public void sendAllPlayerInfo(ServerPlayer player) {
-@@ -792,6 +_,8 @@
+@@ -794,6 +_,8 @@
              this.advancements.put(uuid, result);
          }
  
@@ -120,7 +120,7 @@
          result.setPlayer(player);
          return result;
      }
-@@ -815,7 +_,7 @@
+@@ -817,7 +_,7 @@
      }
  
      public List<ServerPlayer> getPlayers() {
@@ -129,7 +129,7 @@
      }
  
      public Map<UUID, ServerPlayer> getPlayersByUUID() {
-@@ -845,6 +_,7 @@
+@@ -847,6 +_,7 @@
              advancements.reload(this.server.getAdvancements());
          }
  
@@ -137,7 +137,7 @@
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipeManager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
-@@ -854,10 +_,15 @@
+@@ -856,10 +_,15 @@
          for (ServerPlayer player : this.players) {
              player.connection.send(recipes);
              player.getRecipeBook().sendInitialRecipeBook(player);

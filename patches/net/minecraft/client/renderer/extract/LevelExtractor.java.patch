@@ -37,16 +37,16 @@
          this.levelRenderState.render3dCrosshair = this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.THREE_DIMENSIONAL_CROSSHAIR);
          ClientPacketListener connection = this.minecraft.getConnection();
          if (connection != null) {
-@@ -238,7 +_,7 @@
-                             || camera.isDetached()
-                             || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping()
-                     )
--                    && (!(entity instanceof LocalPlayer) || camera.entity() == entity)) {
-+                    && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
-                     if (entity.tickCount == 0) {
-                         entity.xOld = entity.getX();
-                         entity.yOld = entity.getY();
-@@ -259,7 +_,13 @@
+@@ -232,7 +_,7 @@
+         for (Entity entity : this.level.entitiesForRendering()) {
+             if (this.isEntityVisible(entity, frustum, camX, camY, camZ)
+                 && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
+-                && (!(entity instanceof LocalPlayer) || camera.entity() == entity)) {
++                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
+                 if (entity.tickCount == 0) {
+                     entity.xOld = entity.getX();
+                     entity.yOld = entity.getY();
+@@ -264,7 +_,13 @@
          return this.levelRenderer.entityRenderDispatcher().extractEntity(entity, partialTickTime);
      }
  
@@ -60,7 +60,7 @@
          Vec3 cameraPos = camera.position();
          double camX = cameraPos.x();
          double camY = cameraPos.y();
-@@ -284,7 +_,7 @@
+@@ -289,7 +_,7 @@
  
                      BlockEntityRenderState state = this.levelRenderer
                          .blockEntityRenderDispatcher()
@@ -69,7 +69,7 @@
                      if (state != null) {
                          levelRenderState.blockEntityRenderStates.add(state);
                      }
-@@ -301,7 +_,7 @@
+@@ -306,7 +_,7 @@
              } else {
                  BlockEntityRenderState state = this.levelRenderer
                      .blockEntityRenderDispatcher()
@@ -78,7 +78,7 @@
                  if (state != null) {
                      levelRenderState.blockEntityRenderStates.add(state);
                  }
-@@ -336,19 +_,23 @@
+@@ -341,19 +_,23 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
                      BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
@@ -105,7 +105,7 @@
                      }
                  }
              }
-@@ -481,6 +_,13 @@
+@@ -486,6 +_,13 @@
          }
  
          return rendered;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/net/minecraft/client/gui/screens/PauseScreen.java
-@@ -165,6 +_,7 @@
+@@ -166,6 +_,7 @@
              );
          }
  

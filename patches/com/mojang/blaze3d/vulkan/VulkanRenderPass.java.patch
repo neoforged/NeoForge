@@ -24,7 +24,7 @@
          this.label = label;
  
          try (MemoryStack stack = MemoryStack.stackPush()) {
-@@ -124,6 +_,10 @@
+@@ -122,6 +_,10 @@
          }
  
          this.anyDescriptorDirty = true;
@@ -35,7 +35,7 @@
          VK12.vkCmdBindPipeline(this.commandBuffer(), 0, this.hasDepth ? this.pipeline.withDepthPipeline() : this.pipeline.withoutDepthPipeline());
      }
  
-@@ -149,6 +_,18 @@
+@@ -147,6 +_,18 @@
      public void setUniform(String name, GpuBufferSlice value) {
          this.uniforms.put(name, value);
          this.anyDescriptorDirty = true;

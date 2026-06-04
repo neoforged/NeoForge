@@ -208,7 +208,7 @@
      }
  
      public boolean isInvulnerable() {
-@@ -3028,6 +_,7 @@
+@@ -3032,6 +_,7 @@
      }
  
      public @Nullable Entity teleport(TeleportTransition transition) {
@@ -216,7 +216,7 @@
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3250,6 +_,7 @@
+@@ -3254,6 +_,7 @@
          return this.stringUUID;
      }
  
@@ -224,7 +224,7 @@
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -3361,6 +_,8 @@
+@@ -3365,6 +_,8 @@
          EntityDimensions oldDim = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions newDim = this.getDimensions(pose);
@@ -233,7 +233,7 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3802,6 +_,10 @@
+@@ -3806,6 +_,10 @@
                  }
              }
          }
@@ -244,7 +244,7 @@
      }
  
      public void checkDespawn() {
-@@ -3942,6 +_,90 @@
+@@ -3946,6 +_,90 @@
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
          return true;
