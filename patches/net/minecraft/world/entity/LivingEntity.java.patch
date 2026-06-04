@@ -356,7 +356,7 @@
 @@ -1628,6 +_,12 @@
      }
  
-     public void knockback(double power, double xd, double zd, DamageSource source, float damage) {
+     public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
 +        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) power, xd, zd);
 +        if (event.isCanceled()) return;
 +        power = event.getStrength();
@@ -366,7 +366,7 @@
          power *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(power <= 0.0)) {
              this.needsSync = true;
-@@ -1709,17 +_,11 @@
+@@ -1713,17 +_,11 @@
          } else {
              BlockPos ladderCheckPos = this.blockPosition();
              BlockState state = this.getInBlockState();
@@ -389,7 +389,7 @@
          }
      }
  
-@@ -1780,6 +_,11 @@
+@@ -1784,6 +_,11 @@
              effectiveFallDistance = fallDistance;
          }
  
@@ -401,7 +401,7 @@
          boolean damaged = super.causeFallDamage(effectiveFallDistance, damageModifier, damageSource);
          int dmg = this.calculateFallDamage(effectiveFallDistance, damageModifier);
          if (dmg > 0) {
-@@ -1843,10 +_,10 @@
+@@ -1847,10 +_,10 @@
              int xx = Mth.floor(this.getX());
              int yy = Mth.floor(this.getY() - 0.2F);
              int zz = Mth.floor(this.getZ());
@@ -415,7 +415,7 @@
              }
          }
      }
-@@ -1871,6 +_,8 @@
+@@ -1875,6 +_,8 @@
          if (!(damage <= 0.0F)) {
              int durabilityDamage = (int)Math.max(1.0F, damage / 4.0F);
  
@@ -424,7 +424,7 @@
              for (EquipmentSlot slot : slots) {
                  ItemStack itemStack = this.getItemBySlot(slot);
                  Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
-@@ -1905,6 +_,7 @@
+@@ -1909,6 +_,7 @@
              damage = Math.max(v / 25.0F, 0.0F);
              float damageResisted = oldDamage - damage;
              if (damageResisted > 0.0F && damageResisted < 3.4028235E37F) {
@@ -432,7 +432,7 @@
                  if (this instanceof ServerPlayer serverPlayer) {
                      serverPlayer.awardStat(Stats.DAMAGE_RESISTED, Math.round(damageResisted * 10.0F));
                  } else if (damageSource.getEntity() instanceof ServerPlayer) {
-@@ -1930,6 +_,7 @@
+@@ -1934,6 +_,7 @@
  
          if (enchantmentArmor > 0.0F) {
              damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
@@ -440,7 +440,7 @@
          }
  
          return damage;
-@@ -1937,22 +_,37 @@
+@@ -1941,22 +_,37 @@
  
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
@@ -485,7 +485,7 @@
          }
      }
  
-@@ -2010,6 +_,8 @@
+@@ -2014,6 +_,8 @@
      }
  
      public void swing(InteractionHand hand, boolean sendToSwingingEntity) {
@@ -494,7 +494,7 @@
          if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
              this.swingTime = -1;
              this.swinging = true;
-@@ -2152,8 +_,10 @@
+@@ -2156,8 +_,10 @@
  
      private void swapHandItems() {
          ItemStack tmp = this.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -507,7 +507,7 @@
      }
  
      @Override
-@@ -2270,7 +_,13 @@
+@@ -2274,7 +_,13 @@
      }
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
@@ -522,7 +522,7 @@
      }
  
      public float getArmorCoverPercentage() {
-@@ -2375,15 +_,18 @@
+@@ -2379,15 +_,18 @@
              }
  
              this.needsSync = true;
@@ -543,7 +543,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2447,7 +_,7 @@
+@@ -2451,7 +_,7 @@
          BlockPos posBelow = this.getBlockPosBelowThatAffectsMyMovement();
          float blockFriction = this.onGround()
              ? computeModifiedFriction(
@@ -552,7 +552,7 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-@@ -2479,7 +_,15 @@
+@@ -2483,7 +_,15 @@
          return computeModifiedFriction(this.omnidirectionalAirMover() ? 0.91F : 0.98F, (float)this.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
      }
  
@@ -568,7 +568,7 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
-@@ -2508,6 +_,7 @@
+@@ -2512,6 +_,7 @@
              slowDown = 0.96F;
          }
  
@@ -576,7 +576,7 @@
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
          Vec3 movement = this.getDeltaMovement();
-@@ -2685,7 +_,7 @@
+@@ -2689,7 +_,7 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);
              double yd = Math.max(delta.y, -0.15F);
@@ -585,7 +585,7 @@
                  yd = 0.0;
              }
  
-@@ -2926,6 +_,7 @@
+@@ -2936,6 +_,7 @@
              ItemStack previous = lastEquipmentItems.get(slot);
              ItemStack current = this.getItemBySlot(slot);
              if (this.equipmentHasChanged(previous, current)) {
@@ -593,7 +593,7 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3076,10 +_,10 @@
+@@ -3086,10 +_,10 @@
                          this.noJumpDelay = 10;
                      }
                  } else {
@@ -606,7 +606,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3396,8 +_,11 @@
+@@ -3406,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -620,7 +620,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3440,8 +_,11 @@
+@@ -3450,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -633,7 +633,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3469,8 +_,10 @@
+@@ -3479,8 +_,10 @@
      public void startUsingItem(InteractionHand hand) {
          ItemStack itemStack = this.getItemInHand(hand);
          if (!itemStack.isEmpty() && !this.isUsingItem()) {
@@ -645,7 +645,7 @@
              if (!this.level().isClientSide()) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -3540,7 +_,8 @@
+@@ -3550,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -655,7 +655,7 @@
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
-@@ -3574,7 +_,11 @@
+@@ -3584,7 +_,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
@@ -667,7 +667,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3584,6 +_,7 @@
+@@ -3594,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -675,7 +675,7 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3635,6 +_,11 @@
+@@ -3645,6 +_,11 @@
      }
  
      public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles) {
@@ -687,7 +687,7 @@
          double xo = this.getX();
          double yo = this.getY();
          double zo = this.getZ();
-@@ -3642,6 +_,8 @@
+@@ -3652,6 +_,8 @@
          boolean ok = false;
          BlockPos pos = BlockPos.containing(xx, y, zz);
          Level level = this.level();
@@ -696,7 +696,7 @@
          if (level.hasChunkAt(pos)) {
              boolean landed = false;
  
-@@ -3657,14 +_,30 @@
+@@ -3667,14 +_,30 @@
              }
  
              if (landed) {
@@ -727,7 +727,7 @@
              this.teleportTo(xo, yo, zo);
              return false;
          }
-@@ -3745,8 +_,8 @@
+@@ -3755,8 +_,8 @@
          }
  
          BlockState blockState = this.level().getBlockState(bedPosition);
@@ -738,7 +738,7 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3761,15 +_,17 @@
+@@ -3771,15 +_,17 @@
      }
  
      private boolean checkBedExists() {
@@ -759,7 +759,7 @@
                  Vec3 standUp = BedBlock.findStandUpPosition(this.getType(), this.level(), bedPosition, facing, this.getYRot()).orElseGet(() -> {
                      BlockPos above = bedPosition.above();
                      return new Vec3(above.getX() + 0.5, above.getY() + 0.1, above.getZ() + 0.5);
-@@ -3789,7 +_,9 @@
+@@ -3799,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {
          BlockPos bedPos = this.getSleepingPos().orElse(null);
@@ -770,7 +770,7 @@
      }
  
      @Override
-@@ -3798,7 +_,7 @@
+@@ -3808,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack heldWeapon) {
@@ -779,7 +779,7 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3850,6 +_,8 @@
+@@ -3860,6 +_,8 @@
      }
  
      public EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {

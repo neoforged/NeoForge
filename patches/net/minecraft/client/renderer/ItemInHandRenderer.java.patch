@@ -76,7 +76,7 @@
                  if (player.isUsingItem() && player.getUseItemRemainingTicks() > 0 && player.getUsedItemHand() == hand) {
                      ItemUseAnimation useAnimation = itemStack.getUseAnimation();
                      if (!useAnimation.hasCustomArmTransform()) {
-@@ -632,9 +_,18 @@
+@@ -629,9 +_,18 @@
              this.mainHandHeight = Mth.clamp(this.mainHandHeight - 0.4F, 0.0F, 1.0F);
              this.offHandHeight = Mth.clamp(this.offHandHeight - 0.4F, 0.0F, 1.0F);
          } else {

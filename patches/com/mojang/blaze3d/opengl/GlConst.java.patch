@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -373,4 +_,17 @@
+@@ -363,4 +_,17 @@
              return 35044;
          }
      }

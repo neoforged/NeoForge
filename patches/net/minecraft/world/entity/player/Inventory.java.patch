@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -311,6 +_,8 @@
+@@ -293,6 +_,8 @@
          } catch (Throwable t) {
              CrashReport report = CrashReport.forThrowable(t, "Adding item to inventory");
              CrashReportCategory category = report.addCategory("Item being added");

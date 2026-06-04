@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -208,7 +_,7 @@
+@@ -209,7 +_,7 @@
              result.add(
                  jigsaw.withInfo(
                      new StructureTemplate.StructureBlockInfo(
@@ -9,7 +9,7 @@
                      )
                  )
              );
-@@ -227,7 +_,7 @@
+@@ -228,7 +_,7 @@
          for (StructureTemplate.StructureBlockInfo blockInfo : settings.getRandomPalette(this.palettes, position).blocks(block)) {
              BlockPos blockPos = absolute ? calculateRelativePosition(settings, blockInfo.pos).offset(position) : blockInfo.pos;
              if (boundingBox == null || boundingBox.isInside(blockPos)) {
@@ -18,7 +18,7 @@
              }
          }
  
-@@ -244,6 +_,10 @@
+@@ -245,6 +_,10 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
  
@@ -29,7 +29,7 @@
      public boolean placeInWorld(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -271,7 +_,7 @@
+@@ -272,7 +_,7 @@
              int maxX = Integer.MIN_VALUE;
              int maxY = Integer.MIN_VALUE;
              int maxZ = Integer.MIN_VALUE;
@@ -38,7 +38,7 @@
  
              try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
                  for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
-@@ -301,6 +_,7 @@
+@@ -302,6 +_,7 @@
                                      blockEntity.loadWithComponents(
                                          TagValueInput.create(reporter.forChild(blockEntity.problemPath()), level.registryAccess(), blockInfo.nbt)
                                      );
@@ -46,7 +46,7 @@
                                  }
                              }
  
-@@ -385,16 +_,7 @@
+@@ -386,16 +_,7 @@
                  }
  
                  if (!settings.isIgnoreEntities()) {
@@ -64,7 +64,7 @@
                  }
              }
  
-@@ -428,6 +_,10 @@
+@@ -429,6 +_,10 @@
          });
      }
  
@@ -75,7 +75,7 @@
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -435,6 +_,10 @@
+@@ -436,6 +_,10 @@
          StructurePlaceSettings settings,
          List<StructureTemplate.StructureBlockInfo> blockInfoList
      ) {
@@ -86,7 +86,7 @@
          List<StructureTemplate.StructureBlockInfo> originalBlockInfoList = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = new ArrayList<>();
          boolean processOnlyInCurrentChunk = true;
-@@ -457,7 +_,7 @@
+@@ -458,7 +_,7 @@
                  Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
  
                  while (processedBlockInfo != null && iterator.hasNext()) {
@@ -95,7 +95,7 @@
                  }
  
                  if (processedBlockInfo != null) {
-@@ -474,22 +_,30 @@
+@@ -475,22 +_,30 @@
          return processedBlockInfoList;
      }
  
@@ -141,7 +141,7 @@
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
-@@ -497,12 +_,12 @@
+@@ -498,12 +_,12 @@
                  tag.put("Pos", posTag);
                  tag.remove("UUID");
                  createEntityIgnoreException(problemReporter, level, tag).ifPresent(entity -> {
@@ -157,7 +157,7 @@
                          mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos)), EntitySpawnReason.STRUCTURE, null);
                      }
  
-@@ -814,7 +_,7 @@
+@@ -817,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

@@ -49,7 +49,7 @@
      }
  
      public static void writeLastPlayed(CompoundTag tag) {
-@@ -320,10 +_,58 @@
+@@ -325,10 +_,58 @@
          return this.settings.copy();
      }
  

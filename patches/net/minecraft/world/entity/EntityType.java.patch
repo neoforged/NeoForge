@@ -68,7 +68,7 @@
          }
  
          if (postSpawnConfig != null) {
-@@ -400,14 +_,23 @@
+@@ -408,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -92,7 +92,7 @@
          return this != EntityTypes.PLAYER
              && this != EntityTypes.LLAMA_SPIT
              && this != EntityTypes.WITHER
-@@ -439,9 +_,12 @@
+@@ -447,9 +_,12 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -105,7 +105,7 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -461,6 +_,10 @@
+@@ -469,6 +_,10 @@
          );
          private final DependantName<EntityType<?>, String> descriptionId = id -> Util.makeDescriptionId("entity", id.identifier());
          private boolean allowedInPeaceful = true;
@@ -116,7 +116,7 @@
  
          private Builder(EntityType.EntityFactory<T> factory, MobCategory category) {
              this.factory = factory;
-@@ -579,6 +_,26 @@
+@@ -587,6 +_,26 @@
              return this;
          }
  
@@ -143,7 +143,7 @@
          public EntityType<T> build(ResourceKey<EntityType<?>> name) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, name.identifier().toString());
-@@ -599,7 +_,11 @@
+@@ -607,7 +_,11 @@
                  this.descriptionId.get(name),
                  this.lootTable.get(name),
                  this.requiredFeatures,

@@ -18,7 +18,7 @@
 +                topPos += 24; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button (in-dev the test world button "handles" this)
          }
  
-         boolean friendsListEnabled = this.minecraft.getPlayerSocialManager().isFriendListEnabled();
+         int numberOfButtons = 3;
 @@ -310,6 +_,7 @@
          this.extractPanorama(graphics, a);
          super.extractRenderState(graphics, mouseX, mouseY, a);

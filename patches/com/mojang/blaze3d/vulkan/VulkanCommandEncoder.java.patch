@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vulkan/VulkanCommandEncoder.java
 +++ b/com/mojang/blaze3d/vulkan/VulkanCommandEncoder.java
-@@ -309,6 +_,15 @@
+@@ -302,6 +_,15 @@
                  }
  
                  renderingInfo.pDepthAttachment(depthAttachmentInfo);
@@ -16,7 +16,7 @@
              }
  
              KHRDynamicRendering.vkCmdBeginRenderingKHR(this.commandBuffer(), renderingInfo);
-@@ -321,6 +_,7 @@
+@@ -314,6 +_,7 @@
                  width,
                  height,
                  depthAttachment != null,
@@ -24,7 +24,7 @@
                  descriptor.label()
              );
          }
-@@ -425,6 +_,21 @@
+@@ -418,6 +_,21 @@
      public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
          try (MemoryStack stack = MemoryStack.stackPush()) {
              this.clearDepthTextureUnsynced(stack, depthTexture, clearDepth);
