@@ -34,6 +34,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
@@ -175,12 +176,12 @@ public final class FluidUtil {
 
         var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, transaction);
         if (moved != null) {
-            playSoundAndGameEvent(moved.resource(), level, pos, player, pickup);
+            playSoundAndGameEvent(moved.resource(), level, pos, player, transaction, pickup);
         }
         return moved;
     }
 
-    private static void playSoundAndGameEvent(FluidResource resource, Level level, @Nullable BlockPos blockPos, @Nullable Player player, boolean pickup) {
+    private static void playSoundAndGameEvent(FluidResource resource, Level level, @Nullable BlockPos blockPos, @Nullable Player player, @Nullable TransactionContext transaction, boolean pickup) {
         if (player == null && blockPos == null) {
             throw new IllegalArgumentException("Either player or blockPos must be provided.");
         }
@@ -188,7 +189,14 @@ public final class FluidUtil {
         // Prioritize block position, use player position as a fallback
         Vec3 position = blockPos != null ? Vec3.atCenterOf(blockPos) : new Vec3(player.getX(), player.getY() + 0.5, player.getZ());
 
-        triggerSoundAndGameEvent(resource, level, position, player, pickup);
+        if (transaction == null) {
+            //No transaction, just trigger the sound and game event immediately
+            triggerSoundAndGameEvent(resource, level, position, player, pickup);
+        } else {
+            //Trigger on root commit
+            RootCommitJournal onRootCommit = new RootCommitJournal(() -> triggerSoundAndGameEvent(resource, level, position, player, pickup));
+            onRootCommit.updateSnapshots(transaction);
+        }
     }
 
     /**
@@ -237,7 +245,7 @@ public final class FluidUtil {
     /// @param pos         The position of the fluid in the level.
     /// @param side        The side of the fluid that is being drained.
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method.
+    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
     public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         if (destination == null) {
@@ -281,8 +289,8 @@ public final class FluidUtil {
                             BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().identifier(), BuiltInRegistries.FLUID.getKey(bucket.content));
                     return FluidStack.EMPTY;
                 }
+                playSoundAndGameEvent(resource, level, pos, player, tx, true);
                 tx.commit();
-                playSoundAndGameEvent(resource, level, pos, player, true);
                 return extracted;
             }
         } else {
@@ -332,7 +340,7 @@ public final class FluidUtil {
     /// @param level  Level to place the fluid in
     /// @param pos    The position in the level to place the fluid block
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method.
+    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was placed, or [FluidStack#EMPTY] if nothing was placed
     public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, BlockPos pos, boolean validatePlaced, @Nullable TransactionContext transaction) {
         if (source == null) {
@@ -350,7 +358,7 @@ public final class FluidUtil {
                     continue;
                 }
                 // Managed to extract 1 bucket, try to place it!
-                if (tryPlaceFluid(resource, player, level, pos, validatePlaced)) {
+                if (tryPlaceFluid(resource, player, level, pos, validatePlaced, tx)) {
                     tx.commit();
                     return resource.toStack(FluidType.BUCKET_VOLUME);
                 }
@@ -400,6 +408,10 @@ public final class FluidUtil {
     /// @param validatePlaced `true` to respect the result returned by [LiquidBlockContainer#placeLiquid]. To directly mirror [BucketItem#emptyContents] pass `false`.
     /// @return true if the placement was successful, false otherwise
     public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, BlockPos pos, boolean validatePlaced) {
+        return tryPlaceFluid(resource, player, level, pos, validatePlaced, null);
+    }
+
+    private static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, BlockPos pos, boolean validatePlaced, @Nullable TransactionContext transaction) {
         var stack = resource.toStack(FluidType.BUCKET_VOLUME);
         var fluidType = resource.getFluidType();
         if (stack.isEmpty() || !fluidType.canBePlacedInLevel(level, pos, stack)) {
@@ -432,7 +444,7 @@ public final class FluidUtil {
                 var state = fluidType.getBlockForFluidState(level, pos, resource.getFluid().defaultFluidState());
                 level.setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
             }
-            playSoundAndGameEvent(resource, level, pos, player, false);
+            playSoundAndGameEvent(resource, level, pos, player, transaction, false);
             return true;
         }
     }
