@@ -324,7 +324,9 @@ public final class FluidUtil {
         } else {
             if (canDestContainFluid) {
                 LiquidBlockContainer lbc = (LiquidBlockContainer) destBlockState.getBlock();
-                lbc.placeLiquid(level, pos, destBlockState, fluidType.getStateForPlacement(level, pos, stack));
+                if (!lbc.placeLiquid(level, pos, destBlockState, fluidType.getStateForPlacement(level, pos, stack))) {
+                    return false;
+                }
             } else {
                 // Destroy the existing state on fluid placement
                 if (!level.isClientSide() && isDestReplaceable && !destBlockState.liquid()) {
