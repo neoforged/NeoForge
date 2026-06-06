@@ -16,7 +16,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
@@ -242,7 +241,7 @@ public final class FluidUtil {
     /**
      * Tries to extract {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource from a resource handler
      * and place it into the level as a block.
-     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, InteractionHand, BlockPos)},
+     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos)},
      * this function will modify the source handler directly and return what was placed.
      *
      * <p>Makes a fluid emptying or vaporization sound when successful.
@@ -255,8 +254,30 @@ public final class FluidUtil {
      * @param hand   Hand of the player to place the fluid with
      * @param pos    The position in the level to place the fluid block
      * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
+     * @deprecated Use {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)} instead
      */
+    @Deprecated(since = "26.1.2", forRemoval = true)
     public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
+        return tryPlaceFluid(source, player, level, pos);
+    }
+
+    /**
+     * Tries to extract {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource from a resource handler
+     * and place it into the level as a block.
+     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos)},
+     * this function will modify the source handler directly and return what was placed.
+     *
+     * <p>Makes a fluid emptying or vaporization sound when successful.
+     * Honors the amount of fluid contained by the used container.
+     * Checks if water-like fluids should vaporize like in the nether.
+     *
+     * @param source The source for the placed fluid. May be null.
+     * @param player Player who places the fluid. May be null for blocks like dispensers.
+     * @param level  Level to place the fluid in
+     * @param pos    The position in the level to place the fluid block
+     * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
+     */
+    public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, BlockPos pos) {
         if (source == null) {
             return FluidStack.EMPTY;
         }
@@ -272,7 +293,7 @@ public final class FluidUtil {
                     continue;
                 }
                 // Managed to extract 1 bucket, try to place it!
-                if (tryPlaceFluid(resource, player, level, hand, pos)) {
+                if (tryPlaceFluid(resource, player, level, pos)) {
                     tx.commit();
                     return resource.toStack(FluidType.BUCKET_VOLUME);
                 }
@@ -284,7 +305,7 @@ public final class FluidUtil {
     /**
      * Tries to place {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource into the level as a block.
      * Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
-     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, InteractionHand, BlockPos)} to modify a source handler directly.
+     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)} to modify a source handler directly.
      *
      * <p>Makes a fluid emptying or vaporization sound when successful.
      * Honors the amount of fluid contained by the used container.
@@ -298,20 +319,38 @@ public final class FluidUtil {
      * @param hand     Hand of the player to place the fluid with
      * @param pos      The position in the level to place the fluid block
      * @return true if the placement was successful, false otherwise
+     * @deprecated Use {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos)} instead
      */
+    @Deprecated(since = "26.1.2", forRemoval = true)
     public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
+        return tryPlaceFluid(resource, player, level, pos);
+    }
+
+    /// Tries to place [one bucket][FluidType#BUCKET_VOLUME] of a fluid resource into the level as a block.
+    /// Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
+    /// See also [#tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)] to modify a source handler directly.
+    ///
+    /// Makes a fluid emptying or vaporization sound when successful.
+    /// Honors the amount of fluid contained by the used container.
+    /// Checks if water-like fluids should vaporize like in the nether.
+    ///
+    /// Modeled after [BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)].
+    ///
+    /// @param resource The fluid resource to place
+    /// @param player   Player who places the fluid. May be null for blocks like dispensers.
+    /// @param level    Level to place the fluid in
+    /// @param pos      The position in the level to place the fluid block
+    /// @return true if the placement was successful, false otherwise
+    public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, BlockPos pos) {
         var stack = resource.toStack(FluidType.BUCKET_VOLUME);
         var fluidType = resource.getFluidType();
         if (stack.isEmpty() || !fluidType.canBePlacedInLevel(level, pos, stack)) {
             return false;
         }
 
-        var handItem = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        BlockPlaceContext context = new BlockPlaceContext(level, player, hand, handItem, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false));
-
         // check that we can place the fluid at the destination
         BlockState destBlockState = level.getBlockState(pos);
-        boolean isDestReplaceable = destBlockState.canBeReplaced(context);
+        boolean isDestReplaceable = destBlockState.canBeReplaced(resource.getFluid());
         boolean canDestContainFluid = destBlockState.getBlock() instanceof LiquidBlockContainer lbc
                 && lbc.canPlaceLiquid(player, level, pos, destBlockState, resource.getFluid());
         if (!destBlockState.isAir() && !isDestReplaceable && !canDestContainFluid) {

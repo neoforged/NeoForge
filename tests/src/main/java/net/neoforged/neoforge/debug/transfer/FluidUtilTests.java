@@ -125,7 +125,6 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                InteractionHand.MAIN_HAND,
                 helper.absolutePos(waterPos));
         helper.assertValueEqual(Fluids.WATER, placementResult.getFluid(), "placed fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, placementResult.getAmount(), "placed amount");
@@ -141,7 +140,6 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                InteractionHand.MAIN_HAND,
                 helper.absolutePos(waterPos));
         helper.assertTrue(secondPlacementResult.isEmpty(), "second placement result is empty");
         // Block state should not have changed
@@ -153,7 +151,6 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                InteractionHand.MAIN_HAND,
                 helper.absolutePos(waterPos));
         helper.assertTrue(secondPlacementResult.isEmpty(), "third placement result is empty");
         helper.assertValueEqual(Fluids.WATER, thirdPlacementResult.getFluid(), "third placed fluid");

@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -48,7 +47,7 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         // First try to pick up fluid in front of the dispenser, then try to drain a filled container and place the fluid in front of the dispenser
         if (!FluidUtil.tryPickupFluid(resourceHandler, null, source.level(), targetPos, dispenserFacing.getOpposite()).isEmpty()
-                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), InteractionHand.MAIN_HAND, targetPos).isEmpty()) {
+                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), targetPos).isEmpty()) {
             var stack0 = ItemUtil.getStack(containingHandler, 0);
             var stack1 = ItemUtil.getStack(containingHandler, 1);
 
