@@ -35,6 +35,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -96,13 +97,32 @@ public final class FluidUtil {
      * @param pos    The position of the fluid handler block in the level.
      * @param side   The side of the block to interact with. May be null.
      * @return true if the interaction succeeded, false otherwise.
+     * @deprecated Use {@link #interactWithFluidHandler(Player, InteractionHand, Level, BlockPos, Direction, TransactionContext)} instead.
      */
+    @Deprecated(since = "26.1.2", forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side) {
+        return interactWithFluidHandler(player, hand, level, pos, side, null);
+    }
+
+    /// Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
+    /// First it tries to fill the item from the block,
+    /// if that action fails then it tries to drain the item into the block.
+    /// Automatically updates the item in the player's hand and stashes any extra items created.
+    ///
+    /// @param player The player doing the interaction between the item and fluid handler block.
+    /// @param hand   The player's hand that is holding an item that should interact with the fluid handler block.
+    /// @param level  The level that contains the fluid handler block.
+    /// @param pos    The position of the fluid handler block in the level.
+    /// @param side   The side of the block to interact with. May be null.
+    /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
+    /// allow you to make the final decision to commit based on the results of this method.
+    /// @return true if the interaction succeeded, false otherwise.
+    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(level);
         Preconditions.checkNotNull(pos);
 
         var fluidHandler = level.getCapability(Capabilities.Fluid.BLOCK, pos, side);
-        return fluidHandler != null && interactWithFluidHandler(player, hand, pos, fluidHandler);
+        return fluidHandler != null && interactWithFluidHandler(player, hand, pos, fluidHandler, transaction);
     }
 
     /**
@@ -116,25 +136,44 @@ public final class FluidUtil {
      * @param pos     The position at which to send game events and play sounds. If {@code null}, the player's position will be used.
      * @param handler The fluid handler.
      * @return true if the interaction succeeded, false otherwise.
+     * @deprecated Use {@link #interactWithFluidHandler(Player, InteractionHand, BlockPos, ResourceHandler, TransactionContext)} instead.
      */
+    @Deprecated(since = "26.1.2", forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, @Nullable BlockPos pos, ResourceHandler<FluidResource> handler) {
+        return interactWithFluidHandler(player, hand, pos, handler, null);
+    }
+
+    /// Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler.
+    /// First it tries to fill the item from the handler,
+    /// if that action fails then it tries to drain the item into the handler.
+    /// Automatically updates the item in the player's hand and stashes any extra items created.
+    ///
+    /// @param player  The player doing the interaction between the item and fluid handler.
+    /// @param hand    The player's hand that is holding an item that should interact with the fluid handler.
+    /// @param pos     The position at which to send game events and play sounds. If `null`, the player's position will be used.
+    /// @param handler The fluid handler.
+    /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
+    /// allow you to make the final decision to commit based on the results of this method.
+    /// @return true if the interaction succeeded, false otherwise.
+    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, @Nullable BlockPos pos, ResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
         var itemAccess = ItemAccess.forPlayerInteraction(player, hand).oneByOne();
         var handHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
         if (handHandler == null) {
             return false;
         }
 
-        return moveWithSound(handler, handHandler, player.level(), pos, player, true) != null
-                || moveWithSound(handHandler, handler, player.level(), pos, player, false) != null;
+        return moveWithSound(handler, handHandler, player.level(), pos, player, transaction, true) != null
+                || moveWithSound(handHandler, handler, player.level(), pos, player, transaction, false) != null;
     }
 
     @Nullable
-    private static ResourceStack<FluidResource> moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Level level, @Nullable BlockPos pos, @Nullable Player player, boolean pickup) {
+    private static ResourceStack<FluidResource> moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, Level level, @Nullable BlockPos pos,
+            @Nullable Player player, @Nullable TransactionContext transaction, boolean pickup) {
         if (player == null && pos == null) {
             throw new IllegalArgumentException("Either player or pos must be provided.");
         }
 
-        var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, null);
+        var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, transaction);
         if (moved != null) {
             playSoundAndGameEvent(moved.resource(), level, pos, player, pickup);
         }
@@ -181,8 +220,26 @@ public final class FluidUtil {
      * @param pos         The position of the fluid in the level.
      * @param side        The side of the fluid that is being drained.
      * @return a {@link FluidStack} holding a copy of the fluid stack that was picked up, or {@link FluidStack#EMPTY} if nothing was picked up
+     * @deprecated Use {@link #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, Direction, TransactionContext)} instead.
      */
+    @Deprecated(since = "26.1.2", forRemoval = true)
     public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side) {
+        return tryPickupFluid(destination, player, level, pos, side, null);
+    }
+
+    /// Attempts to pick up a fluid in the level and put it into a fluid handler,
+    /// first from a [BucketPickup] block (such as fluid sources and waterlogged blocks),
+    /// or second from a [Capabilities.Fluid#BLOCK] capability instance.
+    ///
+    /// @param destination The destination for the picked up fluid. May be null.
+    /// @param player      The player filling the container. Optional.
+    /// @param level       The level the fluid is in.
+    /// @param pos         The position of the fluid in the level.
+    /// @param side        The side of the fluid that is being drained.
+    /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
+    /// allow you to make the final decision to commit based on the results of this method.
+    /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
+    public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         if (destination == null) {
             return FluidStack.EMPTY;
         }
@@ -196,7 +253,7 @@ public final class FluidUtil {
                 return FluidStack.EMPTY;
             }
             // Try to insert it into the destination
-            try (var tx = Transaction.openRoot()) {
+            try (var tx = Transaction.open(transaction)) {
                 var resource = FluidResource.of(fluid);
                 int inserted = destination.insert(resource, FluidType.BUCKET_VOLUME, tx);
                 if (inserted != FluidType.BUCKET_VOLUME) {
@@ -233,7 +290,7 @@ public final class FluidUtil {
             if (fluidHandler == null) {
                 return FluidStack.EMPTY;
             }
-            var moved = moveWithSound(fluidHandler, destination, level, pos, player, true);
+            var moved = moveWithSound(fluidHandler, destination, level, pos, player, transaction, true);
             return moved != null ? moved.resource().toStack(moved.amount()) : FluidStack.EMPTY;
         }
     }
@@ -254,30 +311,30 @@ public final class FluidUtil {
      * @param hand   Hand of the player to place the fluid with
      * @param pos    The position in the level to place the fluid block
      * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
-     * @deprecated Use {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)} instead
+     * @deprecated Use {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, TransactionContext)} instead
      */
     @Deprecated(since = "26.1.2", forRemoval = true)
     public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
-        return tryPlaceFluid(source, player, level, pos);
+        return tryPlaceFluid(source, player, level, pos, null);
     }
 
-    /**
-     * Tries to extract {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource from a resource handler
-     * and place it into the level as a block.
-     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos)},
-     * this function will modify the source handler directly and return what was placed.
-     *
-     * <p>Makes a fluid emptying or vaporization sound when successful.
-     * Honors the amount of fluid contained by the used container.
-     * Checks if water-like fluids should vaporize like in the nether.
-     *
-     * @param source The source for the placed fluid. May be null.
-     * @param player Player who places the fluid. May be null for blocks like dispensers.
-     * @param level  Level to place the fluid in
-     * @param pos    The position in the level to place the fluid block
-     * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
-     */
-    public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, BlockPos pos) {
+    /// Tries to extract [one bucket][FluidType#BUCKET_VOLUME] of a fluid resource from a resource handler
+    /// and place it into the level as a block.
+    /// Unlike [#tryPlaceFluid(FluidResource, Player, Level, BlockPos)],
+    /// this function will modify the source handler directly and return what was placed.
+    ///
+    /// Makes a fluid emptying or vaporization sound when successful.
+    /// Honors the amount of fluid contained by the used container.
+    /// Checks if water-like fluids should vaporize like in the nether.
+    ///
+    /// @param source The source for the placed fluid. May be null.
+    /// @param player Player who places the fluid. May be null for blocks like dispensers.
+    /// @param level  Level to place the fluid in
+    /// @param pos    The position in the level to place the fluid block
+    /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
+    /// allow you to make the final decision to commit based on the results of this method.
+    /// @return a [FluidStack] holding a copy of the fluid stack that was placed, or [FluidStack#EMPTY] if nothing was placed
+    public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
         if (source == null) {
             return FluidStack.EMPTY;
         }
@@ -287,7 +344,7 @@ public final class FluidUtil {
             if (resource.isEmpty()) {
                 continue;
             }
-            try (var tx = Transaction.openRoot()) {
+            try (var tx = Transaction.open(transaction)) {
                 int amount = source.extract(index, resource, FluidType.BUCKET_VOLUME, tx);
                 if (amount != FluidType.BUCKET_VOLUME) {
                     continue;
@@ -305,7 +362,7 @@ public final class FluidUtil {
     /**
      * Tries to place {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource into the level as a block.
      * Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
-     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)} to modify a source handler directly.
+     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, TransactionContext)} to modify a source handler directly.
      *
      * <p>Makes a fluid emptying or vaporization sound when successful.
      * Honors the amount of fluid contained by the used container.
@@ -328,7 +385,7 @@ public final class FluidUtil {
 
     /// Tries to place [one bucket][FluidType#BUCKET_VOLUME] of a fluid resource into the level as a block.
     /// Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
-    /// See also [#tryPlaceFluid(ResourceHandler, Player, Level, BlockPos)] to modify a source handler directly.
+    /// See also [#tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, TransactionContext)] to modify a source handler directly.
     ///
     /// Makes a fluid emptying or vaporization sound when successful.
     /// Honors the amount of fluid contained by the used container.

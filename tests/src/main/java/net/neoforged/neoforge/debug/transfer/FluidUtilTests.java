@@ -62,6 +62,7 @@ public class FluidUtilTests {
                 player,
                 helper.getLevel(),
                 helper.absolutePos(waterPos),
+                null,
                 null);
         helper.assertValueEqual(Fluids.WATER, pickupResult.getFluid(), "picked up fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, pickupResult.getAmount(), "picked up amount");
@@ -82,6 +83,7 @@ public class FluidUtilTests {
                 player,
                 helper.getLevel(),
                 helper.absolutePos(waterPos),
+                null,
                 null);
         helper.assertTrue(secondPickupResult.isEmpty(), "second pickup result is empty");
         // Block state should not have changed
@@ -125,7 +127,8 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                helper.absolutePos(waterPos));
+                helper.absolutePos(waterPos),
+                null);
         helper.assertValueEqual(Fluids.WATER, placementResult.getFluid(), "placed fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, placementResult.getAmount(), "placed amount");
         helper.assertBlockState(waterPos, finalState);
@@ -140,7 +143,8 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                helper.absolutePos(waterPos));
+                helper.absolutePos(waterPos),
+                null);
         helper.assertTrue(secondPlacementResult.isEmpty(), "second placement result is empty");
         // Block state should not have changed
         helper.assertBlockState(waterPos, finalState);
@@ -151,7 +155,8 @@ public class FluidUtilTests {
                 handHandler,
                 player,
                 helper.getLevel(),
-                helper.absolutePos(waterPos));
+                helper.absolutePos(waterPos),
+                null);
         helper.assertTrue(secondPlacementResult.isEmpty(), "third placement result is empty");
         helper.assertValueEqual(Fluids.WATER, thirdPlacementResult.getFluid(), "third placed fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, thirdPlacementResult.getAmount(), "third placed amount");
