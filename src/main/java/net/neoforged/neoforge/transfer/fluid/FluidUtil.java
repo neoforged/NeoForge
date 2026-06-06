@@ -247,52 +247,15 @@ public final class FluidUtil {
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
     /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
+    /// @see #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, TransactionContext) For picking up from a BucketPickup without falling back to a fluid handler.
     public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         if (destination == null) {
             return FluidStack.EMPTY;
         }
 
         BlockState state = level.getBlockState(pos);
-        Block block = state.getBlock();
-        if (block instanceof BucketPickup bucketPickup) {
-            // Get stored fluid
-            Fluid fluid = level.getFluidState(pos).getType();
-            if (fluid == Fluids.EMPTY) {
-                return FluidStack.EMPTY;
-            }
-            // Try to insert it into the destination
-            try (var tx = Transaction.open(transaction)) {
-                var resource = FluidResource.of(fluid);
-                int inserted = destination.insert(resource, FluidType.BUCKET_VOLUME, tx);
-                if (inserted != FluidType.BUCKET_VOLUME) {
-                    return FluidStack.EMPTY;
-                }
-                // Fluid could fit, so pickup from the level
-                if (level.getFluidState(pos).getType() != fluid) {
-                    // Inserting into destination caused type in the level to change, aborting
-                    return FluidStack.EMPTY;
-                }
-                ItemStack pickedUpStack = bucketPickup.pickupBlock(player, level, pos, level.getBlockState(pos));
-                if (!(pickedUpStack.getItem() instanceof BucketItem bucket)) {
-                    // Not a bucket, abort
-                    if (!pickedUpStack.isEmpty()) {
-                        // Be loud since we are going to void the stack
-                        LOGGER.warn("Picked up stack is not a bucket. Fluid {} at {} in {} picked up as {}.",
-                                BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().identifier(), pickedUpStack);
-                    }
-                    return FluidStack.EMPTY;
-                }
-                FluidStack extracted = new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
-                if (!resource.matches(extracted)) {
-                    // Be loud if something went wrong
-                    LOGGER.warn("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
-                            BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().identifier(), BuiltInRegistries.FLUID.getKey(bucket.content));
-                    return FluidStack.EMPTY;
-                }
-                playSoundAndGameEvent(resource, level, pos, player, tx, true);
-                tx.commit();
-                return extracted;
-            }
+        if (state.getBlock() instanceof BucketPickup bucketPickup) {
+            return tryPickupFluid(destination, player, level, pos, bucketPickup, transaction);
         } else {
             var fluidHandler = level.getCapability(Capabilities.Fluid.BLOCK, pos, state, null, side);
             if (fluidHandler == null) {
@@ -300,6 +263,68 @@ public final class FluidUtil {
             }
             var moved = moveWithSound(fluidHandler, destination, level, pos, player, transaction, true);
             return moved != null ? moved.resource().toStack(moved.amount()) : FluidStack.EMPTY;
+        }
+    }
+
+    /// Attempts to pick up a fluid in the level from a [BucketPickup] block (such as fluid sources and waterlogged blocks) and put it into a fluid handler
+    ///
+    /// @param destination The destination for the picked up fluid. May be null.
+    /// @param player      The player filling the container. Optional.
+    /// @param level       The level the fluid is in.
+    /// @param pos         The position of the fluid in the level.
+    /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
+    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
+    /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
+    /// @see #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, Direction, TransactionContext) For falling back to picking up from a fluid handler if the block is not a BucketPickup.
+    public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
+        if (destination == null) {
+            return FluidStack.EMPTY;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof BucketPickup bucketPickup) {
+            return tryPickupFluid(destination, player, level, pos, bucketPickup, transaction);
+        }
+        return FluidStack.EMPTY;
+    }
+
+    private static FluidStack tryPickupFluid(ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, BucketPickup bucketPickup, @Nullable TransactionContext transaction) {
+        // Get stored fluid
+        Fluid fluid = level.getFluidState(pos).getType();
+        if (fluid == Fluids.EMPTY) {
+            return FluidStack.EMPTY;
+        }
+        // Try to insert it into the destination
+        try (var tx = Transaction.open(transaction)) {
+            var resource = FluidResource.of(fluid);
+            int inserted = destination.insert(resource, FluidType.BUCKET_VOLUME, tx);
+            if (inserted != FluidType.BUCKET_VOLUME) {
+                return FluidStack.EMPTY;
+            }
+            // Fluid could fit, so pickup from the level
+            if (level.getFluidState(pos).getType() != fluid) {
+                // Inserting into destination caused type in the level to change, aborting
+                return FluidStack.EMPTY;
+            }
+            ItemStack pickedUpStack = bucketPickup.pickupBlock(player, level, pos, level.getBlockState(pos));
+            if (!(pickedUpStack.getItem() instanceof BucketItem bucket)) {
+                // Not a bucket, abort
+                if (!pickedUpStack.isEmpty()) {
+                    // Be loud since we are going to void the stack
+                    LOGGER.warn("Picked up stack is not a bucket. Fluid {} at {} in {} picked up as {}.",
+                            BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().identifier(), pickedUpStack);
+                }
+                return FluidStack.EMPTY;
+            }
+            FluidStack extracted = new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
+            if (!resource.matches(extracted)) {
+                // Be loud if something went wrong
+                LOGGER.warn("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
+                        BuiltInRegistries.FLUID.getKey(fluid), pos, level.dimension().identifier(), BuiltInRegistries.FLUID.getKey(bucket.content));
+                return FluidStack.EMPTY;
+            }
+            playSoundAndGameEvent(resource, level, pos, player, tx, true);
+            tx.commit();
+            return extracted;
         }
     }
 
