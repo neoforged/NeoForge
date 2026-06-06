@@ -99,7 +99,8 @@ public class FluidUtilTests {
         testWaterPlacement(
                 helper,
                 Blocks.AIR.defaultBlockState(),
-                Blocks.WATER.defaultBlockState());
+                Blocks.WATER.defaultBlockState(),
+                false);
     }
 
     @GameTest
@@ -109,10 +110,11 @@ public class FluidUtilTests {
         testWaterPlacement(
                 helper,
                 Blocks.STONE_SLAB.defaultBlockState(),
-                Blocks.STONE_SLAB.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true));
+                Blocks.STONE_SLAB.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true),
+                true);
     }
 
-    private static void testWaterPlacement(ExtendedGameTestHelper helper, BlockState initialState, BlockState finalState) {
+    private static void testWaterPlacement(ExtendedGameTestHelper helper, BlockState initialState, BlockState finalState, boolean shouldFailFilledValidation) {
         var waterPos = new BlockPos(1, 0, 0);
         helper.setBlock(waterPos, initialState);
 
@@ -128,6 +130,7 @@ public class FluidUtilTests {
                 player,
                 helper.getLevel(),
                 helper.absolutePos(waterPos),
+                false,
                 null);
         helper.assertValueEqual(Fluids.WATER, placementResult.getFluid(), "placed fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, placementResult.getAmount(), "placed amount");
@@ -144,6 +147,7 @@ public class FluidUtilTests {
                 player,
                 helper.getLevel(),
                 helper.absolutePos(waterPos),
+                false,
                 null);
         helper.assertTrue(secondPlacementResult.isEmpty(), "second placement result is empty");
         // Block state should not have changed
@@ -156,8 +160,8 @@ public class FluidUtilTests {
                 player,
                 helper.getLevel(),
                 helper.absolutePos(waterPos),
+                false,
                 null);
-        helper.assertTrue(secondPlacementResult.isEmpty(), "third placement result is empty");
         helper.assertValueEqual(Fluids.WATER, thirdPlacementResult.getFluid(), "third placed fluid");
         helper.assertValueEqual(FluidType.BUCKET_VOLUME, thirdPlacementResult.getAmount(), "third placed amount");
         helper.assertBlockState(waterPos, finalState);
@@ -166,6 +170,25 @@ public class FluidUtilTests {
         mainHandItem = player.getMainHandItem();
         helper.assertValueEqual(Items.BUCKET, mainHandItem.getItem(), "main hand item");
         helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
+
+        if (shouldFailFilledValidation) {
+            // But yet another placement with a full bucket in hand should fail, since placing additional water into a water block is allowed
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+            var fourthPlacementResult = FluidUtil.tryPlaceFluid(
+                    handHandler,
+                    player,
+                    helper.getLevel(),
+                    helper.absolutePos(waterPos),
+                    true,
+                    null);
+            helper.assertTrue(fourthPlacementResult.isEmpty(), "fourth placement result is empty");
+            helper.assertBlockState(waterPos, finalState);
+
+            // Bucket should not have been emptied
+            mainHandItem = player.getMainHandItem();
+            helper.assertValueEqual(Items.WATER_BUCKET, mainHandItem.getItem(), "main hand item");
+            helper.assertValueEqual(1, mainHandItem.getCount(), "main hand item count");
+        }
 
         // Block state should not have changed
         helper.assertBlockState(waterPos, finalState);

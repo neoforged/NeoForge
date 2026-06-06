@@ -94,7 +94,7 @@ public class CustomFluidContainerTest {
                 blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
                 //try to place fluid in hit block (waterlogging, fill tank, ...). When no success try the block on the hit side.
                 for (BlockPos pos : Arrays.asList(blockHitResult.getBlockPos(), blockHitResult.getBlockPos().relative(blockHitResult.getDirection()))) {
-                    success = !FluidUtil.tryPlaceFluid(handler, player, level, pos, null).isEmpty();
+                    success = !FluidUtil.tryPlaceFluid(handler, player, level, pos, false, null).isEmpty();
                     if (success) break;
                 }
             }

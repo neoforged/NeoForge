@@ -47,7 +47,7 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         // First try to pick up fluid in front of the dispenser, then try to drain a filled container and place the fluid in front of the dispenser
         if (!FluidUtil.tryPickupFluid(resourceHandler, null, source.level(), targetPos, dispenserFacing.getOpposite(), null).isEmpty()
-                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), targetPos, null).isEmpty()) {
+                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), targetPos, false, null).isEmpty()) {
             var stack0 = ItemUtil.getStack(containingHandler, 0);
             var stack1 = ItemUtil.getStack(containingHandler, 1);
 
