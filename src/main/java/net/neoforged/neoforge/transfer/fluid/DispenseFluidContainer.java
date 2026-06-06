@@ -53,7 +53,7 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
             // Grow by 1 to match the shrink in consumeWithRemainder
             stack0.grow(1);
-            return this.consumeWithRemainder(source, stack, stack1);
+            return this.consumeWithRemainder(source, stack0, stack1);
         } else {
             return super.execute(source, stack);
         }
