@@ -5,8 +5,11 @@
     },
     "max_format": [
       107,
-      0
+      1
     ],
-    "min_format": 107
+    "min_format": [
+      107,
+      1
+    ]
   }
 }
