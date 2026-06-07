@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
@@ -360,10 +361,14 @@ public interface IEntityExtension {
     }
 
     /// Returns the block bounciness for the given block state. Normally between 0 and 1
-    /// @see IBlockStateExtension#getBounceRestitution()
-    default double getBlockBounciness(BlockState blockState) {
+    ///
+    /// @param pos Position of the block to query bounciness at
+    /// @param blockState The block state to query bounciness for
+    /// @return The block bounciness for the given block state and position
+    /// @see IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)
+    default double getBlockBounciness(BlockPos pos, BlockState blockState) {
         // must be kept inine with Entity.getBlockBounciness(Block)
-        var blockBounciness = blockState.getBounceRestitution();
+        var blockBounciness = blockState.getBounceRestitution(self().level(), pos, self());
 
         if (!(this instanceof LivingEntity)) {
             blockBounciness *= .8F;

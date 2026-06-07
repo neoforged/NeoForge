@@ -37,12 +37,35 @@
          }
  
          this.checkBelowWorld();
+@@ -785,7 +_,7 @@
+                 profiler.pop();
+             } else {
+                 if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
+-                    this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
++                    this.restituteMovementAfterCollisions(effectPos, effectState, xCollision, zCollision, movement); // NeoForge: Pass down the bounce position to our extensions
+                 }
+ 
+                 if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
+@@ -802,7 +_,13 @@
+         }
+     }
+ 
++    /// @deprecated NeoForge: Use [#restituteMovementAfterCollisions(BlockPos, BlockState, boolean, boolean, Vec3)]
++    @Deprecated
+     private void restituteMovementAfterCollisions(BlockState effectState, boolean xCollision, boolean zCollision, Vec3 movement) {
++        restituteMovementAfterCollisions(getOnPosLegacy(), effectState, xCollision, zCollision, movement);
++    }
++
++    private void restituteMovementAfterCollisions(BlockPos effectPos, BlockState effectState, boolean xCollision, boolean zCollision, Vec3 movement) {
+         double restitution = this.isSuppressingBounce() ? 0.0 : this.getEntityBounciness();
+         Vec3 currentMovement = this.getDeltaMovement();
+         Vec3 movementAfterBounce = currentMovement;
 @@ -818,7 +_,7 @@
          if (this.verticalCollision) {
              if (this.verticalCollisionBelow) {
                  restitution = !(-currentMovement.y < this.getEffectiveGravity()) && !this.isSuppressingBounce() && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
 -                    ? Math.max(restitution, this.getBlockBounciness(effectState.getBlock()))
-+                    ? Math.max(restitution, this.getBlockBounciness(effectState)) // NeoForge: Allow bounciness to be state specific
++                    ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // NeoForge: Allow bounciness to be state and position specific
                      : 0.0;
              }
  
@@ -50,7 +73,7 @@
          this.setDeltaMovement(movementAfterBounce);
      }
  
-+    /// @deprecated NeoForge: Use [IEntityExtension#getBlockBounciness(BlockState)]
++    /// @deprecated NeoForge: Use [IEntityExtension#getBlockBounciness(BlockPos, BlockState) ]
 +    @Deprecated
      private double getBlockBounciness(Block onBlock) {
          float blockBounciness = onBlock.getBounceRestitution();
