@@ -37,6 +37,24 @@
          }
  
          this.checkBelowWorld();
+@@ -818,7 +_,7 @@
+         if (this.verticalCollision) {
+             if (this.verticalCollisionBelow) {
+                 restitution = !(-currentMovement.y < this.getEffectiveGravity()) && !this.isSuppressingBounce() && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
+-                    ? Math.max(restitution, this.getBlockBounciness(effectState.getBlock()))
++                    ? Math.max(restitution, this.getBlockBounciness(effectState)) // NeoForge: Allow bounciness to be state specific
+                     : 0.0;
+             }
+ 
+@@ -845,6 +_,8 @@
+         this.setDeltaMovement(movementAfterBounce);
+     }
+ 
++    /// @deprecated NeoForge: Use [IEntityExtension#getBlockBounciness(BlockState)]
++    @Deprecated
+     private double getBlockBounciness(Block onBlock) {
+         float blockBounciness = onBlock.getBounceRestitution();
+         if (!(this instanceof LivingEntity)) {
 @@ -1062,9 +_,7 @@
              }
  
