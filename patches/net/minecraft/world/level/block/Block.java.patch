@@ -107,6 +107,15 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
+@@ -464,6 +_,8 @@
+         entity.causeFallDamage(fallDistance, 1.0F, entity.damageSources().fall());
+     }
+ 
++    /// @deprecated NeoForge: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution()]
++    @Deprecated
+     public float getBounceRestitution() {
+         return this.bounceRestitution;
+     }
 @@ -497,6 +_,7 @@
      public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
      }

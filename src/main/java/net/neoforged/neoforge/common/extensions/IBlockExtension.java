@@ -1077,4 +1077,9 @@ public interface IBlockExtension {
     default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
         return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
+
+    /// Returns this blocks bounce restitution for the given state. Normally between 0 and 1
+    default float getBounceRestitution(BlockState blockState) {
+        return self().getBounceRestitution();
+    }
 }
