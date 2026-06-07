@@ -42,6 +42,7 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterFeatureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
@@ -57,6 +58,7 @@ import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.resources.VanillaClientListeners;
+import net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer;
 import net.neoforged.neoforge.client.textures.DirectoryPalettedPermutations;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -149,6 +151,10 @@ public class ClientNeoForgeMod {
                     Minecraft.getInstance().getModelManager().getItemModel(modelId);
                 }
             }
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterFeatureRenderersEvent.class, event -> {
+            event.register(ExtendedBlockModelFeatureRenderer.TYPE, new ExtendedBlockModelFeatureRenderer());
         });
     }
 

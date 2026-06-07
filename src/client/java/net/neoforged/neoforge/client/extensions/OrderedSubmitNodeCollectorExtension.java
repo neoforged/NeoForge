@@ -10,6 +10,9 @@ import java.util.List;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.feature.phase.FeatureRenderPhase;
+import net.minecraft.client.renderer.feature.submit.SubmitNode;
+import net.neoforged.neoforge.client.submit.RenderPhaseKey;
 
 public interface OrderedSubmitNodeCollectorExtension {
     /// Submit the provided [BlockStateModelPart]s with full support for per-quad render types.
@@ -30,4 +33,10 @@ public interface OrderedSubmitNodeCollectorExtension {
             int lightCoords,
             int overlayCoords,
             int outlineColor) {}
+
+    /// Submit the provided [SubmitNode] to the [FeatureRenderPhase] identified by the provided [RenderPhaseKey].
+    ///
+    /// @param phaseKey   The render phase to submit to
+    /// @param submitNode The submit node to submit
+    default <T extends SubmitNode, S extends T> void submitSpecial(RenderPhaseKey<T> phaseKey, S submitNode) {}
 }
