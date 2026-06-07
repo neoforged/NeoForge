@@ -9,13 +9,10 @@
              this.translucentBlocksAndItems.submit(submit);
          } else {
              this.solid.submit(submit);
-@@ -249,6 +_,27 @@
-                         )
-                     );
-             }
-+        }
-+    }
-+
+@@ -252,6 +_,27 @@
+         }
+     }
+ 
 +    @Override
 +    public void submitMultiLayerBlockModel(
 +            PoseStack poseStack,
@@ -34,6 +31,23 @@
 +            this.translucentBlocksAndItems.submit(submit);
 +        } else {
 +            this.solid.submit(submit);
++        }
++    }
++
+     private static @Nullable RenderType getOutlineRenderType(RenderType renderType) {
+         if (renderType.isOutline()) {
+             return renderType;
+@@ -350,6 +_,13 @@
+         } else {
+             this.gizmos.submit(submit);
          }
++    }
++
++    @Override
++    public <T extends net.minecraft.client.renderer.feature.submit.SubmitNode, S extends T> void submitSpecial(
++        net.neoforged.neoforge.client.submit.RenderPhaseKey<T> phaseKey, S submitNode
++    ) {
++        phaseKey.resolve(this).submit(submitNode);
      }
  
+     public List<FeatureRenderPhase<?>> allPhases() {

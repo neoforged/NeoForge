@@ -10,6 +10,8 @@ import java.util.List;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.feature.submit.SubmitNode;
+import net.neoforged.neoforge.client.submit.RenderPhaseKey;
 
 public interface SubmitNodeStorageExtension extends SubmitNodeCollector {
     private SubmitNodeStorage self() {
@@ -28,12 +30,8 @@ public interface SubmitNodeStorageExtension extends SubmitNodeCollector {
         self().order(0).submitMultiLayerBlockModel(poseStack, modelParts, translucent, tintLayers, lightCoords, overlayCoords, outlineColor);
     }
 
-    record MultiLayerBlockModelSubmit(
-            PoseStack.Pose pose,
-            List<BlockStateModelPart> modelParts,
-            boolean translucent,
-            int[] tintLayers,
-            int lightCoords,
-            int overlayCoords,
-            int outlineColor) {}
+    @Override
+    default <T extends SubmitNode, S extends T> void submitSpecial(RenderPhaseKey<T> phaseKey, S submitNode) {
+        self().order(0).submitSpecial(phaseKey, submitNode);
+    }
 }
