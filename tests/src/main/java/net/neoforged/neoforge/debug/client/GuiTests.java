@@ -60,7 +60,7 @@ public class GuiTests {
         test.eventListeners().forge().addListener((final ScreenEvent.Init.Post event) -> {
             if (event.getScreen() instanceof AbstractContainerScreen) {
                 event.addListener(Button.builder(Component.literal("Test Gui Layering"), _ -> {
-                    Minecraft.getInstance().gui.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
+                    Minecraft.getInstance().gui.pushScreenLayer(new TestLayer(Component.literal("LayerScreen")));
                     test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Did the layered GUIs work?"));
                 }).pos(2, 2).size(150, 20).build());
 
@@ -128,11 +128,16 @@ public class GuiTests {
         }
 
         private void popLayerButton(Button button) {
-            this.minecraft.gui.popGuiLayer();
+            this.minecraft.gui.popScreenLayer();
         }
 
         private void pushLayerButton(Button button) {
-            this.minecraft.gui.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
+            this.minecraft.gui.pushScreenLayer(new TestLayer(Component.literal("LayerScreen")));
+        }
+
+        @Override
+        public boolean isInGameUi() {
+            return true;
         }
     }
 

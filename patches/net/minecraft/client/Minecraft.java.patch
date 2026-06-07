@@ -218,7 +218,7 @@
 +        net.neoforged.neoforge.client.ClientHooks.fireWindowResize(this.window);
          if (this.gui.screen() != null) {
              this.gui.screen().resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
-+            net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++            this.gui.resizeScreenLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
          }
  
          this.mouseHandler.setIgnoreFirstMove();

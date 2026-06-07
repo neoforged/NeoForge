@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.SequencedMap;
 import java.util.Set;
@@ -50,7 +49,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.LerpingBossEvent;
@@ -222,48 +220,6 @@ public class ClientHooks {
     //private static final Identifier ITEM_GLINT = Identifier.withDefaultNamespace("textures/misc/enchanted_item_glint.png");
 
     /**
-     * Contains the *extra* GUI layers.
-     * The current top layer stays in Minecraft#currentScreen, and the rest serve as a background for it.
-     */
-    private static final Stack<Screen> guiLayers = new Stack<>();
-
-    public static void resizeGuiLayers(int width, int height) {
-        guiLayers.forEach(screen -> screen.resize(width, height));
-    }
-
-    public static void clearGuiLayers(Gui gui) {
-        while (!guiLayers.isEmpty()) {
-            popGuiLayerInternal(gui);
-        }
-    }
-
-    private static void popGuiLayerInternal(Gui gui) {
-        if (gui.screen() != null) {
-            gui.screen().removed();
-        }
-        gui.setScreen(guiLayers.pop());
-    }
-
-    public static void pushGuiLayer(Gui gui, Screen screen) {
-        if (gui.screen() != null) {
-            guiLayers.push(gui.screen());
-        }
-        gui.setScreen(Objects.requireNonNull(screen));
-    }
-
-    public static void popGuiLayer(Gui gui) {
-        if (guiLayers.isEmpty()) {
-            gui.setScreen(null);
-            return;
-        }
-
-        popGuiLayerInternal(gui);
-        if (gui.screen() != null) {
-            gui.screen().triggerImmediateNarration(false);
-        }
-    }
-
-    /**
      * Called by {@link Hud.HeartType#forPlayer} to allow for modification of the displayed heart type in the
      * health bar.
      *
@@ -402,18 +358,19 @@ public class ClientHooks {
         return e.getMusic();
     }
 
-    public static void drawScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiLayers.forEach(layer -> {
+    public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        for (Screen layer : backgroundLayers) {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
-            drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
+            extractScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
             guiGraphics.nextStratum();
-        });
-        drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
+        }
+        extractScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    private static void drawScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
+    private static void extractScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled()) {
             screen.extractRenderStateWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
+        }
         NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 

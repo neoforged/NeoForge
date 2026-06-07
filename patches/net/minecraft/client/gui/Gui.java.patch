@@ -1,16 +1,25 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -177,7 +_,8 @@
+@@ -78,6 +_,8 @@
+     private final ToastManager toastManager;
+     private final ChatListener chatListener;
+     private @Nullable TutorialToast socialInteractionsToast;
++    /// Neo: Contains the extra screen layers. The current top layer stays in [#screen], and the rest serve as a background for it.
++    private final java.util.Stack<Screen> screenLayers = new java.util.Stack<>();
+ 
+     public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
+         this.minecraft = minecraft;
+@@ -175,7 +_,8 @@
              profiler.push("screen");
  
              try {
 -                this.screen.extractRenderStateWithTooltipAndSubtitles(graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
 +                // Neo: Wrap Screen#extractRenderStateWithTooltipAndSubtitles() to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
-+                net.neoforged.neoforge.client.ClientHooks.drawScreen(this.screen, graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
++                net.neoforged.neoforge.client.ClientHooks.extractScreen(this.screen, this.screenLayers, graphics, xMouse, yMouse, deltaTracker.getGameTimeDeltaTicks());
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -226,9 +_,7 @@
+@@ -224,9 +_,7 @@
              LOGGER.error("setScreen called from non-game thread");
          }
  
@@ -21,11 +30,11 @@
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -250,6 +_,19 @@
+@@ -248,6 +_,19 @@
              }
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.clearGuiLayers(this);
++        this.clearScreenLayers();
 +        Screen old = this.screen;
 +        if (screen != null) {
 +            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, screen);
@@ -41,12 +50,61 @@
          this.screen = screen;
          if (this.screen != null) {
              this.screen.added();
-@@ -376,6 +_,8 @@
-             Screen screen = function.apply(nextStep);
+@@ -375,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }
-+
-+        nextStep = net.neoforged.neoforge.client.loading.ClientModLoader.completeModLoading(nextStep);
  
++        nextStep = net.neoforged.neoforge.client.loading.ClientModLoader.completeModLoading(nextStep);
++
          return nextStep;
      }
+ 
+@@ -465,5 +_,48 @@
+                         }
+                     )
+             );
++    }
++
++    /// Neo: Push a screen onto the screen layer stack, pushing the currently active screen (if any) onto the stack of background layers.
++    ///
++    /// @param screen The new top-most screen
++    public void pushScreenLayer(Screen screen) {
++        if (this.screen != null) {
++            this.screenLayers.push(this.screen);
++        }
++        this.screen = java.util.Objects.requireNonNull(screen);
++        screen.init(this.minecraft.getWindow().getGuiScaledWidth(), this.minecraft.getWindow().getGuiScaledHeight());
++    }
++
++    /// Neo: Close the currently active screen (if any) and replace it with the top-most background screen layer.
++    public void popScreenLayer() {
++        if (this.screenLayers.isEmpty()) {
++            this.setScreen(null);
++        } else {
++            this.popScreenLayerInternal();
++            if (this.screen != null) {
++                this.screen.triggerImmediateNarration(false);
++            }
++        }
++    }
++
++    /// Neo: Close the currently active screen (if any) and all background screen layers except the bottom-most
++    /// one, returning to the bottom-most screen in the layer stack.
++    public void clearScreenLayers() {
++        while (!this.screenLayers.isEmpty()) {
++            this.popScreenLayerInternal();
++        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void resizeScreenLayers(int width, int height) {
++        this.screenLayers.forEach(screen -> screen.resize(width, height));
++    }
++
++    private void popScreenLayerInternal() {
++        if (this.screen != null) {
++            this.screen.removed();
++        }
++        this.screen = this.screenLayers.pop();
+     }
+ }
