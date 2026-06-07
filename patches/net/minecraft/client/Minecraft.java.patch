@@ -211,6 +211,14 @@
              }
  
              profiler.push("present");
+@@ -1324,6 +_,7 @@
+ 
+             RenderSystem.getDynamicUniforms().reset();
+             this.levelRenderer.endFrame();
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.FlipFrameEvent());
+             profiler.popPush("frameLimiter");
+             int framerateLimit = this.gameRenderer.gameRenderState().framerateLimit;
+             if (framerateLimit < 260) {
 @@ -1411,8 +_,10 @@
      public void resizeGui() {
          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
