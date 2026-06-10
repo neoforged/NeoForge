@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -149,8 +_,19 @@
+@@ -61,7 +_,6 @@
+     private static final float SITTING_ALLOWED_DAMAGE_PERCENTAGE = 0.25F;
+     private static final String DRAGON_DEATH_TIME_KEY = "DragonDeathTime";
+     private static final String DRAGON_PHASE_KEY = "DragonPhase";
+-    private static final String SITTING_DAMAGE_RECEIVED_KEY = "sitting_damage_received";
+     private static final int DEFAULT_DEATH_TIME = 0;
+     public final DragonFlightHistory flightHistory = new DragonFlightHistory();
+     private final EnderDragonPart[] subEntities;
+@@ -150,8 +_,19 @@
          entityData.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());
      }
  
@@ -20,7 +28,7 @@
          this.processFlappingMovement();
          if (this.level().isClientSide()) {
              this.setHealth(this.getHealth());
-@@ -435,7 +_,7 @@
+@@ -436,7 +_,7 @@
                      BlockPos blockPos = new BlockPos(x, y, z);
                      BlockState state = level.getBlockState(blockPos);
                      if (!state.isAir() && !state.is(BlockTags.DRAGON_TRANSPARENT)) {
@@ -29,7 +37,7 @@
                              destroyedBlock = level.removeBlock(blockPos, false) || destroyedBlock;
                          } else {
                              hitWall = true;
-@@ -539,7 +_,8 @@
+@@ -540,7 +_,8 @@
  
          if (this.level() instanceof ServerLevel level) {
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -39,7 +47,7 @@
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -557,7 +_,8 @@
+@@ -558,7 +_,8 @@
  
          if (this.dragonDeathTime >= 200 && this.level() instanceof ServerLevel level) {
              if (level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -49,7 +57,23 @@
              }
  
              if (this.dragonFight != null) {
-@@ -864,8 +_,19 @@
+@@ -749,7 +_,6 @@
+         super.addAdditionalSaveData(output);
+         output.putInt("DragonPhase", this.phaseManager.getCurrentPhase().getPhase().getId());
+         output.putInt("DragonDeathTime", this.dragonDeathTime);
+-        output.putFloat("sitting_damage_received", this.sittingDamageReceived);
+     }
+ 
+     @Override
+@@ -757,7 +_,6 @@
+         super.readAdditionalSaveData(input);
+         input.getInt("DragonPhase").ifPresent(phaseId -> this.phaseManager.setPhase(EnderDragonPhase.getById(phaseId)));
+         this.dragonDeathTime = input.getIntOr("DragonDeathTime", 0);
+-        this.sittingDamageReceived = input.getFloatOr("sitting_damage_received", 0.0F);
+     }
+ 
+     @Override
+@@ -867,8 +_,19 @@
      }
  
      @Override

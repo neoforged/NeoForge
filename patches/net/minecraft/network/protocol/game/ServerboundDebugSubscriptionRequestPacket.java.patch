@@ -1,0 +1,11 @@
+--- a/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java
++++ b/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java
+@@ -14,7 +_,7 @@
+     private static final StreamCodec<RegistryFriendlyByteBuf, Set<DebugSubscription<?>>> SET_STREAM_CODEC = ByteBufCodecs.registry(
+             Registries.DEBUG_SUBSCRIPTION
+         )
+-        .apply(ByteBufCodecs.collection(ReferenceOpenHashSet::new, 32));
++        .apply(ByteBufCodecs.collection(ReferenceOpenHashSet::new));
+     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDebugSubscriptionRequestPacket> STREAM_CODEC = SET_STREAM_CODEC.map(
+         ServerboundDebugSubscriptionRequestPacket::new, ServerboundDebugSubscriptionRequestPacket::subscriptions
+     );

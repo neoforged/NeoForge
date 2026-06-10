@@ -1,0 +1,11 @@
+--- a/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java
+@@ -20,7 +_,7 @@
+     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateAttributesPacket> STREAM_CODEC = StreamCodec.composite(
+         ByteBufCodecs.VAR_INT,
+         ClientboundUpdateAttributesPacket::getEntityId,
+-        ClientboundUpdateAttributesPacket.AttributeSnapshot.STREAM_CODEC.apply(ByteBufCodecs.list(128)),
++        ClientboundUpdateAttributesPacket.AttributeSnapshot.STREAM_CODEC.apply(ByteBufCodecs.list()),
+         ClientboundUpdateAttributesPacket::getValues,
+         ClientboundUpdateAttributesPacket::new
+     );

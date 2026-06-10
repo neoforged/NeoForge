@@ -1,6 +1,14 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1376,10 +_,35 @@
+@@ -410,7 +_,6 @@
+ import net.minecraft.util.filefix.fixes.LegacyStructureFileFix;
+ import net.minecraft.util.filefix.fixes.LevelDatToSavedDataFileFix;
+ import net.minecraft.util.filefix.fixes.PlayerStorageFileFix;
+-import net.minecraft.util.filefix.fixes.ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix;
+ import net.minecraft.util.filefix.fixes.RemoveObsoleteFilesFileFix;
+ import net.minecraft.util.filefix.fixes.ResourcePackLocationFileFix;
+ 
+@@ -1377,10 +_,35 @@
          Schema v3800 = fixerUpper.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> scuteRenamer = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
          fixerUpper.addFixer(ItemRenameFix.create(v3800, "Rename scute item to turtle_scute", scuteRenamer));
@@ -36,7 +44,7 @@
          Schema v3807 = fixerUpper.addSchema(3807, V3807::new);
          fixerUpper.addFixer(new AddNewChoices(v3807, "Added Vault", References.BLOCK_ENTITY));
          Schema v3807_1 = fixerUpper.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1402,6 +_,18 @@
+@@ -1403,6 +_,18 @@
                  v3814, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
              )
          );
@@ -55,3 +63,12 @@
          Schema v3816 = fixerUpper.addSchema(3816, V3816::new);
          fixerUpper.addFixer(new AddNewChoices(v3816, "Added Bogged", References.ENTITY));
          Schema v3818 = fixerUpper.addSchema(3818, V3818::new);
+@@ -1642,8 +_,6 @@
+         fixerUpper.addFixer(new RenameNameplateToNameTagFix(v4888));
+         Schema v4892 = fixerUpper.addSchema(4892, SAME_NAMESPACED);
+         fixerUpper.addFixer(new OptionsForceDefaultGraphicsApiFix(v4892));
+-        Schema v4899 = fileFixerUpper.addSchema(fixerUpper, 4899, SAME_NAMESPACED);
+-        fileFixerUpper.addFixer(new ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix(v4899));
+     }
+ 
+     private static UnaryOperator<String> createRenamerNoNamespace(Map<String, String> map) {

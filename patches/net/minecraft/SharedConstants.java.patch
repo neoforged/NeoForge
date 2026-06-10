@@ -1,5 +1,21 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
+@@ -13,13 +_,13 @@
+     @Deprecated
+     public static final boolean SNAPSHOT = true;
+     @Deprecated
+-    public static final int WORLD_VERSION = 4900;
++    public static final int WORLD_VERSION = 4898;
+     @Deprecated
+     public static final String SERIES = "main";
+     @Deprecated
+     public static final int RELEASE_NETWORK_PROTOCOL_VERSION = 776;
+     @Deprecated
+-    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 320;
++    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 319;
+     public static final int SNBT_NAG_VERSION = 4882;
+     private static final int SNAPSHOT_PROTOCOL_BIT = 30;
+     public static final boolean CRASH_EAGERLY = true;
 @@ -125,7 +_,8 @@
      public static final float MAXIMUM_BLOCK_EXPLOSION_RESISTANCE = 3600000.0F;
      public static final boolean USE_DEVONLY = false;
@@ -10,6 +26,15 @@
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
      public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;
+@@ -204,7 +_,7 @@
+     }
+ 
+     public static int getProtocolVersion() {
+-        return 1073742144;
++        return 1073742143;
+     }
+ 
+     public static boolean debugVoidTerrain(ChunkPos pos) {
 @@ -218,6 +_,7 @@
      }
  

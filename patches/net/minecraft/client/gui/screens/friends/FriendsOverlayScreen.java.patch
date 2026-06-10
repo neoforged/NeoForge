@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java
++++ b/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java
+@@ -82,7 +_,7 @@
+     }
+ 
+     private void onFriendListUpdate() {
+-        if (this.minecraft.gui.screen() == this && this.minecraft.getPlayerSocialManager().isFriendListEnabled()) {
++        if (this.minecraft.gui.screen() == this) {
+             this.refreshLists();
+         }
+     }

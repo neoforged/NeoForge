@@ -120,7 +120,15 @@
                              ItemStack awardedForStack = success.wasItemInteraction() ? usedItemStack : ItemStack.EMPTY;
                              CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(this.player, awardedForStack, target);
                              if (success.swingSource() == InteractionResult.SwingSource.SERVER) {
-@@ -2076,14 +_,16 @@
+@@ -1908,6 +_,7 @@
+                     this.restartClientLoadTimerAfterRespawn();
+                     if (this.server.isHardcore()) {
+                         this.player.setGameMode(GameType.SPECTATOR);
++                        this.player.level().getGameRules().set(GameRules.SPECTATORS_GENERATE_CHUNKS, false, this.server);
+                     }
+                 }
+                 break;
+@@ -2075,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -138,7 +146,7 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2160,7 +_,7 @@
+@@ -2159,7 +_,7 @@
          this.connection
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
@@ -147,7 +155,7 @@
              );
      }
  
-@@ -2194,6 +_,7 @@
+@@ -2193,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {

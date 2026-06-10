@@ -1,0 +1,37 @@
+--- a/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java
++++ b/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java
+@@ -50,12 +_,12 @@
+         super(lastScreen, options, TITLE);
+     }
+ 
+-    public static void confirmFriendsListEnabled(Minecraft minecraft, Runnable onEnabled, @Nullable Screen lastScreen) {
++    public static void confirmFriendsListEnabled(Minecraft minecraft, Runnable onEnabled, Screen lastScreen) {
+         PlayerSocialManager playerSocialManager = minecraft.getPlayerSocialManager();
+         if (playerSocialManager.isFriendListEnabled()) {
+             onEnabled.run();
+         } else {
+-            minecraft.gui.setScreen(new FriendsListConfirmScreen(accepted -> {
++            minecraft.setScreenAndShow(new FriendsListConfirmScreen(accepted -> {
+                 if (accepted) {
+                     applyFriendSettings(minecraft, true, true, successful -> {
+                         if (successful) {
+@@ -63,7 +_,7 @@
+                         }
+                     });
+                 } else {
+-                    minecraft.gui.setScreen(lastScreen);
++                    minecraft.setScreenAndShow(lastScreen);
+                 }
+             }, FRIENDS_CONFIRM_TITLE, FRIENDS_CONFIRM_MESSAGE, FRIENDS_CONFIRM_TURN_ON, FRIENDS_CONFIRM_TURN_OFF));
+         }
+@@ -119,8 +_,8 @@
+ 
+     private void onFriendsListToggled(Boolean newValue, PlayerSocialManager playerSocialManager, OptionInstance<Boolean> inGameNotificationOpt) {
+         if (newValue) {
+-            this.minecraft.gui.setScreen(new FriendsListConfirmScreen(accepted -> {
+-                this.minecraft.gui.setScreen(this);
++            this.minecraft.setScreenAndShow(new FriendsListConfirmScreen(accepted -> {
++                this.minecraft.setScreenAndShow(this);
+                 if (accepted) {
+                     playerSocialManager.setFriendListEnabled(true);
+                     playerSocialManager.setAllowFriendRequests(true);

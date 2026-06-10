@@ -1,6 +1,27 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -279,6 +_,7 @@
+@@ -75,12 +_,10 @@
+ import net.minecraft.SystemReport;
+ import net.minecraft.client.color.block.BlockColors;
+ import net.minecraft.client.entity.ClientMannequin;
+-import net.minecraft.client.gui.ComponentPath;
+ import net.minecraft.client.gui.Font;
+ import net.minecraft.client.gui.Gui;
+ import net.minecraft.client.gui.Hud;
+ import net.minecraft.client.gui.components.DebugScreenOverlay;
+-import net.minecraft.client.gui.components.EditBox;
+ import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+ import net.minecraft.client.gui.components.debug.DebugScreenEntryList;
+ import net.minecraft.client.gui.components.debugchart.ProfilerPieChart;
+@@ -102,7 +_,6 @@
+ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+-import net.minecraft.client.gui.screens.options.OnlineOptionsScreen;
+ import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
+ import net.minecraft.client.gui.screens.social.PlayerSocialManager;
+ import net.minecraft.client.gui.screens.social.RemoteFriendListUpdateHandler;
+@@ -282,6 +_,7 @@
      public final LevelExtractor levelExtractor;
      public final LevelRenderer levelRenderer;
      private final EntityRenderDispatcher entityRenderDispatcher;
@@ -8,7 +29,7 @@
      private final ItemModelResolver itemModelResolver;
      private final MapRenderer mapRenderer;
      public final ParticleEngine particleEngine;
-@@ -409,7 +_,6 @@
+@@ -412,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
          LOGGER.info("Setting user: {}", this.user.getName());
@@ -16,7 +37,7 @@
          this.demo = gameConfig.game.demo;
          this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;
          this.allowsChat = !gameConfig.game.disableChat;
-@@ -442,6 +_,7 @@
+@@ -445,21 +_,13 @@
          StringBuilder errorMsgBuilder = new StringBuilder("No supported graphics backend was found.");
          Window windowCandidate = null;
          GpuDevice device = null;
@@ -24,7 +45,22 @@
          PreferredGraphicsApi forcedGraphicsApi = gameConfig.game.forcedGraphicsApi;
          if (forcedGraphicsApi != null) {
              LOGGER.warn(
-@@ -456,6 +_,8 @@
+                 "Graphics backend forced to {} by launch argument, in-game preferred graphics backend setting is ignored",
+                 forcedGraphicsApi.getSerializedName()
+             );
+-        } else if (!lastStartWasClean) {
+-            if (this.options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
+-                LOGGER.warn("Detected unexpected shutdown during last game startup: resetting preferred graphics API to Default");
+-                this.options.preferredGraphicsBackend().set(PreferredGraphicsApi.DEFAULT);
+-                this.options.save();
+-            } else if (this.options.preferredGraphicsBackend().get() == PreferredGraphicsApi.DEFAULT) {
+-                LOGGER.warn("Detected unexpected shutdown during last game startup: forcing preferred graphics API to OpenGL");
+-                this.options.preferredGraphicsBackend().set(PreferredGraphicsApi.OPENGL);
+-            }
+         }
+ 
+         PreferredGraphicsApi preferredGraphicsBackend = forcedGraphicsApi == null ? this.options.preferredGraphicsBackend().get() : forcedGraphicsApi;
+@@ -468,6 +_,8 @@
          }
  
          String initialWindowTitle = this.createTitle();
@@ -33,7 +69,7 @@
  
          for (GpuBackend backend : preferredGraphicsBackend.getBackendsToTry()) {
              try {
-@@ -476,8 +_,8 @@
+@@ -488,8 +_,8 @@
                          (id, type) -> this.getShaderManager().getShader(id, type),
                          new GpuDebugOptions(
                              this.options.glDebugVerbosity,
@@ -44,7 +80,7 @@
                              gameConfig.game.vulkanValidation
                          ),
                          this::loadCriticalShaders
-@@ -537,12 +_,14 @@
+@@ -549,12 +_,14 @@
              LOGGER.error("Couldn't set icon", e);
          }
  
@@ -61,7 +97,7 @@
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode, var1 -> {
-@@ -578,11 +_,13 @@
+@@ -590,11 +_,13 @@
          RenderSystem.setupDefaultState();
          this.window.setErrorSection("Post startup");
          this.blockColors = BlockColors.createDefault();
@@ -75,7 +111,7 @@
          this.itemModelResolver = new ItemModelResolver(this.modelManager);
          this.mapTextureManager = new MapTextureManager(this.textureManager);
          this.mapRenderer = new MapRenderer(this.atlasManager, this.mapTextureManager);
-@@ -621,6 +_,7 @@
+@@ -633,6 +_,7 @@
          this.resourceManager.registerReloadListener(particleResources);
          this.particleEngine = new ParticleEngine(this.level, particleResources);
          particleResources.onReload(this.particleEngine::clearParticles);
@@ -83,7 +119,7 @@
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.modelManager);
          WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;
          windowRenderState.width = this.window.getWidth();
-@@ -642,6 +_,9 @@
+@@ -654,6 +_,9 @@
          this.gpuWarnlistManager = new GpuWarnlistManager();
          this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
          this.resourceManager.registerReloadListener(this.regionalCompliancies);
@@ -93,7 +129,7 @@
          this.gui = new Gui(this, new Hud(this), this.gameRenderer.gameRenderState().guiRenderState);
          this.gui.registerReloadListeners(this.resourceManager);
          RealmsClient realmsClient = RealmsClient.getOrCreate(this);
-@@ -676,6 +_,7 @@
+@@ -688,6 +_,7 @@
              }
          }
  
@@ -101,7 +137,7 @@
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
          this.window.setDefaultErrorCallback();
-@@ -692,6 +_,7 @@
+@@ -704,6 +_,7 @@
          TitleScreen.registerTextures(this.textureManager);
          LoadingOverlay.registerTextures(this.textureManager);
          this.gameRenderer.registerPanoramaTextures(this.textureManager);
@@ -109,7 +145,7 @@
          this.timerQuery = new TimerQuery();
          this.gui.setScreen(new GenericMessageScreen(Component.translatable("gui.loadingMinecraft")));
          List<PackResources> packs = this.resourcePackRepository.openAllSelected();
-@@ -701,7 +_,7 @@
+@@ -713,7 +_,7 @@
          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
          GameLoadCookie loadCookie = new GameLoadCookie(realmsClient, gameConfig.quickPlay);
          this.gui.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
@@ -118,7 +154,7 @@
                  this.selfTest();
              }
  
-@@ -755,6 +_,7 @@
+@@ -767,6 +_,7 @@
      }
  
      private void onResourceLoadFinished(@Nullable GameLoadCookie loadCookie) {
@@ -126,7 +162,7 @@
          if (!this.gameLoadFinished) {
              this.gameLoadFinished = true;
              this.onGameLoadFinished(loadCookie);
-@@ -790,7 +_,7 @@
+@@ -802,7 +_,7 @@
      private String createTitle() {
          StringBuilder builder = new StringBuilder("Minecraft");
          if (checkModStatus().shouldReportAsModified()) {
@@ -135,7 +171,7 @@
          }
  
          builder.append(" ");
-@@ -830,7 +_,7 @@
+@@ -842,7 +_,7 @@
      }
  
      private void rollbackResourcePacks(Throwable t, @Nullable GameLoadCookie loadCookie) {
@@ -144,7 +180,7 @@
              this.clearResourcePacksOnError(t, null, loadCookie);
          } else {
              Util.throwAsRuntime(t);
-@@ -886,6 +_,8 @@
+@@ -898,6 +_,8 @@
          DiscontinuousFrame tickFrame = TracyClient.createDiscontinuousFrame("Client Tick");
  
          try {
@@ -153,7 +189,7 @@
              boolean oomRecovery = false;
  
              while (this.running) {
-@@ -947,7 +_,7 @@
+@@ -959,7 +_,7 @@
          CrashReport finalReport = this.fillReport(partialReport);
          int exitCode = saveReportAndShutdownSoundManager(this, this.gameDirectory, finalReport, -1);
          this.emergencySave();
@@ -162,7 +198,7 @@
      }
  
      public static void saveReport(File gameDirectory, CrashReport crash) {
-@@ -984,7 +_,7 @@
+@@ -996,7 +_,7 @@
  
      public static void crash(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash, int exitCode) {
          int actualExitCode = saveReportAndShutdownSoundManager(minecraft, gameDirectory, crash, exitCode);
@@ -171,7 +207,7 @@
      }
  
      public static int saveReportAndShutdownSoundManager(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash, int exitCode) {
-@@ -1088,6 +_,7 @@
+@@ -1100,6 +_,7 @@
  
      public void exitWorldAndClose() {
          try {
@@ -179,7 +215,7 @@
              LOGGER.info("Stopping!");
              if (this.level != null) {
                  this.level.disconnect(ClientLevel.DEFAULT_QUIT_MESSAGE);
-@@ -1129,6 +_,8 @@
+@@ -1141,6 +_,8 @@
              Util.shutdownExecutors();
              this.windowSurface.close();
              RenderSystem.shutdownRenderer();
@@ -188,7 +224,7 @@
          } catch (Throwable t) {
              LOGGER.error("Shutdown failure!", t);
              throw t;
-@@ -1208,7 +_,11 @@
+@@ -1220,7 +_,11 @@
  
          this.window.setErrorSection("Post render");
          boolean var28 = this.pause;
@@ -201,7 +237,7 @@
          if (!var28 && this.pause) {
              this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
          }
-@@ -1289,7 +_,9 @@
+@@ -1301,7 +_,9 @@
                  profiler.popPush("gpuAsync");
                  RenderSystem.executePendingTasks();
                  profiler.pop();
@@ -211,7 +247,7 @@
              }
  
              profiler.push("present");
-@@ -1324,6 +_,7 @@
+@@ -1336,6 +_,7 @@
  
              RenderSystem.getDynamicUniforms().reset();
              this.levelRenderer.endFrame();
@@ -219,7 +255,7 @@
              profiler.popPush("frameLimiter");
              int framerateLimit = this.gameRenderer.gameRenderState().framerateLimit;
              if (framerateLimit < 260) {
-@@ -1411,8 +_,10 @@
+@@ -1423,8 +_,10 @@
      public void resizeGui() {
          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
          this.window.setGuiScale(guiScale);
@@ -230,7 +266,7 @@
          }
  
          this.mouseHandler.setIgnoreFirstMove();
-@@ -1564,6 +_,7 @@
+@@ -1576,6 +_,7 @@
      }
  
      public void stop() {
@@ -238,7 +274,7 @@
          this.running = false;
      }
  
-@@ -1589,8 +_,16 @@
+@@ -1601,8 +_,16 @@
                      BlockPos pos = blockHit.getBlockPos();
                      if (!this.level.getBlockState(pos).isAir()) {
                          Direction direction = blockHit.getDirection();
@@ -257,7 +293,7 @@
                              this.player.swing(InteractionHand.MAIN_HAND);
                          }
                      }
-@@ -1637,9 +_,16 @@
+@@ -1649,9 +_,16 @@
                  }
  
                  boolean endAttack = false;
@@ -274,7 +310,7 @@
                      this.player.swing(InteractionHand.MAIN_HAND);
                      return true;
                  }
-@@ -1667,8 +_,10 @@
+@@ -1679,8 +_,10 @@
                          }
  
                          this.player.resetAttackStrengthTicker();
@@ -285,7 +321,7 @@
                  this.player.swing(InteractionHand.MAIN_HAND);
                  return endAttack;
              }
-@@ -1684,6 +_,11 @@
+@@ -1696,6 +_,11 @@
                  }
  
                  for (InteractionHand hand : InteractionHand.values()) {
@@ -297,7 +333,7 @@
                      ItemStack heldItem = this.player.getItemInHand(hand);
                      if (!heldItem.isItemEnabled(this.level.enabledFeatures())) {
                          return;
-@@ -1700,7 +_,7 @@
+@@ -1712,7 +_,7 @@
  
                                  if (this.player.isWithinEntityInteractionRange(entity, 0.0)
                                      && this.gameMode.interact(this.player, entity, entityHit, hand) instanceof InteractionResult.Success success) {
@@ -306,7 +342,7 @@
                                          this.player.swing(hand);
                                      }
  
-@@ -1712,7 +_,7 @@
+@@ -1724,7 +_,7 @@
                                  int oldCount = heldItem.getCount();
                                  InteractionResult useResult = this.gameMode.useItemOn(this.player, hand, blockHit);
                                  if (useResult instanceof InteractionResult.Success success) {
@@ -315,7 +351,7 @@
                                          this.player.swing(hand);
                                          if (!heldItem.isEmpty() && (heldItem.getCount() != oldCount || this.player.hasInfiniteMaterials())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(hand);
-@@ -1728,8 +_,11 @@
+@@ -1740,8 +_,11 @@
                          }
                      }
  
@@ -328,7 +364,7 @@
                              this.player.swing(hand);
                          }
  
-@@ -1747,6 +_,10 @@
+@@ -1759,6 +_,10 @@
  
      public void tick() {
          this.clientTickCount++;
@@ -339,7 +375,7 @@
          if (this.level != null && !this.pause) {
              this.level.tickRateManager().tick();
          }
-@@ -1805,6 +_,7 @@
+@@ -1817,6 +_,7 @@
  
                  this.tutorial.tick();
  
@@ -347,7 +383,7 @@
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable t) {
-@@ -1818,6 +_,7 @@
+@@ -1830,6 +_,7 @@
  
                      throw new ReportedException(report);
                  }
@@ -355,7 +391,7 @@
              }
  
              profiler.popPush("animateTick");
-@@ -1842,6 +_,10 @@
+@@ -1854,6 +_,10 @@
          profiler.popPush("keyboard");
          this.keyboardHandler.tick();
          profiler.pop();
@@ -366,7 +402,7 @@
      }
  
      private boolean isLevelRunningNormally() {
-@@ -2047,6 +_,7 @@
+@@ -2059,6 +_,7 @@
      }
  
      public void setLevel(ClientLevel level) {
@@ -374,7 +410,7 @@
          this.level = level;
          this.updateLevelInEngines(level);
      }
-@@ -2108,13 +_,16 @@
+@@ -2120,13 +_,16 @@
          IntegratedServer server = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -391,7 +427,7 @@
              }
  
              this.level = null;
-@@ -2138,6 +_,7 @@
+@@ -2150,6 +_,7 @@
          } finally {
              this.gui.setClientLevelTeardownInProgress(false);
          }
@@ -399,7 +435,7 @@
      }
  
      public void clearDownloadedResourcePacks() {
-@@ -2163,6 +_,7 @@
+@@ -2175,6 +_,7 @@
          try {
              this.setScreenAndShow(screen);
              this.gui.hud.onDisconnected();
@@ -407,7 +443,53 @@
              this.level = null;
              this.updateLevelInEngines(null);
              this.player = null;
-@@ -2333,6 +_,7 @@
+@@ -2236,9 +_,7 @@
+     }
+ 
+     public boolean handleGlobalKeyPress(InputConstants.Key key, boolean controlDown) {
+-        if (this.options.keyDebugModifier.isDown()) {
+-            return false;
+-        } else if (this.options.keyFullscreen.matches(key)) {
++        if (this.options.keyFullscreen.matches(key)) {
+             this.toggleFullscreen();
+             return true;
+         } else if (this.options.keyScreenshot.matches(key)) {
+@@ -2261,25 +_,18 @@
+     }
+ 
+     private boolean toggleFriendsScreen() {
+-        if (this.isDemo()) {
+-            return false;
+-        }
+-
+         Screen current = this.gui.screen();
+         if (current instanceof FriendsOverlayScreen friends) {
+-            ComponentPath focusPath = current.getCurrentFocusPath();
+-            if (focusPath == null || !(focusPath.leafComponent() instanceof EditBox)) {
+-                friends.onClose();
+-                return true;
++            friends.onClose();
++            return true;
++        } else {
++            if (current != null && !(current instanceof TitleScreen) && !(current instanceof PauseScreen)) {
++                return false;
+             }
+-        }
+-
+-        if (!(current instanceof TitleScreen) && !(current instanceof PauseScreen)) {
+-            return false;
+-        }
+-
+-        OnlineOptionsScreen.confirmFriendsListEnabled(this, () -> this.gui.setScreen(new FriendsOverlayScreen(current)), current);
+-        return true;
++
++            this.gui.setScreen(new FriendsOverlayScreen(current));
++            return true;
++        }
+     }
+ 
+     public boolean allowFriendRequests() {
+@@ -2354,6 +_,7 @@
  
      private void pickBlockOrEntity() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
@@ -415,7 +497,7 @@
              boolean includeData = this.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockHitResult:
-@@ -2882,6 +_,10 @@
+@@ -2903,6 +_,10 @@
          }
  
          return defaultTickTargetMillis;

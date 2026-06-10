@@ -1,0 +1,11 @@
+--- a/net/minecraft/DetectedVersion.java
++++ b/net/minecraft/DetectedVersion.java
+@@ -25,7 +_,7 @@
+ 
+     public static WorldVersion createBuiltIn(String id, String name, boolean stable) {
+         return new WorldVersion.Simple(
+-            id, name, new DataVersion(4900, "main"), SharedConstants.getProtocolVersion(), PackFormat.of(88, 0), PackFormat.of(107, 1), new Date(), stable
++            id, name, new DataVersion(4898, "main"), SharedConstants.getProtocolVersion(), PackFormat.of(88, 0), PackFormat.of(107, 1), new Date(), stable
+         );
+     }
+ 
