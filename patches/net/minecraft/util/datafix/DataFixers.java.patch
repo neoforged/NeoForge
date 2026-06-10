@@ -1,6 +1,5 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-
 @@ -1377,10 +_,35 @@
          Schema v3800 = fixerUpper.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> scuteRenamer = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
@@ -56,12 +55,3 @@
          Schema v3816 = fixerUpper.addSchema(3816, V3816::new);
          fixerUpper.addFixer(new AddNewChoices(v3816, "Added Bogged", References.ENTITY));
          Schema v3818 = fixerUpper.addSchema(3818, V3818::new);
-@@ -1642,8 +_,6 @@
-         fixerUpper.addFixer(new RenameNameplateToNameTagFix(v4888));
-         Schema v4892 = fixerUpper.addSchema(4892, SAME_NAMESPACED);
-         fixerUpper.addFixer(new OptionsForceDefaultGraphicsApiFix(v4892));
--        Schema v4899 = fileFixerUpper.addSchema(fixerUpper, 4899, SAME_NAMESPACED);
--        fileFixerUpper.addFixer(new ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix(v4899));
-     }
- 
-     private static UnaryOperator<String> createRenamerNoNamespace(Map<String, String> map) {
