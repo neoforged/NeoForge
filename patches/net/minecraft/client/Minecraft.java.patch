@@ -1,26 +1,5 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -75,12 +_,10 @@
- import net.minecraft.SystemReport;
- import net.minecraft.client.color.block.BlockColors;
- import net.minecraft.client.entity.ClientMannequin;
--import net.minecraft.client.gui.ComponentPath;
- import net.minecraft.client.gui.Font;
- import net.minecraft.client.gui.Gui;
- import net.minecraft.client.gui.Hud;
- import net.minecraft.client.gui.components.DebugScreenOverlay;
--import net.minecraft.client.gui.components.EditBox;
- import net.minecraft.client.gui.components.debug.DebugScreenEntries;
- import net.minecraft.client.gui.components.debug.DebugScreenEntryList;
- import net.minecraft.client.gui.components.debugchart.ProfilerPieChart;
-@@ -102,7 +_,6 @@
- import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
- import net.minecraft.client.gui.screens.inventory.InventoryScreen;
- import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
--import net.minecraft.client.gui.screens.options.OnlineOptionsScreen;
- import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
- import net.minecraft.client.gui.screens.social.PlayerSocialManager;
- import net.minecraft.client.gui.screens.social.RemoteFriendListUpdateHandler;
 @@ -282,6 +_,7 @@
      public final LevelExtractor levelExtractor;
      public final LevelRenderer levelRenderer;

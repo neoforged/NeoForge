@@ -1,0 +1,878 @@
+[1mdiff --git a/patches/net/minecraft/DetectedVersion.java.patch b/patches/net/minecraft/DetectedVersion.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..3eb748418[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/DetectedVersion.java.patch[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32m--- a/net/minecraft/DetectedVersion.java[m
+[32m+[m[32m+++ b/net/minecraft/DetectedVersion.java[m
+[32m+[m[32m@@ -25,7 +_,7 @@[m
+[32m+[m[41m [m
+[32m+[m[32m     public static WorldVersion createBuiltIn(String id, String name, boolean stable) {[m
+[32m+[m[32m         return new WorldVersion.Simple([m
+[32m+[m[32m-            id, name, new DataVersion(4900, "main"), SharedConstants.getProtocolVersion(), PackFormat.of(88, 0), PackFormat.of(107, 1), new Date(), stable[m
+[32m+[m[32m+            id, name, new DataVersion(4898, "main"), SharedConstants.getProtocolVersion(), PackFormat.of(88, 0), PackFormat.of(107, 1), new Date(), stable[m
+[32m+[m[32m         );[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[1mdiff --git a/patches/net/minecraft/SharedConstants.java.patch b/patches/net/minecraft/SharedConstants.java.patch[m
+[1mindex 47f186c34..513cb81c3 100644[m
+[1m--- a/patches/net/minecraft/SharedConstants.java.patch[m
+[1m+++ b/patches/net/minecraft/SharedConstants.java.patch[m
+[36m@@ -1,5 +1,21 @@[m
+ --- a/net/minecraft/SharedConstants.java[m
+ +++ b/net/minecraft/SharedConstants.java[m
+[32m+[m[32m@@ -13,13 +_,13 @@[m
+[32m+[m[32m     @Deprecated[m
+[32m+[m[32m     public static final boolean SNAPSHOT = true;[m
+[32m+[m[32m     @Deprecated[m
+[32m+[m[32m-    public static final int WORLD_VERSION = 4900;[m
+[32m+[m[32m+    public static final int WORLD_VERSION = 4898;[m
+[32m+[m[32m     @Deprecated[m
+[32m+[m[32m     public static final String SERIES = "main";[m
+[32m+[m[32m     @Deprecated[m
+[32m+[m[32m     public static final int RELEASE_NETWORK_PROTOCOL_VERSION = 776;[m
+[32m+[m[32m     @Deprecated[m
+[32m+[m[32m-    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 320;[m
+[32m+[m[32m+    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 319;[m
+[32m+[m[32m     public static final int SNBT_NAG_VERSION = 4882;[m
+[32m+[m[32m     private static final int SNAPSHOT_PROTOCOL_BIT = 30;[m
+[32m+[m[32m     public static final boolean CRASH_EAGERLY = true;[m
+ @@ -125,7 +_,8 @@[m
+      public static final float MAXIMUM_BLOCK_EXPLOSION_RESISTANCE = 3600000.0F;[m
+      public static final boolean USE_DEVONLY = false;[m
+[36m@@ -10,6 +26,15 @@[m
+      public static final int WORLD_RESOLUTION = 16;[m
+      public static final int MAX_CHAT_LENGTH = 256;[m
+      public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;[m
+[32m+[m[32m@@ -204,7 +_,7 @@[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     public static int getProtocolVersion() {[m
+[32m+[m[32m-        return 1073742144;[m
+[32m+[m[32m+        return 1073742143;[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     public static boolean debugVoidTerrain(ChunkPos pos) {[m
+ @@ -218,6 +_,7 @@[m
+      }[m
+  [m
+[1mdiff --git a/patches/net/minecraft/client/Minecraft.java.patch b/patches/net/minecraft/client/Minecraft.java.patch[m
+[1mindex 362950693..f289a486f 100644[m
+[1m--- a/patches/net/minecraft/client/Minecraft.java.patch[m
+[1m+++ b/patches/net/minecraft/client/Minecraft.java.patch[m
+[36m@@ -1,6 +1,27 @@[m
+ --- a/net/minecraft/client/Minecraft.java[m
+ +++ b/net/minecraft/client/Minecraft.java[m
+[31m-@@ -279,6 +_,7 @@[m
+[32m+[m[32m@@ -75,12 +_,10 @@[m
+[32m+[m[32m import net.minecraft.SystemReport;[m
+[32m+[m[32m import net.minecraft.client.color.block.BlockColors;[m
+[32m+[m[32m import net.minecraft.client.entity.ClientMannequin;[m
+[32m+[m[32m-import net.minecraft.client.gui.ComponentPath;[m
+[32m+[m[32m import net.minecraft.client.gui.Font;[m
+[32m+[m[32m import net.minecraft.client.gui.Gui;[m
+[32m+[m[32m import net.minecraft.client.gui.Hud;[m
+[32m+[m[32m import net.minecraft.client.gui.components.DebugScreenOverlay;[m
+[32m+[m[32m-import net.minecraft.client.gui.components.EditBox;[m
+[32m+[m[32m import net.minecraft.client.gui.components.debug.DebugScreenEntries;[m
+[32m+[m[32m import net.minecraft.client.gui.components.debug.DebugScreenEntryList;[m
+[32m+[m[32m import net.minecraft.client.gui.components.debugchart.ProfilerPieChart;[m
+[32m+[m[32m@@ -102,7 +_,6 @@[m
+[32m+[m[32m import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;[m
+[32m+[m[32m import net.minecraft.client.gui.screens.inventory.InventoryScreen;[m
+[32m+[m[32m import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;[m
+[32m+[m[32m-import net.minecraft.client.gui.screens.options.OnlineOptionsScreen;[m
+[32m+[m[32m import net.minecraft.client.gui.screens.options.VideoSettingsScreen;[m
+[32m+[m[32m import net.minecraft.client.gui.screens.social.PlayerSocialManager;[m
+[32m+[m[32m import net.minecraft.client.gui.screens.social.RemoteFriendListUpdateHandler;[m
+[32m+[m[32m@@ -282,6 +_,7 @@[m
+      public final LevelExtractor levelExtractor;[m
+      public final LevelRenderer levelRenderer;[m
+      private final EntityRenderDispatcher entityRenderDispatcher;[m
+[36m@@ -8,7 +29,7 @@[m
+      private final ItemModelResolver itemModelResolver;[m
+      private final MapRenderer mapRenderer;[m
+      public final ParticleEngine particleEngine;[m
+[31m-@@ -409,7 +_,6 @@[m
+[32m+[m[32m@@ -412,7 +_,6 @@[m
+              }[m
+          }, Util.nonCriticalIoPool());[m
+          LOGGER.info("Setting user: {}", this.user.getName());[m
+[36m@@ -16,7 +37,7 @@[m
+          this.demo = gameConfig.game.demo;[m
+          this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;[m
+          this.allowsChat = !gameConfig.game.disableChat;[m
+[31m-@@ -442,6 +_,7 @@[m
+[32m+[m[32m@@ -445,21 +_,13 @@[m
+          StringBuilder errorMsgBuilder = new StringBuilder("No supported graphics backend was found.");[m
+          Window windowCandidate = null;[m
+          GpuDevice device = null;[m
+[36m@@ -24,7 +45,22 @@[m
+          PreferredGraphicsApi forcedGraphicsApi = gameConfig.game.forcedGraphicsApi;[m
+          if (forcedGraphicsApi != null) {[m
+              LOGGER.warn([m
+[31m-@@ -456,6 +_,8 @@[m
+[32m+[m[32m                 "Graphics backend forced to {} by launch argument, in-game preferred graphics backend setting is ignored",[m
+[32m+[m[32m                 forcedGraphicsApi.getSerializedName()[m
+[32m+[m[32m             );[m
+[32m+[m[32m-        } else if (!lastStartWasClean) {[m
+[32m+[m[32m-            if (this.options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {[m
+[32m+[m[32m-                LOGGER.warn("Detected unexpected shutdown during last game startup: resetting preferred graphics API to Default");[m
+[32m+[m[32m-                this.options.preferredGraphicsBackend().set(PreferredGraphicsApi.DEFAULT);[m
+[32m+[m[32m-                this.options.save();[m
+[32m+[m[32m-            } else if (this.options.preferredGraphicsBackend().get() == PreferredGraphicsApi.DEFAULT) {[m
+[32m+[m[32m-                LOGGER.warn("Detected unexpected shutdown during last game startup: forcing preferred graphics API to OpenGL");[m
+[32m+[m[32m-                this.options.preferredGraphicsBackend().set(PreferredGraphicsApi.OPENGL);[m
+[32m+[m[32m-            }[m
+[32m+[m[32m         }[m
+[32m+[m[41m [m
+[32m+[m[32m         PreferredGraphicsApi preferredGraphicsBackend = forcedGraphicsApi == null ? this.options.preferredGraphicsBackend().get() : forcedGraphicsApi;[m
+[32m+[m[32m@@ -468,6 +_,8 @@[m
+          }[m
+  [m
+          String initialWindowTitle = this.createTitle();[m
+[36m@@ -33,7 +69,7 @@[m
+  [m
+          for (GpuBackend backend : preferredGraphicsBackend.getBackendsToTry()) {[m
+              try {[m
+[31m-@@ -476,8 +_,8 @@[m
+[32m+[m[32m@@ -488,8 +_,8 @@[m
+                          (id, type) -> this.getShaderManager().getShader(id, type),[m
+                          new GpuDebugOptions([m
+                              this.options.glDebugVerbosity,[m
+[36m@@ -44,7 +80,7 @@[m
+                              gameConfig.game.vulkanValidation[m
+                          ),[m
+                          this::loadCriticalShaders[m
+[31m-@@ -537,12 +_,14 @@[m
+[32m+[m[32m@@ -549,12 +_,14 @@[m
+              LOGGER.error("Couldn't set icon", e);[m
+          }[m
+  [m
+[36m@@ -61,7 +97,7 @@[m
+          this.resourcePackRepository.reload();[m
+          this.options.loadSelectedResourcePacks(this.resourcePackRepository);[m
+          this.languageManager = new LanguageManager(this.options.languageCode, var1 -> {[m
+[31m-@@ -578,11 +_,13 @@[m
+[32m+[m[32m@@ -590,11 +_,13 @@[m
+          RenderSystem.setupDefaultState();[m
+          this.window.setErrorSection("Post startup");[m
+          this.blockColors = BlockColors.createDefault();[m
+[36m@@ -75,7 +111,7 @@[m
+          this.itemModelResolver = new ItemModelResolver(this.modelManager);[m
+          this.mapTextureManager = new MapTextureManager(this.textureManager);[m
+          this.mapRenderer = new MapRenderer(this.atlasManager, this.mapTextureManager);[m
+[31m-@@ -621,6 +_,7 @@[m
+[32m+[m[32m@@ -633,6 +_,7 @@[m
+          this.resourceManager.registerReloadListener(particleResources);[m
+          this.particleEngine = new ParticleEngine(this.level, particleResources);[m
+          particleResources.onReload(this.particleEngine::clearParticles);[m
+[36m@@ -83,7 +119,7 @@[m
+          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.modelManager);[m
+          WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;[m
+          windowRenderState.width = this.window.getWidth();[m
+[31m-@@ -642,6 +_,9 @@[m
+[32m+[m[32m@@ -654,6 +_,9 @@[m
+          this.gpuWarnlistManager = new GpuWarnlistManager();[m
+          this.resourceManager.registerReloadListener(this.gpuWarnlistManager);[m
+          this.resourceManager.registerReloadListener(this.regionalCompliancies);[m
+[36m@@ -93,7 +129,7 @@[m
+          this.gui = new Gui(this, new Hud(this), this.gameRenderer.gameRenderState().guiRenderState);[m
+          this.gui.registerReloadListeners(this.resourceManager);[m
+          RealmsClient realmsClient = RealmsClient.getOrCreate(this);[m
+[31m-@@ -676,6 +_,7 @@[m
+[32m+[m[32m@@ -688,6 +_,7 @@[m
+              }[m
+          }[m
+  [m
+[36m@@ -101,7 +137,7 @@[m
+          this.window.updateRawMouseInput(this.options.rawMouseInput().get());[m
+          this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());[m
+          this.window.setDefaultErrorCallback();[m
+[31m-@@ -692,6 +_,7 @@[m
+[32m+[m[32m@@ -704,6 +_,7 @@[m
+          TitleScreen.registerTextures(this.textureManager);[m
+          LoadingOverlay.registerTextures(this.textureManager);[m
+          this.gameRenderer.registerPanoramaTextures(this.textureManager);[m
+[36m@@ -109,7 +145,7 @@[m
+          this.timerQuery = new TimerQuery();[m
+          this.gui.setScreen(new GenericMessageScreen(Component.translatable("gui.loadingMinecraft")));[m
+          List<PackResources> packs = this.resourcePackRepository.openAllSelected();[m
+[31m-@@ -701,7 +_,7 @@[m
+[32m+[m[32m@@ -713,7 +_,7 @@[m
+          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);[m
+          GameLoadCookie loadCookie = new GameLoadCookie(realmsClient, gameConfig.quickPlay);[m
+          this.gui.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {[m
+[36m@@ -118,7 +154,7 @@[m
+                  this.selfTest();[m
+              }[m
+  [m
+[31m-@@ -755,6 +_,7 @@[m
+[32m+[m[32m@@ -767,6 +_,7 @@[m
+      }[m
+  [m
+      private void onResourceLoadFinished(@Nullable GameLoadCookie loadCookie) {[m
+[36m@@ -126,7 +162,7 @@[m
+          if (!this.gameLoadFinished) {[m
+              this.gameLoadFinished = true;[m
+              this.onGameLoadFinished(loadCookie);[m
+[31m-@@ -790,7 +_,7 @@[m
+[32m+[m[32m@@ -802,7 +_,7 @@[m
+      private String createTitle() {[m
+          StringBuilder builder = new StringBuilder("Minecraft");[m
+          if (checkModStatus().shouldReportAsModified()) {[m
+[36m@@ -135,7 +171,7 @@[m
+          }[m
+  [m
+          builder.append(" ");[m
+[31m-@@ -830,7 +_,7 @@[m
+[32m+[m[32m@@ -842,7 +_,7 @@[m
+      }[m
+  [m
+      private void rollbackResourcePacks(Throwable t, @Nullable GameLoadCookie loadCookie) {[m
+[36m@@ -144,7 +180,7 @@[m
+              this.clearResourcePacksOnError(t, null, loadCookie);[m
+          } else {[m
+              Util.throwAsRuntime(t);[m
+[31m-@@ -886,6 +_,8 @@[m
+[32m+[m[32m@@ -898,6 +_,8 @@[m
+          DiscontinuousFrame tickFrame = TracyClient.createDiscontinuousFrame("Client Tick");[m
+  [m
+          try {[m
+[36m@@ -153,7 +189,7 @@[m
+              boolean oomRecovery = false;[m
+  [m
+              while (this.running) {[m
+[31m-@@ -947,7 +_,7 @@[m
+[32m+[m[32m@@ -959,7 +_,7 @@[m
+          CrashReport finalReport = this.fillReport(partialReport);[m
+          int exitCode = saveReportAndShutdownSoundManager(this, this.gameDirectory, finalReport, -1);[m
+          this.emergencySave();[m
+[36m@@ -162,7 +198,7 @@[m
+      }[m
+  [m
+      public static void saveReport(File gameDirectory, CrashReport crash) {[m
+[31m-@@ -984,7 +_,7 @@[m
+[32m+[m[32m@@ -996,7 +_,7 @@[m
+  [m
+      public static void crash(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash, int exitCode) {[m
+          int actualExitCode = saveReportAndShutdownSoundManager(minecraft, gameDirectory, crash, exitCode);[m
+[36m@@ -171,7 +207,7 @@[m
+      }[m
+  [m
+      public static int saveReportAndShutdownSoundManager(@Nullable Minecraft minecraft, File gameDirectory, CrashReport crash, int exitCode) {[m
+[31m-@@ -1088,6 +_,7 @@[m
+[32m+[m[32m@@ -1100,6 +_,7 @@[m
+  [m
+      public void exitWorldAndClose() {[m
+          try {[m
+[36m@@ -179,7 +215,7 @@[m
+              LOGGER.info("Stopping!");[m
+              if (this.level != null) {[m
+                  this.level.disconnect(ClientLevel.DEFAULT_QUIT_MESSAGE);[m
+[31m-@@ -1129,6 +_,8 @@[m
+[32m+[m[32m@@ -1141,6 +_,8 @@[m
+              Util.shutdownExecutors();[m
+              this.windowSurface.close();[m
+              RenderSystem.shutdownRenderer();[m
+[36m@@ -188,7 +224,7 @@[m
+          } catch (Throwable t) {[m
+              LOGGER.error("Shutdown failure!", t);[m
+              throw t;[m
+[31m-@@ -1208,7 +_,11 @@[m
+[32m+[m[32m@@ -1220,7 +_,11 @@[m
+  [m
+          this.window.setErrorSection("Post render");[m
+          boolean var28 = this.pause;[m
+[36m@@ -201,7 +237,7 @@[m
+          if (!var28 && this.pause) {[m
+              this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);[m
+          }[m
+[31m-@@ -1289,7 +_,9 @@[m
+[32m+[m[32m@@ -1301,7 +_,9 @@[m
+                  profiler.popPush("gpuAsync");[m
+                  RenderSystem.executePendingTasks();[m
+                  profiler.pop();[m
+[36m@@ -211,7 +247,7 @@[m
+              }[m
+  [m
+              profiler.push("present");[m
+[31m-@@ -1324,6 +_,7 @@[m
+[32m+[m[32m@@ -1336,6 +_,7 @@[m
+  [m
+              RenderSystem.getDynamicUniforms().reset();[m
+              this.levelRenderer.endFrame();[m
+[36m@@ -219,7 +255,7 @@[m
+              profiler.popPush("frameLimiter");[m
+              int framerateLimit = this.gameRenderer.gameRenderState().framerateLimit;[m
+              if (framerateLimit < 260) {[m
+[31m-@@ -1411,8 +_,10 @@[m
+[32m+[m[32m@@ -1423,8 +_,10 @@[m
+      public void resizeGui() {[m
+          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());[m
+          this.window.setGuiScale(guiScale);[m
+[36m@@ -230,7 +266,7 @@[m
+          }[m
+  [m
+          this.mouseHandler.setIgnoreFirstMove();[m
+[31m-@@ -1564,6 +_,7 @@[m
+[32m+[m[32m@@ -1576,6 +_,7 @@[m
+      }[m
+  [m
+      public void stop() {[m
+[36m@@ -238,7 +274,7 @@[m
+          this.running = false;[m
+      }[m
+  [m
+[31m-@@ -1589,8 +_,16 @@[m
+[32m+[m[32m@@ -1601,8 +_,16 @@[m
+                      BlockPos pos = blockHit.getBlockPos();[m
+                      if (!this.level.getBlockState(pos).isAir()) {[m
+                          Direction direction = blockHit.getDirection();[m
+[36m@@ -257,7 +293,7 @@[m
+                              this.player.swing(InteractionHand.MAIN_HAND);[m
+                          }[m
+                      }[m
+[31m-@@ -1637,9 +_,16 @@[m
+[32m+[m[32m@@ -1649,9 +_,16 @@[m
+                  }[m
+  [m
+                  boolean endAttack = false;[m
+[36m@@ -274,7 +310,7 @@[m
+                      this.player.swing(InteractionHand.MAIN_HAND);[m
+                      return true;[m
+                  }[m
+[31m-@@ -1667,8 +_,10 @@[m
+[32m+[m[32m@@ -1679,8 +_,10 @@[m
+                          }[m
+  [m
+                          this.player.resetAttackStrengthTicker();[m
+[36m@@ -285,7 +321,7 @@[m
+                  this.player.swing(InteractionHand.MAIN_HAND);[m
+                  return endAttack;[m
+              }[m
+[31m-@@ -1684,6 +_,11 @@[m
+[32m+[m[32m@@ -1696,6 +_,11 @@[m
+                  }[m
+  [m
+                  for (InteractionHand hand : InteractionHand.values()) {[m
+[36m@@ -297,7 +333,7 @@[m
+                      ItemStack heldItem = this.player.getItemInHand(hand);[m
+                      if (!heldItem.isItemEnabled(this.level.enabledFeatures())) {[m
+                          return;[m
+[31m-@@ -1700,7 +_,7 @@[m
+[32m+[m[32m@@ -1712,7 +_,7 @@[m
+  [m
+                                  if (this.player.isWithinEntityInteractionRange(entity, 0.0)[m
+                                      && this.gameMode.interact(this.player, entity, entityHit, hand) instanceof InteractionResult.Success success) {[m
+[36m@@ -306,7 +342,7 @@[m
+                                          this.player.swing(hand);[m
+                                      }[m
+  [m
+[31m-@@ -1712,7 +_,7 @@[m
+[32m+[m[32m@@ -1724,7 +_,7 @@[m
+                                  int oldCount = heldItem.getCount();[m
+                                  InteractionResult useResult = this.gameMode.useItemOn(this.player, hand, blockHit);[m
+                                  if (useResult instanceof InteractionResult.Success success) {[m
+[36m@@ -315,7 +351,7 @@[m
+                                          this.player.swing(hand);[m
+                                          if (!heldItem.isEmpty() && (heldItem.getCount() != oldCount || this.player.hasInfiniteMaterials())) {[m
+                                              this.gameRenderer.itemInHandRenderer.itemUsed(hand);[m
+[31m-@@ -1728,8 +_,11 @@[m
+[32m+[m[32m@@ -1740,8 +_,11 @@[m
+                          }[m
+                      }[m
+  [m
+[36m@@ -328,7 +364,7 @@[m
+                              this.player.swing(hand);[m
+                          }[m
+  [m
+[31m-@@ -1747,6 +_,10 @@[m
+[32m+[m[32m@@ -1759,6 +_,10 @@[m
+  [m
+      public void tick() {[m
+          this.clientTickCount++;[m
+[36m@@ -339,7 +375,7 @@[m
+          if (this.level != null && !this.pause) {[m
+              this.level.tickRateManager().tick();[m
+          }[m
+[31m-@@ -1805,6 +_,7 @@[m
+[32m+[m[32m@@ -1817,6 +_,7 @@[m
+  [m
+                  this.tutorial.tick();[m
+  [m
+[36m@@ -347,7 +383,7 @@[m
+                  try {[m
+                      this.level.tick(() -> true);[m
+                  } catch (Throwable t) {[m
+[31m-@@ -1818,6 +_,7 @@[m
+[32m+[m[32m@@ -1830,6 +_,7 @@[m
+  [m
+                      throw new ReportedException(report);[m
+                  }[m
+[36m@@ -355,7 +391,7 @@[m
+              }[m
+  [m
+              profiler.popPush("animateTick");[m
+[31m-@@ -1842,6 +_,10 @@[m
+[32m+[m[32m@@ -1854,6 +_,10 @@[m
+          profiler.popPush("keyboard");[m
+          this.keyboardHandler.tick();[m
+          profiler.pop();[m
+[36m@@ -366,7 +402,7 @@[m
+      }[m
+  [m
+      private boolean isLevelRunningNormally() {[m
+[31m-@@ -2047,6 +_,7 @@[m
+[32m+[m[32m@@ -2059,6 +_,7 @@[m
+      }[m
+  [m
+      public void setLevel(ClientLevel level) {[m
+[36m@@ -374,7 +410,7 @@[m
+          this.level = level;[m
+          this.updateLevelInEngines(level);[m
+      }[m
+[31m-@@ -2108,13 +_,16 @@[m
+[32m+[m[32m@@ -2120,13 +_,16 @@[m
+          IntegratedServer server = this.singleplayerServer;[m
+          this.singleplayerServer = null;[m
+          this.gameRenderer.resetData();[m
+[36m@@ -391,7 +427,7 @@[m
+              }[m
+  [m
+              this.level = null;[m
+[31m-@@ -2138,6 +_,7 @@[m
+[32m+[m[32m@@ -2150,6 +_,7 @@[m
+          } finally {[m
+              this.gui.setClientLevelTeardownInProgress(false);[m
+          }[m
+[36m@@ -399,7 +435,7 @@[m
+      }[m
+  [m
+      public void clearDownloadedResourcePacks() {[m
+[31m-@@ -2163,6 +_,7 @@[m
+[32m+[m[32m@@ -2175,6 +_,7 @@[m
+          try {[m
+              this.setScreenAndShow(screen);[m
+              this.gui.hud.onDisconnected();[m
+[36m@@ -407,7 +443,53 @@[m
+              this.level = null;[m
+              this.updateLevelInEngines(null);[m
+              this.player = null;[m
+[31m-@@ -2333,6 +_,7 @@[m
+[32m+[m[32m@@ -2236,9 +_,7 @@[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     public boolean handleGlobalKeyPress(InputConstants.Key key, boolean controlDown) {[m
+[32m+[m[32m-        if (this.options.keyDebugModifier.isDown()) {[m
+[32m+[m[32m-            return false;[m
+[32m+[m[32m-        } else if (this.options.keyFullscreen.matches(key)) {[m
+[32m+[m[32m+        if (this.options.keyFullscreen.matches(key)) {[m
+[32m+[m[32m             this.toggleFullscreen();[m
+[32m+[m[32m             return true;[m
+[32m+[m[32m         } else if (this.options.keyScreenshot.matches(key)) {[m
+[32m+[m[32m@@ -2261,25 +_,18 @@[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     private boolean toggleFriendsScreen() {[m
+[32m+[m[32m-        if (this.isDemo()) {[m
+[32m+[m[32m-            return false;[m
+[32m+[m[32m-        }[m
+[32m+[m[32m-[m
+[32m+[m[32m         Screen current = this.gui.screen();[m
+[32m+[m[32m         if (current instanceof FriendsOverlayScreen friends) {[m
+[32m+[m[32m-            ComponentPath focusPath = current.getCurrentFocusPath();[m
+[32m+[m[32m-            if (focusPath == null || !(focusPath.leafComponent() instanceof EditBox)) {[m
+[32m+[m[32m-                friends.onClose();[m
+[32m+[m[32m-                return true;[m
+[32m+[m[32m+            friends.onClose();[m
+[32m+[m[32m+            return true;[m
+[32m+[m[32m+        } else {[m
+[32m+[m[32m+            if (current != null && !(current instanceof TitleScreen) && !(current instanceof PauseScreen)) {[m
+[32m+[m[32m+                return false;[m
+[32m+[m[32m             }[m
+[32m+[m[32m-        }[m
+[32m+[m[32m-[m
+[32m+[m[32m-        if (!(current instanceof TitleScreen) && !(current instanceof PauseScreen)) {[m
+[32m+[m[32m-            return false;[m
+[32m+[m[32m-        }[m
+[32m+[m[32m-[m
+[32m+[m[32m-        OnlineOptionsScreen.confirmFriendsListEnabled(this, () -> this.gui.setScreen(new FriendsOverlayScreen(current)), current);[m
+[32m+[m[32m-        return true;[m
+[32m+[m[32m+[m
+[32m+[m[32m+            this.gui.setScreen(new FriendsOverlayScreen(current));[m
+[32m+[m[32m+            return true;[m
+[32m+[m[32m+        }[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     public boolean allowFriendRequests() {[m
+[32m+[m[32m@@ -2354,6 +_,7 @@[m
+  [m
+      private void pickBlockOrEntity() {[m
+          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {[m
+[36m@@ -415,7 +497,7 @@[m
+              boolean includeData = this.hasControlDown();[m
+              switch (this.hitResult) {[m
+                  case BlockHitResult blockHitResult:[m
+[31m-@@ -2882,6 +_,10 @@[m
+[32m+[m[32m@@ -2903,6 +_,10 @@[m
+          }[m
+  [m
+          return defaultTickTargetMillis;[m
+[1mdiff --git a/patches/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java.patch b/patches/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..d8904d30c[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java.patch[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32m--- a/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java[m
+[32m+[m[32m+++ b/net/minecraft/client/gui/screens/friends/FriendsOverlayScreen.java[m
+[32m+[m[32m@@ -82,7 +_,7 @@[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     private void onFriendListUpdate() {[m
+[32m+[m[32m-        if (this.minecraft.gui.screen() == this && this.minecraft.getPlayerSocialManager().isFriendListEnabled()) {[m
+[32m+[m[32m+        if (this.minecraft.gui.screen() == this) {[m
+[32m+[m[32m             this.refreshLists();[m
+[32m+[m[32m         }[m
+[32m+[m[32m     }[m
+[1mdiff --git a/patches/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java.patch b/patches/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..a82f05b02[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java.patch[m
+[36m@@ -0,0 +1,37 @@[m
+[32m+[m[32m--- a/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java[m
+[32m+[m[32m+++ b/net/minecraft/client/gui/screens/options/OnlineOptionsScreen.java[m
+[32m+[m[32m@@ -50,12 +_,12 @@[m
+[32m+[m[32m         super(lastScreen, options, TITLE);[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m-    public static void confirmFriendsListEnabled(Minecraft minecraft, Runnable onEnabled, @Nullable Screen lastScreen) {[m
+[32m+[m[32m+    public static void confirmFriendsListEnabled(Minecraft minecraft, Runnable onEnabled, Screen lastScreen) {[m
+[32m+[m[32m         PlayerSocialManager playerSocialManager = minecraft.getPlayerSocialManager();[m
+[32m+[m[32m         if (playerSocialManager.isFriendListEnabled()) {[m
+[32m+[m[32m             onEnabled.run();[m
+[32m+[m[32m         } else {[m
+[32m+[m[32m-            minecraft.gui.setScreen(new FriendsListConfirmScreen(accepted -> {[m
+[32m+[m[32m+            minecraft.setScreenAndShow(new FriendsListConfirmScreen(accepted -> {[m
+[32m+[m[32m                 if (accepted) {[m
+[32m+[m[32m                     applyFriendSettings(minecraft, true, true, successful -> {[m
+[32m+[m[32m                         if (successful) {[m
+[32m+[m[32m@@ -63,7 +_,7 @@[m
+[32m+[m[32m                         }[m
+[32m+[m[32m                     });[m
+[32m+[m[32m                 } else {[m
+[32m+[m[32m-                    minecraft.gui.setScreen(lastScreen);[m
+[32m+[m[32m+                    minecraft.setScreenAndShow(lastScreen);[m
+[32m+[m[32m                 }[m
+[32m+[m[32m             }, FRIENDS_CONFIRM_TITLE, FRIENDS_CONFIRM_MESSAGE, FRIENDS_CONFIRM_TURN_ON, FRIENDS_CONFIRM_TURN_OFF));[m
+[32m+[m[32m         }[m
+[32m+[m[32m@@ -119,8 +_,8 @@[m
+[32m+[m[41m [m
+[32m+[m[32m     private void onFriendsListToggled(Boolean newValue, PlayerSocialManager playerSocialManager, OptionInstance<Boolean> inGameNotificationOpt) {[m
+[32m+[m[32m         if (newValue) {[m
+[32m+[m[32m-            this.minecraft.gui.setScreen(new FriendsListConfirmScreen(accepted -> {[m
+[32m+[m[32m-                this.minecraft.gui.setScreen(this);[m
+[32m+[m[32m+            this.minecraft.setScreenAndShow(new FriendsListConfirmScreen(accepted -> {[m
+[32m+[m[32m+                this.minecraft.setScreenAndShow(this);[m
+[32m+[m[32m                 if (accepted) {[m
+[32m+[m[32m                     playerSocialManager.setFriendListEnabled(true);[m
+[32m+[m[32m                     playerSocialManager.setAllowFriendRequests(true);[m
+[1mdiff --git a/patches/net/minecraft/network/codec/ByteBufCodecs.java.patch b/patches/net/minecraft/network/codec/ByteBufCodecs.java.patch[m
+[1mindex 39e09951e..cfc4fd1f4 100644[m
+[1m--- a/patches/net/minecraft/network/codec/ByteBufCodecs.java.patch[m
+[1m+++ b/patches/net/minecraft/network/codec/ByteBufCodecs.java.patch[m
+[36m@@ -1,6 +1,17 @@[m
+ --- a/net/minecraft/network/codec/ByteBufCodecs.java[m
+ +++ b/net/minecraft/network/codec/ByteBufCodecs.java[m
+[31m-@@ -560,7 +_,7 @@[m
+[32m+[m[32m@@ -437,10 +_,6 @@[m
+[32m+[m[32m         return original -> collection(constructor, original);[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m-    static <B extends ByteBuf, V, C extends Collection<V>> StreamCodec.CodecOperation<B, V, C> collection(IntFunction<C> constructor, int maxSize) {[m
+[32m+[m[32m-        return original -> collection(constructor, original, maxSize);[m
+[32m+[m[32m-    }[m
+[32m+[m[32m-[m
+[32m+[m[32m     static <B extends ByteBuf, V> StreamCodec.CodecOperation<B, V, List<V>> list() {[m
+[32m+[m[32m         return original -> collection(ArrayList::new, original);[m
+[32m+[m[32m     }[m
+[32m+[m[32m@@ -564,7 +_,7 @@[m
+      ) {[m
+          return new StreamCodec<RegistryFriendlyByteBuf, R>() {[m
+              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf input) {[m
+[36m@@ -9,7 +20,7 @@[m
+              }[m
+  [m
+              public R decode(RegistryFriendlyByteBuf input) {[m
+[31m-@@ -590,7 +_,7 @@[m
+[32m+[m[32m@@ -594,7 +_,7 @@[m
+              private static final int DIRECT_HOLDER_ID = 0;[m
+  [m
+              private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf input) {[m
+[36m@@ -18,7 +29,7 @@[m
+              }[m
+  [m
+              public Holder<T> decode(RegistryFriendlyByteBuf input) {[m
+[31m-@@ -612,13 +_,38 @@[m
+[32m+[m[32m@@ -616,13 +_,38 @@[m
+          };[m
+      }[m
+  [m
+[36m@@ -57,7 +68,7 @@[m
+                  if (count == -1) {[m
+                      Registry<T> registry = input.registryAccess().lookupOrThrow(registryKey);[m
+                      return registry.get(TagKey.create(registryKey, Identifier.STREAM_CODEC.decode(input))).orElseThrow();[m
+[31m-@@ -634,6 +_,15 @@[m
+[32m+[m[32m@@ -638,6 +_,15 @@[m
+              }[m
+  [m
+              public void encode(RegistryFriendlyByteBuf output, HolderSet<T> value) {[m
+[1mdiff --git a/patches/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java.patch b/patches/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..c7d389f99[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java.patch[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32m--- a/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java[m
+[32m+[m[32m+++ b/net/minecraft/network/protocol/game/ClientboundUpdateAttributesPacket.java[m
+[32m+[m[32m@@ -20,7 +_,7 @@[m
+[32m+[m[32m     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateAttributesPacket> STREAM_CODEC = StreamCodec.composite([m
+[32m+[m[32m         ByteBufCodecs.VAR_INT,[m
+[32m+[m[32m         ClientboundUpdateAttributesPacket::getEntityId,[m
+[32m+[m[32m-        ClientboundUpdateAttributesPacket.AttributeSnapshot.STREAM_CODEC.apply(ByteBufCodecs.list(128)),[m
+[32m+[m[32m+        ClientboundUpdateAttributesPacket.AttributeSnapshot.STREAM_CODEC.apply(ByteBufCodecs.list()),[m
+[32m+[m[32m         ClientboundUpdateAttributesPacket::getValues,[m
+[32m+[m[32m         ClientboundUpdateAttributesPacket::new[m
+[32m+[m[32m     );[m
+[1mdiff --git a/patches/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java.patch b/patches/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..d4b8b208e[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java.patch[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32m--- a/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java[m
+[32m+[m[32m+++ b/net/minecraft/network/protocol/game/ServerboundDebugSubscriptionRequestPacket.java[m
+[32m+[m[32m@@ -14,7 +_,7 @@[m
+[32m+[m[32m     private static final StreamCodec<RegistryFriendlyByteBuf, Set<DebugSubscription<?>>> SET_STREAM_CODEC = ByteBufCodecs.registry([m
+[32m+[m[32m             Registries.DEBUG_SUBSCRIPTION[m
+[32m+[m[32m         )[m
+[32m+[m[32m-        .apply(ByteBufCodecs.collection(ReferenceOpenHashSet::new, 32));[m
+[32m+[m[32m+        .apply(ByteBufCodecs.collection(ReferenceOpenHashSet::new));[m
+[32m+[m[32m     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDebugSubscriptionRequestPacket> STREAM_CODEC = SET_STREAM_CODEC.map([m
+[32m+[m[32m         ServerboundDebugSubscriptionRequestPacket::new, ServerboundDebugSubscriptionRequestPacket::subscriptions[m
+[32m+[m[32m     );[m
+[1mdiff --git a/patches/net/minecraft/server/network/ServerGamePacketListenerImpl.java.patch b/patches/net/minecraft/server/network/ServerGamePacketListenerImpl.java.patch[m
+[1mindex 596737379..9840c5cdf 100644[m
+[1m--- a/patches/net/minecraft/server/network/ServerGamePacketListenerImpl.java.patch[m
+[1m+++ b/patches/net/minecraft/server/network/ServerGamePacketListenerImpl.java.patch[m
+[36m@@ -120,7 +120,15 @@[m
+                              ItemStack awardedForStack = success.wasItemInteraction() ? usedItemStack : ItemStack.EMPTY;[m
+                              CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(this.player, awardedForStack, target);[m
+                              if (success.swingSource() == InteractionResult.SwingSource.SERVER) {[m
+[31m-@@ -2076,14 +_,16 @@[m
+[32m+[m[32m@@ -1908,6 +_,7 @@[m
+[32m+[m[32m                     this.restartClientLoadTimerAfterRespawn();[m
+[32m+[m[32m                     if (this.server.isHardcore()) {[m
+[32m+[m[32m                         this.player.setGameMode(GameType.SPECTATOR);[m
+[32m+[m[32m+                        this.player.level().getGameRules().set(GameRules.SPECTATORS_GENERATE_CHUNKS, false, this.server);[m
+[32m+[m[32m                     }[m
+[32m+[m[32m                 }[m
+[32m+[m[32m                 break;[m
+[32m+[m[32m@@ -2075,14 +_,16 @@[m
+      @Override[m
+      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {[m
+          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());[m
+[36m@@ -138,7 +146,7 @@[m
+          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {[m
+              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));[m
+          }[m
+[31m-@@ -2160,7 +_,7 @@[m
+[32m+[m[32m@@ -2159,7 +_,7 @@[m
+          this.connection[m
+              .setupInboundProtocol([m
+                  ConfigurationProtocols.SERVERBOUND,[m
+[36m@@ -147,7 +155,7 @@[m
+              );[m
+      }[m
+  [m
+[31m-@@ -2194,6 +_,7 @@[m
+[32m+[m[32m@@ -2193,6 +_,7 @@[m
+  [m
+      @Override[m
+      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {[m
+[1mdiff --git a/patches/net/minecraft/util/datafix/DataFixers.java.patch b/patches/net/minecraft/util/datafix/DataFixers.java.patch[m
+[1mindex 882a0875e..7e7b734cf 100644[m
+[1m--- a/patches/net/minecraft/util/datafix/DataFixers.java.patch[m
+[1m+++ b/patches/net/minecraft/util/datafix/DataFixers.java.patch[m
+[36m@@ -1,6 +1,14 @@[m
+ --- a/net/minecraft/util/datafix/DataFixers.java[m
+ +++ b/net/minecraft/util/datafix/DataFixers.java[m
+[31m-@@ -1376,10 +_,35 @@[m
+[32m+[m[32m@@ -410,7 +_,6 @@[m
+[32m+[m[32m import net.minecraft.util.filefix.fixes.LegacyStructureFileFix;[m
+[32m+[m[32m import net.minecraft.util.filefix.fixes.LevelDatToSavedDataFileFix;[m
+[32m+[m[32m import net.minecraft.util.filefix.fixes.PlayerStorageFileFix;[m
+[32m+[m[32m-import net.minecraft.util.filefix.fixes.ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix;[m
+[32m+[m[32m import net.minecraft.util.filefix.fixes.RemoveObsoleteFilesFileFix;[m
+[32m+[m[32m import net.minecraft.util.filefix.fixes.ResourcePackLocationFileFix;[m
+[32m+[m[41m [m
+[32m+[m[32m@@ -1377,10 +_,35 @@[m
+          Schema v3800 = fixerUpper.addSchema(3800, SAME_NAMESPACED);[m
+          UnaryOperator<String> scuteRenamer = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));[m
+          fixerUpper.addFixer(ItemRenameFix.create(v3800, "Rename scute item to turtle_scute", scuteRenamer));[m
+[36m@@ -36,7 +44,7 @@[m
+          Schema v3807 = fixerUpper.addSchema(3807, V3807::new);[m
+          fixerUpper.addFixer(new AddNewChoices(v3807, "Added Vault", References.BLOCK_ENTITY));[m
+          Schema v3807_1 = fixerUpper.addSchema(3807, 1, SAME_NAMESPACED);[m
+[31m-@@ -1402,6 +_,18 @@[m
+[32m+[m[32m@@ -1403,6 +_,18 @@[m
+                  v3814, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")[m
+              )[m
+          );[m
+[36m@@ -55,3 +63,12 @@[m
+          Schema v3816 = fixerUpper.addSchema(3816, V3816::new);[m
+          fixerUpper.addFixer(new AddNewChoices(v3816, "Added Bogged", References.ENTITY));[m
+          Schema v3818 = fixerUpper.addSchema(3818, V3818::new);[m
+[32m+[m[32m@@ -1642,8 +_,6 @@[m
+[32m+[m[32m         fixerUpper.addFixer(new RenameNameplateToNameTagFix(v4888));[m
+[32m+[m[32m         Schema v4892 = fixerUpper.addSchema(4892, SAME_NAMESPACED);[m
+[32m+[m[32m         fixerUpper.addFixer(new OptionsForceDefaultGraphicsApiFix(v4892));[m
+[32m+[m[32m-        Schema v4899 = fileFixerUpper.addSchema(fixerUpper, 4899, SAME_NAMESPACED);[m
+[32m+[m[32m-        fileFixerUpper.addFixer(new ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix(v4899));[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     private static UnaryOperator<String> createRenamerNoNamespace(Map<String, String> map) {[m
+[1mdiff --git a/patches/net/minecraft/util/filefix/fixes/ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix.java.patch b/patches/net/minecraft/util/filefix/fixes/ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix.java.patch[m
+[1mnew file mode 100644[m
+[1mindex 000000000..5d0102eea[m
+[1m--- /dev/null[m
+[1m+++ b/patches/net/minecraft/util/filefix/fixes/ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix.java.patch[m
+[36m@@ -0,0 +1,53 @@[m
+[32m+[m[32m--- a/net/minecraft/util/filefix/fixes/ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix.java[m
+[32m+[m[32m+++ /dev/null[m
+[32m+[m[32m@@ -1,50 +_,0 @@[m
+[32m+[m[32m-package net.minecraft.util.filefix.fixes;[m
+[32m+[m[32m-[m
+[32m+[m[32m-import com.mojang.datafixers.schemas.Schema;[m
+[32m+[m[32m-import com.mojang.serialization.Dynamic;[m
+[32m+[m[32m-import java.util.Optional;[m
+[32m+[m[32m-import net.minecraft.nbt.Tag;[m
+[32m+[m[32m-import net.minecraft.util.datafix.fixes.References;[m
+[32m+[m[32m-import net.minecraft.util.filefix.FileFix;[m
+[32m+[m[32m-import net.minecraft.util.filefix.access.FileAccess;[m
+[32m+[m[32m-import net.minecraft.util.filefix.access.FileRelation;[m
+[32m+[m[32m-import net.minecraft.util.filefix.access.FileResourceTypes;[m
+[32m+[m[32m-import net.minecraft.util.filefix.access.LevelDat;[m
+[32m+[m[32m-import net.minecraft.util.filefix.access.SavedDataNbt;[m
+[32m+[m[32m-import net.minecraft.util.worldupdate.UpgradeProgress;[m
+[32m+[m[32m-[m
+[32m+[m[32m-public class ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix extends FileFix {[m
+[32m+[m[32m-    public ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix(Schema schema) {[m
+[32m+[m[32m-        super(schema);[m
+[32m+[m[32m-    }[m
+[32m+[m[32m-[m
+[32m+[m[32m-    @Override[m
+[32m+[m[32m-    public void makeFixer() {[m
+[32m+[m[32m-        this.addFileContentFix([m
+[32m+[m[32m-            files -> {[m
+[32m+[m[32m-                FileAccess<LevelDat> levelDat = files.getFileAccess(FileResourceTypes.LEVEL_DAT, FileRelation.ORIGIN.forFile("level.dat"));[m
+[32m+[m[32m-                FileAccess<SavedDataNbt> gameRules = files.getFileAccess([m
+[32m+[m[32m-                    FileResourceTypes.savedData(References.SAVED_DATA_GAME_RULES), FileRelation.DATA.forFile("minecraft/game_rules.dat")[m
+[32m+[m[32m-                );[m
+[32m+[m[32m-                return upgradeProgress -> {[m
+[32m+[m[32m-                    upgradeProgress.setType(UpgradeProgress.Type.FILES);[m
+[32m+[m[32m-                    Optional<Dynamic<Tag>> levelDatData = levelDat.getOnlyFile().read();[m
+[32m+[m[32m-                    if (!levelDatData.isEmpty()) {[m
+[32m+[m[32m-                        Dynamic<?> data = levelDatData.get();[m
+[32m+[m[32m-                        boolean wasEverLoadedInSingleplayer = data.get("singleplayer_uuid").get().isSuccess();[m
+[32m+[m[32m-                        if (wasEverLoadedInSingleplayer) {[m
+[32m+[m[32m-                            boolean hardcore = data.get("difficulty_settings").orElseEmptyMap().get("hardcore").asBoolean(false);[m
+[32m+[m[32m-                            if (hardcore) {[m
+[32m+[m[32m-                                SavedDataNbt gameRulesFile = gameRules.getOnlyFile();[m
+[32m+[m[32m-                                gameRulesFile.read()[m
+[32m+[m[32m-                                    .ifPresent([m
+[32m+[m[32m-                                        dataTag -> gameRulesFile.write(dataTag.update("minecraft:spectators_generate_chunks", old -> old.createBoolean(true)))[m
+[32m+[m[32m-                                    );[m
+[32m+[m[32m-                            }[m
+[32m+[m[32m-                        }[m
+[32m+[m[32m-                    }[m
+[32m+[m[32m-                };[m
+[32m+[m[32m-            }[m
+[32m+[m[32m-        );[m
+[32m+[m[32m-    }[m
+[32m+[m[32m-}[m
+[1mdiff --git a/patches/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java.patch b/patches/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java.patch[m
+[1mindex 00a8e7ddc..09dca4047 100644[m
+[1m--- a/patches/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java.patch[m
+[1m+++ b/patches/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java.patch[m
+[36m@@ -1,6 +1,14 @@[m
+ --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java[m
+ +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java[m
+[31m-@@ -149,8 +_,19 @@[m
+[32m+[m[32m@@ -61,7 +_,6 @@[m
+[32m+[m[32m     private static final float SITTING_ALLOWED_DAMAGE_PERCENTAGE = 0.25F;[m
+[32m+[m[32m     private static final String DRAGON_DEATH_TIME_KEY = "DragonDeathTime";[m
+[32m+[m[32m     private static final String DRAGON_PHASE_KEY = "DragonPhase";[m
+[32m+[m[32m-    private static final String SITTING_DAMAGE_RECEIVED_KEY = "sitting_damage_received";[m
+[32m+[m[32m     private static final int DEFAULT_DEATH_TIME = 0;[m
+[32m+[m[32m     public final DragonFlightHistory flightHistory = new DragonFlightHistory();[m
+[32m+[m[32m     private final EnderDragonPart[] subEntities;[m
+[32m+[m[32m@@ -150,8 +_,19 @@[m
+          entityData.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());[m
+      }[m
+  [m
+[36m@@ -20,7 +28,7 @@[m
+          this.processFlappingMovement();[m
+          if (this.level().isClientSide()) {[m
+              this.setHealth(this.getHealth());[m
+[31m-@@ -435,7 +_,7 @@[m
+[32m+[m[32m@@ -436,7 +_,7 @@[m
+                      BlockPos blockPos = new BlockPos(x, y, z);[m
+                      BlockState state = level.getBlockState(blockPos);[m
+                      if (!state.isAir() && !state.is(BlockTags.DRAGON_TRANSPARENT)) {[m
+[36m@@ -29,7 +37,7 @@[m
+                              destroyedBlock = level.removeBlock(blockPos, false) || destroyedBlock;[m
+                          } else {[m
+                              hitWall = true;[m
+[31m-@@ -539,7 +_,8 @@[m
+[32m+[m[32m@@ -540,7 +_,8 @@[m
+  [m
+          if (this.level() instanceof ServerLevel level) {[m
+              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {[m
+[36m@@ -39,7 +47,7 @@[m
+              }[m
+  [m
+              if (this.dragonDeathTime == 1 && !this.isSilent()) {[m
+[31m-@@ -557,7 +_,8 @@[m
+[32m+[m[32m@@ -558,7 +_,8 @@[m
+  [m
+          if (this.dragonDeathTime >= 200 && this.level() instanceof ServerLevel level) {[m
+              if (level.getGameRules().get(GameRules.MOB_DROPS)) {[m
+[36m@@ -49,7 +57,23 @@[m
+              }[m
+  [m
+              if (this.dragonFight != null) {[m
+[31m-@@ -864,8 +_,19 @@[m
+[32m+[m[32m@@ -749,7 +_,6 @@[m
+[32m+[m[32m         super.addAdditionalSaveData(output);[m
+[32m+[m[32m         output.putInt("DragonPhase", this.phaseManager.getCurrentPhase().getPhase().getId());[m
+[32m+[m[32m         output.putInt("DragonDeathTime", this.dragonDeathTime);[m
+[32m+[m[32m-        output.putFloat("sitting_damage_received", this.sittingDamageReceived);[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     @Override[m
+[32m+[m[32m@@ -757,7 +_,6 @@[m
+[32m+[m[32m         super.readAdditionalSaveData(input);[m
+[32m+[m[32m         input.getInt("DragonPhase").ifPresent(phaseId -> this.phaseManager.setPhase(EnderDragonPhase.getById(phaseId)));[m
+[32m+[m[32m         this.dragonDeathTime = input.getIntOr("DragonDeathTime", 0);[m
+[32m+[m[32m-        this.sittingDamageReceived = input.getFloatOr("sitting_damage_received", 0.0F);[m
+[32m+[m[32m     }[m
+[32m+[m[41m [m
+[32m+[m[32m     @Override[m
+[32m+[m[32m@@ -867,8 +_,19 @@[m
+      }[m
+  [m
+      @Override[m

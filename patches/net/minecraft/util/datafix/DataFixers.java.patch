@@ -1,13 +1,6 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -410,7 +_,6 @@
- import net.minecraft.util.filefix.fixes.LegacyStructureFileFix;
- import net.minecraft.util.filefix.fixes.LevelDatToSavedDataFileFix;
- import net.minecraft.util.filefix.fixes.PlayerStorageFileFix;
--import net.minecraft.util.filefix.fixes.ReenableSpectatorsGenerateChunksInHardcoreWorldsFileFix;
- import net.minecraft.util.filefix.fixes.RemoveObsoleteFilesFileFix;
- import net.minecraft.util.filefix.fixes.ResourcePackLocationFileFix;
- 
+
 @@ -1377,10 +_,35 @@
          Schema v3800 = fixerUpper.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> scuteRenamer = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
