@@ -136,7 +136,7 @@
          }
      }
  
-@@ -2105,6 +_,11 @@
+@@ -2109,6 +_,11 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
  
@@ -148,7 +148,7 @@
              this.addAdditionalSaveData(output);
              if (this.isVehicle()) {
                  ValueOutput.ValueOutputList passengersList = output.childrenList("Passengers");
-@@ -2169,6 +_,8 @@
+@@ -2173,6 +_,8 @@
                  this.setTicksFrozen(input.getIntOr("TicksFrozen", 0));
                  this.hasVisualFire = input.getBooleanOr("HasVisualFire", false);
                  this.customData = input.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
@@ -157,7 +157,7 @@
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  this.readAdditionalSaveData(input);
-@@ -2218,6 +_,8 @@
+@@ -2222,6 +_,8 @@
  
          ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
          entity.setDefaultPickUpDelay();
@@ -166,7 +166,7 @@
          level.addFreshEntity(entity);
          return entity;
      }
-@@ -2275,11 +_,11 @@
+@@ -2279,11 +_,11 @@
          }
  
          ItemStack heldItem = player.getItemInHand(hand);
@@ -180,7 +180,7 @@
              && target.canShearEquipment(player)
              && !player.isSecondaryUseActive()
              && target.attemptToShearEquipment(player, hand, heldItem)) {
-@@ -2363,7 +_,11 @@
+@@ -2367,7 +_,11 @@
  
      public void rideTick() {
          this.setDeltaMovement(Vec3.ZERO);
@@ -193,7 +193,7 @@
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
          }
-@@ -2428,6 +_,7 @@
+@@ -2432,6 +_,7 @@
              }
          }
  
@@ -201,7 +201,7 @@
          if (force || this.canRide(entityToRide) && entityToRide.canAddPassenger(this)) {
              if (this.isPassenger()) {
                  this.stopRiding();
-@@ -2462,6 +_,7 @@
+@@ -2466,6 +_,7 @@
      public void removeVehicle() {
          if (this.vehicle != null) {
              Entity oldVehicle = this.vehicle;
@@ -209,7 +209,7 @@
              this.vehicle = null;
              oldVehicle.removePassenger(this);
              Entity.RemovalReason removalReason = this.getRemovalReason();
-@@ -2512,6 +_,8 @@
+@@ -2516,6 +_,8 @@
          return this.passengers.isEmpty();
      }
  
@@ -218,7 +218,7 @@
      protected boolean couldAcceptPassenger() {
          return true;
      }
-@@ -2824,7 +_,7 @@
+@@ -2828,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
  
@@ -227,7 +227,7 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -2943,7 +_,7 @@
+@@ -2947,7 +_,7 @@
      }
  
      protected Component getTypeName() {
@@ -236,7 +236,7 @@
      }
  
      public boolean is(Entity other) {
-@@ -2998,10 +_,11 @@
+@@ -3002,10 +_,11 @@
      }
  
      protected final boolean isInvulnerableToBase(DamageSource source) {
@@ -249,7 +249,7 @@
      }
  
      public boolean isInvulnerable() {
-@@ -3032,6 +_,7 @@
+@@ -3036,6 +_,7 @@
      }
  
      public @Nullable Entity teleport(TeleportTransition transition) {
@@ -257,7 +257,7 @@
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3254,6 +_,7 @@
+@@ -3258,6 +_,7 @@
          return this.stringUUID;
      }
  
@@ -265,7 +265,7 @@
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -3365,6 +_,8 @@
+@@ -3369,6 +_,8 @@
          EntityDimensions oldDim = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions newDim = this.getDimensions(pose);
@@ -274,7 +274,7 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3806,6 +_,10 @@
+@@ -3810,6 +_,10 @@
                  }
              }
          }
@@ -285,7 +285,7 @@
      }
  
      public void checkDespawn() {
-@@ -3946,6 +_,90 @@
+@@ -3950,6 +_,90 @@
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
          return true;
