@@ -49,10 +49,13 @@
              }
  
              if (this.dragonFight != null) {
-@@ -867,8 +_,19 @@
-     }
- 
+@@ -864,6 +_,16 @@
      @Override
+     public boolean canUsePortal(boolean ignorePassenger) {
+         return false;
++    }
++
++    @Override
 +    public boolean isMultipartEntity() {
 +        return true;
 +    }
@@ -60,12 +63,6 @@
 +    @Override
 +    public net.neoforged.neoforge.entity.PartEntity<?>[] getParts() {
 +        return this.subEntities;
-+    }
-+
-+    @Override
-     public void recreateFromPacket(ClientboundAddEntityPacket packet) {
-         super.recreateFromPacket(packet);
-+        if (true) return; // Forge: Fix MC-158205: Moved into setId()
-         EnderDragonPart[] subEntities = this.getSubEntities();
+     }
  
-         for (int i = 0; i < subEntities.length; i++) {
+     @Override
