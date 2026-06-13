@@ -128,7 +128,7 @@
          return this;
      }
  
-@@ -1184,8 +_,20 @@
+@@ -1184,8 +_,19 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos pos) {
@@ -141,7 +141,6 @@
 +        }
 +
 +        // Start vanilla code
-+
          Direction direction = this.level().getBlockState(pos).getValue(HorizontalDirectionalBlock.FACING);
 -        if (!this.isSleeping() && this.isAlive()) {
 +        if (this.isSleeping() || !this.isAlive()) {
@@ -150,17 +149,23 @@
              BedRule rule = this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
              boolean canSleep = rule.canSleep(this.level());
              boolean canSetSpawn = rule.canSetSpawn(this.level());
-@@ -1225,7 +_,13 @@
-                     return Either.left(Player.BedSleepingProblem.NOT_SAFE);
+@@ -1226,6 +_,19 @@
                  }
              }
+ 
 +            // End vanilla code
 +        }
-+            return Either.right(Unit.INSTANCE);
++        return Either.right(Unit.INSTANCE);
 +        }).get();
++
++        // Neo: Fire the event, and return the error if one exists
++        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, pos, vanillaResult);
++        if (vanillaResult.left().isPresent()) {
++            return vanillaResult;
++        }
++
 +        {
- 
-+            // Start vanilla code
++            // Neo: Continue with the vanilla code to start sleeping
              Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(pos).ifRight(unit -> {
                  this.awardStat(Stats.SLEEP_IN_BED);
                  CriteriaTriggers.SLEPT_IN_BED.trigger(this);
