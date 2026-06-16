@@ -226,14 +226,7 @@ generateAccessTransformers {
     methodGroup(
             'recipe criteria', PROTECTED,
             named('net/minecraft/data/recipes/RecipeProvider'),
-            methodsReturning('net/minecraft/advancements/Criterion')
-    )
-
-    // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
-    methodGroup(
-            'skeleton step sound', PROTECTED,
-            classesWithSuperclass('net/minecraft/world/entity/monster/skeleton/AbstractSkeleton'),
-            named('getStepSound')
+            methodsReturning('net/minecraft/advancements/triggers/Criterion')
     )
 
     // Make all noise generator setting factories public so mods can use them for custom dimensions

@@ -30,6 +30,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -54,6 +55,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.poi.ExtendPoiTypesEvent;
@@ -164,7 +166,7 @@ public class BlockTests {
             @Override
             public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
                 // have the player respawn a block north to the location of the anchor
-                return Optional.of(ServerPlayer.RespawnPosAngle.of(pos.getCenter().add(0, 1, 1), pos, 0));
+                return Optional.of(ServerPlayer.RespawnPosAngle.of(Vec3.atCenterOf(pos).add(0, 1, 1), pos, 0));
             }
         }).withBlockItem().withLang("Respawn").withDefaultWhiteModel();
 
@@ -175,7 +177,7 @@ public class BlockTests {
                 .thenExecute(player -> helper.useBlock(new BlockPos(1, 2, 1), player))
                 .thenExecute(player -> player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.CHANGED_DIMENSION))
                 .thenExecute(() -> helper.assertEntityPresent(
-                        EntityType.PLAYER,
+                        EntityTypes.PLAYER,
                         1, 3, 2))
                 .thenSucceed());
     }

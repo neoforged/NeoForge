@@ -206,6 +206,8 @@
   "neoforge.configgui.showLoadWarnings.tooltip": "有効にすると、読み込み中に発生した警告が表示されるようになります。",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Skip modded splashes if vanilla splashes are modified",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "When enabled, modded splash texts are skipped from loading if the vanilla splash text file is modified.",
   "neoforge.controlsgui.shift": "Shift + %s",
   "neoforge.controlsgui.control": "Ctrl + %s",
   "neoforge.controlsgui.control.mac": "Cmd + %s",

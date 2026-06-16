@@ -9,10 +9,14 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.math.Transformation;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.resources.model.cuboid.CuboidModel;
+import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.util.context.ContextMap;
@@ -33,6 +37,10 @@ public final class NeoForgeModelProperties {
      * Part visibilities. For models with named parts (i.e. OBJ and composite), this can be specified under the {@code visibility} JSON key
      */
     public static final ContextKey<Map<String, Boolean>> PART_VISIBILITY = ContextKey.vanilla("part_visibility");
+
+    /// Item layer model face data. For item layer models, the values can be specified in the entries of the {@code textures}
+    /// object via the {@code neoforge_data} JSON key
+    public static final ContextKey<Int2ObjectMap<ExtraFaceData>> ITEM_LAYER_FACE_DATA = ContextKey.vanilla("item_layer_face_data");
 
     /**
      * {@return a {@link Transformation} if the {@code transform} key is present, otherwise {@code null}}
@@ -60,6 +68,32 @@ public final class NeoForgeModelProperties {
         return Map.copyOf(partVisibility);
     }
 
+    /// {@return a map of item layer face data entries if the {@code neoforge_data} key is present on at least one entry of the {@code textures} object, otherwise an empty map}
+    public static Int2ObjectMap<ExtraFaceData> deserializeItemLayerFaceData(JsonObject jsonObject) {
+        if (!jsonObject.has("textures")) {
+            return Int2ObjectMaps.emptyMap();
+        }
+
+        JsonObject textures = GsonHelper.getAsJsonObject(jsonObject, "textures");
+        Int2ObjectMap<ExtraFaceData> layerData = new Int2ObjectOpenHashMap<>();
+        for (int layerIndex = 0; layerIndex < ItemModelGenerator.LAYERS.size(); layerIndex++) {
+            String key = ItemModelGenerator.LAYERS.get(layerIndex);
+            if (!textures.has(key) || !textures.get(key).isJsonObject()) {
+                continue;
+            }
+
+            JsonObject textureEntry = textures.getAsJsonObject(key);
+            if (textureEntry.has("neoforge_data")) {
+                JsonObject dataEntry = GsonHelper.getAsJsonObject(textureEntry, "neoforge_data");
+                ExtraFaceData faceData = ExtraFaceData.read(dataEntry, ExtraFaceData.DEFAULT);
+                if (!faceData.equals(ExtraFaceData.DEFAULT)) {
+                    layerData.put(layerIndex, faceData);
+                }
+            }
+        }
+        return layerData.isEmpty() ? Int2ObjectMaps.emptyMap() : Int2ObjectMaps.unmodifiable(layerData);
+    }
+
     /**
      * Puts the given {@linkplain Transformation root transform} into the given builder if present, overwriting any value specified in a parent model
      */
@@ -85,5 +119,26 @@ public final class NeoForgeModelProperties {
             visibility = Map.copyOf(visibility);
             propertiesBuilder.withParameter(NeoForgeModelProperties.PART_VISIBILITY, visibility);
         }
+    }
+
+    /// Puts the given item layer face data into the given builder if present, merging with values from parent models
+    /// on a per-layer basis and overwriting existing layers
+    public static void fillItemLayerFaceData(ContextMap.Builder propertiesBuilder, Int2ObjectMap<ExtraFaceData> layerFaceData) {
+        if (!layerFaceData.isEmpty()) {
+            Int2ObjectMap<ExtraFaceData> faceData = propertiesBuilder.getOptionalParameter(ITEM_LAYER_FACE_DATA);
+            if (faceData != null) {
+                faceData = new Int2ObjectOpenHashMap<>(faceData);
+                faceData.putAll(layerFaceData);
+                faceData = Int2ObjectMaps.unmodifiable(faceData);
+            } else {
+                faceData = layerFaceData;
+            }
+            propertiesBuilder.withParameter(ITEM_LAYER_FACE_DATA, faceData);
+        }
+    }
+
+    /// Retrieves the [ExtraFaceData] for the given layer index from the given properties map
+    public static ExtraFaceData getItemLayerFaceData(ContextMap additionalProperties, int layer) {
+        return additionalProperties.getOrDefault(ITEM_LAYER_FACE_DATA, Int2ObjectMaps.emptyMap()).getOrDefault(layer, ExtraFaceData.DEFAULT);
     }
 }

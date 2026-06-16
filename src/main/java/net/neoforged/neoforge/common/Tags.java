@@ -19,6 +19,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -138,6 +139,8 @@ public class Tags {
          * Equivalent to the "minecraft:flowers" block tag.
          */
         public static final TagKey<Block> FLOWERS = tag("flowers");
+        /// Light-emitting blocks created when a Frog eats a Magma Cube.
+        public static final TagKey<Block> FROGLIGHTS = tag("froglights");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
@@ -652,6 +655,8 @@ public class Tags {
          * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
          */
         public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
+        /// Light-emitting blocks created when a Frog eats a Magma Cube.
+        public static final TagKey<Item> FROGLIGHTS = tag("froglights");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
@@ -1159,9 +1164,26 @@ public class Tags {
          * For enchantments that decrease damage taken or otherwise benefit, in regard to damage, the entity wearing armor enchanted with it.
          */
         public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENTS = tag("entity_defense_enhancements");
+        /**
+         * Tag that holds all enchantments that recipe viewers should not show to users.
+         * Recipe viewers may use this to automatically find the corresponding Enchanted Book to hide.
+         */
+        public static final TagKey<Enchantment> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
 
         private static TagKey<Enchantment> tag(String name) {
             return TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath("c", name));
+        }
+    }
+
+    public static class Potions {
+        /**
+         * Tag that holds all enchantments that recipe viewers should not show to users.
+         * Recipe viewers may use this to automatically find the corresponding Potion items to hide.
+         */
+        public static final TagKey<Potion> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
+
+        private static TagKey<Potion> tag(String name) {
+            return TagKey.create(Registries.POTION, Identifier.fromNamespaceAndPath("c", name));
         }
     }
 

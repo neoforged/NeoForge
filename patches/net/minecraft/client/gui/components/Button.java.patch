@@ -12,7 +12,7 @@
      @Override
      public void onPress(InputWithModifiers input) {
          this.onPress.onPress(this);
-@@ -98,6 +_,10 @@
+@@ -97,6 +_,10 @@
              button.setTooltip(this.tooltip);
              return button;
          }
@@ -22,8 +22,8 @@
 +        }
      }
  
-     @OnlyIn(Dist.CLIENT)
-@@ -114,6 +_,10 @@
+     public interface CreateNarration {
+@@ -110,6 +_,10 @@
      public static class Plain extends Button {
          protected Plain(int x, int y, int width, int height, Component message, Button.OnPress onPress, Button.CreateNarration createNarration) {
              super(x, y, width, height, message, onPress, createNarration);

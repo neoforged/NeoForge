@@ -8,13 +8,13 @@ package net.neoforged.neoforge.client;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.SequencedMap;
 import java.util.Set;
@@ -50,8 +49,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
@@ -83,7 +82,6 @@ import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -182,6 +180,7 @@ import net.neoforged.neoforge.client.event.SelectMusicEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.event.ToastAddEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.WindowResizeEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -221,54 +220,14 @@ public class ClientHooks {
     //private static final Identifier ITEM_GLINT = Identifier.withDefaultNamespace("textures/misc/enchanted_item_glint.png");
 
     /**
-     * Contains the *extra* GUI layers.
-     * The current top layer stays in Minecraft#currentScreen, and the rest serve as a background for it.
-     */
-    private static final Stack<Screen> guiLayers = new Stack<>();
-
-    public static void resizeGuiLayers(int width, int height) {
-        guiLayers.forEach(screen -> screen.resize(width, height));
-    }
-
-    public static void clearGuiLayers(Minecraft minecraft) {
-        while (!guiLayers.isEmpty())
-            popGuiLayerInternal(minecraft);
-    }
-
-    private static void popGuiLayerInternal(Minecraft minecraft) {
-        if (minecraft.screen != null)
-            minecraft.screen.removed();
-        minecraft.screen = guiLayers.pop();
-    }
-
-    public static void pushGuiLayer(Minecraft minecraft, Screen screen) {
-        if (minecraft.screen != null)
-            guiLayers.push(minecraft.screen);
-        minecraft.screen = Objects.requireNonNull(screen);
-        screen.init(minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
-        minecraft.getNarrator().saySystemNow(screen.getNarrationMessage());
-    }
-
-    public static void popGuiLayer(Minecraft minecraft) {
-        if (guiLayers.isEmpty()) {
-            minecraft.setScreen(null);
-            return;
-        }
-
-        popGuiLayerInternal(minecraft);
-        if (minecraft.screen != null)
-            minecraft.getNarrator().saySystemNow(minecraft.screen.getNarrationMessage());
-    }
-
-    /**
-     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * Called by {@link Hud.HeartType#forPlayer} to allow for modification of the displayed heart type in the
      * health bar.
      *
      * @param player    The local {@link Player}
-     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
+     * @param heartType The {@link Hud.HeartType} which would be displayed by vanilla
      * @return The heart type which should be displayed
      */
-    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
+    public static Hud.HeartType firePlayerHeartTypeEvent(Player player, Hud.HeartType heartType) {
         return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
     }
 
@@ -344,8 +303,8 @@ public class ClientHooks {
         return fovModifierEvent.getNewFovModifier();
     }
 
-    public static float getFieldOfView(GameRenderer renderer, Camera camera, float partialTick, float fov, boolean usedConfiguredFov) {
-        ViewportEvent.ComputeFov event = new ViewportEvent.ComputeFov(renderer, camera, partialTick, fov, usedConfiguredFov);
+    public static float getFieldOfView(GameRenderer renderer, Camera camera, float partialTick, float fov) {
+        ViewportEvent.ComputeFov event = new ViewportEvent.ComputeFov(renderer, camera, partialTick, fov);
         NeoForge.EVENT_BUS.post(event);
         return event.getFOV();
     }
@@ -399,18 +358,19 @@ public class ClientHooks {
         return e.getMusic();
     }
 
-    public static void drawScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiLayers.forEach(layer -> {
+    public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        for (Screen layer : backgroundLayers) {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
-            drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
+            extractScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
             guiGraphics.nextStratum();
-        });
-        drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
+        }
+        extractScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    private static void drawScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
+    private static void extractScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled()) {
             screen.extractRenderStateWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
+        }
         NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 
@@ -781,16 +741,16 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
-    public static boolean renderFireOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, MultiBufferSource bufferSource) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), sprites, bufferSource);
+    public static boolean renderFireOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), sprites, submitNodeCollector);
     }
 
-    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, MultiBufferSource bufferSource) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), sprites, bufferSource);
+    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
+        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), sprites, submitNodeCollector);
     }
 
-    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, SpriteGetter sprites, MultiBufferSource bufferSource) {
-        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, sprites, bufferSource)).isCanceled();
+    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
+        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, sprites, submitNodeCollector)).isCanceled();
     }
 
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
@@ -841,7 +801,7 @@ public class ClientHooks {
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
-        mc.gui.initModdedOverlays();
+        mc.gui.hud.initModdedOverlays();
         CustomEnvironmentEffectsRendererManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
@@ -851,6 +811,7 @@ public class ClientHooks {
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
+        DebugScreenEntries.registerModdedDebugEntries();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup
@@ -910,6 +871,10 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
     }
 
+    public static void fireWindowResize(Window window) {
+        NeoForge.EVENT_BUS.post(new WindowResizeEvent(window));
+    }
+
     /**
      * Fires the {@link GatherEffectScreenTooltipsEvent} and returns the resulting tooltip lines.
      * <p>
@@ -927,7 +892,7 @@ public class ClientHooks {
     }
 
     public static void reloadRenderer() {
-        Minecraft.getInstance().levelRenderer.allChanged();
+        Minecraft.getInstance().levelExtractor.allChanged();
     }
 
     public static List<AtlasManager.AtlasConfig> gatherTextureAtlases(List<AtlasManager.AtlasConfig> vanillaAtlases) {
@@ -949,9 +914,9 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static TextureFormat getStencilFormat() {
+    public static GpuFormat getStencilFormat() {
         var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
-        return reducedPrecision ? TextureFormat.DEPTH24_STENCIL8 : TextureFormat.DEPTH32_STENCIL8;
+        return reducedPrecision ? GpuFormat.D24_UNORM_S8_UINT : GpuFormat.D32_FLOAT_S8_UINT;
     }
 
     private static final HashSet<MetadataSectionType<?>> DEFAULT_METADATA_SECTION_TYPES = new HashSet<>();

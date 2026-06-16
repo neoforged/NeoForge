@@ -13,10 +13,10 @@
              level.gameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Context.of(extendedState));
          } else if (b0 == 1 || b0 == 2) {
 +            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, false)) return false;
-             BlockEntity prevBlockEntity = level.getBlockEntity(pos.relative(direction));
-             if (prevBlockEntity instanceof PistonMovingBlockEntity) {
-                 ((PistonMovingBlockEntity)prevBlockEntity).finalTick();
-@@ -219,6 +_,7 @@
+             if (level.getBlockEntity(pos.relative(direction)) instanceof PistonMovingBlockEntity pistonMovingBlockEntity) {
+                 pistonMovingBlockEntity.finalTick();
+             }
+@@ -218,6 +_,7 @@
              level.gameEvent(GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Context.of(movingPistonState));
          }
  
@@ -24,17 +24,19 @@
          return true;
      }
  
-@@ -289,8 +_,7 @@
-                     level.levelEvent(2001, pos, getId(state));
-                 }
- 
--                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 18);
--                level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
-+                state.onDestroyedByPushReaction(level, pos, direction, level.getFluidState(pos));
-                 toUpdate[updateIndex++] = state;
+@@ -297,8 +_,7 @@
+                 level.levelEvent(2001, pos, getId(state));
              }
  
-@@ -362,6 +_,10 @@
+-            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 18);
+-            level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
++            state.onDestroyedByPushReaction(level, pos, direction, level.getFluidState(pos));
+             toUpdate[updateIndex++] = state;
+         }
+ 
+@@ -367,6 +_,10 @@
+     @Override
+     protected BlockState rotate(BlockState state, Rotation rotation) {
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/ListTag.java
 +++ b/net/minecraft/nbt/ListTag.java
-@@ -152,6 +_,15 @@
+@@ -146,6 +_,15 @@
          this(new ArrayList<>());
      }
  

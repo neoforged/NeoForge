@@ -199,7 +199,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
     }
 
     @Override
-    public <D> FluidResource with(DataComponentType<D> type, D data) {
+    public <D> FluidResource with(DataComponentType<D> type, @Nullable D data) {
         if (isEmpty()) return FluidResource.EMPTY;
         if (Objects.equals(get(type), data)) return this;
 
@@ -210,7 +210,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
 
     //This is overridden to return FluidResource to allow method chaining
     @Override
-    public <D> FluidResource with(Supplier<? extends DataComponentType<D>> type, D data) {
+    public <D> FluidResource with(Supplier<? extends DataComponentType<D>> type, @Nullable D data) {
         return with(type.get(), data);
     }
 

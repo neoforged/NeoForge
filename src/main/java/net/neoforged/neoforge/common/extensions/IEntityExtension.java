@@ -14,10 +14,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
@@ -335,18 +336,6 @@ public interface IEntityExtension {
     }
 
     /**
-     * Returns whether this {@link Entity} has custom outline rendering behavior which does
-     * not use the existing automatic outline rendering based on {@link Entity#isCurrentlyGlowing()}
-     * and the entity's team color.
-     *
-     * @param player the local player currently viewing this {@code Entity}
-     * @return {@code true} to enable outline processing
-     */
-    default boolean hasCustomOutlineRendering(Player player) {
-        return false;
-    }
-
-    /**
      * Sends the pairing data to the client.
      *
      * @param serverPlayer  The player to send the data to.
@@ -369,5 +358,22 @@ public interface IEntityExtension {
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
         AttachmentInternals.copyEntityAttachments(other, self(), isDeath);
+    }
+
+    /// Returns the block bounciness for the given block state. Normally between 0 and 1
+    ///
+    /// @param pos Position of the block to query bounciness at
+    /// @param blockState The block state to query bounciness for
+    /// @return The block bounciness for the given block state and position
+    /// @see IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)
+    default double getBlockBounciness(BlockPos pos, BlockState blockState) {
+        // must be kept inine with Entity.getBlockBounciness(Block)
+        var blockBounciness = blockState.getBounceRestitution(self().level(), pos, self());
+
+        if (!(this instanceof LivingEntity)) {
+            blockBounciness *= .8F;
+        }
+
+        return blockBounciness;
     }
 }

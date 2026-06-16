@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/model/ModelTemplates.java
 +++ b/net/minecraft/client/data/models/model/ModelTemplates.java
-@@ -234,18 +_,18 @@
+@@ -249,18 +_,18 @@
      }
  
      public static ModelTemplate create(String id, TextureSlot... slots) {

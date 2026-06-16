@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientDebugSubscriber.java
 +++ b/net/minecraft/client/multiplayer/ClientDebugSubscriber.java
-@@ -64,6 +_,8 @@
+@@ -63,6 +_,8 @@
              addFlag(subscriptions, DebugSubscriptions.VILLAGE_SECTIONS, SharedConstants.DEBUG_VILLAGE_SECTIONS);
          }
  

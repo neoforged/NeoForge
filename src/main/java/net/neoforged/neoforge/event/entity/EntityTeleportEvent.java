@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
@@ -130,18 +132,14 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         }
     }
 
-    /**
-     * EntityTeleportEvent.EnderEntity is fired before an Enderman or Shulker randomly teleports.
-     * <br>
-     * This event is {@link ICancellableEvent}.<br>
-     * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
-     * <br>
-     * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
-     * <br>
-     * If this event is canceled, the entity will not be teleported.
-     */
+    /// Fired before an [EnderMan] or [Shulker] randomly teleports.
+    ///
+    /// For [EnderMan] entities: if the target position is modified to a location where it could not
+    /// normally teleport to, such as by reason of being obstructed with blocks, it will not teleport there even if this event is not canceled.
+    ///
+    /// This event is fired on the [game event bus][NeoForge#EVENT_BUS], only on the [logical server][LogicalSide#SERVER].
+    ///
+    /// This event is [cancellable][ICancellableEvent]. If this event is canceled, the entity will not be teleported.
     public static class EnderEntity extends EntityTeleportEvent implements ICancellableEvent {
         private final LivingEntity entityLiving;
 

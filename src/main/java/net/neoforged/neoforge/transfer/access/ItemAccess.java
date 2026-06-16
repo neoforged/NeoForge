@@ -200,13 +200,13 @@ public interface ItemAccess {
      *
      * @param newResource The resource of the items after the exchange. <strong>Must be non-empty.</strong>
      * @param amount      The amount of items to exchange. <strong>Must be non-negative.</strong>
-     * @param transaction The transaction that this operation is part of.
+     * @param transaction The transaction that this operation is part of. Passing in {@code null} will open a root transaction, and commit it at the end of the method if everything was exchanged.
      * @throws IllegalArgumentException If the given resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @throws IllegalStateException    If the current resource is empty.
      * @return The amount that was exchanged. Between {@code 0} (inclusive, nothing was exchanged) and {@code amount} (inclusive, everything was exchanged).
      */
     @ApiStatus.NonExtendable
-    default int exchange(ItemResource newResource, int amount, TransactionContext transaction) {
+    default int exchange(ItemResource newResource, int amount, @Nullable TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(newResource, amount);
         var currentResource = getResource();
         TransferPreconditions.checkNonEmpty(currentResource);

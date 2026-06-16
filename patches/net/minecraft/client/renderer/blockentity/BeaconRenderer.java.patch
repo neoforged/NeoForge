@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
-@@ -216,4 +_,10 @@
+@@ -197,4 +_,10 @@
      public boolean shouldRender(T blockEntity, Vec3 cameraPosition) {
          return Vec3.atCenterOf(blockEntity.getBlockPos()).multiply(1.0, 0.0, 1.0).closerThan(cameraPosition.multiply(1.0, 0.0, 1.0), this.getViewDistance());
      }

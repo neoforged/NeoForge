@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -615,8 +_,7 @@
+@@ -620,8 +_,7 @@
      }
  
      protected void waxRecipes(FeatureFlagSet flagSet) {
@@ -10,7 +10,7 @@
              .forEach(
                  (block, waxedBlock) -> {
                      if (waxedBlock.requiredFeatures().isSubsetOf(flagSet)) {
-@@ -828,6 +_,10 @@
+@@ -849,6 +_,10 @@
          return Ingredient.of(this.items.getOrThrow(id));
      }
  
@@ -21,29 +21,25 @@
      protected ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike item) {
          return ShapedRecipeBuilder.shaped(this.items, category, item);
      }
-@@ -877,18 +_,14 @@
-                         final Set<ResourceKey<Recipe<?>>> allRecipes = Sets.newHashSet();
+@@ -899,14 +_,14 @@
                          final List<CompletableFuture<?>> tasks = new ArrayList<>();
                          RecipeOutput recipeOutput = new RecipeOutput() {
--                            {
--                                Objects.requireNonNull(Runner.this);
--                            }
--
                              @Override
 -                            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder) {
 +                            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
                                  if (!allRecipes.add(id)) {
                                      throw new IllegalStateException("Duplicate recipe " + id.identifier());
-                                 } else {
--                                    this.saveRecipe(id, recipe);
-+                                    this.saveRecipe(id, recipe, conditions);
-                                     if (advancementHolder != null) {
--                                        this.saveAdvancement(advancementHolder);
-+                                        this.saveAdvancement(advancementHolder, conditions);
-                                     }
+                                 }
+ 
+-                                this.saveRecipe(id, recipe);
++                                this.saveRecipe(id, recipe, conditions);
+                                 if (advancementHolder != null) {
+-                                    this.saveAdvancement(advancementHolder);
++                                    this.saveAdvancement(advancementHolder, conditions);
                                  }
                              }
-@@ -907,13 +_,19 @@
+ 
+@@ -924,13 +_,19 @@
                              }
  
                              private void saveRecipe(ResourceKey<Recipe<?>> id, Recipe<?> recipe) {

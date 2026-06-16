@@ -45,6 +45,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -417,7 +418,11 @@ public class MutableQuadTests {
         }
     }
 
-    static class MockModelBaker implements ModelBaker, MaterialBaker, ModelBaker.Interner {
+    static class MockModelBaker extends MaterialBaker implements ModelBaker, ModelBaker.Interner {
+        public MockModelBaker() {
+            super(new MockSprite());
+        }
+
         @Override
         public ResolvedModel getModel(Identifier location) {
             throw new UnsupportedOperationException();
@@ -444,7 +449,7 @@ public class MutableQuadTests {
         }
 
         @Override
-        public Material.Baked get(Material material, ModelDebugName name) {
+        protected Material.@Nullable Baked bake(Material material) {
             return new Material.Baked(new MockSprite(), false);
         }
 

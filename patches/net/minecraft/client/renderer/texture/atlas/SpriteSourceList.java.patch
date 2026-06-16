@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
-@@ -35,7 +_,15 @@
+@@ -34,7 +_,15 @@
          this.sources = sources;
      }
  
@@ -15,8 +15,8 @@
 +    public List<SpriteSource.Loader> list(ResourceManager resourceManager, java.util.Set<net.minecraft.server.packs.metadata.MetadataSectionType<?>> additionalMetadata) {
          final Map<Identifier, SpriteSource.DiscardableLoader> sprites = new HashMap<>();
          SpriteSource.Output output = new SpriteSource.Output() {
-             {
-@@ -63,7 +_,7 @@
+             @Override
+@@ -58,7 +_,7 @@
                  }
              }
          };

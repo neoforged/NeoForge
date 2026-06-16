@@ -28,8 +28,8 @@ public class CustomParticleTypeTest {
 
     @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
-        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE");
-        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO");
+        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE", "CT1");
+        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO", "CT2");
 
         private static class CustomParticle extends TerrainParticle {
             public CustomParticle(ClientLevel level, double x, double y, double z) {

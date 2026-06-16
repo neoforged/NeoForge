@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemModelResolver;
@@ -108,7 +108,7 @@ public class StencilEnableTest {
             }
             event.registerAboveAll(
                     Identifier.fromNamespaceAndPath(MOD_ID, "block_outline"),
-                    (guiGraphics, delta) -> {
+                    (guiGraphics, _) -> {
                         ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
 
                         TrackingItemStackRenderState maskState = new TrackingItemStackRenderState();
@@ -128,27 +128,22 @@ public class StencilEnableTest {
     }
 
     private static final class StenciledItemPictureInPictureRenderer extends PictureInPictureRenderer<StenciledItemPictureInPictureRenderState> {
-        StenciledItemPictureInPictureRenderer(MultiBufferSource.BufferSource bufferSource) {
-            super(bufferSource);
-        }
-
         @Override
-        protected void renderToTexture(StenciledItemPictureInPictureRenderState state, PoseStack poseStack) {
-            Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
+        protected void renderToTexture(StenciledItemPictureInPictureRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+            Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
             poseStack.scale(1, -1, -1);
             float scale = state.scale;
-            FeatureRenderDispatcher dispatcher = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
-            SubmitNodeStorage store = dispatcher.getSubmitNodeStorage();
+            FeatureRenderDispatcher dispatcher = Minecraft.getInstance().gameRenderer.featureRenderDispatcher();
             RenderSystem.pushPipelineModifier(STENCIL_FILL_KEY);
             {
-                state.maskRenderState.submit(poseStack, store, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+                state.maskRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                 poseStack.pushPose();
                 poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskRenderState.submit(poseStack, store, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+                state.maskRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                dispatcher.renderAllFeatures();
+                dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
             }
             RenderSystem.popPipelineModifier();
 
@@ -157,14 +152,14 @@ public class StencilEnableTest {
                 poseStack.scale(1.1F, 1.1F, 1.1F);
                 poseStack.translate(-.5F / scale, .5F / scale, 0);
 
-                state.maskedRenderState.submit(poseStack, store, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+                state.maskedRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
                 poseStack.pushPose();
                 poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskedRenderState.submit(poseStack, store, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+                state.maskedRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                dispatcher.renderAllFeatures();
+                dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
             }
             RenderSystem.popPipelineModifier();
         }

@@ -1,6 +1,24 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -246,6 +_,10 @@
+@@ -209,7 +_,7 @@
+             result.add(
+                 jigsaw.withInfo(
+                     new StructureTemplate.StructureBlockInfo(
+-                        calculateRelativePosition(settings, blockInfo.pos()).offset(position), blockInfo.state.rotate(settings.getRotation()), blockInfo.nbt
++                        calculateRelativePosition(settings, blockInfo.pos()).offset(position), blockInfo.state.rotate(settings.getRotation()), net.neoforged.neoforge.common.CommonHooks.captureStructureRotation(blockInfo.nbt, rotation)
+                     )
+                 )
+             );
+@@ -228,7 +_,7 @@
+         for (StructureTemplate.StructureBlockInfo blockInfo : settings.getRandomPalette(this.palettes, position).blocks(block)) {
+             BlockPos blockPos = absolute ? calculateRelativePosition(settings, blockInfo.pos).offset(position) : blockInfo.pos;
+             if (boundingBox == null || boundingBox.isInside(blockPos)) {
+-                result.add(new StructureTemplate.StructureBlockInfo(blockPos, blockInfo.state.rotate(settings.getRotation()), blockInfo.nbt));
++                result.add(new StructureTemplate.StructureBlockInfo(blockPos, blockInfo.state.rotate(settings.getRotation()), net.neoforged.neoforge.common.CommonHooks.captureStructureRotation(blockInfo.nbt, settings.getRotation())));
+             }
+         }
+ 
+@@ -245,6 +_,10 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
  
@@ -12,33 +30,41 @@
          ServerLevelAccessor level,
          BlockPos position,
 @@ -272,7 +_,7 @@
-                 int maxX = Integer.MIN_VALUE;
-                 int maxY = Integer.MIN_VALUE;
-                 int maxZ = Integer.MIN_VALUE;
--                List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList);
-+                List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList, this);
+             int maxX = Integer.MIN_VALUE;
+             int maxY = Integer.MIN_VALUE;
+             int maxZ = Integer.MIN_VALUE;
+-            List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList);
++            List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList, this);
  
-                 try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
-                     for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
-@@ -387,16 +_,7 @@
-                     }
+             try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
+                 for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
+@@ -302,6 +_,7 @@
+                                     blockEntity.loadWithComponents(
+                                         TagValueInput.create(reporter.forChild(blockEntity.problemPath()), level.registryAccess(), blockInfo.nbt)
+                                     );
++                                    net.neoforged.neoforge.common.CommonHooks.applyStructureRotation(blockEntity, blockInfo.nbt, settings);
+                                 }
+                             }
  
-                     if (!settings.isIgnoreEntities()) {
--                        this.placeEntities(
--                            level,
--                            position,
--                            settings.getMirror(),
--                            settings.getRotation(),
--                            settings.getRotationPivot(),
--                            boundingBox,
--                            settings.shouldFinalizeEntities(),
--                            reporter
--                        );
-+                        this.addEntitiesToWorld(level, position, settings, reporter);
-                     }
+@@ -386,16 +_,7 @@
                  }
  
-@@ -431,6 +_,10 @@
+                 if (!settings.isIgnoreEntities()) {
+-                    this.placeEntities(
+-                        level,
+-                        position,
+-                        settings.getMirror(),
+-                        settings.getRotation(),
+-                        settings.getRotationPivot(),
+-                        boundingBox,
+-                        settings.shouldFinalizeEntities(),
+-                        reporter
+-                    );
++                    this.addEntitiesToWorld(level, position, settings, reporter);
+                 }
+             }
+ 
+@@ -429,6 +_,10 @@
          });
      }
  
@@ -49,7 +75,7 @@
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -438,6 +_,10 @@
+@@ -436,6 +_,10 @@
          StructurePlaceSettings settings,
          List<StructureTemplate.StructureBlockInfo> blockInfoList
      ) {
@@ -59,17 +85,17 @@
 +    public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(ServerLevelAccessor level, BlockPos position, BlockPos referencePos, StructurePlaceSettings settings, List<StructureTemplate.StructureBlockInfo> blockInfoList, @Nullable StructureTemplate template) {
          List<StructureTemplate.StructureBlockInfo> originalBlockInfoList = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = new ArrayList<>();
+         boolean processOnlyInCurrentChunk = true;
+@@ -458,7 +_,7 @@
+                 Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
  
-@@ -449,7 +_,7 @@
-             Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
+                 while (processedBlockInfo != null && iterator.hasNext()) {
+-                    processedBlockInfo = iterator.next().processBlock(level, position, referencePos, blockInfo.pos, processedBlockInfo, settings);
++                    processedBlockInfo = iterator.next().process(level, position, referencePos, blockInfo, processedBlockInfo, settings, template);
+                 }
  
-             while (processedBlockInfo != null && iterator.hasNext()) {
--                processedBlockInfo = iterator.next().processBlock(level, position, referencePos, blockInfo, processedBlockInfo, settings);
-+                processedBlockInfo = iterator.next().process(level, position, referencePos, blockInfo, processedBlockInfo, settings, template);
-             }
- 
-             if (processedBlockInfo != null) {
-@@ -465,22 +_,30 @@
+                 if (processedBlockInfo != null) {
+@@ -475,22 +_,30 @@
          return processedBlockInfoList;
      }
  
@@ -115,7 +141,7 @@
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
-@@ -488,12 +_,12 @@
+@@ -498,12 +_,12 @@
                  tag.put("Pos", posTag);
                  tag.remove("UUID");
                  createEntityIgnoreException(problemReporter, level, tag).ifPresent(entity -> {
@@ -131,7 +157,7 @@
                          mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos)), EntitySpawnReason.STRUCTURE, null);
                      }
  
-@@ -823,7 +_,7 @@
+@@ -817,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

@@ -70,6 +70,11 @@ public class NotHolderSet<T> implements ICustomHolderSet<T> {
     }
 
     @Override
+    public boolean isImmediatelyResolvable() {
+        return value.isImmediatelyResolvable();
+    }
+
+    @Override
     public void addInvalidationListener(Runnable runnable) {
         this.owners.add(runnable);
     }

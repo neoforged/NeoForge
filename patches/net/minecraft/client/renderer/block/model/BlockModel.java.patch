@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -23,7 +_,19 @@
+@@ -22,7 +_,19 @@
          PlayerSkinRenderCache playerSkinRenderCache,
          Function<BlockState, BlockStateModel> modelGetter,
          BlockModel missingBlockModel
@@ -19,4 +19,4 @@
 +        }
      }
  
-     @OnlyIn(Dist.CLIENT)
+     interface Unbaked {

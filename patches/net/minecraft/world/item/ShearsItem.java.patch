@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
 @@ -58,20 +_,57 @@
-         }
+         return true;
      }
  
 +    /**
@@ -52,8 +52,8 @@
 +        if (newState != null) {
              Player player = context.getPlayer();
              ItemStack itemInHand = context.getItemInHand();
-             if (player instanceof ServerPlayer) {
-                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer)player, pos, itemInHand);
+             if (player instanceof ServerPlayer serverPlayer) {
+                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pos, itemInHand);
              }
  
 -            level.playSound(player, pos, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);

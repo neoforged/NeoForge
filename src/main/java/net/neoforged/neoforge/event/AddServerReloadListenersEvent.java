@@ -5,12 +5,16 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.Map;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
+import net.neoforged.neoforge.resource.ListenerKey;
 import net.neoforged.neoforge.resource.VanillaServerListeners;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,12 +27,31 @@ import org.jetbrains.annotations.ApiStatus;
 public class AddServerReloadListenersEvent extends SortedReloadListenerEvent {
     private final ReloadableServerResources serverResources;
     private final RegistryAccess registryAccess;
+    private final Map<ListenerKey<?>, PreparableReloadListener> retainedListeners;
 
     @ApiStatus.Internal
-    public AddServerReloadListenersEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+    public AddServerReloadListenersEvent(
+            ReloadableServerResources serverResources,
+            RegistryAccess registryAccess,
+            Map<ListenerKey<?>, PreparableReloadListener> retainedListeners) {
         super(serverResources.listeners(), AddServerReloadListenersEvent::lookupName);
         this.serverResources = serverResources;
         this.registryAccess = registryAccess;
+        this.retainedListeners = retainedListeners;
+    }
+
+    /// Adds a new [`reload listener`][PreparableReloadListener] to the resource manager and retains it in the [ReloadableServerResources]
+    /// for later access through [ReloadableServerResources#getListener(ListenerKey)()].
+    ///
+    /// Unless explicitly specified, this listener will run after all vanilla listeners, in the order it was registered.
+    ///
+    /// @param key      The resource location that identifies the reload listener for dependency sorting and lookup.
+    /// @param listener The listener to add.
+    ///
+    /// @throws IllegalArgumentException if another listener with that key was already registered.
+    public <T extends PreparableReloadListener> void addRetainedListener(ListenerKey<T> key, T listener) {
+        this.addListener(key.getListenerId(), listener);
+        this.retainedListeners.put(key, listener);
     }
 
     /**
@@ -47,12 +70,17 @@ public class AddServerReloadListenersEvent extends SortedReloadListenerEvent {
         return serverResources.getConditionContext();
     }
 
-    /**
-     * Provides access to the loaded registries associated with these server resources.
-     * All built-in and dynamic registries are loaded and frozen by this point.
-     * 
-     * @return The RegistryAccess context for the currently active reload.
-     */
+    /// Provides access to the loaded registries associated with these server resources.
+    /// All built-in and dynamic registries are loaded and frozen by this point.
+    ///
+    /// @apiNote The returned [RegistryAccess] does NOT provide access to the tags loaded during the active reload.
+    /// To resolve tags the [HolderLookup.Provider] provided via [ContextAwareReloadListener#getRegistryLookup()]
+    /// must be used instead.
+    ///
+    /// @return The [RegistryAccess] context for the currently active reload.
+    ///
+    /// @deprecated Use [ContextAwareReloadListener#getRegistryLookup()] instead
+    @Deprecated(forRemoval = true, since = "26.1.2")
     public RegistryAccess getRegistryAccess() {
         return registryAccess;
     }

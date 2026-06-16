@@ -1,33 +1,20 @@
 --- a/net/minecraft/client/renderer/WeatherEffectRenderer.java
 +++ b/net/minecraft/client/renderer/WeatherEffectRenderer.java
-@@ -117,7 +_,19 @@
-         renderPass.drawIndexed(0, startColumn * 6, columnCount * 6, 1);
+@@ -117,7 +_,17 @@
+         return this.vertexBuffer;
      }
  
-+    /**
-+     * @deprecated Neo: use {@link #render(Vec3, WeatherRenderState, net.minecraft.client.renderer.state.level.LevelRenderState)} instead
-+     */
++    /// @deprecated Neo: use [#render(Vec3, WeatherRenderState, net.minecraft.client.renderer.state.level.LevelRenderState)] instead
 +    @Deprecated
      public void render(Vec3 cameraPos, WeatherRenderState renderState) {
 +        this.render(cameraPos, renderState, null);
 +    }
 +
 +    public void render(Vec3 cameraPos, WeatherRenderState renderState, net.minecraft.client.renderer.state.level.@org.jspecify.annotations.Nullable LevelRenderState levelRenderState) {
-+        if (levelRenderState != null && levelRenderState.customWeatherEffectRenderer != null && levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(levelRenderState, renderState, Minecraft.getInstance().renderBuffers().bufferSource(), cameraPos)) {
++        if (levelRenderState != null && levelRenderState.customWeatherEffectRenderer != null && levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(levelRenderState, renderState, cameraPos)) {
 +            return;
 +        }
 +
          int columnCount = renderState.rainColumns.size() + renderState.snowColumns.size();
          if (columnCount != 0) {
              TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-@@ -220,6 +_,10 @@
-     }
- 
-     public void tickRainParticles(ClientLevel level, Camera camera, int ticks, ParticleStatus particleStatus, int weatherRadius) {
-+        var customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(level, camera.position());
-+        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(level, ticks, camera))
-+            return;
-+
-         float rainLevel = level.getRainLevel(1.0F);
-         if (!(rainLevel <= 0.0F)) {
-             RandomSource random = RandomSource.createThreadLocalInstance(ticks * 312987231L);

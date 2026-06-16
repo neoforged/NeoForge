@@ -1080,6 +1080,17 @@ public interface IBlockExtension {
         return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
 
+    /// Returns this blocks bounce restitution for the given state and position. Normally between 0 and 1
+    ///
+    /// @param level The level this block is in
+    /// @param pos The position this block is located at in the given level
+    /// @param blockState The state of this block
+    /// @param entity The entity currently querying for bounce restitution
+    /// @return This blocks bounce restitution for the given state and position
+    default float getBounceRestitution(Level level, BlockPos pos, BlockState blockState, Entity entity) {
+        return self().getBounceRestitution();
+    }
+
     /// Declares whether a block may be relocated and under what circumstances.
     /// "Relocation" here means a region of blocks being cut or copied,
     /// and pasted somewhere else, with a translation and possibly a rotation or mirror,

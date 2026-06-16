@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/TypedInstance.java
 +++ b/net/minecraft/core/TypedInstance.java
-@@ -24,7 +_,8 @@
+@@ -26,7 +_,8 @@
      }
  
      default boolean is(Holder<T> type) {

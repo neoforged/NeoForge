@@ -14,6 +14,7 @@ import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidIds;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags.Fluids;
 
@@ -24,9 +25,9 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
-        tag(Fluids.WATER).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
-        tag(Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
-        tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.get()).addOptional(NeoForgeMod.FLOWING_MILK.get());
+        tag(Fluids.WATER).add(FluidIds.WATER).add(FluidIds.FLOWING_WATER);
+        tag(Fluids.LAVA).add(FluidIds.LAVA).add(FluidIds.FLOWING_LAVA);
+        tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getKey()).addOptional(NeoForgeMod.FLOWING_MILK.getKey());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);
         tag(Fluids.EXPERIENCE);
@@ -38,8 +39,8 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
     }
 
-    private TagAppender<Fluid, Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
-        TagAppender<Fluid, Fluid> tagAppender = tag(tag);
+    private TagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
+        TagAppender<Fluid> tagAppender = tag(tag);
         tagAppender.addOptionalTag(TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("forge", tag.location().getPath())));
         return tagAppender;
     }

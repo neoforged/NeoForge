@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/StructurePiece.java
 +++ b/net/minecraft/world/level/levelgen/structure/StructurePiece.java
-@@ -80,6 +_,9 @@
+@@ -79,6 +_,9 @@
      }
  
      public final CompoundTag createTag(StructurePieceSerializationContext context) {

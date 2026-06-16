@@ -1,21 +1,6 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -100,6 +_,14 @@
-         this.setHealth(this.getMaxHealth());
-         this.noPhysics = true;
-         this.phaseManager = new EnderDragonPhaseManager(this);
-+        this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.length + 1) + 1); // Forge: Fix MC-158205: Make sure part ids are successors of parent mob id
-+    }
-+
-+    @Override
-+    public void setId(int id) {
-+        super.setId(id);
-+        for (int i = 0; i < this.subEntities.length; i++) // Forge: Fix MC-158205: Set part ids to successors of parent mob id
-+            this.subEntities[i].setId(id + i + 1);
-     }
- 
-     public void setDragonFight(EnderDragonFight fight) {
-@@ -148,8 +_,19 @@
+@@ -150,8 +_,19 @@
          entityData.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());
      }
  
@@ -35,7 +20,7 @@
          this.processFlappingMovement();
          if (this.level().isClientSide()) {
              this.setHealth(this.getHealth());
-@@ -434,7 +_,7 @@
+@@ -436,7 +_,7 @@
                      BlockPos blockPos = new BlockPos(x, y, z);
                      BlockState state = level.getBlockState(blockPos);
                      if (!state.isAir() && !state.is(BlockTags.DRAGON_TRANSPARENT)) {
@@ -44,7 +29,7 @@
                              destroyedBlock = level.removeBlock(blockPos, false) || destroyedBlock;
                          } else {
                              hitWall = true;
-@@ -535,7 +_,8 @@
+@@ -540,7 +_,8 @@
  
          if (this.level() instanceof ServerLevel level) {
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -54,7 +39,7 @@
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -553,7 +_,8 @@
+@@ -558,7 +_,8 @@
  
          if (this.dragonDeathTime >= 200 && this.level() instanceof ServerLevel level) {
              if (level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -64,10 +49,13 @@
              }
  
              if (this.dragonFight != null) {
-@@ -859,8 +_,19 @@
-     }
- 
+@@ -864,6 +_,16 @@
      @Override
+     public boolean canUsePortal(boolean ignorePassenger) {
+         return false;
++    }
++
++    @Override
 +    public boolean isMultipartEntity() {
 +        return true;
 +    }
@@ -75,12 +63,6 @@
 +    @Override
 +    public net.neoforged.neoforge.entity.PartEntity<?>[] getParts() {
 +        return this.subEntities;
-+    }
-+
-+    @Override
-     public void recreateFromPacket(ClientboundAddEntityPacket packet) {
-         super.recreateFromPacket(packet);
-+        if (true) return; // Forge: Fix MC-158205: Moved into setId()
-         EnderDragonPart[] subEntities = this.getSubEntities();
+     }
  
-         for (int i = 0; i < subEntities.length; i++) {
+     @Override

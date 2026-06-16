@@ -1,6 +1,6 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -35,9 +_,11 @@
+@@ -36,9 +_,11 @@
          DeprecatedTranslationsInfo deprecatedInfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
          Map<String, String> loadedData = new HashMap<>();
          BiConsumer<String, String> output = loadedData::put;
@@ -14,7 +14,7 @@
          return new Language() {
              @Override
              public String getOrDefault(String elementId, String defaultValue) {
-@@ -62,21 +_,51 @@
+@@ -63,21 +_,51 @@
                      )
                      .isPresent();
              }
@@ -40,8 +40,8 @@
          try (InputStream stream = Language.class.getResourceAsStream(path)) {
 -            loadFromJson(stream, output);
 +            loadFromJson(stream, output, componentConsumer);
-         } catch (JsonParseException | IOException var7) {
-             LOGGER.error("Couldn't read strings from {}", path, var7);
+         } catch (IOException | JsonParseException e) {
+             LOGGER.error("Couldn't read strings from {}", path, e);
          }
      }
  
@@ -67,7 +67,7 @@
              String text = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
              output.accept(entry.getKey(), text);
          }
-@@ -88,6 +_,13 @@
+@@ -89,6 +_,13 @@
  
      public static void inject(Language language) {
          instance = language;

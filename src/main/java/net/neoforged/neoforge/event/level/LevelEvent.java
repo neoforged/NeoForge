@@ -7,7 +7,6 @@ package net.neoforged.neoforge.event.level;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.random.Weighted;
@@ -57,18 +56,11 @@ public abstract class LevelEvent extends Event {
         }
     }
 
-    /**
-     * This event is fired whenever a level unloads.
-     * This event is fired whenever a level unloads in
-     * {@link Minecraft#setLevel(ClientLevel)},
-     * {@link MinecraftServer#stopServer()},
-     * {@link Minecraft#clearLevel(Screen)}.
-     * <p>
-     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
-     * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
-     * on both logical sides.
-     **/
+    /// Fired whenever a level unloads. This may be due to the server being stopped, or the client switching to another level or server.
+    ///
+    /// This event is not [cancellable][ICancellableEvent].
+    ///
+    /// This event is fired on the [game event bus][NeoForge#EVENT_BUS] on both [logical sides][LogicalSide].
     public static class Unload extends LevelEvent {
         public Unload(LevelAccessor level) {
             super(level);

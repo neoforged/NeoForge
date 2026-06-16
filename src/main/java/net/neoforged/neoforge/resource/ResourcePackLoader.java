@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.resource;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -126,7 +127,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile));
+                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloadingissue.brokenresources", e.getKey()).withAffectedModFile(modFile));
                         continue;
                     }
                 } else {
@@ -144,7 +145,7 @@ public class ResourcePackLoader {
                 }
             } catch (IOException exception) {
                 LOGGER.error("Failed to read pack.mcmeta file of {}", modFile, exception);
-                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile).withCause(exception));
+                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloadingissue.brokenresources", e.getKey()).withAffectedModFile(modFile).withCause(exception));
             }
         }
 
@@ -196,7 +197,13 @@ public class ResourcePackLoader {
     private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
         final PackFormat currentVersion = SharedConstants.getCurrentVersion().packVersion(type);
         try (final PackResources primaryResources = resources.openPrimary(location)) {
-            final PackMetadataSection metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
+            PackMetadataSection metadata;
+            try {
+                metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading optional pack metadata for {}, attempting fallback type", location.id(), exception);
+                metadata = primaryResources.getMetadataSection(PackMetadataSection.FALLBACK_TYPE);
+            }
 
             final FeatureFlagSet flags = Optional.ofNullable(primaryResources.getMetadataSection(FeatureFlagsMetadataSection.TYPE))
                     .map(FeatureFlagsMetadataSection::flags)

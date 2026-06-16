@@ -206,6 +206,8 @@
   "neoforge.configgui.showLoadWarnings.tooltip": "Când este activată, NeoForge va arăta orice avertismente care au apărut în timpul încărcării.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Folosește atașament combinat DEPTH_STENCIL",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Setează la adevărat pentru a folosi un atașament combinat DEPTH_STENCIL, în loc de două atașamente separate.",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Skip modded splashes if vanilla splashes are modified",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "When enabled, modded splash texts are skipped from loading if the vanilla splash text file is modified.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",

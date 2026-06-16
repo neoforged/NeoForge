@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/animal/cow/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/cow/MushroomCow.java
-@@ -171,11 +_,19 @@
+@@ -179,11 +_,19 @@
      @Override
      public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
          level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource, 1.0F, 1.0F);
-+        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.COW, (timer) -> {})) return;
-         this.convertTo(EntityType.COW, ConversionParams.single(this, false, false), cow -> {
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.COW, (timer) -> {})) return;
+         this.convertTo(EntityTypes.COW, ConversionParams.single(this, false, false), cow -> {
 +            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, cow);
              level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
              this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_MOOSHROOM, tool, (l, drop) -> {

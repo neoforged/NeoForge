@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -72,9 +_,14 @@
+@@ -67,9 +_,14 @@
          public int get(int dataId) {
              switch (dataId) {
                  case 0:
@@ -16,7 +16,7 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -108,12 +_,14 @@
+@@ -103,12 +_,14 @@
      };
      private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
      private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
@@ -31,7 +31,7 @@
      }
  
      @Override
-@@ -121,10 +_,10 @@
+@@ -116,10 +_,10 @@
          super.loadAdditional(input);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
          ContainerHelper.loadAllItems(input, this.items);
@@ -46,7 +46,7 @@
          this.recipesUsed.clear();
          this.recipesUsed.putAll(input.read("RecipesUsed", RECIPES_USED_CODEC).orElse(Map.of()));
      }
-@@ -132,10 +_,10 @@
+@@ -127,10 +_,10 @@
      @Override
      protected void saveAdditional(ValueOutput output) {
          super.saveAdditional(output);
@@ -61,7 +61,19 @@
          ContainerHelper.saveAllItems(output, this.items);
          output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
      }
-@@ -248,7 +_,7 @@
+@@ -207,9 +_,10 @@
+ 
+     private static void consumeFuel(NonNullList<ItemStack> items, ItemStack fuel) {
+         Item fuelItem = fuel.getItem();
++        // Neo: Query the crafting remainder prior to stack mutation (shrink) in order to grab the correct value
++        ItemStackTemplate remainder = fuel.getCraftingRemainder();
+         fuel.shrink(1);
+         if (fuel.isEmpty()) {
+-            ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
+             items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
+         }
+     }
+@@ -245,7 +_,7 @@
      }
  
      protected int getBurnDuration(FuelValues fuelValues, ItemStack itemStack) {
@@ -70,7 +82,7 @@
      }
  
      private static int getTotalCookTime(ServerLevel level, AbstractFurnaceBlockEntity entity) {
-@@ -292,17 +_,57 @@
+@@ -289,17 +_,57 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -130,11 +142,11 @@
      public boolean canPlaceItem(int slot, ItemStack itemStack) {
          if (slot == 2) {
 @@ -311,7 +_,7 @@
-             return true;
-         } else {
-             ItemStack fuelSlot = this.items.get(1);
--            return this.level.fuelValues().isFuel(itemStack) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
-+            return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
          }
+ 
+         ItemStack fuelSlot = this.items.get(1);
+-        return this.level.fuelValues().isFuel(itemStack) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
++        return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
      }
  
+     @Override

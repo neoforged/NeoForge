@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -114,12 +_,20 @@
+@@ -115,13 +_,21 @@
      }
  
      public boolean destroyBlock(BlockPos pos) {
@@ -13,69 +13,32 @@
 +
          if (this.minecraft.player.blockActionRestricted(this.minecraft.level, pos, this.localPlayerMode)) {
              return false;
-         } else {
-             Level level = this.minecraft.level;
-             BlockState oldState = level.getBlockState(pos);
--            if (!this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
-+            // Neo: Ignore this condition, as it is handled by fireBlockBreak and the event is expected to be able to override it.
-+            if (false && !this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
-                 return false;
-             } else {
-                 Block oldBlock = oldState.getBlock();
-@@ -128,11 +_,12 @@
-                 } else if (oldState.isAir()) {
-                     return false;
-                 } else {
-+                    BlockState removedBlockState =
-                     oldBlock.playerWillDestroy(level, pos, oldState, this.minecraft.player);
-                     FluidState fluidState = level.getFluidState(pos);
--                    boolean changed = level.setBlock(pos, fluidState.createLegacyBlock(), 11);
-+                    boolean changed = oldState.onDestroyedByPlayer(level, pos, minecraft.player, minecraft.player.getMainHandItem().copy(), false, fluidState);
-                     if (changed) {
--                        oldBlock.destroy(level, pos, oldState);
-+                        oldBlock.destroy(level, pos, removedBlockState);
-                     }
+         }
  
-                     if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -159,6 +_,7 @@
-                 }
+         Level level = this.minecraft.level;
+         BlockState oldState = level.getBlockState(pos);
+-        if (!this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
++        // Neo: Ignore this condition, as it is handled by fireBlockBreak and the event is expected to be able to override it.
++        if (false && !this.minecraft.player.getMainHandItem().canDestroyBlock(oldState, level, pos, this.minecraft.player)) {
+             return false;
+         }
  
-                 this.startPrediction(this.minecraft.level, sequence -> {
-+                    if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
-                     this.destroyBlock(pos);
-                     return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
-                 });
-@@ -172,6 +_,7 @@
-                     this.connection
-                         .send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, this.destroyBlockPos, direction));
-                 }
-+                net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
+@@ -134,11 +_,12 @@
+             return false;
+         }
  
-                 BlockState state = this.minecraft.level.getBlockState(pos);
-                 this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, 0.0F);
-@@ -182,9 +_,12 @@
-                 this.startPrediction(this.minecraft.level, sequence -> {
-                     boolean notAir = !state.isAir();
-                     if (notAir && this.destroyProgress == 0.0F) {
-+                        if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
-                         state.attack(this.minecraft.level, pos, this.minecraft.player);
-                     }
++        BlockState removedBlockState =
+         oldBlock.playerWillDestroy(level, pos, oldState, this.minecraft.player);
+         FluidState fluidState = level.getFluidState(pos);
+-        boolean changed = level.setBlock(pos, fluidState.createLegacyBlock(), 11);
++        boolean changed = oldState.onDestroyedByPlayer(level, pos, minecraft.player, minecraft.player.getMainHandItem().copy(), false, fluidState);
+         if (changed) {
+-            oldBlock.destroy(level, pos, oldState);
++            oldBlock.destroy(level, pos, removedBlockState);
+         }
  
-+                    ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
-+                    if (event.getUseItem().isFalse()) return packet;
-                     if (notAir && state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos) >= 1.0F) {
-                         this.destroyBlock(pos);
-                     } else {
-@@ -196,7 +_,7 @@
-                         this.minecraft.level.destroyBlockProgress(this.minecraft.player.getId(), this.destroyBlockPos, this.getDestroyStage());
-                     }
- 
--                    return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
-+                    return packet;
-                 });
-             }
- 
-@@ -235,6 +_,7 @@
+         if (SharedConstants.DEBUG_BLOCK_BREAK) {
+@@ -165,6 +_,7 @@
              }
  
              this.startPrediction(this.minecraft.level, sequence -> {
@@ -83,26 +46,64 @@
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });
-@@ -246,8 +_,8 @@
-                 return false;
-             } else {
-                 this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
--                if (this.destroyTicks % 4.0F == 0.0F) {
--                    SoundType soundType = state.getSoundType();
-+                if (this.destroyTicks % 4.0F == 0.0F && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).playHitSound(state, this.minecraft.level, pos, direction, this.minecraft.getSoundManager())) {
-+                    SoundType soundType = state.getSoundType(this.minecraft.level, pos, this.minecraft.player);
-                     this.minecraft
-                         .getSoundManager()
-                         .play(
-@@ -264,6 +_,7 @@
+@@ -178,6 +_,7 @@
+                 this.connection
+                     .send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, this.destroyBlockPos, direction));
+             }
++            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
  
-                 this.destroyTicks++;
-                 this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
-+                if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, pos, direction).getUseItem().isFalse()) return true;
-                 if (this.destroyProgress >= 1.0F) {
-                     this.isDestroying = false;
-                     if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -306,7 +_,7 @@
+             BlockState state = this.minecraft.level.getBlockState(pos);
+             this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, 0.0F);
+@@ -188,9 +_,12 @@
+             this.startPrediction(this.minecraft.level, sequence -> {
+                 boolean notAir = !state.isAir();
+                 if (notAir && this.destroyProgress == 0.0F) {
++                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
+                     state.attack(this.minecraft.level, pos, this.minecraft.player);
+                 }
+ 
++                ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
++                if (event.getUseItem().isFalse()) return packet;
+                 if (notAir && state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos) >= 1.0F) {
+                     this.destroyBlock(pos);
+                 } else {
+@@ -202,7 +_,7 @@
+                     this.minecraft.level.destroyBlockProgress(this.minecraft.player.getId(), this.destroyBlockPos, this.getDestroyStage());
+                 }
+ 
+-                return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
++                return packet;
+             });
+         }
+ 
+@@ -242,6 +_,7 @@
+             }
+ 
+             this.startPrediction(this.minecraft.level, sequence -> {
++                if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
+                 this.destroyBlock(pos);
+                 return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
+             });
+@@ -254,8 +_,8 @@
+             }
+ 
+             this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
+-            if (this.destroyTicks % 4.0F == 0.0F) {
+-                SoundType soundType = state.getSoundType();
++            if (this.destroyTicks % 4.0F == 0.0F && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).playHitSound(state, this.minecraft.level, pos, direction, this.minecraft.getSoundManager())) {
++                SoundType soundType = state.getSoundType(this.minecraft.level, pos, this.minecraft.player);
+                 this.minecraft
+                     .getSoundManager()
+                     .play(
+@@ -272,6 +_,7 @@
+ 
+             this.destroyTicks++;
+             this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
++            if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, pos, direction).getUseItem().isFalse()) return true;
+             if (this.destroyProgress >= 1.0F) {
+                 this.isDestroying = false;
+                 if (SharedConstants.DEBUG_BLOCK_BREAK) {
+@@ -313,7 +_,7 @@
  
      private boolean sameDestroyTarget(BlockPos pos) {
          ItemStack selected = this.minecraft.player.getMainHandItem();
@@ -111,7 +112,7 @@
      }
  
      private void ensureHasSentCarriedItem() {
-@@ -334,12 +_,23 @@
+@@ -341,13 +_,24 @@
      private InteractionResult performUseItemOn(LocalPlayer player, InteractionHand hand, BlockHitResult blockHit) {
          BlockPos pos = blockHit.getBlockPos();
          ItemStack itemStack = player.getItemInHand(hand);
@@ -121,62 +122,64 @@
 +        }
          if (this.localPlayerMode == GameType.SPECTATOR) {
              return InteractionResult.CONSUME;
-         } else {
--            boolean haveSomethingInOurHands = !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty();
-+            UseOnContext useoncontext = new UseOnContext(player, hand, blockHit);
-+            if (event.getUseItem() != net.minecraft.util.TriState.FALSE) {
-+                InteractionResult result = itemStack.onItemUseFirst(useoncontext);
-+                if (result != InteractionResult.PASS) {
-+                    return result;
-+                }
+         }
+ 
+-        boolean haveSomethingInOurHands = !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty();
++        UseOnContext useoncontext = new UseOnContext(player, hand, blockHit);
++        if (event.getUseItem() != net.minecraft.util.TriState.FALSE) {
++            InteractionResult result = itemStack.onItemUseFirst(useoncontext);
++            if (result != InteractionResult.PASS) {
++                return result;
 +            }
-+            boolean haveSomethingInOurHands = !player.getMainHandItem().doesSneakBypassUse(player.level(), pos, player) || !player.getOffhandItem().doesSneakBypassUse(player.level(), pos, player);
-             boolean suppressUsingBlock = player.isSecondaryUseActive() && haveSomethingInOurHands;
--            if (!suppressUsingBlock) {
-+            if (event.getUseBlock().isTrue() || (event.getUseBlock().isDefault() && !suppressUsingBlock)) {
-                 BlockState blockState = this.minecraft.level.getBlockState(pos);
-                 if (!this.connection.isFeatureEnabled(blockState.getBlock().requiredFeatures())) {
-                     return InteractionResult.FAIL;
-@@ -358,7 +_,10 @@
-                 }
++        }
++        boolean haveSomethingInOurHands = !player.getMainHandItem().doesSneakBypassUse(player.level(), pos, player) || !player.getOffhandItem().doesSneakBypassUse(player.level(), pos, player);
+         boolean suppressUsingBlock = player.isSecondaryUseActive() && haveSomethingInOurHands;
+-        if (!suppressUsingBlock) {
++        if (event.getUseBlock().isTrue() || (event.getUseBlock().isDefault() && !suppressUsingBlock)) {
+             BlockState blockState = this.minecraft.level.getBlockState(pos);
+             if (!this.connection.isFeatureEnabled(blockState.getBlock().requiredFeatures())) {
+                 return InteractionResult.FAIL;
+@@ -366,7 +_,10 @@
+             }
+         }
+ 
+-        if (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack)) {
++        if (event.getUseItem().isFalse()) {
++            return InteractionResult.PASS;
++        }
++        if (event.getUseItem().isTrue() || (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack))) {
+             UseOnContext context = new UseOnContext(player, hand, blockHit);
+             InteractionResult success;
+             if (player.hasInfiniteMaterials()) {
+@@ -398,6 +_,12 @@
+                 return packet;
              }
  
--            if (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack)) {
-+            if (event.getUseItem().isFalse()) {
-+                return InteractionResult.PASS;
++            InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onItemRightClick(player, hand);
++            if (cancelResult != null) {
++                interactionResult.setValue(cancelResult);
++                return packet;
 +            }
-+            if (event.getUseItem().isTrue() || (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack))) {
-                 UseOnContext context = new UseOnContext(player, hand, blockHit);
-                 InteractionResult success;
-                 if (player.hasInfiniteMaterials()) {
-@@ -389,6 +_,11 @@
-                     interactionResult.setValue(InteractionResult.PASS);
-                     return packet;
-                 } else {
-+                    InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onItemRightClick(player, hand);
-+                    if (cancelResult != null) {
-+                        interactionResult.setValue(cancelResult);
-+                        return packet;
-+                    }
-                     InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
-                     ItemStack result;
-                     if (resultHolder instanceof InteractionResult.Success success) {
-@@ -399,6 +_,8 @@
++
+             InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
+             ItemStack result;
+             if (resultHolder instanceof InteractionResult.Success success) {
+@@ -408,6 +_,8 @@
  
-                     if (result != itemStack) {
-                         player.setItemInHand(hand, result);
-+                        if (result.isEmpty())
-+                            net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, itemStack, hand);
-                     }
+             if (result != itemStack) {
+                 player.setItemInHand(hand, result);
++                if (result.isEmpty())
++                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, itemStack, hand);
+             }
  
-                     interactionResult.setValue(resultHolder);
-@@ -432,6 +_,9 @@
+             interactionResult.setValue(resultHolder);
+@@ -443,6 +_,9 @@
          this.ensureHasSentCarriedItem();
          Vec3 location = hitResult.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
          this.connection.send(new ServerboundInteractPacket(entity.getId(), hand, location, player.isShiftKeyDown()));
 +        if (this.localPlayerMode == GameType.SPECTATOR) return InteractionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
 +        InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, hitResult, hand);
 +        if(cancelResult != null) return cancelResult;
-         return (InteractionResult)(this.localPlayerMode == GameType.SPECTATOR ? InteractionResult.PASS : player.interactOn(entity, hand, location));
+         return this.localPlayerMode == GameType.SPECTATOR ? InteractionResult.PASS : player.interactOn(entity, hand, location);
      }
  

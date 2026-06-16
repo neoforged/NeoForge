@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.bus.api.IEventBus;
@@ -30,11 +31,11 @@ public class SpawnPlacementTest {
     private void onSpawnPlacementRegister(RegisterSpawnPlacementsEvent event) {
         LOGGER.info("Modifying spawn placements!");
         // AND: require zombies to spawn below y 40
-        event.register(EntityType.ZOMBIE, ((entityType, level, spawnType, pos, random) -> pos.getY() < 40 && validMonsterSpawn(level, pos, entityType)), RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(EntityTypes.ZOMBIE, ((entityType, level, _, pos, _) -> pos.getY() < 40 && validMonsterSpawn(level, pos, entityType)), RegisterSpawnPlacementsEvent.Operation.AND);
         // REPLACE: don't require darkness to spawn creepers
-        event.register(EntityType.CREEPER, ((entityType, level, spawnType, pos, random) -> validMonsterSpawn(level, pos, entityType)), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(EntityTypes.CREEPER, ((entityType, level, _, pos, _) -> validMonsterSpawn(level, pos, entityType)), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         // OR: allow slimes to spawn in plains
-        event.register(EntityType.SLIME, (entityType, level, spawnType, pos, random) -> validMonsterSpawn(level, pos, entityType) && level.getBiome(pos).is(Biomes.PLAINS));
+        event.register(EntityTypes.SLIME, (entityType, level, _, pos, _) -> validMonsterSpawn(level, pos, entityType) && level.getBiome(pos).is(Biomes.PLAINS));
     }
 
     private static boolean validMonsterSpawn(ServerLevelAccessor level, BlockPos pos, EntityType<?> type) {

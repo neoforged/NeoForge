@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -42,6 +_,8 @@
+@@ -39,6 +_,8 @@
      private final RandomSource random = RandomSource.create();
      private final Font.Provider provider;
      private final StringSplitter splitter;
@@ -9,12 +9,3 @@
  
      public Font(Font.Provider provider) {
          this.provider = provider;
-@@ -216,6 +_,8 @@
-     public StringSplitter getSplitter() {
-         return this.splitter;
-     }
-+
-+    @Override public Font self() { return this; }
- 
-     @OnlyIn(Dist.CLIENT)
-     public static enum DisplayMode {

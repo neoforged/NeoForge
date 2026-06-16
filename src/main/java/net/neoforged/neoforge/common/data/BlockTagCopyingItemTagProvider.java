@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -25,7 +24,7 @@ import net.minecraft.world.level.block.Block;
  * into a separate class and reuse that from your block and item tag provider. See {@link net.minecraft.data.tags.BlockItemTagsProvider}
  * for vanillas implementation of this concept.
  */
-public abstract class BlockTagCopyingItemTagProvider extends IntrinsicHolderTagsProvider<Item> {
+public abstract class BlockTagCopyingItemTagProvider extends TagsProvider<Item> {
     private final CompletableFuture<TagsProvider.TagLookup<Block>> blockTags;
     private final Map<TagKey<Block>, TagKey<Item>> tagsToCopy = new HashMap<>();
 
@@ -33,7 +32,7 @@ public abstract class BlockTagCopyingItemTagProvider extends IntrinsicHolderTags
             CompletableFuture<HolderLookup.Provider> lookupProvider,
             CompletableFuture<TagLookup<Block>> blockTags,
             String modId) {
-        super(output, Registries.ITEM, lookupProvider, item -> item.builtInRegistryHolder().key(), modId);
+        super(output, Registries.ITEM, lookupProvider, modId);
         this.blockTags = blockTags;
     }
 

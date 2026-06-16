@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "group": "bed",
   "key": {
     "#": "minecraft:yellow_wool",

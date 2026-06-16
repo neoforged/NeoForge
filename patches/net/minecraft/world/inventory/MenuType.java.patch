@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/MenuType.java
 +++ b/net/minecraft/world/inventory/MenuType.java
-@@ -55,6 +_,14 @@
+@@ -57,6 +_,14 @@
      }
  
      @Override

@@ -6,13 +6,11 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -29,7 +27,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeMod.MOD_ID)
@@ -46,7 +44,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
 
         List<BlockEntityRenderBoundsRenderState> renderStates = new ArrayList<>();
         BlockEntityRenderDispatcher dispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
-        event.getLevelRenderer().iterateVisibleBlockEntities(be -> {
+        event.getLevelExtractor().iterateVisibleBlockEntities(be -> {
             BlockEntityRenderer<BlockEntity, ?> renderer = dispatcher.getRenderer(be);
             if (renderer != null) {
                 AABB aabb = renderer.getRenderBoundingBox(be);
@@ -63,7 +61,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
     }
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent.AfterOpaqueFeatures event) {
+    public static void onSubmitCustomGeometry(SubmitCustomGeometryEvent event) {
         if (!enabled) {
             return;
         }
@@ -75,15 +73,14 @@ public final class BlockEntityRenderBoundsDebugRenderer {
 
         PoseStack poseStack = event.getPoseStack();
         Vec3 camera = event.getLevelRenderState().cameraRenderState.pos;
-        VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypes.lines());
 
         for (BlockEntityRenderBoundsRenderState be : renderStates) {
             Vec3 offset = Vec3.atLowerCornerOf(be.pos).subtract(camera);
 
             poseStack.pushPose();
             poseStack.translate(offset.x, offset.y, offset.z);
-            // TODO 1.21.11: check that the line width is sufficient
-            ShapeRenderer.renderShape(poseStack, consumer, Shapes.create(be.bounds), 0, 0, 0, 0xFFFF0000, 1F);
+            float lineWidth = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.appropriateLineWidth;
+            event.getSubmitNodeCollector().submitShapeOutline(poseStack, Shapes.create(be.bounds), RenderTypes.lines(), 0xFFFF0000, lineWidth, false);
             poseStack.popPose();
         }
     }
