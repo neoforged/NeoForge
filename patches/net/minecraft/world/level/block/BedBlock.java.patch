@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BedBlock.java
 +++ b/net/minecraft/world/level/block/BedBlock.java
-@@ -334,4 +_,20 @@
+@@ -306,4 +_,20 @@
      private static int[][] bedAboveStandUpOffsets(Direction forward) {
          return new int[][]{{0, 0}, {-forward.getStepX(), -forward.getStepZ()}};
      }

@@ -302,7 +302,7 @@ public class BlockTests {
             }
 
             // test beds
-            BlockState bedFoot = Blocks.WHITE_BED.defaultBlockState();
+            BlockState bedFoot = Blocks.BED.white().defaultBlockState();
             BlockState bedHead = bedFoot.setValue(BedBlock.PART, BedPart.HEAD);
             Direction directionToHead = BedBlock.getConnectedDirection(bedFoot);
             BlockPos headPos = lowerPos.relative(directionToHead);

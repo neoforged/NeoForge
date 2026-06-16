@@ -34,9 +34,7 @@
              toUpdate[updateIndex++] = state;
          }
  
-@@ -367,6 +_,10 @@
-     @Override
-     protected BlockState rotate(BlockState state, Rotation rotation) {
+@@ -369,6 +_,10 @@
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
      }
  
@@ -47,7 +45,7 @@
      @Override
      protected BlockState mirror(BlockState state, Mirror mirror) {
          return state.rotate(mirror.getRotation(state.getValue(FACING)));
-@@ -380,5 +_,22 @@
+@@ -387,5 +_,22 @@
      @Override
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;
