@@ -207,7 +207,7 @@
   "neoforge.configgui.useCombinedDepthStencilAttachment": "使用组合DEPTH_STENCIL附件",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "启用后，将使用组合的DEPTH_STENCIL附件，而不是两个单独的附件。",
   "neoforge.configgui.skipModdedSplashesIfVanillaModified": "Skip modded splashes if vanilla splashes are modified",
-  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "When enabled, modded splash texts are skipped from loading if the vanilla splash text file is modified.",
+  "neoforge.configgui.skipModdedSplashesIfVanillaModified.tooltip": "启用后，若原版闪烁标语文本被修改，则模组添加的闪烁标语将被跳过加载。",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
