@@ -118,6 +118,10 @@ dependencies {
     libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
+        // MC currently (as of 26.2-pre-1) uses the Unsafe-using artifact of LWJGL.
+        // To avoid overriding that artifact, exclude it from here and rely on minecraft-dependencies to provide it.
+        // We must specifically exclude the main LWJGL module, since FML depends on lwjgl-tinyfd.
+        exclude group: 'org.lwjgl', module: 'lwjgl'
     }
     libraries ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
         exclude group: 'org.lwjgl'
