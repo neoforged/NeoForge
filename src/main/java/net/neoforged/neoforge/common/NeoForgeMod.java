@@ -481,7 +481,7 @@ public class NeoForgeMod {
 
         @Override
         public double motionScale(Entity entity) {
-            return entity.level().environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, entity.blockPosition()) ? 0.007D : 0.0023333333333333335D;
+            return entity.level().environmentAttributes().getValue(EnvironmentAttributes.FAST_LAVA, entity.blockPosition()) ? 0.007D : 0.0023333333333333335D;
         }
 
         @Override

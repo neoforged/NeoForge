@@ -68,6 +68,16 @@
      public boolean canBreatheUnderwater() {
          return this.is(EntityTypeTags.CAN_BREATHE_UNDER_WATER);
      }
+@@ -435,6 +_,9 @@
+                 }
+             }
+ 
++            int airSupply = this.getAirSupply();
++            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
++            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)
+             if (this.isEyeInFluid(FluidTags.WATER)
+                 && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
+                 boolean canDrownInWater = !this.canBreatheUnderwater()
 @@ -790,7 +_,11 @@
  
          ItemEntity entity = this.createItemStackToDrop(itemStack, randomly, thrownFromHand);
@@ -562,6 +572,15 @@
      }
  
      protected float getWaterSlowDown() {
+@@ -2424,7 +_,7 @@
+     }
+ 
+     protected boolean shouldTravelInFluid(FluidState fluidState) {
+-        return (this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
++        return (this.isInWater() || this.isInLava() || this.isInFluidType(fluidState)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
+     }
+ 
+     protected void travelFlying(Vec3 input, float speed) {
 @@ -2451,7 +_,7 @@
          BlockPos posBelow = this.getBlockPosBelowThatAffectsMyMovement();
          float blockFriction = this.onGround()
@@ -571,7 +590,7 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-@@ -2483,7 +_,15 @@
+@@ -2483,10 +_,23 @@
          return computeModifiedFriction(this.omnidirectionalAirMover() ? 0.91F : 0.98F, (float)this.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
      }
  
@@ -587,6 +606,14 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
++        if (this.isInFluidType((entity, type, _) -> entity.isEyeInFluid(type))) {
++            if (this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity)) {
++                return;
++            }
++        }
+         if (this.isInWater()) {
+             this.travelInWater(input, baseGravity, isFalling, oldY);
+             this.floatInWaterWhileRidden();
 @@ -2512,6 +_,7 @@
              slowDown = 0.96F;
          }
@@ -612,9 +639,27 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3086,10 +_,10 @@
+@@ -3071,6 +_,10 @@
+         profiler.push("jump");
+         if (this.jumping && this.isAffectedByFluids()) {
+             double fluidHeight;
++            net.neoforged.neoforge.fluids.FluidType fluidType = this.getFluidInteraction().getMaxHeightFluidType();
++            if (!fluidType.isAir()) {
++                fluidHeight = this.getFluidTypeHeight(fluidType);
++            } else
+             if (this.isInLava()) {
+                 fluidHeight = this.getFluidHeight(FluidTags.LAVA);
+             } else {
+@@ -3081,15 +_,17 @@
+             double fluidJumpThreshold = this.getFluidJumpThreshold();
+             if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
+                 if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
++                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
+                     if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
+                         this.jumpFromGround();
                          this.noJumpDelay = 10;
                      }
++                    } else this.jumpInFluid(fluidType);
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
 +                    this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
