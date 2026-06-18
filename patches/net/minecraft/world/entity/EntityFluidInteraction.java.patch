@@ -5,7 +5,7 @@
  
  public class EntityFluidInteraction {
 -    private final Map<TagKey<Fluid>, EntityFluidInteraction.Tracker> trackerByFluid = new Reference2ObjectArrayMap<>();
-+    private final Map<net.neoforged.neoforge.fluids.FluidType, EntityFluidInteraction.Tracker> trackerByFluid = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>();
++    private final Map<net.neoforged.neoforge.fluids.FluidType, EntityFluidInteraction.Tracker> trackerByFluid = new Reference2ObjectArrayMap<>();
  
      public EntityFluidInteraction(Set<TagKey<Fluid>> fluids) {
 -        for (TagKey<Fluid> fluid : fluids) {
@@ -45,7 +45,7 @@
                                          if (x == eyeBlockX && z == eyeBlockZ && eyeY >= fluidBottom && eyeY <= fluidTop) {
                                              tracker.eyesInside = true;
                                          }
-@@ -118,43 +_,157 @@
+@@ -118,43 +_,143 @@
          return hasFluid;
      }
  
@@ -134,27 +134,13 @@
 +    }
 +
 +    public <E extends Entity> boolean isInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
-+        return this.isInFluidMatching(entity, predicate, false);
-+    }
-+
-+    public <E extends Entity> boolean isInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate, boolean forAllTypes) {
-+        if (forAllTypes) {
-+            for (var entry : this.trackerByFluid.entrySet()) {
-+                double height = entry.getValue().height;
-+                if (height <= 0D || !predicate.test(entity, entry.getKey(), height)) {
-+                    return false;
-+                }
++        for (var entry : this.trackerByFluid.entrySet()) {
++            double height = entry.getValue().height;
++            if (height > 0D && predicate.test(entity, entry.getKey(), height)) {
++                return true;
 +            }
-+            return true;
-+        } else {
-+            for (var entry : this.trackerByFluid.entrySet()) {
-+                double height = entry.getValue().height;
-+                if (height > 0D && predicate.test(entity, entry.getKey(), height)) {
-+                    return true;
-+                }
-+            }
-+            return false;
 +        }
++        return false;
 +    }
 +
 +    /// @deprecated Neo: use [#isEyeInFluid(net.neoforged.neoforge.fluids.FluidType)] instead

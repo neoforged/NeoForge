@@ -197,18 +197,7 @@ public interface IEntityExtension {
     /// @param predicate a test taking in the fluid type and its height
     /// @return `true` if a fluid type meets the condition, `false` otherwise
     default boolean isInFluidType(InFluidPredicate<Entity> predicate) {
-        return isInFluidType(predicate, false);
-    }
-
-    /// Returns whether the fluid type the entity is currently in matches
-    /// the specified condition.
-    ///
-    /// @param predicate   a test taking in the fluid type and its height
-    /// @param forAllTypes`true` if all fluid types should match the
-    ///                    condition instead of at least one
-    /// @return `true` if a fluid type meets the condition, `false` otherwise
-    default boolean isInFluidType(InFluidPredicate<Entity> predicate, boolean forAllTypes) {
-        return self().getFluidInteraction().isInFluidMatching(self(), predicate, forAllTypes);
+        return self().getFluidInteraction().isInFluidMatching(self(), predicate);
     }
 
     /// Returns whether the entity is in a fluid.
@@ -218,11 +207,9 @@ public interface IEntityExtension {
         return self().getFluidInteraction().isInAnyFluid();
     }
 
-    /**
-     * Returns the fluid that is on the entity's eyes.
-     *
-     * @return the fluid that is on the entity's eyes
-     */
+    /// Returns the first fluid that is on the entity's eyes.
+    ///
+    /// @return the first fluid that is on the entity's eyes
     default FluidType getFirstEyeInFluidType() {
         return self().getFluidInteraction().getFirstEyeInFluid();
     }
