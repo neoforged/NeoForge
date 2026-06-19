@@ -139,7 +139,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.SPARSE_JUNGLE)
                 .add(Biomes.BEACH)
                 .add(Biomes.LUSH_CAVES)
-                .add(Biomes.DRIPSTONE_CAVES);
+                .add(Biomes.DRIPSTONE_CAVES)
+                .add(Biomes.SULFUR_CAVES);
         tag(Tags.Biomes.IS_WET_NETHER);
         tag(Tags.Biomes.IS_WET_END);
         tag(Tags.Biomes.IS_WET).addTag(Tags.Biomes.IS_WET_OVERWORLD).addTag(Tags.Biomes.IS_WET_NETHER).addTag(Tags.Biomes.IS_WET_END);
@@ -261,7 +262,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Tags.Biomes.IS_AQUATIC_ICY).add(Biomes.FROZEN_RIVER, Biomes.DEEP_FROZEN_OCEAN, Biomes.FROZEN_OCEAN);
         tag(Tags.Biomes.IS_AQUATIC).addTag(Tags.Biomes.IS_OCEAN).addTag(Tags.Biomes.IS_RIVER);
 
-        tag(Tags.Biomes.IS_CAVE).add(Biomes.LUSH_CAVES, Biomes.DRIPSTONE_CAVES, Biomes.DEEP_DARK);
+        tag(Tags.Biomes.IS_CAVE).add(Biomes.LUSH_CAVES, Biomes.DRIPSTONE_CAVES, Biomes.SULFUR_CAVES, Biomes.DEEP_DARK);
         tag(Tags.Biomes.IS_UNDERGROUND).addTag(Tags.Biomes.IS_CAVE);
 
         tag(Tags.Biomes.IS_NETHER_FOREST).add(Biomes.CRIMSON_FOREST, Biomes.WARPED_FOREST);
