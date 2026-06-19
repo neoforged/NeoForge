@@ -35,6 +35,7 @@ import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
+import net.neoforged.neoforge.client.model.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -71,6 +72,7 @@ public class ClientNeoForgeMod {
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "empty"), EmptyModel.LOADER);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "elements"), ElementsModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), ObjLoader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "trimmed_armor"), TrimmedArmorModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), CompositeModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), ItemLayerModel.Loader.INSTANCE);
