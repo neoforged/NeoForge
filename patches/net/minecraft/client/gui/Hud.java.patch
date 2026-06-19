@@ -276,7 +276,7 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
-@@ -791,32 +_,63 @@
+@@ -791,33 +_,62 @@
              this.random.setSeed(this.tickCount * 312871);
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
@@ -336,17 +336,17 @@
 +    }
  
 -            Profiler.get().popPush("air");
+-            this.extractAirBubbles(graphics, player, vehicleHearts, yLineAir, xRight);
 +    private void extractAirLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int xRight = graphics.guiWidth() / 2 + 91;
 +            int yLineAir = graphics.guiHeight() - rightHeight;
-+            LivingEntity vehicleWithHearts = this.getPlayerVehicleWithHealth();
-+            int vehicleHearts = this.getVehicleMaxHearts(vehicleWithHearts);
 +            Profiler.get().push("air");
-             this.extractAirBubbles(graphics, player, vehicleHearts, yLineAir, xRight);
++            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
              Profiler.get().pop();
          }
+     }
 @@ -930,6 +_,8 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }
