@@ -1,0 +1,10 @@
+{
+  "base_model": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "minecraft:item/chainmail_chestplate"
+    }
+  },
+  "base_trim_texture": "minecraft:trims/items/chestplate_trim",
+  "loader": "neoforge:trimmed_armor"
+}
