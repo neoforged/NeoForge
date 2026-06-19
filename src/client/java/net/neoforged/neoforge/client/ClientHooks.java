@@ -811,7 +811,6 @@ public class ClientHooks {
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
-        DebugScreenEntries.registerModdedDebugEntries();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup
