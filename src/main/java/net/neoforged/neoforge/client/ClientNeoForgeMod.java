@@ -37,6 +37,7 @@ import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
 import net.neoforged.neoforge.client.model.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.textures.DirectoryPalettedPermutations;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -93,6 +94,7 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterSpriteSourceTypes(RegisterSpriteSourceTypesEvent event) {
         event.register(NamespacedDirectoryLister.ID, NamespacedDirectoryLister.TYPE);
+        event.register(DirectoryPalettedPermutations.ID, DirectoryPalettedPermutations.TYPE);
     }
 
     @SubscribeEvent
