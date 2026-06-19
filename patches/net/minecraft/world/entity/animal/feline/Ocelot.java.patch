@@ -9,3 +9,12 @@
                      this.setTrusting(true);
                      this.spawnTrustingParticles(true);
                      this.level().broadcastEntityEvent(this, (byte)41);
+@@ -234,7 +_,7 @@
+         return itemStack.is(ItemTags.OCELOT_FOOD);
+     }
+ 
+-    public static boolean checkOcelotSpawnRules(EntityType<Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkOcelotSpawnRules(EntityType<? extends Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return random.nextInt(3) != 0;
+     }
+ 

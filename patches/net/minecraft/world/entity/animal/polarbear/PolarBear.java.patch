@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/polarbear/PolarBear.java
++++ b/net/minecraft/world/entity/animal/polarbear/PolarBear.java
+@@ -108,7 +_,7 @@
+     }
+ 
+     public static boolean checkPolarBearSpawnRules(
+-        EntityType<PolarBear> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends PolarBear> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         Holder<Biome> biome = level.getBiome(pos);
+         return !biome.is(BiomeTags.POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS)
