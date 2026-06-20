@@ -371,6 +371,10 @@ public abstract class ModelProvider<T extends ModelBuilder<T>> implements DataPr
         return singleTexture(name, BLOCK_FOLDER + "/leaves", "all", texture);
     }
 
+    public T flowerPotCross(String name, ResourceLocation plant) {
+        return singleTexture(name, BLOCK_FOLDER + "/flower_pot_cross", "plant", plant);
+    }
+
     /**
      * {@return a model builder that's not directly saved to disk. Meant for use in custom model loaders.}
      */
