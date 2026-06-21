@@ -2,10 +2,10 @@ package net.neoforged.neoforge.client.loading.earlydisplay;
 
 import com.mojang.blaze3d.IndexType;
 import com.mojang.blaze3d.systems.RenderPass;
-import net.neoforged.fml.earlydisplay.render.ElementShader;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPass;
+import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPipeline;
 import net.neoforged.fml.earlydisplay.render.backend.ELSTexture;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,8 +35,8 @@ final class Blaze3DRenderPass implements ELSRenderPass {
     }
 
     @Override
-    public void bindShader(ElementShader shader) {
-        this.renderPass.setPipeline(this.backend.getPipeline(shader));
+    public void bindPipeline(ELSRenderPipeline pipeline) {
+        this.renderPass.setPipeline(this.backend.getPipeline(pipeline));
     }
 
     @Override
@@ -62,7 +62,7 @@ final class Blaze3DRenderPass implements ELSRenderPass {
     @Override
     public void bindIndexBuffer(@Nullable ELSBuffer buffer) {
         if (buffer != null) {
-            this.renderPass.setIndexBuffer(((Blaze3DBuffer) buffer).unwrap(), IndexType.INT);
+            this.renderPass.setIndexBuffer(((Blaze3DBuffer) buffer).unwrap(), IndexType.SHORT);
         }
     }
 

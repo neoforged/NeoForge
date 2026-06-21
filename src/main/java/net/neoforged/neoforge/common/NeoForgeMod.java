@@ -619,8 +619,6 @@ public class NeoForgeMod {
         if (NeoForgeVersion.getBuildType() == NeoForgeBuildType.PULL_REQUEST) {
             ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));
         }
-
-        while (true);
     }
 
     public void preInit(FMLCommonSetupEvent evt) {

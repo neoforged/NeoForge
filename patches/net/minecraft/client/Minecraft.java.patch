@@ -83,17 +83,7 @@
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.modelManager);
          WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;
          windowRenderState.width = this.window.getWidth();
-@@ -654,6 +_,9 @@
-         this.gpuWarnlistManager = new GpuWarnlistManager();
-         this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
-         this.resourceManager.registerReloadListener(this.regionalCompliancies);
-+        // NEO: Moved keyboard and mouse handler setup below ingame gui creation to prevent NPEs in them.
-+        this.mouseHandler.setup(this.window);
-+        this.keyboardHandler.setup(this.window);
-         this.gui = new Gui(this, new Hud(this), this.gameRenderer.gameRenderState().guiRenderState);
-         this.gui.registerReloadListeners(this.resourceManager);
-         RealmsClient realmsClient = RealmsClient.getOrCreate(this);
-@@ -688,6 +_,7 @@
+@@ -688,9 +_,11 @@
              }
          }
  
@@ -101,6 +91,10 @@
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
          this.window.setDefaultErrorCallback();
++        net.neoforged.neoforge.client.ClientHooks.takeOverLoadingScreen(this.window);
+         GLFW.glfwShowWindow(windowCandidate.handle());
+         this.resizeGui();
+         this.loadCriticalShaders();
 @@ -704,6 +_,7 @@
          TitleScreen.registerTextures(this.textureManager);
          LoadingOverlay.registerTextures(this.textureManager);
@@ -118,6 +112,16 @@
                  this.selfTest();
              }
  
+@@ -722,6 +_,9 @@
+         }), false));
+         this.quickPlayLog = QuickPlayLog.of(gameConfig.quickPlay.logPath());
+         this.framerateLimitTracker = new FramerateLimitTracker(this.options, this);
++        // NEO: Moved keyboard and mouse handler setup below ingame gui and framerate limiter creation to prevent NPEs in them.
++        this.mouseHandler.setup(this.window);
++        this.keyboardHandler.setup(this.window);
+         this.fpsPieProfiler = new ContinuousProfiler(Util.timeSource(), () -> this.fpsPieRenderTicks, this.framerateLimitTracker::isHeavilyThrottled);
+         if (TracyClient.isAvailable() && gameConfig.game.captureTracyImages) {
+             this.tracyFrameCapture = new TracyFrameCapture();
 @@ -767,6 +_,7 @@
      }
  

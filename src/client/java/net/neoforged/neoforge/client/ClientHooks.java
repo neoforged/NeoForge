@@ -1032,6 +1032,7 @@ public class ClientHooks {
         EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
         if (earlyLoadingScreen != null) {
             earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
+            earlyLoadingScreen.periodicTick();
         }
     }
 }

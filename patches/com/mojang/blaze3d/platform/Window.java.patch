@@ -17,18 +17,6 @@
          this.backend = backend;
          if (initialMonitor != null) {
              VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -132,6 +_,11 @@
-         try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
-             backend.setWindowHints();
-             GLFW.glfwWindowHint(131076, 0);
-+            var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
-+            if (earlyLoadingScreen != null) {
-+                windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
-+                GLFW.glfwSetWindowTitle(windowHandle, title);
-+            } else
-             windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
-             if (windowHandle == 0L) {
-                 backend.handleWindowCreationErrors(glfwErrors.firstError());
 @@ -237,11 +_,11 @@
      }
  
