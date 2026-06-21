@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -560,7 +_,7 @@
+@@ -564,7 +_,7 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
@@ -9,7 +9,7 @@
              }
  
              public R decode(RegistryFriendlyByteBuf input) {
-@@ -590,7 +_,7 @@
+@@ -594,7 +_,7 @@
              private static final int DIRECT_HOLDER_ID = 0;
  
              private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
@@ -18,7 +18,7 @@
              }
  
              public Holder<T> decode(RegistryFriendlyByteBuf input) {
-@@ -612,13 +_,38 @@
+@@ -616,13 +_,38 @@
          };
      }
  
@@ -57,7 +57,7 @@
                  if (count == -1) {
                      Registry<T> registry = input.registryAccess().lookupOrThrow(registryKey);
                      return registry.get(TagKey.create(registryKey, Identifier.STREAM_CODEC.decode(input))).orElseThrow();
-@@ -634,6 +_,15 @@
+@@ -638,6 +_,15 @@
              }
  
              public void encode(RegistryFriendlyByteBuf output, HolderSet<T> value) {

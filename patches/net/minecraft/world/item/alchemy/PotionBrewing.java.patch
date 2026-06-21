@@ -47,17 +47,18 @@
          return !this.isContainer(source) ? false : this.hasContainerMix(source, ingredient) || this.hasPotionMix(source, ingredient);
      }
  
-@@ -103,6 +_,8 @@
-         if (source.isEmpty()) {
+@@ -104,6 +_,9 @@
              return source;
-         } else {
-+            var customMix = registry.getOutput(source, ingredient); // Parameters are swapped compared to what vanilla passes!
-+            if (!customMix.isEmpty()) return customMix;
-             Optional<Holder<Potion>> potion = source.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
-             if (potion.isEmpty()) {
-                 return source;
-@@ -124,9 +_,18 @@
          }
+ 
++        var customMix = registry.getOutput(source, ingredient); // Parameters are swapped compared to what vanilla passes!
++        if (!customMix.isEmpty()) return customMix;
++
+         Optional<Holder<Potion>> potion = source.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
+         if (potion.isEmpty()) {
+             return source;
+@@ -124,9 +_,18 @@
+         return source;
      }
  
 +    /**

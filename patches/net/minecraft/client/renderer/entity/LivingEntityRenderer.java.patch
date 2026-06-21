@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
-@@ -72,6 +_,7 @@
+@@ -73,6 +_,7 @@
      }
  
      public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
@@ -8,7 +8,7 @@
          poseStack.pushPose();
          if (state.hasPose(Pose.SLEEPING)) {
              Direction bedOrientation = state.bedOrientation;
-@@ -109,6 +_,7 @@
+@@ -110,6 +_,7 @@
  
          poseStack.popPose();
          super.submit(state, poseStack, submitNodeCollector, camera);
@@ -16,7 +16,7 @@
      }
  
      protected boolean shouldRenderLayers(S state) {
-@@ -205,7 +_,7 @@
+@@ -201,7 +_,7 @@
      protected boolean shouldShowName(T entity, double distanceToCameraSq) {
          if (entity.isDiscrete()) {
              float maxDist = 32.0F;

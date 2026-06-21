@@ -288,7 +288,7 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             private void openBrowseGUI() {
-                Minecraft.getInstance().setScreen(new TestScreen(
+                Minecraft.getInstance().gui.setScreen(new TestScreen(
                         Component.literal("Tests of group ").append(getTitle()),
                         framework, List.of(group)) {
                     @Override
@@ -299,7 +299,7 @@ public abstract class AbstractTestScreen extends Screen {
                         showAsGroup.setValue(false);
                         groupableList.resetRows("");
 
-                        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (button) -> minecraft.setScreen(outer))
+                        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (button) -> minecraft.gui.setScreen(outer))
                                 .size(60, 20)
                                 .pos(this.width - 20 - 60, this.height - 29)
                                 .build());

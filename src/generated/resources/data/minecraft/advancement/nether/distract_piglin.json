@@ -8,8 +8,8 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "type": "minecraft:piglin",
-              "flags": {
+              "minecraft:entity_type": "minecraft:piglin",
+              "minecraft:flags": {
                 "is_baby": false
               }
             }
@@ -25,9 +25,7 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type_specific": {
-                  "type": "neoforge:piglin_neutral_armor"
-                }
+                "neoforge:piglin_neutral_armor": {}
               }
             }
           }
@@ -42,8 +40,8 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "type": "minecraft:piglin",
-              "flags": {
+              "minecraft:entity_type": "minecraft:piglin",
+              "minecraft:flags": {
                 "is_baby": false
               }
             }
@@ -61,9 +59,7 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type_specific": {
-                  "type": "neoforge:piglin_neutral_armor"
-                }
+                "neoforge:piglin_neutral_armor": {}
               }
             }
           }

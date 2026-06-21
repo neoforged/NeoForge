@@ -108,7 +108,7 @@
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"
   ],
   "net/minecraft/data/tags/TagAppender": [
-    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<E, T>"
+    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
   ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
@@ -271,12 +271,12 @@
     "net/neoforged/neoforge/client/extensions/IModelProviderExtension"
   ],
   "net/minecraft/client/data/models/model/TexturedModel$Provider": [
-    "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"
+    "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$ProviderExtension"
   ],
   "net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection": [
     "net/neoforged/neoforge/client/IRenderableSection"
   ],
-  "net/minecraft/client/gui/Gui$HeartType": [
+  "net/minecraft/client/gui/Hud$HeartType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/client/gui/font/providers/GlyphProviderType": [

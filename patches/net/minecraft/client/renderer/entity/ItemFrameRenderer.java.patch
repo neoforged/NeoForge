@@ -16,7 +16,7 @@
  
          poseStack.popPose();
      }
-@@ -128,7 +_,7 @@
+@@ -130,7 +_,7 @@
          if (!itemStack.isEmpty()) {
              MapId framedMapId = entity.getFramedMapId(itemStack);
              if (framedMapId != null) {

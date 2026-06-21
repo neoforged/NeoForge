@@ -97,7 +97,8 @@ public abstract class LivingDamageEvent extends LivingEvent {
     public static class Post extends LivingDamageEvent {
         private final float originalDamage;
         private final DamageSource source;
-        private final float newDamage;
+        private final float inflictedDamage;
+        private final float healthDamage;
         private final float blockedDamage;
         private final float shieldDamage;
         private final int postAttackInvulnerabilityTicks;
@@ -107,7 +108,8 @@ public abstract class LivingDamageEvent extends LivingEvent {
             super(entity);
             this.originalDamage = container.getOriginalDamage();
             this.source = container.getSource();
-            this.newDamage = container.getNewDamage();
+            this.inflictedDamage = container.getInflictedDamage();
+            this.healthDamage = container.getNewDamage();
             this.blockedDamage = container.getBlockedDamage();
             this.shieldDamage = container.getShieldDamage();
             this.postAttackInvulnerabilityTicks = container.getPostAttackInvulnerabilityTicks();
@@ -126,9 +128,14 @@ public abstract class LivingDamageEvent extends LivingEvent {
             return source;
         }
 
+        /** {@return the amount of damage inflicted to the entity, after all modifications} */
+        public float getInflictedDamage() {
+            return this.inflictedDamage;
+        }
+
         /** {@return the amount of health this entity lost during this sequence} */
-        public float getNewDamage() {
-            return newDamage;
+        public float getHealthDamage() {
+            return this.healthDamage;
         }
 
         /** {@return the amount of damage reduced by a blocking action} */

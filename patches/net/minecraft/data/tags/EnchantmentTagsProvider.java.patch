@@ -3,7 +3,7 @@
 @@ -13,8 +_,13 @@
  import net.minecraft.world.item.enchantment.Enchantment;
  
- public abstract class EnchantmentTagsProvider extends KeyTagProvider<Enchantment> {
+ public abstract class EnchantmentTagsProvider extends TagsProvider<Enchantment> {
 +    /** @deprecated Forge: Use the {@linkplain #EnchantmentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public EnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {

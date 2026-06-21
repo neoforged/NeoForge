@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -29,6 +_,7 @@
+@@ -31,6 +_,7 @@
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
      private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
@@ -8,7 +8,7 @@
  
      protected Fluid() {
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
-@@ -64,6 +_,9 @@
+@@ -66,6 +_,9 @@
      }
  
      protected void entityInside(Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier) {
@@ -18,7 +18,7 @@
      }
  
      protected @Nullable ParticleOptions getDripParticle() {
-@@ -107,6 +_,11 @@
+@@ -109,6 +_,11 @@
  
      public abstract VoxelShape getShape(final FluidState state, final BlockGetter level, final BlockPos pos);
  
@@ -30,7 +30,7 @@
      public @Nullable AABB getAABB(FluidState state, BlockGetter level, BlockPos pos) {
          if (this.isEmpty()) {
              return null;
-@@ -123,5 +_,22 @@
+@@ -125,5 +_,22 @@
      @Deprecated
      public Holder.Reference<Fluid> builtInRegistryHolder() {
          return this.builtInRegistryHolder;

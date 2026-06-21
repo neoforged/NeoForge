@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 
 public class TestScreen extends Screen {
     public static int open() {
-        Minecraft.getInstance().setScreen(new TestScreen());
+        Minecraft.getInstance().gui.setScreen(new TestScreen());
         return Command.SINGLE_SUCCESS;
     }
 

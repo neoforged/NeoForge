@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -66,6 +_,16 @@
+@@ -68,6 +_,16 @@
          this.particleFactory = ignored -> particleOptions;
      }
  
@@ -17,7 +17,7 @@
      public int getBlendInDurationTicks() {
          return this.blendInDurationTicks;
      }
-@@ -137,6 +_,18 @@
+@@ -139,6 +_,18 @@
          return this;
      }
  
@@ -36,7 +36,7 @@
      public MobEffect setBlendDuration(int ticks) {
          return this.setBlendDuration(ticks, ticks, ticks);
      }
-@@ -194,8 +_,16 @@
+@@ -196,8 +_,16 @@
          return this.requiredFeatures;
      }
  

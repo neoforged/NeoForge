@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
-@@ -87,6 +_,20 @@
+@@ -84,6 +_,20 @@
          return retrievedItem;
      }
  

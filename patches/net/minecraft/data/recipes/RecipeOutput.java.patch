@@ -1,9 +1,9 @@
 --- a/net/minecraft/data/recipes/RecipeOutput.java
 +++ b/net/minecraft/data/recipes/RecipeOutput.java
-@@ -7,7 +_,9 @@
- import org.jspecify.annotations.Nullable;
+@@ -9,7 +_,9 @@
+ import net.neoforged.neoforge.common.extensions.IRecipeOutputExtension;
  
- public interface RecipeOutput extends net.neoforged.neoforge.common.extensions.IRecipeOutputExtension {
+ public interface RecipeOutput extends IRecipeOutputExtension {
 -    void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement);
 +    default void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement) {
 +        accept(id, recipe, advancement, new net.neoforged.neoforge.common.conditions.ICondition[0]);

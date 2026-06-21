@@ -27,6 +27,9 @@
     "minecraft:block_place": {
       "frequency": 13
     },
+    "minecraft:bounce": {
+      "frequency": 2
+    },
     "minecraft:container_close": {
       "frequency": 9
     },

@@ -1,16 +1,16 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
 @@ -68,6 +_,8 @@
- 
              for (LerpingBossEvent event : this.events.values()) {
                  int xLeft = screenWidth / 2 - 91;
+                 int yo = yOffset;
 +                var customizeEvent = net.neoforged.neoforge.client.ClientHooks.onCustomizeBossEventProgress(graphics, this.minecraft.getWindow(), event, xLeft, yOffset, 10 + this.minecraft.font.lineHeight);
 +                if (!customizeEvent.isCanceled()) {
-                 this.extractBar(graphics, xLeft, yOffset, event);
+                 this.extractBar(graphics, xLeft, yo, event);
                  Component msg = event.getName();
                  int width = this.minecraft.font.width(msg);
 @@ -75,6 +_,8 @@
-                 int y = yOffset - 9;
+                 int y = yo - 9;
                  graphics.text(this.minecraft.font, msg, x, y, -1);
                  yOffset += 10 + 9;
 +                }

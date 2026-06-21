@@ -9,11 +9,11 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
 
-public abstract class ItemTagsProvider extends IntrinsicHolderTagsProvider<Item> {
+public abstract class ItemTagsProvider extends TagsProvider<Item> {
     public ItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
-        super(output, Registries.ITEM, lookupProvider, item -> item.builtInRegistryHolder().key(), modId);
+        super(output, Registries.ITEM, lookupProvider, modId);
     }
 }

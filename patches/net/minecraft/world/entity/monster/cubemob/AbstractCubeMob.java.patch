@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/entity/monster/cubemob/AbstractCubeMob.java
++++ b/net/minecraft/world/entity/monster/cubemob/AbstractCubeMob.java
+@@ -125,6 +_,7 @@
+             float size = this.getDimensions(this.getPose()).width() * 2.0F;
+             float radius = size / 2.0F;
+ 
++            if (!spawnCustomParticles()) // Neo: Don't spawn particles if it's handled by the implementation itself
+             for (int i = 0; i < size * 16.0F; i++) {
+                 float dir = this.random.nextFloat() * (float) (Math.PI * 2);
+                 float d = this.random.nextFloat() * 0.5F + 0.5F;
+@@ -192,15 +_,24 @@
+             int count = this.getSplitCount();
+             PlayerTeam team = this.getTeam();
+ 
++            var children = new java.util.ArrayList<net.minecraft.world.entity.Mob>(); // Neo: Children list for MobSplitEvent.
++            this.preventConversionSpawns = true;
++
+             for (int i = 0; i < count; i++) {
+                 float xd = (i % 2 - 0.5F) * xzCubeSpawnOffset;
+                 float zd = (i / 2 - 0.5F) * xzCubeSpawnOffset;
+-                this.convertTo(
++                var child = this.convertTo(
+                     this.getType(),
+                     new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, team),
+                     EntitySpawnReason.TRIGGERED,
+                     cubeMob -> this.setUpSplitCube(cubeMob, halfSize, xd, zd)
+                 );
++                if (child != null) children.add(child);
++            }
++            this.preventConversionSpawns = false;
++
++            if (!net.neoforged.neoforge.event.EventHooks.onMobSplit(this, children).isCanceled()) {
++                children.forEach(this.level()::addFreshEntity);
+             }
+         }
+ 
+@@ -264,6 +_,15 @@
+         Vec3 movement = this.getDeltaMovement();
+         this.setDeltaMovement(movement.x, this.getJumpPower(), movement.z);
+         this.needsSync = true;
++        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
++    }
++
++    /**
++     * Called when the slime spawns particles on landing, see onUpdate.
++     * Return true to prevent the spawning of the default particles.
++     */
++    protected boolean spawnCustomParticles() {
++        return false;
+     }
+ 
+     @Override

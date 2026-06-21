@@ -1,7 +1,7 @@
 --- a/net/minecraft/server/commands/TimeCommand.java
 +++ b/net/minecraft/server/commands/TimeCommand.java
-@@ -190,7 +_,9 @@
-         }
+@@ -188,7 +_,9 @@
+         return wrapTime(clockManager.getTotalTicks(clock));
      }
  
 -    private static int setPaused(CommandSourceStack source, Holder<WorldClock> clock, boolean paused) {

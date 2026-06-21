@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/PacketProcessor.java
 +++ b/net/minecraft/network/PacketProcessor.java
-@@ -11,7 +_,7 @@
+@@ -13,7 +_,7 @@
  
  public class PacketProcessor implements AutoCloseable {
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -9,11 +9,10 @@
      private final Thread runningThread;
      private boolean closed;
  
-@@ -28,6 +_,19 @@
-             throw new RejectedExecutionException("Server already shutting down");
-         } else {
-             this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(listener, packet));
-+        }
+@@ -31,6 +_,19 @@
+         }
+ 
+         this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(listener, packet));
 +    }
 +
 +    /**
@@ -26,6 +25,7 @@
 +            throw new RejectedExecutionException("Server already shutting down");
 +        } else {
 +            this.packetsToBeHandled.add(new net.neoforged.neoforge.network.handling.QueuedPacket.CustomPayload(task));
-         }
++        }
      }
  
+     public void processQueuedPackets() {

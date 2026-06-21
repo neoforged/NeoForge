@@ -1,22 +1,22 @@
 --- a/net/minecraft/world/damagesource/DamageScaling.java
 +++ b/net/minecraft/world/damagesource/DamageScaling.java
-@@ -3,6 +_,8 @@
- import com.mojang.serialization.Codec;
- import net.minecraft.util.StringRepresentable;
+@@ -5,6 +_,8 @@
+ 
+ import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
  
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
- public enum DamageScaling implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum DamageScaling implements StringRepresentable, IExtensibleEnum {
      NEVER("never"),
      WHEN_CAUSED_BY_LIVING_NON_PLAYER("when_caused_by_living_non_player"),
-@@ -10,13 +_,46 @@
+@@ -12,13 +_,46 @@
  
      public static final Codec<DamageScaling> CODEC = StringRepresentable.fromEnum(DamageScaling::values);
      private final String id;
 +    private final net.neoforged.neoforge.common.damagesource.IScalingFunction scaling;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-     private DamageScaling(String id) {
+     DamageScaling(String id) {
 +        this(id, net.neoforged.neoforge.common.damagesource.IScalingFunction.DEFAULT);
 +    }
 +

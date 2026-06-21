@@ -12,6 +12,7 @@ import net.neoforged.neoforge.transfer.ItemAccessResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base implementation of a simple fluid {@link ResourceHandler} backed by an {@link ItemAccess}.
@@ -51,6 +52,7 @@ public class ItemAccessFluidHandler extends ItemAccessResourceHandler<FluidResou
     }
 
     @Override
+    @Nullable
     protected ItemResource update(ItemResource accessResource, int index, FluidResource newResource, int newAmount) {
         return accessResource.with(component, SimpleFluidContent.copyOf(newResource.toStack(newAmount)));
     }

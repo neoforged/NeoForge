@@ -18,7 +18,7 @@ public final class SelfTestClient {
         var clientSelfTestDestination = System.getenv("NEOFORGE_CLIENT_SELFTEST");
         if (clientSelfTestDestination != null) {
             NeoForge.EVENT_BUS.addListener((ClientTickEvent.Pre e) -> {
-                if (Minecraft.getInstance().getOverlay() instanceof LoadingOverlay) {
+                if (Minecraft.getInstance().gui.overlay() instanceof LoadingOverlay) {
                     return;
                 }
                 if (Minecraft.getInstance().isRunning()) {

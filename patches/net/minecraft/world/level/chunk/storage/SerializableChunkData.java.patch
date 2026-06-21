@@ -45,27 +45,36 @@
      public static SerializableChunkData parse(LevelHeightAccessor levelHeight, PalettedContainerFactory containerFactory, CompoundTag chunkData) {
          if (chunkData.getString("Status").isEmpty()) {
              return null;
-@@ -185,6 +_,9 @@
-                 }
+@@ -123,7 +_,7 @@
+         long[] carvingMask = chunkData.getLongArray("carving_mask").orElse(null);
+         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
+         chunkData.getCompound("Heightmaps").ifPresent(heightmapsTag -> {
+-            for (Heightmap.Types type : status.heightmapsAfter()) {
++            for (Heightmap.Types type : status.getChunkSaveHeightmaps()) {
+                 heightmapsTag.getLongArray(type.getSerializationKey()).ifPresent(longs -> heightmaps.put(type, longs));
              }
- 
-+            CompoundTag attachmentData = chunkData.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY).orElse(null);
-+            ListTag auxLightData = chunkData.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY).orElse(null);
-+
-             return new SerializableChunkData(
-                 containerFactory,
-                 chunkPos,
-@@ -203,7 +_,9 @@
-                 sectionData,
-                 entities,
-                 blockEntities,
--                structureData
-+                structureData,
-+                attachmentData,
-+                auxLightData
-             );
+         });
+@@ -186,6 +_,9 @@
+             }
          }
+ 
++        CompoundTag attachmentData = chunkData.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY).orElse(null);
++        ListTag auxLightData = chunkData.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY).orElse(null);
++
+         return new SerializableChunkData(
+             containerFactory,
+             chunkPos,
+@@ -204,7 +_,9 @@
+             sectionData,
+             entities,
+             blockEntities,
+-            structureData
++            structureData,
++            attachmentData,
++            auxLightData
+         );
      }
+ 
 @@ -263,6 +_,9 @@
                  postLoadChunk(level, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
@@ -76,6 +85,15 @@
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> fluidTicks = ProtoChunkTicks.load(this.packedTicks.fluids());
+@@ -284,7 +_,7 @@
+         chunk.setLightCorrect(this.lightCorrect);
+         EnumSet<Heightmap.Types> toPrime = EnumSet.noneOf(Heightmap.Types.class);
+ 
+-        for (Heightmap.Types type : chunk.getPersistedStatus().heightmapsAfter()) {
++        for (Heightmap.Types type : chunk.getPersistedStatus().getChunkSaveHeightmaps()) {
+             long[] heightmap = this.heightmaps.get(type);
+             if (heightmap != null) {
+                 chunk.setHeightmap(type, heightmap);
 @@ -304,6 +_,10 @@
              }
          }
@@ -86,38 +104,47 @@
 +
          if (chunkType == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunk, false);
-         } else {
-@@ -387,6 +_,18 @@
-             CompoundTag structureData = packStructureData(
-                 StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences()
-             );
-+
-+            CompoundTag attachmentData = null;
-+            try {
-+                attachmentData = chunk.writeAttachmentsToNBT(level.registryAccess());
-+            } catch (Exception exception) {
-+                LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
-+            }
-+            ListTag auxLightData = null;
-+            if (chunk instanceof LevelChunk levelChunk) {
-+                auxLightData = levelChunk.getAuxLightManager(pos).serializeNBT();
-+            }
-+
-             return new SerializableChunkData(
-                 level.palettedContainerFactory(),
-                 pos,
-@@ -405,7 +_,9 @@
-                 sectionData,
-                 entities,
-                 blockEntities,
--                structureData
-+                structureData,
-+                attachmentData,
-+                auxLightData
-             );
          }
+@@ -375,7 +_,7 @@
+         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
+ 
+         for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
+-            if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
++            if (chunk.getPersistedStatus().getChunkSaveHeightmaps().contains(entry.getKey())) {
+                 long[] data = entry.getValue().getRawData();
+                 heightmaps.put(entry.getKey(), (long[])data.clone());
+             }
+@@ -386,6 +_,18 @@
+             .map(shorts -> shorts != null && !shorts.isEmpty() ? new ShortArrayList(shorts) : null)
+             .toArray(ShortList[]::new);
+         CompoundTag structureData = packStructureData(StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences());
++
++        CompoundTag attachmentData = null;
++        try {
++            attachmentData = chunk.writeAttachmentsToNBT(level.registryAccess());
++        } catch (Exception exception) {
++            LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
++        }
++        ListTag auxLightData = null;
++        if (chunk instanceof LevelChunk levelChunk) {
++            auxLightData = levelChunk.getAuxLightManager(pos).serializeNBT();
++        }
++
+         return new SerializableChunkData(
+             level.palettedContainerFactory(),
+             pos,
+@@ -404,7 +_,9 @@
+             sectionData,
+             entities,
+             blockEntities,
+-            structureData
++            structureData,
++            attachmentData,
++            auxLightData
+         );
      }
-@@ -473,6 +_,14 @@
+ 
+@@ -471,6 +_,14 @@
          this.heightmaps.forEach((type, data) -> heightmapsTag.put(type.getSerializationKey(), new LongArrayTag(data)));
          tag.put("Heightmaps", heightmapsTag);
          tag.put("structures", this.structureData);

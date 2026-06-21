@@ -1,34 +1,47 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -104,11 +_,17 @@
+@@ -113,15 +_,16 @@
          int copyrightWidth = this.font.width(COPYRIGHT_TEXT);
          int copyrightX = this.width - copyrightWidth - 2;
          int spacing = 24;
 -        int topPos = this.height / 4 + 48;
 +        int topPos = this.height / 4 + 32;
++        int numberOfButtons = 4;
++        int currentButton = 0;
          if (this.minecraft.isDemo()) {
              topPos = this.createDemoMenuOptions(topPos, 24);
          } else {
              topPos = this.createNormalMenuOptions(topPos, 24);
-+            int modsOffset = SharedConstants.IS_RUNNING_IN_IDE ? 2 : -100;
-+            int modsWidth = SharedConstants.IS_RUNNING_IN_IDE ? 98 : 200;
-+            this.addRenderableWidget(new net.neoforged.neoforge.client.gui.widget.ModsButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
-+                    .pos(this.width / 2 + modsOffset, topPos + 24).size(modsWidth, 20)));
-+            if (!SharedConstants.IS_RUNNING_IN_IDE)
-+                topPos += 24; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button (in-dev the test world button "handles" this)
++            this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          }
  
-         topPos = this.createTestWorldButton(topPos, 24);
-@@ -158,7 +_,7 @@
-                 Button.builder(
-                         Component.literal("Create Test World"), button -> CreateWorldScreen.testWorld(this.minecraft, () -> this.minecraft.setScreen(this))
-                     )
--                    .bounds(this.width / 2 - 100, topPos += spacing, 200, 20)
-+                    .bounds(this.width / 2 - 100, topPos += spacing, 98, 20)
-                     .build()
-             );
-         }
-@@ -297,6 +_,7 @@
+-        int numberOfButtons = 3;
+-        int currentButton = 0;
+         topPos += 24;
+         this.friends = this.addRenderableWidget(
+             CommonButtons.friends(
+@@ -130,17 +_,17 @@
+                 !this.minecraft.isDemo()
+             )
+         );
+-        this.friends.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
++        this.friends.setPosition(this.getHorizontalPosition(++currentButton, numberOfButtons, 20), topPos);
+         SpriteIconButton language = this.addRenderableWidget(
+             CommonButtons.language(
+                 20, var1x -> this.minecraft.gui.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())), true
+             )
+         );
+-        language.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
++        language.setPosition(this.getHorizontalPosition(++currentButton, numberOfButtons, 20), topPos);
+         SpriteIconButton accessibility = this.addRenderableWidget(
+             CommonButtons.accessibility(20, var1x -> this.minecraft.gui.setScreen(new AccessibilityOptionsScreen(this, this.minecraft.options)), true)
+         );
+-        accessibility.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
++        accessibility.setPosition(this.getHorizontalPosition(++currentButton, numberOfButtons, 20), topPos);
+         Button.Builder var10001 = Button.builder(
+             Component.translatable("menu.options"), var1x -> this.minecraft.gui.setScreen(new OptionsScreen(this, this.minecraft.options, false))
+         );
+@@ -310,6 +_,7 @@
          this.extractPanorama(graphics, a);
          super.extractRenderState(graphics, mouseX, mouseY, a);
          this.logoRenderer.extractRenderState(graphics, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : widgetFade);
@@ -36,7 +49,7 @@
          if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
              this.splash.extractRenderState(graphics, this.width, this.font, widgetFade);
          }
-@@ -310,7 +_,13 @@
+@@ -323,7 +_,13 @@
              versionString = versionString + I18n.get("menu.modded");
          }
  

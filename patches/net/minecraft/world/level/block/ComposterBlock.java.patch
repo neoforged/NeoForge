@@ -51,7 +51,7 @@
 +        float chance = getValue(itemStack);
          if ((fillLevel != 0 || !(chance > 0.0F)) && !(level.getRandom().nextDouble() < chance)) {
              return state;
-         } else {
+         }
 @@ -407,7 +_,7 @@
  
          @Override

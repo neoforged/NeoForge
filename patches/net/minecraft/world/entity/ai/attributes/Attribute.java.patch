@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/attributes/Attribute.java
 +++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
-@@ -52,6 +_,21 @@
+@@ -54,6 +_,21 @@
          return this.sentiment.getStyle(valueIncrease);
      }
  
@@ -19,6 +19,6 @@
 +        };
 +    }
 +
-     public static enum Sentiment {
+     public enum Sentiment {
          POSITIVE,
          NEUTRAL,

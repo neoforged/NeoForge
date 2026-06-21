@@ -1,26 +1,24 @@
 --- a/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
 +++ b/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
-@@ -93,7 +_,9 @@
+@@ -96,7 +_,9 @@
          if (this.texture == null) {
-             this.texture = device.createTexture(() -> "UI " + this.getTextureLabel() + " texture", 13, TextureFormat.RGBA8, width, height, 1, 1);
+             this.texture = device.createTexture(() -> "UI " + this.getTextureLabel() + " texture", 13, GpuFormat.RGBA8_UNORM, width, height, 1, 1);
              this.textureView = device.createTextureView(this.texture);
--            this.depthTexture = device.createTexture(() -> "UI " + this.getTextureLabel() + " depth texture", 9, TextureFormat.DEPTH32, width, height, 1, 1);
+-            this.depthTexture = device.createTexture(() -> "UI " + this.getTextureLabel() + " depth texture", 9, GpuFormat.D32_FLOAT, width, height, 1, 1);
 +            // Neo: copy stencil setting from main target
-+            TextureFormat depthFormat = net.minecraft.client.Minecraft.getInstance().getMainRenderTarget().getDepthTexture().getFormat();
++            GpuFormat depthFormat = net.minecraft.client.Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture().getFormat();
 +            this.depthTexture = device.createTexture(() -> "UI " + this.getTextureLabel() + " depth texture", 9, depthFormat, width, height, 1, 1);
              this.depthTextureView = device.createTextureView(this.depthTexture);
          }
  
-@@ -136,4 +_,13 @@
-     protected abstract void renderToTexture(final T renderState, final PoseStack poseStack);
+@@ -139,4 +_,11 @@
+     protected abstract void renderToTexture(T renderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector);
  
      protected abstract String getTextureLabel();
 +
-+    /**
-+     * Neo: This is used to check if this renderer can be reused for a given state, texture width and texture height on
-+     * a subsequent frame. In Vanilla, a renderer would be used for multiple different states even within the same frame,
-+     * leading to crashes and the last state being used for all blits of that renderer in that frame.
-+     */
++    /// Neo: This is used to check if this renderer can be reused for a given state, texture width and texture height on
++    /// a subsequent frame. In Vanilla, a renderer would be used for multiple different states even within the same frame,
++    /// leading to crashes and the last state being used for all blits of that renderer in that frame.
 +    public boolean canBeReusedFor(T state, int textureWidth, int textureHeight) {
 +        return texture == null || (texture.getWidth(0) == textureWidth && texture.getHeight(0) == textureHeight);
 +    }

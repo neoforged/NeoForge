@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
 +++ b/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
-@@ -152,7 +_,7 @@
-             return false;
-         } else {
-             for (StructureTemplate.StructureBlockInfo dataMarker : StructureTemplate.processBlockInfos(
--                level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false)
-+                level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false), template
-             )) {
-                 this.handleDataMarker(level, dataMarker, position, rotation, random, chunkBB);
-             }
+@@ -153,7 +_,7 @@
+         }
+ 
+         for (StructureTemplate.StructureBlockInfo dataMarker : StructureTemplate.processBlockInfos(
+-            level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false)
++            level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false), template
+         )) {
+             this.handleDataMarker(level, dataMarker, position, rotation, random, chunkBB);
+         }

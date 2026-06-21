@@ -1,9 +1,29 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -247,6 +_,14 @@
-             }
+@@ -15,7 +_,8 @@
+ 
+ import net.neoforged.neoforge.common.extensions.IHolderExtension;
+ 
+-public sealed interface Holder<T> extends IHolderExtension<T> permits Holder.Direct, Holder.Reference {
++// TODO 26.2 - decide how to deal with Holder being seleaed
++public /* sealed */ interface Holder<T> extends IHolderExtension<T> /* permits Holder.Direct, Holder.Reference */ {
+     T value();
+ 
+     boolean isBound();
+@@ -129,7 +_,7 @@
+         DIRECT;
+     }
+ 
+-    non-sealed class Reference<T> implements Holder<T> {
++    /* non-sealed */ class Reference<T> implements Holder<T> {
+         private final HolderOwner<T> owner;
+         private @Nullable Set<TagKey<T>> tags;
+         private @Nullable DataComponentMap components;
+@@ -249,6 +_,15 @@
+             this.value = value;
          }
  
++
 +        @org.jspecify.annotations.Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            if (owner instanceof HolderLookup.RegistryLookup<T> lookup) {
@@ -15,7 +35,7 @@
          void bindTags(Collection<TagKey<T>> tags) {
              this.tags = Set.copyOf(tags);
          }
-@@ -268,6 +_,32 @@
+@@ -270,6 +_,32 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
@@ -47,4 +67,4 @@
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
          }
  
-         protected static enum Type {
+         protected enum Type {

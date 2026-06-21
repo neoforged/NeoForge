@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/model/TextureMapping.java
 +++ b/net/minecraft/client/data/models/model/TextureMapping.java
-@@ -436,4 +_,12 @@
+@@ -453,4 +_,12 @@
          Identifier id = BuiltInRegistries.ITEM.getKey(item);
          return new Material(id.withPath(path -> "item/" + path + suffix));
      }

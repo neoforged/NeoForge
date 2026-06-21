@@ -44,15 +44,15 @@
          if (valid.test(entity.getItemInHand(InteractionHand.OFF_HAND))) {
              return entity.getItemInHand(InteractionHand.OFF_HAND);
 @@ -97,7 +_,7 @@
-             arrowx.setCritArrow(true);
+             arrow.setCritArrow(true);
          }
  
--        return arrowx;
-+        return customArrow(arrowx, projectile, weapon);
+-        return arrow;
++        return customArrow(arrow, projectile, weapon);
      }
  
      protected static List<ItemStack> draw(ItemStack weapon, ItemStack projectile, LivingEntity shooter) {
-@@ -122,7 +_,8 @@
+@@ -120,7 +_,8 @@
      }
  
      protected static ItemStack useAmmo(ItemStack weapon, ItemStack projectile, LivingEntity holder, boolean forceInfinite) {
@@ -63,9 +63,9 @@
              : 0;
          if (ammoToUse > projectile.getCount()) {
 @@ -139,5 +_,20 @@
- 
-             return used;
          }
+ 
+         return used;
 +    }
 +
 +    public AbstractArrow customArrow(AbstractArrow arrow, ItemStack projectileStack, ItemStack weaponStack) {

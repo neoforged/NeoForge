@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChorusPlantBlock;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -44,8 +45,8 @@ public class CanSustainPlantTests {
 
         final BlockPos belowBlock = new BlockPos(1, 1, 1);
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(player -> player.snapTo(helper.absolutePos(belowBlock).north().getCenter()))
-                .thenExecute(player -> player.lookAt(EntityAnchorArgument.Anchor.EYES, helper.absolutePos(belowBlock).getCenter()))
+                .thenExecute(player -> player.snapTo(Vec3.atCenterOf(helper.absolutePos(belowBlock).north())))
+                .thenExecute(player -> player.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(helper.absolutePos(belowBlock))))
 
                 .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WATER))
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.LILY_PAD)))
@@ -337,7 +338,7 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WHITE_TERRACOTTA))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.DYED_TERRACOTTA.white()))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
@@ -357,7 +358,7 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.GLAZED_TERRACOTTA.white()))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 

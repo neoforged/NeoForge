@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -147,7 +_,7 @@
+@@ -141,7 +_,7 @@
                  DispensibleContainerItem bucket = (DispensibleContainerItem)dispensed.getItem();
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
                  Level level = source.level();
@@ -9,20 +9,3 @@
                      bucket.checkExtraContent(null, level, dispensed, target);
                      return this.consumeWithRemainder(source, dispensed, new ItemStack(Items.BUCKET));
                  } else {
-@@ -195,11 +_,12 @@
-                 if (BaseFireBlock.canBePlacedAt(level, targetPos, facing)) {
-                     level.setBlockAndUpdate(targetPos, BaseFireBlock.getState(level, targetPos));
-                     level.gameEvent(null, GameEvent.BLOCK_PLACE, targetPos);
--                } else if (CampfireBlock.canLight(target) || CandleBlock.canLight(target) || CandleCakeBlock.canLight(target)) {
--                    level.setBlockAndUpdate(targetPos, target.setValue(BlockStateProperties.LIT, true));
-+                } else if (target.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, dispensed, new net.minecraft.world.phys.BlockHitResult(targetPos.getCenter(), facing.getOpposite(), targetPos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState blockstate2) {
-+                    level.setBlockAndUpdate(targetPos, blockstate2);
-                     level.gameEvent(null, GameEvent.BLOCK_CHANGE, targetPos);
--                } else if (target.getBlock() instanceof TntBlock) {
--                    if (TntBlock.prime(level, targetPos)) {
-+                } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) {
-+                    if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null)) {
-+                        if (target.getBlock() instanceof TntBlock)
-                         level.removeBlock(targetPos, false);
-                     } else {
-                         this.setSuccess(false);

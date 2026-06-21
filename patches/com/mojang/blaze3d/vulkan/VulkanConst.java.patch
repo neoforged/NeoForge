@@ -1,0 +1,20 @@
+--- a/com/mojang/blaze3d/vulkan/VulkanConst.java
++++ b/com/mojang/blaze3d/vulkan/VulkanConst.java
+@@ -261,4 +_,17 @@
+             case FIFO_RELAXED -> 3;
+         };
+     }
++
++    public static int toVk(net.neoforged.neoforge.client.stencil.StencilOperation op) {
++        return switch (op) {
++            case KEEP -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_KEEP;
++            case ZERO -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_ZERO;
++            case REPLACE -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_REPLACE;
++            case INCR -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_INCREMENT_AND_CLAMP;
++            case DECR -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_DECREMENT_AND_CLAMP;
++            case INVERT -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_INVERT;
++            case INCR_WRAP -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_INCREMENT_AND_WRAP;
++            case DECR_WRAP -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_DECREMENT_AND_WRAP;
++        };
++    }
+ }

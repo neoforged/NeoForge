@@ -16,6 +16,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.ItemAccessResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base implementation of an item {@link ResourceHandler} backed by an {@link ItemAccess}.
@@ -75,6 +76,7 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
     }
 
     @Override
+    @Nullable
     protected ItemResource update(ItemResource accessResource, int index, ItemResource newResource, int newAmount) {
         var contents = getContents(accessResource);
         // Ensure we don't truncate any data by taking the max of the number of slots we need to fit, and our desired size

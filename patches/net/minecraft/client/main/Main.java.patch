@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -74,12 +_,13 @@
+@@ -99,12 +_,13 @@
          OptionSpec<Integer> proxyPortOption = parser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
          OptionSpec<String> proxyUserOption = parser.accepts("proxyUser").withRequiredArg();
          OptionSpec<String> proxyPassOption = parser.accepts("proxyPass").withRequiredArg();
@@ -16,7 +16,7 @@
          OptionSpec<String> versionOption = parser.accepts("version").withRequiredArg().required();
          OptionSpec<Integer> widthOption = parser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
          OptionSpec<Integer> heightOption = parser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
-@@ -114,10 +_,12 @@
+@@ -159,10 +_,12 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
              stage = "Bootstrap";
@@ -31,24 +31,24 @@
              stage = "Argument parsing";
              List<String> leftoverArgs = optionSet.valuesOf(nonOption);
              if (!leftoverArgs.isEmpty()) {
-@@ -186,7 +_,8 @@
-                     disableChat,
-                     captureTracyImages,
+@@ -235,7 +_,8 @@
+                     vulkanValidation,
                      renderDebugLabels,
+                     forcedGraphicsApi,
 -                    optionSet.has(offlineDeveloperMode)
 +                    // Neo: Auto-enable offlineDeveloperMode if no accessToken is passed in dev
 +                    optionSet.has(offlineDeveloperMode) || !optionSet.has(accessTokenOption)
                  ),
                  new GameConfig.QuickPlayData(quickPlayLogPath, quickPlayVariant)
              );
-@@ -197,7 +_,11 @@
+@@ -246,7 +_,11 @@
              CrashReportCategory initialization = report.addCategory("Initialization");
              NativeModuleLister.addCrashSection(initialization);
              Minecraft.fillReport(null, null, launchedVersion, null, report);
--            Minecraft.crash(null, gameDir, report);
+-            Minecraft.crash(null, gameDir, report, -1);
 +            // Neo: Instead of crash(...), we show the error immediately using our earlydisplay GUI
-+            int exitCode = Minecraft.saveReport(gameDir, report);
-+            net.neoforged.neoforge.client.loading.ClientModLoader.reportFatalError(var75, gameDir.toPath(), report);
++            int exitCode = Minecraft.saveReport(gameDir, report, -1);
++            net.neoforged.neoforge.client.loading.ClientModLoader.reportFatalError(t, gameDir.toPath(), report);
 +            System.exit(exitCode);
 +            // Neo: Rethrow to let early error screen handle it
              return;

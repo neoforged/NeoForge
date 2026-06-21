@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/ServerWatchdog.java
 +++ b/net/minecraft/server/dedicated/ServerWatchdog.java
-@@ -46,7 +_,13 @@
+@@ -48,7 +_,13 @@
                      String.format(Locale.ROOT, "%.2f", this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND)
                  );
                  LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
@@ -15,7 +15,7 @@
                  this.server.fillSystemReport(report.getSystemReport());
                  CrashReportCategory serverStats = report.addCategory("Performance stats");
                  serverStats.setDetail("Random tick rate", () -> this.server.getGameRules().getAsString(GameRules.RANDOM_TICK_SPEED));
-@@ -75,17 +_,21 @@
+@@ -77,10 +_,14 @@
      }
  
      public static CrashReport createWatchdogCrashReport(String message, long mainThreadId) {
@@ -23,19 +23,20 @@
 +    }
 +
 +    public static CrashReport createWatchdogCrashReport(String message, long mainThreadId, String messageSource) {
-         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-         ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
+         ThreadInfo[] threadInfos = Util.dumpThreadInfo();
+         Arrays.sort(threadInfos, THREAD_INFO_COMPARATOR);
          StringBuilder builder = new StringBuilder();
--        Error exception = new Error("Watchdog");
-+        Error exception = new Error(messageSource);
+-        Error exception = new Error("Watchdog (" + message + ")");
++        Error exception = new Error(messageSource + " (" + message + ")");
  
          for (ThreadInfo threadInfo : threadInfos) {
              if (threadInfo.getThreadId() == mainThreadId) {
-                 exception.setStackTrace(threadInfo.getStackTrace());
+@@ -88,7 +_,7 @@
              }
  
+             builder.append("\n");
 -            builder.append(threadInfo);
 +            builder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadInfo));
-             builder.append("\n");
          }
  
+         CrashReport report = new CrashReport(message, exception);

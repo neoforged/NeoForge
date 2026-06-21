@@ -12,7 +12,7 @@
                  if (data != null) {
                      for (ServerPlayer player : this.level.players()) {
                          data.tickCarriedBy(player, itemStack, frame);
-@@ -255,6 +_,7 @@
+@@ -260,6 +_,7 @@
      public void removePairing(ServerPlayer player) {
          this.entity.stopSeenByPlayer(player);
          player.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -20,7 +20,7 @@
      }
  
      public void addPairing(ServerPlayer player) {
-@@ -262,9 +_,10 @@
+@@ -267,9 +_,10 @@
          this.sendPairingData(player, packets::add);
          player.connection.send(new ClientboundBundlePacket(packets));
          this.entity.startSeenByPlayer(player);
@@ -32,7 +32,7 @@
          this.entity.updateDataBeforeSync();
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
-@@ -272,6 +_,7 @@
+@@ -277,6 +_,7 @@
  
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket(this);
          broadcast.accept(packet);
@@ -40,7 +40,7 @@
          if (this.trackedDataValues != null) {
              broadcast.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
          }
-@@ -309,6 +_,8 @@
+@@ -314,6 +_,8 @@
          if (this.entity instanceof Leashable leashable && leashable.isLeashed()) {
              broadcast.accept(new ClientboundSetEntityLinkPacket(this.entity, leashable.getLeashHolder()));
          }

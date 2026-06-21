@@ -88,13 +88,13 @@ public class CustomFluidContainerTest {
             var handler = ItemAccess.forPlayerInteraction(player, hand).oneByOne().getCapability(Capabilities.Fluid.ITEM);
 
             var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-            boolean success = !FluidUtil.tryPickupFluid(handler, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection()).isEmpty();
+            boolean success = !FluidUtil.tryPickupFluid(handler, player, level, blockHitResult.getBlockPos(), blockHitResult.getDirection(), null).isEmpty();
 
             if (!success) {
                 blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
                 //try to place fluid in hit block (waterlogging, fill tank, ...). When no success try the block on the hit side.
                 for (BlockPos pos : Arrays.asList(blockHitResult.getBlockPos(), blockHitResult.getBlockPos().relative(blockHitResult.getDirection()))) {
-                    success = !FluidUtil.tryPlaceFluid(handler, player, level, hand, pos).isEmpty();
+                    success = !FluidUtil.tryPlaceFluid(handler, player, level, pos, false, null).isEmpty();
                     if (success) break;
                 }
             }

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -57,7 +_,7 @@
+@@ -59,7 +_,7 @@
          for (int vertex = 0; vertex < 4; vertex++) {
              Vector3fc pos = quad.position(vertex);
              long packedUv = quad.packedUV(vertex);
@@ -9,7 +9,7 @@
              int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
              float u = UVPair.unpackU(packedUv);
              float v = UVPair.unpackV(packedUv);
-@@ -74,11 +_,12 @@
+@@ -76,11 +_,12 @@
          for (int vertex = 0; vertex < 4; vertex++) {
              Vector3fc position = quad.position(vertex);
              long packedUv = quad.packedUV(vertex);

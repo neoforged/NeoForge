@@ -6,7 +6,7 @@
      private final LevelHeightAccessor levelHeightAccessor;
 +    final LevelChunk wrapped;
  
-     SectionCopy(LevelChunk levelChunk, int sectionIndex) {
+     public SectionCopy(LevelChunk levelChunk, int sectionIndex) {
 +        this.wrapped = levelChunk;
          this.levelHeightAccessor = levelChunk;
          this.debug = levelChunk.getLevel().isDebug();

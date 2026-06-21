@@ -8,16 +8,16 @@
          graphics.nextStratum();
          this.extractRenderState(graphics, mouseX, mouseY, a);
          graphics.extractDeferredElements(mouseX, mouseY, a);
-@@ -194,7 +_,7 @@
+@@ -196,7 +_,7 @@
      }
  
      public void onClose() {
--        this.minecraft.setScreen(null);
-+        this.minecraft.popGuiLayer();
+-        this.minecraft.gui.setScreen(null);
++        this.minecraft.gui.popScreenLayer();
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
-@@ -237,9 +_,9 @@
+@@ -239,9 +_,9 @@
  
      public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(
@@ -29,7 +29,7 @@
          );
      }
  
-@@ -326,8 +_,11 @@
+@@ -327,8 +_,11 @@
          this.width = width;
          this.height = height;
          if (!this.initialized) {
@@ -41,7 +41,7 @@
          } else {
              this.repositionElements();
          }
-@@ -344,8 +_,11 @@
+@@ -345,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -53,7 +53,7 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
-@@ -469,6 +_,10 @@
+@@ -466,6 +_,10 @@
      public void onFilesDrop(List<Path> files) {
      }
  
@@ -64,18 +64,20 @@
      private void scheduleNarration(long delay, boolean ignoreSuppression) {
          this.nextNarrationTime = Util.getMillis() + delay;
          if (ignoreSuppression) {
-@@ -616,6 +_,14 @@
+@@ -613,6 +_,16 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;
 +    }
 +
-+    private void addEventWidget(GuiEventListener b) {
-+        if (b instanceof Renderable r)
++    private void addEventWidget(GuiEventListener listener) {
++        if (listener instanceof Renderable r) {
 +            this.renderables.add(r);
-+        if (b instanceof NarratableEntry ne)
++        }
++        if (listener instanceof NarratableEntry ne) {
 +            this.narratables.add(ne);
-+        children.add(b);
++        }
++        children.add(listener);
      }
  
-     @OnlyIn(Dist.CLIENT)
+     public record NarratableSearchResult(NarratableEntry entry, int index, NarratableEntry.NarrationPriority priority) {

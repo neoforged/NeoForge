@@ -1,35 +1,36 @@
 --- a/com/mojang/blaze3d/pipeline/RenderTarget.java
 +++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
-@@ -20,14 +_,23 @@
+@@ -21,6 +_,7 @@
      public int height;
      protected final String label;
      public final boolean useDepth;
 +    public final boolean useStencil;
+     protected final GpuFormat format;
      protected @Nullable GpuTexture colorTexture;
      protected @Nullable GpuTextureView colorTextureView;
-     protected @Nullable GpuTexture depthTexture;
+@@ -28,8 +_,16 @@
      protected @Nullable GpuTextureView depthTextureView;
  
-     public RenderTarget(@Nullable String label, boolean useDepth) {
-+        this(label, useDepth, false);
+     public RenderTarget(@Nullable String label, boolean useDepth, GpuFormat format) {
++        this(label, useDepth, false, format);
 +    }
 +
-+    public RenderTarget(@Nullable String label, boolean useDepth, boolean useStencil) {
++    public RenderTarget(@Nullable String label, boolean useDepth, boolean useStencil, GpuFormat format) {
 +        if (useStencil && !useDepth) {
 +            throw new IllegalArgumentException("Stencil can only be enabled if depth is enabled.");
 +        }
          this.label = label == null ? "FBO " + UNNAMED_RENDER_TARGETS++ : label;
          this.useDepth = useDepth;
 +        this.useStencil = useStencil;
+         this.format = format;
      }
  
-     public void resize(int width, int height) {
-@@ -80,7 +_,8 @@
+@@ -83,7 +_,8 @@
              this.width = width;
              this.height = height;
              if (this.useDepth) {
--                this.depthTexture = device.createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, width, height, 1, 1);
-+                var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
+-                this.depthTexture = device.createTexture(() -> this.label + " / Depth", 15, GpuFormat.D32_FLOAT, width, height, 1, 1);
++                var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : GpuFormat.D32_FLOAT;
 +                this.depthTexture = device.createTexture(() -> this.label + " / Depth", 15, format, width, height, 1, 1);
                  this.depthTextureView = device.createTextureView(this.depthTexture);
              }

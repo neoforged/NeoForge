@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -104,7 +_,8 @@
-     private final MultiBufferSource.BufferSource bufferSource;
-     private final SubmitNodeCollector submitNodeCollector;
+@@ -88,7 +_,8 @@
+     private final Projection guiProjection = new Projection();
+     private final ProjectionMatrixBuffer guiProjectionMatrixBuffer = new ProjectionMatrixBuffer("gui");
      private final FeatureRenderDispatcher featureRenderDispatcher;
 -    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
 +    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
@@ -10,16 +10,13 @@
      private @Nullable GuiItemAtlas itemAtlas;
      private int cachedGuiScale;
      private final CubeMap cubeMap = new CubeMap(Identifier.withDefaultNamespace("textures/gui/title/background/panorama"));
-@@ -118,19 +_,13 @@
-         MultiBufferSource.BufferSource bufferSource,
-         SubmitNodeCollector submitNodeCollector,
-         FeatureRenderDispatcher featureRenderDispatcher,
--        List<PictureInPictureRenderer<?>> pictureInPictureRenderers
-+        List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories
-     ) {
+@@ -97,16 +_,10 @@
+     private @Nullable TextureSetup previousTextureSetup = null;
+     private StagedVertexBuffer.@Nullable Draw previousDraw;
+ 
+-    public GuiRenderer(GuiRenderState renderState, FeatureRenderDispatcher featureRenderDispatcher, List<PictureInPictureRenderer<?>> pictureInPictureRenderers) {
++    public GuiRenderer(GuiRenderState renderState, FeatureRenderDispatcher featureRenderDispatcher, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories) {
          this.renderState = renderState;
-         this.bufferSource = bufferSource;
-         this.submitNodeCollector = submitNodeCollector;
          this.featureRenderDispatcher = featureRenderDispatcher;
 -        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();
 -
@@ -28,11 +25,11 @@
 -        }
 -
 -        this.pictureInPictureRenderers = builder.buildOrThrow();
-+        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(bufferSource, pipRendererFactories);
++        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(pipRendererFactories);
      }
  
      public void endFrame() {
-@@ -161,6 +_,7 @@
+@@ -134,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -40,21 +37,18 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -290,7 +_,9 @@
-         RenderPipeline pipeline = elementState.pipeline();
-         TextureSetup textureSetup = elementState.textureSetup();
+@@ -224,6 +_,7 @@
          ScreenRectangle scissorArea = elementState.scissorArea();
--        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)) {
-+        if (pipeline != this.previousPipeline || this.scissorChanged(scissorArea, this.previousScissorArea) || !textureSetup.equals(this.previousTextureSetup)
-+                || pipeline.getVertexFormatMode().connectedPrimitives // Neo: flush elements with connected primitives individually
-+        ) {
-             if (this.bufferBuilder != null) {
-                 this.recordMesh(this.bufferBuilder, this.previousPipeline, this.previousTextureSetup, this.previousScissorArea);
-             }
-@@ -368,14 +_,31 @@
+         if (this.previousDraw == null
+             || pipeline != this.previousPipeline
++            || pipeline.getPrimitiveTopology().connectedPrimitives // Neo: flush elements with connected primitives individually
+             || this.scissorChanged(scissorArea, this.previousScissorArea)
+             || !textureSetup.equals(this.previousTextureSetup)) {
+             this.previousPipeline = pipeline;
+@@ -287,14 +_,31 @@
  
      private void preparePictureInPicture() {
-         int guiScale = Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.guiScale;
+         int guiScale = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.guiScale;
 -        this.renderState.forEachPictureInPicture(pictureInPictureState -> this.preparePictureInPictureState(pictureInPictureState, guiScale));
 +        this.pictureInPictureRenderStatesScratch.clear();
 +        this.renderState.forEachPictureInPicture(state -> {
@@ -79,34 +73,19 @@
 +        }
 +        PictureInPictureRenderer<T> renderer = pool.get(picturesInPictureState, guiScale, firstPass);
          if (renderer != null) {
-             renderer.prepare(picturesInPictureState, this.renderState, guiScale);
+             renderer.prepare(picturesInPictureState, this.renderState, this.featureRenderDispatcher, guiScale);
 +            return true;
          }
 +        return false;
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
-@@ -548,6 +_,14 @@
-             renderPass.bindTexture("Sampler2", draw.textureSetup.texure2(), draw.textureSetup.sampler2());
-         }
- 
-+        // Neo: support non-quad vertex format modes
-+        VertexFormat.Mode formatMode = pipeline.getVertexFormatMode();
-+        if (formatMode != VertexFormat.Mode.QUADS) {
-+            RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(formatMode);
-+            indexBuffer = autoStorageIndexBuffer.getBuffer(draw.indexCount);
-+            indexType = autoStorageIndexBuffer.type();
-+        }
-+
-         renderPass.setIndexBuffer(indexBuffer, indexType);
-         renderPass.drawIndexed(draw.baseVertex, 0, draw.indexCount, 1);
-     }
-@@ -587,7 +_,7 @@
+@@ -422,7 +_,7 @@
              this.itemAtlas = null;
          }
  
 -        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
 +        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
          this.guiProjectionMatrixBuffer.close();
- 
-         for (MappableRingBuffer buffer : this.vertexBuffers.values()) {
+         this.oversizedItemRenderers.values().forEach(PictureInPictureRenderer::close);
+         this.cubeMap.close();

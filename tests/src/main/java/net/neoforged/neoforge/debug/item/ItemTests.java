@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.item;
 
 import java.util.EnumMap;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -21,13 +22,14 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
@@ -73,7 +75,7 @@ public class ItemTests {
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
         final var cowBucket = reg.items().registerItem("cow_bucket", props -> new MobBucketItem(
-                EntityType.COW,
+                EntityTypes.COW,
                 Fluids.WATER,
                 SoundEvents.BUCKET_EMPTY_FISH,
                 props.stacksTo(1)))
@@ -107,7 +109,7 @@ public class ItemTests {
                 .thenExecute(() -> helper.pulseRedstone(new net.minecraft.core.BlockPos(1, 1, 2), 3))
                 .thenIdle(5)
                 .thenExecute(() -> helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.WATER, new net.minecraft.core.BlockPos(1, 2, 1)))
-                .thenExecute(() -> helper.assertEntityPresent(net.minecraft.world.entity.EntityType.COW, 1, 3, 1))
+                .thenExecute(() -> helper.assertEntityPresent(net.minecraft.world.entity.EntityTypes.COW, 1, 3, 1))
                 .thenExecute(() -> helper.killAllEntitiesOfClass(net.minecraft.world.entity.animal.cow.Cow.class))
                 .thenSucceed());
     }
@@ -197,7 +199,7 @@ public class ItemTests {
                 .thenExecute(style -> helper.assertTrue(
                         style.isItalic(), "custom rarity did not make component italic"))
                 .thenExecute(style -> helper.assertTrue(
-                        style.getColor().getValue() == ChatFormatting.DARK_AQUA.getColor(), "custom rarity did not make component italic"))
+                        Objects.equals(style.getColor(), TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA)), "custom rarity did not make component italic"))
                 .thenSucceed());
     }
 
@@ -215,15 +217,15 @@ public class ItemTests {
             }
         }).withLang("Snow Boots").tab(CreativeModeTabs.TOOLS_AND_UTILITIES);
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 1))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1))
                 .thenExecute(pig -> pig.setItemSlot(EquipmentSlot.FEET, snowBoots.get().getDefaultInstance()))
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth() / 2 - 1))
                 // Pig shouldn't have fallen
-                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
+                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityTypes.PIG, 1, 2, 1))
 
                 // Back to max health so falling time
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
-                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 1, 1))
+                .thenWaitUntil(() -> helper.assertEntityPresent(EntityTypes.PIG, 1, 1, 1))
                 .thenSucceed());
     }
 

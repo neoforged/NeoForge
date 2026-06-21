@@ -9,8 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.resources.Identifier;
@@ -65,10 +65,11 @@ public interface IClientFluidTypeExtensions {
      * @param mc        the client instance
      * @param poseStack the transformations representing the current rendering position
      */
-    default void renderOverlay(Minecraft mc, PoseStack poseStack, MultiBufferSource buffers) {
+    default void renderOverlay(Minecraft mc, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         Identifier texture = this.getRenderOverlayTexture(mc);
-        if (texture != null)
-            ScreenEffectRenderer.renderFluid(mc, poseStack, buffers, texture);
+        if (texture != null) {
+            ScreenEffectRenderer.submitFluid(mc, poseStack, submitNodeCollector, texture);
+        }
     }
 
     /**

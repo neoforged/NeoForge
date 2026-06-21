@@ -43,7 +43,7 @@
                      }
                  }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
 @@ -69,5 +_,46 @@
-                 LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, var14);
+                 LOGGER.error("Couldn't parse data file '{}' from '{}'", id, location, e);
              }
          }
 +    }

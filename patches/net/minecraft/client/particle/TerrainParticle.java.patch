@@ -1,18 +1,23 @@
 --- a/net/minecraft/client/particle/TerrainParticle.java
 +++ b/net/minecraft/client/particle/TerrainParticle.java
-@@ -74,8 +_,14 @@
+@@ -69,12 +_,19 @@
+         return this.sprite.getV((this.vo + 1.0F) / 4.0F);
+     }
+ 
++    public TerrainParticle updateSprite(BlockState state, @Nullable BlockPos pos) {
++        if (pos != null) { // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
++            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
++        }
++        return this;
++    }
++
+     private static @Nullable TerrainParticle createTerrainParticle(
+         BlockParticleOption options, ClientLevel level, double x, double y, double z, double xAux, double yAux, double zAux
      ) {
          BlockState state = options.getState();
          return !state.isAir() && !state.is(Blocks.MOVING_PISTON) && state.shouldSpawnTerrainParticles()
 -            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state)
 +            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state).updateSprite(state, options.getPos())
              : null;
-+    }
-+
-+    public TerrainParticle updateSprite(BlockState state, BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
-+        if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
-+            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
-+        return this;
      }
  
-     @OnlyIn(Dist.CLIENT)

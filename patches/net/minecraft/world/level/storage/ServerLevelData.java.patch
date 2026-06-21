@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/ServerLevelData.java
 +++ b/net/minecraft/world/level/storage/ServerLevelData.java
-@@ -36,4 +_,11 @@
+@@ -38,4 +_,11 @@
      void setGameType(GameType gameType);
  
      void setGameTime(final long time);

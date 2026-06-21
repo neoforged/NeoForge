@@ -92,7 +92,7 @@ public class LootPoolTest {
                                     lootTableToUse,
                                     LootTable.lootTable()
                                             .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.PINK_CONCRETE))));
+                                                    .add(LootItem.lootTableItem(Items.CONCRETE.pink()))));
                         }, LootContextParamSets.ALL_PARAMS)),
                 event.getLookupProvider()));
 
@@ -109,7 +109,7 @@ public class LootPoolTest {
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
                             .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null);
-                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.PINK_CONCRETE.defaultBlockState()).create(LootContextParamSets.BLOCK);
+                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.CONCRETE.pink().defaultBlockState()).create(LootContextParamSets.BLOCK);
                     ObjectArrayList<ItemStack> collectedItems = lootTable.getRandomItems(lootparams);
                     helper.assertTrue(collectedItems.isEmpty(), "neoforge:test_loot_table_2 Loot Table should be canceled and empty");
                 })
@@ -131,13 +131,13 @@ public class LootPoolTest {
                                     lootTableToUse,
                                     LootTable.lootTable()
                                             .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.ORANGE_CONCRETE))));
+                                                    .add(LootItem.lootTableItem(Items.CONCRETE.orange()))));
                         }, LootContextParamSets.ALL_PARAMS)),
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
             if (event.getKey() == lootTableToUse) {
-                LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.BLUE_CONCRETE);
+                LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.CONCRETE.blue());
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.setTable(new LootTable.Builder().withPool(pool).build());
             }
@@ -150,9 +150,9 @@ public class LootPoolTest {
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
                             .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null);
-                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.PINK_CONCRETE.defaultBlockState()).create(LootContextParamSets.BLOCK);
+                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.CONCRETE.pink().defaultBlockState()).create(LootContextParamSets.BLOCK);
                     ObjectArrayList<ItemStack> collectedItems = lootTable.getRandomItems(lootparams);
-                    helper.assertTrue(collectedItems.size() == 1 && collectedItems.get(0).getItem().equals(Items.BLUE_CONCRETE), "neoforge:test_loot_table_3 Loot Table should be replaced and drops Blue Concrete");
+                    helper.assertTrue(collectedItems.size() == 1 && collectedItems.getFirst().getItem().equals(Items.CONCRETE.blue()), "neoforge:test_loot_table_3 Loot Table should be replaced and drops Blue Concrete");
                 })
                 .thenSucceed());
     }
@@ -172,13 +172,13 @@ public class LootPoolTest {
                                     lootTableToUse,
                                     LootTable.lootTable()
                                             .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.YELLOW_CONCRETE))));
+                                                    .add(LootItem.lootTableItem(Items.CONCRETE.yellow()))));
                         }, LootContextParamSets.ALL_PARAMS)),
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
             if (event.getKey() == lootTableToUse) {
-                LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.YELLOW_CONCRETE);
+                LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.CONCRETE.yellow());
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.getTable().addPool(pool.build());
             }
@@ -191,9 +191,9 @@ public class LootPoolTest {
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
                             .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
                             .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null);
-                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.PINK_CONCRETE.defaultBlockState()).create(LootContextParamSets.BLOCK);
+                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.CONCRETE.pink().defaultBlockState()).create(LootContextParamSets.BLOCK);
                     ObjectArrayList<ItemStack> collectedItems = lootTable.getRandomItems(lootparams);
-                    helper.assertTrue(collectedItems.size() == 2 && collectedItems.stream().allMatch(itemStack -> itemStack.getItem().equals(Items.YELLOW_CONCRETE)), "neoforge:test_loot_table_4 Loot Table should drop 2 Yellow Concrete");
+                    helper.assertTrue(collectedItems.size() == 2 && collectedItems.stream().allMatch(itemStack -> itemStack.getItem().equals(Items.CONCRETE.yellow())), "neoforge:test_loot_table_4 Loot Table should drop 2 Yellow Concrete");
                 })
                 .thenSucceed());
     }
