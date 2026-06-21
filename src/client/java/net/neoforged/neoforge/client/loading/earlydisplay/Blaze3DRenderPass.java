@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
 import com.mojang.blaze3d.IndexType;
@@ -7,7 +12,7 @@ import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPass;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPipeline;
 import net.neoforged.fml.earlydisplay.render.backend.ELSTexture;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
 final class Blaze3DRenderPass implements ELSRenderPass {
