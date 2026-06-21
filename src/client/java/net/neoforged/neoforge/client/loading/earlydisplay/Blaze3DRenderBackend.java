@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
 import com.mojang.blaze3d.GpuFormat;
@@ -21,6 +26,13 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.earlydisplay.render.ElementShader;
@@ -37,14 +49,6 @@ import org.joml.Vector4f;
 import org.joml.Vector4fc;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class Blaze3DRenderBackend extends ELSRenderBackend {
@@ -148,8 +152,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     public void copyBufferToBuffer(ELSBufferSlice source, ELSBufferSlice destination) {
         this.device.createCommandEncoder().copyToBuffer(
                 ((Blaze3DBufferSlice) source).unwrap(),
-                ((Blaze3DBufferSlice) destination).unwrap()
-        );
+                ((Blaze3DBufferSlice) destination).unwrap());
     }
 
     @Override
@@ -179,8 +182,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
 
             if (width[0] != 0 || height[0] != 0) {
                 GpuSurface.PresentMode presentMode = GpuSurface.PresentMode.getSupportedVsyncMode(
-                        gpuSurface.supportedPresentModes(), Minecraft.getInstance().options.enableVsync().get()
-                );
+                        gpuSurface.supportedPresentModes(), Minecraft.getInstance().options.enableVsync().get());
                 GpuSurface.Configuration config = new GpuSurface.Configuration(width[0], height[0], presentMode);
 
                 try {
@@ -241,7 +243,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     }
 
     @Override
-    public void close() { }
+    public void close() {}
 
     @Override
     public String name() {

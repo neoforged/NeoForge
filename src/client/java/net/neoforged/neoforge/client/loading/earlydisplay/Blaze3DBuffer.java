@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
-import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
-
 import java.util.Set;
+import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 
 @SuppressWarnings("UnstableApiUsage")
 final class Blaze3DBuffer implements ELSBuffer {
