@@ -28,6 +28,7 @@ import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderBackend;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPass;
+import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPipeline;
 import net.neoforged.fml.earlydisplay.render.backend.ELSTexture;
 import net.neoforged.fml.earlydisplay.render.backend.TextureFormat;
 import net.neoforged.fml.earlydisplay.theme.NativeBuffer;
@@ -57,7 +58,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
             .addAttribute("position", GpuFormat.RG32_FLOAT)
             .addAttribute("uv", GpuFormat.RG32_FLOAT)
             .build();
-    private static final VertexFormat FORMAT_COLOR = VertexFormat.builder(0)
+    private static final VertexFormat FORMAT_POS_COLOR = VertexFormat.builder(0)
             .addAttribute("position", GpuFormat.RG32_FLOAT)
             .addAttribute("color", GpuFormat.RGBA8_UNORM)
             .build();
@@ -66,34 +67,47 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
             .addAttribute("uv", GpuFormat.RG32_FLOAT)
             .addAttribute("color", GpuFormat.RGBA8_UNORM)
             .build();
-    private static final BindGroupLayout BIND_GROUP_LAYOUT = BindGroupLayout.builder()
-            .withSampler("tex")
-            .withUniform("screenSize", UniformType.UNIFORM_BUFFER)
-            .build();
 
     private final GpuDevice device;
     private final Window window;
-    private final Map<ElementShader, RenderPipeline> pipelines = new IdentityHashMap<>();
+    private final Map<ELSRenderPipeline, RenderPipeline> pipelines = new IdentityHashMap<>();
 
     public Blaze3DRenderBackend(Window window) {
         this.device = RenderSystem.getDevice();
         this.window = window;
+        super();
     }
 
     @Override
-    public void preloadPipelines(Collection<ElementShader> shaders) {
-        for (ElementShader shader : shaders) {
+    public void preloadPipelines(Collection<ELSRenderPipeline> pipelines) {
+        for (ELSRenderPipeline elsPipeline : pipelines) {
+            ElementShader shader = elsPipeline.shader();
+            BindGroupLayout.Builder layoutBuilder = BindGroupLayout.builder();
+            if (elsPipeline.sampler() != null) {
+                layoutBuilder.withSampler(elsPipeline.sampler());
+            }
+            for (String uniform : elsPipeline.uniforms()) {
+                layoutBuilder.withUniform(uniform, UniformType.UNIFORM_BUFFER);
+            }
             RenderPipeline pipeline = RenderPipeline.builder()
                     .withLocation(makeId(shader.getName()))
                     .withVertexShader(makeId(shader.getVertexShaderPath()))
                     .withFragmentShader(makeId(shader.getFragmentShaderPath()))
-                    .withPrimitiveTopology(PrimitiveTopology.QUADS)
+                    .withPrimitiveTopology(switch (elsPipeline.vertexMode()) {
+                        case TRIANGLES -> PrimitiveTopology.TRIANGLES;
+                        case QUADS -> PrimitiveTopology.QUADS;
+                    })
                     .withColorTargetState(COLOR_STATE)
-                    .withVertexBinding(0, FORMAT_POS_TEX_COLOR)
-                    .withBindGroupLayout(BIND_GROUP_LAYOUT)
+                    .withVertexBinding(0, switch (elsPipeline.vertexFormat()) {
+                        case POS -> FORMAT_POS;
+                        case POS_TEX -> FORMAT_POS_TEX;
+                        case POS_COLOR -> FORMAT_POS_COLOR;
+                        case POS_TEX_COLOR -> FORMAT_POS_TEX_COLOR;
+                    })
+                    .withBindGroupLayout(layoutBuilder.build())
                     .build();
-            device.precompilePipeline(pipeline, makeShaderSource(shader));
-            this.pipelines.put(shader, pipeline);
+            this.device.precompilePipeline(pipeline, makeShaderSource(shader));
+            this.pipelines.put(elsPipeline, pipeline);
         }
     }
 
@@ -104,7 +118,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
             case RED -> GpuFormat.R8_UNORM;
         };
         GpuTexture texture = this.device.createTexture(debugName, TEX_USAGE, b3dFormat, width, height, 1, 1);
-        GpuSampler sampler = RenderSystem.getSamplerCache().getRepeat(linearFilter ? FilterMode.LINEAR : FilterMode.NEAREST);
+        GpuSampler sampler = RenderSystem.getSamplerCache().getClampToEdge(linearFilter ? FilterMode.LINEAR : FilterMode.NEAREST);
         return new Blaze3DTexture(format, texture, this.device.createTextureView(texture), sampler);
     }
 
@@ -131,10 +145,10 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     }
 
     @Override
-    public void copyBufferToBuffer(ELSBuffer source, ELSBuffer destination) {
+    public void copyBufferToBuffer(ELSBufferSlice source, ELSBufferSlice destination) {
         this.device.createCommandEncoder().copyToBuffer(
-                ((Blaze3DBuffer) source).slice().unwrap(),
-                ((Blaze3DBuffer) destination).slice().unwrap()
+                ((Blaze3DBufferSlice) source).unwrap(),
+                ((Blaze3DBufferSlice) destination).unwrap()
         );
     }
 
@@ -146,7 +160,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     @Override
     public ELSRenderPass createRenderPass(String label, ELSTexture target, ThemeColor clearColor) {
         GpuTextureView texture = ((Blaze3DTexture) target).view();
-        Optional<Vector4fc> clearColorVec = Optional.of(new Vector4f(clearColor.a(), clearColor.r(), clearColor.g(), clearColor.a()));
+        Optional<Vector4fc> clearColorVec = Optional.of(new Vector4f(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a()));
         return new Blaze3DRenderPass(this, this.device.createCommandEncoder().createRenderPass(() -> label, texture, clearColorVec));
     }
 
@@ -216,7 +230,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     }
 
     @Override
-    public void acquireContextOwnership() {}
+    public void acquireContextOwnership(boolean createContext) {}
 
     @Override
     public void releaseContextOwnership() {}
@@ -234,10 +248,10 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
         return "Blaze3D";
     }
 
-    RenderPipeline getPipeline(ElementShader shader) {
-        RenderPipeline pipeline = this.pipelines.get(shader);
+    RenderPipeline getPipeline(ELSRenderPipeline elsPipeline) {
+        RenderPipeline pipeline = this.pipelines.get(elsPipeline);
         if (pipeline == null) {
-            throw new IllegalArgumentException("Unrecognized shader: " + shader);
+            throw new IllegalArgumentException("Unrecognized pipeline: " + elsPipeline);
         }
         return pipeline;
     }
