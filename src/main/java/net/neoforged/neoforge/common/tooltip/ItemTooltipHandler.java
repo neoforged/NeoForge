@@ -34,7 +34,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
-@SuppressWarnings("UnstableApiUsage")
 public final class ItemTooltipHandler {
     private static final List<TooltipAppender> HEAD_APPENDERS = new ArrayList<>();
     private static final List<TooltipAppender> MIDDLE_APPENDERS = new ArrayList<>();

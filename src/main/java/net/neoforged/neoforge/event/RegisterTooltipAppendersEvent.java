@@ -16,7 +16,6 @@ import net.neoforged.neoforge.common.tooltip.TooltipAppender;
 import net.neoforged.neoforge.common.tooltip.TooltipLocation;
 import org.jetbrains.annotations.ApiStatus;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class RegisterTooltipAppendersEvent extends Event implements IModBusEvent {
     private final Map<TooltipLocation, List<TooltipAppender>> appenders;
     private final Map<DataComponentType<?>, TooltipAppender> componentAppenders;
