@@ -605,7 +605,8 @@
 +                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
 +                    if (!slotsWithGliders.isEmpty()) {
                      EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
-                     this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
+-                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
++                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
 +                    }
                  }
  
