@@ -216,7 +216,8 @@ public class NeoForgeMod {
      */
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
 
-    /// This attribute controls if the player may use elytra or gliding flight, akin to the [`GLIDER` data component][net.minecraft.core.component.DataComponents#GLIDER].
+    /// This attribute controls if an entity may use gliding flight (elytra).
+    /// The [`glider` data component][net.minecraft.core.component.DataComponents#GLIDER] is modified to use this attribute.
     ///
     /// This is a [BooleanAttribute], and should only be modified using the standards established by that class.
     public static final Holder<Attribute> GLIDING_FLIGHT = ATTRIBUTES.register("gliding_flight", () -> new BooleanAttribute("neoforge.gliding_flight", false).setSyncable(true));
