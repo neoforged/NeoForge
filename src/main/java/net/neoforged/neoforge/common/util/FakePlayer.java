@@ -6,10 +6,14 @@
 package net.neoforged.neoforge.common.util;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.DataFixer;
+import java.nio.file.Path;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.network.Connection;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
@@ -68,11 +72,14 @@ import net.minecraft.network.protocol.game.ServerboundTeleportToEntityPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stat;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -140,6 +147,48 @@ public class FakePlayer extends ServerPlayer {
     @Override
     public boolean isFakePlayer() {
         return true;
+    }
+
+    public static class FakePlayerAdvancements extends PlayerAdvancements {
+        public FakePlayerAdvancements(DataFixer fixer, PlayerList playerList, ServerAdvancementManager manager, Path path, ServerPlayer player) {
+            super(fixer, playerList, manager, path, player);
+        }
+
+        @Override
+        protected void load(ServerAdvancementManager manager) {}
+
+        @Override
+        public void setPlayer(ServerPlayer player) {}
+
+        @Override
+        public void stopListening() {}
+
+        @Override
+        public void reload(ServerAdvancementManager manager) {}
+
+        @Override
+        public void save() {}
+
+        @Override
+        public boolean award(AdvancementHolder advancement, String criterion) {
+            return false;
+        }
+
+        @Override
+        public boolean revoke(AdvancementHolder advancement, String criterion) {
+            return false;
+        }
+
+        @Override
+        public void flushDirty(ServerPlayer player) {}
+
+        @Override
+        public void setSelectedTab(@Nullable AdvancementHolder advancement) {}
+
+        @Override
+        public AdvancementProgress getOrStartProgress(AdvancementHolder advancement) {
+            return new AdvancementProgress();
+        }
     }
 
     @ParametersAreNonnullByDefault
