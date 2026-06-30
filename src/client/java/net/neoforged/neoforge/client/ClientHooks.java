@@ -351,13 +351,6 @@ public class ClientHooks {
         return e.getSound();
     }
 
-    @Nullable
-    public static Music selectMusic(Music situational, @Nullable SoundInstance playing) {
-        SelectMusicEvent e = new SelectMusicEvent(situational, playing);
-        NeoForge.EVENT_BUS.post(e);
-        return e.getMusic();
-    }
-
     public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         for (Screen layer : backgroundLayers) {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
