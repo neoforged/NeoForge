@@ -87,8 +87,8 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
         for (ELSRenderPipeline elsPipeline : pipelines) {
             ElementShader shader = elsPipeline.shader();
             BindGroupLayout.Builder layoutBuilder = BindGroupLayout.builder();
-            if (elsPipeline.sampler() != null) {
-                layoutBuilder.withSampler(elsPipeline.sampler());
+            if (elsPipeline.texture() != null) {
+                layoutBuilder.withSampler(elsPipeline.texture());
             }
             for (String uniform : elsPipeline.uniforms()) {
                 layoutBuilder.withUniform(uniform, UniformType.UNIFORM_BUFFER);
