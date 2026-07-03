@@ -216,6 +216,7 @@ import net.neoforged.neoforge.event.entity.player.CustomClickActionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSwitchHotbarSlotEvent;
 import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -881,6 +882,15 @@ public class CommonHooks {
 
     public static void onEmptyLeftClick(Player player) {
         NeoForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
+    }
+
+    public static PlayerSwitchHotbarSlotEvent.Pre onSwitchHotbarSlotPre(Player player, int oldSlotIndex, int newSlotIndex) {
+        var preEvent = new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex);
+        return NeoForge.EVENT_BUS.post(preEvent);
+    }
+
+    public static void onSwitchHotbarSlotPost(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Post(player, oldSlotIndex, newSlotIndex));
     }
 
     /**

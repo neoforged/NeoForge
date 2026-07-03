@@ -96,6 +96,28 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
+@@ -1487,6 +_,10 @@
+     @Override
+     public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
++
++        var preEvent = net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
++        if (preEvent.isCanceled()) return;
++
+         if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
+             if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+                 this.player.stopUsingItem();
+@@ -1494,6 +_,10 @@
+ 
+             this.player.getInventory().setSelectedSlot(packet.getSlot());
+             this.player.resetLastActionTime();
++
++            if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
++                net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPost(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
++            }
+         } else {
+             LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
+         }
 @@ -1513,8 +_,9 @@
                  }
  
