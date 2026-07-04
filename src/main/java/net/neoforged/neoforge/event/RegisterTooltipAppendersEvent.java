@@ -50,7 +50,7 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
     ///
     /// @param type     The type to register the appender for
     /// @param appender The appender to register
-    public void registerComponentAppenderBeforeAll(Supplier<DataComponentType<?>> type, TooltipAppender appender) {
+    public void registerComponentAppenderBeforeAll(Supplier<? extends DataComponentType<?>> type, TooltipAppender appender) {
         this.registerComponentAppenderBeforeAll(type.get(), appender);
     }
 
@@ -67,7 +67,7 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
     /// @param type      The type to register the appender for
     /// @param otherType The type before which the provided appender should be applied
     /// @param appender  The appender to register
-    public void registerComponentAppenderBefore(Supplier<DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
+    public void registerComponentAppenderBefore(Supplier<? extends DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
         this.registerComponentAppenderBefore(type.get(), otherType, appender);
     }
 
@@ -86,7 +86,7 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
     /// @param type      The type to register the appender for
     /// @param otherType The type after which the provided appender should be applied
     /// @param appender  The appender to register
-    public void registerComponentAppenderAfter(Supplier<DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
+    public void registerComponentAppenderAfter(Supplier<? extends DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
         this.registerComponentAppenderAfter(type.get(), otherType, appender);
     }
 
@@ -104,7 +104,7 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
     ///
     /// @param type     The type to register the appender for
     /// @param appender The appender to register
-    public void registerComponentAppenderAfterAll(Supplier<DataComponentType<?>> type, TooltipAppender appender) {
+    public void registerComponentAppenderAfterAll(Supplier<? extends DataComponentType<?>> type, TooltipAppender appender) {
         this.registerComponentAppenderAfterAll(type.get(), appender);
     }
 
