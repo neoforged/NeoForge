@@ -9,6 +9,7 @@ import com.google.common.graph.MutableGraph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
@@ -37,24 +38,40 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
         this.lastVanillaType = lastVanillaType;
     }
 
-    /// Register a [TooltipAppender] at the provided [TooltipLocation]
+    /// Register a [TooltipAppender] at the provided [TooltipLocation].
     ///
     /// @param location The location to apply the appender to
     /// @param appender The appender to register
     public void registerAppender(TooltipLocation location, TooltipAppender appender) {
-        this.appenders.computeIfAbsent(location, $ -> new ArrayList<>()).add(appender);
+        this.appenders.computeIfAbsent(location, _ -> new ArrayList<>()).add(appender);
     }
 
-    /// Register a [TooltipAppender] for the provided [DataComponentType] before all other data component tooltip appenders
+    /// Register a [TooltipAppender] for the provided [DataComponentType] before all vanilla data component tooltip appenders.
+    ///
+    /// @param type     The type to register the appender for
+    /// @param appender The appender to register
+    public void registerComponentAppenderBeforeAll(Supplier<DataComponentType<?>> type, TooltipAppender appender) {
+        this.registerComponentAppenderBeforeAll(type.get(), appender);
+    }
+
+    /// Register a [TooltipAppender] for the provided [DataComponentType] before all vanilla data component tooltip appenders.
     ///
     /// @param type     The type to register the appender for
     /// @param appender The appender to register
     public void registerComponentAppenderBeforeAll(DataComponentType<?> type, TooltipAppender appender) {
-        this.registerComponentAppender(type, appender);
-        this.componentGraph.putEdge(type, this.firstVanillaType);
+        this.registerComponentAppenderBefore(type, this.firstVanillaType, appender);
     }
 
-    /// Register a [TooltipAppender] for the provided [DataComponentType] before the other provided data component type
+    /// Register a [TooltipAppender] for the provided [DataComponentType] before the other provided data component type.
+    ///
+    /// @param type      The type to register the appender for
+    /// @param otherType The type before which the provided appender should be applied
+    /// @param appender  The appender to register
+    public void registerComponentAppenderBefore(Supplier<DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
+        this.registerComponentAppenderBefore(type.get(), otherType, appender);
+    }
+
+    /// Register a [TooltipAppender] for the provided [DataComponentType] before the other provided data component type.
     ///
     /// @param type      The type to register the appender for
     /// @param otherType The type before which the provided appender should be applied
@@ -64,7 +81,16 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
         this.componentGraph.putEdge(type, otherType);
     }
 
-    /// Register a [TooltipAppender] for the provided [DataComponentType] after the other provided data component type
+    /// Register a [TooltipAppender] for the provided [DataComponentType] after the other provided data component type.
+    ///
+    /// @param type      The type to register the appender for
+    /// @param otherType The type after which the provided appender should be applied
+    /// @param appender  The appender to register
+    public void registerComponentAppenderAfter(Supplier<DataComponentType<?>> type, DataComponentType<?> otherType, TooltipAppender appender) {
+        this.registerComponentAppenderAfter(type.get(), otherType, appender);
+    }
+
+    /// Register a [TooltipAppender] for the provided [DataComponentType] after the other provided data component type.
     ///
     /// @param type      The type to register the appender for
     /// @param otherType The type after which the provided appender should be applied
@@ -74,13 +100,20 @@ public final class RegisterTooltipAppendersEvent extends Event implements IModBu
         this.componentGraph.putEdge(otherType, type);
     }
 
-    /// Register a [TooltipAppender] for the provided [DataComponentType] after all other data component tooltip appenders
+    /// Register a [TooltipAppender] for the provided [DataComponentType] after all vanilla data component tooltip appenders.
+    ///
+    /// @param type     The type to register the appender for
+    /// @param appender The appender to register
+    public void registerComponentAppenderAfterAll(Supplier<DataComponentType<?>> type, TooltipAppender appender) {
+        this.registerComponentAppenderAfterAll(type.get(), appender);
+    }
+
+    /// Register a [TooltipAppender] for the provided [DataComponentType] after all vanilla data component tooltip appenders.
     ///
     /// @param type     The type to register the appender for
     /// @param appender The appender to register
     public void registerComponentAppenderAfterAll(DataComponentType<?> type, TooltipAppender appender) {
-        this.registerComponentAppender(type, appender);
-        this.componentGraph.putEdge(this.lastVanillaType, type);
+        this.registerComponentAppenderAfter(type, this.lastVanillaType, appender);
     }
 
     private void registerComponentAppender(DataComponentType<?> type, TooltipAppender appender) {

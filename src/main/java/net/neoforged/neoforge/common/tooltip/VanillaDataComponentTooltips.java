@@ -49,6 +49,8 @@ final class VanillaDataComponentTooltips {
         putDefaultEntry(appenders, DataComponents.DYED_COLOR);
         putDefaultEntry(appenders, DataComponents.PROFILE);
         putDefaultEntry(appenders, DataComponents.LORE);
+        putDefaultEntry(appenders, DataComponents.SULFUR_CUBE_CONTENT);
+        // Neo: Replace attribute tooltips with custom handling
         appenders.put(DataComponents.ATTRIBUTE_MODIFIERS, (stack, context, display, player, flag, builder) -> AttributeUtil.addAttributeTooltips(stack, builder, display, AttributeTooltipContext.of(player, context, display, flag)));
         putUnitEntry(appenders, DataComponents.INTANGIBLE_PROJECTILE, ItemStack.INTANGIBLE_TOOLTIP);
         putUnitEntry(appenders, DataComponents.UNBREAKABLE, ItemStack.UNBREAKABLE_TOOLTIP);

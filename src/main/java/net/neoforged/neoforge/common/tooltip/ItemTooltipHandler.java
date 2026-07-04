@@ -98,9 +98,9 @@ public final class ItemTooltipHandler {
     }
 
     private static void buildInitialComponentGraph(
-            Map<DataComponentType<?>, TooltipAppender> appenders,
+            SequencedMap<DataComponentType<?>, TooltipAppender> appenders,
             MutableGraph<DataComponentType<?>> graph,
-            Map<DataComponentType<?>, TooltipAppender> vanillaAppenders) {
+            SequencedMap<DataComponentType<?>, TooltipAppender> vanillaAppenders) {
         vanillaAppenders.forEach((type, appender) -> {
             appenders.put(type, appender);
             graph.addNode(type);
