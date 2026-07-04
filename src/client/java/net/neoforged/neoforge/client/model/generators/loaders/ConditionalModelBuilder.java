@@ -10,18 +10,17 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.resources.model.cuboid.MissingCuboidModel;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.ConditionalModelLoader;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import org.jspecify.annotations.Nullable;
 
 /// @see ConditionalModelLoader
 public final class ConditionalModelBuilder extends CustomLoaderBuilder {
     private final List<ICondition> conditions = new ArrayList<>();
-    @Nullable
-    private Identifier fallback;
+    private Identifier fallback = MissingCuboidModel.LOCATION;
 
     public ConditionalModelBuilder() {
         super(ConditionalModelLoader.ID, true);
@@ -55,7 +54,6 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
 
     @Override
     public JsonObject toJson(JsonObject json) {
-        Preconditions.checkNotNull(fallback, "No fallback model set");
         Preconditions.checkState(!conditions.isEmpty(), "No conditions specified");
 
         json = super.toJson(json);
