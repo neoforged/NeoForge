@@ -239,7 +239,7 @@ public class ModListScreen extends Screen {
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             final Style component = findTextLine((int) event.x(), (int) event.y());
             if (component != null && component.getClickEvent() != null) {
-                defaultHandleGameClickEvent(component.getClickEvent(), minecraft, ModListScreen.this);
+                defaultHandleClickEvent(component.getClickEvent(), minecraft, ModListScreen.this);
                 return true;
             }
             return super.mouseClicked(event, doubleClick);
