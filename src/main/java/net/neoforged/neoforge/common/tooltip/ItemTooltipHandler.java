@@ -8,17 +8,14 @@ package net.neoforged.neoforge.common.tooltip;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedMap;
-import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -27,8 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.loading.toposort.CyclePresentException;
-import net.neoforged.fml.loading.toposort.TopologicalSort;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.RegisterTooltipAppendersEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -114,35 +110,7 @@ public final class ItemTooltipHandler {
     }
 
     private static void addDataComponentAppenders(SequencedMap<DataComponentType<?>, TooltipAppender> appenders, MutableGraph<DataComponentType<?>> graph) {
-        // Build the index mapping in a way that can be used as a comparator to preserve insertion order.
-        Object2IntMap<DataComponentType<?>> insertionOrder = new Object2IntOpenHashMap<>();
-        int idx = 0;
-        for (DataComponentType<?> listener : appenders.keySet()) {
-            insertionOrder.put(listener, idx++);
-        }
-
-        // Do the sort.
-        List<DataComponentType<?>> sorted;
-        try {
-            sorted = TopologicalSort.topologicalSort(graph, Comparator.comparingInt(insertionOrder::getInt));
-        } catch (CyclePresentException ex) {
-            // Build a real error message and re-throw.
-            StringBuilder sb = new StringBuilder();
-            sb.append("Cycles were detected during component tooltip appender sorting:\n");
-
-            Set<Set<DataComponentType<?>>> cycles = ex.getCycles();
-            idx = 0;
-            for (Set<DataComponentType<?>> cycle : cycles) {
-                sb.append(idx++).append(": ");
-                for (DataComponentType<?> key : cycle) {
-                    sb.append(key).append("->");
-                }
-                sb.append(cycle.iterator().next()).append('\n');
-            }
-
-            throw new IllegalArgumentException(sb.toString());
-        }
-
+        List<DataComponentType<?>> sorted = CommonHooks.sortGraphChecked(graph, appenders.keySet(), "component tooltip appenders", Function.identity());
         for (DataComponentType<?> type : sorted) {
             MIDDLE_APPENDERS.add(appenders.get(type));
         }
