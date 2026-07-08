@@ -342,17 +342,15 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getNewDamage();
     }
 
-    /**
-     * Creates and posts a {@link LivingDamageEvent.Post}. This is invoked in
-     * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
-     * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
-     *
-     * @param entity    the entity to receive damage
-     * @param container the container object holding the truly final values of the damage pipeline. The values
-     *                  of this container and used to instantiate final fields in the event.
-     */
-    public static void onLivingDamagePost(LivingEntity entity, DamageContainer container) {
-        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, container));
+    /// Creates and posts a [LivingDamageEvent.Post]. This is invoked in [LivingEntity#actuallyHurt(DamageSource, float)] and [Player#actuallyHurt(DamageSource, float)]
+    /// and requires access to the internal field [LivingEntity#damageContainers] as a parameter.
+    ///
+    /// @param entity             the entity to receive damage
+    /// @param container          the container object holding the truly final values of the damage pipeline. The values of this container and used to instantiate final
+    /// fields in the event.
+    /// @param performSideEffects whether side effects should be performed
+    public static void onLivingDamagePost(LivingEntity entity, DamageContainer container, boolean performSideEffects) {
+        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, container, performSideEffects));
     }
 
     /**

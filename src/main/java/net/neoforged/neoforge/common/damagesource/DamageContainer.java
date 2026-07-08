@@ -148,12 +148,12 @@ public class DamageContainer {
     /// - Knockback performed on the entity
     /// - Hurt/death sounds should be played
     ///@param sideEffects `true` if damage side effects should be performed.
-    public void setDamageSideEffects(boolean sideEffects) {
+    public void setShouldCauseSideEffects(boolean sideEffects) {
         this.damageSideEffects = sideEffects;
     }
 
     /// {@return `true` if damage side effects should be performed}
-    public boolean getDamageSideEffects() {
+    public boolean shouldCauseSideEffects() {
         return this.damageSideEffects;
     }
 

@@ -212,7 +212,7 @@
 +        this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
  
 -        boolean tookFullDamage = true;
-+        boolean performSideEffects = true;// Neo: Rename local variable to be more clear on its behavior
++        boolean performSideEffects = true; // Neo: Rename local variable to be more clear on its behavior
          if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
              if (damage <= this.lastHurt) {
 +                // Neo: Pop the container when vanilla would abort the incoming damage due to the invulnerability ticks.
@@ -221,7 +221,7 @@
              }
 +
 +            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
-+            this.damageContainers.peek().setDamageSideEffects(false);
++            this.damageContainers.peek().setShouldCauseSideEffects(false);
 +            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
  
@@ -241,7 +241,7 @@
              this.hurtDuration = 10;
              this.hurtTime = this.hurtDuration;
          }
-+        performSideEffects = this.damageContainers.peek().getDamageSideEffects();
++        performSideEffects = this.damageContainers.peek().shouldCauseSideEffects();
  
          this.resolveMobResponsibleForDamage(source);
          this.resolvePlayerResponsibleForDamage(source);
@@ -273,7 +273,7 @@
  
 +        // Neo: Fire our post-damage event hooks. As usual, fire the extension method first, then the event version.
 +        this.onDamageTaken(this.damageContainers.peek());
-+        net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
++        net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek(), performSideEffects);
 +        this.damageContainers.pop();
          return success;
      }
