@@ -22,10 +22,10 @@ public interface TooltipFlagExtension {
         return false;
     }
 
-    /// {@return if the tooltip should provide recipe viewer specific information} For example, some mods hide extra information by requiring
+    /// {@return if the tooltip should provide all information that it may show under varying circumstances} For example, some mods hide extra information by requiring
     /// a player to hold a key down (like SHIFT). These mods can choose to provide this extra information to recipe viewers unconditionally,
     /// so that the tooltip can be fully indexed and searched.
-    default boolean isRecipeViewer() {
+    default boolean shouldDisplayAllInformation() {
         return false;
     }
 }
