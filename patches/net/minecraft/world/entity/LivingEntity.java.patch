@@ -611,13 +611,18 @@
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -3187,6 +_,9 @@
+@@ -3186,7 +_,14 @@
+     }
  
      protected boolean canGlide() {
++        return canGlide(true);
++    }
++
++    protected boolean canGlide(boolean isNeoForgeConnection) {
          if (!this.onGround() && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
 +            // Neo: Check only the gliding flight attribute on the entity (for directly applied attributes)
 +            var glidingFlight = this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT);
-+            if (true) return glidingFlight > 0;
++            if (isNeoForgeConnection) return glidingFlight > 0;
              for (EquipmentSlot slot : EquipmentSlot.VALUES) {
                  if (canGlideUsing(this.getItemBySlot(slot), slot)) {
                      return true;
