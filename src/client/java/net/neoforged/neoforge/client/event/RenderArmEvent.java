@@ -18,17 +18,15 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Fired before the player's arm is rendered in first person. This is a more targeted version of {@link RenderHandEvent},
- * and can be used to replace the rendering of the player's arm, such as for rendering armor on the arm or outright
- * replacing the arm with armor.
- *
- * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
- * If this event is cancelled, then the arm will not be rendered.</p>
- *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
- */
+/// Fired before the player's arm is rendered in first person. This is a more targeted version of [RenderHandEvent],
+/// and can be used to replace the rendering of the player's arm, such as for rendering armor on the arm or outright
+/// replacing the arm with armor.
+///
+/// This event is [cancellable][ICancellableEvent]. If this event is cancelled, then the arm will not be rendered.
+///
+/// This event is fired on the [main Forge event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
+///
+/// @param <AvatarlikeEntity> This generic parameter **cannot** be used to target specific subclasses of [Avatar], nor narrow the type in any other way (i.e. it must be specified as a wild card).
 public class RenderArmEvent<AvatarlikeEntity extends Avatar & ClientAvatarEntity> extends Event implements ICancellableEvent {
     private final PoseStack poseStack;
     private final SubmitNodeCollector submitNodeCollector;
