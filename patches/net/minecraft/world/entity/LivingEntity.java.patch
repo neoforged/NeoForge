@@ -34,12 +34,13 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -358,12 +_,15 @@
+@@ -358,12 +_,16 @@
              .add(Attributes.AIR_DRAG_MODIFIER)
              .add(Attributes.FRICTION_MODIFIER)
              .add(Attributes.NAME_TAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE)
++            .add(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
  
@@ -597,6 +598,35 @@
              }
          } else {
              this.noJumpDelay = 0;
+@@ -3176,8 +_,11 @@
+                 int freeFallInterval = checkFallFlyTicks / 10;
+                 if (freeFallInterval % 2 == 0) {
+                     List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
++                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
++                    if (!slotsWithGliders.isEmpty()) {
+                     EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
+-                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
++                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
++                    }
+                 }
+ 
+                 this.gameEvent(GameEvent.ELYTRA_GLIDE);
+@@ -3186,7 +_,15 @@
+     }
+ 
+     protected boolean canGlide() {
++        return canGlide(true);
++    }
++
++    protected boolean canGlide(boolean isNeoForgeConnection) {
+         if (!this.onGround() && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
++            // Neo: Check only (on a NeoForge connection) the gliding flight attribute on the entity (for directly applied attributes)
++            // (LocalPlayer#canGlide calls this with false, to support clients connecting to vanilla servers)
++            var glidingFlight = this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT);
++            if (isNeoForgeConnection) return glidingFlight > 0;
+             for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+                 if (canGlideUsing(this.getItemBySlot(slot), slot)) {
+                     return true;
 @@ -3406,8 +_,11 @@
  
      private void updatingUsingItem() {
@@ -779,3 +809,12 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
+@@ -3981,6 +_,8 @@
+     }
+ 
+     public static boolean canGlideUsing(ItemStack itemStack, EquipmentSlot slot) {
++        // Neo: Check if the item has the gliding flight attribute
++        if (itemStack.getAttributeModifiers().compute(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT, 0, slot) > 0) return true;
+         if (!itemStack.has(DataComponents.GLIDER)) {
+             return false;
+         }
