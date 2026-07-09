@@ -68,6 +68,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -193,7 +194,9 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
+import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeBuildType;
@@ -1025,5 +1028,18 @@ public class ClientHooks {
             }
         }
         return Map.copyOf(models);
+    }
+
+    public static void updateModelVisibility(Model<?> model, BaseRenderState state) {
+        Map<String, Boolean> renderData = state.getRenderData(RenderStateExtensions.MODEL_PART_VISIBILITY);
+        if (renderData != null) {
+            ModelPart root = model.root();
+            for (Map.Entry<String, Boolean> entry : renderData.entrySet()) {
+                String modelPart = entry.getKey();
+                if (root.hasChild(modelPart)) {
+                    root.getChild(modelPart).visible = entry.getValue();
+                }
+            }
+        }
     }
 }
