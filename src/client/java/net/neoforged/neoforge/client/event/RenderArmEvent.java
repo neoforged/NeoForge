@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 ///
 /// This event is [cancellable][ICancellableEvent]. If this event is cancelled, then the arm will not be rendered.
 ///
-/// This event is fired on the [main Forge event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
+/// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
 ///
 /// @param <AvatarlikeEntity> This generic parameter **cannot** be used to target specific subclasses of [Avatar], nor narrow the type in any other way (i.e. it must be specified as a wild card).
 public class RenderArmEvent<AvatarlikeEntity extends Avatar & ClientAvatarEntity> extends Event implements ICancellableEvent {
