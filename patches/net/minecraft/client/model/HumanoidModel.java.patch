@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -217,6 +_,7 @@
- 
-     public void setupAnim(T state) {
-         super.setupAnim(state);
-+        net.neoforged.neoforge.client.ClientHooks.updateModelVisibility(this, state);
-         HumanoidModel.ArmPose leftArmPose = state.leftArmPose;
-         HumanoidModel.ArmPose rightArmPose = state.rightArmPose;
-         float swimAmount = state.swimAmount;
 @@ -391,6 +_,9 @@
                  break;
              case SPEAR:

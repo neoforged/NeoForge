@@ -196,7 +196,6 @@ import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
-import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeBuildType;
@@ -1030,15 +1029,37 @@ public class ClientHooks {
         return Map.copyOf(models);
     }
 
-    public static void updateModelVisibility(Model<?> model, BaseRenderState state) {
-        Map<String, Boolean> renderData = state.getRenderData(RenderStateExtensions.MODEL_PART_VISIBILITY);
+    @Nullable
+    public static Map<ModelPart, Boolean> updateModelVisibility(Model<?> model, Object state) {
+        if (!(state instanceof BaseRenderState baseRenderState)) {
+            return null;
+        }
+        Map<ModelPart, Boolean> previousVisibility = null;
+        Map<String, Boolean> renderData = baseRenderState.getModelPartVisibility();
         if (renderData != null) {
             ModelPart root = model.root();
             for (Map.Entry<String, Boolean> entry : renderData.entrySet()) {
                 String modelPart = entry.getKey();
                 if (root.hasChild(modelPart)) {
-                    root.getChild(modelPart).visible = entry.getValue();
+                    ModelPart child = root.getChild(modelPart);
+                    boolean desiredVisibility = entry.getValue();
+                    if (child.visible != desiredVisibility) {
+                        if (previousVisibility == null) {//Lazy init the map in case there are no parts with different visibilities
+                            previousVisibility = new HashMap<>();
+                        }
+                        previousVisibility.put(child, child.visible);
+                        child.visible = desiredVisibility;
+                    }
                 }
+            }
+        }
+        return previousVisibility;
+    }
+
+    public static void resetVisibility(@Nullable Map<ModelPart, Boolean> previousVisibility) {
+        if (previousVisibility != null) {
+            for (Map.Entry<ModelPart, Boolean> entry : previousVisibility.entrySet()) {
+                entry.getKey().visible = entry.getValue();
             }
         }
     }

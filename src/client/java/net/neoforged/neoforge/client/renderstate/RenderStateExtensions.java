@@ -17,20 +17,14 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 
 public final class RenderStateExtensions {
     private RenderStateExtensions() {}
-
-    ///TODO: Better docs, but lack of entry -> default visibility, also if you add to it due to it not being present, use a mutable map
-    public static final ContextKey<Map<String, Boolean>> MODEL_PART_VISIBILITY = new ContextKey<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "model_part_visibility"));
 
     private static final Map<Class<?>, Collection<BiConsumer<?, ?>>> ENTITY = new Reference2ObjectArrayMap<>();
     private static final Map<Class<?>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = new Reference2ObjectOpenHashMap<>();
