@@ -51,6 +51,8 @@ public abstract class BaseRenderState implements IRenderStateExtension {
     ///
     /// @param modelPart Name of the model part. This will be looked up from [net.minecraft.client.model.Model#root()] via [net.minecraft.client.model.geom.ModelPart#getChild]
     /// @param visible `false` to disable rendering of the part.
+    ///
+    /// @see net.minecraft.client.model.geom.PartNames
     public void changeModelPartVisibility(String modelPart, boolean visible) {
         Map<String, Boolean> visibility = getRenderData(MODEL_PART_VISIBILITY);
         if (visibility == null) {
