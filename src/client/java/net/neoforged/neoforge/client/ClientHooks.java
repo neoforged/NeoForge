@@ -19,6 +19,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.floats.FloatComparators;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1030,22 +1034,24 @@ public class ClientHooks {
     }
 
     @Nullable
-    public static Map<ModelPart, Boolean> updateModelVisibility(Model<?> model, Object state) {
+    @ApiStatus.Internal
+    public static Object2BooleanMap<ModelPart> updateModelVisibility(Model<?> model, Object state) {
         if (!(state instanceof BaseRenderState baseRenderState)) {
             return null;
         }
-        Map<ModelPart, Boolean> previousVisibility = null;
-        Map<String, Boolean> renderData = baseRenderState.getModelPartVisibility();
+        Object2BooleanMap<ModelPart> previousVisibility = null;
+        Object2BooleanMap<String> renderData = baseRenderState.getModelPartVisibility();
         if (renderData != null) {
             ModelPart root = model.root();
-            for (Map.Entry<String, Boolean> entry : renderData.entrySet()) {
+            for (ObjectIterator<Object2BooleanMap.Entry<String>> iterator = Object2BooleanMaps.fastIterator(renderData); iterator.hasNext();) {
+                Object2BooleanMap.Entry<String> entry = iterator.next();
                 String modelPart = entry.getKey();
                 if (root.hasChild(modelPart)) {
                     ModelPart child = root.getChild(modelPart);
-                    boolean desiredVisibility = entry.getValue();
+                    boolean desiredVisibility = entry.getBooleanValue();
                     if (child.visible != desiredVisibility) {
                         if (previousVisibility == null) {//Lazy init the map in case there are no parts with different visibilities
-                            previousVisibility = new HashMap<>();
+                            previousVisibility = new Object2BooleanOpenHashMap<>();
                         }
                         previousVisibility.put(child, child.visible);
                         child.visible = desiredVisibility;
@@ -1056,10 +1062,11 @@ public class ClientHooks {
         return previousVisibility;
     }
 
-    public static void resetVisibility(@Nullable Map<ModelPart, Boolean> previousVisibility) {
+    public static void resetVisibility(@Nullable Object2BooleanMap<ModelPart> previousVisibility) {
         if (previousVisibility != null) {
-            for (Map.Entry<ModelPart, Boolean> entry : previousVisibility.entrySet()) {
-                entry.getKey().visible = entry.getValue();
+            for (ObjectIterator<Object2BooleanMap.Entry<ModelPart>> iterator = Object2BooleanMaps.fastIterator(previousVisibility); iterator.hasNext();) {
+                Object2BooleanMap.Entry<ModelPart> entry = iterator.next();
+                entry.getKey().visible = entry.getBooleanValue();
             }
         }
     }
