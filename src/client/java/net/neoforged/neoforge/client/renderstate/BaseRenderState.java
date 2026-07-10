@@ -64,6 +64,7 @@ public abstract class BaseRenderState implements IRenderStateExtension {
 
     /// {@return the model part visibility or `null` if all parts have their default visibility}
     @Nullable
+    @ApiStatus.Internal
     public Map<String, Boolean> getModelPartVisibility() {
         return getRenderData(MODEL_PART_VISIBILITY);
     }
