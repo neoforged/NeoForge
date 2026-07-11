@@ -764,6 +764,152 @@ public class DeferredRegister<T> {
             return this.registerItem(name, Item::new, UnaryOperator.identity());
         }
 
+        /**
+         * Convenience method to register an item using a supplier.
+         * Uses default {@link Item.Properties}.
+         *
+         * @param <I>  The item type
+         * @param name The item's registry name
+         * @param sup  A supplier that creates the item
+         * @return A {@link DeferredItem} representing the registered item
+         * @see #registerItem(String, Function)
+         */
+        public <I extends Item> DeferredItem<I> registerItem(String name, Supplier<? extends I> sup) {
+            return this.registerItem(name, props -> sup.get(), UnaryOperator.identity());
+        }
+
+        /**
+         * Convenience method to register an item using a supplier and custom properties.
+         *
+         * @param <I>        The item type
+         * @param name       The item's registry name
+         * @param sup        A supplier that creates the item
+         * @param properties The custom {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered item
+         * @see #registerItem(String, Function, Supplier)
+         */
+        public <I extends Item> DeferredItem<I> registerItem(String name, Supplier<? extends I> sup, Supplier<Item.Properties> properties) {
+            return this.registerItem(name, props -> sup.get(), properties);
+        }
+
+        /**
+         * Convenience method to register an item using a supplier and custom properties via {@link UnaryOperator}.
+         *
+         * @param <I>        The item type
+         * @param name       The item's registry name
+         * @param sup        A supplier that creates the item
+         * @param properties The {@link UnaryOperator} to apply to {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered item
+         * @see #registerItem(String, Function, UnaryOperator)
+         */
+        public <I extends Item> DeferredItem<I> registerItem(String name, Supplier<? extends I> sup, UnaryOperator<Item.Properties> properties) {
+            return this.registerItem(name, props -> sup.get(), properties);
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a {@link Holder} reference.
+         * The name is automatically derived from the block's registry name.
+         * Uses default {@link Item.Properties}.
+         *
+         * @param block The {@link Holder} of the block to create a BlockItem for
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(Holder)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(Holder<Block> block) {
+            return this.registerSimpleBlockItem(block, UnaryOperator.identity());
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a {@link Holder} reference with custom properties.
+         * The name is automatically derived from the block's registry name.
+         *
+         * @param block      The {@link Holder} of the block to create a BlockItem for
+         * @param properties The custom {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(Holder, Supplier)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(Holder<Block> block, Supplier<Item.Properties> properties) {
+            return this.registerSimpleBlockItem(block, properties);
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a {@link Holder} reference with custom properties.
+         * The name is automatically derived from the block's registry name.
+         *
+         * @param block      The {@link Holder} of the block to create a BlockItem for
+         * @param properties The {@link UnaryOperator} to apply to {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(Holder, UnaryOperator)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(Holder<Block> block, UnaryOperator<Item.Properties> properties) {
+            return this.registerSimpleBlockItem(block, properties);
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a block supplier.
+         *
+         * @param name  The item's registry name
+         * @param block A supplier for the block to create a BlockItem for
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(String, Supplier)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block) {
+            return this.registerSimpleBlockItem(name, block, UnaryOperator.identity());
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a block supplier with custom properties.
+         *
+         * @param name       The item's registry name
+         * @param block      A supplier for the block to create a BlockItem for
+         * @param properties The custom {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(String, Supplier, Supplier)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block, Supplier<Item.Properties> properties) {
+            return this.registerSimpleBlockItem(name, block, properties);
+        }
+
+        /**
+         * Convenience method to register a {@link BlockItem} from a block supplier with custom properties.
+         *
+         * @param name       The item's registry name
+         * @param block      A supplier for the block to create a BlockItem for
+         * @param properties The {@link UnaryOperator} to apply to {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         * @see #registerSimpleBlockItem(String, Supplier, UnaryOperator)
+         */
+        public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block, UnaryOperator<Item.Properties> properties) {
+            return this.registerSimpleBlockItem(name, block, properties);
+        }
+
+        /**
+         * Convenience method to register a custom {@link BlockItem} class.
+         * Automatically sets {@link Item.Properties#useBlockDescriptionPrefix()}.
+         *
+         * @param <I>  The BlockItem type
+         * @param name The item's registry name
+         * @param sup  A supplier that creates the BlockItem
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         */
+        public <I extends BlockItem> DeferredItem<I> registerBlockItem(String name, Supplier<? extends I> sup) {
+            return this.registerItem(name, sup, () -> new Item.Properties().useBlockDescriptionPrefix());
+        }
+
+        /**
+         * Convenience method to register a custom {@link BlockItem} class with custom properties.
+         * Automatically sets {@link Item.Properties#useBlockDescriptionPrefix()}.
+         *
+         * @param <I>        The BlockItem type
+         * @param name       The item's registry name
+         * @param sup        A supplier that creates the BlockItem
+         * @param properties The custom {@link Item.Properties}
+         * @return A {@link DeferredItem} representing the registered BlockItem
+         */
+        public <I extends BlockItem> DeferredItem<I> registerBlockItem(String name, Supplier<? extends I> sup, Supplier<Item.Properties> properties) {
+            return this.registerItem(name, props -> sup.get(), () -> properties.get().useBlockDescriptionPrefix());
+        }
+
         @Override
         protected <I extends Item> DeferredItem<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, Identifier key) {
             return DeferredItem.createItem(ResourceKey.create(registryKey, key));
