@@ -19,6 +19,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.floats.FloatComparators;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +72,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -193,6 +198,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
+import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -1025,5 +1031,43 @@ public class ClientHooks {
             }
         }
         return Map.copyOf(models);
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    public static Object2BooleanMap<ModelPart> updateModelVisibility(Model<?> model, Object state) {
+        if (!(state instanceof BaseRenderState baseRenderState)) {
+            return null;
+        }
+        Object2BooleanMap<ModelPart> previousVisibility = null;
+        Object2BooleanMap<String> renderData = baseRenderState.getModelPartVisibility();
+        if (renderData != null) {
+            ModelPart root = model.root();
+            for (ObjectIterator<Object2BooleanMap.Entry<String>> iterator = Object2BooleanMaps.fastIterator(renderData); iterator.hasNext();) {
+                Object2BooleanMap.Entry<String> entry = iterator.next();
+                String modelPart = entry.getKey();
+                if (root.hasChild(modelPart)) {
+                    ModelPart child = root.getChild(modelPart);
+                    boolean desiredVisibility = entry.getBooleanValue();
+                    if (child.visible != desiredVisibility) {
+                        if (previousVisibility == null) {//Lazy init the map in case there are no parts with different visibilities
+                            previousVisibility = new Object2BooleanOpenHashMap<>();
+                        }
+                        previousVisibility.put(child, child.visible);
+                        child.visible = desiredVisibility;
+                    }
+                }
+            }
+        }
+        return previousVisibility;
+    }
+
+    public static void resetVisibility(@Nullable Object2BooleanMap<ModelPart> previousVisibility) {
+        if (previousVisibility != null) {
+            for (ObjectIterator<Object2BooleanMap.Entry<ModelPart>> iterator = Object2BooleanMaps.fastIterator(previousVisibility); iterator.hasNext();) {
+                Object2BooleanMap.Entry<ModelPart> entry = iterator.next();
+                entry.getKey().visible = entry.getBooleanValue();
+            }
+        }
     }
 }
