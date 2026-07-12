@@ -764,8 +764,6 @@ public class DeferredRegister<T> {
             return this.registerItem(name, Item::new, UnaryOperator.identity());
         }
 
-        // ==================== ADDED CONVENIENCE METHODS ====================
-
         /**
          * Convenience method to register an item using a supplier.
          * Uses default {@link Item.Properties}.
