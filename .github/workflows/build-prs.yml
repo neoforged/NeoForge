@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, windows]
     steps:
       - name: Checkout repository
         uses: neoforged/actions/checkout@main
