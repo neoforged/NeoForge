@@ -147,7 +147,7 @@ public class DamageContainer {
     /// - Motion should be synced to the client [LivingEntity#markHurt]
     /// - Knockback performed on the entity
     /// - Hurt/death sounds should be played
-    ///@param sideEffects `true` if damage side effects should be performed.
+    /// @param sideEffects `true` if damage side effects should be performed.
     public void setShouldCauseSideEffects(boolean sideEffects) {
         this.damageSideEffects = sideEffects;
     }

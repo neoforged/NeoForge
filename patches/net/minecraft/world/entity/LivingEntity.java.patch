@@ -273,7 +273,7 @@
  
 +        // Neo: Fire our post-damage event hooks. As usual, fire the extension method first, then the event version.
 +        this.onDamageTaken(this.damageContainers.peek());
-+        net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek(), performSideEffects);
++        net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
 +        this.damageContainers.pop();
          return success;
      }

@@ -105,9 +105,9 @@ public abstract class LivingDamageEvent extends LivingEvent {
         private final boolean performSideEffects;
         private final EnumMap<DamageContainer.Reduction, Float> reductions;
 
-        public Post(LivingEntity entity, DamageContainer container, boolean performSideEffects) {
+        public Post(LivingEntity entity, DamageContainer container) {
             super(entity);
-            this.performSideEffects = performSideEffects;
+            this.performSideEffects = container.shouldCauseSideEffects();
             this.originalDamage = container.getOriginalDamage();
             this.source = container.getSource();
             this.inflictedDamage = container.getInflictedDamage();
