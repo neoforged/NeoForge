@@ -892,8 +892,8 @@ public class DeferredRegister<T> {
          * @param sup  A supplier that creates the BlockItem
          * @return A {@link DeferredItem} representing the registered BlockItem
          */
-        private static final DeferredItem<CustomBlockItem> CUSTOM_BLOCK_ITEM = 
-            ITEMS.registerCustomBlockItem("test_custom_block_item", CustomBlockItem::new);
+        public <I extends BlockItem> DeferredItem<I> registerCustomBlockItem(String name, Supplier<? extends I> sup) { // <--- SATIR 895
+            return this.registerItem(name, sup, () -> new Item.Properties().useBlockDescriptionPrefix());
         }
 
         /**
@@ -906,9 +906,8 @@ public class DeferredRegister<T> {
          * @param properties The custom {@link Item.Properties}
          * @return A {@link DeferredItem} representing the registered BlockItem
          */
-        private static final DeferredItem<CustomBlockItem> CUSTOM_BLOCK_ITEM_WITH_PROPS = 
-            ITEMS.registerCustomBlockItem("test_custom_block_item_props", CustomBlockItem::new, 
-                () -> new Item.Properties().stacksTo(8));
+        public <I extends BlockItem> DeferredItem<I> registerCustomBlockItem(String name, Supplier<? extends I> sup, Supplier<Item.Properties> properties) { // <--- SATIR 909
+            return this.registerItem(name, props -> sup.get(), () -> properties.get().useBlockDescriptionPrefix());
         }
 
         @Override
