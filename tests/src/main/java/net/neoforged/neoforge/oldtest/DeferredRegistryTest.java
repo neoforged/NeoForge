@@ -69,12 +69,13 @@ public class DeferredRegistryTest {
     private static final DeferredItem<BlockItem> BLOCK_ITEM_WITH_NAME_AND_PROPS = ITEMS.registerBlockItem("test_block_item_with_name_props", BLOCK::get, () -> new Item.Properties().stacksTo(16));
     private static final DeferredItem<BlockItem> BLOCK_ITEM_WITH_NAME_AND_OPERATOR = ITEMS.registerBlockItem("test_block_item_with_name_operator", BLOCK::get, props -> props.stacksTo(1).fireResistant());
 
+    // CustomBlockItem tests - using registerCustomBlockItem
     private static final DeferredItem<CustomBlockItem> CUSTOM_BLOCK_ITEM = ITEMS.registerCustomBlockItem("test_custom_block_item",
-            () -> new CustomBlockItem(new Item.Properties()));
+        () -> new CustomBlockItem(new Item.Properties()));
 
     private static final DeferredItem<CustomBlockItem> CUSTOM_BLOCK_ITEM_WITH_PROPS = ITEMS.registerCustomBlockItem("test_custom_block_item_props",
-            () -> new CustomBlockItem(new Item.Properties().stacksTo(8)),
-            () -> new Item.Properties().stacksTo(8));
+        () -> new CustomBlockItem(new Item.Properties().stacksTo(8)),
+        () -> new Item.Properties().stacksTo(8));
 
     private static final DeferredHolder<Custom, Custom> CUSTOM = CUSTOMS.register("test", () -> new Custom() {});
     private static final DeferredHolder<Object, Object> DOESNT_EXIST = DOESNT_EXIST_REG.register("test", Object::new);
