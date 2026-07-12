@@ -27,10 +27,12 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.RegisterTooltipAppendersEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class ItemTooltipHandler {
+    private static final List<DataComponentType<?>> VANILLA_APPENDER_ORDER = new ArrayList<>();
     private static final List<TooltipAppender> HEAD_APPENDERS = new ArrayList<>();
     private static final List<TooltipAppender> MIDDLE_APPENDERS = new ArrayList<>();
     private static final List<TooltipAppender> TAIL_APPENDERS = new ArrayList<>();
@@ -76,6 +78,7 @@ public final class ItemTooltipHandler {
         SequencedMap<DataComponentType<?>, TooltipAppender> componentAppenders = new LinkedHashMap<>();
         MutableGraph<DataComponentType<?>> componentGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
         SequencedMap<DataComponentType<?>, TooltipAppender> vanillaAppenders = VanillaDataComponentTooltips.collectVanillaAppenders();
+        VANILLA_APPENDER_ORDER.addAll(vanillaAppenders.sequencedKeySet());
         buildInitialComponentGraph(componentAppenders, componentGraph, vanillaAppenders);
         ModLoader.postEvent(new RegisterTooltipAppendersEvent(
                 appenders,
@@ -114,6 +117,11 @@ public final class ItemTooltipHandler {
         for (DataComponentType<?> type : sorted) {
             MIDDLE_APPENDERS.add(appenders.get(type));
         }
+    }
+
+    @VisibleForTesting
+    public static List<DataComponentType<?>> getVanillaAppenderOrder() {
+        return VANILLA_APPENDER_ORDER;
     }
 
     private ItemTooltipHandler() {}

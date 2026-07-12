@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.tooltip;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SequencedMap;
-import java.util.Set;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.CommonComponents;
@@ -87,7 +86,6 @@ final class VanillaDataComponentTooltips {
                 }
             }
         });
-        validate(appenders.keySet());
         return appenders;
     }
 
@@ -101,8 +99,5 @@ final class VanillaDataComponentTooltips {
                 builder.accept(component);
             }
         });
-    }
-
-    private static void validate(Set<DataComponentType<?>> registeredTypesSet) {
     }
 }
