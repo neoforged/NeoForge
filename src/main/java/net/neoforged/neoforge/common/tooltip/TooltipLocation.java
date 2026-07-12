@@ -14,14 +14,18 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 @SuppressWarnings("deprecation")
 public enum TooltipLocation {
-    /// Append tooltip lines before [Item#appendHoverText(ItemStack, Item.TooltipContext, TooltipDisplay, Consumer, TooltipFlag)]
+    /** Append tooltip lines before {@link Item#appendHoverText(ItemStack, Item.TooltipContext, TooltipDisplay, Consumer, TooltipFlag)} */
     HEAD,
-    /// Append tooltip lines between [Item#appendHoverText(ItemStack, Item.TooltipContext, TooltipDisplay, Consumer, TooltipFlag)]
-    /// and [data component][DataComponentType] tooltips
+    /**
+     * Append tooltip lines between {@link Item#appendHoverText(ItemStack, Item.TooltipContext, TooltipDisplay, Consumer, TooltipFlag)}
+     * and {@linkplain DataComponentType data component} tooltips
+     */
     POST_CUSTOM,
-    /// Append tooltip lines between [data component][DataComponentType] tooltips and additional item info
-    /// (item ID, data component count, disabled status, OP warning)
+    /**
+     * Append tooltip lines between {@linkplain DataComponentType data component} tooltips and additional item info
+     * (item ID, data component count, disabled status, OP warning)
+     */
     PRE_ITEM_INFO,
-    /// Append tooltip lines after additional item info (item ID, data component count, disabled status, OP warning)
+    /** Append tooltip lines after additional item info (item ID, data component count, disabled status, OP warning) */
     TAIL
 }
