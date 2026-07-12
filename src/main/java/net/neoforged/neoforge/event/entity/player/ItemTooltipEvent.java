@@ -6,17 +6,12 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.component.TooltipProvider;
-import net.neoforged.neoforge.common.extensions.IDataComponentHolderExtension;
 import org.jspecify.annotations.Nullable;
 
 public class ItemTooltipEvent extends PlayerEvent {
@@ -79,16 +74,5 @@ public class ItemTooltipEvent extends PlayerEvent {
     /// Used to determine what components on the item tooltip should be hidden
     public TooltipDisplay getDisplay() {
         return display;
-    }
-
-    /// Handy utility to quickly append a component to the items tooltip
-    /// @see IDataComponentHolderExtension#addToTooltip(DataComponentType, TooltipContext, TooltipDisplay, Consumer, TooltipFlag)
-    public <T extends TooltipProvider> void addToTooltip(DataComponentType<T> type) {
-        itemStack.addToTooltip(type, context, display, toolTip::add, flags);
-    }
-
-    /// Handy utility to quickly append a component to the items tooltip
-    public <T extends TooltipProvider> void addToTooltip(Supplier<? extends DataComponentType<T>> type) {
-        addToTooltip(type.get());
     }
 }
