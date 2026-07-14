@@ -12,11 +12,11 @@
              topPos = this.createDemoMenuOptions(topPos, 24);
          } else {
              topPos = this.createNormalMenuOptions(topPos, 24);
-+            this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          }
  
 -        int numberOfButtons = 3;
 -        int currentButton = 0;
++        this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          topPos += 24;
          this.friends = this.addRenderableWidget(
              CommonButtons.friends(
