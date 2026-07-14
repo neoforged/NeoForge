@@ -532,7 +532,7 @@ public class ModListScreen extends Screen {
             this.configButton = buttonsLayout.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.config"),
                     _ -> {
                         if (this.configScreenFactory != null) {
-                            ModListScreen.this.minecraft.setScreenAndShow(this.configScreenFactory.apply(ModListScreen.this));
+                            ModListScreen.this.minecraft.gui.setScreen(this.configScreenFactory.apply(ModListScreen.this));
                         }
                     }).size(buttonWidth, buttonHeight).build());
 
@@ -704,7 +704,7 @@ public class ModListScreen extends Screen {
         }
 
         private void openChangelogScreen(VersionChecker.CheckResult checkResult) {
-            ModListScreen.this.minecraft.setScreenAndShow(new ChangelogScreen(ModListScreen.this, displayInfo(), checkResult));
+            ModListScreen.this.minecraft.gui.setScreen(new ChangelogScreen(ModListScreen.this, displayInfo(), checkResult));
         }
 
         private static boolean containsText(Component component) {

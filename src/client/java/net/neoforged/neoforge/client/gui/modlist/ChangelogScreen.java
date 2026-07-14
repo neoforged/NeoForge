@@ -107,6 +107,6 @@ class ChangelogScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreenAndShow(lastScreen);
+        this.minecraft.gui.setScreen(lastScreen);
     }
 }
