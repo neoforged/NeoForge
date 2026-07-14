@@ -89,7 +89,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
                 0,
                 -1,
                 new WidgetSprites(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "icon/neo_logo")),
-                button -> Minecraft.getInstance().gui.setScreen(ModListScreen.create()),
+                button -> Minecraft.getInstance().gui.setScreen(ModListScreen.create(parentScreen)),
                 Component.translatable("fml.menu.mods"),
                 null,
                 false);

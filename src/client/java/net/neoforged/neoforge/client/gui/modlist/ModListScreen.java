@@ -92,6 +92,7 @@ public class ModListScreen extends Screen {
     static final int ICON_SIZE = 24;
     static final int LOGO_HEIGHT = 50;
 
+    private final @Nullable Screen lastScreen;
     private final ImmutableList<ModDisplayInfo> mods;
     private final Path modsFolder;
     private final ConfigurationScreenFactory configFactory;
@@ -110,7 +111,7 @@ public class ModListScreen extends Screen {
     @Nullable
     private EditBox search;
 
-    public static ModListScreen create() {
+    public static ModListScreen create(@Nullable Screen lastScreen) {
         final Builder<ModDisplayInfo> mods = ImmutableList.builder();
 
         for (ModContainer container : ModList.get().getSortedMods()) {
@@ -164,11 +165,12 @@ public class ModListScreen extends Screen {
             mods.add(displayInfo);
         }
 
-        return new ModListScreen(mods.build(), FMLPaths.MODSDIR.get(), ConfigurationScreenFactory.DEFAULT, VersionCheckResultSupplier.DEFAULT);
+        return new ModListScreen(lastScreen, mods.build(), FMLPaths.MODSDIR.get(), ConfigurationScreenFactory.DEFAULT, VersionCheckResultSupplier.DEFAULT);
     }
 
-    private ModListScreen(ImmutableList<ModDisplayInfo> mods, Path modsFolder, ConfigurationScreenFactory configFactory, VersionCheckResultSupplier versionCheck) {
+    private ModListScreen(@Nullable Screen lastScreen, ImmutableList<ModDisplayInfo> mods, Path modsFolder, ConfigurationScreenFactory configFactory, VersionCheckResultSupplier versionCheck) {
         super(translatable("neoforge.screen.mods.title"));
+        this.lastScreen = lastScreen;
         this.mods = mods;
         this.modsFolder = modsFolder;
         this.allEntries = new ArrayList<>(mods.size());
@@ -247,7 +249,6 @@ public class ModListScreen extends Screen {
 
     @Override
     public void onClose() {
-        super.onClose();
         final TextureManager textureManager = this.minecraft.getTextureManager();
         for (ModsList.Entry entry : this.allEntries) {
             if (entry.iconData != null) {
@@ -256,6 +257,7 @@ public class ModListScreen extends Screen {
         }
         assert this.displayPanel != null;
         this.displayPanel.close();
+        this.minecraft.gui.setScreen(this.lastScreen);
     }
 
     private void updateModsList() {

@@ -4,7 +4,7 @@
          helper.addChild(this.openScreenButton(ADVANCEMENTS, () -> new AdvancementsScreen(this.minecraft.player.connection.getAdvancements(), this)));
          helper.addChild(this.openScreenButton(STATS, () -> new StatsScreen(this, this.minecraft.player.getStats())));
          LinearLayout iconButtonRow = LinearLayout.horizontal().spacing(4);
-+        iconButtonRow.addChild(SpriteIconButton.builder(Component.translatable("fml.menu.mods"), _ -> this.minecraft.gui.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)), true)
++        iconButtonRow.addChild(SpriteIconButton.builder(Component.translatable("fml.menu.mods"), _ -> this.minecraft.gui.setScreen(net.neoforged.neoforge.client.gui.modlist.ModListScreen.create(this)), true)
 +                .width(20)
 +                .sprite(Identifier.fromNamespaceAndPath(net.neoforged.neoforge.common.NeoForgeMod.MOD_ID, "icon/neo_logo"), 15, 15)
 +                .spriteOffset(0, -1)
