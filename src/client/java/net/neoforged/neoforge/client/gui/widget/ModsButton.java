@@ -80,6 +80,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
     }
 
     public static ModsButton create(Screen parentScreen) {
+        //noinspection SuspiciousNameCombination (we pass DEFAULT_HEIGHT for both width and height to get a square)
         return new ModsButton(
                 Button.DEFAULT_HEIGHT,
                 Button.DEFAULT_HEIGHT,
@@ -89,7 +90,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
                 0,
                 -1,
                 new WidgetSprites(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "icon/neo_logo")),
-                button -> Minecraft.getInstance().gui.setScreen(ModListScreen.create(parentScreen)),
+                _ -> Minecraft.getInstance().gui.setScreen(ModListScreen.create(parentScreen)),
                 Component.translatable("fml.menu.mods"),
                 null,
                 false);
