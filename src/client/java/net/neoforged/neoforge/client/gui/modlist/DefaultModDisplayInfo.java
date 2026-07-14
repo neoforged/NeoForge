@@ -90,13 +90,21 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return licenseText;
     }
 
-    /// {@inheritDoc} This uses the `logoFile` key of the mod file info or, if not available, the mod info.
+    /// {@inheritDoc} This uses the `bannerFile` key of the mod file info or, if not available, the mod info.
+    /// If `bannerFile` is not available in both, the same sources are searched for `logoFile`.
     ///
     /// @see #convertPath(String)
     @Override
     @Nullable
-    public ImageResource logo() {
-        return container.getModInfo().getLogoFile().map(this::convertPath).orElse(null);
+    public ImageResource banner() {
+        if (container.getModInfo().getConfig().getConfigElement("bannerFile")
+                .or(() -> container.getModInfo().getOwningFile().getConfig().getConfigElement("bannerFile"))
+                .or(() -> container.getModInfo().getLogoFile())
+                .or(() -> container.getModInfo().getOwningFile().getConfig().getConfigElement("logoFile"))
+                .orElse(null) instanceof String iconFile) {
+            return convertPath(iconFile);
+        }
+        return null;
     }
 
     /// {@inheritDoc} This uses the `iconFile` key of the mod file info or, if not available, the mod info.

@@ -13,7 +13,7 @@ license="LGPL v2.1"
     authors="The NeoForged Team"
     description="A free, open-source, community-oriented modding API for Minecraft: Java Edition."
     displayURL="https://neoforged.net"
-    logoFile="neoforged_logo.png"
+    bannerFile="neoforged_logo.png"
     iconFile="neoforged_icon.png"
 
 [[mixins]]

@@ -51,7 +51,7 @@ final class BlankModDisplayInfo implements ModDisplayInfo {
     }
 
     @Override
-    public @Nullable ImageResource logo() {
+    public @Nullable ImageResource banner() {
         return null;
     }
 

@@ -41,12 +41,12 @@ public interface ModDisplayInfo extends IExtensionPoint {
     /// {@return the mod license} This is always displayed, even if [empty][Component#empty()].
     Component license();
 
-    /// {@return the logo displayed in the info panel, or `null`}
+    /// {@return the banner displayed in the info panel, or `null`}
     ///
-    /// The logo is rendered with its original aspect ratio, bounded by the width of the info panel (ordinarily
-    /// {@value ModListScreen#INFO_PANEL_WIDTH} pixels) and a maximum height of {@value ModListScreen#LOGO_HEIGHT} pixels.
+    /// The banner is rendered with its original aspect ratio, bounded by the width of the info panel (ordinarily
+    /// {@value ModListScreen#INFO_PANEL_WIDTH} pixels) and a maximum height of {@value ModListScreen#BANNER_HEIGHT} pixels.
     @Nullable
-    ImageResource logo(); // rendered as rectangle
+    ImageResource banner(); // rendered as rectangle
 
     /// {@return the icon displayed in the mod list, or `null`}
     ///

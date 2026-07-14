@@ -90,7 +90,7 @@ public class ModListScreen extends Screen {
     static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
     static final int ICON_SIZE = 24;
-    static final int LOGO_HEIGHT = 50;
+    static final int BANNER_HEIGHT = 50;
 
     private final @Nullable Screen lastScreen;
     private final ImmutableList<ModDisplayInfo> mods;
@@ -127,7 +127,7 @@ public class ModListScreen extends Screen {
                     }
 
                     @Override
-                    public ImageResource logo() {
+                    public ImageResource banner() {
                         return ImageResource.packAsset(LogoRenderer.MINECRAFT_LOGO);
                     }
 
@@ -412,7 +412,7 @@ public class ModListScreen extends Screen {
         private static final int MAIN_PADDING = 4; // Padding between sections
 
         private final int width;
-        private final ResizableTextureImageWidget logoWidget;
+        private final ResizableTextureImageWidget bannerWidget;
         private final MultiLineTextWidget displayNameWidget;
         private final MultiLineTextWidget idAndVersionWidget;
         private final MultiLineTextWidget newerVersionWidget;
@@ -427,7 +427,7 @@ public class ModListScreen extends Screen {
         private final MultiLineTextWidget descriptionWidget;
         private ModsList.@Nullable Entry selected;
         @Nullable
-        private ImageData logoData;
+        private ImageData bannerData;
         @Nullable
         private UnaryOperator<Screen> configScreenFactory;
 
@@ -452,7 +452,7 @@ public class ModListScreen extends Screen {
             // Ensure layout width fills the whole width
             contentLayout.addChild(SpacerElement.width(width));
 
-            this.logoWidget = contentLayout.addChild(
+            this.bannerWidget = contentLayout.addChild(
                     new ResizableTextureImageWidget(0, 0, 0, 0, MissingTextureAtlasSprite.getLocation(), 0, 0),
                     contentLayout.newCellSettings().paddingTop(INFO_PANEL_FRAME_PADDING).alignHorizontallyCenter());
 
@@ -584,12 +584,12 @@ public class ModListScreen extends Screen {
 
         /// Resets layout to a blank state.
         private void reset() {
-            if (this.logoData != null) {
+            if (this.bannerData != null) {
                 final TextureManager textureManager = ModListScreen.this.minecraft.getTextureManager();
-                textureManager.release(logoData.sprite);
-                this.logoData = null;
+                textureManager.release(bannerData.sprite);
+                this.bannerData = null;
             }
-            this.logoWidget.updateResource(MissingTextureAtlasSprite.getLocation(), 0, 0);
+            this.bannerWidget.updateResource(MissingTextureAtlasSprite.getLocation(), 0, 0);
 
             hideTextWidget(this.displayNameWidget);
             hideTextWidget(this.idAndVersionWidget);
@@ -622,23 +622,23 @@ public class ModListScreen extends Screen {
             if (this.selected == null) return; // Do nothing if nothing is selected
             ModDisplayInfo displayInfo = this.selected.displayInfo;
 
-            final ImageResource logoResource = displayInfo.logo();
-            if (logoResource != null) {
-                // Load new logo data
+            final ImageResource bannerResource = displayInfo.banner();
+            if (bannerResource != null) {
+                // Load new banner data
                 if (displayInfo.id().equals("minecraft")) {
                     // Special-case for the 'minecraft' mod: render the logo using LogoRenderer
                     float scaleFactor = Math.min(1F, (float) width / LogoRenderer.LOGO_TEXTURE_WIDTH);
-                    int logoWidth = (int) (LogoRenderer.LOGO_TEXTURE_WIDTH * scaleFactor);
-                    this.logoWidget.useMinecraftLogo(logoWidth);
+                    int bannerWidth = (int) (LogoRenderer.LOGO_TEXTURE_WIDTH * scaleFactor);
+                    this.bannerWidget.useMinecraftLogo(bannerWidth);
                 } else {
-                    this.logoData = loadImage("logo", displayInfo.id(), logoResource);
-                    if (this.logoData != null) {
-                        float widthScaleFactor = Math.min(1F, (float) this.width / this.logoData.width());
-                        float heightScaleFactor = Math.min(1F, (float) LOGO_HEIGHT / this.logoData.height());
+                    this.bannerData = loadImage("banner", displayInfo.id(), bannerResource);
+                    if (this.bannerData != null) {
+                        float widthScaleFactor = Math.min(1F, (float) this.width / this.bannerData.width());
+                        float heightScaleFactor = Math.min(1F, (float) BANNER_HEIGHT / this.bannerData.height());
                         float scaleFactor = Math.min(widthScaleFactor, heightScaleFactor);
-                        int logoWidth = (int) (this.logoData.width() * scaleFactor);
-                        int logoHeight = (int) (this.logoData.height() * scaleFactor);
-                        this.logoWidget.updateResource(this.logoData.sprite(), logoWidth, logoHeight);
+                        int bannerWidth = (int) (this.bannerData.width() * scaleFactor);
+                        int bannerHeight = (int) (this.bannerData.height() * scaleFactor);
+                        this.bannerWidget.updateResource(this.bannerData.sprite(), bannerWidth, bannerHeight);
                     }
                 }
             }

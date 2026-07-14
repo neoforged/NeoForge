@@ -7,5 +7,5 @@ version="${minecraft_version}"
 displayName="Minecraft"
 authors="Mojang Studios"
 description=""
-logoFile="minecraft:textures/gui/title/minecraft.png" # For completeness; the mod list screen will use the logo renderer
+bannerFile="minecraft:textures/gui/title/minecraft.png" # For completeness; the mod list screen will use the logo renderer
 iconFile="vanilla#pack.png"
