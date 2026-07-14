@@ -66,14 +66,17 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
                 .orElseGet(Component::empty);
     }
 
-    /// {@inheritDoc} This uses the translation key `neoforge.screen.mods.info.description.[modid]` if available, where `[modid]` is the [mod ID][#id()], with a fallback to the `description` key of the mod info.
+    /// {@inheritDoc} This uses the translation key `neoforge.screen.mods.info.description.[modid]` if available,
+    /// where `[modid]` is the [mod ID][#id()], with a fallback to the `description` key of the mod info.
     @Override
     public Component description() {
         //noinspection UnstableApiUsage
         return Component.translatable(FMLTranslations.getPattern("neoforge.screen.mods.info.description." + id(), container.getModInfo()::getDescription));
     }
 
-    /// {@inheritDoc} This uses the `license` key of the mod file info. If the `licenseURL` key of the mod file info is set and is a valid URL, then this component has an [open URL click action][ClickEvent.Action#OPEN_URL] with that URL.
+    /// {@inheritDoc} This uses the `license` key of the mod file info.
+    /// If the `licenseURL` key of the mod file info is set and is a valid URL,
+    /// then this component has an [open URL click action][ClickEvent.Action#OPEN_URL] with that URL.
     @Override
     public Component license() {
         MutableComponent licenseText = Component.literal(container.getModInfo().getOwningFile().getLicense());
@@ -90,7 +93,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return licenseText;
     }
 
-    /// {@inheritDoc} This uses the `bannerFile` key of the mod file info or, if not available, the mod info.
+    /// {@inheritDoc} This uses the `bannerFile` key of the mod info or, if not available, the mod file info.
     /// If `bannerFile` is not available in both, the same sources are searched for `logoFile`.
     ///
     /// @see #convertPath(String)
@@ -107,7 +110,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return null;
     }
 
-    /// {@inheritDoc} This uses the `iconFile` key of the mod file info or, if not available, the mod info.
+    /// {@inheritDoc} This uses the `iconFile` key of the mod info or, if not available, the mod file info.
     ///
     /// @see #convertPath(String)
     @Override
@@ -156,7 +159,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
                 .orElse(null);
     }
 
-    /// {@inheritDoc} This uses the `issueTrackerURL` key of the mod file info or, if not available, the mod info.
+    /// {@inheritDoc} This uses the `issueTrackerURL` key of the mod info or, if not available, the mod file info.
     @Override
     @Nullable
     public URI issuesUrl() {
