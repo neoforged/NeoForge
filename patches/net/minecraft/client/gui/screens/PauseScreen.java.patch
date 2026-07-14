@@ -1,15 +1,10 @@
 --- a/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/net/minecraft/client/gui/screens/PauseScreen.java
-@@ -102,6 +_,12 @@
+@@ -102,6 +_,7 @@
          helper.addChild(this.openScreenButton(ADVANCEMENTS, () -> new AdvancementsScreen(this.minecraft.player.connection.getAdvancements(), this)));
          helper.addChild(this.openScreenButton(STATS, () -> new StatsScreen(this, this.minecraft.player.getStats())));
          LinearLayout iconButtonRow = LinearLayout.horizontal().spacing(4);
-+        iconButtonRow.addChild(SpriteIconButton.builder(Component.translatable("fml.menu.mods"), _ -> this.minecraft.gui.setScreen(net.neoforged.neoforge.client.gui.modlist.ModListScreen.create(this)), true)
-+                .width(20)
-+                .sprite(Identifier.fromNamespaceAndPath(net.neoforged.neoforge.common.NeoForgeMod.MOD_ID, "icon/neo_logo"), 15, 15)
-+                .spriteOffset(0, -1)
-+                .withTootip()
-+                .build());
++        iconButtonRow.addChild(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this));
          SpriteIconButton reportBugsButton = SpriteIconButton.builder(REPORT_BUGS, ConfirmLinkScreen.confirmLink(this, CommonLinks.SNAPSHOT_BUGS_FEEDBACK), true)
              .width(20)
              .sprite(Identifier.withDefaultNamespace("pause_menu/bug"), 15, 15)
