@@ -6,11 +6,12 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
@@ -92,8 +93,8 @@ public class GrindstoneEventTest {
 
             //summon visual lightning above the grindstone
             event.getContainerAccess().execute((level, pos) -> {
-                LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                bolt.setPos(pos.getCenter());
+                LightningBolt bolt = new LightningBolt(EntityTypes.LIGHTNING_BOLT, level);
+                bolt.setPos(Vec3.atCenterOf(pos));
                 bolt.setVisualOnly(true);
                 level.addFreshEntity(bolt);
             });

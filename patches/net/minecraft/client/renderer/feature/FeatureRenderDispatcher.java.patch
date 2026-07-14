@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
++++ b/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
+@@ -55,6 +_,7 @@
+         this.featureRenderers.put(QuadParticleFeatureRenderer.TYPE, new QuadParticleFeatureRenderer());
+         this.featureRenderers.put(ShapeOutlineFeatureRenderer.TYPE, new ShapeOutlineFeatureRenderer());
+         this.featureRenderers.put(GizmoFeatureRenderer.TYPE, new GizmoFeatureRenderer());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RegisterFeatureRenderersEvent(this.featureRenderers));
+     }
+ 
+     public FeatureRenderDispatcher.PreparedFrame prepareFrame(SubmitNodeStorage submitNodeStorage) {

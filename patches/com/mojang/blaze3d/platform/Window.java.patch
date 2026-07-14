@@ -1,9 +1,9 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -92,6 +_,16 @@
+@@ -102,6 +_,16 @@
          this.windowedWidth = this.width = allowedWindowMinSize(displayData.width());
          this.windowedHeight = this.height = allowedWindowMinSize(displayData.height());
-         this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.getMonitor() : 0L);
+         this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.monitor() : 0L);
 +        // Neo: If the window was taken over from EarlyLoadingScreen, inherit a potentially resized window size
 +        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
 +        if (earlyLoadingScreen != null) {
@@ -17,10 +17,10 @@
          this.backend = backend;
          if (initialMonitor != null) {
              VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -121,6 +_,11 @@
-         long windowHandle;
+@@ -132,6 +_,11 @@
          try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
              backend.setWindowHints();
+             GLFW.glfwWindowHint(131076, 0);
 +            var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
 +            if (earlyLoadingScreen != null) {
 +                windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
@@ -29,15 +29,19 @@
              windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
              if (windowHandle == 0L) {
                  backend.handleWindowCreationErrors(glfwErrors.firstError());
-@@ -226,8 +_,10 @@
+@@ -237,11 +_,11 @@
      }
  
      public void defaultErrorCallback(int errorCode, long description) {
--        RenderSystem.assertOnRenderThread();
+-        if (!RenderSystem.isOnRenderThread()) {
+-            LOGGER.error("Error callback from invalid thread ({})", Thread.currentThread().getName());
+-        }
+-
          String errorString = MemoryUtil.memUTF8(description);
 +        if (!RenderSystem.isOnRenderThread()) {
-+            throw new IllegalStateException("Encountered GL error off-thread @ " + errorSection + ": " + errorCode + ": " + errorString);
++            LOGGER.error("Error callback from invalid thread ({}): {}: {}", Thread.currentThread().getName(), errorCode, errorString);
 +        }
++
          LOGGER.error("########## GL ERROR ##########");
          LOGGER.error("@ {}", this.errorSection);
          LOGGER.error("{}: {}", errorCode, errorString);

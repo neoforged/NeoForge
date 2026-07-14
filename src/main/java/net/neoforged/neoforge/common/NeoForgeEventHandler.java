@@ -48,13 +48,9 @@ import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.VisibleForTesting;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
-    private static LootModifierManager LOOT_MODIFIER_MANAGER;
-    private static DataMapLoader DATA_MAP_LOADER;
-
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
@@ -106,7 +102,9 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent.ServerDataLoad event) {
-        DATA_MAP_LOADER.apply(event.getRegistries());
+        event.getServerResources()
+                .getListener(NeoForgeReloadListeners.DATA_MAPS_KEY)
+                .apply(event.getRegistries());
     }
 
     @SubscribeEvent
@@ -153,17 +151,11 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onResourceReload(AddServerReloadListenersEvent event) {
-        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
         event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
-        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader());
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
-    }
 
-    @VisibleForTesting
-    public static LootModifierManager getLootModifierManager() {
-        if (LOOT_MODIFIER_MANAGER == null)
-            throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
-        return LOOT_MODIFIER_MANAGER;
+        event.addRetainedListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY, new LootModifierManager());
+        event.addRetainedListener(NeoForgeReloadListeners.DATA_MAPS_KEY, new DataMapLoader());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

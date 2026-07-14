@@ -51,7 +51,7 @@
 +        float chance = getValue(itemStack);
          if ((fillLevel != 0 || !(chance > 0.0F)) && !(level.getRandom().nextDouble() < chance)) {
              return state;
-         } else {
+         }
 @@ -407,7 +_,7 @@
  
          @Override
@@ -68,7 +68,7 @@
 +    }
 +
 +    public static float getValue(ItemStack item) {
-+        var value = item.typeHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
++        var value = item.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
 +        if (value != null) return value.chance();
 +        return -1f;
      }

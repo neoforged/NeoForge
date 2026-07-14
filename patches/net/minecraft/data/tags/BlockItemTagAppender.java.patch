@@ -1,0 +1,31 @@
+--- a/net/minecraft/data/tags/BlockItemTagAppender.java
++++ b/net/minecraft/data/tags/BlockItemTagAppender.java
+@@ -56,4 +_,28 @@
+         this.original.addOptionalTag(tag);
+         return this;
+     }
++
++    @Override
++    public BlockItemTagAppender<Element> add(net.minecraft.tags.TagEntry entry) {
++        original.add(entry);
++        return this;
++    }
++
++    @Override
++    public BlockItemTagAppender<Element> replace(boolean value) {
++        original.replace(value);
++        return this;
++    }
++
++    @Override
++    public BlockItemTagAppender<Element> remove(ResourceKey<Element> block) {
++        original.remove(block);
++        return this;
++    }
++
++    @Override
++    public BlockItemTagAppender<Element> remove(TagKey<Element> tag) {
++        original.remove(tag);
++        return this;
++    }
+ }

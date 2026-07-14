@@ -11,8 +11,12 @@ import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
@@ -31,13 +35,13 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.BARRELS).addTag(Tags.Blocks.BARRELS_WOODEN);
         tag(Tags.Blocks.BARRELS_WOODEN).add(Blocks.BARREL);
         tag(Tags.Blocks.BARS).addTags(Tags.Blocks.BARS_COPPER, Tags.Blocks.BARS_IRON, BlockTags.BARS);
-        tag(Tags.Blocks.BARS_COPPER).addAll(Blocks.COPPER_BARS.asList());
+        tag(Tags.Blocks.BARS_COPPER).addAll(Blocks.COPPER_BARS.asList().stream().map(b -> b.builtInRegistryHolder().key()));
         tag(Tags.Blocks.BARS_IRON).add(Blocks.IRON_BARS);
         tag(Tags.Blocks.BOOKSHELVES).add(Blocks.BOOKSHELF);
         tag(Tags.Blocks.BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
         tag(Tags.Blocks.BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
-        tag(Tags.Blocks.CHAINS).add(Blocks.IRON_CHAIN).addAll(Blocks.COPPER_CHAIN.asList());
-        tag(Tags.Blocks.CHESTS).add(Blocks.COPPER_CHEST).addTags(Tags.Blocks.CHESTS_ENDER, Tags.Blocks.CHESTS_TRAPPED, Tags.Blocks.CHESTS_WOODEN);
+        tag(Tags.Blocks.CHAINS).add(Blocks.IRON_CHAIN).addAll(Blocks.COPPER_CHAIN.asList().stream().map(b -> b.builtInRegistryHolder().key()));
+        tag(Tags.Blocks.CHESTS).addAll(Blocks.COPPER_CHEST.asList().stream().map(b -> b.builtInRegistryHolder().key())).addTags(Tags.Blocks.CHESTS_ENDER, Tags.Blocks.CHESTS_TRAPPED, Tags.Blocks.CHESTS_WOODEN);
         tag(Tags.Blocks.CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(Tags.Blocks.CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
         tag(Tags.Blocks.CHESTS_WOODEN).add(Blocks.CHEST, Blocks.TRAPPED_CHEST);
@@ -47,7 +51,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.COBBLESTONES_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
         tag(Tags.Blocks.COBBLESTONES_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
         tag(Tags.Blocks.COBBLESTONES_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
-        tag(Tags.Blocks.CONCRETES).add(Blocks.WHITE_CONCRETE, Blocks.ORANGE_CONCRETE, Blocks.MAGENTA_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE, Blocks.YELLOW_CONCRETE, Blocks.LIME_CONCRETE, Blocks.PINK_CONCRETE, Blocks.GRAY_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE, Blocks.CYAN_CONCRETE, Blocks.PURPLE_CONCRETE, Blocks.BLUE_CONCRETE, Blocks.BROWN_CONCRETE, Blocks.GREEN_CONCRETE, Blocks.RED_CONCRETE, Blocks.BLACK_CONCRETE);
+        tag(Tags.Blocks.CONCRETES).addAll(Blocks.CONCRETE.asList());
         addColored(Tags.Blocks.DYED, "{color}_banner");
         addColored(Tags.Blocks.DYED, "{color}_bed");
         addColored(Tags.Blocks.DYED, "{color}_candle");
@@ -75,11 +79,11 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.FROGLIGHTS).add(Blocks.OCHRE_FROGLIGHT, Blocks.PEARLESCENT_FROGLIGHT, Blocks.VERDANT_FROGLIGHT);
         tag(Tags.Blocks.GLASS_BLOCKS).addTags(Tags.Blocks.GLASS_BLOCKS_COLORLESS, Tags.Blocks.GLASS_BLOCKS_CHEAP, Tags.Blocks.GLASS_BLOCKS_TINTED);
         tag(Tags.Blocks.GLASS_BLOCKS_COLORLESS).add(Blocks.GLASS);
-        tag(Tags.Blocks.GLASS_BLOCKS_CHEAP).add(Blocks.GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.BLACK_STAINED_GLASS);
+        tag(Tags.Blocks.GLASS_BLOCKS_CHEAP).add(Blocks.GLASS).addAll(Blocks.STAINED_GLASS.asList());
         tag(Tags.Blocks.GLASS_BLOCKS_TINTED).add(Blocks.TINTED_GLASS);
-        tag(Tags.Blocks.GLASS_PANES).addTags(Tags.Blocks.GLASS_PANES_COLORLESS).add(Blocks.WHITE_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.BLACK_STAINED_GLASS_PANE);
+        tag(Tags.Blocks.GLASS_PANES).addAll(Blocks.STAINED_GLASS_PANE.asList()).addTags(Tags.Blocks.GLASS_PANES_COLORLESS);
         tag(Tags.Blocks.GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
-        tag(Tags.Blocks.GLAZED_TERRACOTTAS).add(Blocks.WHITE_GLAZED_TERRACOTTA, Blocks.ORANGE_GLAZED_TERRACOTTA, Blocks.MAGENTA_GLAZED_TERRACOTTA, Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, Blocks.YELLOW_GLAZED_TERRACOTTA, Blocks.LIME_GLAZED_TERRACOTTA, Blocks.PINK_GLAZED_TERRACOTTA, Blocks.GRAY_GLAZED_TERRACOTTA, Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA, Blocks.CYAN_GLAZED_TERRACOTTA, Blocks.PURPLE_GLAZED_TERRACOTTA, Blocks.BLUE_GLAZED_TERRACOTTA, Blocks.BROWN_GLAZED_TERRACOTTA, Blocks.GREEN_GLAZED_TERRACOTTA, Blocks.RED_GLAZED_TERRACOTTA, Blocks.BLACK_GLAZED_TERRACOTTA);
+        tag(Tags.Blocks.GLAZED_TERRACOTTAS).addAll(Blocks.GLAZED_TERRACOTTA.asList());
         tag(Tags.Blocks.GRAVELS).add(Blocks.GRAVEL);
         tag(Tags.Blocks.SKULLS).add(Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD);
         tag(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS);
@@ -94,15 +98,15 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.ORE_RATES_SINGULAR).add(Blocks.ANCIENT_DEBRIS, Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.NETHER_QUARTZ_ORE);
         tag(Tags.Blocks.ORE_RATES_SPARSE).add(Blocks.NETHER_GOLD_ORE);
         tag(Tags.Blocks.ORES).addTags(Tags.Blocks.ORES_COAL, Tags.Blocks.ORES_COPPER, Tags.Blocks.ORES_DIAMOND, Tags.Blocks.ORES_EMERALD, Tags.Blocks.ORES_GOLD, Tags.Blocks.ORES_IRON, Tags.Blocks.ORES_LAPIS, Tags.Blocks.ORES_NETHERITE_SCRAP, Tags.Blocks.ORES_REDSTONE, Tags.Blocks.ORES_QUARTZ);
-        tag(Tags.Blocks.ORES_COAL).addTag(BlockTags.COAL_ORES);
+        tag(Tags.Blocks.ORES_COAL).addTag(BlockItemTags.COAL_ORES.block());
         tag(Tags.Blocks.ORES_COPPER).addTag(BlockTags.COPPER_ORES);
-        tag(Tags.Blocks.ORES_DIAMOND).addTag(BlockTags.DIAMOND_ORES);
-        tag(Tags.Blocks.ORES_EMERALD).addTag(BlockTags.EMERALD_ORES);
+        tag(Tags.Blocks.ORES_DIAMOND).addTag(BlockItemTags.DIAMOND_ORES.block());
+        tag(Tags.Blocks.ORES_EMERALD).addTag(BlockItemTags.EMERALD_ORES.block());
         tag(Tags.Blocks.ORES_GOLD).addTag(BlockTags.GOLD_ORES);
         tag(Tags.Blocks.ORES_IRON).addTag(BlockTags.IRON_ORES);
-        tag(Tags.Blocks.ORES_LAPIS).addTag(BlockTags.LAPIS_ORES);
+        tag(Tags.Blocks.ORES_LAPIS).addTag(BlockItemTags.LAPIS_ORES.block());
         tag(Tags.Blocks.ORES_QUARTZ).add(Blocks.NETHER_QUARTZ_ORE);
-        tag(Tags.Blocks.ORES_REDSTONE).addTag(BlockTags.REDSTONE_ORES);
+        tag(Tags.Blocks.ORES_REDSTONE).addTag(BlockItemTags.REDSTONE_ORES.block());
         tag(Tags.Blocks.ORES_NETHERITE_SCRAP).add(Blocks.ANCIENT_DEBRIS);
         tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_COPPER_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DEEPSLATE_LAPIS_ORE, Blocks.DEEPSLATE_REDSTONE_ORE);
         tag(Tags.Blocks.ORES_IN_GROUND_NETHERRACK).add(Blocks.NETHER_GOLD_ORE, Blocks.NETHER_QUARTZ_ORE);
@@ -138,7 +142,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Tags.Blocks.STORAGE_BLOCKS_RESIN, Tags.Blocks.STORAGE_BLOCKS_SLIME, Tags.Blocks.STORAGE_BLOCKS_WHEAT);
         tag(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL).add(Blocks.BONE_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_COAL).add(Blocks.COAL_BLOCK);
-        tag(Tags.Blocks.STORAGE_BLOCKS_COPPER).add(Blocks.COPPER_BLOCK);
+        tag(Tags.Blocks.STORAGE_BLOCKS_COPPER).add(Blocks.COPPER_BLOCK.waxed().unaffected());
         tag(Tags.Blocks.STORAGE_BLOCKS_DIAMOND).add(Blocks.DIAMOND_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_DRIED_KELP).add(Blocks.DRIED_KELP_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_EMERALD).add(Blocks.EMERALD_BLOCK);
@@ -202,6 +206,75 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 throw new IllegalStateException("Unknown vanilla block: " + key);
             tag(tag).add(block);
         }
+    }
+
+    protected record Appender(TagAppender<Block> app) implements TagAppender<Block> {
+        @Override
+        public Appender add(ResourceKey<Block> element) {
+            app.add(element);
+            return this;
+        }
+
+        @Override
+        public Appender addOptional(ResourceKey<Block> element) {
+            app.addOptional(element);
+            return this;
+        }
+
+        @Override
+        public Appender addTag(TagKey<Block> tag) {
+            app.addTag(tag);
+            return this;
+        }
+
+        @Override
+        public Appender addOptionalTag(TagKey<Block> tag) {
+            app.addOptionalTag(tag);
+            return this;
+        }
+
+        @Override
+        public Appender add(TagEntry entry) {
+            app.add(entry);
+            return this;
+        }
+
+        @Override
+        public Appender replace(boolean value) {
+            app.replace(value);
+            return this;
+        }
+
+        @Override
+        public Appender remove(ResourceKey<Block> element) {
+            app.remove(element);
+            return this;
+        }
+
+        @Override
+        public Appender remove(TagKey<Block> tag) {
+            app.remove(tag);
+            return this;
+        }
+
+        public Appender add(Block... blocks) {
+            for (Block block : blocks) {
+                add(BuiltInRegistries.BLOCK.wrapAsHolder(block).getKey());
+            }
+            return this;
+        }
+
+        public Appender addAll(Iterable<Block> blocks) {
+            for (Block block : blocks) {
+                add(block);
+            }
+            return this;
+        }
+    }
+
+    @Override
+    protected Appender tag(TagKey<Block> tag) {
+        return new Appender(super.tag(tag));
     }
 
     private void addColoredTags(Consumer<TagKey<Block>> consumer, TagKey<Block> group) {

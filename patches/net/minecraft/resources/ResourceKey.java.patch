@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceKey.java
 +++ b/net/minecraft/resources/ResourceKey.java
-@@ -64,6 +_,13 @@
+@@ -73,6 +_,13 @@
          return createRegistryKey(this.registryName);
      }
  

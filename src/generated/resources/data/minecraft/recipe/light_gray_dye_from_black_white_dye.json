@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "group": "light_gray_dye",
   "ingredients": [
     "#c:dyes/black",

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -52,7 +_,7 @@
+@@ -54,7 +_,7 @@
  
      @Override
      protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -9,7 +9,7 @@
      }
  
      @Override
-@@ -79,7 +_,7 @@
+@@ -81,7 +_,7 @@
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
          if (!level.isClientSide() && level.getBlockState(pos).is(this)) {
@@ -18,16 +18,15 @@
              if (shouldBeRemoved(pos, level, shape)) {
                  dropResources(state, level, pos);
                  level.removeBlock(pos, movedByPiston);
-@@ -115,7 +_,7 @@
-         if (level.isClientSide()) {
+@@ -113,14 +_,14 @@
              return state;
-         } else {
--            RailShape current = state.getValue(this.getShapeProperty());
-+            RailShape current = getRailDirection(state, level, pos, null);
-             return new RailState(level, pos, state).place(level.hasNeighborSignal(pos), first, current).getState();
          }
+ 
+-        RailShape current = state.getValue(this.getShapeProperty());
++        RailShape current = getRailDirection(state, level, pos, null);
+         return new RailState(level, pos, state).place(level.hasNeighborSignal(pos), first, current).getState();
      }
-@@ -123,7 +_,7 @@
+ 
      @Override
      protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
          if (!movedByPiston) {
@@ -36,7 +35,7 @@
                  level.updateNeighborsAt(pos.above(), this);
              }
  
-@@ -144,6 +_,11 @@
+@@ -141,6 +_,11 @@
          return state.setValue(this.getShapeProperty(), isEastWest ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, isWaterSource);
      }
  
@@ -48,7 +47,7 @@
      public abstract Property<RailShape> getShapeProperty();
  
      protected RailShape rotate(RailShape shape, Rotation rotation) {
-@@ -299,5 +_,15 @@
+@@ -296,5 +_,15 @@
      @Override
      protected FluidState getFluidState(BlockState state) {
          return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);

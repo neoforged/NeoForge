@@ -1,52 +1,53 @@
 --- a/net/minecraft/client/renderer/SubmitNodeCollection.java
 +++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
-@@ -38,6 +_,7 @@
-     private final List<SubmitNodeStorage.LeashSubmit> leashSubmits = new ArrayList<>();
-     private final List<SubmitNodeStorage.MovingBlockSubmit> movingBlockSubmits = new ArrayList<>();
-     private final List<SubmitNodeStorage.BlockModelSubmit> blockModelSubmits = new ArrayList<>();
-+    private final List<SubmitNodeStorage.MultiLayerBlockModelSubmit> multiLayerBlockModelSubmits = new ArrayList<>();
-     private final List<SubmitNodeStorage.BreakingBlockModelSubmit> breakingBlockModelSubmits = new ArrayList<>();
-     private final List<SubmitNodeStorage.ItemSubmit> itemSubmits = new ArrayList<>();
-     private final List<SubmitNodeCollector.ParticleGroupRenderer> particleGroupRenderers = new ArrayList<>();
-@@ -173,6 +_,21 @@
+@@ -206,7 +_,7 @@
+     public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState movingBlockRenderState, int outlineColor) {
+         MovingBlockFeatureRenderer.Submit submit = new MovingBlockFeatureRenderer.Submit(new Matrix4f(poseStack.last().pose()), movingBlockRenderState, 0);
+         BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(movingBlockRenderState.blockState);
+-        if (model.hasMaterialFlag(1)) {
++        if (model.hasMaterialFlag(movingBlockRenderState, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, 1)) {
+             this.translucentBlocksAndItems.submit(submit);
+         } else {
+             this.solid.submit(submit);
+@@ -252,6 +_,27 @@
+         }
      }
  
-     @Override
++    @Override
 +    public void submitMultiLayerBlockModel(
-+        PoseStack poseStack,
-+        List<BlockStateModelPart> modelParts,
-+        boolean translucent,
-+        int[] tintLayers,
-+        int lightCoords,
-+        int overlayCoords,
-+        int outlineColor
++            PoseStack poseStack,
++            List<BlockStateModelPart> modelParts,
++            boolean translucent,
++            int[] tintLayers,
++            int lightCoords,
++            int overlayCoords,
++            int outlineColor
 +    ) {
-+        this.wasUsed = true;
-+        this.multiLayerBlockModelSubmits
-+            .add(new SubmitNodeStorage.MultiLayerBlockModelSubmit(poseStack.last().copy(), modelParts, translucent, tintLayers, lightCoords, overlayCoords, outlineColor));
++        PoseStack.Pose pose = poseStack.last().copy();
++        var submit = new net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer.Submit(
++                pose, modelParts, translucent, tintLayers, lightCoords, overlayCoords, -1
++        );
++        if (translucent) {
++            this.translucentBlocksAndItems.submit(submit);
++        } else {
++            this.solid.submit(submit);
++        }
++    }
++
+     private static @Nullable RenderType getOutlineRenderType(RenderType renderType) {
+         if (renderType.isOutline()) {
+             return renderType;
+@@ -350,6 +_,13 @@
+         } else {
+             this.gizmos.submit(submit);
+         }
 +    }
 +
 +    @Override
-     public void submitBreakingBlockModel(PoseStack poseStack, BlockStateModel model, long seed, int progress) {
-         this.wasUsed = true;
-         this.breakingBlockModelSubmits.add(new SubmitNodeStorage.BreakingBlockModelSubmit(poseStack.last().copy(), model, seed, progress));
-@@ -236,6 +_,11 @@
-         return this.blockModelSubmits;
++    public <T extends net.minecraft.client.renderer.feature.submit.SubmitNode, S extends T> void submitSpecial(
++        net.neoforged.neoforge.client.submit.RenderPhaseKey<T> phaseKey, S submitNode
++    ) {
++        phaseKey.resolve(this).submit(submitNode);
      }
  
-+    /// Neo: expose multi-layer block model submits with support for per-quad render types
-+    public List<SubmitNodeStorage.MultiLayerBlockModelSubmit> getMultiLayerBlockModelSubmits() {
-+        return this.multiLayerBlockModelSubmits;
-+    }
-+
-     public List<SubmitNodeStorage.BreakingBlockModelSubmit> getBreakingBlockModelSubmits() {
-         return this.breakingBlockModelSubmits;
-     }
-@@ -272,6 +_,7 @@
-         this.leashSubmits.clear();
-         this.movingBlockSubmits.clear();
-         this.blockModelSubmits.clear();
-+        this.multiLayerBlockModelSubmits.clear();
-         this.breakingBlockModelSubmits.clear();
-         this.itemSubmits.clear();
-         this.particleGroupRenderers.clear();
+     public List<FeatureRenderPhase<?>> allPhases() {

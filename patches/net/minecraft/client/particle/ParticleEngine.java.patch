@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -34,10 +_,17 @@
+@@ -35,10 +_,17 @@
      private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
      private final ParticleResources resourceManager;
      private final RandomSource random = RandomSource.create();
@@ -18,7 +18,7 @@
      }
  
      public void createTrackingEmitter(Entity entity, ParticleOptions particle) {
-@@ -59,7 +_,7 @@
+@@ -60,7 +_,7 @@
      }
  
      private <T extends ParticleOptions> @Nullable Particle makeParticle(T options, double x, double y, double z, double xa, double ya, double za) {
@@ -27,16 +27,16 @@
          return provider == null ? null : provider.createParticle(options, this.level, x, y, z, xa, ya, za, this.random);
      }
  
-@@ -107,6 +_,8 @@
+@@ -110,6 +_,8 @@
              return new ItemPickupParticleGroup(this);
          } else if (type == ParticleRenderType.ELDER_GUARDIANS) {
              return new ElderGuardianParticleGroup(this);
 +        } else if (this.particleGroupFactories.containsKey(type)) {
 +            return this.particleGroupFactories.get(type).apply(this);
          } else {
-             return (ParticleGroup<?>)(type == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, type));
+             return type == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, type);
          }
-@@ -117,7 +_,7 @@
+@@ -120,7 +_,7 @@
      }
  
      public void extract(ParticlesRenderState particlesRenderState, Frustum frustum, Camera camera, float partialTickTime) {

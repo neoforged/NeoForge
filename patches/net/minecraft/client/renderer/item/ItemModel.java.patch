@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/item/ItemModel.java
 +++ b/net/minecraft/client/renderer/item/ItemModel.java
-@@ -37,7 +_,21 @@
+@@ -36,7 +_,21 @@
          PlayerSkinRenderCache playerSkinRenderCache,
          MissingItemModel missingItemModel,
          @Nullable RegistryContextSwapper contextSwapper

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.item.ItemStack;
@@ -56,13 +56,13 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.IRON_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
                 .thenExecute(() -> helper.assertItemEntityNotPresent(Items.QUARTZ))
-                .thenExecute(() -> helper.assertEntityNotPresent(EntityType.EXPERIENCE_ORB))
+                .thenExecute(() -> helper.assertEntityNotPresent(EntityTypes.EXPERIENCE_ORB))
                 .thenIdle(5) // Test that breaking the block normally functions as expected.
                 .thenExecute(() -> helper.setBlock(pos, Blocks.NETHER_QUARTZ_ORE))
                 .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
                 .thenExecute(() -> helper.assertItemEntityPresent(Items.QUARTZ))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.EXPERIENCE_ORB))
+                .thenExecute(() -> helper.assertEntityPresent(EntityTypes.EXPERIENCE_ORB))
                 .thenSucceed());
     }
 
@@ -86,7 +86,7 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.EMERALD_BLOCK, pos))
                 .thenExecute(() -> helper.assertItemEntityPresent(Items.EMERALD_BLOCK))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.EXPERIENCE_ORB))
+                .thenExecute(() -> helper.assertEntityPresent(EntityTypes.EXPERIENCE_ORB))
                 .thenSucceed());
     }
 
@@ -110,7 +110,7 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.setBlock(pos, Blocks.IRON_BLOCK))
                 .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.IRON_BLOCK, pos))
-                .thenExecute(() -> helper.assertTrue(helper.getEntities(EntityType.ITEM, newPos, 0).size() == 1, "Failed to detect moved iron block"))
+                .thenExecute(() -> helper.assertTrue(helper.getEntities(EntityTypes.ITEM, newPos, 0).size() == 1, "Failed to detect moved iron block"))
                 .thenSucceed());
     }
 
@@ -204,19 +204,19 @@ public class BlockEventTests {
                 .placeSustainedWater(1, 1, 1, Blocks.FARMLAND.defaultBlockState()));
 
         test.eventListeners().forge().addListener((final BlockEvent.FarmlandTrampleEvent event) -> {
-            if (event.getEntity().getType() != EntityType.GOAT) {
+            if (event.getEntity().getType() != EntityTypes.GOAT) {
                 event.setCanceled(true);
             }
             test.pass();
         });
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.spawnWithNoFreeWill(EntityType.SHEEP, new BlockPos(0, 4, 1).getCenter()))
+                .thenExecute(() -> helper.spawnWithNoFreeWill(EntityTypes.SHEEP, Vec3.atCenterOf(new BlockPos(0, 4, 1))))
                 .thenExecuteAfter(40, () -> helper.assertBlockPresent(Blocks.FARMLAND, new BlockPos(0, 1, 1)))
                 .thenExecute(() -> helper.killAllEntitiesOfClass(Sheep.class))
                 .thenIdle(20)
 
-                .thenExecute(() -> helper.spawnWithNoFreeWill(EntityType.GOAT, new BlockPos(1, 4, 0).getCenter()))
+                .thenExecute(() -> helper.spawnWithNoFreeWill(EntityTypes.GOAT, Vec3.atCenterOf(new BlockPos(1, 4, 0))))
                 .thenExecuteAfter(40, () -> helper.assertBlockPresent(Blocks.DIRT, new BlockPos(1, 1, 0)))
                 .thenExecute(() -> helper.killAllEntitiesOfClass(Goat.class))
                 .thenSucceed());

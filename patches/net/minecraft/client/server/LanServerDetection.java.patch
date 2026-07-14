@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/server/LanServerDetection.java
 +++ b/net/minecraft/client/server/LanServerDetection.java
-@@ -33,7 +_,7 @@
+@@ -32,7 +_,7 @@
              this.setDaemon(true);
              this.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LanServerDetection.LOGGER));
              this.socket = new MulticastSocket(4445);
@@ -9,7 +9,7 @@
              this.socket.setSoTimeout(5000);
              this.socket.joinGroup(this.pingGroup);
          }
-@@ -87,7 +_,11 @@
+@@ -85,7 +_,11 @@
              String motd = LanServerPinger.parseMotd(pingData);
              String address = LanServerPinger.parseAddress(pingData);
              if (address != null) {

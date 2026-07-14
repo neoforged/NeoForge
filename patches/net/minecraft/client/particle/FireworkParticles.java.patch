@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/particle/FireworkParticles.java
 +++ b/net/minecraft/client/particle/FireworkParticles.java
-@@ -222,6 +_,10 @@
+@@ -217,6 +_,10 @@
                      colors = IntList.of(DyeColor.BLACK.getFireworkColor());
                  }
  
-+                var factory = net.neoforged.neoforge.client.FireworkShapeFactoryRegistry.get(explosionx.shape());
++                var factory = net.neoforged.neoforge.client.FireworkShapeFactoryRegistry.get(explosion.shape());
 +                if (factory != null)
 +                    factory.build(this, trail, twinkle, colors.toIntArray(), fadeColors.toIntArray());
 +                else
-                 switch (explosionx.shape()) {
+                 switch (explosion.shape()) {
                      case SMALL_BALL:
                          this.createParticleBall(0.25, 2, colors, fadeColors, trail, twinkle);

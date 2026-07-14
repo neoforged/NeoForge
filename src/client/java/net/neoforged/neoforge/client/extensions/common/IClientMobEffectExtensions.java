@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -82,7 +82,7 @@ public interface IClientMobEffectExtensions {
      * This can be used to render icons from your own texture sheet.
      *
      * @param instance    The effect instance
-     * @param gui         The gui
+     * @param hud         The HUD
      * @param guiGraphics The gui graphics
      * @param x           The x coordinate
      * @param y           The y coordinate
@@ -90,7 +90,7 @@ public interface IClientMobEffectExtensions {
      * @param alpha       The alpha value. Blinks when the effect is about to run out
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderGuiIcon(MobEffectInstance instance, Gui gui, GuiGraphicsExtractor guiGraphics, int x, int y, float z, float alpha) {
+    default boolean renderGuiIcon(MobEffectInstance instance, Hud hud, GuiGraphicsExtractor guiGraphics, int x, int y, float z, float alpha) {
         return false;
     }
 }

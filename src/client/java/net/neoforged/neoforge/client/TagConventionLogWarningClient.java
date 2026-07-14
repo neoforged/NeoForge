@@ -7,11 +7,11 @@ package net.neoforged.neoforge.client;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.locale.Language;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -93,7 +93,7 @@ public final class TagConventionLogWarningClient {
             }
 
             String translationKey = Tags.getTagTranslationKey(itemTagKey);
-            if (!I18n.exists(translationKey)) {
+            if (!Language.getInstance().has(translationKey)) {
                 untranslatedTags.add(itemTagKey);
             }
         });

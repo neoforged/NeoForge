@@ -21,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.IContainerFactory;
+import org.jspecify.annotations.Nullable;
 
 public interface IPlayerExtension {
     private Player self() {
@@ -54,7 +55,7 @@ public interface IPlayerExtension {
      *                     data written by {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      *
      */
-    default OptionalInt openMenu(MenuProvider menuProvider, BlockPos pos) {
+    default OptionalInt openMenu(@Nullable MenuProvider menuProvider, BlockPos pos) {
         return openMenu(menuProvider, buf -> buf.writeBlockPos(pos));
     }
 
@@ -71,7 +72,7 @@ public interface IPlayerExtension {
      *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
-    default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
+    default OptionalInt openMenu(@Nullable MenuProvider menuProvider, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 

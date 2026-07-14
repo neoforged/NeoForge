@@ -77,7 +77,7 @@
              )
          );
      }
-@@ -142,7 +_,19 @@
+@@ -141,7 +_,19 @@
          Map<BlockState, BlockStateModel> blockStateModels,
          Map<Identifier, ItemModel> itemStackModels,
          Map<Identifier, ClientItem.Properties> itemProperties
@@ -97,7 +97,7 @@
          public BlockStateModel getBlockStateModel(BlockState blockState) {
              return this.blockStateModels.getOrDefault(blockState, this.missingModels.block);
          }
-@@ -152,6 +_,8 @@
+@@ -150,6 +_,8 @@
      private static class InternerImpl implements ModelBaker.Interner {
          private final Interner<Vector3fc> vectors = Interners.newStrongInterner();
          private final Interner<BakedQuad.MaterialInfo> materialInfos = Interners.newStrongInterner();
@@ -106,7 +106,7 @@
  
          @Override
          public Vector3fc vector(Vector3fc v) {
-@@ -161,6 +_,16 @@
+@@ -159,6 +_,16 @@
          @Override
          public BakedQuad.MaterialInfo materialInfo(BakedQuad.MaterialInfo material) {
              return this.materialInfos.intern(material);

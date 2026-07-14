@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -29,16 +28,13 @@ import org.jspecify.annotations.Nullable;
 @ApiStatus.Internal
 public class PictureInPictureRendererPool<T extends PictureInPictureRenderState> implements AutoCloseable {
     private final PictureInPictureRendererRegistration<T> factory;
-    private final MultiBufferSource.BufferSource buffers;
     // The renderers from last frame, which we will try to reuse this frame
     private Object2ObjectMap<T, PictureInPictureRenderer<T>> renderersLastFrame = new Object2ObjectOpenHashMap<>();
     // The renderers we already used in this frame, which we will try to reuse next frame
     private Object2ObjectMap<T, PictureInPictureRenderer<T>> renderersThisFrame = new Object2ObjectOpenHashMap<>();
 
-    public PictureInPictureRendererPool(PictureInPictureRendererRegistration<T> factory,
-            MultiBufferSource.BufferSource buffers) {
+    public PictureInPictureRendererPool(PictureInPictureRendererRegistration<T> factory) {
         this.factory = factory;
-        this.buffers = buffers;
     }
 
     @Nullable
@@ -69,7 +65,7 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
         }
 
         // Nothing else helped, create a new one
-        var renderer = factory.factory().apply(buffers);
+        var renderer = factory.factory().get();
         renderersThisFrame.put(state, renderer);
         return renderer;
     }
@@ -90,11 +86,11 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
         renderersLastFrame.values().forEach(PictureInPictureRenderer::close);
     }
 
-    public static Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> createPools(MultiBufferSource.BufferSource bufferSource, List<PictureInPictureRendererRegistration<?>> pipRendererFactories) {
+    public static Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> createPools(List<PictureInPictureRendererRegistration<?>> pipRendererFactories) {
         ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> builder = ImmutableMap.builder();
 
         for (var factory : pipRendererFactories) {
-            builder.put(factory.stateClass(), new PictureInPictureRendererPool<>(factory, bufferSource));
+            builder.put(factory.stateClass(), new PictureInPictureRendererPool<>(factory));
         }
 
         return builder.buildOrThrow();

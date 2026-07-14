@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/BundlerInfo.java
 +++ b/net/minecraft/network/protocol/BundlerInfo.java
-@@ -28,6 +_,26 @@
+@@ -27,6 +_,26 @@
              }
  
              @Override
@@ -26,8 +26,8 @@
 +            @Override
              public BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> packet) {
                  return packet == delimiterPacket ? new BundlerInfo.Bundler() {
-                     private final List<Packet<? super T>> bundlePackets;
-@@ -53,7 +_,24 @@
+                     private final List<Packet<? super T>> bundlePackets = new ArrayList<>();
+@@ -50,7 +_,24 @@
          };
      }
  

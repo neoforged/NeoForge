@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -49,16 +48,6 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     // Helpers for accessing Item data
     private ItemStack self() {
         return (ItemStack) this;
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
-     * Returns a full ItemStack instance of the result.
-     *
-     * @return The resulting ItemStack
-     */
-    default @Nullable ItemStackTemplate getCraftingRemainder() {
-        return self().getItem().getCraftingRemainder(self());
     }
 
     /**
@@ -394,5 +383,18 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      */
     default boolean canFitInsideContainerItems() {
         return self().getItem().canFitInsideContainerItems(self());
+    }
+
+    /// Called to damage an item held by this stack providing the [gliding flight attribute][net.neoforged.neoforge.common.NeoForgeMod#GLIDING_FLIGHT].
+    /// The default vanilla implementation is to damage the item by 1.
+    ///
+    /// If an entity has multiple items equipped that provide the gliding flight attribute, one of those items will be randomly selected
+    /// to be called with this method.
+    ///
+    /// @param wearer the entity wearing the item
+    /// @param slot the equipment slot occupied by the item
+    /// @see IItemExtension#onGlideDamage(ItemStack, LivingEntity, EquipmentSlot)
+    default void onGlideDamage(LivingEntity wearer, EquipmentSlot slot) {
+        self().getItem().onGlideDamage(self(), wearer, slot);
     }
 }

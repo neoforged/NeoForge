@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -78,6 +79,7 @@ import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -194,6 +196,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.resource.ListenerKey;
 import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -452,8 +455,8 @@ public class EventHooks {
         return event.getNewState();
     }
 
-    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
-        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
+    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context, TooltipDisplay display) {
+        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context, display);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
@@ -683,6 +686,7 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new CanContinueSleepingEvent(sleeper, problem)).mayContinueSleeping();
     }
 
+    @Nullable
     public static InteractionResult onArrowNock(ItemStack item, Level level, Player player, InteractionHand hand, boolean hasAmmo) {
         ArrowNockEvent event = new ArrowNockEvent(player, item, hand, level, hasAmmo);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
@@ -829,8 +833,11 @@ public class EventHooks {
      * 
      * @throws IllegalArgumentException if {@link ReloadListenerSort#sort(SortedReloadListenerEvent)} detects a cycle.
      */
-    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
-        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, registryAccess);
+    public static List<PreparableReloadListener> onResourceReload(
+            ReloadableServerResources serverResources,
+            RegistryAccess registryAccess,
+            Map<ListenerKey<?>, PreparableReloadListener> retainedListeners) {
+        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, registryAccess, retainedListeners);
         NeoForge.EVENT_BUS.post(event);
         return ReloadListenerSort.sort(event);
     }

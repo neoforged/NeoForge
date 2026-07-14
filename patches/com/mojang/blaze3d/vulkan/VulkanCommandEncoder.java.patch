@@ -1,0 +1,48 @@
+--- a/com/mojang/blaze3d/vulkan/VulkanCommandEncoder.java
++++ b/com/mojang/blaze3d/vulkan/VulkanCommandEncoder.java
+@@ -302,6 +_,15 @@
+                 }
+ 
+                 renderingInfo.pDepthAttachment(depthAttachmentInfo);
++
++                if (vulkanDepthAttachment.texture().getFormat().hasStencilAspect()) {
++                    VkRenderingAttachmentInfo stencilAttachmentInfo = VkRenderingAttachmentInfo.calloc(stack).sType$Default();
++                    stencilAttachmentInfo.imageView(vulkanDepthAttachment.vkImageView());
++                    stencilAttachmentInfo.imageLayout(VK12.VK_IMAGE_LAYOUT_GENERAL);
++                    stencilAttachmentInfo.loadOp(VK12.VK_ATTACHMENT_LOAD_OP_LOAD);
++                    stencilAttachmentInfo.storeOp(VK12.VK_ATTACHMENT_STORE_OP_STORE);
++                    renderingInfo.pStencilAttachment(stencilAttachmentInfo);
++                }
+             }
+ 
+             KHRDynamicRendering.vkCmdBeginRenderingKHR(this.commandBuffer(), renderingInfo);
+@@ -314,6 +_,7 @@
+                 width,
+                 height,
+                 depthAttachment != null,
++                depthAttachment != null && depthAttachment.textureView().texture().getFormat().hasStencilAspect(),
+                 descriptor.label()
+             );
+         }
+@@ -418,6 +_,21 @@
+     public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
+         try (MemoryStack stack = MemoryStack.stackPush()) {
+             this.clearDepthTextureUnsynced(stack, depthTexture, clearDepth);
++            this.memoryBarrier(stack);
++        }
++    }
++
++    @Override
++    public void clearStencilTexture(GpuTexture texture, int value) {
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++            VkClearDepthStencilValue vkClearStencil = VkClearDepthStencilValue.calloc(stack).stencil(value);
++            VkImageSubresourceRange subresourceRange = VkImageSubresourceRange.calloc(stack);
++            subresourceRange.baseMipLevel(0);
++            subresourceRange.levelCount(texture.getMipLevels());
++            subresourceRange.baseArrayLayer(0);
++            subresourceRange.layerCount(1);
++            subresourceRange.aspectMask(VK12.VK_IMAGE_ASPECT_STENCIL_BIT);
++            VK12.vkCmdClearDepthStencilImage(this.commandBuffer(), ((VulkanGpuTexture)texture).vkImage(), 1, vkClearStencil, subresourceRange);
+             this.memoryBarrier(stack);
+         }
+     }

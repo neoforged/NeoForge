@@ -6,10 +6,12 @@
 package net.neoforged.neoforge.common;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
@@ -63,6 +65,7 @@ import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
@@ -209,6 +212,7 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.CustomClickActionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -223,7 +227,9 @@ import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -304,10 +310,12 @@ public class CommonHooks {
      * @param entity    the entity to receive damage
      * @param container the newly instantiated container for damage to be dealt. Most properties of
      *                  the container will be empty at this stage.
-     * @return if the event is cancelled and no damage will be applied to the entity
+     * @return if the event is cancelled or the entity was killed during the event. If true, further processing stops and no damage will be applied to the entity
      */
     public static boolean onEntityIncomingDamage(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
+        Preconditions.checkArgument(!entity.isDeadOrDying(), "The LivingIncomingDamageEvent cannot be fired with a dead entity.");
+        var event = NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container));
+        return event.isCanceled() || entity.isDeadOrDying();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -798,12 +806,13 @@ public class CommonHooks {
         return true;
     }
 
-    private static ThreadLocal<Player> craftingPlayer = new ThreadLocal<Player>();
+    private static final ThreadLocal<@Nullable Player> craftingPlayer = new ThreadLocal<>();
 
-    public static void setCraftingPlayer(Player player) {
+    public static void setCraftingPlayer(@Nullable Player player) {
         craftingPlayer.set(player);
     }
 
+    @Nullable
     public static Player getCraftingPlayer() {
         return craftingPlayer.get();
     }
@@ -1121,7 +1130,10 @@ public class CommonHooks {
      */
     public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
-        LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
+        LootModifierManager man = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+                .getServerResources()
+                .managers()
+                .getListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY);
         for (IGlobalLootModifier mod : man.getSortedModifiers()) {
             try {
                 generatedLoot = mod.apply(generatedLoot, context);
@@ -1823,5 +1835,10 @@ public class CommonHooks {
             rotation = rotation.getRotated(prevRotation.get());
         }
         blockEntity.applyStructureRotation(settings.getMirror(), rotation);
+    }
+
+    @ApiStatus.Internal
+    public static boolean onCustomClickAction(@Nullable ServerPlayer player, GameProfile profile, Identifier id, Optional<Tag> payload) {
+        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, profile, id, payload.orElse(null))).isCanceled();
     }
 }

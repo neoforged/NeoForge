@@ -31,6 +31,7 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -100,7 +101,7 @@ public class AttachmentTests {
         test.onGameTest(helper -> {
             var player = helper.makeOpMockPlayer(LevelBasedPermissionSet.OWNER);
             var pos = helper.absolutePos(BlockPos.ZERO);
-            player.setPos(pos.getCenter());
+            player.setPos(Vec3.atCenterOf(pos));
 
             helper.getLevel().getChunk(pos).removeData(attachmentType); // remove data to ensure that the test can run multiple times
 

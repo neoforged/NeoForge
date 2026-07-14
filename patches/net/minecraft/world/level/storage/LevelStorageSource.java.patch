@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -531,6 +_,19 @@
+@@ -525,6 +_,19 @@
              }
          }
  
@@ -20,20 +20,20 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
-@@ -560,10 +_,12 @@
+@@ -554,10 +_,12 @@
              Dynamic<?> unfixedDataTag;
              try {
                  unfixedDataTag = this.getUnfixedDataTag(false);
 +                this.readAdditionalLevelSaveData(false);
-             } catch (NbtException | ReportedNbtException | IOException var3) {
-                 LevelStorageSource.LOGGER.warn("Failed to load world data from {}", this.levelDirectory.dataFile(), var3);
+             } catch (IOException | NbtException | ReportedNbtException e) {
+                 LevelStorageSource.LOGGER.warn("Failed to load world data from {}", this.levelDirectory.dataFile(), e);
                  LevelStorageSource.LOGGER.info("Attempting to use fallback {}", this.levelDirectory.oldDataFile());
                  unfixedDataTag = this.getUnfixedDataTag(true);
 +                this.readAdditionalLevelSaveData(true);
                  this.restoreLevelDataFromOld();
              }
  
-@@ -589,6 +_,7 @@
+@@ -583,6 +_,7 @@
              CompoundTag dataTag = levelData.createTag(singleplayerUUID);
              CompoundTag root = new CompoundTag();
              root.put("Data", dataTag);
@@ -41,7 +41,7 @@
              this.saveLevelData(root);
          }
  
-@@ -615,6 +_,10 @@
+@@ -609,6 +_,10 @@
  
          public Optional<Path> getIconFile() {
              return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());

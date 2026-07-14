@@ -42,7 +42,7 @@
  
      @Override
      public void setBlockState(BlockState blockState) {
-@@ -139,10 +_,11 @@
+@@ -139,11 +_,13 @@
      }
  
      private static boolean ejectItems(Level level, BlockPos blockPos, HopperBlockEntity self) {
@@ -51,21 +51,22 @@
 +        var containerOrHandler = getContainerOrHandlerAt(level, blockPos.relative(self.facing), self.facing.getOpposite());
 +        if (containerOrHandler.isEmpty()) {
              return false;
--        } else {
-+        } else if (containerOrHandler.container() != null) {
-+            Container container = containerOrHandler.container();
-             Direction direction = self.facing.getOpposite();
-             if (isFullContainer(container, direction)) {
-                 return false;
-@@ -166,6 +_,8 @@
- 
-                 return false;
-             }
-+        } else {
-+            return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.insertHook(self, containerOrHandler.itemHandler());
          }
+ 
++        if (containerOrHandler.container() != null) {
++        Container container = containerOrHandler.container();
+         Direction direction = self.facing.getOpposite();
+         if (isFullContainer(container, direction)) {
+             return false;
+@@ -167,6 +_,8 @@
+         }
+ 
+         return false;
++        }
++        return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.insertHook(self, containerOrHandler.itemHandler());
      }
  
+     private static int[] getSlots(Container container, Direction direction) {
 @@ -216,8 +_,9 @@
      public static boolean suckInItems(Level level, Hopper hopper) {
          BlockPos blockPos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());

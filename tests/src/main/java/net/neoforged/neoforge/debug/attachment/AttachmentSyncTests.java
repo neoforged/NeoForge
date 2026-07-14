@@ -15,7 +15,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
@@ -195,7 +195,7 @@ public class AttachmentSyncTests {
 
                         player.clearOutboundPackets();
                     })
-                    .thenMap(() -> helper.spawnWithNoFreeWill(EntityType.PIG, helper.relativePos(player.blockPosition())))
+                    .thenMap(() -> helper.spawnWithNoFreeWill(EntityTypes.PIG, helper.relativePos(player.blockPosition())))
                     // Test that players receive updates for entities in tracked chunks
                     .thenExecute(entity -> {
                         var testValue = helper.randomInt();

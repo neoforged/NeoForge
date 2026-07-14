@@ -51,7 +51,7 @@ public class FrameworkClientImpl implements FrameworkClient {
                 @Override
                 public void setDown(boolean pValue) {
                     if (pValue) {
-                        Minecraft.getInstance().setScreen(new TestScreen(
+                        Minecraft.getInstance().gui.setScreen(new TestScreen(
                                 Component.literal("All tests"), impl, List.copyOf(impl.tests().allGroups())));
                     }
                     super.setDown(pValue);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/UnbakedModel.java
 +++ b/net/minecraft/client/resources/model/UnbakedModel.java
-@@ -60,5 +_,9 @@
+@@ -61,5 +_,9 @@
          public boolean lightLikeBlock() {
              return this == SIDE;
          }

@@ -45,8 +45,8 @@
         {
             "enum": "net/minecraft/world/entity/MobCategory",
             "name": "NEOTESTS_TEST",
-            "constructor": "(Ljava/lang/String;IZZI)V",
-            "parameters": [ "neotests:test", 1, true, true, 128 ]
+            "constructor": "(Ljava/lang/String;Ljava/lang/String;IZZI)V",
+            "parameters": [ "neotests:test", "T", 1, true, true, 128 ]
         },
         {
             "enum": "net/minecraft/world/item/ItemUseAnimation",

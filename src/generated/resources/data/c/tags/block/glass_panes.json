@@ -1,6 +1,5 @@
 {
   "values": [
-    "#c:glass_panes/colorless",
     "minecraft:white_stained_glass_pane",
     "minecraft:orange_stained_glass_pane",
     "minecraft:magenta_stained_glass_pane",
@@ -16,6 +15,7 @@
     "minecraft:brown_stained_glass_pane",
     "minecraft:green_stained_glass_pane",
     "minecraft:red_stained_glass_pane",
-    "minecraft:black_stained_glass_pane"
+    "minecraft:black_stained_glass_pane",
+    "#c:glass_panes/colorless"
   ]
 }

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Helper interface for resources backed by a registry entry and which also hold data component values.
@@ -40,7 +41,7 @@ public interface DataComponentHolderResource<T> extends RegisteredResource<T>, D
      * @param data the data to set
      * @param <D>  the type of data component
      */
-    <D> DataComponentHolderResource<T> with(DataComponentType<D> type, D data);
+    <D> DataComponentHolderResource<T> with(DataComponentType<D> type, @Nullable D data);
 
     /**
      * {@return a resource without the data component, i.e. with the data component explicitly removed}
@@ -61,7 +62,7 @@ public interface DataComponentHolderResource<T> extends RegisteredResource<T>, D
      * @param data the data to set
      * @param <D>  the type of data component
      */
-    default <D> DataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, D data) {
+    default <D> DataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, @Nullable D data) {
         return with(type.get(), data);
     }
 

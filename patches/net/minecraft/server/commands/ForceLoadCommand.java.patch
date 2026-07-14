@@ -45,21 +45,21 @@
          return 0;
      }
  
-@@ -177,7 +_,7 @@
-                             () -> Component.translatable(
-                                 "commands.forceload." + (add ? "added" : "removed") + ".single",
-                                 Component.translationArg(finalFirstChanged),
--                                Component.translationArg(dimension.identifier())
-+                                    level.getDescription() // Neo: Use dimension translation, if one exists
-                             ),
-                             true
-                         );
-@@ -188,7 +_,7 @@
-                             () -> Component.translatable(
-                                 "commands.forceload." + (add ? "added" : "removed") + ".multiple",
-                                 changedChunks,
--                                Component.translationArg(dimension.identifier()),
-+                                level.getDescription(), // Neo: Use dimension translation, if one exists
-                                 Component.translationArg(min),
-                                 Component.translationArg(max)
-                             ),
+@@ -179,7 +_,7 @@
+                     () -> Component.translatable(
+                         "commands.forceload." + (add ? "added" : "removed") + ".single",
+                         Component.translationArg(finalFirstChanged),
+-                        Component.translationArg(dimension.identifier())
++                        level.getDescription() // Neo: Use dimension translation, if one exists
+                     ),
+                     true
+                 );
+@@ -190,7 +_,7 @@
+                     () -> Component.translatable(
+                         "commands.forceload." + (add ? "added" : "removed") + ".multiple",
+                         changedChunks,
+-                        Component.translationArg(dimension.identifier()),
++                        level.getDescription(), // Neo: Use dimension translation, if one exists
+                         Component.translationArg(min),
+                         Component.translationArg(max)
+                     ),

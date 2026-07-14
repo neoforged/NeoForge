@@ -25,6 +25,7 @@ import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -34,6 +35,7 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ColorCollection;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -73,29 +75,14 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.DIAMOND, Tags.Items.GEMS_DIAMOND);
         replace(Items.EMERALD, Tags.Items.GEMS_EMERALD);
 
-        replace(Items.WHITE_DYE, Tags.Items.DYES_WHITE);
-        replace(Items.ORANGE_DYE, Tags.Items.DYES_ORANGE);
-        replace(Items.MAGENTA_DYE, Tags.Items.DYES_MAGENTA);
-        replace(Items.LIGHT_BLUE_DYE, Tags.Items.DYES_LIGHT_BLUE);
-        replace(Items.YELLOW_DYE, Tags.Items.DYES_YELLOW);
-        replace(Items.LIME_DYE, Tags.Items.DYES_LIME);
-        replace(Items.PINK_DYE, Tags.Items.DYES_PINK);
-        replace(Items.GRAY_DYE, Tags.Items.DYES_GRAY);
-        replace(Items.LIGHT_GRAY_DYE, Tags.Items.DYES_LIGHT_GRAY);
-        replace(Items.CYAN_DYE, Tags.Items.DYES_CYAN);
-        replace(Items.PURPLE_DYE, Tags.Items.DYES_PURPLE);
-        replace(Items.BLUE_DYE, Tags.Items.DYES_BLUE);
-        replace(Items.BROWN_DYE, Tags.Items.DYES_BROWN);
-        replace(Items.GREEN_DYE, Tags.Items.DYES_GREEN);
-        replace(Items.RED_DYE, Tags.Items.DYES_RED);
-        replace(Items.BLACK_DYE, Tags.Items.DYES_BLACK);
+        ColorCollection.zipApply(Items.DYE, ColorCollection.VALUES.map(DyeColor::getTag), this::replace);
 
         replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
         replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
 
         replace(Items.EGG, Tags.Items.EGGS);
         replace(Items.STRING, Tags.Items.STRINGS);
-        exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
+        exclude(getConversionRecipeName(Blocks.WOOL.pick(DyeColor.WHITE), Items.STRING));
         replace(Items.LEATHER, Tags.Items.LEATHERS);
 
         exclude(Blocks.GOLD_BLOCK);
@@ -105,7 +92,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.DIAMOND_BLOCK);
         exclude(Blocks.EMERALD_BLOCK);
         exclude(Blocks.NETHERITE_BLOCK);
-        exclude(Blocks.COPPER_BLOCK);
+        exclude(Blocks.COPPER_BLOCK.weathering().unaffected());
         exclude(Blocks.AMETHYST_BLOCK);
 
         exclude(Blocks.COBBLESTONE_STAIRS);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ChestBlock.java
 +++ b/net/minecraft/world/level/block/ChestBlock.java
-@@ -368,7 +_,8 @@
+@@ -364,7 +_,8 @@
  
      @Override
      protected BlockState mirror(BlockState state, Mirror mirror) {

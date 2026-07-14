@@ -10,16 +10,19 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -83,101 +86,59 @@ public class CapabilityHooks {
             return ComposterWrapper.get(level, pos, side);
         }, Blocks.COMPOSTER);
 
-        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> {
-            return ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER);
-        },
-                Blocks.CHEST,
-                Blocks.TRAPPED_CHEST,
-                Blocks.COPPER_CHEST,
-                Blocks.EXPOSED_COPPER_CHEST,
-                Blocks.WEATHERED_COPPER_CHEST,
-                Blocks.OXIDIZED_COPPER_CHEST,
-                Blocks.WAXED_COPPER_CHEST,
-                Blocks.WAXED_EXPOSED_COPPER_CHEST,
-                Blocks.WAXED_WEATHERED_COPPER_CHEST,
-                Blocks.WAXED_OXIDIZED_COPPER_CHEST);
+        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.CHEST, Blocks.TRAPPED_CHEST);
+        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.COPPER_CHEST.asList().toArray(Block[]::new));
 
         var sidedVanillaContainers = List.of(
-                BlockEntityType.BLAST_FURNACE,
-                BlockEntityType.BREWING_STAND,
-                BlockEntityType.FURNACE,
-                BlockEntityType.SMOKER,
-                BlockEntityType.SHULKER_BOX);
+                BlockEntityTypes.BLAST_FURNACE,
+                BlockEntityTypes.BREWING_STAND,
+                BlockEntityTypes.FURNACE,
+                BlockEntityTypes.SMOKER,
+                BlockEntityTypes.SHULKER_BOX);
         for (var type : sidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.Item.BLOCK, type, WorldlyContainerWrapper::new);
         }
 
         var nonSidedVanillaContainers = List.of(
-                BlockEntityType.BARREL,
-                BlockEntityType.CHISELED_BOOKSHELF,
-                BlockEntityType.DISPENSER,
-                BlockEntityType.DROPPER,
-                BlockEntityType.HOPPER,
-                BlockEntityType.JUKEBOX,
-                BlockEntityType.CRAFTER,
-                BlockEntityType.DECORATED_POT,
-                BlockEntityType.SHELF);
+                BlockEntityTypes.BARREL,
+                BlockEntityTypes.CHISELED_BOOKSHELF,
+                BlockEntityTypes.DISPENSER,
+                BlockEntityTypes.DROPPER,
+                BlockEntityTypes.HOPPER,
+                BlockEntityTypes.JUKEBOX,
+                BlockEntityTypes.CRAFTER,
+                BlockEntityTypes.DECORATED_POT,
+                BlockEntityTypes.SHELF);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.Item.BLOCK, type, (container, side) -> VanillaContainerWrapper.of(container));
         }
 
         // Entities
         var containerEntities = List.of(
-                EntityType.ACACIA_CHEST_BOAT,
-                EntityType.BIRCH_CHEST_BOAT,
-                EntityType.CHERRY_CHEST_BOAT,
-                EntityType.DARK_OAK_CHEST_BOAT,
-                EntityType.JUNGLE_CHEST_BOAT,
-                EntityType.MANGROVE_CHEST_BOAT,
-                EntityType.OAK_CHEST_BOAT,
-                EntityType.SPRUCE_CHEST_BOAT,
-                EntityType.BAMBOO_CHEST_RAFT,
-                EntityType.PALE_OAK_CHEST_BOAT,
-                EntityType.CHEST_MINECART,
-                EntityType.HOPPER_MINECART);
+                EntityTypes.ACACIA_CHEST_BOAT,
+                EntityTypes.BIRCH_CHEST_BOAT,
+                EntityTypes.CHERRY_CHEST_BOAT,
+                EntityTypes.DARK_OAK_CHEST_BOAT,
+                EntityTypes.JUNGLE_CHEST_BOAT,
+                EntityTypes.MANGROVE_CHEST_BOAT,
+                EntityTypes.OAK_CHEST_BOAT,
+                EntityTypes.SPRUCE_CHEST_BOAT,
+                EntityTypes.BAMBOO_CHEST_RAFT,
+                EntityTypes.PALE_OAK_CHEST_BOAT,
+                EntityTypes.CHEST_MINECART,
+                EntityTypes.HOPPER_MINECART);
         for (var entityType : containerEntities) {
             event.registerEntity(Capabilities.Item.ENTITY, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
             event.registerEntity(Capabilities.Item.ENTITY_AUTOMATION, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
         }
-        event.registerEntity(Capabilities.Item.ENTITY, EntityType.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player.getInventory()));
+        event.registerEntity(Capabilities.Item.ENTITY, EntityTypes.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player.getInventory()));
 
         // Items
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27),
-                Items.SHULKER_BOX,
-                Items.BLACK_SHULKER_BOX,
-                Items.BLUE_SHULKER_BOX,
-                Items.BROWN_SHULKER_BOX,
-                Items.CYAN_SHULKER_BOX,
-                Items.GRAY_SHULKER_BOX,
-                Items.GREEN_SHULKER_BOX,
-                Items.LIGHT_BLUE_SHULKER_BOX,
-                Items.LIGHT_GRAY_SHULKER_BOX,
-                Items.LIME_SHULKER_BOX,
-                Items.MAGENTA_SHULKER_BOX,
-                Items.ORANGE_SHULKER_BOX,
-                Items.PINK_SHULKER_BOX,
-                Items.PURPLE_SHULKER_BOX,
-                Items.RED_SHULKER_BOX,
-                Items.WHITE_SHULKER_BOX,
-                Items.YELLOW_SHULKER_BOX);
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS),
-                Items.BUNDLE,
-                Items.BLACK_BUNDLE,
-                Items.BLUE_BUNDLE,
-                Items.BROWN_BUNDLE,
-                Items.CYAN_BUNDLE,
-                Items.GRAY_BUNDLE,
-                Items.GREEN_BUNDLE,
-                Items.LIGHT_BLUE_BUNDLE,
-                Items.LIGHT_GRAY_BUNDLE,
-                Items.LIME_BUNDLE,
-                Items.MAGENTA_BUNDLE,
-                Items.ORANGE_BUNDLE,
-                Items.PINK_BUNDLE,
-                Items.PURPLE_BUNDLE,
-                Items.RED_BUNDLE,
-                Items.WHITE_BUNDLE,
-                Items.YELLOW_BUNDLE);
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.SHULKER_BOX);
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.DYED_SHULKER_BOX.asList().toArray(ItemLike[]::new));
+
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.BUNDLE);
+        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.DYED_BUNDLE.asList().toArray(ItemLike[]::new));
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {

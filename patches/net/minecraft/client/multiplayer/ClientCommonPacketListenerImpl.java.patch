@@ -63,8 +63,8 @@
          this.connection.send(packet);
      }
  
-@@ -504,5 +_,15 @@
-         @OnlyIn(Dist.CLIENT)
+@@ -494,5 +_,15 @@
+ 
          private record PendingRequest(UUID id, URL url, String hash) {
          }
 +    }

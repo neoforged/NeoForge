@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "group": "pink_dye",
   "ingredients": [
     "#c:dyes/red",

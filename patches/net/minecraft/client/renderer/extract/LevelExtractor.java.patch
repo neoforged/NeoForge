@@ -1,0 +1,121 @@
+--- a/net/minecraft/client/renderer/extract/LevelExtractor.java
++++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
+@@ -157,11 +_,12 @@
+                         section.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED
+                             || this.sectionUpdateTracker.hasAllNeighbors(this.level, section.getSectionNode())
+                     )) {
++                    var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(section.getRenderOrigin(), this.level);
+                     this.levelRenderState
+                         .sectionUpdateRenderStates
+                         .add(
+                             new SectionUpdateRenderState(
+-                                section.getSectionNode(), dirtyState.isDirtyFromPlayer(), cache.createRegion(this.level, section.getSectionNode())
++                                section.getSectionNode(), dirtyState.isDirtyFromPlayer(), cache.createRegion(this.level, section.getSectionNode()), additionalRenderers
+                             )
+                         );
+                     dirtyState.setNotDirty();
+@@ -172,7 +_,7 @@
+         profiler.popPush("entities");
+         this.extractVisibleEntities(camera, cullFrustum, deltaTracker, this.levelRenderState);
+         profiler.popPush("blockEntities");
+-        this.extractVisibleBlockEntities(camera, deltaPartialTick, this.levelRenderState);
++        this.extractVisibleBlockEntities(camera, deltaPartialTick, this.levelRenderState, cullFrustum);
+         profiler.popPush("blockOutline");
+         this.extractBlockOutline(camera, this.levelRenderState);
+         profiler.popPush("blockBreaking");
+@@ -206,6 +_,13 @@
+         profiler.popPush("debug");
+         this.debugRenderer.emitGizmos(cullFrustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
+         this.gameTestBlockHighlightRenderer.emitGizmos();
++        profiler.popPush("neoforge_custom");
++        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, camera.position());
++        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomSkyboxRenderer(this.level, camera.position());
++        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomCloudsRenderer(this.level, camera.position());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
++                this, this.levelRenderState, this.level, camera, cullFrustum, deltaTracker
++        ));
+         this.levelRenderState.render3dCrosshair = this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.THREE_DIMENSIONAL_CROSSHAIR);
+         ClientPacketListener connection = this.minecraft.getConnection();
+         if (connection != null) {
+@@ -232,7 +_,7 @@
+         for (Entity entity : this.level.entitiesForRendering()) {
+             if (this.isEntityVisible(entity, frustum, camX, camY, camZ)
+                 && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
+-                && (!(entity instanceof LocalPlayer) || camera.entity() == entity)) {
++                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
+                 if (entity.tickCount == 0) {
+                     entity.xOld = entity.getX();
+                     entity.yOld = entity.getY();
+@@ -264,7 +_,13 @@
+         return this.levelRenderer.entityRenderDispatcher().extractEntity(entity, partialTickTime);
+     }
+ 
++    /// @deprecated Neo: use [#extractVisibleBlockEntities(Camera, float, LevelRenderState, Frustum)] instead
++    @Deprecated
+     private void extractVisibleBlockEntities(Camera camera, float deltaPartialTick, LevelRenderState levelRenderState) {
++        this.extractVisibleBlockEntities(camera, deltaPartialTick, levelRenderState, null);
++    }
++
++    private void extractVisibleBlockEntities(Camera camera, float deltaPartialTick, LevelRenderState levelRenderState, @Nullable Frustum cullFrustum) {
+         Vec3 cameraPos = camera.position();
+         double camX = cameraPos.x();
+         double camY = cameraPos.y();
+@@ -289,7 +_,7 @@
+ 
+                     BlockEntityRenderState state = this.levelRenderer
+                         .blockEntityRenderDispatcher()
+-                        .tryExtractRenderState(blockEntity, deltaPartialTick, breakProgress, false);
++                        .tryExtractRenderState(blockEntity, deltaPartialTick, breakProgress, false, cullFrustum);
+                     if (state != null) {
+                         levelRenderState.blockEntityRenderStates.add(state);
+                     }
+@@ -306,7 +_,7 @@
+             } else {
+                 BlockEntityRenderState state = this.levelRenderer
+                     .blockEntityRenderDispatcher()
+-                    .tryExtractRenderState(blockEntity, deltaPartialTick, null, true);
++                    .tryExtractRenderState(blockEntity, deltaPartialTick, null, true, cullFrustum);
+                 if (state != null) {
+                     levelRenderState.blockEntityRenderStates.add(state);
+                 }
+@@ -341,19 +_,23 @@
+                 BlockState state = this.level.getBlockState(pos);
+                 if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
+                     BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
+-                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(1);
++                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(this.level, pos, state, 1);
+                     boolean highContrast = this.minecraft.options.highContrastBlockOutline().get();
+                     CollisionContext context = CollisionContext.of(camera.entity());
++                    var event = new net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent(this, this.level, pos, state, blockHitResult, context, isBlockTranslucent, highContrast, camera, levelRenderState);
++                    if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                        return;
++                    }
+                     VoxelShape shape = state.getShape(this.level, pos, context);
+                     if (SharedConstants.DEBUG_SHAPES) {
+                         VoxelShape collisionShape = state.getCollisionShape(this.level, pos, context);
+                         VoxelShape occlusionShape = state.getOcclusionShape();
+                         VoxelShape interactionShape = state.getInteractionShape(this.level, pos);
+                         levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(
+-                            pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape
++                            pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape, event.getCustomRenderers()
+                         );
+                     } else {
+-                        levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(pos, isBlockTranslucent, highContrast, shape);
++                        levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(pos, isBlockTranslucent, highContrast, shape, event.getCustomRenderers());
+                     }
+                 }
+             }
+@@ -486,6 +_,13 @@
+         }
+ 
+         return rendered;
++    }
++
++    public void iterateVisibleBlockEntities(java.util.function.Consumer<BlockEntity> blockEntityConsumer) {
++        for (var chunkInfo : this.levelRenderer.visibleSections()) {
++            chunkInfo.getSectionMesh().getRenderableBlockEntities().forEach(blockEntityConsumer);
++        }
++        this.level.getGloballyRenderedBlockEntities().forEach(blockEntityConsumer);
+     }
+ 
+     @VisibleForDebug

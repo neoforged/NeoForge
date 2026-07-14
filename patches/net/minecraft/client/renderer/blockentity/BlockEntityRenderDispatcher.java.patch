@@ -1,28 +1,29 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -69,13 +_,25 @@
+@@ -69,15 +_,26 @@
          this.cameraPos = cameraPos;
      }
  
-+    /**
-+     * @deprecated Neo: use {@link #tryExtractRenderState(BlockEntity, float, ModelFeatureRenderer.CrumblingOverlay, net.minecraft.client.renderer.culling.Frustum)} instead
-+     */
++    /// @deprecated Neo: use [#tryExtractRenderState(BlockEntity, float, ModelFeatureRenderer.CrumblingOverlay, boolean, net.minecraft.client.renderer.culling.Frustum)] instead
      public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
-         E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress
+         E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, boolean isGloballyRendered
      ) {
-+        return tryExtractRenderState(blockEntity, partialTicks, breakProgress, null);
++        return tryExtractRenderState(blockEntity, partialTicks, breakProgress, isGloballyRendered, null);
 +    }
 +
-+    @Nullable
-+    public <E extends BlockEntity, S extends BlockEntityRenderState> S tryExtractRenderState(
-+            E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, net.minecraft.client.renderer.culling.@Nullable Frustum frustum
++    public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
++        E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, boolean isGloballyRendered, net.minecraft.client.renderer.culling.@Nullable Frustum frustum
 +    ) {
          BlockEntityRenderer<E, S> renderer = this.getRenderer(blockEntity);
          if (renderer == null) {
              return null;
-         } else if (!blockEntity.hasLevel() || !blockEntity.getType().isValid(blockEntity.getBlockState())) {
+         }
+ 
+         if (!blockEntity.hasLevel() || !blockEntity.getType().isValid(blockEntity.getBlockState())) {
 +            return null;
-+        } else if (frustum != null && !frustum.isVisible(renderer.getRenderBoundingBox(blockEntity))) {
++        }
++
++        if (frustum != null && !frustum.isVisible(renderer.getRenderBoundingBox(blockEntity))) {
              return null;
-         } else if (!renderer.shouldRender(blockEntity, this.cameraPos)) {
-             return null;
+         }
+ 

@@ -26,28 +26,28 @@
 +
          if (this.byLocation.containsKey(key.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
-         } else if (this.byValue.containsKey(value)) {
-@@ -104,16 +_,18 @@
-                 holder.bindKey(key);
-             } else {
-                 holder = this.byKey.computeIfAbsent(key, k -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)k));
-+                // Forge: Bind the value immediately so it can be queried while the registry is not frozen
-+                holder.bindValue(value);
-             }
- 
-             this.byKey.put(key, holder);
-             this.byLocation.put(key.identifier(), holder);
-             this.byValue.put(value, holder);
--            int newId = this.byId.size();
-             this.byId.add(holder);
-             this.toId.put(value, newId);
-             this.registrationInfos.put(key, registrationInfo);
-             this.registryLifecycle = this.registryLifecycle.add(registrationInfo.lifecycle());
-+            this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, newId, key, value));
-             return holder;
          }
+@@ -107,16 +_,18 @@
+             holder.bindKey(key);
+         } else {
+             holder = this.byKey.computeIfAbsent(key, k -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)k));
++            // Neo: Bind the value immediately so it can be queried while the registry is not frozen
++            holder.bindValue(value);
+         }
+ 
+         this.byKey.put(key, holder);
+         this.byLocation.put(key.identifier(), holder);
+         this.byValue.put(value, holder);
+-        int newId = this.byId.size();
+         this.byId.add(holder);
+         this.toId.put(value, newId);
+         this.registrationInfos.put(key, registrationInfo);
+         this.registryLifecycle = this.registryLifecycle.add(registrationInfo.lifecycle());
++        this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, newId, key, value));
+         return holder;
      }
-@@ -136,7 +_,7 @@
+ 
+@@ -138,7 +_,7 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
@@ -56,7 +56,7 @@
      }
  
      @Override
-@@ -151,12 +_,12 @@
+@@ -153,12 +_,12 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
@@ -71,23 +71,16 @@
      }
  
      @Override
-@@ -171,12 +_,12 @@
+@@ -173,7 +_,7 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
 -        return this.byKey.computeIfAbsent(key, id -> {
-+        return this.byKey.computeIfAbsent(resolve(key), p_258169_ -> {
++        return this.byKey.computeIfAbsent(resolve(key), id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
-             } else {
--                this.validateWrite((ResourceKey<T>)id);
--                return Holder.Reference.createStandAlone(this, (ResourceKey<T>)id);
-+                this.validateWrite((ResourceKey<T>)p_258169_);
-+                return Holder.Reference.createStandAlone(this, (ResourceKey<T>)p_258169_);
              }
-         });
-     }
-@@ -203,7 +_,7 @@
+@@ -205,7 +_,7 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
@@ -96,11 +89,11 @@
          return getValueFromNullable(result);
      }
  
-@@ -269,13 +_,23 @@
+@@ -271,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
-+    /** @deprecated Forge: For internal use only. Use the Register events when registering values. */
++    /** @deprecated Neo: For internal use only. Use the Register events when registering values. */
 +    @Deprecated
 +    @Override
 +    public void unfreeze(boolean clearTags) {
@@ -114,48 +107,48 @@
      @Override
      public Registry<T> freeze() {
          if (this.frozen) {
-             return this;
-         } else {
-             this.frozen = true;
--            this.byValue.forEach((value, holder) -> holder.bindValue((T)value));
-             List<Identifier> unboundEntries = this.byKey
-                 .entrySet()
-                 .stream()
-@@ -291,11 +_,15 @@
-                         throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
-                     }
- 
--                    this.unregisteredIntrusiveHolders = null;
-+                    // Neo: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
-+                    // this.unregisteredIntrusiveHolders = null;
-                 }
-+                this.bakeCallbacks.forEach(bakeCallback -> bakeCallback.onBake(this));
- 
-                 if (this.allTags.isBound()) {
--                    throw new IllegalStateException("Tags already present before freezing");
-+                    // Neo: we freeze/unfreeze the registry to apply snapshots and tags need to be preserved in those cases
-+                    //throw new IllegalStateException("Tags already present before freezing");
-+                    return this;
-                 } else {
-                     List<Identifier> unboundTags = this.frozenTags
-                         .entrySet()
-@@ -452,6 +_,12 @@
-                     return patchedHolder;
-                 }
- 
-+                // Neo: Make the underlying staged tag contents accessible for loading condition evaluation.
-+                @Override
-+                public Map<TagKey<T>, List<Holder<T>>> contents() {
-+                    return Collections.unmodifiableMap(pendingContents);
-+                }
-+
-                 @Override
-                 public void apply() {
-                     pendingTags.forEach((id, tag) -> {
-@@ -463,6 +_,55 @@
-                 }
-             };
+@@ -278,7 +_,6 @@
          }
+ 
+         this.frozen = true;
+-        this.byValue.forEach((value, holder) -> holder.bindValue((T)value));
+         List<Identifier> unboundEntries = this.byKey
+             .entrySet()
+             .stream()
+@@ -295,11 +_,14 @@
+                 throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
+             }
+ 
+-            this.unregisteredIntrusiveHolders = null;
++            // Neo: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
++            // this.unregisteredIntrusiveHolders = null;
+         }
++        this.bakeCallbacks.forEach(bakeCallback -> bakeCallback.onBake(this));
+ 
+         if (this.allTags.isBound()) {
+-            throw new IllegalStateException("Tags already present before freezing");
++            // Neo: we freeze/unfreeze the registry to apply snapshots and tags need to be preserved in those cases
++            // throw new IllegalStateException("Tags already present before freezing");
+         }
+ 
+         List<Identifier> unboundTags = this.frozenTags
+@@ -443,6 +_,12 @@
+                 return patchedHolder;
+             }
+ 
++            // Neo: Make the underlying staged tag contents accessible for loading condition evaluation.
++            @Override
++            public Map<TagKey<T>, List<Holder<T>>> contents() {
++                return Collections.unmodifiableMap(pendingContents);
++            }
++
+             @Override
+             public void apply() {
+                 pendingTags.forEach((id, tag) -> {
+@@ -453,6 +_,55 @@
+                 MappedRegistry.this.refreshTagsInHolders();
+             }
+         };
 +    }
 +
 +    @Override

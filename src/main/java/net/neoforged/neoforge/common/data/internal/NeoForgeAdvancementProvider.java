@@ -12,7 +12,9 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -22,20 +24,20 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.ContextAwarePredicate;
-import net.minecraft.advancements.criterion.DamagePredicate;
-import net.minecraft.advancements.criterion.DamageSourcePredicate;
-import net.minecraft.advancements.criterion.DataComponentMatchers;
-import net.minecraft.advancements.criterion.EntityEquipmentPredicate;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.EntitySubPredicate;
-import net.minecraft.advancements.criterion.EntityTypePredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.ItemUsedOnLocationTrigger;
-import net.minecraft.advancements.criterion.PlayerHurtEntityTrigger;
-import net.minecraft.advancements.criterion.PlayerInteractTrigger;
-import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
+import net.minecraft.advancements.predicates.ContextAwarePredicate;
+import net.minecraft.advancements.predicates.DamagePredicate;
+import net.minecraft.advancements.predicates.DamageSourcePredicate;
+import net.minecraft.advancements.predicates.DataComponentMatchers;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.predicates.entity.EntityEquipmentPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
+import net.minecraft.advancements.predicates.entity.EntityTypePredicate;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.ItemUsedOnLocationTrigger;
+import net.minecraft.advancements.triggers.PlayerHurtEntityTrigger;
+import net.minecraft.advancements.triggers.PlayerInteractTrigger;
+import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
@@ -51,6 +53,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -90,14 +93,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 }
                 return predicate.feet().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent();
             })) {
-                helper.replaceSubPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE);
+                helper.addSubPredicate(PiglinNeutralArmorEntityPredicate.CODEC, PiglinNeutralArmorEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
         }));
         criteriaReplacers.add(replacePlayerHurtEntityCriteria(helper -> {
-            if (helper.clearTypeIfMatches(EntityType.TRIDENT)) {
-                helper.replaceSubPredicate(TridentEntityPredicate.INSTANCE);
+            if (helper.clearTypeIfMatches(EntityTypes.TRIDENT)) {
+                helper.addSubPredicate(TridentEntityPredicate.CODEC, TridentEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
@@ -105,7 +108,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         //Walk on powdered snow
         criteriaReplacers.add(replaceLootEntityPredicate(helper -> {
             if (helper.clearEquipmentIfMatches(predicate -> predicate.feet().filter(item -> predicateMatches(item, Items.LEATHER_BOOTS)).isPresent())) {
-                helper.replaceSubPredicate(SnowBootsEntityPredicate.INSTANCE);
+                helper.addSubPredicate(SnowBootsEntityPredicate.CODEC, SnowBootsEntityPredicate.INSTANCE);
                 return true;
             }
             return false;
@@ -367,15 +370,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private static class EntityPredicateReplacementHelper {
         private final EntityPredicate source;
+        private final Map<Codec<? extends EntitySubPredicate>, EntitySubPredicate> extra = new HashMap<>();
         private Optional<EntityTypePredicate> entityType;
         private Optional<EntityEquipmentPredicate> equipment;
-        private Optional<EntitySubPredicate> subPredicate;
 
         public EntityPredicateReplacementHelper(EntityPredicate source) {
             this.source = source;
-            this.entityType = this.source.entityType();
-            this.equipment = this.source.equipment();
-            this.subPredicate = this.source.subPredicate();
+            this.entityType = Optional.ofNullable(this.source.getPartIfExists(EntityTypePredicate.CODEC));
+            this.equipment = Optional.ofNullable(this.source.getPartIfExists(EntityEquipmentPredicate.CODEC));
         }
 
         public boolean clearTypeIfMatches(EntityType<?> type) {
@@ -394,31 +396,21 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             return false;
         }
 
-        public void replaceSubPredicate(EntitySubPredicate predicate) {
-            if (subPredicate.isPresent()) {
-                throw new IllegalStateException("Attempting to replace an entity predicate that already has a sub predicate");
-            }
-            subPredicate = Optional.of(predicate);
+        public <T extends EntitySubPredicate> void addSubPredicate(Codec<T> key, T predicate) {
+            extra.put(key, predicate);
         }
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public EntityPredicate create() {
-            return new EntityPredicate(
-                    entityType,
-                    source.distanceToPlayer(),
-                    source.movement(),
-                    source.location(),
-                    source.effects(),
-                    source.nbt(),
-                    source.flags(),
-                    equipment,
-                    subPredicate,
-                    source.periodicTick(),
-                    source.vehicle(),
-                    source.passenger(),
-                    source.targetedEntity(),
-                    source.team(),
-                    source.slots(),
-                    source.components());
+            var builder = EntityPredicate.Builder.from(source, c -> c != EntityEquipmentPredicate.CODEC && c != EntityTypePredicate.CODEC);
+            if (entityType.isPresent()) {
+                builder.entityType(entityType.orElseThrow());
+            }
+            if (equipment.isPresent()) {
+                builder.equipment(equipment.orElseThrow());
+            }
+            extra.forEach((k, v) -> builder.put((Codec) k, v));
+            return builder.build();
         }
     }
 }

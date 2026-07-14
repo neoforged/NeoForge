@@ -6,5 +6,5 @@
  @OnlyIn(Dist.CLIENT)
 +@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further uniform types such as SSBO and StorageTexelBuffer may be added")
  public enum UniformType {
-     UNIFORM_BUFFER("ubo"),
-     TEXEL_BUFFER("utb");
+     UNIFORM_BUFFER,
+     TEXEL_BUFFER;

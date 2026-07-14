@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/level/chunk/status/ChunkStatus.java
++++ b/net/minecraft/world/level/chunk/status/ChunkStatus.java
+@@ -59,6 +_,13 @@
+         this.chunkType = chunkType;
+         this.heightmapsAfter = heightmapsAfter;
+         this.index = parent == null ? 0 : parent.getIndex() + 1;
++
++        EnumSet<Heightmap.Types> chunkSaveHeightmaps = EnumSet.copyOf(this.heightmapsAfter);
++        if (this.chunkType != ChunkType.LEVELCHUNK) {
++            chunkSaveHeightmaps.add(Heightmap.Types.WORLD_SURFACE_WG);
++            chunkSaveHeightmaps.add(Heightmap.Types.OCEAN_FLOOR_WG);
++        }
++        this.chunkSaveHeightmaps = chunkSaveHeightmaps;
+     }
+ 
+     public int getIndex() {
+@@ -109,4 +_,16 @@
+     public String getName() {
+         return BuiltInRegistries.CHUNK_STATUS.getKey(this).toString();
+     }
++
++    /**
++     * Neo: Internal use only.
++     * Patch to fix [MC-308222](https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-308222)
++     * intended for loading a non-fully generated chunk from disk to keep worldgen heightmap data for
++     * structures and features to heightmap snap properly again.
++     * @return A set of the chunk status's heightmaps alongside _WG heightmaps for worldgen-only chunk statuses
++     */
++    public EnumSet<Heightmap.Types> getChunkSaveHeightmaps() {
++        return this.chunkSaveHeightmaps;
++    }
++    private final EnumSet<Heightmap.Types> chunkSaveHeightmaps;
+ }

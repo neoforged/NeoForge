@@ -9,7 +9,7 @@
          this.reloadCallback = reloadCallback;
      }
  
-@@ -68,8 +_,12 @@
+@@ -67,8 +_,12 @@
          this.reloadCallback.accept(locale);
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/Registry.java
 +++ b/net/minecraft/core/Registry.java
-@@ -47,7 +_,7 @@
+@@ -49,7 +_,7 @@
      }
  
      private DataResult<Holder.Reference<T>> safeCastToReference(Holder<T> holder) {

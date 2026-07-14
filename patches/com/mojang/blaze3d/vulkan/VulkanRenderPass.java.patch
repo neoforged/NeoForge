@@ -1,0 +1,56 @@
+--- a/com/mojang/blaze3d/vulkan/VulkanRenderPass.java
++++ b/com/mojang/blaze3d/vulkan/VulkanRenderPass.java
+@@ -52,6 +_,7 @@
+     private final int outputWidth;
+     private final int outputHeight;
+     private final boolean hasDepth;
++    private final boolean hasStencil;
+     private final Supplier<String> label;
+     protected int pushedDebugGroups = 0;
+     private final VkCommandBuffer commandBuffer;
+@@ -69,6 +_,7 @@
+         int outputWidth,
+         int outputHeight,
+         boolean hasDepth,
++        boolean hasStencil,
+         Supplier<String> label
+     ) {
+         this.device = device;
+@@ -79,6 +_,7 @@
+         this.outputWidth = outputWidth;
+         this.outputHeight = outputHeight;
+         this.hasDepth = hasDepth;
++        this.hasStencil = hasStencil;
+         this.label = label;
+ 
+         try (MemoryStack stack = MemoryStack.stackPush()) {
+@@ -122,6 +_,10 @@
+         }
+ 
+         this.anyDescriptorDirty = true;
++        if (this.hasStencil) {
++            VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.pipeline.withDepthStencilPipeline());
++            return;
++        }
+         VK12.vkCmdBindPipeline(this.commandBuffer(), 0, this.hasDepth ? this.pipeline.withDepthPipeline() : this.pipeline.withoutDepthPipeline());
+     }
+ 
+@@ -147,6 +_,18 @@
+     public void setUniform(String name, GpuBufferSlice value) {
+         this.uniforms.put(name, value);
+         this.anyDescriptorDirty = true;
++    }
++
++    @Override
++    public void setViewport(int x, int y, int width, int height) {
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++            VkViewport.Buffer viewport = VkViewport.calloc(1, stack);
++            viewport.x(x);
++            viewport.y(y);
++            viewport.width(width);
++            viewport.height(height);
++            VK12.vkCmdSetViewport(this.commandBuffer(), 0, viewport);
++        }
+     }
+ 
+     @Override

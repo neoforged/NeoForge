@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
 +++ b/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
-@@ -53,6 +_,18 @@
+@@ -55,6 +_,18 @@
          return new MultiVariantGenerator(this.block, newEntries, this.seenProperties);
      }
  

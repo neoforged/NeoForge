@@ -25,6 +25,6 @@
 +        return false;
 +    }
 +
-     public record Default(boolean advanced, boolean creative) implements TooltipFlag {
+     record Default(boolean advanced, boolean creative) implements TooltipFlag {
          @Override
          public boolean isAdvanced() {

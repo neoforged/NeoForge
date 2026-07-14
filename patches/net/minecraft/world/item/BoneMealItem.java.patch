@@ -25,5 +25,5 @@
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBonemealEvent(player, level, pos, state, itemStack);
 +        if (event.isCanceled()) return event.isSuccessful();
          if (state.getBlock() instanceof BonemealableBlock block && block.isValidBonemealTarget(level, pos, state)) {
-             if (level instanceof ServerLevel) {
+             if (level instanceof ServerLevel serverLevel) {
                  if (block.isBonemealSuccess(level, level.getRandom(), pos, state)) {

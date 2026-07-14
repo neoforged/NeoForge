@@ -1,9 +1,12 @@
 --- a/net/minecraft/world/level/block/BucketPickup.java
 +++ b/net/minecraft/world/level/block/BucketPickup.java
-@@ -12,5 +_,6 @@
- public interface BucketPickup extends net.neoforged.neoforge.common.extensions.IBucketPickupExtension {
+@@ -14,5 +_,9 @@
+ public interface BucketPickup extends IBucketPickupExtension {
      ItemStack pickupBlock(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state);
  
-+    @Deprecated//Forge: Use state sensitive variant instead
++    /**
++     * Neo: use state sensitive variant instead.
++     */
++    @Deprecated
      Optional<SoundEvent> getPickupSound();
  }

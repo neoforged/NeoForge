@@ -57,6 +57,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -399,7 +400,7 @@ public class ModListScreen extends Screen {
                 final Language language = Language.getInstance();
                 graphics.text(ModListScreen.this.font, language.getVisualOrder(ModListScreen.this.font.ellipsize(displayInfo.displayName(), maxTextWidth)), textLeft, top, 0xFFFFFFFF);
                 top += ModListScreen.this.font.lineHeight;
-                graphics.text(ModListScreen.this.font, language.getVisualOrder(ModListScreen.this.font.ellipsize(Component.literal(displayInfo.version()), maxTextWidth)), textLeft, top, 0xFF000000 + Objects.requireNonNull(ChatFormatting.GRAY.getColor()));
+                graphics.text(ModListScreen.this.font, language.getVisualOrder(ModListScreen.this.font.ellipsize(Component.literal(displayInfo.version()), maxTextWidth)), textLeft, top, 0xFF000000 + TextColor.GRAY.getValue());
             }
         }
     }
@@ -487,7 +488,7 @@ public class ModListScreen extends Screen {
             this.creditsWidget = buildTextWidget(contentLayout);
 
             this.separator = contentLayout.addChild(
-                    new SolidColorWidget(width - 8, 1).setColor(ARGB.opaque(Objects.requireNonNull(ChatFormatting.GRAY.getColor()))).calculateShadow(),
+                    new SolidColorWidget(width - 8, 1).setColor(ARGB.opaque(TextColor.GRAY.getValue())).calculateShadow(),
                     contentLayout.newCellSettings().paddingVertical(MAIN_PADDING).alignHorizontallyCenter());
 
             this.descriptionWidget = buildTextWidget(contentLayout);
@@ -529,7 +530,7 @@ public class ModListScreen extends Screen {
             this.configButton = buttonsLayout.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.config"),
                     _ -> {
                         if (this.configScreenFactory != null) {
-                            ModListScreen.this.minecraft.setScreen(this.configScreenFactory.apply(ModListScreen.this));
+                            ModListScreen.this.minecraft.setScreenAndShow(this.configScreenFactory.apply(ModListScreen.this));
                         }
                     }).size(buttonWidth, buttonHeight).build());
 
@@ -701,7 +702,7 @@ public class ModListScreen extends Screen {
         }
 
         private void openChangelogScreen(VersionChecker.CheckResult checkResult) {
-            ModListScreen.this.minecraft.setScreen(new ChangelogScreen(ModListScreen.this, displayInfo(), checkResult));
+            ModListScreen.this.minecraft.setScreenAndShow(new ChangelogScreen(ModListScreen.this, displayInfo(), checkResult));
         }
 
         private static boolean containsText(Component component) {

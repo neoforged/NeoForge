@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -74,6 +_,7 @@
+@@ -71,6 +_,7 @@
      private static @Nullable DynamicUniforms dynamicUniforms;
      private static final ScissorState scissorStateForRenderTypeDraws = new ScissorState();
      private static final SamplerCache samplerCache = new SamplerCache();
@@ -8,31 +8,26 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
-@@ -379,4 +_,38 @@
-     @OnlyIn(Dist.CLIENT)
-     record GpuAsyncTask(Runnable callback, GpuFence fence) {
+@@ -377,5 +_,33 @@
      }
+ 
+     private record GpuAsyncTask(Runnable callback, GpuFence fence) {
++    }
 +
-+    /**
-+     * Neo: Push the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} to be applied to subsequent rendering.
-+     * <p>
-+     * Must be paired with a corresponding {@link #popPipelineModifier()} call after flushing the used buffers
-+     */
++    /// Neo: Push the provided [net.neoforged.neoforge.client.pipeline.PipelineModifier] to be applied to subsequent rendering.
++    ///
++    /// Must be paired with a corresponding [#popPipelineModifier()] call after flushing the used buffers
 +    public static void pushPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier) {
 +        PIPELINE_MODIFIERS.push(modifier);
 +    }
 +
-+    /**
-+     * Neo: Pop the last {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} off the modifier stack
-+     */
++    /// Neo: Pop the last [net.neoforged.neoforge.client.pipeline.PipelineModifier] off the modifier stack
 +    public static void popPipelineModifier() {
 +        PIPELINE_MODIFIERS.pop();
 +    }
 +
-+    /**
-+     * Neo: Run the provided {@link Runnable} with the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} applied
-+     * to the pipelines used by the rendering done in the {@link Runnable}
-+     */
++    /// Neo: Run the provided [Runnable] with the provided [net.neoforged.neoforge.client.pipeline.PipelineModifier] applied
++    /// to the pipelines used by the rendering done in the [Runnable]
 +    public static void renderWithPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier, Runnable renderTask) {
 +        PIPELINE_MODIFIERS.renderWithModifier(modifier, renderTask);
 +    }
@@ -45,5 +40,5 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void ensurePipelineModifiersEmpty() {
 +        PIPELINE_MODIFIERS.ensureEmpty();
-+     }
+     }
  }

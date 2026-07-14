@@ -11,7 +11,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.StandingSignBlock;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -30,7 +30,7 @@ public class BlockEntityTypeValidBlocksEventTests {
 
     @Test
     void testAddingNewSignToBlockEntityValueBlocksField() {
-        Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
+        Assertions.assertTrue(BlockEntityTypes.SIGN.isValid(BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
                 "Adding modded Sign to Signs Block Entity Type's valid blocks should had succeeded.");
 
         Assertions.assertTrue(wasArgumentExceptionThrownForInvalidBlockClass,
@@ -49,9 +49,9 @@ public class BlockEntityTypeValidBlocksEventTests {
         }
 
         public static void onBlockEntityValidBlocks(BlockEntityTypeAddBlocksEvent event) {
-            event.modify(BlockEntityType.SIGN, TEST_SIGN_BLOCK.get());
+            event.modify(BlockEntityTypes.SIGN, TEST_SIGN_BLOCK.get());
             try {
-                event.modify(BlockEntityType.SIGN, TEST_BED_BLOCK.get());
+                event.modify(BlockEntityTypes.SIGN, TEST_BED_BLOCK.get());
             } catch (IllegalArgumentException illegalArgumentException) {
                 wasArgumentExceptionThrownForInvalidBlockClass = true;
             }

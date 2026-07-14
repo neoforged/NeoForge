@@ -10,13 +10,13 @@
              if (featureHolder != null) {
                  for (int dx = 0; dx >= -1; dx--) {
                      for (int dz = 0; dz >= -1; dz--) {
-@@ -161,6 +_,9 @@
+@@ -162,6 +_,9 @@
+         }
+ 
+         Holder<ConfiguredFeature<?, ?>> featureHolder = level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);
++        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
++        if (event.isCanceled()) return false;
++        featureHolder = event.getFeature();
+         if (featureHolder == null) {
              return false;
-         } else {
-             Holder<ConfiguredFeature<?, ?>> featureHolder = level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);
-+            var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
-+            featureHolder = event.getFeature();
-+            if (event.isCanceled()) return false;
-             if (featureHolder == null) {
-                 return false;
-             } else {
+         }

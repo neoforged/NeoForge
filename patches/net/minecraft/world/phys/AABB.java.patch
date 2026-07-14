@@ -8,7 +8,7 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -458,6 +_,14 @@
+@@ -462,6 +_,14 @@
          return new AABB(
              center.x - sizeX / 2.0, center.y - sizeY / 2.0, center.z - sizeZ / 2.0, center.x + sizeX / 2.0, center.y + sizeY / 2.0, center.z + sizeZ / 2.0
          );
