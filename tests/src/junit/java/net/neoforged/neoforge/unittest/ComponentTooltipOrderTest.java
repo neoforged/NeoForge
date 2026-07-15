@@ -42,12 +42,19 @@ public class ComponentTooltipOrderTest {
 
         Assertions.assertEquals(registeredOrder.size(), vanillaOrder.size(), () -> {
             String vanillaTypeList = vanillaOrder.stream()
+                    .filter(component -> !registeredOrder.contains(component))
                     .map(DataComponentType::toString)
                     .collect(Collectors.joining(", "));
             String registeredTypeList = registeredOrder.stream()
+                    .filter(component -> !vanillaOrder.contains(component))
                     .map(DataComponentType::toString)
                     .collect(Collectors.joining(", "));
-            return String.format(Locale.ROOT, "Tooltip data component lists don't match\nVanilla: %s\nRegistered: %s", vanillaTypeList, registeredTypeList);
+            if (!vanillaTypeList.isEmpty() && !registeredTypeList.isEmpty()) {
+                return String.format(Locale.ROOT, "Tooltip data component lists don't match\nMissing Vanilla: %s\nExtra Registered: %s", vanillaTypeList, registeredTypeList);
+            } else if (vanillaTypeList.isEmpty()) {
+                return String.format(Locale.ROOT, "Registered tooltip data components have the following extra entries: %s", registeredTypeList);
+            }
+            return String.format(Locale.ROOT, "Registered tooltip data components are missing the following vanilla entries: %s", vanillaTypeList);
         });
         assertOrder(vanillaOrder, registeredOrder);
     }
