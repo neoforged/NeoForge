@@ -195,16 +195,35 @@
              return lines;
          }
      }
-@@ -883,7 +_,8 @@
-         this.addToTooltip(DataComponents.PROFILE, context, display, builder, tooltipFlag);
-         this.addToTooltip(DataComponents.LORE, context, display, builder, tooltipFlag);
-         this.addToTooltip(DataComponents.SULFUR_CUBE_CONTENT, context, display, builder, tooltipFlag);
--        this.addAttributeTooltips(builder, display, player);
-+        // Neo: Replace attribute tooltips with custom handling
-+        net.neoforged.neoforge.common.util.AttributeUtil.addAttributeTooltips(this, builder, display, net.neoforged.neoforge.common.util.AttributeTooltipContext.of(player, context, display, tooltipFlag));
-         this.addUnitComponentToTooltip(DataComponents.INTANGIBLE_PROJECTILE, INTANGIBLE_TOOLTIP, display, builder);
-         this.addUnitComponentToTooltip(DataComponents.UNBREAKABLE, UNBREAKABLE_TOOLTIP, display, builder);
-         this.addToTooltip(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, context, display, builder, tooltipFlag);
+@@ -861,7 +_,16 @@
+     public void addDetailsToTooltip(
+         Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
+     ) {
++        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipHead(this, context, display, player, tooltipFlag, builder);
+         this.getItem().appendHoverText(this, context, display, builder, tooltipFlag);
++        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipMiddle(this, context, display, player, tooltipFlag, builder);
++        this.addDetailsToTooltipTail(context, display, player, tooltipFlag, builder);
++        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipTail(this, context, display, player, tooltipFlag, builder);
++    }
++
++    private void addDetailsToTooltipComponents(
++            Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
++    ) {
+         this.addToTooltip(DataComponents.TROPICAL_FISH_PATTERN, context, display, builder, tooltipFlag);
+         this.addToTooltip(DataComponents.INSTRUMENT, context, display, builder, tooltipFlag);
+         this.addToTooltip(DataComponents.MAP_ID, context, display, builder, tooltipFlag);
+@@ -913,7 +_,11 @@
+             if (this.isDamaged() && display.shows(DataComponents.DAMAGE)) {
+                 builder.accept(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
+             }
++        }
++    }
+ 
++    private void addDetailsToTooltipTail(Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder) {
++        if (tooltipFlag.isAdvanced()) {
+             builder.accept(Component.literal(BuiltInRegistries.ITEM.getKey(this.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY));
+             int count = this.components.size();
+             if (count > 0) {
 @@ -936,7 +_,10 @@
              builder.accept(component);
          }
