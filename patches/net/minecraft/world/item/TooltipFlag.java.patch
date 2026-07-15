@@ -1,30 +1,12 @@
 --- a/net/minecraft/world/item/TooltipFlag.java
 +++ b/net/minecraft/world/item/TooltipFlag.java
-@@ -8,6 +_,27 @@
+@@ -1,6 +_,8 @@
+ package net.minecraft.world.item;
  
-     boolean isCreative();
+-public interface TooltipFlag extends net.neoforged.neoforge.common.extensions.TooltipFlagExtension {
++import net.neoforged.neoforge.common.extensions.TooltipFlagExtension;
++
++public interface TooltipFlag extends TooltipFlagExtension {
+     TooltipFlag.Default NORMAL = new TooltipFlag.Default(false, false);
+     TooltipFlag.Default ADVANCED = new TooltipFlag.Default(true, false);
  
-+    /**
-+     * Neo: Returns the state of the Control key (as reported by Screen) on the client, or {@code false} on the server.
-+     */
-+    default boolean hasControlDown() {
-+        return false;
-+    }
-+
-+    /**
-+     * Neo: Returns the state of the Shift key (as reported by Screen) on the client, or {@code false} on the server.
-+     */
-+    default boolean hasShiftDown() {
-+        return false;
-+    }
-+
-+    /**
-+     * Neo: Returns the state of the Alt key (as reported by Screen) on the client, or {@code false} on the server.
-+     */
-+    default boolean hasAltDown() {
-+        return false;
-+    }
-+
-     public record Default(boolean advanced, boolean creative) implements TooltipFlag {
-         @Override
-         public boolean isAdvanced() {
