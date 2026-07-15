@@ -39,13 +39,13 @@
 +
          if (this.byLocation.containsKey(p_256252_.location())) {
 -            Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
-+            // NEO: Add missing 'throw' clause (fixed in 1.21.2/24w33a)
++            // Neo: Add missing 'throw' clause (fixed in 1.21.2/24w33a)
 +            throw Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
          }
  
          if (this.byValue.containsKey(p_256591_)) {
 -            Util.pauseInIde(new IllegalStateException("Adding duplicate value '" + p_256591_ + "' to registry"));
-+            // NEO: Add missing 'throw' clause (fixed in 1.21.2/24w33a)
++            // Neo: Add missing 'throw' clause (fixed in 1.21.2/24w33a)
 +            throw Util.pauseInIde(new IllegalStateException("Adding duplicate value '" + p_256591_ + "' to registry"));
          }
  
