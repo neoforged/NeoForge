@@ -69,7 +69,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
             if (!old.equals(to))
                 throw new IllegalStateException("Duplicate alias with key \"" + from + "\" attempting to map to \"" + to + "\", found existing mapping \"" + old + "\"");
         }
-        if (resolve(from).equals(to))
+        if (resolve(to).equals(from))
             throw new IllegalStateException("Infinite alias loop detected: from " + from + " to " + to);
         this.aliases.put(from, to);
     }
