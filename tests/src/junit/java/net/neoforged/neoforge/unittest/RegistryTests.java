@@ -49,7 +49,7 @@ public class RegistryTests {
         // A -> B -> C -> D
         var registry = createRegistry();
         var ex = assertThrows(
-                IllegalStateException.class,
+                IllegalArgumentException.class,
                 () -> registry.addAlias(id("a"), id("c")),
                 "Duplicate alias registration should throw an exception");
         assertEquals(
@@ -65,7 +65,7 @@ public class RegistryTests {
         // A -> B -> C -> D
         var registry = createRegistry();
         var ex = assertThrows(
-                IllegalStateException.class,
+                IllegalArgumentException.class,
                 () -> registry.addAlias(id("d"), id("b")),
                 "Alias loop registration should throw an exception");
         assertEquals(
