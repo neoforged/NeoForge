@@ -11,16 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import org.junit.jupiter.api.Test;
 
 public class RegistryTests {
     static ResourceKey<Registry<Unit>> REGISTRY_KEY = ResourceKey.createRegistryKey(id("registry_test"));
 
-    static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath("test", path);
+    static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath("test", path);
     }
 
     MappedRegistry<Unit> createRegistry() {
