@@ -14,16 +14,13 @@ import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 /// and including any blockentity data.
 ///
 /// Relocator mechanics may query {@link IBlockStateExtension#getRelocability} for each block in some area being moved.
-public sealed interface BlockRelocability permits BlockRelocability.Never, BlockRelocability.Always, BlockRelocability.Multiblock {
+public sealed interface BlockRelocability permits BlockRelocability.No, BlockRelocability.Yes, BlockRelocability.Multiblock {
     /// {@return true if the block is relocatable from a given Set of block positions, false otherwise}
     /// @param relocatingPositions Set of positions blocks are being relocated from
     public abstract boolean isRelocatable(Set<BlockPos> relocatingPositions);
 
-    /// BlockRelocability indicating some block may never be relocated.
-    /// "Never" only indicates that this BlockRelocability instance produced by some context
-    /// will always return false for isRelocatable; it does not imply that the relevant block
-    /// will always produce a Never instance in any context.
-    public static enum Never implements BlockRelocability {
+    /// BlockRelocability indicating some block is currently refusing to be moved
+    public static enum No implements BlockRelocability {
         /** Singleton instance **/
         INSTANCE;
 
@@ -33,11 +30,8 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
         }
     }
 
-    /// BlockRelocability indicating some block is movable from any position.
-    /// "Always" only indicates that this BlockRelocability instance produced by some context
-    /// will always return true for isRelocatable; it does not imply that the relevant block
-    /// will always produce an Always instance in any context.
-    public static enum Always implements BlockRelocability {
+    /// BlockRelocability indicating some block is currently agreeing to be moved
+    public static enum Yes implements BlockRelocability {
         /** Singleton instance **/
         INSTANCE;
 
@@ -54,7 +48,14 @@ public sealed interface BlockRelocability permits BlockRelocability.Never, Block
     /// only require themselves and the core, and having the core block require all non-core positions.
     ///
     /// @param requiredPositions Set of block positions which must be moved with this block to allow moving it.
+    /// This Set must include the block's own position.
     public static record Multiblock(Set<BlockPos> requiredPositions) implements BlockRelocability {
+        public Multiblock(Set<BlockPos> requiredPositions) {
+            if (requiredPositions.isEmpty())
+                throw new IllegalArgumentException("requiredPositions cannot be empty");
+            this.requiredPositions = requiredPositions;
+        }
+
         @Override
         public boolean isRelocatable(Set<BlockPos> relocatingPositions) {
             return relocatingPositions.containsAll(requiredPositions);

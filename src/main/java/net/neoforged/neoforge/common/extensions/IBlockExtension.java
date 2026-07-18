@@ -1097,7 +1097,7 @@ public interface IBlockExtension {
     /// @return BlockRelocability declaring whether the block may be relocated
     default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
         return state.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
-                ? BlockRelocability.Never.INSTANCE
-                : BlockRelocability.Always.INSTANCE;
+                ? BlockRelocability.No.INSTANCE
+                : BlockRelocability.Yes.INSTANCE;
     }
 }

@@ -51,20 +51,20 @@
          return false;
 +    }
 +
-+    // Neoforge: Extended piston multiblock can be relocated if and only if both halves are being relocated
++    // Neo: Extended piston multiblock can be relocated if and only if both halves are being relocated
 +    @Override
-+    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos thisPos, BlockState thisState) {
-+        if (thisState.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
-+            return net.neoforged.neoforge.common.util.BlockRelocability.Never.INSTANCE;
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
 +        }
-+        if (!thisState.getValue(EXTENDED))
-+            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
-+        Direction facing = thisState.getValue(FACING);
-+        BlockPos neighborPos = thisPos.relative(facing);
++        if (!state.getValue(EXTENDED))
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        Direction facing = state.getValue(FACING);
++        BlockPos neighborPos = pos.relative(facing);
 +        BlockState neighborState = level.getBlockState(neighborPos);
++        if (neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing)
++            return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
 +        // if this is extended but somebody already cut the block in half, no point in denying the relocation
-+        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
-+            return net.neoforged.neoforge.common.util.BlockRelocability.Always.INSTANCE;
-+        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(thisPos, neighborPos));
++        return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
      }
  }
