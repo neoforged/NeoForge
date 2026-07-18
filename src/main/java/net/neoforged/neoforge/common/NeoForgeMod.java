@@ -219,7 +219,7 @@ public class NeoForgeMod {
     /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "neoforge:none".
      */
-    public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneBiomeModifier.INSTANCE));
+    public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneBiomeModifier::new));
 
     /**
      * Stock biome modifier for adding features to biomes.
@@ -307,7 +307,7 @@ public class NeoForgeMod {
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
      */
-    public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneStructureModifier.INSTANCE));
+    public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneStructureModifier::new));
 
     /**
      * Stock structure modifier for adding mob spawns to structures.
