@@ -12,7 +12,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class NoneBiomeModifier implements BiomeModifier {
     /**
-     * @deprecated Use `new NoneBiomeModifier()` instead if an instance is required
+     * @deprecated Use {@code new NoneBiomeModifier()} instead if an instance is required
      */
     @Deprecated(forRemoval = true)
     public static final NoneBiomeModifier INSTANCE = new NoneBiomeModifier();
