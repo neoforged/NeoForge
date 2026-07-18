@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/level/block/BedBlock.java
++++ b/net/minecraft/world/level/block/BedBlock.java
+@@ -306,4 +_,20 @@
+     private static int[][] bedAboveStandUpOffsets(Direction forward) {
+         return new int[][]{{0, 0}, {-forward.getStepX(), -forward.getStepZ()}};
+     }
++
++    // Neo: beds are relocatable if and only if both halves are being relocated
++    @Override
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
++        }
++        // verify the other half exists; if not, don't deny relocation
++        BedPart thisPart = state.getValue(PART);
++        BlockPos neighborPos = pos.relative(getConnectedDirection(state)); // getConnectedDirection points to the other half
++        BlockState neighborState = level.getBlockState(neighborPos);
++        BlockState expectedState = state.setValue(PART, thisPart == BedPart.HEAD ? BedPart.FOOT : BedPart.HEAD);
++        if (neighborState != expectedState)
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
++    }
+ }
