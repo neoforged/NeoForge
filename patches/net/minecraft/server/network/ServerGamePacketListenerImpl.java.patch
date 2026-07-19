@@ -101,8 +101,7 @@
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 +
-+        var preEvent = net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
-+        if (preEvent.isCanceled()) return;
++        if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
 +
          if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
              if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
@@ -113,7 +112,7 @@
              this.player.resetLastActionTime();
 +
 +            if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
-+                net.neoforged.neoforge.common.CommonHooks.onSwitchHotbarSlotPost(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
++                net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPost(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot());
 +            }
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
