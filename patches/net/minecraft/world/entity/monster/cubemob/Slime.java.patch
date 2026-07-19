@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/cubemob/Slime.java
++++ b/net/minecraft/world/entity/monster/cubemob/Slime.java
+@@ -70,7 +_,7 @@
+         return this.isTiny() ? SoundEvents.SLIME_JUMP_SMALL : SoundEvents.SLIME_JUMP;
+     }
+ 
+-    public static boolean checkSlimeSpawnRules(EntityType<Slime> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkSlimeSpawnRules(EntityType<? extends Slime> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         if (level.getDifficulty() != Difficulty.PEACEFUL) {
+             if (EntitySpawnReason.isSpawner(spawnReason)) {
+                 return checkMobSpawnRules(type, level, spawnReason, pos, random);

@@ -195,6 +195,9 @@
     "net/neoforged/neoforge/common/extensions/IItemStackExtension",
     "net/neoforged/neoforge/common/MutableDataComponentHolder"
   ],
+  "net/minecraft/world/item/TooltipFlag": [
+    "net/neoforged/neoforge/common/extensions/TooltipFlagExtension"
+  ],
   "net/minecraft/world/level/BaseSpawner": [
     "net/neoforged/neoforge/common/extensions/IOwnedSpawner"
   ],

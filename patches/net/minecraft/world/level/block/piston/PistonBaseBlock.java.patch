@@ -34,14 +34,37 @@
              toUpdate[updateIndex++] = state;
          }
  
-@@ -367,6 +_,10 @@
-     @Override
-     protected BlockState rotate(BlockState state, Rotation rotation) {
+@@ -369,6 +_,10 @@
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-+    }
-+
-+    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
-+         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
      }
  
++    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
++         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
++    }
++
      @Override
+     protected BlockState mirror(BlockState state, Mirror mirror) {
+         return state.rotate(mirror.getRotation(state.getValue(FACING)));
+@@ -387,5 +_,22 @@
+     @Override
+     protected boolean isPathfindable(BlockState state, PathComputationType type) {
+         return false;
++    }
++
++    // Neo: Extended piston multiblock can be relocated if and only if both halves are being relocated
++    @Override
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
++        }
++        if (!state.getValue(EXTENDED))
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        Direction facing = state.getValue(FACING);
++        BlockPos neighborPos = pos.relative(facing);
++        BlockState neighborState = level.getBlockState(neighborPos);
++        // if this is extended but somebody already cut the block in half, no point in denying the relocation
++        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
+     }
+ }

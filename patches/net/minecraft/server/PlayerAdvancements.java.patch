@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
-@@ -162,6 +_,8 @@
-     }
- 
-     public boolean award(AdvancementHolder holder, String criterion) {
-+        // Forge: don't grant advancements for fake players
-+        if (this.player instanceof net.neoforged.neoforge.common.util.FakePlayer) return false;
-         boolean result = false;
-         AdvancementProgress progress = this.getOrStartProgress(holder);
-         boolean wasDone = progress.isDone();
 @@ -169,12 +_,14 @@
              this.unregisterListeners(holder);
              this.progressChanged.add(holder);

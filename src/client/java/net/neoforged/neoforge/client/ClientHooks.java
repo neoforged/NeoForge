@@ -19,6 +19,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.floats.FloatComparators;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +52,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
+import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
@@ -67,6 +72,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -77,7 +83,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.particle.ParticleResources;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -121,6 +126,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -192,6 +198,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
+import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -249,8 +256,9 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
-    public static boolean renderSpecificFirstPersonArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, AbstractClientPlayer player, HumanoidArm arm) {
-        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, submitNodeCollector, packedLight, player, arm)).isCanceled();
+    public static <AvatarlikeEntity extends Avatar & ClientAvatarEntity> boolean renderSpecificFirstPersonArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+            int lightCoords, Identifier skinTexture, boolean hasSleeve, AvatarlikeEntity avatar, HumanoidArm arm, ModelPart armPart) {
+        return NeoForge.EVENT_BUS.post(new RenderArmEvent<>(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, avatar, arm, armPart)).isCanceled();
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
@@ -1023,5 +1031,43 @@ public class ClientHooks {
             }
         }
         return Map.copyOf(models);
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    public static Object2BooleanMap<ModelPart> updateModelVisibility(Model<?> model, Object state) {
+        if (!(state instanceof BaseRenderState baseRenderState)) {
+            return null;
+        }
+        Object2BooleanMap<ModelPart> previousVisibility = null;
+        Object2BooleanMap<String> renderData = baseRenderState.getModelPartVisibility();
+        if (renderData != null) {
+            ModelPart root = model.root();
+            for (ObjectIterator<Object2BooleanMap.Entry<String>> iterator = Object2BooleanMaps.fastIterator(renderData); iterator.hasNext();) {
+                Object2BooleanMap.Entry<String> entry = iterator.next();
+                String modelPart = entry.getKey();
+                if (root.hasChild(modelPart)) {
+                    ModelPart child = root.getChild(modelPart);
+                    boolean desiredVisibility = entry.getBooleanValue();
+                    if (child.visible != desiredVisibility) {
+                        if (previousVisibility == null) {//Lazy init the map in case there are no parts with different visibilities
+                            previousVisibility = new Object2BooleanOpenHashMap<>();
+                        }
+                        previousVisibility.put(child, child.visible);
+                        child.visible = desiredVisibility;
+                    }
+                }
+            }
+        }
+        return previousVisibility;
+    }
+
+    public static void resetVisibility(@Nullable Object2BooleanMap<ModelPart> previousVisibility) {
+        if (previousVisibility != null) {
+            for (ObjectIterator<Object2BooleanMap.Entry<ModelPart>> iterator = Object2BooleanMaps.fastIterator(previousVisibility); iterator.hasNext();) {
+                Object2BooleanMap.Entry<ModelPart> entry = iterator.next();
+                entry.getKey().visible = entry.getBooleanValue();
+            }
+        }
     }
 }

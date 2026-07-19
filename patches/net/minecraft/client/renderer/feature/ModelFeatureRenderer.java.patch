@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/renderer/feature/ModelFeatureRenderer.java
++++ b/net/minecraft/client/renderer/feature/ModelFeatureRenderer.java
+@@ -36,7 +_,11 @@
+ 
+         Model<? super S> model = submit.model();
+         model.setupAnim(submit.state());
++        // Neo: Update the model's visibility if configured to do so during RegisterRenderStateModifiersEvent so that all core parts can have their visibilities mutated
++        // instead of just the specific subset that vanilla hardcodes support for in setupAnim via the state
++        var previousVisibility = net.neoforged.neoforge.client.ClientHooks.updateModelVisibility(model, submit.state());
+         model.renderToBuffer(this.poseStack, buffer, submit.lightCoords(), submit.overlayCoords(), submit.tintedColor());
++        net.neoforged.neoforge.client.ClientHooks.resetVisibility(previousVisibility);
+     }
+ 
+     public record CrumblingOverlay(int progress, PoseStack.Pose cameraPose) {
