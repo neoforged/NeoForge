@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when a player switches the hotbar slot either by
@@ -17,11 +18,11 @@ import net.neoforged.bus.api.ICancellableEvent;
  * @see PlayerSwitchHotbarSlotEvent.Pre
  * @see PlayerSwitchHotbarSlotEvent.Post
  */
-public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
+public abstract class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
     private final int oldSlotIndex;
     private final int newSlotIndex;
 
-    public PlayerSwitchHotbarSlotEvent(Player player, int oldSlotIndex, int newSlotIndex) {
+    private PlayerSwitchHotbarSlotEvent(Player player, int oldSlotIndex, int newSlotIndex) {
         super(player);
         this.oldSlotIndex = oldSlotIndex;
         this.newSlotIndex = newSlotIndex;
@@ -55,7 +56,8 @@ public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
      * }
      * }</pre>
      */
-    public static non-sealed class Pre extends PlayerSwitchHotbarSlotEvent implements ICancellableEvent {
+    public static class Pre extends PlayerSwitchHotbarSlotEvent implements ICancellableEvent {
+        @ApiStatus.Internal
         public Pre(Player player, int oldSlotIndex, int newSlotIndex) {
             super(player, oldSlotIndex, newSlotIndex);
         }
@@ -74,7 +76,8 @@ public abstract sealed class PlayerSwitchHotbarSlotEvent extends PlayerEvent {
      * Fired after all the slot switching logic is successfully
      * performed.
      */
-    public static non-sealed class Post extends PlayerSwitchHotbarSlotEvent {
+    public static class Post extends PlayerSwitchHotbarSlotEvent {
+        @ApiStatus.Internal
         public Post(Player player, int oldSlotIndex, int newSlotIndex) {
             super(player, oldSlotIndex, newSlotIndex);
         }
