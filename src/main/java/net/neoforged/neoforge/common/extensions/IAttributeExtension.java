@@ -128,7 +128,7 @@ public interface IAttributeExtension {
      */
     default MutableComponent toBaseComponent(double value, double entityBase, boolean merged, TooltipFlag flag) {
         Attribute attr = self();
-        MutableComponent comp = Component.translatable("attribute.modifier.equals.0", FORMAT.format(value), Component.translatable(attr.getDescriptionId()));
+        MutableComponent comp = Component.translatable("attribute.modifier.equals.0", this.toValueComponent(null, value, flag), Component.translatable(attr.getDescriptionId()));
 
         // Emit both the value of the modifier, and the entity's base value as debug information, since both are flattened into the modifier.
         // Skip showing debug information here when displaying a merged modifier, since it will be shown if the user holds shift to display the un-merged modifier.

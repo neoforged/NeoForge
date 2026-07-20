@@ -221,3 +221,27 @@
              );
              boolean flag3 = !blockstate7.isViewBlocking(p_111168_, blockpos$mutableblockpos)
                  || blockstate7.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
+@@ -770,8 +_,9 @@
+             float f6;
+             int k1;
+             if (!flag2 && !flag1) {
+-                f6 = f;
+-                k1 = i;
++                // Neo: f6 is flanked by corner1, not corner0, so we must use corner1's edge values
++                f6 = f1;
++                k1 = j;
+             } else {
+                 blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]).move(modelblockrenderer$adjacencyinfo.corners[2]);
+                 BlockState blockstate11 = p_111168_.getBlockState(blockpos$mutableblockpos);
+@@ -782,8 +_,9 @@
+             float f7;
+             int l1;
+             if (!flag3 && !flag1) {
+-                f7 = f;
+-                l1 = i;
++                // Neo: f7 is flanked by corner1, not corner0, so we must use corner1's edge values
++                f7 = f1;
++                l1 = j;
+             } else {
+                 blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]).move(modelblockrenderer$adjacencyinfo.corners[3]);
+                 BlockState blockstate12 = p_111168_.getBlockState(blockpos$mutableblockpos);

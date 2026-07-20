@@ -141,15 +141,19 @@
  
              serverstatscounter = new ServerStatsCounter(this.server, file2);
              this.stats.put(uuid, serverstatscounter);
-@@ -832,6 +_,8 @@
-             this.advancements.put(uuid, playeradvancements);
-         }
- 
-+        // Forge: don't overwrite active player with a fake one.
-+        if (!(p_11297_ instanceof net.neoforged.neoforge.common.util.FakePlayer))
-         playeradvancements.setPlayer(p_11297_);
-         return playeradvancements;
+@@ -824,6 +_,12 @@
      }
+ 
+     public PlayerAdvancements getPlayerAdvancements(ServerPlayer p_11297_) {
++        // Neo: return a no-op PlayerAdvancements for fake players to avoid leaking CriteriaTrigger entries (#1487)
++        if (p_11297_.isFakePlayer()) {
++            Path path = this.server.getWorldPath(LevelResource.PLAYER_ADVANCEMENTS_DIR).resolve("_fake.json");
++            return new net.neoforged.neoforge.common.util.FakePlayer.FakePlayerAdvancements(
++                    this.server.getFixerUpper(), this, this.server.getAdvancements(), path, p_11297_);
++        }
+         UUID uuid = p_11297_.getUUID();
+         PlayerAdvancements playeradvancements = this.advancements.get(uuid);
+         if (playeradvancements == null) {
 @@ -859,7 +_,7 @@
      }
  

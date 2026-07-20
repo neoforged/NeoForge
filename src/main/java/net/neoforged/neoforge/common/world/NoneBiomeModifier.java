@@ -11,6 +11,10 @@ import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class NoneBiomeModifier implements BiomeModifier {
+    /**
+     * @deprecated Use {@code new NoneBiomeModifier()} instead if an instance is required
+     */
+    @Deprecated(forRemoval = true)
     public static final NoneBiomeModifier INSTANCE = new NoneBiomeModifier();
 
     @Override
