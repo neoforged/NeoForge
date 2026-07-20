@@ -43,7 +43,7 @@
              }
          }
  
-@@ -1924,6 +_,23 @@
+@@ -1924,6 +_,48 @@
          }
  
          repository.setSelected(selected);
@@ -51,6 +51,9 @@
 +
 +    private void setForgeKeybindProperties() {
 +        net.neoforged.neoforge.client.settings.KeyConflictContext inGame = net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME;
++        net.neoforged.neoforge.client.settings.KeyConflictContext spectator = net.neoforged.neoforge.client.settings.KeyConflictContext.SPECTATOR;
++        net.neoforged.neoforge.client.settings.KeyConflictContext debug = net.neoforged.neoforge.client.settings.KeyConflictContext.DEBUG;
++        net.neoforged.neoforge.client.settings.KeyConflictContext guiAndInGame = net.neoforged.neoforge.client.settings.KeyConflictContext.GUI_AND_IN_GAME;
 +        keyUp.setKeyConflictContext(inGame);
 +        keyLeft.setKeyConflictContext(inGame);
 +        keyDown.setKeyConflictContext(inGame);
@@ -59,11 +62,33 @@
 +        keyShift.setKeyConflictContext(inGame);
 +        keySprint.setKeyConflictContext(inGame);
 +        keyAttack.setKeyConflictContext(inGame);
-+        keyChat.setKeyConflictContext(inGame);
++        keyUse.setKeyConflictContext(inGame);
++        keyChat.setKeyConflictContext(guiAndInGame);
 +        keyPlayerList.setKeyConflictContext(inGame);
 +        keyCommand.setKeyConflictContext(inGame);
++        keyFriends.setKeyConflictContext(guiAndInGame);
++        keySocialInteractions.setKeyConflictContext(guiAndInGame);
 +        keyTogglePerspective.setKeyConflictContext(inGame);
 +        keySmoothCamera.setKeyConflictContext(inGame);
++        keyQuickActions.setKeyConflictContext(inGame);
++        keyToggleGui.setKeyConflictContext(inGame);
++        keyToggleSpectatorShaderEffects.setKeyConflictContext(inGame);
++        keySaveHotbarActivator.setKeyConflictContext(inGame);
++        keyLoadHotbarActivator.setKeyConflictContext(inGame);
++        keySpectatorOutlines.setKeyConflictContext(spectator);
++        keySpectatorHotbar.setKeyConflictContext(spectator);
++        keyInventory.setKeyConflictContext(guiAndInGame);
++        keySwapOffhand.setKeyConflictContext(guiAndInGame);
++        keyDrop.setKeyConflictContext(guiAndInGame);
++        keyPickItem.setKeyConflictContext(guiAndInGame);
++        keyAdvancements.setKeyConflictContext(guiAndInGame);
++        for (KeyMapping keyHotbarSlot : keyHotbarSlots) {
++            keyHotbarSlot.setKeyConflictContext(guiAndInGame);
++        }
++
++        for (KeyMapping debugKey : debugKeys) {
++            debugKey.setKeyConflictContext(debug);
++        }
      }
  
      public CameraType getCameraType() {

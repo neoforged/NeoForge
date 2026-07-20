@@ -21,6 +21,8 @@ class KeyConflictContextTest {
         Assertions.assertTrue(KeyConflictContext.GUI.conflicts(KeyConflictContext.GUI));
         Assertions.assertFalse(KeyConflictContext.GUI.conflicts(KeyConflictContext.IN_GAME));
         Assertions.assertFalse(KeyConflictContext.GUI.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.GUI.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertFalse(KeyConflictContext.GUI.conflicts(KeyConflictContext.DEBUG));
         Assertions.assertFalse(KeyConflictContext.GUI.conflicts(new TestKeyConflictContext()));
     }
 
@@ -34,6 +36,8 @@ class KeyConflictContextTest {
         Assertions.assertFalse(KeyConflictContext.IN_GAME.conflicts(KeyConflictContext.GUI));
         Assertions.assertTrue(KeyConflictContext.IN_GAME.conflicts(KeyConflictContext.IN_GAME));
         Assertions.assertFalse(KeyConflictContext.IN_GAME.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.IN_GAME.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertFalse(KeyConflictContext.IN_GAME.conflicts(KeyConflictContext.DEBUG));
         Assertions.assertFalse(KeyConflictContext.IN_GAME.conflicts(new TestKeyConflictContext()));
     }
 
@@ -47,6 +51,8 @@ class KeyConflictContextTest {
         Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(KeyConflictContext.GUI));
         Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(KeyConflictContext.IN_GAME));
         Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(KeyConflictContext.DEBUG));
         Assertions.assertTrue(KeyConflictContext.UNIVERSAL.conflicts(new TestKeyConflictContext()));
     }
 
@@ -56,12 +62,44 @@ class KeyConflictContextTest {
     }
 
     @Test
-    void guiAndInGameContextConflictsWithVanillaGuiAndInGameButNotCustomContexts() {
+    void guiAndInGameContextConflictsWithVanillaGuiAndInGameButNotCustomOrSpecialContexts() {
         Assertions.assertTrue(KeyConflictContext.GUI_AND_IN_GAME.conflicts(KeyConflictContext.GUI));
         Assertions.assertTrue(KeyConflictContext.GUI_AND_IN_GAME.conflicts(KeyConflictContext.IN_GAME));
         Assertions.assertTrue(KeyConflictContext.GUI_AND_IN_GAME.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.GUI_AND_IN_GAME.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertFalse(KeyConflictContext.GUI_AND_IN_GAME.conflicts(KeyConflictContext.DEBUG));
         Assertions.assertFalse(KeyConflictContext.GUI_AND_IN_GAME.conflicts(new TestKeyConflictContext()));
         Assertions.assertTrue(new TestKeyConflictContext(KeyConflictContext.GUI_AND_IN_GAME).conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+    }
+
+    @Test
+    void spectatorContextDoesNotRequireExactKeyModifierNone() {
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.requiresExactKeyModifierNone());
+    }
+
+    @Test
+    void spectatorContextOnlyConflictsWithSpectatorContext() {
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.conflicts(KeyConflictContext.GUI));
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.conflicts(KeyConflictContext.IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertTrue(KeyConflictContext.SPECTATOR.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.conflicts(KeyConflictContext.DEBUG));
+        Assertions.assertFalse(KeyConflictContext.SPECTATOR.conflicts(new TestKeyConflictContext()));
+    }
+
+    @Test
+    void debugContextDoesNotRequireExactKeyModifierNone() {
+        Assertions.assertFalse(KeyConflictContext.DEBUG.requiresExactKeyModifierNone());
+    }
+
+    @Test
+    void debugContextOnlyConflictsWithDebugContext() {
+        Assertions.assertFalse(KeyConflictContext.DEBUG.conflicts(KeyConflictContext.GUI));
+        Assertions.assertFalse(KeyConflictContext.DEBUG.conflicts(KeyConflictContext.IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.DEBUG.conflicts(KeyConflictContext.GUI_AND_IN_GAME));
+        Assertions.assertFalse(KeyConflictContext.DEBUG.conflicts(KeyConflictContext.SPECTATOR));
+        Assertions.assertTrue(KeyConflictContext.DEBUG.conflicts(KeyConflictContext.DEBUG));
+        Assertions.assertFalse(KeyConflictContext.DEBUG.conflicts(new TestKeyConflictContext()));
     }
 
     @Test

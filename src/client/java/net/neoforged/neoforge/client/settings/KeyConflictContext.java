@@ -113,5 +113,67 @@ public enum KeyConflictContext implements IKeyConflictContext {
         public boolean requiresExactKeyModifierNone() {
             return GUI.isActive();
         }
+    },
+
+    /**
+     * Spectator key bindings are only active while no {@link Screen} is open and the local player is in
+     * spectator mode.
+     * <p>
+     * They only conflict with other spectator bindings. This allows bindings such as pick block and the
+     * spectator hotbar action key to share a default key, matching vanilla's mode-specific behavior.
+     * <p>
+     * Spectator bindings do not require exact {@link KeyModifier#NONE} matching. For example,
+     * {@code A} and {@code Shift+A} conflict in this context because holding Shift does not stop the
+     * bare key from being active in spectator mode.
+     */
+    SPECTATOR {
+        @SuppressWarnings("ConstantValue")
+        @Override
+        public boolean isActive() {
+            Minecraft minecraft = Minecraft.getInstance();
+            return !GUI.isActive() && minecraft != null && minecraft.player != null && minecraft.player.isSpectator();
+        }
+
+        @Override
+        public boolean conflicts(IKeyConflictContext other) {
+            return this == other;
+        }
+
+        @Override
+        public boolean requiresExactKeyModifierNone() {
+            return false;
+        }
+    },
+
+    /**
+     * Debug key bindings are vanilla debug actions gated by the debug modifier key.
+     * <p>
+     * They only conflict with other debug bindings. Vanilla gives debug shortcuts precedence while
+     * the debug modifier is held, so {@code F3+A} can reload chunks without making the in-game
+     * {@code A} binding unassignable.
+     * <p>
+     * The debug modifier key itself remains a separate vanilla key binding rather than a NeoForge
+     * {@link KeyModifier}.
+     * <p>
+     * Debug bindings do not require exact {@link KeyModifier#NONE} matching because the debug modifier
+     * key gates the entire debug context instead of acting as each debug binding's key modifier.
+     */
+    DEBUG {
+        @SuppressWarnings("ConstantValue")
+        @Override
+        public boolean isActive() {
+            Minecraft minecraft = Minecraft.getInstance();
+            return minecraft != null && minecraft.options != null && minecraft.options.keyDebugModifier.isDown();
+        }
+
+        @Override
+        public boolean conflicts(IKeyConflictContext other) {
+            return other == this;
+        }
+
+        @Override
+        public boolean requiresExactKeyModifierNone() {
+            return false;
+        }
     }
 }

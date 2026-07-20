@@ -25,7 +25,12 @@ class KeyMappingModifierHelperTest {
     private static final AtomicInteger NEXT_MAPPING_ID = new AtomicInteger();
     private static final InputConstants.Key A = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_A);
     private static final InputConstants.Key B = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_B);
+    private static final InputConstants.Key F3 = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F3);
+    private static final InputConstants.Key L = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_L);
+    private static final InputConstants.Key P = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_P);
+    private static final InputConstants.Key T = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_T);
     private static final InputConstants.Key LEFT_SHIFT = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT);
+    private static final InputConstants.Key MOUSE_3 = InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_MIDDLE);
     private static final InputConstants.Key ACTIVE_CONTEXT_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_C);
     private static final IKeyConflictContext ACTIVE_GUI_CONTEXT = new TestKeyConflictContext("gui", true, false);
     private static final IKeyConflictContext INACTIVE_GUI_CONTEXT = new TestKeyConflictContext("gui", false, false);
@@ -243,6 +248,132 @@ class KeyMappingModifierHelperTest {
         var universalShiftA = keyMapping(KeyConflictContext.UNIVERSAL, KeyModifier.SHIFT, A);
 
         assertMappingConflict(universalA, universalShiftA);
+    }
+
+    @Test
+    void debugModifierKeyDoesNotConflictWithDebugContextBindings() {
+        var debugOverlay = keyMapping(KeyConflictContext.UNIVERSAL, KeyModifier.NONE, F3);
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+        var debugB = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, B);
+
+        assertNoMappingConflict(debugOverlay, debugA);
+        assertNoMappingConflict(debugOverlay, debugB);
+        Assertions.assertFalse(debugOverlay.hasKeyModifierConflict(debugA));
+        Assertions.assertFalse(debugA.hasKeyModifierConflict(debugOverlay));
+    }
+
+    @Test
+    void debugContextBindingsOnlyConflictWhenTheirActionKeyMatches() {
+        var firstDebugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+        var secondDebugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+        var debugB = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, B);
+
+        assertMappingConflict(firstDebugA, secondDebugA);
+        assertNoMappingConflict(firstDebugA, debugB);
+    }
+
+    @Test
+    void debugContextBareAndModifiedBindingsConflictWhenTheirActionKeyMatches() {
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+        var debugShiftA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.SHIFT, A);
+
+        assertMappingConflict(debugA, debugShiftA);
+    }
+
+    @Test
+    void debugContextBareAndModifiedBindingsDoNotConflictWhenTheirActionKeyDiffers() {
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+        var debugShiftB = keyMapping(KeyConflictContext.DEBUG, KeyModifier.SHIFT, B);
+
+        assertNoMappingConflict(debugA, debugShiftB);
+    }
+
+    @Test
+    void debugContextModifiedBindingsWithDifferentModifiersDoNotConflict() {
+        var debugShiftA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.SHIFT, A);
+        var debugControlA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.CONTROL, A);
+
+        assertNoMappingConflict(debugShiftA, debugControlA);
+    }
+
+    @Test
+    void debugProfilingDoesNotConflictWithAdvancements() {
+        var profiling = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, L);
+        var advancements = keyMapping(KeyConflictContext.GUI_AND_IN_GAME, KeyModifier.NONE, L);
+
+        assertNoMappingConflict(profiling, advancements);
+    }
+
+    @Test
+    void debugReloadResourcePacksDoesNotConflictWithChat() {
+        var reloadResourcePacks = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, T);
+        var chat = keyMapping(KeyConflictContext.GUI_AND_IN_GAME, KeyModifier.NONE, T);
+
+        assertNoMappingConflict(reloadResourcePacks, chat);
+    }
+
+    @Test
+    void debugFocusPauseDoesNotConflictWithSocialInteractions() {
+        var focusPause = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, P);
+        var socialInteractions = keyMapping(KeyConflictContext.GUI_AND_IN_GAME, KeyModifier.NONE, P);
+
+        assertNoMappingConflict(focusPause, socialInteractions);
+    }
+
+    @Test
+    void universalContextConflictsWithDebugContextWhenKeyAndModifiersOverlap() {
+        var universalA = keyMapping(KeyConflictContext.UNIVERSAL, KeyModifier.NONE, A);
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+
+        assertMappingConflict(universalA, debugA);
+    }
+
+    @Test
+    void spectatorHotbarDoesNotConflictWithPickBlock() {
+        var pickBlock = keyMapping(KeyConflictContext.GUI_AND_IN_GAME, KeyModifier.NONE, MOUSE_3);
+        var spectatorHotbar = keyMapping(KeyConflictContext.SPECTATOR, KeyModifier.NONE, MOUSE_3);
+
+        assertNoMappingConflict(pickBlock, spectatorHotbar);
+    }
+
+    @Test
+    void spectatorBindingsConflictWithSameSpectatorActionKey() {
+        var firstSpectatorHotbar = keyMapping(KeyConflictContext.SPECTATOR, KeyModifier.NONE, MOUSE_3);
+        var secondSpectatorHotbar = keyMapping(KeyConflictContext.SPECTATOR, KeyModifier.NONE, MOUSE_3);
+
+        assertMappingConflict(firstSpectatorHotbar, secondSpectatorHotbar);
+    }
+
+    @Test
+    void inGameBareKeyDoesNotConflictWithDebugContextBindingWhenActionKeyMatches() {
+        var strafeA = keyMapping(KeyConflictContext.IN_GAME, KeyModifier.NONE, A);
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+
+        assertNoMappingConflict(strafeA, debugA);
+    }
+
+    @Test
+    void inGameBareKeyDoesNotConflictWithDebugContextBindingWhenActionKeyDiffers() {
+        var strafeA = keyMapping(KeyConflictContext.IN_GAME, KeyModifier.NONE, A);
+        var debugB = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, B);
+
+        assertNoMappingConflict(strafeA, debugB);
+    }
+
+    @Test
+    void guiAndInGameBareKeyDoesNotConflictWithDebugContextBindingWhenActionKeyMatches() {
+        var inventoryA = keyMapping(KeyConflictContext.GUI_AND_IN_GAME, KeyModifier.NONE, A);
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+
+        assertNoMappingConflict(inventoryA, debugA);
+    }
+
+    @Test
+    void guiBareKeyDoesNotConflictWithDebugContextBinding() {
+        var guiA = keyMapping(KeyConflictContext.GUI, KeyModifier.NONE, A);
+        var debugA = keyMapping(KeyConflictContext.DEBUG, KeyModifier.NONE, A);
+
+        assertNoMappingConflict(guiA, debugA);
     }
 
     @Test
