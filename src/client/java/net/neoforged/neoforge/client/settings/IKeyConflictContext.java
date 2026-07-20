@@ -22,4 +22,20 @@ public interface IKeyConflictContext {
      *         This will be called on both contexts to check for conflicts.
      */
     boolean conflicts(IKeyConflictContext other);
+
+    /**
+     * {@return true if mappings using {@link KeyModifier#NONE} should only match
+     * when no modifier keys are held in this context}
+     * <p>
+     * When this is true, a bare key mapping such as {@code A} does not match while
+     * Shift, Control, Command, or Alt is held. This allows {@code A} and
+     * {@code Shift+A} to coexist without conflicts.
+     * <p>
+     * When this is false, {@link KeyModifier#NONE} means the mapping has no separate
+     * modifier requirement. A bare key mapping such as {@code A} can still match while
+     * Shift is held, so {@code A} conflicts with {@code Shift+A}.
+     */
+    default boolean requiresExactKeyModifierNone() {
+        return true;
+    }
 }

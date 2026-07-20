@@ -25,7 +25,7 @@ public interface IKeyMappingExtension {
      * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
      */
     default boolean isActiveAndMatches(InputConstants.Key keyCode) {
-        return keyCode != InputConstants.UNKNOWN && keyCode.equals(getKey()) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+        return KeyMappingModifierHelper.isActiveAndMatches(keyCode, getKey(), getKeyConflictContext(), getKeyModifier());
     }
 
     public default void setToDefault() {
@@ -43,19 +43,15 @@ public interface IKeyMappingExtension {
     void setKeyModifierAndCode(KeyModifier keyModifier, InputConstants.Key keyCode);
 
     default boolean isConflictContextAndModifierActive() {
-        return getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+        IKeyConflictContext keyConflictContext = getKeyConflictContext();
+        return keyConflictContext.isActive() && KeyMappingModifierHelper.isModifierActive(keyConflictContext, getKeyModifier(), getKey());
     }
 
     /**
      * Returns true when one of the bindings' key codes conflicts with the other's modifier.
      */
     default boolean hasKeyModifierConflict(KeyMapping other) {
-        if (getKeyConflictContext().conflicts(other.getKeyConflictContext()) || other.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-            if (getKeyModifier().matches(other.getKey()) || other.getKeyModifier().matches(getKey())) {
-                return true;
-            }
-        }
-        return false;
+        return KeyMappingModifierHelper.hasKeyModifierConflict(self(), other);
     }
 
     /**
