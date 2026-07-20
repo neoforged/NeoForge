@@ -9,8 +9,6 @@ apply plugin : net.neoforged.neodev.NeoDevExtraPlugin
 evaluationDependsOn(":neoforge")
 
 def neoforgeProject = project(':neoforge')
-def testframeworkProject = project(':testframework')
-def coremodsProject = project(':neoforge-coremods')
 
 sourceSets {
     main {
@@ -22,12 +20,12 @@ sourceSets {
 }
 
 dependencies {
-    implementation(neoforgeProject) {
+    implementation(project(':neoforge')) {
         capabilities {
             requireFeature('client')
         }
     }
-    implementation(testframeworkProject)
+    implementation(project(':testframework'))
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     junitImplementation "org.junit.jupiter:junit-jupiter"
@@ -36,12 +34,12 @@ dependencies {
 
     junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
-    junitImplementation(neoforgeProject) {
+    junitImplementation(project(':neoforge')) {
         capabilities {
             requireFeature('client')
         }
     }
-    junitImplementation(testframeworkProject)
+    junitImplementation(project(':testframework'))
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
@@ -76,7 +74,7 @@ neoDev {
             sourceSet sourceSets.junit
         }
         coremods {
-            sourceSet coremodsProject.sourceSets.main
+            sourceSet project(':neoforge-coremods').sourceSets.main
         }
     }
 

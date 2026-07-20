@@ -423,7 +423,8 @@ public class NeoDevPlugin implements Plugin<Project> {
 
             // This is true by default (see gradle.properties), and needs to be disabled explicitly when building (see release.yml).
             String installerDebugProperty = "include_artifacts_in_installer";
-            if (project.getProperties().containsKey(installerDebugProperty) && Boolean.parseBoolean(project.getProperties().get(installerDebugProperty).toString())) {
+            Object installerDebugPropertyValue = project.findProperty(installerDebugProperty);
+            if (installerDebugPropertyValue != null && Boolean.parseBoolean(installerDebugPropertyValue.toString())) {
                 task.from(universalJar.flatMap(AbstractArchiveTask::getArchiveFile), spec -> {
                     spec.into(String.format("/maven/net/neoforged/neoforge/%s/", neoForgeVersion.get()));
                     spec.rename(name -> String.format("neoforge-%s-universal.jar", neoForgeVersion.get()));

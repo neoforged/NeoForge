@@ -30,7 +30,7 @@ public final class FileUtils {
     }
 
     public static OutputStream newSafeFileOutputStream(Path destination) throws IOException {
-        var uniqueId = ProcessHandle.current().pid() + "." + Thread.currentThread().getId();
+        var uniqueId = ProcessHandle.current().pid() + "." + Thread.currentThread().threadId();
 
         var tempFile = destination.resolveSibling(destination.getFileName().toString() + "." + uniqueId + ".tmp");
         var closed = new boolean[1];
