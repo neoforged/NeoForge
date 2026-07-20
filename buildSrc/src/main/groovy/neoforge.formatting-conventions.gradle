@@ -43,7 +43,9 @@ immaculate {
         java()
         trailingNewline()
         noTabs()
-        googleFixImports()
+        google {
+            fixImports()
+        }
         toggleOff = 'spotless:off'
         toggleOn = 'spotless:on'
         eclipse {
