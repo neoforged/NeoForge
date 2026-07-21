@@ -16,12 +16,3 @@
      }
  
      protected boolean shouldRenderLayers(S state) {
-@@ -201,7 +_,7 @@
-     protected boolean shouldShowName(T entity, double distanceToCameraSq) {
-         if (entity.isDiscrete()) {
-             float maxDist = 32.0F;
--            if (distanceToCameraSq >= 1024.0) {
-+            if (!net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(entity, distanceToCameraSq)) {
-                 return false;
-             }
-         }
