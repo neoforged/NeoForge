@@ -9,16 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
 public enum KeyConflictContext implements IKeyConflictContext {
-    /**
-     * Universal key bindings are always active and will conflict with any other context, including custom
-     * contexts supplied by mods.
-     * <p>
-     * Use this only for bindings that must reserve their key globally. Bindings which are active in both
-     * vanilla GUI and in-game contexts, but should not claim every custom context, should use
-     * {@link #GUI_AND_IN_GAME} instead.
-     * <p>
-     * Key Bindings are universal by default.
-     */
+    /// Universal key bindings are always active and will conflict with any other context, including custom
+    /// contexts supplied by mods.
+    ///
+    /// Use this only for bindings that must reserve their key globally. Bindings which are active in both
+    /// vanilla GUI and in-game contexts, but should not claim every custom context, should use
+    /// [GUI_AND_IN_GAME][#GUI_AND_IN_GAME] instead.
+    ///
+    /// Key bindings are universal by default.
     UNIVERSAL {
         @Override
         public boolean isActive() {
@@ -36,15 +34,13 @@ public enum KeyConflictContext implements IKeyConflictContext {
         }
     },
 
-    /**
-     * GUI key bindings are only active while a {@link Screen} is open.
-     * <p>
-     * They only conflict with other GUI bindings. This allows the same key to be bound separately for
-     * in-game use when no screen is open.
-     * <p>
-     * GUI bindings require exact {@link KeyModifier#NONE} matching. For example, a bare key in this
-     * context will not match while an extra modifier is held.
-     */
+    /// GUI key bindings are only active while a [Screen] is open.
+    ///
+    /// They only conflict with other GUI bindings. This allows the same key to be bound separately for
+    /// in-game use when no screen is open.
+    ///
+    /// GUI bindings require exact [NONE][KeyModifier#NONE] matching. For example, a bare key in this
+    /// context will not match while an extra modifier is held.
     GUI {
         @SuppressWarnings("ConstantValue")
         @Override
@@ -59,16 +55,15 @@ public enum KeyConflictContext implements IKeyConflictContext {
         }
     },
 
-    /**
-     * In-game key bindings are only active while no {@link Screen} is open.
-     * <p>
-     * They only conflict with other in-game bindings. This allows the same key to be bound separately for
-     * GUI use while a screen is open.
-     * <p>
-     * In-game bindings do not require exact {@link KeyModifier#NONE} matching. For example, {@code A}
-     * and {@code Shift+A} conflict in this context because holding Shift does not stop the bare key from
-     * being active in-game. See {@link #requiresExactKeyModifierNone()}.
-     */
+    /// In-game key bindings are only active while no [Screen] is open.
+    ///
+    /// They only conflict with other in-game bindings. This allows the same key to be bound separately for
+    /// GUI use while a screen is open.
+    ///
+    /// In-game bindings do not require exact [NONE][KeyModifier#NONE] matching. For example, a
+    /// bare `A` mapping and an `A` mapping with [Shift][KeyModifier#SHIFT] conflict in this context
+    /// because holding [Shift][KeyModifier#SHIFT] does not stop the bare key from being active
+    /// in-game. See [#requiresExactKeyModifierNone()].
     IN_GAME {
         @Override
         public boolean isActive() {
@@ -86,18 +81,16 @@ public enum KeyConflictContext implements IKeyConflictContext {
         }
     },
 
-    /**
-     * Key bindings used both while a {@link Screen} is open and while no screen is open.
-     * <p>
-     * This is active in the same places as {@link #UNIVERSAL}, but this context's own conflict rule only
-     * covers the standard {@link #GUI}, {@link #IN_GAME}, and {@code #GUI_AND_IN_GAME}
-     * contexts. It does not automatically conflict with every custom context added by mods, although a
-     * custom context or {@link #UNIVERSAL} can still choose to conflict with it.
-     * <p>
-     * This context requires exact {@link KeyModifier#NONE} matching while a GUI is open. For example, a
-     * bare key in this context will not match while an extra modifier is held in a GUI, unlike
-     * {@link #UNIVERSAL}.
-     */
+    /// Key bindings used both while a [Screen] is open and while no screen is open.
+    ///
+    /// This is active in the same places as [UNIVERSAL][#UNIVERSAL], but this context's own conflict rule
+    /// only covers the standard [GUI][#GUI], [IN_GAME][#IN_GAME], and [GUI_AND_IN_GAME][#GUI_AND_IN_GAME]
+    /// contexts. It does not automatically conflict with every custom context added by mods, although a
+    /// custom context or [UNIVERSAL][#UNIVERSAL] can still choose to conflict with it.
+    ///
+    /// This context requires exact [NONE][KeyModifier#NONE] matching while a GUI is open. For example, a
+    /// bare key in this context will not match while an extra modifier is held in a GUI, unlike
+    /// [UNIVERSAL][#UNIVERSAL].
     GUI_AND_IN_GAME {
         @Override
         public boolean isActive() {
