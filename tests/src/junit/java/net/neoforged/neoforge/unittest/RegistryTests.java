@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.unittest;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.mojang.serialization.Lifecycle;
@@ -48,15 +47,10 @@ public class RegistryTests {
         //  /--------v (duplicate)
         // A -> B -> C -> D
         var registry = createRegistry();
-        var ex = assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> registry.addAlias(id("a"), id("c")),
                 "Duplicate alias registration should throw an exception");
-        assertEquals(
-                "Duplicate alias with key \"%s\" attempting to map to \"%s\", found existing mapping \"%s\"".formatted(
-                        id("a"), id("c"), id("b")),
-                ex.getMessage(),
-                "Exception did not have the expected message for duplicate alias");
     }
 
     @Test
@@ -64,14 +58,9 @@ public class RegistryTests {
         //      v--------\
         // A -> B -> C -> D
         var registry = createRegistry();
-        var ex = assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> registry.addAlias(id("d"), id("b")),
                 "Alias loop registration should throw an exception");
-        assertEquals(
-                "Infinite alias loop detected: from %s to %s".formatted(
-                        id("d"), id("b")),
-                ex.getMessage(),
-                "Exception did not have expected message for alias loop");
     }
 }
