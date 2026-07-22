@@ -144,6 +144,8 @@ public abstract class ScreenEvent extends Event {
      * @see Render.Pre
      * @see Render.Background
      * @see Render.Post
+     * @see Render.BeforePreeditOverlay
+     * @see Render.BeforeTooltip
      */
     public static abstract class Render extends ScreenEvent {
         private final GuiGraphicsExtractor guiGraphics;
@@ -233,6 +235,28 @@ public abstract class ScreenEvent extends Event {
         public static class Post extends Render {
             @ApiStatus.Internal
             public Post(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /**
+         * Fired before the IME preedit overlay is extracted.
+         * Renders below the preedit overlay and tooltips.
+         */
+        public static class BeforePreeditOverlay extends Render {
+            @ApiStatus.Internal
+            public BeforePreeditOverlay(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /**
+         * Fired before the tooltip is extracted.
+         * Renders above the preedit overlay but below the tooltip.
+         */
+        public static class BeforeTooltip extends Render {
+            @ApiStatus.Internal
+            public BeforeTooltip(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
