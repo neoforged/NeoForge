@@ -167,7 +167,6 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
@@ -836,21 +835,8 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static InteractionResult onInteractEntityAt(Player player, Entity entity, HitResult ray, InteractionHand hand) {
-        Vec3 vec3d = ray.getLocation().subtract(entity.position());
-        return onInteractEntityAt(player, entity, vec3d, hand);
-    }
-
-    @Nullable
-    public static InteractionResult onInteractEntityAt(Player player, Entity entity, Vec3 vec3d, InteractionHand hand) {
-        PlayerInteractEvent.EntityInteractSpecific evt = new PlayerInteractEvent.EntityInteractSpecific(player, hand, entity, vec3d);
-        NeoForge.EVENT_BUS.post(evt);
-        return evt.isCanceled() ? evt.getCancellationResult() : null;
-    }
-
-    @Nullable
-    public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand) {
-        PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity);
+    public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand, Vec3 location) {
+        PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity, location);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }

@@ -173,7 +173,7 @@
  
              return InteractionResult.PASS;
          } else {
-+            InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntity(this, entity, hand);
++            InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntity(this, entity, hand, location);
 +            if (cancelResult != null) return cancelResult;
              ItemStack itemStack = this.getItemInHand(hand);
              ItemStack itemStackClone = itemStack.copy();
