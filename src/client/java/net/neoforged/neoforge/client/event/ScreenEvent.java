@@ -139,13 +139,13 @@ public abstract class ScreenEvent extends Event {
 
     /**
      * Fired when a screen is being drawn.
-     * See the two subclasses for listening before and after drawing.
+     * See the subclasses for the various rendering stages.
      *
      * @see Render.Pre
      * @see Render.Background
-     * @see Render.Post
      * @see Render.BeforePreeditOverlay
      * @see Render.BeforeTooltip
+     * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
         private final GuiGraphicsExtractor guiGraphics;
@@ -225,21 +225,6 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
-         * Fired <b>after</b> the screen is drawn.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
-        public static class Post extends Render {
-            @ApiStatus.Internal
-            public Post(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
-            }
-        }
-
-        /**
          * Fired before the IME preedit overlay is extracted.
          * Renders below the preedit overlay and tooltips.
          */
@@ -257,6 +242,21 @@ public abstract class ScreenEvent extends Event {
         public static class BeforeTooltip extends Render {
             @ApiStatus.Internal
             public BeforeTooltip(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /**
+         * Fired <b>after</b> the screen is drawn.
+         *
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         */
+        public static class Post extends Render {
+            @ApiStatus.Internal
+            public Post(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
