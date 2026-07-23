@@ -1883,4 +1883,26 @@ public class CommonHooks {
             throw new IllegalArgumentException(sb.toString());
         }
     }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ItemAttributeModifiers> makeItemAttributesStreamCodec(
+            StreamCodec<RegistryFriendlyByteBuf, List<ItemAttributeModifiers.Entry>> entriesStreamCodec,
+            Function<ItemAttributeModifiers, List<ItemAttributeModifiers.Entry>> entryGetter,
+            Function<List<ItemAttributeModifiers.Entry>, ItemAttributeModifiers> constructor) {
+        return new StreamCodec<>() {
+            @Override
+            public ItemAttributeModifiers decode(RegistryFriendlyByteBuf input) {
+                return constructor.apply(entriesStreamCodec.decode(input));
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf output, ItemAttributeModifiers value) {
+                List<ItemAttributeModifiers.Entry> modifiers = entryGetter.apply(value);
+                if (output.getConnectionType().isOther()) {
+                    modifiers = new ArrayList<>(modifiers);
+                    modifiers.removeIf(entry -> !entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE));
+                }
+                entriesStreamCodec.encode(output, modifiers);
+            }
+        };
+    }
 }
