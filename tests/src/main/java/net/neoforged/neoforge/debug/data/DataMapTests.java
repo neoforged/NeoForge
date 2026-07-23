@@ -20,12 +20,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
@@ -488,11 +492,42 @@ public class DataMapTests {
         });
     }
 
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that tags in datamap values can be deserialized")
+    static void tagInValueTest(final DynamicTest test, final RegistrationHelper reg) {
+        final DataMapType<Item, TagValue> dataMap = reg.registerDataMap(DataMapType.builder(
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "tag_value_test"),
+                Registries.ITEM, TagValue.CODEC)
+                .build());
+        Holder<Item> target = BuiltInRegistries.ITEM.wrapAsHolder(Items.STICK);
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                HolderSet.Named<Block> blocks = provider.lookupOrThrow(Registries.BLOCK).getOrThrow(BlockTags.ACACIA_LOGS);
+                builder(dataMap).add(target, new TagValue(blocks), false);
+            }
+        });
+        test.onGameTest(helper -> {
+            TagValue data = target.getData(dataMap);
+            helper.assertNotNull(data, "TagValue missing from stick");
+            helper.assertTrue(data.blocks.unwrapKey().isPresent(), "HolderSet is not a tag");
+            helper.succeed();
+        });
+    }
+
     public record SomeObject(
             int intValue,
             String stringValue) {
         public static final Codec<SomeObject> CODEC = RecordCodecBuilder.create(in -> in.group(
                 Codec.INT.fieldOf("intValue").forGetter(SomeObject::intValue),
                 Codec.STRING.fieldOf("stringValue").forGetter(SomeObject::stringValue)).apply(in, SomeObject::new));
+    }
+
+    public record TagValue(HolderSet<Block> blocks) {
+        public static final Codec<TagValue> CODEC = RegistryCodecs.homogeneousList(Registries.BLOCK)
+                .fieldOf("blocks")
+                .codec()
+                .xmap(TagValue::new, TagValue::blocks);
     }
 }

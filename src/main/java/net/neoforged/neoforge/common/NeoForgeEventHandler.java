@@ -156,7 +156,7 @@ public class NeoForgeEventHandler {
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
         event.addListener(INSTANCE);
-        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(DATA_MAPS = new DataMapLoader(event.getRegistryAccess()));
     }
 
     static LootModifierManager getLootModifierManager() {
