@@ -79,7 +79,9 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.model.data.ModelData;
@@ -1087,5 +1089,26 @@ public interface IBlockExtension {
     /// @return This blocks bounce restitution for the given state and position
     default float getBounceRestitution(Level level, BlockPos pos, BlockState blockState, Entity entity) {
         return self().getBounceRestitution();
+    }
+
+    /// Declares whether a block may be relocated and under what circumstances.
+    /// "Relocation" here means a region of blocks being cut or copied,
+    /// and pasted somewhere else, with a translation and possibly a rotation or mirror,
+    /// also copying any blockentity data to the new position(s).
+    ///
+    /// A multiblock which is relocatable if and only if the entire multiblock is being relocated
+    /// (e.g. a bed, a door, a 3x3 machine) may override this method to define such behavior.
+    ///
+    /// Blocks which may never be relocated should be added to
+    /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case this method does not need to be overridden.
+    ///
+    /// @param level LevelReader which the block is being relocated from
+    /// @param pos BlockPos which the block is being relocated from
+    /// @param state BlockState of the block being relocated
+    /// @return BlockRelocability declaring whether the block may be relocated
+    default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
+        return state.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
+                ? BlockRelocability.No.INSTANCE
+                : BlockRelocability.Yes.INSTANCE;
     }
 }

@@ -52,6 +52,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.internal.SelfTestClient;
 import net.neoforged.neoforge.client.model.CompositeUnbakedModel;
+import net.neoforged.neoforge.client.model.ConditionalModelLoader;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
@@ -193,6 +194,7 @@ public class ClientNeoForgeMod {
         event.register(neoForgeId("empty"), EmptyModel.LOADER);
         event.register(neoForgeId("obj"), ObjLoader.INSTANCE);
         event.register(neoForgeId("composite"), CompositeUnbakedModel.Loader.INSTANCE);
+        event.register(ConditionalModelLoader.ID, ConditionalModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

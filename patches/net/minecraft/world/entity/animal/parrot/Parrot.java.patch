@@ -22,6 +22,15 @@
                      this.tame(player);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
+@@ -303,7 +_,7 @@
+         return false;
+     }
+ 
+-    public static boolean checkParrotSpawnRules(EntityType<Parrot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkParrotSpawnRules(EntityType<? extends Parrot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return level.getBlockState(pos.below()).is(BlockTags.PARROTS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
+     }
+ 
 @@ -328,7 +_,10 @@
  
      public static SoundEvent getAmbient(Level level, RandomSource random) {

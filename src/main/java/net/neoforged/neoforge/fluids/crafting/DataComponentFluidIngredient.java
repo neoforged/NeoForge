@@ -25,6 +25,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 
@@ -49,22 +50,22 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     private final HolderSet<Fluid> fluids;
     private final DataComponentExactPredicate components;
     private final boolean strict;
-    private final FluidStack[] stacks;
+    private final FluidStackTemplate[] templates;
 
     public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentExactPredicate components, boolean strict) {
         this.fluids = fluids;
         this.components = components;
         this.strict = strict;
-        this.stacks = fluids.stream()
-                .map(i -> new FluidStack(i, FluidType.BUCKET_VOLUME, components.asPatch()))
-                .toArray(FluidStack[]::new);
+        this.templates = fluids.stream()
+                .map(i -> new FluidStackTemplate(i, FluidType.BUCKET_VOLUME, components.asPatch()))
+                .toArray(FluidStackTemplate[]::new);
     }
 
     @Override
     public boolean test(FluidStack stack) {
         if (strict) {
-            for (FluidStack stack2 : this.stacks) {
-                if (FluidStack.isSameFluidSameComponents(stack, stack2)) return true;
+            for (FluidStackTemplate template : this.templates) {
+                if (FluidStack.isSameFluidSameComponents(stack, template)) return true;
             }
             return false;
         } else {
@@ -72,14 +73,15 @@ public class DataComponentFluidIngredient extends FluidIngredient {
         }
     }
 
+    @Override
     public Stream<Holder<Fluid>> generateFluids() {
         return fluids.stream();
     }
 
     @Override
     public SlotDisplay display() {
-        return new SlotDisplay.Composite(Stream.of(stacks)
-                .map(stack -> (SlotDisplay) new FluidStackSlotDisplay(stack))
+        return new SlotDisplay.Composite(Stream.of(templates)
+                .map(template -> (SlotDisplay) new FluidStackSlotDisplay(template))
                 .toList());
     }
 

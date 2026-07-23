@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/Silverfish.java
 +++ b/net/minecraft/world/entity/monster/Silverfish.java
+@@ -109,7 +_,7 @@
+     }
+ 
+     public static boolean checkSilverfishSpawnRules(
+-        EntityType<Silverfish> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends Silverfish> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         if (!checkAnyLightMonsterSpawnRules(type, level, spawnReason, pos, random)) {
+             return false;
 @@ -143,7 +_,7 @@
              }
  

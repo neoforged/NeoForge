@@ -62,6 +62,7 @@ public class DamageContainer {
     private float blockedDamage = 0f;
     private float shieldDamage = 0;
     private int invulnerabilityTicksAfterAttack = 20;
+    private boolean damageSideEffects = true;
     private float inflictedDamage = 0;
 
     public DamageContainer(DamageSource source, float originalDamage) {
@@ -139,6 +140,21 @@ public class DamageContainer {
     /** {@return the number of ticks this entity will be invulnerable after damage is applied} */
     public int getPostAttackInvulnerabilityTicks() {
         return invulnerabilityTicksAfterAttack;
+    }
+
+    /// Sets whether damage side effects should be performed:
+    /// - If the attack was blocked so [net.minecraft.world.item.component.BlocksAttacks#onBlocked] should be called, or if it wasn't and [net.minecraft.server.level.ServerLevel#broadcastDamageEvent] should be called instead.
+    /// - Motion should be synced to the client [LivingEntity#markHurt]
+    /// - Knockback performed on the entity
+    /// - Hurt/death sounds should be played
+    /// @param sideEffects `true` if damage side effects should be performed.
+    public void setShouldCauseSideEffects(boolean sideEffects) {
+        this.damageSideEffects = sideEffects;
+    }
+
+    /// {@return `true` if damage side effects should be performed}
+    public boolean shouldCauseSideEffects() {
+        return this.damageSideEffects;
     }
 
     /**

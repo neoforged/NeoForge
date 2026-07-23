@@ -129,7 +129,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -569,11 +568,6 @@ public class ClientHooks {
         InputEvent.InteractionKeyMappingTriggered event = new InputEvent.InteractionKeyMappingTriggered(button, keyBinding, hand);
         NeoForge.EVENT_BUS.post(event);
         return event;
-    }
-
-    public static boolean isNameplateInRenderDistance(LivingEntity entity, double squareDistance) {
-        double value = entity.getAttributeValue(NeoForgeMod.NAMETAG_DISTANCE);
-        return !(squareDistance > value * value);
     }
 
     public static boolean shouldRenderEffect(MobEffectInstance effectInstance) {

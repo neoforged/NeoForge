@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
++++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
+@@ -143,4 +_,20 @@
+     protected boolean isPathfindable(BlockState state, PathComputationType type) {
+         return false;
+     }
++
++    // Neo: Extended piston multiblock be relocated if and only if both halves are being relocated
++    @Override
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
++        }
++        Direction facing = state.getValue(FACING);
++        BlockPos neighborPos = pos.relative(facing.getOpposite()); // facing points to head, opposite points to base
++        BlockState neighborState = level.getBlockState(neighborPos);
++        // if extended, treat as a double block which must be moved in its entirety
++        if (neighborState.getBlock() instanceof PistonBaseBlock && neighborState.getValue(FACING) == facing && neighborState.getValue(PistonBaseBlock.EXTENDED))
++            return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
++        // if this is extended but somebody already cut the block in half, no point in denying the relocation
++        return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++    }
+ }

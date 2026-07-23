@@ -34,12 +34,11 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -358,12 +_,16 @@
+@@ -358,12 +_,15 @@
              .add(Attributes.AIR_DRAG_MODIFIER)
              .add(Attributes.FRICTION_MODIFIER)
              .add(Attributes.NAME_TAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED)
-+            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
@@ -206,13 +205,14 @@
          if (damage < 0.0F) {
              damage = 0.0F;
          }
-@@ -1214,20 +_,30 @@
+@@ -1214,27 +_,38 @@
          if (Float.isNaN(damage) || Float.isInfinite(damage)) {
              damage = Float.MAX_VALUE;
          }
 +        this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
  
-         boolean tookFullDamage = true;
+-        boolean tookFullDamage = true;
++        boolean performSideEffects = true; // Neo: Rename local variable to be more clear on its behavior
          if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
              if (damage <= this.lastHurt) {
 +                // Neo: Pop the container when vanilla would abort the incoming damage due to the invulnerability ticks.
@@ -221,16 +221,17 @@
              }
 +
 +            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
++            this.damageContainers.peek().setShouldCauseSideEffects(false);
 +            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
  
              this.actuallyHurt(level, source, damage - this.lastHurt);
 -            this.lastHurt = damage;
+-            tookFullDamage = false;
 +            // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
 +            // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
 +            this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
 +            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
-             tookFullDamage = false;
          } else {
 -            this.lastHurt = damage;
 -            this.invulnerableTime = 20;
@@ -239,6 +240,32 @@
 +            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
              this.hurtDuration = 10;
              this.hurtTime = this.hurtDuration;
+         }
++        performSideEffects = this.damageContainers.peek().shouldCauseSideEffects();
+ 
+         this.resolveMobResponsibleForDamage(source);
+         this.resolvePlayerResponsibleForDamage(source);
+-        if (tookFullDamage) {
++        if (performSideEffects) {
+             BlocksAttacks blocksAttacks = itemInUse.get(DataComponents.BLOCKS_ATTACKS);
+             if (blocked && blocksAttacks != null) {
+                 blocksAttacks.onBlocked(level, this);
+@@ -1253,14 +_,14 @@
+ 
+         if (this.isDeadOrDying()) {
+             if (!this.checkTotemDeathProtection(source)) {
+-                if (tookFullDamage) {
++                if (performSideEffects) {
+                     this.makeSound(this.getDeathSound());
+                     this.playSecondaryHurtSound(source);
+                 }
+ 
+                 this.die(source);
+             }
+-        } else if (tookFullDamage) {
++        } else if (performSideEffects) {
+             this.playHurtSound(source);
+             this.playSecondaryHurtSound(source);
          }
 @@ -1286,6 +_,10 @@
              CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, originalDamage, damage, blocked);

@@ -9,6 +9,15 @@
                  this.makeSound(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
                  this.finishConversion();
              }
+@@ -182,7 +_,7 @@
+         }
+     }
+ 
+-    public static boolean checkHoglinSpawnRules(EntityType<Hoglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkHoglinSpawnRules(EntityType<? extends Hoglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return !level.getBlockState(pos.below()).is(Blocks.NETHER_WART_BLOCK);
+     }
+ 
 @@ -248,7 +_,10 @@
  
      private void finishConversion() {
