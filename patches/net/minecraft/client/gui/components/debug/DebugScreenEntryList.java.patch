@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntryList.java
+@@ -42,6 +_,7 @@
+ 
+     public DebugScreenEntryList(File workingDirectory, DataFixer dataFixer) {
+         this.debugProfileFile = new File(workingDirectory, "debug-profile.json");
++        DebugScreenEntries.registerModdedDebugEntries(); // Neo: Register modded debug entries
+         this.codec = DataFixTypes.DEBUG_PROFILE.wrapCodec(DebugScreenEntryList.SerializedOptions.CODEC, dataFixer, 4649);
+         this.load();
+     }
 @@ -164,7 +_,8 @@
                  }
              }

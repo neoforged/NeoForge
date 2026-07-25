@@ -55,7 +55,7 @@
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;
-@@ -206,6 +_,53 @@
+@@ -206,6 +_,59 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();
@@ -63,6 +63,12 @@
 +
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket packet) {
++        // Handle the initial registration payload by responding with the client's set of supported channels.
++        if (!this.initializedConnection && packet.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload) {
++            net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry.sendInitialListeningChannels(this);
++            return;
++        }
++
 +        // Handle the query payload by responding with the client's network channels. Update the connection type accordingly.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
 +            this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;

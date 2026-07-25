@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
++++ b/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
+@@ -224,7 +_,7 @@
+     }
+ 
+     public static boolean checkSulfurCubeSpawnRules(
+-        EntityType<SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         return true;
+     }

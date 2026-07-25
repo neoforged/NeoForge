@@ -39,7 +39,7 @@
              .add(Attributes.FRICTION_MODIFIER)
              .add(Attributes.NAME_TAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED)
-+            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE)
++            .add(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
  
@@ -205,13 +205,14 @@
          if (damage < 0.0F) {
              damage = 0.0F;
          }
-@@ -1214,20 +_,30 @@
+@@ -1214,27 +_,38 @@
          if (Float.isNaN(damage) || Float.isInfinite(damage)) {
              damage = Float.MAX_VALUE;
          }
 +        this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
  
-         boolean tookFullDamage = true;
+-        boolean tookFullDamage = true;
++        boolean performSideEffects = true; // Neo: Rename local variable to be more clear on its behavior
          if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
              if (damage <= this.lastHurt) {
 +                // Neo: Pop the container when vanilla would abort the incoming damage due to the invulnerability ticks.
@@ -220,16 +221,17 @@
              }
 +
 +            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
++            this.damageContainers.peek().setShouldCauseSideEffects(false);
 +            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
  
              this.actuallyHurt(level, source, damage - this.lastHurt);
 -            this.lastHurt = damage;
+-            tookFullDamage = false;
 +            // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
 +            // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
 +            this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
 +            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
-             tookFullDamage = false;
          } else {
 -            this.lastHurt = damage;
 -            this.invulnerableTime = 20;
@@ -238,6 +240,32 @@
 +            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
              this.hurtDuration = 10;
              this.hurtTime = this.hurtDuration;
+         }
++        performSideEffects = this.damageContainers.peek().shouldCauseSideEffects();
+ 
+         this.resolveMobResponsibleForDamage(source);
+         this.resolvePlayerResponsibleForDamage(source);
+-        if (tookFullDamage) {
++        if (performSideEffects) {
+             BlocksAttacks blocksAttacks = itemInUse.get(DataComponents.BLOCKS_ATTACKS);
+             if (blocked && blocksAttacks != null) {
+                 blocksAttacks.onBlocked(level, this);
+@@ -1253,14 +_,14 @@
+ 
+         if (this.isDeadOrDying()) {
+             if (!this.checkTotemDeathProtection(source)) {
+-                if (tookFullDamage) {
++                if (performSideEffects) {
+                     this.makeSound(this.getDeathSound());
+                     this.playSecondaryHurtSound(source);
+                 }
+ 
+                 this.die(source);
+             }
+-        } else if (tookFullDamage) {
++        } else if (performSideEffects) {
+             this.playHurtSound(source);
+             this.playSecondaryHurtSound(source);
          }
 @@ -1286,6 +_,10 @@
              CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, originalDamage, damage, blocked);
@@ -597,6 +625,35 @@
              }
          } else {
              this.noJumpDelay = 0;
+@@ -3176,8 +_,11 @@
+                 int freeFallInterval = checkFallFlyTicks / 10;
+                 if (freeFallInterval % 2 == 0) {
+                     List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
++                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
++                    if (!slotsWithGliders.isEmpty()) {
+                     EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
+-                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
++                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
++                    }
+                 }
+ 
+                 this.gameEvent(GameEvent.ELYTRA_GLIDE);
+@@ -3186,7 +_,15 @@
+     }
+ 
+     protected boolean canGlide() {
++        return canGlide(true);
++    }
++
++    protected boolean canGlide(boolean isNeoForgeConnection) {
+         if (!this.onGround() && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
++            // Neo: Check only (on a NeoForge connection) the gliding flight attribute on the entity (for directly applied attributes)
++            // (LocalPlayer#canGlide calls this with false, to support clients connecting to vanilla servers)
++            var glidingFlight = this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT);
++            if (isNeoForgeConnection) return glidingFlight > 0;
+             for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+                 if (canGlideUsing(this.getItemBySlot(slot), slot)) {
+                     return true;
 @@ -3406,8 +_,11 @@
  
      private void updatingUsingItem() {
@@ -779,3 +836,12 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
+@@ -3981,6 +_,8 @@
+     }
+ 
+     public static boolean canGlideUsing(ItemStack itemStack, EquipmentSlot slot) {
++        // Neo: Check if the item has the gliding flight attribute
++        if (itemStack.getAttributeModifiers().compute(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT, 0, slot) > 0) return true;
+         if (!itemStack.has(DataComponents.GLIDER)) {
+             return false;
+         }

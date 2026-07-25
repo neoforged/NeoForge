@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Endermite.java
++++ b/net/minecraft/world/entity/monster/Endermite.java
+@@ -129,7 +_,7 @@
+     }
+ 
+     public static boolean checkEndermiteSpawnRules(
+-        EntityType<Endermite> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends Endermite> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         if (!checkAnyLightMonsterSpawnRules(type, level, spawnReason, pos, random)) {
+             return false;
