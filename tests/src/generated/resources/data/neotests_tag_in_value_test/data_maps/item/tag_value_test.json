@@ -1,0 +1,7 @@
+{
+  "values": {
+    "minecraft:stick": {
+      "blocks": "#minecraft:acacia_logs"
+    }
+  }
+}
