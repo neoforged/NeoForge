@@ -1898,8 +1898,13 @@ public class CommonHooks {
             public void encode(RegistryFriendlyByteBuf output, ItemAttributeModifiers value) {
                 List<ItemAttributeModifiers.Entry> modifiers = entryGetter.apply(value);
                 if (output.getConnectionType().isOther()) {
-                    modifiers = new ArrayList<>(modifiers);
-                    modifiers.removeIf(entry -> !entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE));
+                    List<ItemAttributeModifiers.Entry> filteredModifiers = new ArrayList<>(modifiers.size());
+                    for (ItemAttributeModifiers.Entry entry : modifiers) {
+                        if (entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                            filteredModifiers.add(entry);
+                        }
+                    }
+                    modifiers = filteredModifiers;
                 }
                 entriesStreamCodec.encode(output, modifiers);
             }
