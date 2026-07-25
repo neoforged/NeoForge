@@ -217,6 +217,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Class for various client-side-only hooks.
@@ -1069,9 +1070,21 @@ public class ClientHooks {
 
     public static void takeOverLoadingScreen(Window window) {
         EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
-        if (earlyLoadingScreen != null) {
-            earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
-            earlyLoadingScreen.periodicTick();
+        if (earlyLoadingScreen == null) {
+            return;
+        }
+
+        EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
+        if (state.minimized()) {
+            GLFW.glfwIconifyWindow(window.handle());
+        } else {
+            if (state.posValid()) {
+                GLFW.glfwSetWindowPos(window.handle(), state.x(), state.y());
+            }
+            GLFW.glfwSetWindowSize(window.handle(), state.width(), state.height());
+            if (state.maximized()) {
+                GLFW.glfwMaximizeWindow(window.handle());
+            }
         }
     }
 }
