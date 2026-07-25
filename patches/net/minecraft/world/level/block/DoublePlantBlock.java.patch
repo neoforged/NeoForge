@@ -8,3 +8,25 @@
              return belowState.is(this) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER;
          }
      }
+@@ -132,5 +_,21 @@
+     @Override
+     protected long getSeed(BlockState state, BlockPos pos) {
+         return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
++    }
++
++    // Neo: Relocatable if and only if both halves are being relocated
++    @Override
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
++        }
++        // verify the other half exists; if not, don't deny relocation
++        DoubleBlockHalf thisHalf = state.getValue(HALF);
++        BlockPos neighborPos = pos.relative(thisHalf.getDirectionToOther());
++        BlockState neighborState = level.getBlockState(neighborPos);
++        BlockState expectedState = state.setValue(HALF, thisHalf.getOtherHalf());
++        if (neighborState != expectedState)
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
+     }
+ }
