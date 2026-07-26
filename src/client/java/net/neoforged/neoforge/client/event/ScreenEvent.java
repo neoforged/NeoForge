@@ -143,8 +143,7 @@ public abstract class ScreenEvent extends Event {
      *
      * @see Render.Pre
      * @see Render.Background
-     * @see Render.BeforePreeditOverlay
-     * @see Render.BeforeTooltip
+     * @see Render.Foreground
      * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
@@ -225,23 +224,16 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
-         * Fired before the IME preedit overlay is extracted.
-         * Renders below the preedit overlay and tooltips.
+         * Fired after the screen's main contents and before deferred elements (e.g. tooltips and the preedit overlay).
+         *
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class BeforePreeditOverlay extends Render {
+        public static class Foreground extends Render {
             @ApiStatus.Internal
-            public BeforePreeditOverlay(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
-            }
-        }
-
-        /**
-         * Fired before the tooltip is extracted.
-         * Renders above the preedit overlay but below the tooltip.
-         */
-        public static class BeforeTooltip extends Render {
-            @ApiStatus.Internal
-            public BeforeTooltip(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+            public Foreground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }

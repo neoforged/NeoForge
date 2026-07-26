@@ -133,22 +133,6 @@
          int localY = y;
  
          for (int i = 0; i < lines.size(); i++) {
-@@ -1154,11 +_,15 @@
-             this.requestCursor(CursorTypes.POINTING_HAND);
-         }
- 
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.BeforePreeditOverlay(this.minecraft.gui.screen(), this, mouseX, mouseY, a));
-+
-         if (this.preeditOverlay != null) {
-             this.nextStratum();
-             this.preeditOverlay.extractRenderState(this, mouseX, mouseY, a);
-         }
- 
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.BeforeTooltip(this.minecraft.gui.screen(), this, mouseX, mouseY, a));
-+
-         if (this.deferredTooltip != null) {
-             this.nextStratum();
-             this.deferredTooltip.run();
 @@ -1183,6 +_,31 @@
                  default:
              }
