@@ -1075,16 +1075,15 @@ public class ClientHooks {
         }
 
         EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
-        if (state.minimized()) {
-            GLFW.glfwIconifyWindow(window.handle());
-        } else {
-            if (state.posValid()) {
-                GLFW.glfwSetWindowPos(window.handle(), state.x(), state.y());
-            }
+        if (state.posValid() && !state.minimized()) {
+            GLFW.glfwSetWindowPos(window.handle(), state.x(), state.y());
             GLFW.glfwSetWindowSize(window.handle(), state.width(), state.height());
-            if (state.maximized()) {
-                GLFW.glfwMaximizeWindow(window.handle());
-            }
+        }
+        if (state.maximized()) {
+            GLFW.glfwMaximizeWindow(window.handle());
+        }
+        if (state.minimized() && !window.isFullscreen()) {
+            GLFW.glfwIconifyWindow(window.handle());
         }
     }
 }
