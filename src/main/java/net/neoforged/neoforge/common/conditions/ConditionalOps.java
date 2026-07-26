@@ -30,6 +30,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         this.context = context;
     }
 
+    public ConditionalOps(DynamicOps<T> ops, RegistryOps.RegistryInfoLookup lookupProvider, ICondition.IContext context) {
+        super(ops, lookupProvider);
+        this.context = context;
+    }
+
     /**
      * Returns a codec that can retrieve a {@link ICondition.IContext} from a registry ops,
      * for example with {@code retrieveContext().decode(ops, ops.emptyMap())}.
@@ -102,6 +107,12 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         return Codec.of(
                 new ConditionalEncoder<>(conditionalsKey, ICondition.LIST_CODEC, ownerCodec),
                 new ConditionalDecoder<>(conditionalsKey, ICondition.LIST_CODEC, retrieveContext().codec(), ownerCodec));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <U> ConditionalOps<U> withParent(DynamicOps<U> parent) {
+        return parent == this.delegate ? (ConditionalOps<U>) this : new ConditionalOps<>(parent, this.lookupProvider, this.context);
     }
 
     private static final class ConditionalEncoder<A> implements Encoder<Optional<WithConditions<A>>> {
