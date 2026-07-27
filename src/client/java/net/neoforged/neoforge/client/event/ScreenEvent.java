@@ -223,14 +223,12 @@ public abstract class ScreenEvent extends Event {
             }
         }
 
-        /**
-         * Fired after the screen's main contents and before deferred elements (e.g. tooltips and the preedit overlay).
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
+        /// Fired after the screen's main contents and before deferred elements (e.g. tooltips and the preedit overlay).
+        ///
+        /// This event is not [cancellable][ICancellableEvent].
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
         public static class Foreground extends Render {
             @ApiStatus.Internal
             public Foreground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
