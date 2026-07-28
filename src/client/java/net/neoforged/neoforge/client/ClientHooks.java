@@ -591,6 +591,7 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(mouseButtonInfo, action));
     }
 
+    /// @deprecated Use [#onMouseScroll(MouseHandler, double, double, Vector2ic)] instead
     @Deprecated(forRemoval = true, since = "26.1")
     public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY) {
         return onMouseScroll(mouseHelper, scrollDeltaX, scrollDeltaY, new Vector2i(0, 0));
