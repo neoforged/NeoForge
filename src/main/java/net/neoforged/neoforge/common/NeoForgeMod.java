@@ -200,23 +200,26 @@ public class NeoForgeMod {
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
+    /// If the server is intended to be vanilla-compatible then this attribute must not be applied via item attribute modifiers.
     public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new PercentageAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
 
-    /**
-     * This attribute controls if the player may use creative flight when not in creative mode.
-     * <p>
-     * This is a {@link BooleanAttribute}, and should only be modified using the standards established by that class.
-     * <p>
-     * To determine if a player may fly (either via game mode or attribute), use {@link IPlayerExtension#mayFly}
-     * <p>
-     * Game mode flight cannot be disabled via this attribute.
-     */
+    /// This attribute controls if the player may use creative flight when not in creative mode.
+    ///
+    /// This is a [BooleanAttribute], and should only be modified using the standards established by that class.
+    ///
+    /// To determine if a player may fly (either via game mode or attribute), use [IPlayerExtension#mayFly]
+    ///
+    /// Game mode flight cannot be disabled via this attribute.
+    ///
+    /// If the server is intended to be vanilla-compatible then this attribute must not be applied via item attribute modifiers.
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
 
     /// This attribute controls if an entity may use gliding flight (elytra).
     /// The [`glider` data component][net.minecraft.core.component.DataComponents#GLIDER] is modified to use this attribute.
     ///
     /// This is a [BooleanAttribute], and should only be modified using the standards established by that class.
+    ///
+    /// If the server is intended to be vanilla-compatible then this attribute must not be applied via item attribute modifiers.
     public static final Holder<Attribute> GLIDING_FLIGHT = ATTRIBUTES.register("gliding_flight", () -> new BooleanAttribute("neoforge.gliding_flight", false).setSyncable(true));
 
     /**
