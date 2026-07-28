@@ -76,7 +76,7 @@
                      }
  
                      int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
-+                    if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, scaledXOffset, scaledYOffset)) return;
++                    if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, scaledXOffset, scaledYOffset, wheelXY)) return;
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.hud.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.hud.getSpectatorGui().onMouseScrolled(-wheel);
