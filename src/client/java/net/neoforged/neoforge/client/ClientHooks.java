@@ -209,6 +209,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fc;
+import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
@@ -588,6 +589,11 @@ public class ClientHooks {
 
     public static void onMouseButtonPost(MouseButtonInfo mouseButtonInfo, int action) {
         NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(mouseButtonInfo, action));
+    }
+
+    @Deprecated(forRemoval = true, since = "26.1")
+    public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY) {
+        return onMouseScroll(mouseHelper, scrollDeltaX, scrollDeltaY, new Vector2i(0, 0));
     }
 
     public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY, Vector2ic acummulatedScroll) {
