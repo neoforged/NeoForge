@@ -284,6 +284,19 @@
      }
  
      public void setSwimming(boolean p_20283_) {
+@@ -2719,7 +_,11 @@
+     }
+ 
+     public int getTicksRequiredToFreeze() {
+-        return 140;
++        return this.getData(net.neoforged.neoforge.common.NeoForgeMod.TICKS_REQUIRED_TO_FREEZE);
++    }
++
++    public void setTicksRequiredToFreeze(int ticksRequiredToFreeze) {
++        this.setData(net.neoforged.neoforge.common.NeoForgeMod.TICKS_REQUIRED_TO_FREEZE, ticksRequiredToFreeze);
+     }
+ 
+     public void thunderHit(ServerLevel p_19927_, LightningBolt p_19928_) {
 @@ -2728,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
