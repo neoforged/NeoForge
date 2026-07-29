@@ -590,30 +590,18 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-@@ -2483,10 +_,23 @@
-         return computeModifiedFriction(this.omnidirectionalAirMover() ? 0.91F : 0.98F, (float)this.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
-     }
- 
-+    /**
-+     * @deprecated Neo: use {@link #travelInFluid(Vec3, FluidState)} instead
-+     */
-+    @Deprecated
-     protected void travelInFluid(Vec3 input) {
-+        travelInFluid(input, net.minecraft.world.level.material.Fluids.EMPTY.defaultFluidState());
-+    }
-+
-+    private void travelInFluid(Vec3 input, FluidState fluidState) {
-         boolean isFalling = this.getDeltaMovement().y <= 0.0;
-         double oldY = this.getY();
-         double baseGravity = this.getEffectiveGravity();
-+        if (this.isInFluidType((entity, type, _) -> entity.isEyeInFluid(type))) {
-+            if (this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity)) {
-+                return;
-+            }
-+        }
-         if (this.isInWater()) {
+@@ -2491,6 +_,11 @@
              this.travelInWater(input, baseGravity, isFalling, oldY);
              this.floatInWaterWhileRidden();
+         } else {
++            if (this.isInFluidType((entity, type, _) -> !type.isVanilla() && entity.isEyeInFluid(type))) {
++                if (this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity)) {
++                    return;
++                }
++            }
+             this.travelInLava(input, baseGravity, isFalling, oldY);
+         }
+     }
 @@ -2512,6 +_,7 @@
              slowDown = 0.96F;
          }

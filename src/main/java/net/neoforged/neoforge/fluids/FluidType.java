@@ -323,8 +323,7 @@ public class FluidType {
      * @param entity the item in the fluid
      */
     public void setItemMovement(ItemEntity entity) {
-        Vec3 vec3 = entity.getDeltaMovement();
-        entity.setDeltaMovement(vec3.x * (double) 0.99F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.99F);
+        entity.setFluidMovement(.99F);
     }
 
     /**

@@ -40,7 +40,7 @@
              this.zo = this.getZ();
              Vec3 oldMovement = this.getDeltaMovement();
 +            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > 0.1F) {
++            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > FLOAT_HEIGHT) {
 +                fluidType.setItemMovement(this);
 +            } else
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {

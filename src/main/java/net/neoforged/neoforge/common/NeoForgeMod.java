@@ -486,8 +486,7 @@ public class NeoForgeMod {
 
         @Override
         public void setItemMovement(ItemEntity entity) {
-            Vec3 vec3 = entity.getDeltaMovement();
-            entity.setDeltaMovement(vec3.x * (double) 0.95F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.95F);
+            entity.setFluidMovement(.95F);
         }
 
         @Override
