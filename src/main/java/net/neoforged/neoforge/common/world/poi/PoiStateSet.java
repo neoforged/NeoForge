@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.world.poi;
 
 import com.google.common.collect.Iterators;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -16,45 +17,61 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class PoiStateSet implements Set<BlockState> {
-    private final Set<BlockState> backingSet = new ReferenceOpenHashSet<>();
+    /** Contains possibly lazily-evaluated states. */
+    private final Set<BlockState> backingSet;
+    /** Actual elements are added to this through {@link #addCustomStates}. */
+    private final Set<BlockState> ownElements = new ReferenceOpenHashSet<>();
 
     public PoiStateSet(Set<BlockState> states) {
-        this.backingSet.addAll(states);
+        // `states` may contain lazily-evaluated elements, so don't make a defensive copy.
+        this.backingSet = states;
     }
 
     @Override
     public int size() {
-        return this.backingSet.size();
+        return this.backingSet.size() + this.ownElements.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return this.backingSet.isEmpty();
+        return this.backingSet.isEmpty() && this.ownElements.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        return this.backingSet.contains(o);
+        return this.backingSet.contains(o) || this.ownElements.contains(o);
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public boolean containsAll(Collection<?> c) {
-        return this.backingSet.containsAll(c);
+        for (var el : c) {
+            if (!this.backingSet.contains(el) && !this.ownElements.contains(el))
+                return false;
+        }
+        return true;
     }
 
     @Override
     public Iterator<BlockState> iterator() {
-        return Iterators.unmodifiableIterator(this.backingSet.iterator());
+        return Iterators.unmodifiableIterator(Iterators.concat(this.backingSet.iterator(), this.ownElements.iterator()));
+    }
+
+    private ArrayList<BlockState> toList() {
+        ArrayList<BlockState> outList = new ArrayList<>(this.backingSet.size() + this.ownElements.size());
+        outList.addAll(this.backingSet);
+        outList.addAll(this.ownElements);
+        return outList;
     }
 
     @Override
     public Object[] toArray() {
-        return this.backingSet.toArray();
+        return toList().toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return this.backingSet.toArray(a);
+        return toList().toArray(a);
     }
 
     @Override
@@ -93,6 +110,6 @@ public final class PoiStateSet implements Set<BlockState> {
     }
 
     void addCustomStates(Set<BlockState> states) {
-        this.backingSet.addAll(states);
+        this.ownElements.addAll(states);
     }
 }
