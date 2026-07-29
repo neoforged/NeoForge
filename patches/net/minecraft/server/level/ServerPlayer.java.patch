@@ -226,6 +226,14 @@
      }
  
      @Override
+@@ -1379,6 +_,7 @@
+         this.connection.send(new ClientboundMountScreenOpenPacket(this.containerCounter, i, p_470632_.getId()));
+         this.containerMenu = new NautilusInventoryMenu(this.containerCounter, this.getInventory(), p_470807_, p_470632_, i);
+         this.initMenu(this.containerMenu);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
+     }
+ 
+     @Override
 @@ -1407,6 +_,7 @@
      public void doCloseContainer() {
          this.containerMenu.removed(this);
