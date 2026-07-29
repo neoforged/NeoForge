@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/font/glyphs/BakedSheetGlyph.java
 +++ b/net/minecraft/client/gui/font/glyphs/BakedSheetGlyph.java
-@@ -206,6 +_,15 @@
+@@ -205,6 +_,15 @@
              this.glyph.renderEffect(this, pose, buffer, packedLightCoords, false);
          }
  
@@ -16,7 +16,7 @@
          @Override
          public RenderType renderType(Font.DisplayMode displayMode) {
              return this.glyph.renderTypes.select(displayMode);
-@@ -259,6 +_,15 @@
+@@ -257,6 +_,15 @@
              this.glyph.renderChar(this, pose, buffer, packedLightCoords, flat);
          }
  

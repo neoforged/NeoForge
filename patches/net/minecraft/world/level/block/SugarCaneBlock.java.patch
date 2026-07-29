@@ -16,21 +16,21 @@
              }
          }
      }
-@@ -91,13 +_,16 @@
-         if (stateBelow.is(this)) {
+@@ -92,13 +_,16 @@
              return true;
-         } else {
-+            var soilDecision = stateBelow.canSustainPlant(level, pos.below(), Direction.UP, state);
-+            if (!soilDecision.isDefault()) return soilDecision.isTrue();
-             if (stateBelow.is(BlockTags.SUPPORTS_SUGAR_CANE)) {
-                 BlockPos below = pos.below();
+         }
  
-                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                     BlockState blockState = level.getBlockState(below.relative(direction));
-                     FluidState fluidState = level.getFluidState(below.relative(direction));
--                    if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)) {
-+                    // Neo: Allow the fluid state to dynamically decide whether it hydrates here if the tag-based checks fail
-+                    if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState, below.relative(direction))) {
-                         return true;
-                     }
++        var soilDecision = stateBelow.canSustainPlant(level, pos.below(), Direction.UP, state);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         if (stateBelow.is(BlockTags.SUPPORTS_SUGAR_CANE)) {
+             BlockPos below = pos.below();
+ 
+             for (Direction direction : Direction.Plane.HORIZONTAL) {
+                 BlockState blockState = level.getBlockState(below.relative(direction));
+                 FluidState fluidState = level.getFluidState(below.relative(direction));
+-                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)) {
++                // Neo: Allow the fluid state to dynamically decide whether it hydrates here if the tag-based checks fail
++                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState, below.relative(direction))) {
+                     return true;
                  }
+             }

@@ -179,6 +179,7 @@
   "tag.item.c.bricks.resin": "Resin Bricks",
   "tag.item.c.buckets": "Buckets",
   "tag.item.c.buckets.empty": "Empty Buckets",
+  "tag.item.c.buckets.entity_dry": "Dry Entity Buckets",
   "tag.item.c.buckets.entity_water": "Water Entity Buckets",
   "tag.item.c.buckets.lava": "Lava Buckets",
   "tag.item.c.buckets.milk": "Milk Buckets",

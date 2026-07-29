@@ -24,7 +24,7 @@
  
          return result;
      }
-@@ -148,16 +_,18 @@
+@@ -147,16 +_,18 @@
          private static final ModelDiscovery.Slot<TextureSlots> KEY_TEXTURE_SLOTS = slot(4);
          private static final ModelDiscovery.Slot<Material.Baked> KEY_PARTICLE_SPRITE = slot(5);
          private static final ModelDiscovery.Slot<QuadCollection> KEY_DEFAULT_GEOMETRY = slot(6);
@@ -46,7 +46,7 @@
              return new ModelDiscovery.Slot<>(index);
          }
  
-@@ -229,15 +_,20 @@
+@@ -228,15 +_,20 @@
  
          private QuadCollection bakeDefaultState(TextureSlots textureSlots, ModelBaker baker, ModelState state) {
              QuadCollection result = this.getSlot(KEY_DEFAULT_GEOMETRY);

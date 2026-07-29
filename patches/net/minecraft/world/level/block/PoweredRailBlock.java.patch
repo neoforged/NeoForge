@@ -1,10 +1,13 @@
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
-@@ -22,8 +_,19 @@
+@@ -22,8 +_,22 @@
          return CODEC;
      }
  
-+    private final boolean isActivator;  // TRUE for an Activator Rail, FALSE for Powered Rail
++    /**
++     * Neo: {@code true} for an activator rail, {@code false} for powered rail
++     */
++    private final boolean isActivator;
 +
      public PoweredRailBlock(BlockBehaviour.Properties properties) {
 +        this(properties, false);
@@ -20,15 +23,15 @@
          this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(POWERED, false).setValue(WATERLOGGED, false));
      }
  
-@@ -35,7 +_,7 @@
-             int y = pos.getY();
-             int z = pos.getZ();
-             boolean checkBelow = true;
--            RailShape shape = state.getValue(SHAPE);
-+            RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null);
-             switch (shape) {
-                 case NORTH_SOUTH:
-                     if (forward) {
+@@ -36,7 +_,7 @@
+         int y = pos.getY();
+         int z = pos.getZ();
+         boolean checkBelow = true;
+-        RailShape shape = state.getValue(SHAPE);
++        RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null);
+         switch (shape) {
+             case NORTH_SOUTH:
+                 if (forward) {
 @@ -104,17 +_,17 @@
  
      protected boolean isSameRailWithPower(Level level, BlockPos pos, boolean forward, int searchDepth, RailShape dir) {
@@ -36,22 +39,22 @@
 -        if (!state.is(this)) {
 +        if (!(state.getBlock() instanceof PoweredRailBlock other)) {
              return false;
-         } else {
--            RailShape myShape = state.getValue(SHAPE);
-+            RailShape myShape = other.getRailDirection(state, level, pos, null);
-             if (dir != RailShape.EAST_WEST || myShape != RailShape.NORTH_SOUTH && myShape != RailShape.ASCENDING_NORTH && myShape != RailShape.ASCENDING_SOUTH) {
-                 if (dir != RailShape.NORTH_SOUTH
-                     || myShape != RailShape.EAST_WEST && myShape != RailShape.ASCENDING_EAST && myShape != RailShape.ASCENDING_WEST) {
--                    if (!state.getValue(POWERED)) {
-+                    if (isActivatorRail() != other.isActivatorRail()) {
-                         return false;
-                     } else {
--                        return level.hasNeighborSignal(pos) ? true : this.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
-+                        return level.hasNeighborSignal(pos) ? true : other.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
-                     }
-                 } else {
+         }
+ 
+-        RailShape myShape = state.getValue(SHAPE);
++        RailShape myShape = other.getRailDirection(state, level, pos, null);
+         if (dir != RailShape.EAST_WEST || myShape != RailShape.NORTH_SOUTH && myShape != RailShape.ASCENDING_NORTH && myShape != RailShape.ASCENDING_SOUTH) {
+             if (dir != RailShape.NORTH_SOUTH || myShape != RailShape.EAST_WEST && myShape != RailShape.ASCENDING_EAST && myShape != RailShape.ASCENDING_WEST) {
+-                if (!state.getValue(POWERED)) {
++                if (isActivatorRail() != other.isActivatorRail()) {
                      return false;
-@@ -134,7 +_,7 @@
+                 } else {
+-                    return level.hasNeighborSignal(pos) ? true : this.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
++                    return level.hasNeighborSignal(pos) ? true : other.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
+                 }
+             } else {
+                 return false;
+@@ -133,7 +_,7 @@
          if (shouldPower != isPowered) {
              level.setBlock(pos, state.setValue(POWERED, shouldPower), 3);
              level.updateNeighborsAt(pos.below(), this);
@@ -60,7 +63,7 @@
                  level.updateNeighborsAt(pos.above(), this);
              }
          }
-@@ -161,6 +_,10 @@
+@@ -160,6 +_,10 @@
  
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

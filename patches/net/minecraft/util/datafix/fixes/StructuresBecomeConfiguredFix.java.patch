@@ -10,5 +10,5 @@
 +            if (net.neoforged.neoforge.common.CommonHooks.checkStructureNamespace(key)) return chunk.createString(key); // Neo: pass-through structure IDs which have a non-"minecraft" namespace
 +            if (true) return chunk.createString("unknown." + key); // Neo: Pass-through with "unknown." prefix, so deserializer logs and ignores rather than fixer throwing an exception and dropping chunk data
              return null;
-         } else {
-             String resultingId = conversion.fallback;
+         }
+ 

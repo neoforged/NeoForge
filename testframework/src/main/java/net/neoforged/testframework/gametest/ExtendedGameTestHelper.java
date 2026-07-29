@@ -43,6 +43,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -82,7 +83,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         pos = this.absolutePos(pos);
         item.useOn(new UseOnContext(
                 this.getLevel(), player, InteractionHand.MAIN_HAND, item, new BlockHitResult(
-                        pos.getCenter(), direction, pos, false)));
+                        Vec3.atCenterOf(pos), direction, pos, false)));
     }
 
     public void useBlock(BlockPos pos, Player player, ItemStack item) {
@@ -202,7 +203,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void assertItemEntityCountIsAtLeast(Item item, BlockPos pos, double range, int lowerLimit) {
         final BlockPos blockpos = this.absolutePos(pos);
-        final List<ItemEntity> list = this.getLevel().getEntities(EntityType.ITEM, new AABB(blockpos).inflate(range), Entity::isAlive);
+        final List<ItemEntity> list = this.getLevel().getEntities(EntityTypes.ITEM, new AABB(blockpos).inflate(range), Entity::isAlive);
         int count = 0;
 
         for (final ItemEntity itementity : list) {
@@ -338,10 +339,12 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         this.assertEntityProperty(entity, e -> !e.hasEffect(effect), testName);
     }
 
+    @Override
     public void assertTrue(boolean value, String message) {
         this.assertTrue(value, Component.translatable(message));
     }
 
+    @Override
     public void assertFalse(boolean value, String message) {
         this.assertFalse(value, Component.translatable(message));
     }
@@ -354,6 +357,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         this.assertBlock(pos, predicate, block -> Component.translatable(message, block));
     }
 
+    @Override
     public <T> void assertValueEqual(T expected, T actual, String message) {
         this.assertValueEqual(expected, actual, Component.translatable(message));
     }

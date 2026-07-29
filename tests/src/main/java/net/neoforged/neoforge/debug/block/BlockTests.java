@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -29,6 +30,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -40,14 +42,20 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.poi.ExtendPoiTypesEvent;
@@ -58,6 +66,7 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -158,7 +167,7 @@ public class BlockTests {
             @Override
             public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
                 // have the player respawn a block north to the location of the anchor
-                return Optional.of(ServerPlayer.RespawnPosAngle.of(pos.getCenter().add(0, 1, 1), pos, 0));
+                return Optional.of(ServerPlayer.RespawnPosAngle.of(Vec3.atCenterOf(pos).add(0, 1, 1), pos, 0));
             }
         }).withBlockItem().withLang("Respawn").withDefaultWhiteModel();
 
@@ -169,7 +178,7 @@ public class BlockTests {
                 .thenExecute(player -> helper.useBlock(new BlockPos(1, 2, 1), player))
                 .thenExecute(player -> player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.CHANGED_DIMENSION))
                 .thenExecute(() -> helper.assertEntityPresent(
-                        EntityType.PLAYER,
+                        EntityTypes.PLAYER,
                         1, 3, 2))
                 .thenSucceed());
     }
@@ -264,5 +273,64 @@ public class BlockTests {
             }
             test.pass();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if double blocks correctly implement the isRelocatable block extension")
+    static void areDoubleBlocksRelocatable(final ExtendedGameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos floorCenter = helper.absolutePos(new BlockPos(1, 0, 1)); // we're in a 3x3x3 cube by default
+        BlockPos lowerPos = floorCenter.above();
+        BlockPos abovePos = lowerPos.above();
+        // set some dirt so we can place a plant on it
+        level.setBlock(floorCenter, Blocks.DIRT.defaultBlockState(), 0);
+        // test vertical double blocks
+        for (Block doubleBlock : new Block[] { Blocks.OAK_DOOR, Blocks.ROSE_BUSH }) {
+            BlockState lowerState = doubleBlock.defaultBlockState();
+            BlockState upperState = lowerState.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+            level.setBlock(lowerPos, lowerState, 0);
+            level.setBlock(abovePos, upperState, 0);
+            // validate individual halves are not relocatable but both halves are
+            helper.assertFalse(lowerState.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), lowerState + " incorrectly relocatable without upper half");
+            helper.assertFalse(upperState.getRelocability(level, abovePos).isRelocatable(Set.of(abovePos)), upperState + " incorrectly relocatable without lower half");
+            helper.assertTrue(lowerState.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, abovePos)), lowerState + " incorrectly non-relocatable with whole multiblock");
+            helper.assertTrue(upperState.getRelocability(level, abovePos).isRelocatable(Set.of(lowerPos, abovePos)), upperState + " incorrectly non-relocatable with whole multiblock");
+            // clean up blocks or rose bush nukes itself from shape updates
+            level.setBlock(lowerPos, Blocks.AIR.defaultBlockState(), 0);
+            level.setBlock(abovePos, Blocks.AIR.defaultBlockState(), 0);
+        }
+
+        // test beds
+        BlockState bedFoot = Blocks.BED.white().defaultBlockState();
+        BlockState bedHead = bedFoot.setValue(BedBlock.PART, BedPart.HEAD);
+        Direction directionToHead = BedBlock.getConnectedDirection(bedFoot);
+        BlockPos headPos = lowerPos.relative(directionToHead);
+        // do beds need support? can't remember, just place dirt under where the head will be too
+        level.setBlock(floorCenter.relative(directionToHead), Blocks.DIRT.defaultBlockState(), 0);
+        level.setBlock(lowerPos, bedFoot, 0);
+        level.setBlock(headPos, bedHead, 0);
+        helper.assertFalse(bedFoot.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Bed foot " + bedFoot + " incorrectly relocatable without head");
+        helper.assertFalse(bedHead.getRelocability(level, headPos).isRelocatable(Set.of(headPos)), "Bed head " + bedHead + " incorrectly relocatable without foot");
+        helper.assertTrue(bedFoot.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, headPos)), "Bed foot " + bedFoot + " incorrectly non-relocatable with whole bed");
+        helper.assertTrue(bedHead.getRelocability(level, headPos).isRelocatable(Set.of(lowerPos, headPos)), "Bed head " + bedHead + " incorrectly non-relocatable with whole bed");
+
+        // finally, check pistons
+        // unextended pistons are always relocatable
+        // extended pistons are relocatable if and only if both halves are being relocated
+        BlockState unextendedPiston = Blocks.PISTON.defaultBlockState().setValue(PistonBaseBlock.FACING, Direction.UP);
+        level.setBlock(lowerPos, unextendedPiston, 0);
+        helper.assertTrue(unextendedPiston.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Unextended piston " + unextendedPiston + " incorrectly non-relocatable");
+        level.setBlock(headPos, Blocks.REDSTONE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+        helper.startSequence()
+                .thenExecuteAfter(3, () -> {
+                    BlockState pistonBase = level.getBlockState(lowerPos);
+                    BlockState pistonHead = level.getBlockState(abovePos);
+                    helper.assertFalse(pistonBase.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos)), "Piston base " + pistonBase + " incorrectly relocatable without head");
+                    helper.assertFalse(pistonHead.getRelocability(level, abovePos).isRelocatable(Set.of(abovePos)), "Piston head " + pistonHead + " incorrectly relocatable without base");
+                    helper.assertTrue(pistonBase.getRelocability(level, lowerPos).isRelocatable(Set.of(lowerPos, abovePos)), "Piston base " + pistonBase + " incorrectly non-relocatable with head");
+                    helper.assertTrue(pistonHead.getRelocability(level, abovePos).isRelocatable(Set.of(lowerPos, abovePos)), "Piston head " + pistonHead + " incorrectly non-relocatable with base");
+                })
+                .thenSucceed();
     }
 }

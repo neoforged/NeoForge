@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockModelLighter.java
 +++ b/net/minecraft/client/renderer/block/BlockModelLighter.java
-@@ -32,6 +_,8 @@
+@@ -30,6 +_,8 @@
          this.cache = CACHE.get();
      }
  

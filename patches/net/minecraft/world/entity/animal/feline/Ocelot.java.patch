@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/feline/Ocelot.java
 +++ b/net/minecraft/world/entity/animal/feline/Ocelot.java
-@@ -161,7 +_,7 @@
+@@ -168,7 +_,7 @@
          if ((this.temptGoal == null || this.temptGoal.isRunning()) && !this.isTrusting() && this.isFood(itemStack) && player.distanceToSqr(this) < 9.0) {
              this.usePlayerItem(player, hand, itemStack);
              if (!this.level().isClientSide()) {
@@ -9,3 +9,12 @@
                      this.setTrusting(true);
                      this.spawnTrustingParticles(true);
                      this.level().broadcastEntityEvent(this, (byte)41);
+@@ -234,7 +_,7 @@
+         return itemStack.is(ItemTags.OCELOT_FOOD);
+     }
+ 
+-    public static boolean checkOcelotSpawnRules(EntityType<Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkOcelotSpawnRules(EntityType<? extends Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return random.nextInt(3) != 0;
+     }
+ 

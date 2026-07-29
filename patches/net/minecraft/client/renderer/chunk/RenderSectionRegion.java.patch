@@ -6,9 +6,9 @@
      private final LevelLightEngine lightEngine;
 +    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot;
  
-+    /** @deprecated Neo: use {@link #RenderSectionRegion(ClientLevel, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
++    /// @deprecated Neo: use [#RenderSectionRegion(ClientLevel, int, int, int, SectionCopy\[\], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)] instead
 +    @Deprecated
-     RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
+     public RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections) {
 +        this(level, minSectionX, minSectionY, minSectionZ, sections, net.neoforged.neoforge.model.data.ModelDataManager.EMPTY_SNAPSHOT);
 +    }
 +

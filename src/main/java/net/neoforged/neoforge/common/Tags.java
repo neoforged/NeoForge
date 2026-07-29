@@ -416,6 +416,7 @@ public class Tags {
         public static final TagKey<Item> BUCKETS_MILK = tag("buckets/milk");
         public static final TagKey<Item> BUCKETS_POWDER_SNOW = tag("buckets/powder_snow");
         public static final TagKey<Item> BUCKETS_ENTITY_WATER = tag("buckets/entity_water");
+        public static final TagKey<Item> BUCKETS_ENTITY_DRY = tag("buckets/entity_dry");
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
          */

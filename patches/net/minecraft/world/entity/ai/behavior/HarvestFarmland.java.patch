@@ -7,18 +7,18 @@
 -        if (!level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 +        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, body)) {
              return false;
-         } else if (!body.getVillagerData().profession().is(VillagerProfession.FARMER)) {
-             return false;
-@@ -80,7 +_,7 @@
+         }
+ 
+@@ -82,7 +_,7 @@
          BlockState state = level.getBlockState(blockPos);
          Block block = state.getBlock();
          Block blockBelow = level.getBlockState(blockPos.below()).getBlock();
--        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(state) || state.isAir() && blockBelow instanceof FarmlandBlock;
+-        return block instanceof CropBlock cropBlock && cropBlock.isMaxAge(state) || state.isAir() && blockBelow instanceof FarmlandBlock;
 +        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(state) || state.isAir() && (blockBelow instanceof FarmlandBlock || blockBelow.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
      }
  
      protected void start(ServerLevel level, Villager body, long timestamp) {
-@@ -107,7 +_,7 @@
+@@ -109,7 +_,7 @@
                      level.destroyBlock(this.aboveFarmlandPos, true, body);
                  }
  
@@ -27,7 +27,7 @@
                      SimpleContainer inventory = body.getInventory();
  
                      for (int i = 0; i < inventory.getContainerSize(); i++) {
-@@ -118,6 +_,11 @@
+@@ -120,6 +_,11 @@
                              level.setBlockAndUpdate(this.aboveFarmlandPos, place);
                              level.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(body, place));
                              ok = true;

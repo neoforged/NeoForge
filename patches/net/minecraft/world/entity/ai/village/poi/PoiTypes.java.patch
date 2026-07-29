@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
-@@ -80,7 +_,7 @@
+@@ -56,7 +_,7 @@
          .stream()
          .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
          .collect(ImmutableSet.toImmutableSet());
@@ -9,7 +9,7 @@
  
      private static Set<BlockState> getBlockStates(Block block) {
          return ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates());
-@@ -98,6 +_,7 @@
+@@ -74,6 +_,7 @@
      }
  
      private static void registerBlockStates(Holder<PoiType> type, Set<BlockState> matchingStates) {

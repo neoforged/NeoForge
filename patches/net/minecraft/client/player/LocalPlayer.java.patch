@@ -33,8 +33,17 @@
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -973,6 +_,10 @@
+@@ -971,8 +_,19 @@
+     }
+ 
      @Override
++    protected boolean canGlide() {
++        // Neo: Override canGlide for the client to check if it is connected to a neo forge server, and if not then fall back to checking the worn items.
++        // This way when Player#tryToStartFallFlying is called, on the client, it is able to check for the vanilla components on equipped items
++        return !getAbilities().flying && canGlide(connection.getConnectionType().isNeoForge());
++    }
++
++    @Override
      public void rideTick() {
          super.rideTick();
 +        if (this.wantsToStopRiding() && this.isPassenger()) {

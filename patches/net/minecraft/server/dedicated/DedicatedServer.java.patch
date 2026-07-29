@@ -1,49 +1,49 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -97,6 +_,7 @@
+@@ -88,6 +_,7 @@
+     private final ServerLinks serverLinks;
      private final Map<String, String> codeOfConductTexts;
-     private @Nullable ManagementServer jsonRpcServer;
-     private long lastHeartbeat;
+     private final @Nullable ManagementServer jsonRpcServer;
 +    private net.neoforged.neoforge.server.dedicated.@Nullable DedicatedLanServerPinger dediLanPinger;
  
      public DedicatedServer(
          Thread serverThread,
-@@ -211,6 +_,7 @@
- 
+@@ -167,6 +_,7 @@
+         Thread consoleThread = new Thread("Server console handler") {
              @Override
              public void run() {
 +                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;
-@@ -284,11 +_,13 @@
-             this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
-             long levelNanoTime = Util.getNanos();
-             this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
-             LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
-             this.loadLevel();
-             long elapsed = Util.getNanos() - levelNanoTime;
-             String time = String.format(Locale.ROOT, "%.3fs", elapsed / 1.0E9);
-             LOGGER.info("Done ({})! For help, type \"help\"", time);
-+            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spamming during long load.
-             if (properties.announcePlayerAchievements != null) {
-                 this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
-             }
-@@ -318,6 +_,12 @@
- 
-             this.saveEverything(false, true, true);
-             this.notificationManager().serverStarted();
-+            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
-+                this.dediLanPinger = new net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
-+                this.dediLanPinger.start();
-+            }
-+
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
-             return true;
+@@ -241,11 +_,13 @@
+         this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
+         long levelNanoTime = Util.getNanos();
+         this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
+         LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
+         this.loadLevel();
+         long elapsed = Util.getNanos() - levelNanoTime;
+         String time = String.format(Locale.ROOT, "%.3fs", elapsed / 1.0E9);
+         LOGGER.info("Done ({})! For help, type \"help\"", time);
++        this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spamming during long load.
+         if (properties.announcePlayerAchievements != null) {
+             this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
          }
+@@ -274,6 +_,12 @@
+ 
+         this.saveEverything(false, true, true);
+         this.notificationManager().serverStarted();
++        if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
++            this.dediLanPinger = new net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
++            this.dediLanPinger.start();
++        }
++
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
+         return true;
      }
-@@ -463,6 +_,11 @@
+ 
+@@ -410,6 +_,11 @@
              this.queryThreadGs4.stop();
          }
  
@@ -55,7 +55,7 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -752,7 +_,12 @@
+@@ -720,7 +_,12 @@
      @Override
      protected void stopServer() {
          this.notificationManager().serverShuttingDown();

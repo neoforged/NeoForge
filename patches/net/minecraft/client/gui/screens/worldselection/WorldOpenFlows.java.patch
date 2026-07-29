@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -255,7 +_,9 @@
+@@ -254,7 +_,9 @@
              backupWarning = Component.translatable("selectWorld.backupWarning.customized");
          } else {
              backupQuestion = Component.translatable("selectWorld.backupQuestion.experimental");
@@ -11,15 +11,15 @@
          }
  
          this.minecraft
-@@ -314,6 +_,7 @@
+@@ -318,6 +_,7 @@
          try {
              levelDataTag = worldAccess.getUnfixedDataTag(false);
              summary = worldAccess.fixAndGetSummaryFromTag(levelDataTag);
 +            worldAccess.readAdditionalLevelSaveData(false);
-         } catch (NbtException | ReportedNbtException | IOException var10) {
-             this.minecraft.setScreen(new RecoverWorldDataScreen(this.minecraft, success -> {
+         } catch (IOException | NbtException | ReportedNbtException e) {
+             this.minecraft.gui.setScreen(new RecoverWorldDataScreen(this.minecraft, success -> {
                  if (success) {
-@@ -518,11 +_,20 @@
+@@ -524,11 +_,20 @@
          WorldData data = worldDataAndGenSettings.data();
          boolean oldCustomized = worldDataAndGenSettings.genSettings().options().isOldCustomizedWorld();
          boolean unstable = data.worldGenSettingsLifecycle() != Lifecycle.stable();

@@ -26,7 +26,7 @@
      public static float getU(CuboidFace.UVs uvs, Quadrant rotation, int vertex) {
          return uvs.getVertexU(rotation.rotateVertexIndex(vertex)) / 16.0F;
      }
-@@ -38,7 +_,8 @@
+@@ -37,7 +_,8 @@
              String texture = getTexture(object);
              CuboidFace.UVs uvs = getUVs(object);
              Quadrant rotation = getRotation(object);

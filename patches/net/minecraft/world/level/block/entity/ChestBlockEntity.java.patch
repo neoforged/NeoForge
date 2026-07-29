@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -192,6 +_,17 @@
+@@ -182,6 +_,17 @@
          return ChestMenu.threeRows(containerId, inventory, this);
      }
  

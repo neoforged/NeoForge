@@ -1,73 +1,33 @@
 --- a/net/minecraft/data/tags/TagAppender.java
 +++ b/net/minecraft/data/tags/TagAppender.java
-@@ -55,6 +_,30 @@
+@@ -57,6 +_,30 @@
                  builder.addOptionalTag(tag.location());
                  return this;
              }
 +
 +            @Override
-+            public TagAppender<ResourceKey<T>, T> add(net.minecraft.tags.TagEntry entry) {
++            public TagAppender<T> add(net.minecraft.tags.TagEntry entry) {
 +                builder.add(entry);
 +                return this;
 +            }
 +
 +            @Override
-+            public TagAppender<ResourceKey<T>, T> replace(boolean value) {
++            public TagAppender<T> replace(boolean value) {
 +                builder.setReplace(value);
 +                return this;
 +            }
 +
 +            @Override
-+            public TagAppender<ResourceKey<T>, T> remove(final ResourceKey<T> resourceKey) {
-+                builder.removeElement(resourceKey.identifier());
++            public TagAppender<T> remove(TagKey<T> tag) {
++                builder.remove(net.minecraft.tags.TagEntry.tag(tag.location()));
 +                return this;
 +            }
 +
 +            @Override
-+            public TagAppender<ResourceKey<T>, T> remove(TagKey<T> tag) {
-+                builder.removeTag(tag.location());
++            public TagAppender<T> remove(ResourceKey<T> element) {
++                builder.removeElement(element.identifier());
 +                return this;
 +            }
          };
      }
- 
-@@ -73,7 +_,7 @@
- 
-             @Override
-             public TagAppender<U, T> addOptional(U element) {
--                original.add(converter.apply(element));
-+                original.addOptional(converter.apply(element));
-                 return this;
-             }
- 
-@@ -86,6 +_,30 @@
-             @Override
-             public TagAppender<U, T> addOptionalTag(TagKey<T> tag) {
-                 original.addOptionalTag(tag);
-+                return this;
-+            }
-+
-+            @Override
-+            public TagAppender<U, T> add(net.minecraft.tags.TagEntry entry) {
-+                original.add(entry);
-+                return this;
-+            }
-+
-+            @Override
-+            public TagAppender<U, T> replace(boolean value) {
-+                original.replace(value);
-+                return this;
-+            }
-+
-+            @Override
-+            public TagAppender<U, T> remove(final U u) {
-+                original.remove(converter.apply(u));
-+                return this;
-+            }
-+
-+            @Override
-+            public TagAppender<U, T> remove(TagKey<T> tag) {
-+                original.remove(tag);
-                 return this;
-             }
-         };
+ }

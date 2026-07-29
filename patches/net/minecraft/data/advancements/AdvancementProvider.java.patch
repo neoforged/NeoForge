@@ -1,11 +1,11 @@
 --- a/net/minecraft/data/advancements/AdvancementProvider.java
 +++ b/net/minecraft/data/advancements/AdvancementProvider.java
-@@ -37,7 +_,7 @@
-                     throw new IllegalStateException("Duplicate advancement " + holder.id());
-                 } else {
-                     Path path = this.pathProvider.json(holder.id());
--                    tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path));
-+                    tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path));// TODO: make conditional
+@@ -38,7 +_,7 @@
                  }
+ 
+                 Path path = this.pathProvider.json(holder.id());
+-                tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path));
++                tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path)); // TODO: make conditional
              };
  
+             for (AdvancementSubProvider subProvider : this.subProviders) {

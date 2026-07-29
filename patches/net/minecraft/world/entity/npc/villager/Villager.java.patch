@@ -1,28 +1,28 @@
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -298,7 +_,7 @@
+@@ -289,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);
 -        if (itemStack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping()) {
 +        if (itemStack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping() || player.isSecondaryUseActive()) {
              return super.mobInteract(player, hand);
-         } else if (this.isBaby()) {
-             this.setUnhappy();
-@@ -759,10 +_,11 @@
+         }
+ 
+@@ -761,10 +_,11 @@
  
      @Override
      public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
 -        if (level.getDifficulty() != Difficulty.PEACEFUL) {
-+        if (level.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
++        if (level.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.WITCH, (timer) -> {})) {
              LOGGER.info("Villager {} was struck by lightning {}.", this, lightningBolt);
-             Witch witch = this.convertTo(EntityType.WITCH, ConversionParams.single(this, false, false), w -> {
+             Witch witch = this.convertTo(EntityTypes.WITCH, ConversionParams.single(this, false, false), w -> {
                  w.finalizeSpawn(level, level.getCurrentDifficultyAt(w.blockPosition()), EntitySpawnReason.CONVERSION, null);
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, w);
                  w.setPersistenceRequired();
                  this.releaseAllPois();
              });
-@@ -782,7 +_,10 @@
+@@ -784,7 +_,10 @@
      @Override
      public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
          Item item = itemStack.getItem();

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/GameEventTagsProvider.java
 +++ b/net/minecraft/data/tags/GameEventTagsProvider.java
-@@ -55,8 +_,14 @@
+@@ -56,8 +_,14 @@
          GameEvent.UNEQUIP.key()
      );
  

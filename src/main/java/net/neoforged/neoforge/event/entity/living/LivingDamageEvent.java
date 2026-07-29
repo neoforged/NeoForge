@@ -102,10 +102,12 @@ public abstract class LivingDamageEvent extends LivingEvent {
         private final float blockedDamage;
         private final float shieldDamage;
         private final int postAttackInvulnerabilityTicks;
+        private final boolean performSideEffects;
         private final EnumMap<DamageContainer.Reduction, Float> reductions;
 
         public Post(LivingEntity entity, DamageContainer container) {
             super(entity);
+            this.performSideEffects = container.shouldCauseSideEffects();
             this.originalDamage = container.getOriginalDamage();
             this.source = container.getSource();
             this.inflictedDamage = container.getInflictedDamage();
@@ -116,6 +118,11 @@ public abstract class LivingDamageEvent extends LivingEvent {
             this.reductions = new EnumMap<DamageContainer.Reduction, Float>(Arrays.stream(DamageContainer.Reduction.values())
                     .map(type -> new AbstractMap.SimpleEntry<>(type, container.getReduction(type)))
                     .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
+        }
+
+        /// {@return `true` if side effects like sound and knockback should be performed}
+        public boolean shouldCauseSideEffects() {
+            return performSideEffects;
         }
 
         /** {@return the original damage when {@link LivingEntity#hurt} was invoked} */

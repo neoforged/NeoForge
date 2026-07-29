@@ -93,7 +93,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
         this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
                 .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), lowerButtonHeight, buttonWidth, 20)
                 .build());
-        this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), button -> this.minecraft.setScreen(this.parent))
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), _ -> this.minecraft.gui.setScreen(this.parent))
                 .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), lowerButtonHeight, buttonWidth, 20)
                 .build());
     }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Strider.java
++++ b/net/minecraft/world/entity/monster/Strider.java
+@@ -100,7 +_,7 @@
+     }
+ 
+     public static boolean checkStriderSpawnRules(
+-        EntityType<Strider> ignoredType, LevelAccessor level, EntitySpawnReason ignoredSpawnType, BlockPos pos, RandomSource ignoredRandom
++        EntityType<? extends Strider> ignoredType, LevelAccessor level, EntitySpawnReason ignoredSpawnType, BlockPos pos, RandomSource ignoredRandom
+     ) {
+         BlockPos.MutableBlockPos checkPos = pos.mutable();
+ 

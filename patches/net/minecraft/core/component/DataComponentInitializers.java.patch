@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentInitializers.java
 +++ b/net/minecraft/core/component/DataComponentInitializers.java
-@@ -68,6 +_,12 @@
+@@ -69,6 +_,12 @@
          Set<Holder.Reference<T>> elementsWithComponents = Sets.newIdentityHashSet();
          elementBuilders.builders.forEach((elementKey, elementBuilder) -> {
              Holder.Reference<T> element = registry.getOrThrow((ResourceKey<T>)elementKey);
@@ -13,7 +13,7 @@
              DataComponentMap components = elementBuilder.build();
              entries.add(new DataComponentInitializers.BakedEntry<>(element, components));
              elementsWithComponents.add(element);
-@@ -115,6 +_,7 @@
+@@ -116,6 +_,7 @@
          }
  
          default <C> DataComponentInitializers.Initializer<T> add(DataComponentType<C> type, C value) {
@@ -21,7 +21,7 @@
              return this.andThen((components, context, key) -> components.set(type, value));
          }
      }
-@@ -141,7 +_,11 @@
+@@ -142,7 +_,11 @@
          C create(HolderLookup.Provider context);
  
          default <T> DataComponentInitializers.Initializer<T> asInitializer(DataComponentType<C> type) {

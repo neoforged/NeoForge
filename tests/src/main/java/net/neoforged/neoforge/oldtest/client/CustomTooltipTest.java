@@ -148,7 +148,7 @@ public class CustomTooltipTest {
         }
 
         static void show() {
-            Minecraft.getInstance().setScreen(new TooltipTestScreen());
+            Minecraft.getInstance().gui.setScreen(new TooltipTestScreen());
         }
 
         @Override
@@ -208,7 +208,7 @@ public class CustomTooltipTest {
         }
 
         private Component getTestComponent(boolean testFont) {
-            return Component.literal("test").withStyle(s -> s.withFont(new FontDescription.Resource(testFont ? Minecraft.UNIFORM_FONT : Minecraft.DEFAULT_FONT)));
+            return Component.literal("test").withStyle(s -> s.withFont(new FontDescription.Resource(testFont ? Identifier.withDefaultNamespace("uniform") : Minecraft.DEFAULT_FONT)));
         }
 
         private void test1(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {

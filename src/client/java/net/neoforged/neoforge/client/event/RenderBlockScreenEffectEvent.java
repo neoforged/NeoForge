@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -53,17 +53,17 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
     private final BlockState blockState;
     private final BlockPos blockPos;
     private final SpriteGetter sprites;
-    private final MultiBufferSource bufferSource;
+    private final SubmitNodeCollector submitNodeCollector;
 
     @ApiStatus.Internal
-    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos, SpriteGetter sprites, MultiBufferSource bufferSource) {
+    public RenderBlockScreenEffectEvent(Player player, PoseStack poseStack, OverlayType type, BlockState block, BlockPos blockPos, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
         this.player = player;
         this.poseStack = poseStack;
         this.overlayType = type;
         this.blockState = block;
         this.blockPos = blockPos;
         this.sprites = sprites;
-        this.bufferSource = bufferSource;
+        this.submitNodeCollector = submitNodeCollector;
     }
 
     /**
@@ -108,10 +108,8 @@ public class RenderBlockScreenEffectEvent extends Event implements ICancellableE
         return sprites;
     }
 
-    /**
-     * {@return the buffer source used in rendering}
-     */
-    public MultiBufferSource getBufferSource() {
-        return bufferSource;
+    /// {@return the submit node collector to use for rendering}
+    public SubmitNodeCollector getSubmitNodeCollector() {
+        return submitNodeCollector;
     }
 }

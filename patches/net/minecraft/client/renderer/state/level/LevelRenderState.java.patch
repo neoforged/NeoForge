@@ -1,27 +1,27 @@
 --- a/net/minecraft/client/renderer/state/level/LevelRenderState.java
 +++ b/net/minecraft/client/renderer/state/level/LevelRenderState.java
-@@ -10,7 +_,7 @@
+@@ -9,7 +_,7 @@
  import org.jspecify.annotations.Nullable;
  
  @OnlyIn(Dist.CLIENT)
 -public class LevelRenderState {
 +public class LevelRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
      public CameraRenderState cameraRenderState = new CameraRenderState();
+     public final List<SectionUpdateRenderState> sectionUpdateRenderStates = new ArrayList<>();
      public final List<EntityRenderState> entityRenderStates = new ArrayList<>();
-     public final List<BlockEntityRenderState> blockEntityRenderStates = new ArrayList<>();
-@@ -26,6 +_,9 @@
-     public int cloudColor;
-     public float cloudHeight;
-     public @Nullable ChunkSectionsToRender chunkSectionsToRender;
+@@ -30,6 +_,9 @@
+     public boolean shouldResetChunkLayerSampler;
+     public boolean shouldShowEntityOutlines;
+     public boolean shouldResetSkyRenderer;
 +    public net.neoforged.neoforge.client.@Nullable CustomSkyboxRenderer customSkyboxRenderer;
 +    public net.neoforged.neoforge.client.@Nullable CustomCloudsRenderer customCloudsRenderer;
 +    public net.neoforged.neoforge.client.@Nullable CustomWeatherEffectRenderer customWeatherEffectRenderer;
  
      public void reset() {
-         this.entityRenderStates.clear();
-@@ -37,5 +_,9 @@
-         this.worldBorderRenderState.reset();
-         this.skyRenderState.reset();
+         this.sectionUpdateRenderStates.clear();
+@@ -43,5 +_,9 @@
+         this.particlesRenderState.reset();
+         this.chunkLoadingRenderState.reset();
          this.gameTime = 0L;
 +        this.customSkyboxRenderer = null;
 +        this.customCloudsRenderer = null;

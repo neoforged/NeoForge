@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.graph.Graph;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -22,6 +23,8 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -169,6 +172,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.loading.toposort.CyclePresentException;
+import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -1840,5 +1845,69 @@ public class CommonHooks {
     @ApiStatus.Internal
     public static boolean onCustomClickAction(@Nullable ServerPlayer player, GameProfile profile, Identifier id, Optional<Tag> payload) {
         return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, profile, id, payload.orElse(null))).isCanceled();
+    }
+
+    /// Toposort the given graph, throwing a descriptive exception if the graph contains cycles.
+    ///
+    /// @param graph           The graph to sort
+    /// @param values          The values of the graph in insertion order for secondary ordering
+    /// @param typeDescription A descriptive name of the type being sorted
+    /// @param valuePrinter    A function converting the sorted values to a human-readable representation
+    /// @return the sorted list of values
+    public static <T> List<T> sortGraphChecked(Graph<T> graph, Collection<T> values, String typeDescription, Function<T, ?> valuePrinter) {
+        // Build the index mapping in a way that can be used as a comparator to preserve insertion order.
+        Object2IntMap<T> insertionOrder = new Object2IntOpenHashMap<>();
+        int idx = 0;
+        for (T value : values) {
+            insertionOrder.put(value, idx++);
+        }
+
+        // Do the sort.
+        try {
+            return TopologicalSort.topologicalSort(graph, Comparator.comparingInt(insertionOrder::getInt));
+        } catch (CyclePresentException ex) {
+            // Build a real error message and re-throw.
+            StringBuilder sb = new StringBuilder();
+            sb.append("Cycles were detected during ").append(typeDescription).append(" sorting:\n");
+
+            Set<Set<T>> cycles = ex.getCycles();
+            idx = 0;
+            for (Set<T> cycle : cycles) {
+                sb.append(idx++).append(": ");
+                for (T key : cycle) {
+                    sb.append(valuePrinter.apply(key)).append("->");
+                }
+                sb.append(valuePrinter.apply(cycle.iterator().next())).append('\n');
+            }
+
+            throw new IllegalArgumentException(sb.toString());
+        }
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ItemAttributeModifiers> makeItemAttributesStreamCodec(
+            StreamCodec<RegistryFriendlyByteBuf, List<ItemAttributeModifiers.Entry>> entriesStreamCodec,
+            Function<ItemAttributeModifiers, List<ItemAttributeModifiers.Entry>> entryGetter,
+            Function<List<ItemAttributeModifiers.Entry>, ItemAttributeModifiers> constructor) {
+        return new StreamCodec<>() {
+            @Override
+            public ItemAttributeModifiers decode(RegistryFriendlyByteBuf input) {
+                return constructor.apply(entriesStreamCodec.decode(input));
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf output, ItemAttributeModifiers value) {
+                List<ItemAttributeModifiers.Entry> modifiers = entryGetter.apply(value);
+                if (output.getConnectionType().isOther()) {
+                    List<ItemAttributeModifiers.Entry> filteredModifiers = new ArrayList<>(modifiers.size());
+                    for (ItemAttributeModifiers.Entry entry : modifiers) {
+                        if (entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                            filteredModifiers.add(entry);
+                        }
+                    }
+                    modifiers = filteredModifiers;
+                }
+                entriesStreamCodec.encode(output, modifiers);
+            }
+        };
     }
 }

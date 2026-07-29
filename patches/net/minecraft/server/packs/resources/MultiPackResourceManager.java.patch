@@ -13,7 +13,7 @@
 @@ -58,6 +_,7 @@
          try {
              return pack.getMetadataSection(ResourceFilterSection.TYPE);
-         } catch (Exception var3) {
+         } catch (Exception e) {
 +            if (!net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen())// Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
              LOGGER.error("Failed to get filter section from pack {}", pack.packId());
              return null;

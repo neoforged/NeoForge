@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.tags.KeyTagProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -53,7 +53,7 @@ public interface WorldClockTests {
             }).getRegistryProvider();
 
             // register tag generator to tag our new world clock as 'ignores_pausing'
-            event.createProvider(output -> new KeyTagProvider<WorldClock>(output, Registries.WORLD_CLOCK, moddedProviders, modId) {
+            event.createProvider(output -> new TagsProvider<WorldClock>(output, Registries.WORLD_CLOCK, moddedProviders, modId) {
                 @Override
                 protected void addTags(HolderLookup.Provider registries) {
                     tag(Tags.WorldClocks.IGNORES_PAUSE_COMMAND).add(ignoresPause);

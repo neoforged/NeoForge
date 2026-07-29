@@ -1,21 +1,42 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -32,7 +_,10 @@
-     private final VertexFormat.Mode vertexFormatMode;
+@@ -30,21 +_,42 @@
+     private final @Nullable ColorTargetState[] colorTargetStates;
+     private final @Nullable VertexFormat[] vertexFormatPerBuffer = new VertexFormat[16];
+     private final PrimitiveTopology primitiveTopology;
++    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
      private final int sortKey;
      private static int sortKeySeed;
-+    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
  
-+    /** @deprecated Neo: use {@link #RenderPipeline(Identifier, Identifier, Identifier, ShaderDefines, List, List, ColorTargetState, DepthStencilState, PolygonMode, boolean, VertexFormat, VertexFormat.Mode, int, Optional)} instead */
+-    protected RenderPipeline(
+-        Identifier location,
+-        Identifier vertexShader,
+-        Identifier fragmentShader,
+-        ShaderDefines shaderDefines,
+-        List<BindGroupLayout> bindGroupLayouts,
+-        @Nullable ColorTargetState[] colorTargetStates,
+-        @Nullable DepthStencilState depthStencilState,
+-        PolygonMode polygonMode,
+-        boolean cull,
+-        @Nullable VertexFormat[] vertexFormatPerBuffer,
+-        PrimitiveTopology primitiveTopology,
++    /// @deprecated Neo: use [#RenderPipeline(Identifier, Identifier, Identifier, ShaderDefines, List, ColorTargetState\[\], DepthStencilState, PolygonMode, boolean, VertexFormat\[\], PrimitiveTopology, Optional, int)] instead
 +    @Deprecated
-     protected RenderPipeline(
-         Identifier location,
-         Identifier vertexShader,
-@@ -48,6 +_,25 @@
-         VertexFormat.Mode vertexFormatMode,
-         int sortKey
-     ) {
-+        this(location, vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, sortKey, Optional.empty());
++    protected RenderPipeline(
++        Identifier location,
++        Identifier vertexShader,
++        Identifier fragmentShader,
++        ShaderDefines shaderDefines,
++        List<BindGroupLayout> bindGroupLayouts,
++        @Nullable ColorTargetState[] colorTargetStates,
++        @Nullable DepthStencilState depthStencilState,
++        PolygonMode polygonMode,
++        boolean cull,
++        @Nullable VertexFormat[] vertexFormatPerBuffer,
++        PrimitiveTopology primitiveTopology,
++        int sortKey
++    ) {
++        this(location, vertexShader, fragmentShader, shaderDefines, bindGroupLayouts, colorTargetStates, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, primitiveTopology, Optional.empty(), sortKey);
 +    }
 +
 +    protected RenderPipeline(
@@ -23,29 +44,26 @@
 +        Identifier vertexShader,
 +        Identifier fragmentShader,
 +        ShaderDefines shaderDefines,
-+        List<String> samplers,
-+        List<RenderPipeline.UniformDescription> uniforms,
-+        ColorTargetState colorTargetState,
++        List<BindGroupLayout> bindGroupLayouts,
++        @Nullable ColorTargetState[] colorTargetStates,
 +        @Nullable DepthStencilState depthStencilState,
 +        PolygonMode polygonMode,
 +        boolean cull,
-+        VertexFormat vertexFormat,
-+        VertexFormat.Mode vertexFormatMode,
-+        int sortKey,
-+        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
-+    ) {
++        @Nullable VertexFormat[] vertexFormatPerBuffer,
++        PrimitiveTopology primitiveTopology,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest,
+         int sortKey
+     ) {
          this.location = location;
-         this.vertexShader = vertexShader;
-         this.fragmentShader = fragmentShader;
-@@ -61,6 +_,7 @@
-         this.vertexFormat = vertexFormat;
-         this.vertexFormatMode = vertexFormatMode;
-         this.sortKey = sortKey;
+@@ -57,6 +_,7 @@
+         this.cull = cull;
+         this.colorTargetStates = colorTargetStates;
+         this.primitiveTopology = primitiveTopology;
 +        this.stencilTest = stencilTest;
+         this.sortKey = sortKey;
+         System.arraycopy(vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer.length);
      }
- 
-     public int getSortKey() {
-@@ -128,6 +_,45 @@
+@@ -130,6 +_,48 @@
          return this.depthStencilState != null;
      }
  
@@ -72,18 +90,21 @@
 +            }
 +            builder.definesBuilder = Optional.of(defBuilder);
 +        }
-+        if (!this.samplers.isEmpty()) {
-+            builder.samplers = Optional.of(new ArrayList<>(this.samplers));
-+        }
-+        if (!this.uniforms.isEmpty()) {
-+            builder.uniforms = Optional.of(new ArrayList<>(this.uniforms));
++        if (!this.bindGroupLayouts.isEmpty()) {
++            builder.bindGroupLayouts = Optional.of(new ArrayList<>(this.bindGroupLayouts));
 +        }
 +        builder.depthStencilState = Optional.ofNullable(this.depthStencilState);
 +        builder.polygonMode = Optional.of(this.polygonMode);
 +        builder.cull = Optional.of(this.cull);
-+        builder.colorTargetState = Optional.of(this.colorTargetState);
-+        builder.vertexFormat = Optional.of(this.vertexFormat);
-+        builder.vertexFormatMode = Optional.of(this.vertexFormatMode);
++        System.arraycopy(this.colorTargetStates, 0, builder.colorTargetStates, 0, this.colorTargetStates.length);
++        int activeColorTargetStateCount = 0;
++        for (int i = 0; i < this.colorTargetStates.length; i++) {
++            if (this.colorTargetStates[i] != null) {
++                activeColorTargetStateCount = i + 1;
++            }
++        }
++        System.arraycopy(this.vertexFormatPerBuffer, 0, builder.vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer.length);
++        builder.primitiveTopology = Optional.of(this.primitiveTopology);
 +        builder.stencilTest = this.stencilTest;
 +        return builder;
 +    }
@@ -91,15 +112,15 @@
      public static RenderPipeline.Builder builder(RenderPipeline.Snippet... snippets) {
          RenderPipeline.Builder builder = new RenderPipeline.Builder();
  
-@@ -153,6 +_,7 @@
-         private Optional<ColorTargetState> colorTargetState = Optional.empty();
-         private Optional<VertexFormat> vertexFormat = Optional.empty();
-         private Optional<VertexFormat.Mode> vertexFormatMode = Optional.empty();
+@@ -154,6 +_,7 @@
+         private int activeColorTargetStateCount;
+         private final @Nullable VertexFormat[] vertexFormatPerBuffer = new VertexFormat[16];
+         private Optional<PrimitiveTopology> primitiveTopology = Optional.empty();
 +        private Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest = Optional.empty();
  
          private Builder() {
          }
-@@ -280,6 +_,16 @@
+@@ -270,6 +_,16 @@
              return this;
          }
  
@@ -116,7 +137,7 @@
          private void withSnippet(RenderPipeline.Snippet snippet) {
              if (snippet.vertexShader.isPresent()) {
                  this.vertexShader = snippet.vertexShader;
-@@ -342,6 +_,10 @@
+@@ -332,6 +_,10 @@
              if (snippet.polygonMode.isPresent()) {
                  this.polygonMode = snippet.polygonMode;
              }
@@ -127,51 +148,48 @@
          }
  
          public RenderPipeline.Snippet buildSnippet() {
-@@ -356,7 +_,8 @@
+@@ -346,7 +_,8 @@
                  this.polygonMode,
                  this.cull,
-                 this.vertexFormat,
--                this.vertexFormatMode
-+                this.vertexFormatMode,
+                 this.vertexFormatPerBuffer,
+-                this.primitiveTopology
++                this.primitiveTopology,
 +                this.stencilTest
              );
          }
  
-@@ -385,7 +_,8 @@
+@@ -411,6 +_,7 @@
                      this.cull.orElse(true),
-                     this.vertexFormat.get(),
-                     this.vertexFormatMode.get(),
--                    nextPipelineSortKey++
-+                    nextPipelineSortKey++,
-+                    this.stencilTest
+                     this.vertexFormatPerBuffer,
+                     this.primitiveTopology.get(),
++                    this.stencilTest,
+                     nextPipelineSortKey++
                  );
              }
-         }
-@@ -403,8 +_,26 @@
+@@ -428,7 +_,25 @@
          Optional<PolygonMode> polygonMode,
          Optional<Boolean> cull,
-         Optional<VertexFormat> vertexFormat,
--        Optional<VertexFormat.Mode> vertexFormatMode
-+        Optional<VertexFormat.Mode> vertexFormatMode,
+         @Nullable VertexFormat[] vertexFormatPerBuffer,
+-        Optional<PrimitiveTopology> vertexFormatMode
++        Optional<PrimitiveTopology> vertexFormatMode,
 +        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
      ) {
-+        /** @deprecated Neo: use {@link #Snippet(Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional)} instead */
++        /// @deprecated Neo: use [#Snippet(Optional, Optional, Optional, Optional, ColorTargetState\[\], int, Optional, Optional, Optional, VertexFormat\[\], Optional, Optional)] instead
 +        @Deprecated
 +        public Snippet(
-+                Optional<Identifier> vertexShader,
-+                Optional<Identifier> fragmentShader,
-+                Optional<ShaderDefines> shaderDefines,
-+                Optional<List<String>> samplers,
-+                Optional<List<RenderPipeline.UniformDescription>> uniforms,
-+                Optional<ColorTargetState> colorTargetState,
-+                Optional<DepthStencilState> depthStencilState,
-+                Optional<PolygonMode> polygonMode,
-+                Optional<Boolean> cull,
-+                Optional<VertexFormat> vertexFormat,
-+                Optional<VertexFormat.Mode> vertexFormatMode
++            Optional<Identifier> vertexShader,
++            Optional<Identifier> fragmentShader,
++            Optional<ShaderDefines> shaderDefines,
++            Optional<List<BindGroupLayout>> bindGroupLayouts,
++            @Nullable ColorTargetState[] colorTargetStates,
++            int activeColorTargetStateCount,
++            Optional<DepthStencilState> depthStencilState,
++            Optional<PolygonMode> polygonMode,
++            Optional<Boolean> cull,
++            @Nullable VertexFormat[] vertexFormatPerBuffer,
++            Optional<PrimitiveTopology> vertexFormatMode
 +        ) {
-+            this(vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, Optional.empty());
++            this(vertexShader, fragmentShader, shaderDefines, bindGroupLayouts, colorTargetStates, activeColorTargetStateCount, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, vertexFormatMode, Optional.empty());
 +        }
      }
- 
-     @OnlyIn(Dist.CLIENT)
+ }

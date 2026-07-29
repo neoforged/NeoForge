@@ -9,10 +9,10 @@
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());
 @@ -164,7 +_,6 @@
-                 this.onFinish.accept(Optional.of(var2));
+                 this.onFinish.accept(Optional.of(t));
              }
  
 -            this.fadeOutStart = Util.getMillis();
-             if (this.minecraft.screen != null) {
+             if (this.minecraft.gui.screen() != null) {
                  Window window = this.minecraft.getWindow();
-                 this.minecraft.screen.init(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+                 this.minecraft.gui.screen().init(window.getGuiScaledWidth(), window.getGuiScaledHeight());

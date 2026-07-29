@@ -21,4 +21,4 @@
 +        }
          if (uncompressedLength > 8388608) {
              throw new IllegalArgumentException("Packet too big (is " + uncompressedLength + ", should be less than 8388608)");
-         } else {
+         }

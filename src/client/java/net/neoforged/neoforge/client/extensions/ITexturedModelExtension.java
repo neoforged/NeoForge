@@ -21,7 +21,7 @@ public interface ITexturedModelExtension {
         return (TexturedModel) this;
     }
 
-    interface Provider {
+    interface ProviderExtension {
         /**
          * Returns a new provider which mutates the backing {@link ModelTemplate}
          */

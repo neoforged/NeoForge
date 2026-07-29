@@ -6,7 +6,7 @@
          BlockPos frontPos = source.pos().relative(direction);
 +        AbstractBoat abstractboat = this.type.create(level, EntitySpawnReason.DISPENSER);
 +        if (abstractboat != null) {
-+            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).accept(abstractboat);
++            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).apply(abstractboat);
 +            abstractboat.setYRot(direction.toYRot());
 +            level.addFreshEntity(abstractboat);
 +        }

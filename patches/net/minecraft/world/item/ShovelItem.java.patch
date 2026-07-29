@@ -1,29 +1,29 @@
 --- a/net/minecraft/world/item/ShovelItem.java
 +++ b/net/minecraft/world/item/ShovelItem.java
-@@ -42,18 +_,15 @@
-             return InteractionResult.PASS;
-         } else {
-             Player player = context.getPlayer();
--            BlockState newState = FLATTENABLES.get(blockState.getBlock());
-+            BlockState newState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN, false);
-             BlockState updatedState = null;
-             if (newState != null && level.getBlockState(pos.above()).isAir()) {
-                 level.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
-                 updatedState = newState;
--            } else if (blockState.getBlock() instanceof CampfireBlock && blockState.getValue(CampfireBlock.LIT)) {
-+            } else if ((updatedState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOUSE, false)) != null) {
-                 if (!level.isClientSide()) {
-                     level.levelEvent(null, 1009, pos, 0);
-                 }
--
--                CampfireBlock.dowse(context.getPlayer(), level, pos, blockState);
--                updatedState = blockState.setValue(CampfireBlock.LIT, false);
-             }
+@@ -43,18 +_,15 @@
+         }
  
-             if (updatedState != null) {
-@@ -70,5 +_,15 @@
-                 return InteractionResult.PASS;
+         Player player = context.getPlayer();
+-        BlockState newState = FLATTENABLES.get(blockState.getBlock());
++        BlockState newState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN, false);
+         BlockState updatedState = null;
+         if (newState != null && level.getBlockState(pos.above()).isAir()) {
+             level.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+             updatedState = newState;
+-        } else if (blockState.getBlock() instanceof CampfireBlock && blockState.getValue(CampfireBlock.LIT)) {
++        } else if ((updatedState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOUSE, false)) != null) {
+             if (!level.isClientSide()) {
+                 level.levelEvent(null, 1009, pos, 0);
              }
+-
+-            CampfireBlock.dowse(context.getPlayer(), level, pos, blockState);
+-            updatedState = blockState.setValue(CampfireBlock.LIT, false);
+         }
+ 
+         if (updatedState != null) {
+@@ -70,5 +_,15 @@
+         } else {
+             return InteractionResult.PASS;
          }
 +    }
 +

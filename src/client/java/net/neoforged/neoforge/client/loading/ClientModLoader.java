@@ -91,7 +91,7 @@ public class ClientModLoader extends CommonModLoader {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         if (!warnings.isEmpty()) {
             if (NeoForgeClientConfig.INSTANCE.showLoadWarnings.get()) {
-                return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
+                return () -> Minecraft.getInstance().gui.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
 
             //User disabled warning screen, as least log them

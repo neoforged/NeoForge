@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -106,7 +_,7 @@
+@@ -110,7 +_,7 @@
              : DataResult.success(item)
      );
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -9,7 +9,7 @@
      public static final Identifier BASE_ATTACK_DAMAGE_ID = Identifier.withDefaultNamespace("base_attack_damage");
      public static final Identifier BASE_ATTACK_SPEED_ID = Identifier.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -117,6 +_,7 @@
+@@ -121,6 +_,7 @@
      private final @Nullable ItemStackTemplate craftingRemainingItem;
      protected final String descriptionId;
      private final FeatureFlagSet requiredFeatures;
@@ -17,7 +17,7 @@
  
      public static int getId(Item item) {
          return item == null ? 0 : BuiltInRegistries.ITEM.getId(item);
-@@ -139,12 +_,13 @@
+@@ -143,12 +_,13 @@
          BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.add(properties.itemIdOrThrow(), componentInitializer);
          this.craftingRemainingItem = properties.craftingRemainingItem;
          this.requiredFeatures = properties.requiredFeatures;
@@ -32,7 +32,7 @@
      }
  
      @Deprecated
-@@ -156,6 +_,21 @@
+@@ -160,6 +_,21 @@
          return this.builtInRegistryHolder.components();
      }
  
@@ -54,7 +54,7 @@
      public int getDefaultMaxStackSize() {
          return this.components().getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -163,6 +_,8 @@
+@@ -167,6 +_,8 @@
      public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int ticksRemaining) {
      }
  
@@ -63,7 +63,7 @@
      public void onDestroyed(ItemEntity itemEntity) {
      }
  
-@@ -279,6 +_,8 @@
+@@ -283,6 +_,8 @@
          return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
      }
  
@@ -72,7 +72,7 @@
      public final @Nullable ItemStackTemplate getCraftingRemainder() {
          return this.craftingRemainingItem;
      }
-@@ -345,13 +_,26 @@
+@@ -349,13 +_,26 @@
      }
  
      public boolean useOnRelease(ItemStack itemStack) {
@@ -100,7 +100,7 @@
      public boolean canFitInsideContainerItems() {
          return true;
      }
-@@ -376,6 +_,12 @@
+@@ -380,6 +_,12 @@
          private @Nullable ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
          private final DependantName<Item, Identifier> model = ResourceKey::identifier;
@@ -113,7 +113,7 @@
  
          public Item.Properties food(FoodProperties foodProperties) {
              return this.food(foodProperties, Consumables.DEFAULT_FOOD);
-@@ -660,7 +_,11 @@
+@@ -664,7 +_,11 @@
          }
  
          public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
@@ -126,7 +126,7 @@
              return this;
          }
  
-@@ -709,7 +_,26 @@
+@@ -713,7 +_,26 @@
  
          boolean isPeaceful();
  
@@ -153,7 +153,7 @@
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
                  public HolderLookup.Provider registries() {
-@@ -729,6 +_,17 @@
+@@ -733,6 +_,17 @@
                  @Override
                  public boolean isPeaceful() {
                      return level.getDifficulty() == Difficulty.PEACEFUL;

@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/decoration/HangingEntity.java
 +++ b/net/minecraft/world/entity/decoration/HangingEntity.java
-@@ -83,7 +_,7 @@
-         if (this.hasLevelCollision(this.getPopBox())) {
+@@ -84,7 +_,7 @@
              return false;
-         } else {
--            boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(pos -> {
-+            boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection())).allMatch(pos -> {
-                 BlockState state = this.level().getBlockState(pos);
-                 return state.isSolid() || DiodeBlock.isDiode(state);
-             });
+         }
+ 
+-        boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(pos -> {
++        boolean isSupported = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection())).allMatch(pos -> {
+             BlockState state = this.level().getBlockState(pos);
+             return state.isSolid() || DiodeBlock.isDiode(state);
+         });

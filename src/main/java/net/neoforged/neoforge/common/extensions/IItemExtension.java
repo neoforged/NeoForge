@@ -674,4 +674,18 @@ public interface IItemExtension {
     default boolean canFitInsideContainerItems(ItemStack stack) {
         return self().canFitInsideContainerItems();
     }
+
+    /// Called to damage an item providing the [gliding flight attribute][net.neoforged.neoforge.common.NeoForgeMod#GLIDING_FLIGHT].
+    /// The default vanilla implementation is to damage the item by 1.
+    ///
+    /// If an entity has multiple items equipped that provide the gliding flight attribute, one of those items will be randomly selected
+    /// to be called with this method.
+    ///
+    /// @param stack the stack of the item providing the gliding flight attribute
+    /// @param wearer the entity wearing the item
+    /// @param slot the equipment slot occupied by the item
+    /// @see IItemStackExtension#onGlideDamage(LivingEntity, EquipmentSlot)
+    default void onGlideDamage(ItemStack stack, LivingEntity wearer, EquipmentSlot slot) {
+        stack.hurtAndBreak(1, wearer, slot);
+    }
 }

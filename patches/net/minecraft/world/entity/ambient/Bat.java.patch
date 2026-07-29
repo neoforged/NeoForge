@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ambient/Bat.java
++++ b/net/minecraft/world/entity/ambient/Bat.java
+@@ -219,7 +_,7 @@
+         output.putByte("BatFlags", this.entityData.get(DATA_ID_FLAGS));
+     }
+ 
+-    public static boolean checkBatSpawnRules(EntityType<Bat> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkBatSpawnRules(EntityType<? extends Bat> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         if (pos.getY() >= level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY()) {
+             return false;
+         } else if (random.nextBoolean()) {

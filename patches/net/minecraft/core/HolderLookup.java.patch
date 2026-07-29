@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderLookup.java
 +++ b/net/minecraft/core/HolderLookup.java
-@@ -99,6 +_,18 @@
+@@ -96,6 +_,18 @@
              };
          }
  
@@ -16,10 +16,10 @@
 +            return null;
 +        }
 +
-         public interface Delegate<T> extends HolderLookup.RegistryLookup<T> {
+         interface Delegate<T> extends HolderLookup.RegistryLookup<T> {
              HolderLookup.RegistryLookup<T> parent();
  
-@@ -130,6 +_,12 @@
+@@ -127,6 +_,12 @@
              @Override
              default Stream<HolderSet.Named<T>> listTags() {
                  return this.parent().listTags();

@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.common.advancements.critereon;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.advancements.criterion.EntitySubPredicate;
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -18,14 +19,9 @@ import org.jspecify.annotations.Nullable;
 
 public class PiglinNeutralArmorEntityPredicate implements EntitySubPredicate {
     public static final PiglinNeutralArmorEntityPredicate INSTANCE = new PiglinNeutralArmorEntityPredicate();
-    public static final MapCodec<PiglinNeutralArmorEntityPredicate> CODEC = MapCodec.unit(INSTANCE);
+    public static final Codec<PiglinNeutralArmorEntityPredicate> CODEC = MapCodec.unitCodec(INSTANCE);
 
     private PiglinNeutralArmorEntityPredicate() {}
-
-    @Override
-    public MapCodec<PiglinNeutralArmorEntityPredicate> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean matches(Entity entity, ServerLevel level, @Nullable Vec3 position) {
