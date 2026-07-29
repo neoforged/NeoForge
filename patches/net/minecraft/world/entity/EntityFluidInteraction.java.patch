@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -21,16 +_,13 @@
+@@ -21,16 +_,17 @@
  import org.jspecify.annotations.Nullable;
  
  public class EntityFluidInteraction {
@@ -8,9 +8,11 @@
 +    private final Map<net.neoforged.neoforge.fluids.FluidType, EntityFluidInteraction.Tracker> trackerByFluid = new Reference2ObjectArrayMap<>();
  
      public EntityFluidInteraction(Set<TagKey<Fluid>> fluids) {
--        for (TagKey<Fluid> fluid : fluids) {
+         for (TagKey<Fluid> fluid : fluids) {
 -            this.trackerByFluid.put(fluid, new EntityFluidInteraction.Tracker());
--        }
++            // Neo: Handle tracked fluids more generically
++            //this.trackerByFluid.put(fluid, new EntityFluidInteraction.Tracker());
+         }
      }
  
      public void update(Entity entity, boolean ignoreCurrent) {
@@ -45,7 +47,7 @@
                                          if (x == eyeBlockX && z == eyeBlockZ && eyeY >= fluidBottom && eyeY <= fluidTop) {
                                              tracker.eyesInside = true;
                                          }
-@@ -118,43 +_,143 @@
+@@ -118,43 +_,154 @@
          return hasFluid;
      }
  
@@ -101,6 +103,17 @@
          return tracker != null ? tracker.height : 0.0;
      }
  
++    public <E extends Entity> double getMaxFluidHeightMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
++        double maxHeight = 0D;
++        for (var entry : this.trackerByFluid.entrySet()) {
++            double height = entry.getValue().height;
++            if (height > maxHeight && predicate.test(entity, entry.getKey(), height)) {
++                maxHeight = height;
++            }
++        }
++        return maxHeight;
++    }
++
 +    public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
 +        double maxHeight = 0D;
 +        var maxHeightType = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();

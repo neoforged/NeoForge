@@ -859,7 +859,7 @@ public class FluidType {
      */
     public static final class Properties {
         private String descriptionId;
-        private double motionScale = 0.014D;
+        private double motionScale = Entity.WATER_FLOW_SCALE;
         private boolean canPushEntity = true;
         private boolean canSwim = true;
         private boolean canDrown = true;

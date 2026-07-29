@@ -73,7 +73,7 @@
              }
  
 +            int airSupply = this.getAirSupply();
-+            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
++            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, level, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
 +            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
@@ -610,6 +610,15 @@
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
          Vec3 movement = this.getDeltaMovement();
+@@ -2555,7 +_,7 @@
+ 
+     private void floatInWaterWhileRidden() {
+         boolean canEntityFloatInWater = this.is(EntityTypeTags.CAN_FLOAT_WHILE_RIDDEN);
+-        if (canEntityFloatInWater && this.isVehicle() && this.getFluidHeight(FluidTags.WATER) > this.getFluidJumpThreshold()) {
++        if (canEntityFloatInWater && this.isVehicle() && this.getFluidInteraction().getMaxFluidHeightMatching(this, (_, type, _) -> type.getIsWaterLike()) > this.getFluidJumpThreshold()) {
+             this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F, 0.0));
+         }
+     }
 @@ -2689,7 +_,7 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);

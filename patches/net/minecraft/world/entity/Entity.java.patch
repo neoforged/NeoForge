@@ -28,6 +28,15 @@
      }
  
      public boolean isColliding(BlockPos pos, BlockState state) {
+@@ -530,7 +_,7 @@
+ 
+         this.wasInPowderSnow = this.isInPowderSnow;
+         this.isInPowderSnow = false;
+-        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
++        this.wasEyeInWater = this.fluidInteraction.isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
+         this.updateFluidInteraction();
+         this.updateSwimming();
+         if (this.level() instanceof ServerLevel serverLevel) {
 @@ -550,7 +_,7 @@
          }
  

@@ -1450,7 +1450,7 @@ public class CommonHooks {
      * @param refillAirAmount  The amount of air to refill when the entity is able to breathe
      * @implNote This method needs to closely replicate the logic found right after the call site in {@link LivingEntity#baseTick()} as it overrides it.
      */
-    public static void onLivingBreathe(LivingEntity entity, int consumeAirAmount, int refillAirAmount) {
+    public static void onLivingBreathe(LivingEntity entity, ServerLevel level, int consumeAirAmount, int refillAirAmount) {
         // Check things that vanilla considers to be air - these will cause the air supply to be increased.
         EntityFluidInteraction fluidInteraction = entity.getFluidInteraction();
         boolean isAir = !fluidInteraction.isEyeInFluidMatching(entity, (_, type, _) -> !type.isAir()) || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
@@ -1481,11 +1481,13 @@ public class CommonHooks {
                     entity.level().addParticle(ParticleTypes.BUBBLE, entity.getX() + d2, entity.getY() + d3, entity.getZ() + d4, vec3.x, vec3.y, vec3.z);
                 }
 
-                if (drownEvent.getDamageAmount() > 0) entity.hurt(entity.damageSources().drown(), drownEvent.getDamageAmount());
+                if (drownEvent.getDamageAmount() > 0) {
+                    entity.hurtServer(level, entity.damageSources().drown(), drownEvent.getDamageAmount());
+                }
             }
         }
 
-        if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && fluidInteraction.isEyeInFluidMatching(entity, (e, type, _) -> !e.getVehicle().canBeRiddenUnderFluidType(type, e))) {
+        if (!isAir && entity.isPassenger() && entity.getVehicle() != null && fluidInteraction.isEyeInFluidMatching(entity, (e, type, _) -> !e.getVehicle().canBeRiddenUnderFluidType(type, e))) {
             entity.stopRiding();
         }
     }

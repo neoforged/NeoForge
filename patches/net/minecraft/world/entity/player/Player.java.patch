@@ -46,7 +46,14 @@
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
-@@ -284,6 +_,7 @@
+@@ -278,12 +_,13 @@
+             this.lastItemInMainHand = mainHandItemStack.copy();
+         }
+ 
+-        if (!this.isEyeInFluid(FluidTags.WATER) && this.isEquipped(Items.TURTLE_HELMET)) {
++        if (!this.getFluidInteraction().isEyeInFluidMatching(this, (entity, type, _) -> entity.canDrownInFluidType(type)) && this.isEquipped(Items.TURTLE_HELMET)) {
+             this.turtleHelmetTick();
+         }
  
          this.cooldowns.tick();
          this.updatePlayerPose();
@@ -102,6 +109,15 @@
          float speed = this.inventory.getSelectedItem().getDestroySpeed(state);
          if (speed > 1.0F) {
              speed += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
+@@ -606,7 +_,7 @@
+         }
+ 
+         speed *= (float)this.getAttributeValue(Attributes.BLOCK_BREAK_SPEED);
+-        if (this.isEyeInFluid(FluidTags.WATER)) {
++        if (this.getFluidInteraction().isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike())) {
+             speed *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
+         }
+ 
 @@ -614,13 +_,19 @@
              speed /= 5.0F;
          }
