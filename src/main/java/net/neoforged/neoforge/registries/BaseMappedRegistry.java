@@ -67,10 +67,10 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
         if (this.aliases.containsKey(from)) {
             ResourceLocation old = this.aliases.get(from);
             if (!old.equals(to))
-                throw new IllegalStateException("Duplicate alias with key \"" + from + "\" attempting to map to \"" + to + "\", found existing mapping \"" + old + "\"");
+                throw new IllegalArgumentException("Duplicate alias with key \"" + from + "\" attempting to map to \"" + to + "\", found existing mapping \"" + old + "\"");
         }
-        if (resolve(from).equals(to))
-            throw new IllegalStateException("Infinite alias loop detected: from " + from + " to " + to);
+        if (resolve(to).equals(from))
+            throw new IllegalArgumentException("Infinite alias loop detected: from " + from + " to " + to);
         this.aliases.put(from, to);
     }
 

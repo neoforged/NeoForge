@@ -71,6 +71,8 @@ public interface IRegistryExtension<T> {
      *
      * @param from the source registry name to alias from
      * @param to   the target registry name to alias to
+     * @throws IllegalArgumentException if an alias already exists for the source registry name that does not point to the
+     *                                  same target registry name, or if the alias would cause a resolution loop
      */
     void addAlias(ResourceLocation from, ResourceLocation to);
 
