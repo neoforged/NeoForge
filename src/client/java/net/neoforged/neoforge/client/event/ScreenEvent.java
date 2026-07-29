@@ -967,6 +967,7 @@ public abstract class ScreenEvent extends Event {
     public static class Opening extends ScreenEvent implements ICancellableEvent {
         @Nullable
         private final Screen currentScreen;
+        @Nullable
         private Screen newScreen;
 
         @ApiStatus.Internal
@@ -997,7 +998,7 @@ public abstract class ScreenEvent extends Event {
         /**
          * Sets the new screen to be opened if the event is not cancelled. May be null.
          */
-        public void setNewScreen(Screen newScreen) {
+        public void setNewScreen(@Nullable Screen newScreen) {
             this.newScreen = newScreen;
         }
     }
