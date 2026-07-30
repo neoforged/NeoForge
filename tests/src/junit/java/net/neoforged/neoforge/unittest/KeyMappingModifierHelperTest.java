@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyMappingLookup;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -272,6 +273,36 @@ class KeyMappingModifierHelperTest {
         Assertions.assertFalse(bareShift.hasKeyModifierConflict(shiftA));
         Assertions.assertFalse(shiftA.hasKeyModifierConflict(bareShift));
         assertNoMappingConflict(bareShift, shiftA);
+    }
+
+    @Test
+    void releasingNormalKeyReleasesBindingsForAllModifiers() {
+        var bareA = keyMapping(ACTIVE_GUI_CONTEXT, KeyModifier.NONE, A);
+        var shiftA = keyMapping(ACTIVE_GUI_CONTEXT, KeyModifier.SHIFT, A);
+        var lookup = new KeyMappingLookup();
+        lookup.put(A, bareA);
+        lookup.put(A, shiftA);
+
+        var releasedMappings = lookup.getAll(A, true);
+
+        Assertions.assertEquals(2, releasedMappings.size());
+        Assertions.assertTrue(releasedMappings.contains(bareA));
+        Assertions.assertTrue(releasedMappings.contains(shiftA));
+    }
+
+    @Test
+    void releasingModifierKeyReleasesBareModifierAndModifiedBindings() {
+        var bareShift = keyMapping(ACTIVE_GUI_CONTEXT, KeyModifier.NONE, LEFT_SHIFT);
+        var shiftA = keyMapping(ACTIVE_GUI_CONTEXT, KeyModifier.SHIFT, A);
+        var lookup = new KeyMappingLookup();
+        lookup.put(LEFT_SHIFT, bareShift);
+        lookup.put(A, shiftA);
+
+        var releasedMappings = lookup.getAll(LEFT_SHIFT, true);
+
+        Assertions.assertEquals(2, releasedMappings.size());
+        Assertions.assertTrue(releasedMappings.contains(bareShift));
+        Assertions.assertTrue(releasedMappings.contains(shiftA));
     }
 
     @ParameterizedTest
