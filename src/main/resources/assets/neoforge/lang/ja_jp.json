@@ -216,6 +216,7 @@
   "neoforge.swim_speed": "泳ぐ速度",
   "neoforge.name_tag_distance": "名前表示の描画距離",
   "neoforge.creative_flight": "クリエイティブ時の飛行",
+  "neoforge.gliding_flight": "Gliding Flight",
   "fluid_type.minecraft.milk": "ミルク",
   "fluid_type.minecraft.flowing_milk": "ミルク",
   "neoforge.froge.warningScreen.title": "NeoForgeスナップショット通知",

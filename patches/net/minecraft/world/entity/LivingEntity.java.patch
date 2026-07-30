@@ -34,12 +34,11 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -358,12 +_,16 @@
+@@ -358,12 +_,15 @@
              .add(Attributes.AIR_DRAG_MODIFIER)
              .add(Attributes.FRICTION_MODIFIER)
              .add(Attributes.NAME_TAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED)
-+            .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }

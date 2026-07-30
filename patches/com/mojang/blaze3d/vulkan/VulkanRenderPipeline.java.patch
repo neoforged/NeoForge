@@ -23,11 +23,11 @@
 +                frontState.compareMask(stencilTest.readMask());
 +                frontState.writeMask(stencilTest.writeMask());
 +                frontState.reference(stencilTest.referenceValue());
-+                final var backState = depthStencilState.front();
-+                backState.failOp(VulkanConst.toVk(stencilTest.front().fail()));
-+                backState.passOp(VulkanConst.toVk(stencilTest.front().pass()));
-+                backState.depthFailOp(VulkanConst.toVk(stencilTest.front().depthFail()));
-+                backState.compareOp(VulkanConst.toVk(stencilTest.front().compare()));
++                final var backState = depthStencilState.back();
++                backState.failOp(VulkanConst.toVk(stencilTest.back().fail()));
++                backState.passOp(VulkanConst.toVk(stencilTest.back().pass()));
++                backState.depthFailOp(VulkanConst.toVk(stencilTest.back().depthFail()));
++                backState.compareOp(VulkanConst.toVk(stencilTest.back().compare()));
 +                backState.compareMask(stencilTest.readMask());
 +                backState.writeMask(stencilTest.writeMask());
 +                backState.reference(stencilTest.referenceValue()); // note: must match front unless portability feature is required and checked for (if on portability device)
