@@ -171,6 +171,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSwitchHotbarSlotEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
@@ -648,6 +649,14 @@ public class EventHooks {
     public static float onLivingHeal(LivingEntity entity, float amount) {
         LivingHealEvent event = new LivingHealEvent(entity, amount);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+    }
+
+    public static boolean onSwitchHotbarSlotPre(Player player, int oldSlotIndex, int newSlotIndex) {
+        return NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex)).isCanceled();
+    }
+
+    public static void onSwitchHotbarSlotPost(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Post(player, oldSlotIndex, newSlotIndex));
     }
 
     public static boolean onPotionAttemptBrew(NonNullList<ItemStack> stacks) {
