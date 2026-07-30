@@ -18,6 +18,7 @@ import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.lwjgl.glfw.GLFW;
 
@@ -273,6 +274,28 @@ class KeyMappingModifierHelperTest {
         assertNoMappingConflict(bareShift, shiftA);
     }
 
+    @ParameterizedTest
+    @EnumSource(KeyConflictContext.class)
+    void bareModifierKeyAndModifiedKeyCanBothBeDownInSameVanillaContext(KeyConflictContext keyConflictContext) {
+        var bareShift = testableKeyMapping(keyConflictContext, KeyModifier.NONE, LEFT_SHIFT);
+        var shiftA = testableKeyMapping(keyConflictContext, KeyModifier.SHIFT, A);
+
+        assertMappingConflict(bareShift, shiftA);
+
+        bareShift.setConflictContextAndModifierActive(true);
+        shiftA.setConflictContextAndModifierActive(true);
+        bareShift.setDown(true);
+        shiftA.setDown(true);
+
+        Assertions.assertTrue(bareShift.isDown());
+        Assertions.assertTrue(shiftA.isDown());
+
+        shiftA.setConflictContextAndModifierActive(false);
+
+        Assertions.assertTrue(bareShift.isDown());
+        Assertions.assertFalse(shiftA.isDown());
+    }
+
     private static Stream<InputConstants.Key> modifierKeys() {
         return Stream.of(
                 GLFW.GLFW_KEY_LEFT_SHIFT,
@@ -294,6 +317,10 @@ class KeyMappingModifierHelperTest {
 
     private static KeyMapping keyMapping(IKeyConflictContext keyConflictContext, KeyModifier keyModifier, InputConstants.Key key) {
         return new KeyMapping("key.neoforge.test.key_mapping_modifier_helper." + NEXT_MAPPING_ID.incrementAndGet(), keyConflictContext, keyModifier, key, KeyMapping.Category.MISC);
+    }
+
+    private static TestableKeyMapping testableKeyMapping(IKeyConflictContext keyConflictContext, KeyModifier keyModifier, InputConstants.Key key) {
+        return new TestableKeyMapping("key.neoforge.test.key_mapping_modifier_helper." + NEXT_MAPPING_ID.incrementAndGet(), keyConflictContext, keyModifier, key);
     }
 
     private static void assertMappingConflict(KeyMapping first, KeyMapping second) {
@@ -339,6 +366,23 @@ class KeyMappingModifierHelperTest {
         @Override
         public boolean requiresExactKeyModifierNone() {
             return requiresExactKeyModifierNone;
+        }
+    }
+
+    private static final class TestableKeyMapping extends KeyMapping {
+        private boolean conflictContextAndModifierActive;
+
+        private TestableKeyMapping(String name, IKeyConflictContext keyConflictContext, KeyModifier keyModifier, InputConstants.Key key) {
+            super(name, keyConflictContext, keyModifier, key, KeyMapping.Category.MISC);
+        }
+
+        private void setConflictContextAndModifierActive(boolean conflictContextAndModifierActive) {
+            this.conflictContextAndModifierActive = conflictContextAndModifierActive;
+        }
+
+        @Override
+        public boolean isConflictContextAndModifierActive() {
+            return conflictContextAndModifierActive;
         }
     }
 }
