@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.settings;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -46,7 +47,7 @@ public class KeyMappingLookup {
     public List<KeyMapping> getAll(InputConstants.Key keyCode, boolean releasing) {
         List<KeyMapping> matchingBindings = new ArrayList<>();
         // Get a list of all active modifiers
-        List<KeyModifier> activeModifiers = KeyModifier.getActiveModifiers();
+        List<KeyModifier> activeModifiers = this.getActiveModifiers();
         // Get modifier for key code
         KeyModifier keyCodeModifier = KeyModifier.getKeyModifier(keyCode);
 
@@ -63,7 +64,7 @@ public class KeyMappingLookup {
 
                     // Loop through all modifier codes
                     for (var otherModifierCode : otherModifier.codes()) {
-                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), otherModifierCode.getValue())) {
+                        if (this.isKeyDown(otherModifierCode)) {
                             matchingBindings.addAll(findKeybinds(otherModifierCode, modifier));
                         }
                     }
@@ -91,6 +92,16 @@ public class KeyMappingLookup {
         }
 
         return matchingBindings;
+    }
+
+    @VisibleForTesting
+    protected List<KeyModifier> getActiveModifiers() {
+        return KeyModifier.getActiveModifiers();
+    }
+
+    @VisibleForTesting
+    protected boolean isKeyDown(InputConstants.Key key) {
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), key.getValue());
     }
 
     private List<KeyMapping> findKeybinds(InputConstants.Key keyCode, KeyModifier modifier) {
