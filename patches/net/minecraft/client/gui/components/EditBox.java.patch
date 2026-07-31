@@ -1,53 +1,13 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -60,6 +_,7 @@
-     private long focusedTime = Util.getMillis();
-     private int textX;
-     private int textY;
-+    private java.util.function.Predicate<String> filter = _ -> true; // Neo: Add back text input filtering
- 
-     public EditBox(Font font, Component narration) {
-         this(font, 150, 20, narration);
-@@ -98,6 +_,8 @@
-     }
- 
-     public void setValue(String value) {
-+        if (!this.filter.test(value)) return; // Neo: Allow value filtering
-+
-         if (value.length() > this.maxLength) {
-             this.value = value.substring(0, this.maxLength);
-         } else {
-@@ -131,6 +_,14 @@
-         this.updateTextPosition();
-     }
- 
-+    /**
-+     * Sets a filter on the edit box that will only allow strings that pass the given predicate to be
-+     * inserted.
-+     */
-+    public void setFilter(java.util.function.Predicate<String> filter) {
-+        this.filter = filter;
-+    }
-+
-     public void insertText(String input) {
-         int start = Math.min(this.cursorPos, this.highlightPos);
-         int end = Math.max(this.cursorPos, this.highlightPos);
-@@ -147,6 +_,7 @@
-                 insertionLength = maxInsertionLength;
-             }
- 
-+            if (!filter.test(text)) return; // Neo: filter inputs
-             this.value = new StringBuilder(this.value).replace(start, end, text).toString();
-             this.setCursorPosition(start + insertionLength);
-             this.setHighlightPos(this.cursorPos);
-@@ -628,6 +_,10 @@
-     public void setHint(Component hint) {
-         boolean hasNoStyle = hint.getStyle().equals(Style.EMPTY);
+@@ -630,6 +_,10 @@
          this.hint = hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint;
-+    }
-+
+     }
+ 
 +    public boolean getTextShadow() {
 +        return this.textShadow;
-     }
- 
++    }
++
      @FunctionalInterface
+     public interface TextFormatter {
+         @Nullable FormattedCharSequence format(final String text, final int offset);
