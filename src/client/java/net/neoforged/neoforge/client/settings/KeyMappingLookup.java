@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.KeyMapping;
@@ -38,60 +39,68 @@ public class KeyMappingLookup {
 
     /**
      * Returns all active keys associated with the given key code and the active
-     * modifiers and conflict context.
+     * modifiers and conflict context. When releasing, returns all key mappings that
+     * may have been marked as down by the released key, so stale down states are
+     * always cleared even if the current modifiers or conflict context no longer
+     * match.
      *
-     * @param keyCode   the key being pressed
+     * @param keyCode   the key being pressed or released
      * @param releasing if the key is being released
      * @return the list of key mappings
      */
     public List<KeyMapping> getAll(InputConstants.Key keyCode, boolean releasing) {
-        List<KeyMapping> matchingBindings = new ArrayList<>();
-        // Get a list of all active modifiers
-        List<KeyModifier> activeModifiers = this.getActiveModifiers();
-        // Get modifier for key code
         KeyModifier keyCodeModifier = KeyModifier.getKeyModifier(keyCode);
 
-        for (var modifier : activeModifiers) {
-            // If modifier matches, add other modifiers
-            if (modifier.matches(keyCode)) {
-                // Check if binding matches with another modifier
-                for (var otherModifier : activeModifiers) {
+        if (releasing) {
+            // Releases must clear every mapping that may have been marked down by
+            // this key, regardless of the current modifiers or conflict context.
+            var matchingBindings = new LinkedHashSet<KeyMapping>();
 
-                    // Skip if modifier matches current key code
-                    if (otherModifier == keyCodeModifier) {
-                        continue;
-                    }
+            for (var modifierBindings : map.values()) {
+                Collection<KeyMapping> bindingsForKey = modifierBindings.get(keyCode);
+                if (bindingsForKey != null) {
+                    matchingBindings.addAll(bindingsForKey);
+                }
+            }
 
-                    // Loop through all modifier codes
-                    for (var otherModifierCode : otherModifier.codes()) {
-                        if (this.isKeyDown(otherModifierCode)) {
-                            matchingBindings.addAll(findKeybinds(otherModifierCode, modifier));
-                        }
+            if (keyCodeModifier != KeyModifier.NONE) {
+                for (var entry : map.get(keyCodeModifier).entrySet()) {
+                    if (entry.getKey() != InputConstants.UNKNOWN) {
+                        matchingBindings.addAll(entry.getValue());
                     }
                 }
-            } else {
-                // Attempt to add all bindings where the keycode and the modifier are different
+            }
+
+            return new ArrayList<>(matchingBindings);
+        }
+
+        List<KeyMapping> matchingBindings = new ArrayList<>();
+        List<KeyModifier> activeModifiers = this.getActiveModifiers();
+
+        for (var modifier : activeModifiers) {
+            if (modifier != keyCodeModifier) {
                 matchingBindings.addAll(findKeybinds(keyCode, modifier));
+                continue;
+            }
+
+            // If the key code is itself a modifier, check bindings for other active modifier keys.
+            for (var otherModifier : activeModifiers) {
+                if (otherModifier == modifier) {
+                    continue;
+                }
+
+                for (var otherModifierCode : otherModifier.codes()) {
+                    if (this.isKeyDown(otherModifierCode)) {
+                        matchingBindings.addAll(findKeybinds(otherModifierCode, modifier));
+                    }
+                }
             }
         }
 
-        // Release all bindings which use this key code as a modifier
-        if (releasing && keyCodeModifier != KeyModifier.NONE) {
-            matchingBindings.addAll(map.get(keyCodeModifier).entrySet().stream()
-                    // Only match keys that are mapped
-                    .filter(entry -> entry.getKey() != InputConstants.UNKNOWN)
-                    .flatMap(entry -> entry.getValue().stream())
-                    // Make sure the key is active in the current context
-                    .filter(mapping -> mapping.getKeyConflictContext().isActive())
-                    .toList());
+        if (!matchingBindings.isEmpty()) {
+            return matchingBindings;
         }
-
-        // If there were no matches or a key is being released, check the key without any modifiers
-        if (releasing || matchingBindings.isEmpty()) {
-            matchingBindings.addAll(findKeybinds(keyCode, KeyModifier.NONE));
-        }
-
-        return matchingBindings;
+        return findKeybinds(keyCode, KeyModifier.NONE);
     }
 
     @VisibleForTesting
