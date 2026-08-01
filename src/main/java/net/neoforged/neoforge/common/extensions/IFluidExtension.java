@@ -18,6 +18,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -29,6 +30,25 @@ import org.jspecify.annotations.Nullable;
 public interface IFluidExtension {
     private Fluid self() {
         return (Fluid) this;
+    }
+
+    /**
+     * Returns the still/source variant of this fluid if it is a flowing variant, or itself otherwise.
+     *
+     * @return the still/source variant of this fluid
+     */
+    default Fluid getSource() {
+        return self() instanceof FlowingFluid flowing ? flowing.getSource() : self();
+    }
+
+    /**
+     * Returns the flowing variant of this fluid if available, or {@code null} if this fluid has no flowing variant.
+     *
+     * @return the flowing variant of this fluid, or {@code null}
+     */
+    @Nullable
+    default Fluid getFlowing() {
+        return self() instanceof FlowingFluid flowing ? flowing.getFlowing() : null;
     }
 
     /**
