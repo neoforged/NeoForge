@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/item/SolidBucketItem.java
++++ b/net/minecraft/world/item/SolidBucketItem.java
+@@ -33,6 +_,11 @@
+     }
+ 
+     @Override
++    protected SoundEvent getPlaceSound(BlockState state, Level level, BlockPos pos, Player entity) {
++        return this.getPlaceSound(state);
++    }
++
++    @Override
+     public String getDescriptionId() {
+         return this.getOrCreateDescriptionId();
+     }
