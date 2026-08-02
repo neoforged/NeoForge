@@ -39,7 +39,7 @@
 -            boolean shouldShowName = state.distanceToCameraSq < Mth.square(nameTagDistance) && this.shouldShowName(entity, state.distanceToCameraSq);
 +            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(entity, state, this.getNameTag(entity), this, partialTicks);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+            boolean shouldShowName = event.canRender().isTrue() || (event.canRender().isDefault() && state.distanceToCameraSq < 4096.0 && this.shouldShowName(entity, state.distanceToCameraSq));
++            boolean shouldShowName = event.canRender().isTrue() || (event.canRender().isDefault() && state.distanceToCameraSq < Mth.square(nameTagDistance) && this.shouldShowName(entity, state.distanceToCameraSq));
              if (shouldShowName) {
 -                state.nameTag = this.getNameTag(entity);
 +                state.nameTag = event.getContent();

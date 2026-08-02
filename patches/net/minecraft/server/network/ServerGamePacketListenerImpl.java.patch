@@ -96,6 +96,31 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
+@@ -1487,13 +_,24 @@
+     @Override
+     public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
++
++        if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
++            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
++        }
++
+         if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
+             if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+                 this.player.stopUsingItem();
+             }
+ 
++            int cachedOldSlotIndex = this.player.getInventory().getSelectedSlot();
++
+             this.player.getInventory().setSelectedSlot(packet.getSlot());
+             this.player.resetLastActionTime();
++
++            if (cachedOldSlotIndex != packet.getSlot()) {
++                net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPost(this.player, cachedOldSlotIndex, packet.getSlot());
++            }
+         } else {
+             LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
+         }
 @@ -1513,8 +_,9 @@
                  }
  
