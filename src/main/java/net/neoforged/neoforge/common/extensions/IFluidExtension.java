@@ -18,7 +18,6 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -38,7 +37,7 @@ public interface IFluidExtension {
      * @return the still/source variant of this fluid
      */
     default Fluid getSource() {
-        return self() instanceof FlowingFluid flowing ? flowing.getSource() : self();
+        return self();
     }
 
     /**
@@ -48,7 +47,7 @@ public interface IFluidExtension {
      */
     @Nullable
     default Fluid getFlowing() {
-        return self() instanceof FlowingFluid flowing ? flowing.getFlowing() : null;
+        return null;
     }
 
     /**
