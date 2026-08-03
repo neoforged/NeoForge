@@ -142,7 +142,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Tags.Blocks.STORAGE_BLOCKS_RESIN, Tags.Blocks.STORAGE_BLOCKS_SLIME, Tags.Blocks.STORAGE_BLOCKS_WHEAT);
         tag(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL).add(Blocks.BONE_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_COAL).add(Blocks.COAL_BLOCK);
-        tag(Tags.Blocks.STORAGE_BLOCKS_COPPER).add(Blocks.COPPER_BLOCK.waxed().unaffected());
+        tag(Tags.Blocks.STORAGE_BLOCKS_COPPER).add(Blocks.COPPER_BLOCK.weathering().unaffected());
         tag(Tags.Blocks.STORAGE_BLOCKS_DIAMOND).add(Blocks.DIAMOND_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_DRIED_KELP).add(Blocks.DRIED_KELP_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_EMERALD).add(Blocks.EMERALD_BLOCK);
