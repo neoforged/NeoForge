@@ -115,9 +115,9 @@ public class ClientNeoForgeMod {
                 }
             });
 
-            // Unload SERVER configs only when disconnecting from a remote server
+            // Unload SHARED configs only when disconnecting from a remote server
             if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
-                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SHARED);
             }
         });
 

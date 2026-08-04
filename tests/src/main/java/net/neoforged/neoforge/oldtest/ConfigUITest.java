@@ -26,13 +26,13 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 public class ConfigUITest {
     public ConfigUITest(final ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, Client.SPEC);
-        container.registerConfig(ModConfig.Type.COMMON, Common.SPEC);
-        container.registerConfig(ModConfig.Type.SERVER, Server.SPEC);
+        container.registerConfig(ModConfig.Type.STANDARD, Standard.SPEC);
+        container.registerConfig(ModConfig.Type.SHARED, Shared.SPEC);
         container.registerConfig(ModConfig.Type.STARTUP, Startup.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, MDKConfig.SPEC, "mdk");
 
-        // Test: Accessing this COMMON config value during startup should work:
-        final var a = Common.value.get().size();
+        // Test: Accessing this STANDARD config value during startup should work:
+        final var a = Standard.value.get().size();
         // Test: Accessing a STARTUP config value should also work:
         final var b = Startup.value.get();
     }
@@ -68,7 +68,7 @@ public class ConfigUITest {
         }
     }
 
-    public static class Server {
+    public static class Shared {
         public static final ModConfigSpec SPEC;
 
         static {
@@ -80,20 +80,20 @@ public class ConfigUITest {
         }
     }
 
-    public static class Common {
+    public static class Standard {
         public static final ModConfigSpec SPEC;
         public static Supplier<List<? extends Integer>> value;
 
         static {
             final var builder = new ModConfigSpec.Builder();
 
-            builder.translation("configuitest.common.section1")
+            builder.translation("configuitest.standard.section1")
                     .push("section1");
 
-            builder.translation("configuitest.common.section2")
+            builder.translation("configuitest.standard.section2")
                     .push("section2");
 
-            value = wrap(builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true));
+            value = wrap(builder.translation("configuitest.standard.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true));
 
             builder.pop(2);
 
@@ -144,12 +144,12 @@ public class ConfigUITest {
         private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
         static {
-            BUILDER.comment("Whether to log the dirt block on common setup").define("logDirtBlock", true);
+            BUILDER.comment("Whether to log the dirt block on standard setup").define("logDirtBlock", true);
 
             BUILDER.comment("Where all the wild booleans live").translation("key.random").push("subsection1");
-            BUILDER.comment("Whether to log the dirt block on common setup").define("val1", true);
-            BUILDER.comment("Whether to log the dirt block on common setup").define("val2", true);
-            BUILDER.comment("Whether to log the dirt block on common setup").define("val3", true);
+            BUILDER.comment("Whether to log the dirt block on standard setup").define("val1", true);
+            BUILDER.comment("Whether to log the dirt block on standard setup").define("val2", true);
+            BUILDER.comment("Whether to log the dirt block on standard setup").define("val3", true);
 
             BUILDER.comment("Where all the wild ints live").translation("key.randomint").push("subsection2");
             BUILDER.comment("A weird number").defineInRange("eridNumber", 43, 43, 53);
@@ -162,7 +162,7 @@ public class ConfigUITest {
             BUILDER.defineEnum("dir2", Direction.SOUTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NORTH);
 
             BUILDER.pop();
-            BUILDER.comment("Whether to log the dirt block on common setup").define("outer2", true);
+            BUILDER.comment("Whether to log the dirt block on standard setup").define("outer2", true);
 
             BUILDER.comment("A magic number").defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
 
@@ -171,7 +171,7 @@ public class ConfigUITest {
             BUILDER.comment("What you want the introduction message to be for the magic number").define("magicNumberIntroduction", "The magic number is... ");
 
             // a list of strings that are treated as resource locations for items
-            BUILDER.comment("A list of items to log on common setup.").defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "minecraft:",
+            BUILDER.comment("A list of items to log on standard setup.").defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "minecraft:",
                     obj -> obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(Identifier.tryParse(itemName)));
 
             BUILDER.comment("A list of int for no reason.").defineListAllowEmpty("intlist", List.of(1, 2, 3), () -> 0,

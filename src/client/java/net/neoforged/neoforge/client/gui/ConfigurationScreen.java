@@ -96,7 +96,7 @@ import org.lwjgl.glfw.GLFW;
  * In any case, register your configuration screen in your client mod class like this:
  * 
  * {@snippet :
- * &#64;Mod(value = "examplemod", dist = Dist.CLIENT)
+ * @Mod(value = "examplemod", dist = Dist.CLIENT)
  * public class ExampleMod {
  *     public ExampleMod(ModContainer container) {
  *         container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, parent));
@@ -291,11 +291,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         tooltip.append(TOOLTIP_CANNOT_EDIT_NOT_LOADED).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose
-                    } else if (type == Type.SERVER && minecraft.getCurrentServer() != null && (!minecraft.hasSingleplayerServer() || !minecraft.getSingleplayerServer().isPublished())) {
+                    } else if (type == Type.SHARED && minecraft.getCurrentServer() != null && (!minecraft.hasSingleplayerServer() || !minecraft.getSingleplayerServer().isPublished())) {
                         tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose
-                    } else if (type == Type.SERVER && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
+                    } else if (type == Type.SHARED && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
                         tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose

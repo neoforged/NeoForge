@@ -52,7 +52,7 @@ public final class ConfigSync {
             configsToSync.put(connection, new LinkedHashMap<>());
         }
 
-        final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
+        final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SHARED).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
             try {
                 return Files.readAllBytes(mc.getFullPath());
             } catch (IOException e) {
@@ -67,7 +67,7 @@ public final class ConfigSync {
 
     /**
      * Registers a listener for {@link ModConfigEvent.Reloading} for all mod busses,
-     * that will sync changes to server configs to connected clients.
+     * that will sync changes to server's shared configs to connected clients.
      */
     public static void registerEventListeners() {
         for (var modContainer : ModList.get().getSortedMods()) {
@@ -75,7 +75,7 @@ public final class ConfigSync {
             if (modBus != null) {
                 modBus.addListener(ModConfigEvent.Reloading.class, event -> {
                     var config = event.getConfig();
-                    if (config.getType() != ModConfig.Type.SERVER) {
+                    if (config.getType() != ModConfig.Type.SHARED) {
                         return;
                     }
                     var loadedConfig = config.getLoadedConfig();

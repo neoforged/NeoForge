@@ -1397,9 +1397,9 @@ public class ModConfigSpec implements IConfigSpec {
         /**
          * Require a game restart.
          * <p>
-         * Cannot be used for {@linkplain ModConfig.Type#SERVER server configs}.
+         * Cannot be used for {@linkplain ModConfig.Type#SHARED server configs}.
          */
-        GAME(ModConfig.Type.SERVER);
+        GAME(ModConfig.Type.SHARED);
 
         private final Set<ModConfig.Type> invalidTypes;
 

@@ -12,14 +12,14 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * General configuration that doesn't need to be synchronized but needs to be available before server startup
  */
-public final class NeoForgeCommonConfig {
+public final class NeoForgeStandardConfig {
     @ApiStatus.Internal
     public static final ModConfigSpec SPEC;
-    public static final NeoForgeCommonConfig INSTANCE;
+    public static final NeoForgeStandardConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
 
-    private NeoForgeCommonConfig(ModConfigSpec.Builder builder) {
+    private NeoForgeStandardConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
@@ -27,7 +27,7 @@ public final class NeoForgeCommonConfig {
     }
 
     static {
-        final Pair<NeoForgeCommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeCommonConfig::new);
+        final Pair<NeoForgeStandardConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeStandardConfig::new);
         SPEC = specPair.getRight();
         INSTANCE = specPair.getLeft();
     }
