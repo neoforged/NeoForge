@@ -301,7 +301,7 @@ public class ModListScreen extends Screen {
         }
 
         final TextureManager textureManager = this.minecraft.getTextureManager();
-        final Identifier sprite = Identifier.fromNamespaceAndPath("neoforge", "mod/" + type + "/" + modId);
+        final Identifier sprite = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "mod/" + type + "/" + modId);
         textureManager.register(sprite, new DynamicTexture(sprite::toString, image));
 
         return new ImageData(sprite, image.getWidth(), image.getHeight());
@@ -507,7 +507,7 @@ public class ModListScreen extends Screen {
 
             this.squirr = this.contentFrame.addChild(ImageWidget.texture(
                     32, 30,
-                    Identifier.fromNamespaceAndPath("neoforge", "textures/gui/bigsquirr.png"),
+                    Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/bigsquirr.png"),
                     32, 30), this.contentFrame.newChildLayoutSettings().alignVerticallyBottom().alignHorizontallyRight().paddingRight(16).paddingBottom(-1));
 
             EqualSpacingLayout buttonsLayout = this.mainLayout.addChild(new EqualSpacingLayout(width, BUTTON_PANEL_HEIGHT, EqualSpacingLayout.Orientation.HORIZONTAL));
@@ -698,7 +698,7 @@ public class ModListScreen extends Screen {
                 this.descriptionWidget.visible = true;
             }
 
-            if (displayInfo.id().equals("neoforge") && SpecialDates.dayNow().equals(APRIL_FOOLS)) {
+            if (displayInfo.id().equals(NeoForgeMod.MOD_ID) && SpecialDates.dayNow().equals(APRIL_FOOLS)) {
                 this.squirr.visible = true;
             }
         }
