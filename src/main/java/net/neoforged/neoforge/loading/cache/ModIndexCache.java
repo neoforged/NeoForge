@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -26,6 +25,7 @@ import net.neoforged.neoforge.loading.perf.LoadingPerf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Persistent per-file mod index (<em>PR-LOAD-1</em>, 持久化模組索引).
@@ -48,8 +48,8 @@ public final class ModIndexCache {
     private static final int SCHEMA_VERSION = 1;
     private static final String SHA_256 = "SHA-256";
 
-    /** Fingerprint plus the per-file analysis blobs persisted by consumers (e.g. compat precheck results). */
-    public record Entry(long size, long lastModified, String sha256, Map<String, String> analysis) {}
+    /** Fingerprint of a mod file plus its persisted analysis blob (the compat precheck result, if any). */
+    public record Entry(long size, long lastModified, String sha256, @Nullable String analysis) {}
 
     private final Path indexFile;
     private final Map<String, Entry> entries = new ConcurrentHashMap<>();
@@ -95,16 +95,16 @@ public final class ModIndexCache {
     }
 
     /**
-     * Records the given analysis blobs for a file, persisting the index. Uses the fast path
+     * Records the analysis blob for a file, persisting the index. Uses the fast path
      * (size + last-modified) when the file is unchanged so repeated launches do not re-hash content.
      */
-    public void store(Path file, Map<String, String> analysis) {
+    public void store(Path file, @Nullable String analysis) {
         String fileName = fileNameOf(file);
         Entry current = currentEntry(file);
         if (current == null) {
             return; // File disappeared; do not persist a stale entry.
         }
-        entries.put(fileName, new Entry(current.size(), current.lastModified(), current.sha256(), Map.copyOf(analysis)));
+        entries.put(fileName, new Entry(current.size(), current.lastModified(), current.sha256(), analysis));
         persist();
     }
 
@@ -128,10 +128,7 @@ public final class ModIndexCache {
                 JsonObject files = json.getAsJsonObject("files");
                 for (String fileName : files.keySet()) {
                     JsonObject entry = files.getAsJsonObject(fileName);
-                    Map<String, String> analysis = new HashMap<>();
-                    if (entry.has("analysis") && entry.get("analysis").isJsonObject()) {
-                        entry.getAsJsonObject("analysis").entrySet().forEach(e -> analysis.put(e.getKey(), e.getValue().getAsString()));
-                    }
+                    String analysis = entry.has("analysis") && entry.get("analysis").isJsonPrimitive() ? entry.get("analysis").getAsString() : null;
                     entries.put(fileName, new Entry(
                             entry.get("size").getAsLong(),
                             entry.get("lastModified").getAsLong(),
@@ -162,9 +159,10 @@ public final class ModIndexCache {
                 entry.addProperty("size", e.getValue().size());
                 entry.addProperty("lastModified", e.getValue().lastModified());
                 entry.addProperty("sha256", e.getValue().sha256());
-                JsonObject analysis = new JsonObject();
-                e.getValue().analysis().forEach(analysis::addProperty);
-                entry.add("analysis", analysis);
+                String analysis = e.getValue().analysis();
+                if (analysis != null) {
+                    entry.addProperty("analysis", analysis);
+                }
                 files.add(e.getKey(), entry);
             }
             root.add("files", files);
@@ -199,7 +197,7 @@ public final class ModIndexCache {
             if (cached != null && cached.size() == size && cached.lastModified() == lastModified) {
                 return cached;
             }
-            return new Entry(size, lastModified, hashFile(file), Map.of());
+            return new Entry(size, lastModified, hashFile(file), null);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -217,7 +215,7 @@ public final class ModIndexCache {
                 updateDigest(digest, path);
             }
         }
-        return new Entry(size, newestModified, hex(digest.digest()), Map.of());
+        return new Entry(size, newestModified, hex(digest.digest()), null);
     }
 
     private static String hashFile(Path file) throws IOException {

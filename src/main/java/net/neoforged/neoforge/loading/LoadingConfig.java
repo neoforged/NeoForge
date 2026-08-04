@@ -20,10 +20,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Loader-level switches for the pre-loading and pre-adaptation features described by
- * <em>PR-X-2</em> (設定與開關). All new behavior is disabled by defaulting to the existing
- * NeoForge behavior, and every switch can be toggled through a single JSON file in the game
- * directory ({@value #FILE_NAME}).
+ * Loader-level switches for the pre-loading and pre-adaptation features (<em>PR-X-2</em>, 設定與開關).
+ * Every switch can be toggled through a single JSON file in the game directory
+ * ({@value #FILE_NAME}); defaults preserve the existing NeoForge behavior.
  *
  * <p>The configuration file is intentionally <em>not</em> treated as a trusted source: a missing,
  * malformed or partially corrupt file silently falls back to the documented defaults so startup can
@@ -31,11 +30,10 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>Supported switches and their defaults:</p>
  * <ul>
- * <li>{@code enable-index-cache} (on) - persist a per-file mod index across launches.</li>
+ * <li>{@code enable-index-cache} (on) - persist a per-file mod index and reuse cached per-file
+ * analyses across launches.</li>
  * <li>{@code parallel-load} (on) - analyze independent mod files concurrently.</li>
- * <li>{@code transform-cache} (on) - reuse cached analysis/transform results across launches.</li>
  * <li>{@code compat-precheck} (on) - run the pre-flight compatibility check before event dispatch.</li>
- * <li>{@code auto-adapt} (off) - allow symbol re-adaptation instead of only detecting it.</li>
  * <li>{@code block-on-incompatible} (on) - abort startup on blocked mods (current behavior); when off, continue.</li>
  * <li>{@code perf} (off, unless {@code --perf} is passed) - emit stage timing and cache reports.</li>
  * </ul>
@@ -54,20 +52,15 @@ public final class LoadingConfig {
     public final Path file;
     public final boolean enableIndexCache;
     public final boolean parallelLoad;
-    public final boolean transformCache;
     public final boolean compatPrecheck;
-    public final boolean autoAdapt;
     public final boolean blockOnIncompatible;
     public final boolean perf;
 
-    private LoadingConfig(Path file, boolean enableIndexCache, boolean parallelLoad, boolean transformCache,
-            boolean compatPrecheck, boolean autoAdapt, boolean blockOnIncompatible, boolean perf) {
+    private LoadingConfig(Path file, boolean enableIndexCache, boolean parallelLoad, boolean compatPrecheck, boolean blockOnIncompatible, boolean perf) {
         this.file = file;
         this.enableIndexCache = enableIndexCache;
         this.parallelLoad = parallelLoad;
-        this.transformCache = transformCache;
         this.compatPrecheck = compatPrecheck;
-        this.autoAdapt = autoAdapt;
         this.blockOnIncompatible = blockOnIncompatible;
         this.perf = perf;
     }
@@ -81,9 +74,7 @@ public final class LoadingConfig {
     public static LoadingConfig load(@Nullable Path gameDir, boolean perfArg) {
         boolean enableIndexCache = true;
         boolean parallelLoad = true;
-        boolean transformCache = true;
         boolean compatPrecheck = true;
-        boolean autoAdapt = false;
         boolean blockOnIncompatible = true;
         boolean perf = perfArg;
         Path file = null;
@@ -98,9 +89,7 @@ public final class LoadingConfig {
                         if (json != null) {
                             enableIndexCache = bool(json, "enable-index-cache", enableIndexCache);
                             parallelLoad = bool(json, "parallel-load", parallelLoad);
-                            transformCache = bool(json, "transform-cache", transformCache);
                             compatPrecheck = bool(json, "compat-precheck", compatPrecheck);
-                            autoAdapt = bool(json, "auto-adapt", autoAdapt);
                             blockOnIncompatible = bool(json, "block-on-incompatible", blockOnIncompatible);
                             perf |= bool(json, "perf", false);
                         }
@@ -113,9 +102,7 @@ public final class LoadingConfig {
                     json.addProperty("schemaVersion", SCHEMA_VERSION);
                     json.addProperty("enable-index-cache", enableIndexCache);
                     json.addProperty("parallel-load", parallelLoad);
-                    json.addProperty("transform-cache", transformCache);
                     json.addProperty("compat-precheck", compatPrecheck);
-                    json.addProperty("auto-adapt", autoAdapt);
                     json.addProperty("block-on-incompatible", blockOnIncompatible);
                     json.addProperty("perf", false);
                     try {
@@ -128,10 +115,10 @@ public final class LoadingConfig {
             }
         }
 
-        LoadingConfig config = new LoadingConfig(file, enableIndexCache, parallelLoad, transformCache, compatPrecheck, autoAdapt, blockOnIncompatible, perf);
+        LoadingConfig config = new LoadingConfig(file, enableIndexCache, parallelLoad, compatPrecheck, blockOnIncompatible, perf);
         instance = config;
-        LOGGER.info("Loading configuration: index-cache={}, parallel-load={}, transform-cache={}, compat-precheck={}, auto-adapt={}, block-on-incompatible={}, perf={}",
-                enableIndexCache, parallelLoad, transformCache, compatPrecheck, autoAdapt, blockOnIncompatible, perf);
+        LOGGER.info("Loading configuration: index-cache={}, parallel-load={}, compat-precheck={}, block-on-incompatible={}, perf={}",
+                enableIndexCache, parallelLoad, compatPrecheck, blockOnIncompatible, perf);
         return config;
     }
 

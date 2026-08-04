@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,17 +19,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.loading.LoadingConfig;
+import net.neoforged.neoforge.loading.adapt.SymbolAnalyzer.ModAnalysis;
+import net.neoforged.neoforge.loading.adapt.SymbolAnalyzer.SymbolAnalysis;
 import net.neoforged.neoforge.loading.cache.ModIndexCache;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -45,10 +40,10 @@ import org.jspecify.annotations.Nullable;
  * Pre-flight compatibility check (<em>PR-ADAPT-1</em>, 相容性預檢).
  *
  * <p>Runs before mod events are dispatched and classifies every mod as {@code pass} (loadable),
- * {@code warn} (loadable with known risks) or {@code block} (must not be loaded). Checks cover
- * required/optional dependency presence and version ranges, incompatible/discouraged dependencies,
- * and references to symbols listed in the {@link BreakingChangesDatabase}. The expensive bytecode
- * scan is cached per-file in the {@link ModIndexCache} keyed by file fingerprint.</p>
+ * {@code warn} (loadable with known risks) or {@code block} (must not be loaded). The rules are
+ * delegated to {@link DependencyChecker} (dependency presence and version ranges) and
+ * {@link SymbolAnalyzer} (references to symbols listed in the {@link BreakingChangesDatabase},
+ * cached per file fingerprint in the {@link ModIndexCache}).</p>
  *
  * <p>When {@code block-on-incompatible} is enabled (the default, matching current behavior), a
  * {@link ModLoadingException} is thrown before any mod event fires; the existing loading-error
@@ -60,7 +55,6 @@ public final class CompatPrecheck {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String REPORT_FILE = "neoforge-compat-report.json";
-    private static final String ANALYSIS_KEY = "compat";
 
     public enum CheckStatus {
         PASS, WARN, BLOCK
@@ -156,11 +150,11 @@ public final class CompatPrecheck {
             versionsById.put(check.modId(), check.version());
         }
 
-        SymbolAnalysis analysis = analyzeSymbols(checks, db, cache, config);
+        SymbolAnalysis analysis = SymbolAnalyzer.analyze(checks, db, cache, config);
 
         List<ModResult> results = new ArrayList<>();
         for (ModCheck check : checks) {
-            List<CheckIssue> issues = new ArrayList<>(dependencyIssues(check, versionsById));
+            List<CheckIssue> issues = new ArrayList<>(DependencyChecker.check(check, versionsById));
             ModAnalysis fileAnalysis = analysis.fileResults().get(check.modId());
             if (fileAnalysis != null) {
                 issues.addAll(fileAnalysis.issues());
@@ -186,160 +180,6 @@ public final class CompatPrecheck {
             writeReport(gameDir, report);
         }
         return report;
-    }
-
-    private static List<CheckIssue> dependencyIssues(ModCheck check, Map<String, ArtifactVersion> versionsById) {
-        List<CheckIssue> issues = new ArrayList<>();
-        for (Dep dep : check.dependencies()) {
-            ArtifactVersion target = versionsById.get(dep.modId());
-            boolean inRange = target != null && (dep.range() == null || dep.range().containsVersion(target));
-            switch (dep.type()) {
-                case REQUIRED -> {
-                    if (target == null) {
-                        issues.add(new CheckIssue(CheckStatus.BLOCK,
-                                "requires missing mod \"" + dep.modId() + "\"",
-                                "Install " + dep.modId() + " or remove " + check.modId() + " from the mods folder."));
-                    } else if (!inRange) {
-                        issues.add(new CheckIssue(CheckStatus.BLOCK,
-                                "requires " + dep.modId() + " version " + dep.range() + " but " + target + " is installed",
-                                "Update " + dep.modId() + " to a compatible version."));
-                    }
-                }
-                case OPTIONAL -> {
-                    if (target != null && !inRange) {
-                        issues.add(new CheckIssue(CheckStatus.WARN,
-                                "optionally requires " + dep.modId() + " version " + dep.range() + " but " + target + " is installed",
-                                "Optional integration with " + dep.modId() + " may be disabled."));
-                    }
-                }
-                case INCOMPATIBLE -> {
-                    if (target != null) {
-                        issues.add(new CheckIssue(CheckStatus.BLOCK,
-                                "is incompatible with installed mod \"" + dep.modId() + "\"",
-                                "Remove " + dep.modId() + " or " + check.modId() + "."));
-                    }
-                }
-                case DISCOURAGED -> {
-                    if (target != null) {
-                        issues.add(new CheckIssue(CheckStatus.WARN,
-                                "discourages use with installed mod \"" + dep.modId() + "\"",
-                                "Using both mods together is not recommended."));
-                    }
-                }
-            }
-        }
-        return issues;
-    }
-
-    record ModAnalysis(List<CheckIssue> issues, List<String> adaptableSymbols) {}
-
-    record SymbolAnalysis(Map<String, ModAnalysis> fileResults, int cacheHits, int cacheMisses) {}
-
-    /**
-     * Scans each distinct mod file once (in parallel when enabled) and returns, per mod, the list of
-     * symbol-reference issues. Results are cached per file fingerprint.
-     */
-    private static SymbolAnalysis analyzeSymbols(List<ModCheck> checks, BreakingChangesDatabase db, @Nullable ModIndexCache cache, LoadingConfig config) {
-        // Group mods by their file so a multi-mod JAR is only scanned once.
-        Map<Path, List<ModCheck>> byFile = checks.stream()
-                .filter(c -> c.jarFile() != null)
-                .collect(Collectors.groupingBy(ModCheck::jarFile));
-
-        Map<Path, List<String>> hitsByFile = new HashMap<>();
-        AtomicInteger cacheHits = new AtomicInteger();
-        AtomicInteger cacheMisses = new AtomicInteger();
-        List<Path> files = new ArrayList<>(byFile.keySet());
-        if (config.parallelLoad && files.size() > 1) {
-            ForkJoinPool pool = new ForkJoinPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
-            try {
-                List<CompletableFuture<Void>> futures = files.stream()
-                        .map(file -> CompletableFuture.runAsync(() -> hitsByFile.put(file, analyzeFile(file, db, cache, config, cacheHits, cacheMisses)), pool))
-                        .toList();
-                for (CompletableFuture<Void> future : futures) {
-                    future.get();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                LOGGER.warn("Parallel compatibility analysis failed for one or more files; using partial results", e);
-            } finally {
-                pool.shutdown();
-            }
-        } else {
-            for (Path file : files) {
-                hitsByFile.put(file, analyzeFile(file, db, cache, config, cacheHits, cacheMisses));
-            }
-        }
-
-        Map<String, ModAnalysis> result = new HashMap<>();
-        for (Map.Entry<Path, List<ModCheck>> entry : byFile.entrySet()) {
-            List<String> hits = hitsByFile.getOrDefault(entry.getKey(), List.of());
-            for (ModCheck mod : entry.getValue()) {
-                List<CheckIssue> issues = new ArrayList<>();
-                List<String> adaptable = new ArrayList<>();
-                for (String symbol : hits) {
-                    db.find(symbol).ifPresent(change -> {
-                        issues.add(new CheckIssue(
-                                change.safeToAdapt() ? CheckStatus.WARN : CheckStatus.BLOCK,
-                                "Referenced symbol " + change.symbol() + (change.replacedBy().isBlank() ? "" : " replaced by " + change.replacedBy()),
-                                change.safeToAdapt() ? "This is auto-adaptable (safe rename); a shim or bytecode adaptation may keep the mod working." : change.note()));
-                        if (change.safeToAdapt()) {
-                            adaptable.add(change.symbol());
-                        }
-                    });
-                }
-                result.put(mod.modId(), new ModAnalysis(issues, adaptable));
-            }
-        }
-        return new SymbolAnalysis(result, cacheHits.get(), cacheMisses.get());
-    }
-
-    private static List<String> analyzeFile(Path file, BreakingChangesDatabase db, @Nullable ModIndexCache cache, LoadingConfig config, AtomicInteger cacheHits, AtomicInteger cacheMisses) {
-        if (!Files.exists(file)) {
-            return List.of();
-        }
-        // Reuse the cached analysis when both the file and the database are unchanged.
-        if (cache != null && config.enableIndexCache && config.transformCache) {
-            ModIndexCache.Entry cached = cache.getCached(file);
-            if (cached != null) {
-                String analysis = cached.analysis().get(ANALYSIS_KEY);
-                if (analysis != null) {
-                    try {
-                        JsonObject json = JsonParser.parseString(analysis).getAsJsonObject();
-                        if (db.hash().equals(json.get("dbHash").getAsString())) {
-                            cacheHits.incrementAndGet();
-                            return parseSymbols(json.getAsJsonArray("symbols"));
-                        }
-                    } catch (RuntimeException e) {
-                        // Fall through to a rescan.
-                    }
-                }
-            }
-        }
-
-        cacheMisses.incrementAndGet();
-        Set<String> referenced = JarSymbolScanner.scan(file);
-        List<String> hits = new ArrayList<>();
-        for (String symbol : referenced) {
-            db.find(symbol).ifPresent(change -> hits.add(symbol));
-        }
-        hits.sort(Comparator.naturalOrder());
-
-        if (cache != null && config.enableIndexCache && config.transformCache) {
-            JsonObject analysis = new JsonObject();
-            analysis.addProperty("dbHash", db.hash());
-            JsonArray symbols = new JsonArray();
-            hits.forEach(symbols::add);
-            analysis.add("symbols", symbols);
-            cache.store(file, Map.of(ANALYSIS_KEY, analysis.toString()));
-        }
-        return hits;
-    }
-
-    private static List<String> parseSymbols(JsonArray symbols) {
-        List<String> result = new ArrayList<>(symbols.size());
-        symbols.forEach(s -> result.add(s.getAsString()));
-        return result;
     }
 
     private static void writeReport(Path gameDir, Report report) {

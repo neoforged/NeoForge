@@ -8,7 +8,6 @@ package net.neoforged.neoforge.unittest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import net.neoforged.neoforge.loading.cache.ModIndexCache;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,14 +30,14 @@ class ModIndexCacheTest {
 
         Path indexFile = tempDir.resolve(ModIndexCacheTest.class.getName() + ".json");
         ModIndexCache cache = ModIndexCache.createForTest(indexFile);
-        cache.store(mod, Map.of("compat", "analysis-data"));
+        cache.store(mod, "analysis-data");
         Assertions.assertTrue(Files.isRegularFile(indexFile));
 
         ModIndexCache reloaded = ModIndexCache.createForTest(indexFile);
         reloaded.load();
         ModIndexCache.Entry entry = reloaded.getCached(mod);
         Assertions.assertNotNull(entry, "Unchanged file should hit the cache");
-        Assertions.assertEquals("analysis-data", entry.analysis().get("compat"));
+        Assertions.assertEquals("analysis-data", entry.analysis());
     }
 
     @Test
@@ -47,7 +46,7 @@ class ModIndexCacheTest {
         Path mod = writeModFile(mods, "mod.jar", "content-v1");
 
         ModIndexCache cache = ModIndexCache.createForTest(tempDir.resolve("index.json"));
-        cache.store(mod, Map.of());
+        cache.store(mod, null);
 
         Files.writeString(mod, "content-v2-changed", StandardCharsets.UTF_8);
         Assertions.assertNull(cache.getCached(mod), "Changed file must miss the cache");
@@ -59,7 +58,7 @@ class ModIndexCacheTest {
         Path mod = writeModFile(mods, "mod.jar", "content-v1");
 
         ModIndexCache cache = ModIndexCache.createForTest(tempDir.resolve("index.json"));
-        cache.store(mod, Map.of());
+        cache.store(mod, null);
 
         Files.writeString(tempDir.resolve("index.json"), "{ this is corrupted", StandardCharsets.UTF_8);
         ModIndexCache reloaded = ModIndexCache.createForTest(tempDir.resolve("index.json"));
@@ -75,8 +74,8 @@ class ModIndexCacheTest {
         Path modB = writeModFile(mods, "b.jar", "bbbb");
 
         ModIndexCache cache = ModIndexCache.createForTest(tempDir.resolve("index.json"));
-        cache.store(modA, Map.of());
-        cache.store(modB, Map.of());
+        cache.store(modA, null);
+        cache.store(modB, null);
 
         Files.writeString(modA, "aaaa-new", StandardCharsets.UTF_8);
         Assertions.assertNull(cache.getCached(modA));

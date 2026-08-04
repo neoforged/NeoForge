@@ -78,9 +78,7 @@ public final class DiagnosticsCollector {
             config.addProperty("file", loadingConfig.file == null ? null : loadingConfig.file.toString());
             config.addProperty("enableIndexCache", loadingConfig.enableIndexCache);
             config.addProperty("parallelLoad", loadingConfig.parallelLoad);
-            config.addProperty("transformCache", loadingConfig.transformCache);
             config.addProperty("compatPrecheck", loadingConfig.compatPrecheck);
-            config.addProperty("autoAdapt", loadingConfig.autoAdapt);
             config.addProperty("blockOnIncompatible", loadingConfig.blockOnIncompatible);
             config.addProperty("perf", loadingConfig.perf);
         }
