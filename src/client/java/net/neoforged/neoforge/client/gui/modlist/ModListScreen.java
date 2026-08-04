@@ -117,7 +117,7 @@ public class ModListScreen extends Screen {
         for (ModContainer container : ModList.get().getSortedMods()) {
             final ModDisplayInfo displayInfo;
             final String modId = container.getModId();
-            if (modId.equalsIgnoreCase(Identifier.DEFAULT_NAMESPACE) && !FMLEnvironment.isProduction()) {
+            if (!FMLEnvironment.isProduction() && modId.equalsIgnoreCase(Identifier.DEFAULT_NAMESPACE)) {
                 // This is a special case in development because the Minecraft mods.toml information is hardcoded in FML
                 // TODO: remove in the future once FML is updated to match
                 displayInfo = new DefaultModDisplayInfo(container) {
