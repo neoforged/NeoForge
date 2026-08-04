@@ -22,6 +22,16 @@ dependencyResolutionManagement {
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         mavenCentral()
+        // For PR testing
+        maven {
+            name = "Maven for PR #436" // https://github.com/neoforged/FancyModLoader/pull/436
+            url = uri("https://prmaven.neoforged.net/FancyModLoader/pr436")
+            content {
+                includeModule("net.neoforged.fancymodloader", "earlydisplay")
+                includeModule("net.neoforged.fancymodloader", "junit-fml")
+                includeModule("net.neoforged.fancymodloader", "loader")
+            }
+        }
     }
 }
 
