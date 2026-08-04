@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
 import net.neoforged.neoforge.internal.CommonModLoader;
+import net.neoforged.neoforge.loading.diagnostics.DiagnosticsCollector;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
@@ -105,6 +106,10 @@ public class ClientModLoader extends CommonModLoader {
 
     public static void reportFatalError(Throwable error, Path gameDir, CrashReport report) {
         Path logFile = gameDir.resolve("logs", "latest.log");
+        Path diagnostics = DiagnosticsCollector.write(gameDir, error);
+        if (diagnostics != null) {
+            LOGGER.fatal("A diagnostics bundle for this error was written to {}", diagnostics);
+        }
         FatalErrorReporting.reportFatalError(error, gameDir, logFile, report.getSaveFile());
     }
 }
