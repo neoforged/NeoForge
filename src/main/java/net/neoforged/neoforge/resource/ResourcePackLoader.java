@@ -274,7 +274,7 @@ public class ResourcePackLoader {
     }
 
     public static String getPackName(IModFile mf) {
-        return "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining());
+        return "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining(","));
     }
 
     private static boolean hasResourcePack(IModFile mf) {
