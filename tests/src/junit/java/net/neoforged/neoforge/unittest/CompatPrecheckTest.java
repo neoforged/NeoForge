@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.loading.adapt;
+package net.neoforged.neoforge.unittest;
 
 import java.io.BufferedOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,6 +13,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import net.neoforged.neoforge.loading.LoadingConfig;
+import net.neoforged.neoforge.loading.adapt.BreakingChangesDatabase;
+import net.neoforged.neoforge.loading.adapt.CompatPrecheck;
 import net.neoforged.neoforge.loading.adapt.CompatPrecheck.CheckStatus;
 import net.neoforged.neoforge.loading.adapt.CompatPrecheck.Dep;
 import net.neoforged.neoforge.loading.adapt.CompatPrecheck.ModCheck;

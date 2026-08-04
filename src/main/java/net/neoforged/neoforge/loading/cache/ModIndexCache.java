@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -110,7 +109,7 @@ public final class ModIndexCache {
     }
 
     /** Re-reads the index from disk. */
-    void load() {
+    public void load() {
         entries.clear();
         loaded = false;
         if (!Files.isRegularFile(indexFile)) {
@@ -169,7 +168,10 @@ public final class ModIndexCache {
                 files.add(e.getKey(), entry);
             }
             root.add("files", files);
-            Files.createDirectories(indexFile.getParent());
+            Path parent = indexFile.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
             Path temp = indexFile.resolveSibling(indexFile.getFileName() + ".tmp");
             Files.writeString(temp, GSON.toJson(root), StandardCharsets.UTF_8);
             Files.move(temp, indexFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -260,7 +262,7 @@ public final class ModIndexCache {
         return new ModIndexCache(indexFile, null);
     }
 
-    Map<String, Entry> entries() {
+    public Map<String, Entry> entries() {
         return Map.copyOf(entries);
     }
 }

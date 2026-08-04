@@ -53,7 +53,6 @@ public final class BreakingChangesDatabase {
             String since,
             boolean safeToAdapt,
             String note) {
-
         /** {@return the internal member symbol ({@code owner.name}) or the internal type name if this entry has no member} */
         String internalSymbol() {
             String normalized = symbol.replace('.', '/');

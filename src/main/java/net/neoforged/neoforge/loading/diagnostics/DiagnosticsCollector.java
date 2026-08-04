@@ -48,7 +48,7 @@ public final class DiagnosticsCollector {
 
     /** Writes a diagnostics bundle for the given failure into {@code gameDir}/neoforge-diagnostics/. */
     public static Path write(Path gameDir, Throwable error) {
-        if (gameDir == null) {
+        if (gameDir == null || gameDir.resolve("probe").getParent() == null) {
             return null;
         }
         try {

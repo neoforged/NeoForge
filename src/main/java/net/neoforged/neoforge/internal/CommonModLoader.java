@@ -59,11 +59,12 @@ public abstract class CommonModLoader {
         var perf = LoadingPerf.get();
 
         Path gameDir = FMLLoader.getCurrent().getGameDir();
+        Path usableGameDir = gameDir != null && gameDir.resolve("probe").getParent() != null ? gameDir : null;
         LoadingConfig config = LoadingConfig.getOrNull();
         if (config == null) {
-            config = LoadingConfig.load(gameDir, perfFlag());
+            config = LoadingConfig.load(usableGameDir, perfFlag());
         }
-        ModIndexCache indexCache = config.enableIndexCache ? ModIndexCache.initialize(gameDir, config, perf) : null;
+        ModIndexCache indexCache = config.enableIndexCache && usableGameDir != null ? ModIndexCache.initialize(usableGameDir, config, perf) : null;
 
         try (var ignored = perf.stage("Discovery & initialization")) {
             ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
@@ -71,7 +72,7 @@ public abstract class CommonModLoader {
 
         if (config.compatPrecheck) {
             try (var ignored = perf.stage("Compatibility precheck")) {
-                CompatPrecheck.runAndGate(ModList.get(), indexCache, BreakingChangesDatabase.load(gameDir), config, gameDir);
+                CompatPrecheck.runAndGate(ModList.get(), indexCache, BreakingChangesDatabase.load(usableGameDir), config, usableGameDir);
             }
         }
 
@@ -130,7 +131,8 @@ public abstract class CommonModLoader {
             ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry::setup);
         }
 
-        perf.finish(FMLLoader.getCurrent().getGameDir(), LoadingConfig.get());
+        Path gameDir = FMLLoader.getCurrent().getGameDir();
+        perf.finish(gameDir != null && gameDir.resolve("probe").getParent() != null ? gameDir : null, LoadingConfig.get());
     }
 
     private static boolean perfFlag() {

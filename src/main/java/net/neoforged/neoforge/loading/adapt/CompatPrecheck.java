@@ -32,7 +32,6 @@ import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.loading.LoadingConfig;
 import net.neoforged.neoforge.loading.cache.ModIndexCache;
-import net.neoforged.neoforge.loading.perf.LoadingPerf;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
@@ -80,7 +79,6 @@ public final class CompatPrecheck {
             Map<String, IModInfo> modInfos,
             int cacheHits,
             int cacheMisses) {
-
         public boolean hasBlocks() {
             return results.stream().anyMatch(r -> r.status() == CheckStatus.BLOCK);
         }
@@ -152,7 +150,7 @@ public final class CompatPrecheck {
     }
 
     /** Core run that operates on plain data so it can be unit tested without a live {@link ModList}. */
-    static Report run(List<ModCheck> checks, Map<String, IModInfo> modInfos, @Nullable ModIndexCache cache, BreakingChangesDatabase db, LoadingConfig config, @Nullable Path gameDir) {
+    public static Report run(List<ModCheck> checks, Map<String, IModInfo> modInfos, @Nullable ModIndexCache cache, BreakingChangesDatabase db, LoadingConfig config, @Nullable Path gameDir) {
         Map<String, ArtifactVersion> versionsById = new HashMap<>();
         for (ModCheck check : checks) {
             versionsById.put(check.modId(), check.version());

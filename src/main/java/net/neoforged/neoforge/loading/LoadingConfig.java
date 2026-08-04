@@ -48,7 +48,7 @@ public final class LoadingConfig {
     private static final int SCHEMA_VERSION = 1;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static volatile LoadingConfig instance = defaults(null, false);
+    private static volatile LoadingConfig instance;
 
     /** Switches that must not change while the game is starting up. */
     public final Path file;
@@ -72,16 +72,13 @@ public final class LoadingConfig {
         this.perf = perf;
     }
 
-    private static LoadingConfig defaults(Path file, boolean perf) {
-        return new LoadingConfig(file, true, true, true, true, false, true, perf);
-    }
-
     /**
      * Loads the configuration from {@code gameDir}/{@value #FILE_NAME}, honoring the {@code --perf}
      * program argument. Writes a default file on first launch so users can discover the switches.
+     * A {@code null} game directory or one without a usable parent (e.g. the JUnit test harness,
+     * which boots with an empty one) falls back to the documented defaults without file I/O.
      */
-    public static LoadingConfig load(Path gameDir, boolean perfArg) {
-        Path file = gameDir.resolve(FILE_NAME);
+    public static LoadingConfig load(@Nullable Path gameDir, boolean perfArg) {
         boolean enableIndexCache = true;
         boolean parallelLoad = true;
         boolean transformCache = true;
@@ -89,38 +86,45 @@ public final class LoadingConfig {
         boolean autoAdapt = false;
         boolean blockOnIncompatible = true;
         boolean perf = perfArg;
+        Path file = null;
 
-        if (Files.isRegularFile(file)) {
-            try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                JsonObject json = GSON.fromJson(reader, JsonObject.class);
-                if (json != null) {
-                    enableIndexCache = bool(json, "enable-index-cache", enableIndexCache);
-                    parallelLoad = bool(json, "parallel-load", parallelLoad);
-                    transformCache = bool(json, "transform-cache", transformCache);
-                    compatPrecheck = bool(json, "compat-precheck", compatPrecheck);
-                    autoAdapt = bool(json, "auto-adapt", autoAdapt);
-                    blockOnIncompatible = bool(json, "block-on-incompatible", blockOnIncompatible);
-                    perf |= bool(json, "perf", false);
+        if (gameDir != null) {
+            Path candidate = gameDir.resolve(FILE_NAME);
+            if (candidate.getParent() != null) {
+                file = candidate;
+                if (Files.isRegularFile(file)) {
+                    try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+                        JsonObject json = GSON.fromJson(reader, JsonObject.class);
+                        if (json != null) {
+                            enableIndexCache = bool(json, "enable-index-cache", enableIndexCache);
+                            parallelLoad = bool(json, "parallel-load", parallelLoad);
+                            transformCache = bool(json, "transform-cache", transformCache);
+                            compatPrecheck = bool(json, "compat-precheck", compatPrecheck);
+                            autoAdapt = bool(json, "auto-adapt", autoAdapt);
+                            blockOnIncompatible = bool(json, "block-on-incompatible", blockOnIncompatible);
+                            perf |= bool(json, "perf", false);
+                        }
+                    } catch (IOException | RuntimeException e) {
+                        LOGGER.warn("Failed to read loading configuration {}; falling back to defaults. The file can be safely deleted.", file, e);
+                    }
+                } else {
+                    // Write a default file so the switches are discoverable and editable.
+                    var json = new JsonObject();
+                    json.addProperty("schemaVersion", SCHEMA_VERSION);
+                    json.addProperty("enable-index-cache", enableIndexCache);
+                    json.addProperty("parallel-load", parallelLoad);
+                    json.addProperty("transform-cache", transformCache);
+                    json.addProperty("compat-precheck", compatPrecheck);
+                    json.addProperty("auto-adapt", autoAdapt);
+                    json.addProperty("block-on-incompatible", blockOnIncompatible);
+                    json.addProperty("perf", false);
+                    try {
+                        Files.createDirectories(file.getParent());
+                        Files.writeString(file, GSON.toJson(json), StandardCharsets.UTF_8);
+                    } catch (IOException e) {
+                        LOGGER.debug("Could not write default loading configuration to {}", file, e);
+                    }
                 }
-            } catch (IOException | RuntimeException e) {
-                LOGGER.warn("Failed to read loading configuration {}; falling back to defaults. The file can be safely deleted.", file, e);
-            }
-        } else {
-            // Write a default file so the switches are discoverable and editable.
-            var json = new JsonObject();
-            json.addProperty("schemaVersion", SCHEMA_VERSION);
-            json.addProperty("enable-index-cache", enableIndexCache);
-            json.addProperty("parallel-load", parallelLoad);
-            json.addProperty("transform-cache", transformCache);
-            json.addProperty("compat-precheck", compatPrecheck);
-            json.addProperty("auto-adapt", autoAdapt);
-            json.addProperty("block-on-incompatible", blockOnIncompatible);
-            json.addProperty("perf", false);
-            try {
-                Files.createDirectories(file.getParent());
-                Files.writeString(file, GSON.toJson(json), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                LOGGER.debug("Could not write default loading configuration to {}", file, e);
             }
         }
 
