@@ -133,7 +133,7 @@ public class DamageContainer {
      * @param ticks Ticks of invulnerability after this damage sequence
      */
     public void setPostAttackInvulnerabilityTicks(int ticks) {
-        Preconditions.checkArgument(ticks > 0, "Ticks cannot be negative.");
+        Preconditions.checkArgument(ticks >= 0, "Ticks cannot be negative.");
         this.invulnerabilityTicksAfterAttack = ticks;
     }
 
