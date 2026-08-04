@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import joptsimple.internal.Strings;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
@@ -75,7 +76,14 @@ public class CrashReportExtender {
 
             try {
                 //noinspection UnstableApiUsage
-                category.setDetail("Failure message", () -> FMLTranslations.stripControlCodes(FMLTranslations.translateIssueEnglish(issue)).replace("\n", "\n\t\t"));
+                String translated = FMLTranslations.stripControlCodes(FMLTranslations.translateIssueEnglish(issue));
+                if (translated.equals(issue.translationKey())) {
+                    // Unknown translation key (e.g. NeoForge-specific issues FML has no strings for):
+                    // fall back to the raw arguments so the report stays readable instead of showing a bare key.
+                    translated = issue.translationArgs().stream().map(Object::toString).collect(Collectors.joining(" | "));
+                }
+                final String failureMessage = translated;
+                category.setDetail("Failure message", () -> failureMessage.replace("\n", "\n\t\t"));
             } catch (Exception e) {
                 // If translating the issue failed, fallback to just adding the raw translation key and arguments 
                 category.setDetail("Failure message", () -> issue.translationKey().replace("\n", "\n\t\t"));

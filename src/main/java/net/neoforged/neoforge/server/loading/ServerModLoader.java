@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.server.loading;
 
 import java.io.File;
+import java.nio.file.Path;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.internal.CommonModLoader;
+import net.neoforged.neoforge.loading.diagnostics.DiagnosticsCollector;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +36,18 @@ public class ServerModLoader extends CommonModLoader {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly
             LanguageHook.loadBuiltinLanguages();
+            var diagnostics = DiagnosticsCollector.write(FMLLoader.getCurrent().getGameDir(), error);
+            if (diagnostics != null) {
+                LOGGER.fatal("A diagnostics bundle for this error was written to {}", diagnostics);
+            }
             CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), new File("."));
+            throw error;
+        } catch (RuntimeException | Error error) {
+            ServerModLoader.hasErrors = true;
+            Path diagnostics = DiagnosticsCollector.write(FMLLoader.getCurrent().getGameDir(), error);
+            if (diagnostics != null) {
+                LOGGER.fatal("A diagnostics bundle for this error was written to {}", diagnostics);
+            }
             throw error;
         }
         var warnings = ModLoader.getLoadingIssues().stream().filter(i -> i.severity() == ModLoadingIssue.Severity.WARNING).toList();

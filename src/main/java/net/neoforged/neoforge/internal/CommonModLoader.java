@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.internal;
 
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
@@ -19,8 +20,14 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.loading.LoadingConfig;
+import net.neoforged.neoforge.loading.adapt.BreakingChangesDatabase;
+import net.neoforged.neoforge.loading.adapt.CompatPrecheck;
+import net.neoforged.neoforge.loading.cache.ModIndexCache;
+import net.neoforged.neoforge.loading.perf.LoadingPerf;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -34,6 +41,10 @@ import org.jetbrains.annotations.ApiStatus;
  * <li>Server runs both consecutively.</li>
  * <li>Datagen only runs {@link #begin}.</li>
  * </ul>
+ *
+ * <p>Loading stages are timed by {@link LoadingPerf}; the compatibility precheck
+ * ({@link CompatPrecheck}) runs between mod initialization and event dispatch so that incompatible
+ * mods are rejected with a clear diagnostic instead of failing mid-event.</p>
  */
 @ApiStatus.Internal
 public abstract class CommonModLoader {
@@ -45,24 +56,45 @@ public abstract class CommonModLoader {
 
     protected static void begin(Runnable periodicTask, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
+        var perf = LoadingPerf.get();
 
-        ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
+        Path gameDir = FMLLoader.getCurrent().getGameDir();
+        Path usableGameDir = gameDir != null && gameDir.resolve("probe").getParent() != null ? gameDir : null;
+        LoadingConfig config = LoadingConfig.getOrNull();
+        if (config == null) {
+            config = LoadingConfig.load(usableGameDir, perfFlag());
+        }
+        ModIndexCache indexCache = config.enableIndexCache && usableGameDir != null ? ModIndexCache.initialize(usableGameDir, config, perf) : null;
 
-        ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
-            RegistryManager.postNewRegistryEvent();
-            GameData.unfreezeData();
-            GameData.postRegisterEvents();
-            GameData.freezeData();
-            registriesLoaded = true;
-        });
+        try (var ignored = perf.stage("Discovery & initialization")) {
+            ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
+        }
+
+        if (config.compatPrecheck) {
+            try (var ignored = perf.stage("Compatibility precheck")) {
+                CompatPrecheck.runAndGate(ModList.get(), indexCache, BreakingChangesDatabase.load(usableGameDir), config, usableGameDir);
+            }
+        }
+
+        try (var ignored = perf.stage("Registry initialization")) {
+            ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
+                RegistryManager.postNewRegistryEvent();
+                GameData.unfreezeData();
+                GameData.postRegisterEvents();
+                GameData.freezeData();
+                registriesLoaded = true;
+            });
+        }
 
         if (!datagen) {
-            ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
-                if (FMLEnvironment.getDist() == Dist.CLIENT) {
-                    ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
-                }
-                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
-            });
+            try (var ignored = perf.stage("Config loading")) {
+                ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
+                    if (FMLEnvironment.getDist() == Dist.CLIENT) {
+                        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
+                    }
+                    ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
+                });
+            }
         }
 
         NeoForge.EVENT_BUS.start();
@@ -71,17 +103,48 @@ public abstract class CommonModLoader {
     protected static void load(Runnable periodicTask) {
         Executor syncExecutor = ModWorkManager.syncExecutor();
         Executor parallelExecutor = ModWorkManager.parallelExecutor();
+        var perf = LoadingPerf.get();
 
-        ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
-        ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
-                FMLEnvironment.getDist().isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
+        try (var ignored = perf.stage("Common setup")) {
+            ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
+        }
+        try (var ignored = perf.stage("Sided setup")) {
+            ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
+                    FMLEnvironment.getDist().isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
+        }
 
-        ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
+        try (var ignored = perf.stage("Registration events")) {
+            ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
+        }
 
-        ModLoader.dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
-        ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
-        ModLoader.dispatchParallelEvent("Complete loading of %d mods".formatted(ModList.get().size()), syncExecutor, parallelExecutor, periodicTask, FMLLoadCompleteEvent::new);
+        try (var ignored = perf.stage("Enqueue IMC")) {
+            ModLoader.dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
+        }
+        try (var ignored = perf.stage("Process IMC")) {
+            ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
+        }
+        try (var ignored = perf.stage("Complete loading of mods")) {
+            ModLoader.dispatchParallelEvent("Complete loading of %d mods".formatted(ModList.get().size()), syncExecutor, parallelExecutor, periodicTask, FMLLoadCompleteEvent::new);
+        }
 
-        ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry::setup);
+        try (var ignored = perf.stage("Network registry lock")) {
+            ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry::setup);
+        }
+
+        Path gameDir = FMLLoader.getCurrent().getGameDir();
+        perf.finish(gameDir != null && gameDir.resolve("probe").getParent() != null ? gameDir : null, LoadingConfig.get());
+    }
+
+    private static boolean perfFlag() {
+        var loader = FMLLoader.getCurrent();
+        if (loader == null) {
+            return false;
+        }
+        for (String argument : loader.getProgramArgs().getArguments()) {
+            if ("--perf".equals(argument)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

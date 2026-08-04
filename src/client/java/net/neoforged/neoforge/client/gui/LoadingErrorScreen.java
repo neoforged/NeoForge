@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -161,9 +162,13 @@ public class LoadingErrorScreen extends ErrorScreen {
 
     private record FormattedIssue(Component text, ModLoadingIssue issue) {
         public static FormattedIssue of(ModLoadingIssue issue) {
-            return new FormattedIssue(
-                    Component.literal(FMLTranslations.translateIssue(issue)),
-                    issue);
+            String translated = FMLTranslations.translateIssue(issue);
+            if (translated.equals(issue.translationKey())) {
+                // Unknown translation key (e.g. NeoForge-specific issues FML has no strings for):
+                // fall back to the raw arguments so the screen stays readable instead of showing a bare key.
+                translated = issue.translationArgs().stream().map(Object::toString).collect(Collectors.joining(" | "));
+            }
+            return new FormattedIssue(Component.literal(translated), issue);
         }
     }
 }

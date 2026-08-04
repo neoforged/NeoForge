@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "changes": [
+    {
+      "symbol": "net.neoforged.neoforge.event.entity.player.PlayerInteractEvent$EntityInteractSpecific",
+      "replacedBy": "net.neoforged.neoforge.event.entity.player.PlayerInteractEvent$EntityInteract",
+      "kind": "renamed",
+      "since": "26.2",
+      "safeToAdapt": true,
+      "note": "EntityInteractSpecific was merged into EntityInteract; the constructor signature is unchanged. Subscribers should register the merged event instead."
+    },
+    {
+      "symbol": "net.neoforged.neoforge.common.world.NoneBiomeModifier",
+      "replacedBy": "",
+      "kind": "removed",
+      "since": "26.1",
+      "safeToAdapt": false,
+      "note": "Removed in favor of loading conditions on biome modifier codecs; there is no drop-in replacement."
+    }
+  ]
+}
