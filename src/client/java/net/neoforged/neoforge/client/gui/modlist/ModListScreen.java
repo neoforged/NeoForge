@@ -117,7 +117,7 @@ public class ModListScreen extends Screen {
         for (ModContainer container : ModList.get().getSortedMods()) {
             final ModDisplayInfo displayInfo;
             final String modId = container.getModId();
-            if (modId.equalsIgnoreCase("minecraft") && !FMLEnvironment.isProduction()) {
+            if (modId.equalsIgnoreCase(Identifier.DEFAULT_NAMESPACE) && !FMLEnvironment.isProduction()) {
                 // This is a special case in development because the Minecraft mods.toml information is hardcoded in FML
                 // TODO: remove in the future once FML is updated to match
                 displayInfo = new DefaultModDisplayInfo(container) {
@@ -625,7 +625,7 @@ public class ModListScreen extends Screen {
             final ImageResource bannerResource = displayInfo.banner();
             if (bannerResource != null) {
                 // Load new banner data
-                if (displayInfo.id().equals("minecraft")) {
+                if (displayInfo.id().equals(Identifier.DEFAULT_NAMESPACE)) {
                     // Special-case for the 'minecraft' mod: render the logo using LogoRenderer
                     float scaleFactor = Math.min(1F, (float) width / LogoRenderer.LOGO_TEXTURE_WIDTH);
                     int bannerWidth = (int) (LogoRenderer.LOGO_TEXTURE_WIDTH * scaleFactor);
