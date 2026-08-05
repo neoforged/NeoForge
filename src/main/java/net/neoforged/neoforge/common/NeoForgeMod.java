@@ -105,8 +105,8 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.RegisteredCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
-import net.neoforged.neoforge.common.config.NeoForgeStandardConfig;
-import net.neoforged.neoforge.common.config.NeoForgeSharedConfig;
+import net.neoforged.neoforge.common.config.NeoForgeLocalConfig;
+import net.neoforged.neoforge.common.config.NeoForgeSyncedConfig;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.CustomDisplayIngredient;
@@ -595,8 +595,8 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
-        container.registerConfig(ModConfig.Type.SHARED, NeoForgeSharedConfig.SPEC);
-        container.registerConfig(ModConfig.Type.STANDARD, NeoForgeStandardConfig.SPEC);
+        container.registerConfig(ModConfig.Type.SHARED, NeoForgeSyncedConfig.SPEC);
+        container.registerConfig(ModConfig.Type.STANDARD, NeoForgeLocalConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 

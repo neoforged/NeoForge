@@ -13,10 +13,10 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * General configuration that needs to be synchronized to the server and/or is desirable to be configurable per world
  */
-public final class NeoForgeSharedConfig {
+public final class NeoForgeSyncedConfig {
     @ApiStatus.Internal
     public static final ModConfigSpec SPEC;
-    public static final NeoForgeSharedConfig INSTANCE;
+    public static final NeoForgeSyncedConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue removeErroringBlockEntities;
 
@@ -28,7 +28,7 @@ public final class NeoForgeSharedConfig {
 
     public final ModConfigSpec.BooleanValue advertiseDedicatedServerToLan;
 
-    private NeoForgeSharedConfig(ModConfigSpec.Builder builder) {
+    private NeoForgeSyncedConfig(ModConfigSpec.Builder builder) {
         removeErroringBlockEntities = builder
                 .comment("Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
                 .translation("neoforge.configgui.removeErroringBlockEntities")
@@ -59,7 +59,7 @@ public final class NeoForgeSharedConfig {
     }
 
     static {
-        final Pair<NeoForgeSharedConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeSharedConfig::new);
+        final Pair<NeoForgeSyncedConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeSyncedConfig::new);
         SPEC = specPair.getRight();
         INSTANCE = specPair.getLeft();
     }

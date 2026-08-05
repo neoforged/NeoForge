@@ -67,7 +67,7 @@ public final class ConfigSync {
 
     /**
      * Registers a listener for {@link ModConfigEvent.Reloading} for all mod busses,
-     * that will sync changes to server's shared configs to connected clients.
+     * that will sync changes to server's synced configs to connected clients.
      */
     public static void registerEventListeners() {
         for (var modContainer : ModList.get().getSortedMods()) {
@@ -75,7 +75,7 @@ public final class ConfigSync {
             if (modBus != null) {
                 modBus.addListener(ModConfigEvent.Reloading.class, event -> {
                     var config = event.getConfig();
-                    if (config.getType() != ModConfig.Type.SHARED) {
+                    if (config.getType() != ModConfig.Type.SYNCED) {
                         return;
                     }
                     var loadedConfig = config.getLoadedConfig();
