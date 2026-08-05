@@ -307,13 +307,16 @@ public class EntityFluidInteractionTests {
         final BlockPos seedOilPos = new BlockPos(1, 2, 1);
         final BlockPos waterPos = new BlockPos(3, 2, 1);
         final BlockPos lavaPos = new BlockPos(5, 2, 1);
+        final BlockPos milkPos = new BlockPos(7, 2, 1);
         helper.fillFluidColumn(SEED_OIL, seedOilPos);
         helper.fillFluidColumn(WATER, waterPos);
         helper.fillFluidColumn(LAVA, lavaPos);
+        helper.fillFluidColumn(MILK, milkPos);
 
         final Zombie seedOilZombie = helper.spawnZombieWithNoFreeWill(seedOilPos);
         final Zombie waterZombie = helper.spawnZombieWithNoFreeWill(waterPos);
         final Zombie lavaZombie = helper.spawnZombieWithNoFreeWill(lavaPos);
+        final Zombie milkZombie = helper.spawnZombieWithNoFreeWill(milkPos);
 
         helper.startSequence()
                 .thenExecuteAfter(2, () -> {
@@ -322,14 +325,17 @@ public class EntityFluidInteractionTests {
                     helper.assertFalse(seedOilZombie.isInLava(), "Custom fluid without lava-like behavior should stay outside lava state");
                     helper.assertTrue(waterZombie.isInWater(), "Water control should count as water");
                     helper.assertTrue(lavaZombie.isInLava(), "Lava control should count as lava");
+                    helper.assertTrue(milkZombie.isInWater(), "Custom fluid with water-like behavior should count as water");
 
                     final double seedOilTravelY = travelYVelocity(seedOilZombie);
                     final double waterTravelY = travelYVelocity(waterZombie);
                     final double lavaTravelY = travelYVelocity(lavaZombie);
-                    helper.assertTrue(seedOilTravelY < 0.0D, "Entity in custom fluid without movement override should move downward when travel is applied");
+                    final double milkTravelY = travelYVelocity(milkZombie);
+                    helper.assertTrue(seedOilTravelY == 0.0D, "Entity in custom non-waterlike fluid without movement override should stay in-place when travel is applied");
                     helper.assertTrue(waterTravelY < 0.0D, "Entity in water should move downward when travel is applied");
                     helper.assertTrue(lavaTravelY < 0.0D, "Entity in lava should move downward when travel is applied");
-                    helper.assertTrue(seedOilTravelY < waterTravelY, "Entity in custom fluid without movement override should sink faster than entity in water");
+                    helper.assertTrue(milkTravelY < 0.0D, "Entity in custom waterlike fluid without movement override should move downward when travel is applied");
+                    helper.assertTrue(milkTravelY == waterTravelY, "Entity in custom waterlike fluid without movement override should sink at the same rate as an entity in water");
                     helper.assertTrue(lavaTravelY < waterTravelY, "Entity in lava should sink faster than entity in water");
                 })
                 .thenSucceed();
