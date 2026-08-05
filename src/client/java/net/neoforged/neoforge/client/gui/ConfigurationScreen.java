@@ -96,7 +96,7 @@ import org.lwjgl.glfw.GLFW;
  * In any case, register your configuration screen in your client mod class like this:
  * 
  * {@snippet :
- * @Mod(value = "examplemod", dist = Dist.CLIENT)
+ * &#64;Mod(value = "examplemod", dist = Dist.CLIENT)
  * public class ExampleMod {
  *     public ExampleMod(ModContainer container) {
  *         container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, parent));
