@@ -595,8 +595,8 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
-        container.registerConfig(ModConfig.Type.SHARED, NeoForgeSyncedConfig.SPEC);
-        container.registerConfig(ModConfig.Type.STANDARD, NeoForgeLocalConfig.SPEC);
+        container.registerConfig(ModConfig.Type.SYNCED, NeoForgeSyncedConfig.SPEC);
+        container.registerConfig(ModConfig.Type.LOCAL, NeoForgeLocalConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 

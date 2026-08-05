@@ -52,7 +52,7 @@ public final class ConfigSync {
             configsToSync.put(connection, new LinkedHashMap<>());
         }
 
-        final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SHARED).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
+        final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SYNCED).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
             try {
                 return Files.readAllBytes(mc.getFullPath());
             } catch (IOException e) {

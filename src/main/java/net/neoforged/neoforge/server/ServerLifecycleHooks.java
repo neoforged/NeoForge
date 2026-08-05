@@ -90,7 +90,7 @@ public class ServerLifecycleHooks {
     public static void handleServerAboutToStart(final MinecraftServer server) {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SHARED, FMLPaths.CONFIGDIR.get(), getSyncedConfigPath(server));
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SYNCED, FMLPaths.CONFIGDIR.get(), getSyncedConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
@@ -124,7 +124,7 @@ public class ServerLifecycleHooks {
             latch.countDown();
             exitLatch = null;
         }
-        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SHARED);
+        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SYNCED);
     }
 
     @Nullable

@@ -61,7 +61,7 @@ public abstract class CommonModLoader {
                 if (FMLEnvironment.getDist() == Dist.CLIENT) {
                     ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
                 }
-                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.STANDARD, FMLPaths.CONFIGDIR.get());
+                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.LOCAL, FMLPaths.CONFIGDIR.get());
             });
         }
 
