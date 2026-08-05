@@ -44,7 +44,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -71,7 +70,6 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -487,12 +485,6 @@ public class NeoForgeMod {
         @Override
         public void setItemMovement(ItemEntity entity) {
             entity.setFluidMovement(.95F);
-        }
-
-        @Override
-        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-            // Prevent water movement logic (which is denoted by returning false) being used for lava
-            return true;
         }
     });
 
