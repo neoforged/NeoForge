@@ -1,0 +1,49 @@
+--- a/net/minecraft/world/entity/animal/sheep/Sheep.java
++++ b/net/minecraft/world/entity/animal/sheep/Sheep.java
+@@ -56,6 +56,11 @@
+ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.SheepRegrowWoolEvent;
++// CraftBukkit end
++
+ public class Sheep extends Animal implements Shearable {
+ 
+     private static final int EAT_ANIMATION_TICKS = 40;
+@@ -151,6 +156,11 @@
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
+                 if (this.readyForShearing()) {
++                    // CraftBukkit start
++                    if (!CraftEventFactory.handlePlayerShearEntityEvent(player, this, itemstack, hand)) {
++                        return InteractionResult.PASS;
++                    }
++                    // CraftBukkit end
+                     this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                     this.gameEvent(GameEvent.SHEAR, player);
+                     itemstack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+@@ -169,7 +179,9 @@
+         level.playSound((Entity) null, (Entity) this, SoundEvents.SHEEP_SHEAR, soundSource, 1.0F, 1.0F);
+         this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_SHEEP, tool, (serverlevel1, itemstack1) -> {
+             for (int i = 0; i < itemstack1.getCount(); ++i) {
++                this.forceDrops = true; // CraftBukkit
+                 ItemEntity itementity = this.spawnAtLocation(serverlevel1, itemstack1.copyWithCount(1), 1.0F);
++                this.forceDrops = false; // CraftBukkit
+ 
+                 if (itementity != null) {
+                     itementity.setDeltaMovement(itementity.getDeltaMovement().add((double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F), (double) (this.random.nextFloat() * 0.05F), (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)));
+@@ -292,6 +304,12 @@
+ 
+     @Override
+     public void ate() {
++        // CraftBukkit start
++        SheepRegrowWoolEvent event = new SheepRegrowWoolEvent((org.bukkit.entity.Sheep) this.getBukkitEntity());
++        this.level().getCraftServer().getPluginManager().callEvent(event);
++
++        if (event.isCancelled()) return;
++        // CraftBukkit end
+         super.ate();
+         this.setSheared(false);
+         if (this.canAgeUp()) {

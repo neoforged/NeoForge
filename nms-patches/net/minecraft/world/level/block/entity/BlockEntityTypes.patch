@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/BlockEntityTypes.java
++++ b/net/minecraft/world/level/block/entity/BlockEntityTypes.java
+@@ -67,7 +67,7 @@
+     public static final BlockEntityType<TestInstanceBlockEntity> TEST_INSTANCE_BLOCK = register(BlockEntityTypeIds.TEST_INSTANCE_BLOCK, TestInstanceBlockEntity::new, Blocks.TEST_INSTANCE_BLOCK);
+     public static final BlockEntityType<CopperGolemStatueBlockEntity> COPPER_GOLEM_STATUE = register(BlockEntityTypeIds.COPPER_GOLEM_STATUE, CopperGolemStatueBlockEntity::new, Blocks.COPPER_GOLEM_STATUE.asList());
+     public static final BlockEntityType<PotentSulfurBlockEntity> POTENT_SULFUR = register(BlockEntityTypeIds.POTENT_SULFUR, PotentSulfurBlockEntity::new, Blocks.POTENT_SULFUR);
+-    static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(BlockEntityTypes.COMMAND_BLOCK, BlockEntityTypes.LECTERN, BlockEntityTypes.SIGN, BlockEntityTypes.HANGING_SIGN, BlockEntityTypes.MOB_SPAWNER, BlockEntityTypes.TRIAL_SPAWNER);
++    static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(BlockEntityTypes.COMMAND_BLOCK, BlockEntityTypes.LECTERN, BlockEntityTypes.SIGN, BlockEntityTypes.HANGING_SIGN, BlockEntityTypes.MOB_SPAWNER, BlockEntityTypes.TRIAL_SPAWNER, BlockEntityTypes.CHEST); // CraftBukkit
+ 
+     public BlockEntityTypes() {}
+ 

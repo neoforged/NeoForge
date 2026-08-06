@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/animal/golem/IronGolem.java
++++ b/net/minecraft/world/entity/animal/golem/IronGolem.java
+@@ -100,7 +100,7 @@
+     @Override
+     protected void doPush(Entity entity) {
+         if (entity instanceof Enemy && !(entity instanceof Creeper) && this.getRandom().nextInt(20) == 0) {
+-            this.setTarget((LivingEntity) entity);
++            this.setTarget((LivingEntity) entity, org.bukkit.event.entity.EntityTargetLivingEntityEvent.TargetReason.COLLISION, true); // CraftBukkit - set reason
+         }
+ 
+         super.doPush(entity);
+@@ -130,7 +130,7 @@
+ 
+     @Override
+     public boolean canAttack(LivingEntity target) {
+-        return this.isPlayerCreated() && target.is((Object) EntityTypes.PLAYER) ? false : (target.is((Object) EntityTypes.CREEPER) ? false : super.canAttack(target));
++        return this.isPlayerCreated() && target.is(EntityTypes.PLAYER) ? false : (target.is(EntityTypes.CREEPER) ? false : super.canAttack(target)); // CraftBukkit - decompile error
+     }
+ 
+     @Override

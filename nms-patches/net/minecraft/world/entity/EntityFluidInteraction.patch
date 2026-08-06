@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/entity/EntityFluidInteraction.java
++++ b/net/minecraft/world/entity/EntityFluidInteraction.java
+@@ -19,6 +19,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.tags.FluidTags;
++// CraftBukkit end
++
+ public class EntityFluidInteraction {
+ 
+     private final Map<TagKey<Fluid>, EntityFluidInteraction.Tracker> trackerByFluid = new Reference2ObjectArrayMap();
+@@ -86,6 +90,11 @@
+                                             entityfluidinteraction_tracker.accumulateCurrent(vec3);
+                                         }
+                                     }
++                                    // CraftBukkit start - store last lava contact location
++                                    if (fluid1.is(FluidTags.LAVA)) {
++                                        entity.lastLavaContact = blockpos_mutableblockpos.immutable();
++                                    }
++                                    // CraftBukkit end
+                                 }
+                             }
+                         }

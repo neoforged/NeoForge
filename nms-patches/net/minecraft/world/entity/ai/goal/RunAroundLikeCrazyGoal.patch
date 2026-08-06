@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/entity/ai/goal/RunAroundLikeCrazyGoal.java
++++ b/net/minecraft/world/entity/ai/goal/RunAroundLikeCrazyGoal.java
+@@ -7,6 +7,11 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class RunAroundLikeCrazyGoal extends Goal {
+ 
+     private final AbstractHorse horse;
+@@ -63,7 +68,7 @@
+                 int i = this.horse.getTemper();
+                 int j = this.horse.getMaxTemper();
+ 
+-                if (j > 0 && this.horse.getRandom().nextInt(j) < i) {
++                if (j > 0 && this.horse.getRandom().nextInt(j) < i && !CraftEventFactory.callEntityTameEvent(this.horse, ((CraftHumanEntity) this.horse.getBukkitEntity().getPassenger()).getHandle()).isCancelled()) { // CraftBukkit - fire EntityTameEvent
+                     this.horse.tameWithName(player);
+                     return;
+                 }

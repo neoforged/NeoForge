@@ -1,0 +1,37 @@
+--- a/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
++++ b/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
+@@ -225,8 +225,10 @@
+         };
+     }
+ 
+-    protected void parseSelector() throws CommandSyntaxException {
+-        this.usesSelectors = true;
++    // CraftBukkit start
++    protected void parseSelector(boolean overridePermissions) throws CommandSyntaxException {
++        this.usesSelectors = !overridePermissions;
++        // CraftBukkit end
+         this.suggestions = this::suggestSelector;
+         if (!this.reader.canRead()) {
+             throw EntitySelectorParser.ERROR_MISSING_SELECTOR_TYPE.createWithContext(this.reader);
+@@ -509,6 +511,12 @@
+     }
+ 
+     public EntitySelector parse() throws CommandSyntaxException {
++        // CraftBukkit start
++        return parse(false);
++    }
++
++    public EntitySelector parse(boolean overridePermissions) throws CommandSyntaxException {
++        // CraftBukkit end
+         this.startPosition = this.reader.getCursor();
+         this.suggestions = this::suggestNameOrSelector;
+         if (this.reader.canRead() && this.reader.peek() == '@') {
+@@ -517,7 +525,7 @@
+             }
+ 
+             this.reader.skip();
+-            this.parseSelector();
++            this.parseSelector(overridePermissions); // CraftBukkit
+         } else {
+             this.parseNameOrUUID();
+         }

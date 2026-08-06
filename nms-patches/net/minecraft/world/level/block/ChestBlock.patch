@@ -1,0 +1,62 @@
+--- a/net/minecraft/world/level/block/ChestBlock.java
++++ b/net/minecraft/world/level/block/ChestBlock.java
+@@ -93,11 +93,32 @@
+             return Optional.empty();
+         }
+     };
+-    public static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>>() {
++    // CraftBukkit start
++    public static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleChestCombiner();
++
++    public static class DoubleChestCombiner implements DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>> {
++
+         public Optional<MenuProvider> acceptDouble(final ChestBlockEntity first, final ChestBlockEntity second) {
+-            final Container container = new CompoundContainer(first, second);
++            final CompoundContainer container = new CompoundContainer(first, second);
++
++            return Optional.of(new Dummy.DoubleInventory(first, second, container));
++        }
++
++        public static class Dummy {
++
++            public static class DoubleInventory implements MenuProvider {
++
++                private final ChestBlockEntity first;
++                private final ChestBlockEntity second;
++                public final CompoundContainer container;
++
++                public DoubleInventory(ChestBlockEntity first, ChestBlockEntity second, CompoundContainer container) {
++                    this.first = first;
++                    this.second = second;
++                    this.container = container;
++                }
++                // CraftBukkit end
+ 
+-            return Optional.of(new MenuProvider() {
+                 {
+                     // $FF impossible: Objects.requireNonNull(<VAR_NAMELESS_ENCLOSURE>);
+                 }
+@@ -122,7 +143,7 @@
+                 public Component getDisplayName() {
+                     return (Component) (first.hasCustomName() ? first.getDisplayName() : (second.hasCustomName() ? second.getDisplayName() : Component.translatable("container.chestDouble")));
+                 }
+-            });
++            };
+         }
+ 
+         public Optional<MenuProvider> acceptSingle(ChestBlockEntity single) {
+@@ -295,7 +316,13 @@
+ 
+     @Override
+     protected @Nullable MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+-        return (MenuProvider) ((Optional) this.combine(state, level, pos, false).apply(ChestBlock.MENU_PROVIDER_COMBINER)).orElse((Object) null);
++        // CraftBukkit start
++        return getMenuProvider(state, level, pos, false);
++    }
++
++    public @Nullable MenuProvider getMenuProvider(BlockState blockstate, Level level, BlockPos blockpos, boolean ignoreObstructions) {
++        return (MenuProvider) ((Optional) this.combine(blockstate, level, blockpos, ignoreObstructions).apply(ChestBlock.MENU_PROVIDER_COMBINER)).orElse((Object) null);
++        // CraftBukkit end
+     }
+ 
+     public static DoubleBlockCombiner.Combiner<ChestBlockEntity, Float2FloatFunction> opennessCombiner(final LidBlockEntity entity) {

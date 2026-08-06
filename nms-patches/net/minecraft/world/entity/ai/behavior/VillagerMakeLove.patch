@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
++++ b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
+@@ -17,6 +17,11 @@
+ import net.minecraft.world.entity.npc.villager.Villager;
+ import net.minecraft.world.level.pathfinder.Path;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.CreatureSpawnEvent;
++// CraftBukkit end
++
+ public class VillagerMakeLove extends Behavior<Villager> {
+ 
+     private long birthTimestamp;
+@@ -87,7 +92,7 @@
+     private boolean isBreedingPossible(Villager myBody) {
+         Brain<Villager> brain = myBody.getBrain();
+         Optional<AgeableMob> optional = brain.getMemory(MemoryModuleType.BREED_TARGET).filter((ageablemob) -> {
+-            return ageablemob.is((Object) EntityTypes.VILLAGER);
++            return ageablemob.is(EntityTypes.VILLAGER); // CraftBukkit - decompile error
+         });
+ 
+         return optional.isEmpty() ? false : BehaviorUtils.targetIsValid(brain, MemoryModuleType.BREED_TARGET, EntityTypes.VILLAGER) && myBody.canBreed() && ((AgeableMob) optional.get()).canBreed();
+@@ -113,11 +118,17 @@
+         if (villager2 == null) {
+             return Optional.empty();
+         } else {
+-            source.setAge(6000);
+-            target.setAge(6000);
+             villager2.setAge(-24000);
+             villager2.snapTo(source.getX(), source.getY(), source.getZ(), 0.0F, 0.0F);
+-            level.addFreshEntityWithPassengers(villager2);
++            // CraftBukkit start - call EntityBreedEvent
++            if (CraftEventFactory.callEntityBreedEvent(villager2, source, target, null, null, 0).isCancelled()) {
++                return Optional.empty();
++            }
++            // Move age setting down
++            source.setAge(6000);
++            target.setAge(6000);
++            level.addFreshEntityWithPassengers(villager2, CreatureSpawnEvent.SpawnReason.BREEDING);
++            // CraftBukkit end
+             level.broadcastEntityEvent(villager2, (byte) 12);
+             return Optional.of(villager2);
+         }

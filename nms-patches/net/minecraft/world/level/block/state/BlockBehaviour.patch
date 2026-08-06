@@ -1,0 +1,55 @@
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -82,6 +82,11 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.item.context.UseOnContext;
++import net.minecraft.world.level.ServerExplosion;
++// CraftBukkit end
++
+ public abstract class BlockBehaviour implements FeatureElement {
+ 
+     protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+@@ -165,6 +170,12 @@
+ 
+     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {}
+ 
++    // CraftBukkit start
++    protected void onPlace(BlockState blockstate, Level level, BlockPos blockpos, BlockState blockstate1, boolean flag, @Nullable UseOnContext context) {
++        this.onPlace(blockstate, level, blockpos, blockstate1, flag);
++    }
++    // CraftBukkit end
++
+     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {}
+ 
+     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
+@@ -176,8 +187,10 @@
+                 BlockEntity blockentity = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
+                 LootParams.Builder lootparams_builder = (new LootParams.Builder(level)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockentity).withOptionalParameter(LootContextParams.THIS_ENTITY, explosion.getDirectSourceEntity());
+ 
+-                if (explosion.getBlockInteraction() == Explosion.BlockInteraction.DESTROY_WITH_DECAY) {
+-                    lootparams_builder.withParameter(LootContextParams.EXPLOSION_RADIUS, explosion.radius());
++                // CraftBukkit start - add yield
++                if (explosion instanceof ServerExplosion serverExplosion && serverExplosion.yield < 1.0F) {
++                    lootparams_builder.withParameter(LootContextParams.EXPLOSION_RADIUS, 1.0F / serverExplosion.yield);
++                    // CraftBukkit end
+                 }
+ 
+                 state.spawnAfterBreak(level, pos, ItemStack.EMPTY, flag);
+@@ -1124,7 +1137,13 @@
+         }
+ 
+         public void onPlace(Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+-            this.getBlock().onPlace(this.asState(), level, pos, oldState, movedByPiston);
++            // CraftBukkit start
++            this.onPlace(level, pos, oldState, movedByPiston, null);
++        }
++
++        public void onPlace(Level level, BlockPos blockpos, BlockState blockstate, boolean flag, @Nullable UseOnContext context) {
++            this.getBlock().onPlace(this.asState(), level, blockpos, blockstate, flag, context);
++            // CraftBukkit end
+         }
+ 
+         public void affectNeighborsAfterRemoval(ServerLevel level, BlockPos pos, boolean movedByPiston) {

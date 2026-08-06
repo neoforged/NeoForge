@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java
++++ b/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java
+@@ -37,7 +37,7 @@
+         LivingEntity livingentity = this.mob.getLastHurtByMob();
+ 
+         if (i != this.timestamp && livingentity != null) {
+-            if (livingentity.is((Object) EntityTypes.PLAYER) && (Boolean) getServerLevel((Entity) this.mob).getGameRules().get(GameRules.UNIVERSAL_ANGER)) {
++            if (livingentity.is(EntityTypes.PLAYER) && (Boolean) getServerLevel((Entity) this.mob).getGameRules().get(GameRules.UNIVERSAL_ANGER)) { // CraftBukkit - decompile error
+                 return false;
+             } else {
+                 for (Class<?> oclass : this.toIgnoreDamage) {
+@@ -61,7 +61,7 @@
+ 
+     @Override
+     public void start() {
+-        this.mob.setTarget(this.mob.getLastHurtByMob());
++        this.mob.setTarget(this.mob.getLastHurtByMob(), org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, true); // CraftBukkit - reason
+         this.targetMob = this.mob.getTarget();
+         this.timestamp = this.mob.getLastHurtByMobTimestamp();
+         this.unseenMemoryTicks = 300;
+@@ -75,7 +75,7 @@
+     protected void alertOthers() {
+         double d0 = this.getFollowDistance();
+         AABB aabb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
+-        List<? extends Mob> list = this.mob.level().<Mob>getEntitiesOfClass(this.mob.getClass(), aabb, EntitySelector.NO_SPECTATORS);
++        List<? extends Mob> list = this.mob.level().getEntitiesOfClass(this.mob.getClass(), aabb, EntitySelector.NO_SPECTATORS); // CraftBukkit - decompile error
+         Iterator iterator = list.iterator();
+ 
+         while (true) {
+@@ -128,6 +128,6 @@
+     }
+ 
+     protected void alertOther(Mob other, LivingEntity hurtByMob) {
+-        other.setTarget(hurtByMob);
++        other.setTarget(hurtByMob, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY, true); // CraftBukkit - reason
+     }
+ }

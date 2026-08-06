@@ -1,0 +1,57 @@
+--- a/net/minecraft/world/entity/animal/golem/SnowGolem.java
++++ b/net/minecraft/world/entity/animal/golem/SnowGolem.java
+@@ -43,6 +43,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class SnowGolem extends AbstractGolem implements RangedAttackMob, Shearable {
+ 
+     private static final EntityDataAccessor<Byte> DATA_PUMPKIN_ID = SynchedEntityData.<Byte>defineId(SnowGolem.class, EntityDataSerializers.BYTE);
+@@ -98,7 +102,7 @@
+ 
+         if (level instanceof ServerLevel serverlevel) {
+             if ((Boolean) serverlevel.environmentAttributes().getValue(EnvironmentAttributes.SNOW_GOLEM_MELTS, this.position())) {
+-                this.hurtServer(serverlevel, this.damageSources().onFire(), 1.0F);
++                this.hurtServer(serverlevel, this.damageSources().melting(), 1.0F); // CraftBukkit - DamageSources.ON_FIRE -> CraftEventFactory.MELTING
+             }
+ 
+             if (!(Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
+@@ -114,7 +118,11 @@
+                 BlockPos blockpos = new BlockPos(j, k, l);
+ 
+                 if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
+-                    this.level().setBlockAndUpdate(blockpos, blockstate);
++                    // CraftBukkit start
++                    if (!CraftEventFactory.handleBlockFormEvent(this.level(), blockpos, blockstate, this)) {
++                        continue;
++                    }
++                    // CraftBukkit end
+                     this.level().gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this, blockstate));
+                 }
+             }
+@@ -151,6 +159,11 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
++                // CraftBukkit start
++                if (!CraftEventFactory.handlePlayerShearEntityEvent(player, this, itemstack, hand)) {
++                    return InteractionResult.PASS;
++                }
++                // CraftBukkit end
+                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                 this.gameEvent(GameEvent.SHEAR, player);
+                 itemstack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+@@ -167,7 +180,9 @@
+         level.playSound((Entity) null, (Entity) this, SoundEvents.SNOW_GOLEM_SHEAR, soundSource, 1.0F, 1.0F);
+         this.setPumpkin(false);
+         this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_SNOW_GOLEM, tool, (serverlevel1, itemstack1) -> {
++            this.forceDrops = true; // CraftBukkit
+             this.spawnAtLocation(serverlevel1, itemstack1, this.getEyeHeight());
++            this.forceDrops = false; // CraftBukkit
+         });
+     }
+ 

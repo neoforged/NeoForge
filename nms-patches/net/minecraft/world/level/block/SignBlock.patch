@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/level/block/SignBlock.java
++++ b/net/minecraft/world/level/block/SignBlock.java
+@@ -138,7 +138,7 @@
+                 } else if (flag1) {
+                     return InteractionResult.SUCCESS_SERVER;
+                 } else if (!this.otherPlayerIsEditingSign(player, signblockentity) && player.mayBuild() && this.hasEditableText(player, signblockentity, flag)) {
+-                    this.openTextEdit(player, signblockentity, flag);
++                    this.openTextEdit(player, signblockentity, flag, org.bukkit.event.player.PlayerSignOpenEvent.Cause.INTERACT); // CraftBukkit
+                     return InteractionResult.SUCCESS_SERVER;
+                 } else {
+                     return InteractionResult.PASS;
+@@ -188,6 +188,15 @@
+     }
+ 
+     public void openTextEdit(Player player, SignBlockEntity sign, boolean isFrontText) {
++        // Craftbukkit start
++        openTextEdit(player, sign, isFrontText, org.bukkit.event.player.PlayerSignOpenEvent.Cause.UNKNOWN);
++    }
++
++    public void openTextEdit(Player player, SignBlockEntity sign, boolean isFrontText, org.bukkit.event.player.PlayerSignOpenEvent.Cause cause) {
++        if (!org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerSignOpenEvent(player, sign, isFrontText, cause)) {
++            return;
++        }
++        // Craftbukkit end
+         sign.setAllowedPlayerEditor(player.getUUID());
+         player.openTextEdit(sign, isFrontText);
+     }
+@@ -200,6 +209,6 @@
+ 
+     @Override
+     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+-        return createTickerHelper(type, BlockEntityTypes.SIGN, SignBlockEntity::tick);
++        return null; // Craftbukkit - remove unnecessary sign ticking
+     }
+ }

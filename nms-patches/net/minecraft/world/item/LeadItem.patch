@@ -1,0 +1,87 @@
+--- a/net/minecraft/world/item/LeadItem.java
++++ b/net/minecraft/world/item/LeadItem.java
+@@ -15,6 +15,13 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import java.util.Iterator;
++import org.bukkit.craftbukkit.CraftEquipmentSlot;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.event.hanging.HangingPlaceEvent;
++// CraftBukkit end
++
+ public class LeadItem extends Item {
+ 
+     public LeadItem(Item.Properties properties) {
+@@ -31,14 +38,14 @@
+             Player player = context.getPlayer();
+ 
+             if (!level.isClientSide() && player != null) {
+-                return bindPlayerMobs(player, level, blockpos);
++                return bindPlayerMobs(player, level, blockpos, context.getHand()); // CraftBukkit - Pass hand
+             }
+         }
+ 
+         return InteractionResult.PASS;
+     }
+ 
+-    public static InteractionResult bindPlayerMobs(Player player, Level level, BlockPos pos) {
++    public static InteractionResult bindPlayerMobs(Player player, Level level, BlockPos pos, net.minecraft.world.InteractionHand interactionhand) { // CraftBukkit - Add EnumHand
+         List<Leashable> list = Leashable.leashableInArea(level, Vec3.atCenterOf(pos), (leashable) -> {
+             return leashable.getLeashHolder() == player;
+         });
+@@ -50,10 +57,33 @@
+             LeashFenceKnotEntity leashfenceknotentity = (LeashFenceKnotEntity) optional.orElseGet(() -> {
+                 return LeashFenceKnotEntity.createKnot(level, pos);
+             });
++            // CraftBukkit start - fire HangingPlaceEvent
++            if (optional.isEmpty()) {
++                org.bukkit.inventory.EquipmentSlot hand = CraftEquipmentSlot.getHand(interactionhand);
++                HangingPlaceEvent event = new HangingPlaceEvent((org.bukkit.entity.Hanging) leashfenceknotentity.getBukkitEntity(), player != null ? (org.bukkit.entity.Player) player.getBukkitEntity() : null, CraftBlock.at(level, pos), org.bukkit.block.BlockFace.SELF, hand);
++                level.getCraftServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    leashfenceknotentity.discard(null); // CraftBukkit - add Bukkit remove cause
++                    return InteractionResult.PASS;
++                }
++            }
++            // CraftBukkit end
+             boolean flag = false;
+ 
+-            for (Leashable leashable : list) {
++            // CraftBukkit start - handle setLeashedTo at end of loop
++            for (Iterator iterator = list.iterator(); iterator.hasNext();) {
++                Leashable leashable = (Leashable) iterator.next();
++                // CraftBukkit end
+                 if (leashable.canHaveALeashAttachedTo(leashfenceknotentity)) {
++                    // CraftBukkit start
++                    if (leashable instanceof Entity leashed) {
++                        if (org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerLeashEntityEvent(leashed, leashfenceknotentity, player, interactionhand).isCancelled()) {
++                            iterator.remove();
++                            continue;
++                        }
++                    }
++                    // CraftBukkit end
+                     leashable.setLeashedTo(leashfenceknotentity, true);
+                     flag = true;
+                 }
+@@ -65,11 +95,17 @@
+                 return InteractionResult.SUCCESS_SERVER;
+             } else {
+                 if (optional.isEmpty()) {
+-                    leashfenceknotentity.discard();
++                    leashfenceknotentity.discard(null); // CraftBukkit - remove reason
+                 }
+ 
+                 return InteractionResult.PASS;
+             }
+         }
+     }
++
++    // CraftBukkit start
++    public static InteractionResult bindPlayerMobs(Player player, Level level, BlockPos pos) {
++        return bindPlayerMobs(player, level, pos, net.minecraft.world.InteractionHand.MAIN_HAND);
++    }
++    // CraftBukkit end
+ }

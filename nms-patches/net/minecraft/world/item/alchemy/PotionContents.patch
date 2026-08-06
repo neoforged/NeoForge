@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/alchemy/PotionContents.java
++++ b/net/minecraft/world/item/alchemy/PotionContents.java
+@@ -158,7 +158,7 @@
+                 if (((MobEffect) mobeffectinstance.getEffect().value()).isInstantaneous()) {
+                     ((MobEffect) mobeffectinstance.getEffect().value()).applyInstantaneousEffect(serverlevel, player2, player2, entity, mobeffectinstance.getAmplifier(), 1.0D);
+                 } else {
+-                    entity.addEffect(mobeffectinstance);
++                    entity.addEffect(mobeffectinstance, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.POTION_DRINK); // CraftBukkit
+                 }
+ 
+             }, durationScale);

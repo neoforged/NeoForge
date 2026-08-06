@@ -1,0 +1,166 @@
+--- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -40,6 +40,16 @@
+ import net.minecraft.world.level.saveddata.SavedDataType;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import java.util.UUID;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.map.CraftMapCursor;
++import org.bukkit.craftbukkit.map.CraftMapView;
++import org.bukkit.craftbukkit.util.CraftChatMessage;
++// CraftBukkit end
++
+ public class MapItemSavedData extends SavedData {
+ 
+     private static final int MAP_SIZE = 128;
+@@ -68,6 +78,14 @@
+             return List.copyOf(mapitemsaveddata.bannerMarkers.values());
+         }), MapFrame.CODEC.listOf().optionalFieldOf("frames", List.of()).forGetter((mapitemsaveddata) -> {
+             return List.copyOf(mapitemsaveddata.frameMarkers.values());
++            // CraftBukkit start
++        }), Codec.LONG.optionalFieldOf("UUIDLeast", 0L).forGetter((mapitemsaveddata) -> {
++            UUID uuid = mapitemsaveddata.updateUUID();
++            return (uuid != null) ? uuid.getLeastSignificantBits() : 0L;
++        }), Codec.LONG.optionalFieldOf("UUIDMost", 0L).forGetter((mapitemsaveddata) -> {
++            UUID uuid = mapitemsaveddata.updateUUID();
++            return (uuid != null) ? uuid.getMostSignificantBits() : 0L;
++            // CraftBukkit end
+         })).apply(instance, MapItemSavedData::new);
+     });
+     public int centerX;
+@@ -85,6 +103,46 @@
+     private final Map<String, MapFrame> frameMarkers;
+     private int trackedDecorationCount;
+ 
++    // CraftBukkit start
++    public final CraftMapView mapView;
++    public UUID uniqueId = null;
++    public MapId id;
++
++    private static ResourceKey<Level> getWorldKey(ResourceKey<Level> resourcekey, long uuidLeast, long uuidMost) {
++        Level lookup = MinecraftServer.getServer().getLevel(resourcekey);
++        if (lookup != null) {
++            return resourcekey;
++        }
++
++        if (uuidLeast != 0L && uuidMost != 0L) {
++            UUID uniqueId = new UUID(uuidMost, uuidLeast);
++
++            CraftWorld world = (CraftWorld) Bukkit.getWorld(uniqueId);
++            // Check if the stored world details are correct.
++            if (world == null) {
++                /* All Maps which do not have their valid world loaded are set to a dimension which hopefully won't be reached.
++                   This is to prevent them being corrupted with the wrong map data. */
++                // PAIL: Use Vanilla exception handling for now
++            } else {
++                return world.getHandle().dimension();
++            }
++        }
++        throw new IllegalArgumentException("Invalid map dimension: " + resourcekey);
++    }
++
++    @Nullable
++    private UUID updateUUID() {
++        if (this.uniqueId == null) {
++            Level level = MinecraftServer.getServer().getLevel(this.dimension);
++            if (level != null) {
++                this.uniqueId = level.getWorld().getUID();
++            }
++        }
++
++        return this.uniqueId;
++    }
++    // CraftBukkit end
++
+     public static SavedDataType<MapItemSavedData> type(MapId id) {
+         return new SavedDataType<MapItemSavedData>(Identifier.withDefaultNamespace(id.key()), () -> {
+             throw new IllegalStateException("Should never create an empty map saved data");
+@@ -105,17 +163,21 @@
+         this.trackingPosition = trackingPosition;
+         this.unlimitedTracking = unlimitedTracking;
+         this.locked = locked;
++        // CraftBukkit start
++        updateUUID();
++        mapView = new CraftMapView(this);
+     }
+ 
+-    private MapItemSavedData(ResourceKey<Level> dimension, int centerX, int centerZ, byte scale, ByteBuffer colors, boolean trackingPosition, boolean unlimitedTracking, boolean locked, List<MapBanner> banners, List<MapFrame> frames) {
+-        this(centerX, centerZ, (byte) Mth.clamp(scale, 0, 4), trackingPosition, unlimitedTracking, locked, dimension);
++    private MapItemSavedData(ResourceKey<Level> dimension, int centerX, int centerZ, byte scale, ByteBuffer colors, boolean trackingPosition, boolean unlimitedTracking, boolean locked, List<MapBanner> banners, List<MapFrame> frames, long uuidLeast, long uuidMost) {
++        this(centerX, centerZ, (byte) Mth.clamp(scale, 0, 4), trackingPosition, unlimitedTracking, locked, getWorldKey(dimension, uuidLeast, uuidMost));
++        // CraftBukkit end
+         if (colors.array().length == 16384) {
+             this.colors = colors.array();
+         }
+ 
+         for (MapBanner mapbanner : banners) {
+             this.bannerMarkers.put(mapbanner.getId(), mapbanner);
+-            this.addDecoration(mapbanner.getDecoration(), (LevelAccessor) null, mapbanner.getId(), (double) mapbanner.pos().getX(), (double) mapbanner.pos().getZ(), 180.0D, (Component) mapbanner.name().orElse((Object) null));
++            this.addDecoration(mapbanner.getDecoration(), (LevelAccessor) null, mapbanner.getId(), (double) mapbanner.pos().getX(), (double) mapbanner.pos().getZ(), 180.0D, (Component) mapbanner.name().orElse(null)); // CraftBukkit - decompile error
+         }
+ 
+         for (MapFrame mapframe : frames) {
+@@ -393,7 +455,7 @@
+ 
+             if (!this.isTrackedCountOverLimit(256)) {
+                 this.bannerMarkers.put(mapbanner.getId(), mapbanner);
+-                this.addDecoration(mapbanner.getDecoration(), level, mapbanner.getId(), d0, d1, 180.0D, (Component) mapbanner.name().orElse((Object) null));
++                this.addDecoration(mapbanner.getDecoration(), level, mapbanner.getId(), d0, d1, 180.0D, (Component) mapbanner.name().orElse(null)); // CraftBukkit - decompile error
+                 this.setDirty();
+                 return true;
+             }
+@@ -550,7 +612,7 @@
+             this.player = player;
+         }
+ 
+-        private MapItemSavedData.MapPatch createPatch() {
++        private MapItemSavedData.MapPatch createPatch(byte[] buffer) { // CraftBukkit
+             int i = this.minDirtyX;
+             int j = this.minDirtyY;
+             int k = this.maxDirtyX + 1 - this.minDirtyX;
+@@ -559,7 +621,7 @@
+ 
+             for (int i1 = 0; i1 < k; ++i1) {
+                 for (int j1 = 0; j1 < l; ++j1) {
+-                    abyte[i1 + j1 * k] = MapItemSavedData.this.colors[i + i1 + (j + j1) * 128];
++                    abyte[i1 + j1 * k] = buffer[i + i1 + (j + j1) * 128]; // CraftBukkit
+                 }
+             }
+ 
+@@ -568,19 +630,29 @@
+ 
+         private @Nullable Packet<?> nextUpdatePacket(MapId id) {
+             MapItemSavedData.MapPatch mapitemsaveddata_mappatch;
++            org.bukkit.craftbukkit.map.RenderData render = MapItemSavedData.this.mapView.render((org.bukkit.craftbukkit.entity.CraftPlayer) this.player.getBukkitEntity()); // CraftBukkit
+ 
+             if (this.dirtyData) {
+                 this.dirtyData = false;
+-                mapitemsaveddata_mappatch = this.createPatch();
++                mapitemsaveddata_mappatch = this.createPatch(render.buffer); // CraftBukkit
+             } else {
+                 mapitemsaveddata_mappatch = null;
+             }
+ 
+             Collection<MapDecoration> collection;
+ 
+-            if (this.dirtyDecorations && this.tick++ % 5 == 0) {
++            if ((true || this.dirtyDecorations) && this.tick++ % 5 == 0) { // CraftBukkit - custom maps don't update this yet
+                 this.dirtyDecorations = false;
+-                collection = MapItemSavedData.this.decorations.values();
++                // CraftBukkit start
++                java.util.Collection<MapDecoration> icons = new java.util.ArrayList<MapDecoration>();
++
++                for (org.bukkit.map.MapCursor cursor : render.cursors) {
++                    if (cursor.isVisible()) {
++                        icons.add(new MapDecoration(CraftMapCursor.CraftType.bukkitToMinecraftHolder(cursor.getType()), cursor.getX(), cursor.getY(), cursor.getDirection(), CraftChatMessage.fromStringOrOptional(cursor.getCaption())));
++                    }
++                }
++                collection = icons;
++                // CraftBukkit end
+             } else {
+                 collection = null;
+             }

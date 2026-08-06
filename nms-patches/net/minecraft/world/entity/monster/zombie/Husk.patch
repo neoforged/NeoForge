@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/zombie/Husk.java
++++ b/net/minecraft/world/entity/monster/zombie/Husk.java
+@@ -68,7 +68,7 @@
+         if (flag && this.getMainHandItem().isEmpty() && target instanceof LivingEntity livingentity) {
+             float f = level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+ 
+-            livingentity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 140 * (int) f), this);
++            livingentity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 140 * (int) f), this, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
+         }
+ 
+         return flag;

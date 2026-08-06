@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/entity/projectile/EvokerFangs.java
++++ b/net/minecraft/world/entity/projectile/EvokerFangs.java
+@@ -17,6 +17,10 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class EvokerFangs extends Entity implements TraceableEntity {
+ 
+     public static final int ATTACK_DURATION = 20;
+@@ -99,7 +103,7 @@
+             }
+ 
+             if (--this.lifeTicks < 0) {
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+             }
+         }
+ 
+@@ -110,7 +114,7 @@
+ 
+         if (entity.isAlive() && !entity.isInvulnerable() && entity != livingentity1) {
+             if (livingentity1 == null) {
+-                entity.hurt(this.damageSources().magic(), 6.0F);
++                entity.hurt(this.damageSources().magic().customEntityDamager(this), 6.0F); // CraftBukkit
+             } else {
+                 if (livingentity1.isAlliedTo((Entity) entity)) {
+                     return;

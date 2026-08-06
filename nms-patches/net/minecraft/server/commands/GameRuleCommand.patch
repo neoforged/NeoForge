@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/GameRuleCommand.java
++++ b/net/minecraft/server/commands/GameRuleCommand.java
+@@ -42,7 +42,7 @@
+         CommandSourceStack commandsourcestack = (CommandSourceStack) context.getSource();
+         T t0 = (T) context.getArgument("value", gameRule.valueClass());
+ 
+-        commandsourcestack.getLevel().getGameRules().set(gameRule, t0, ((CommandSourceStack) context.getSource()).getServer());
++        commandsourcestack.getLevel().getGameRules().set(gameRule, t0, ((CommandSourceStack) context.getSource()).getLevel()); // CraftBukkit
+         commandsourcestack.sendSuccess(() -> {
+             return Component.translatable("commands.gamerule.set", gameRule.id(), gameRule.serialize(t0));
+         }, true);

@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
++++ b/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
+@@ -31,6 +31,12 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.CraftGameEvent;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.event.block.BlockReceiveGameEvent;
++// CraftBukkit end
++
+ public interface VibrationSystem {
+ 
+     List<ResourceKey<GameEvent>> RESONANCE_EVENTS = List.of(GameEvent.RESONATE_1.key(), GameEvent.RESONATE_2.key(), GameEvent.RESONATE_3.key(), GameEvent.RESONATE_4.key(), GameEvent.RESONATE_5.key(), GameEvent.RESONATE_6.key(), GameEvent.RESONATE_7.key(), GameEvent.RESONATE_8.key(), GameEvent.RESONATE_9.key(), GameEvent.RESONATE_10.key(), GameEvent.RESONATE_11.key(), GameEvent.RESONATE_12.key(), GameEvent.RESONATE_13.key(), GameEvent.RESONATE_14.key(), GameEvent.RESONATE_15.key());
+@@ -113,7 +119,7 @@
+             return instance.group(VibrationInfo.CODEC.lenientOptionalFieldOf("event").forGetter((vibrationsystem_data) -> {
+                 return Optional.ofNullable(vibrationsystem_data.currentVibration);
+             }), VibrationSelector.CODEC.fieldOf("selector").forGetter(VibrationSystem.Data::getSelectionStrategy), ExtraCodecs.optionalAlwaysPresentFieldOf(ExtraCodecs.NON_NEGATIVE_INT, "event_delay", 0).forGetter(VibrationSystem.Data::getTravelTimeInTicks)).apply(instance, (optional, vibrationselector, integer) -> {
+-                return new VibrationSystem.Data((VibrationInfo) optional.orElse((Object) null), vibrationselector, integer, true);
++                return new VibrationSystem.Data((VibrationInfo) optional.orElse(null), vibrationselector, integer, true); // CraftBukkit- decompile error
+             });
+         });
+         public static final String NBT_TAG_KEY = "listener";
+@@ -201,7 +207,14 @@
+                 } else {
+                     Vec3 vec31 = (Vec3) optional.get();
+ 
+-                    if (!vibrationsystem_user.canReceiveVibration(level, BlockPos.containing(sourcePosition), event, context)) {
++                    // CraftBukkit start
++                    boolean defaultCancel = !vibrationsystem_user.canReceiveVibration(level, BlockPos.containing(sourcePosition), event, context);
++                    Entity sourceEntity = context.sourceEntity();
++                    BlockReceiveGameEvent bukkitEvent = new BlockReceiveGameEvent(CraftGameEvent.minecraftToBukkit(event.value()), CraftBlock.at(level, BlockPos.containing(vec31)), (sourceEntity == null) ? null : sourceEntity.getBukkitEntity());
++                    bukkitEvent.setCancelled(defaultCancel);
++                    level.getCraftServer().getPluginManager().callEvent(bukkitEvent);
++                    if (bukkitEvent.isCancelled()) {
++                        // CraftBukkit end
+                         return false;
+                     } else if (isOccluded(level, sourcePosition, vec31)) {
+                         return false;
+@@ -313,7 +326,8 @@
+             if (user.requiresAdjacentChunksToBeTicking() && !areAdjacentChunksTicking(serverLevel, blockpos1)) {
+                 return false;
+             } else {
+-                user.onReceiveVibration(serverLevel, blockpos, currentVibration.gameEvent(), (Entity) currentVibration.getEntity(serverLevel).orElse((Object) null), (Entity) currentVibration.getProjectileOwner(serverLevel).orElse((Object) null), VibrationSystem.Listener.distanceBetweenInBlocks(blockpos, blockpos1));
++                // CraftBukkit - decompile error
++                user.onReceiveVibration(serverLevel, blockpos, currentVibration.gameEvent(), (Entity) currentVibration.getEntity(serverLevel).orElse(null), (Entity) currentVibration.getProjectileOwner(serverLevel).orElse(null), VibrationSystem.Listener.distanceBetweenInBlocks(blockpos, blockpos1));
+                 data.setCurrentVibration((VibrationInfo) null);
+                 return true;
+             }

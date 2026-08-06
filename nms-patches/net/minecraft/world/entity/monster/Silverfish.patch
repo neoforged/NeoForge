@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/entity/monster/Silverfish.java
++++ b/net/minecraft/world/entity/monster/Silverfish.java
+@@ -31,6 +31,11 @@
+ import net.minecraft.world.level.gamerules.GameRules;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class Silverfish extends Monster {
+ 
+     private Silverfish.@Nullable SilverfishWakeUpFriendsGoal friendsGoal;
+@@ -161,6 +166,11 @@
+                             if (block instanceof InfestedBlock) {
+                                 InfestedBlock infestedblock = (InfestedBlock) block;
+ 
++                                // CraftBukkit start
++                                if (!CraftEventFactory.callEntityChangeBlockEvent(this.silverfish, blockpos1, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState())) {
++                                    continue;
++                                }
++                                // CraftBukkit end
+                                 if ((Boolean) getServerLevel(level).getGameRules().get(GameRules.MOB_GRIEFING)) {
+                                     level.destroyBlock(blockpos1, true, this.silverfish);
+                                 } else {
+@@ -229,9 +239,14 @@
+                 BlockState blockstate = levelaccessor.getBlockState(blockpos);
+ 
+                 if (InfestedBlock.isCompatibleHostBlock(blockstate)) {
++                    // CraftBukkit start
++                    if (!CraftEventFactory.callEntityChangeBlockEvent(this.mob, blockpos, InfestedBlock.infestedStateByHost(blockstate))) {
++                        return;
++                    }
++                    // CraftBukkit end
+                     levelaccessor.setBlock(blockpos, InfestedBlock.infestedStateByHost(blockstate), 3);
+                     this.mob.spawnAnim();
+-                    this.mob.discard();
++                    this.mob.discard(EntityRemoveEvent.Cause.ENTER_BLOCK); // CraftBukkit - add Bukkit remove cause
+                 }
+ 
+             }

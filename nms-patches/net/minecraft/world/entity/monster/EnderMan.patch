@@ -1,0 +1,74 @@
+--- a/net/minecraft/world/entity/monster/EnderMan.java
++++ b/net/minecraft/world/entity/monster/EnderMan.java
+@@ -66,6 +66,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++// CraftBukkit end
++
+ public class EnderMan extends Monster implements NeutralMob {
+ 
+     private static final Identifier SPEED_MODIFIER_ATTACKING_ID = Identifier.withDefaultNamespace("attacking");
+@@ -113,7 +118,17 @@
+ 
+     @Override
+     public void setTarget(@Nullable LivingEntity target) {
+-        super.setTarget(target);
++        // CraftBukkit start - fire event
++        setTarget(target, EntityTargetEvent.TargetReason.UNKNOWN, true);
++    }
++
++    @Override
++    public boolean setTarget(LivingEntity target, EntityTargetEvent.TargetReason reason, boolean fireEvent) {
++        if (!super.setTarget(target, reason, fireEvent)) {
++            return false;
++        }
++        target = getTarget();
++        // CraftBukkit end
+         AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+ 
+         if (target == null) {
+@@ -128,6 +143,7 @@
+                 attributeinstance.addTransientModifier(EnderMan.SPEED_MODIFIER_ATTACKING);
+             }
+         }
++        return true;
+ 
+     }
+ 
+@@ -200,7 +216,7 @@
+         super.readAdditionalSaveData(input);
+         this.setCarriedBlock((BlockState) input.read("carriedBlockState", BlockState.CODEC).filter((blockstate) -> {
+             return !blockstate.isAir();
+-        }).orElse((Object) null));
++        }).orElse(null)); // CraftBukkit - decompile error
+         this.readPersistentAngerSaveData(this.level(), input);
+     }
+ 
+@@ -558,9 +574,11 @@
+             if (blockstate2 != null) {
+                 blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
+                 if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
++                    if (CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockpos, blockstate2)) { // CraftBukkit - Place event
+                     level.setBlock(blockpos, blockstate2, 3);
+                     level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
+                     this.enderman.setCarriedBlock((BlockState) null);
++                    } // CraftBukkit
+                 }
+ 
+             }
+@@ -599,9 +617,11 @@
+             boolean flag = blockhitresult.getBlockPos().equals(blockpos);
+ 
+             if (blockstate.is(BlockTags.ENDERMAN_HOLDABLE) && flag) {
++                if (CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockpos, Blocks.AIR.defaultBlockState())) { // CraftBukkit - Place event
+                 level.removeBlock(blockpos, false);
+                 level.gameEvent(GameEvent.BLOCK_DESTROY, blockpos, GameEvent.Context.of(this.enderman, blockstate));
+                 this.enderman.setCarriedBlock(blockstate.getBlock().defaultBlockState());
++                } // CraftBukkit
+             }
+ 
+         }

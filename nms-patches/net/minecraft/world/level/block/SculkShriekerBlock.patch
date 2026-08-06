@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/SculkShriekerBlock.java
++++ b/net/minecraft/world/level/block/SculkShriekerBlock.java
+@@ -64,6 +64,7 @@
+             ServerPlayer serverplayer = SculkShriekerBlockEntity.tryGetPlayer(entity);
+ 
+             if (serverplayer != null) {
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent(serverplayer, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null).isCancelled()) return; // CraftBukkit
+                 serverlevel.getBlockEntity(pos, BlockEntityTypes.SCULK_SHRIEKER).ifPresent((sculkshriekerblockentity) -> {
+                     sculkshriekerblockentity.tryShriek(serverlevel, serverplayer);
+                 });
+@@ -126,10 +127,17 @@
+     @Override
+     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
+         super.spawnAfterBreak(state, level, pos, tool, dropExperience);
++        // CraftBukkit start - Delegate to getExpDrop
++    }
++
++    @Override
++    public int getExpDrop(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
+         if (dropExperience) {
+-            this.tryDropExperience(level, pos, tool, ConstantInt.of(5));
++            return this.tryDropExperience(level, pos, tool, ConstantInt.of(5));
+         }
+ 
++        return 0;
++        // CraftBukkit end
+     }
+ 
+     @Override

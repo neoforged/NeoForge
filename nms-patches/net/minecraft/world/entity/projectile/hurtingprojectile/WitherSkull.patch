@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/WitherSkull.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/WitherSkull.java
+@@ -26,6 +26,11 @@
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.entity.ExplosionPrimeEvent;
++// CraftBukkit end
++
+ public class WitherSkull extends AbstractHurtingProjectile {
+ 
+     private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.<Boolean>defineId(WitherSkull.class, EntityDataSerializers.BOOLEAN);
+@@ -72,7 +77,7 @@
+                     if (entity.isAlive()) {
+                         EnchantmentHelper.doPostAttackEffects(serverlevel, entity, damagesource);
+                     } else {
+-                        livingentity.heal(5.0F);
++                        livingentity.heal(5.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.WITHER); // CraftBukkit
+                     }
+                 }
+             } else {
+@@ -89,7 +94,7 @@
+                 }
+ 
+                 if (i > 0) {
+-                    livingentity1.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * i, 1), this.getEffectSource());
++                    livingentity1.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * i, 1), this.getEffectSource(), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
+                 }
+             }
+ 
+@@ -100,8 +105,16 @@
+     protected void onHit(HitResult hitResult) {
+         super.onHit(hitResult);
+         if (!this.level().isClientSide()) {
+-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, Level.ExplosionInteraction.MOB);
+-            this.discard();
++            // CraftBukkit start
++            // this.level().explode(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, World.a.MOB);
++            ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), 1.0F, false);
++            this.level().getCraftServer().getPluginManager().callEvent(event);
++
++            if (!event.isCancelled()) {
++                this.level().explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), event.getFire(), Level.ExplosionInteraction.MOB);
++            }
++            // CraftBukkit end
++            this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }

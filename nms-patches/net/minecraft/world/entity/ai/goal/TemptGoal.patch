@@ -1,0 +1,56 @@
+--- a/net/minecraft/world/entity/ai/goal/TemptGoal.java
++++ b/net/minecraft/world/entity/ai/goal/TemptGoal.java
+@@ -13,6 +13,13 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
++// CraftBukkit end
++
+ public class TemptGoal extends Goal {
+ 
+     private static final TargetingConditions TEMPT_TARGETING = TargetingConditions.forNonCombat().ignoreLineOfSight();
+@@ -25,7 +32,7 @@
+     private double pz;
+     private double pRotX;
+     private double pRotY;
+-    protected @Nullable Player player;
++    protected @Nullable LivingEntity player; // CraftBukkit
+     private int calmDown;
+     private boolean isRunning;
+     private final Predicate<ItemStack> items;
+@@ -59,6 +66,15 @@
+             return false;
+         } else {
+             this.player = getServerLevel((Entity) this.mob).getNearestPlayer(this.targetingConditions.range(this.mob.getAttributeValue(Attributes.TEMPT_RANGE)), this.mob);
++            // CraftBukkit start
++            if (this.player != null) {
++                EntityTargetLivingEntityEvent event = CraftEventFactory.callEntityTargetLivingEvent(this.mob, this.player, EntityTargetEvent.TargetReason.TEMPT);
++                if (event.isCancelled()) {
++                    return false;
++                }
++                this.player = (event.getTarget() == null) ? null : ((CraftLivingEntity) event.getTarget()).getHandle();
++            }
++            // CraftBukkit end
+             return this.player != null;
+         }
+     }
+@@ -127,7 +143,13 @@
+     }
+ 
+     protected void navigateTowards(Player player) {
+-        this.mob.getNavigation().moveTo((Entity) player, this.speedModifier);
++        // CraftBukkit start
++        this.navigateTowards((Entity) player);
++    }
++
++    protected void navigateTowards(Entity entity) {
++        this.mob.getNavigation().moveTo(entity, this.speedModifier);
++        // CraftBukkit end
+     }
+ 
+     public boolean isRunning() {

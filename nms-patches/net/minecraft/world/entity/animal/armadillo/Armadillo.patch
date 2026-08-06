@@ -1,0 +1,69 @@
+--- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
++++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
+@@ -55,6 +55,10 @@
+ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityDamageEvent;
++// CraftBukkit end
++
+ public class Armadillo extends Animal {
+ 
+     public static final float BABY_SCALE = 0.6F;
+@@ -131,7 +135,7 @@
+ 
+     @Override
+     public Brain<Armadillo> getBrain() {
+-        return super.getBrain();
++        return (Brain<Armadillo>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -145,10 +149,12 @@
+         ArmadilloAi.updateActivity(this);
+         profilerfiller.pop();
+         if (this.isAlive() && --this.scuteTime <= 0 && this.shouldDropLoot(level)) {
++            this.forceDrops = true; // CraftBukkit
+             if (this.dropFromGiftLootTable(level, BuiltInLootTables.ARMADILLO_SHED, this::spawnAtLocation)) {
+                 this.playSound(SoundEvents.ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+                 this.gameEvent(GameEvent.ENTITY_PLACE);
+             }
++            this.forceDrops = false; // CraftBukkit
+ 
+             this.scuteTime = this.pickNextScuteDropTime();
+         }
+@@ -299,8 +305,13 @@
+     }
+ 
+     @Override
+-    protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
+-        super.actuallyHurt(level, source, dmg);
++    // CraftBukkit start - void -> boolean
++    public boolean actuallyHurt(ServerLevel level, DamageSource source, float dmg, EntityDamageEvent event) {
++        boolean damageResult = super.actuallyHurt(level, source, dmg, event);
++        if (!damageResult) {
++            return false;
++        }
++        // CraftBukkit end
+         if (!this.isNoAi() && !this.isDeadOrDying()) {
+             if (source.getEntity() instanceof LivingEntity) {
+                 this.getBrain().setMemoryWithExpiry(MemoryModuleType.DANGER_DETECTED_RECENTLY, true, 80L);
+@@ -312,6 +323,7 @@
+             }
+ 
+         }
++        return true; // CraftBukkit
+     }
+ 
+     @Override
+@@ -335,7 +347,9 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
++                this.forceDrops = true; // CraftBukkit
+                 this.dropFromEntityInteractLootTable(serverlevel, BuiltInLootTables.ARMADILLO_BRUSH, interactingEntity, tool, this::spawnAtLocation);
++                this.forceDrops = false; // CraftBukkit
+                 this.playSound(SoundEvents.ARMADILLO_BRUSH);
+                 this.gameEvent(GameEvent.ENTITY_INTERACT);
+             }

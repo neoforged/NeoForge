@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/item/EndCrystalItem.java
++++ b/net/minecraft/world/item/EndCrystalItem.java
+@@ -48,6 +48,11 @@
+                         EndCrystal endcrystal = new EndCrystal(level, d0 + 0.5D, d1, d2 + 0.5D);
+ 
+                         endcrystal.setShowBottom(false);
++                        // CraftBukkit start
++                        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPlaceEvent(context, endcrystal).isCancelled()) {
++                            return InteractionResult.FAIL;
++                        }
++                        // CraftBukkit end
+                         level.addFreshEntity(endcrystal);
+                         level.gameEvent(context.getPlayer(), (Holder) GameEvent.ENTITY_PLACE, blockpos1);
+                         EnderDragonFight enderdragonfight = serverlevel.getDragonFight();

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/feline/Ocelot.java
++++ b/net/minecraft/world/entity/animal/feline/Ocelot.java
+@@ -173,7 +173,7 @@
+         if ((this.temptGoal == null || this.temptGoal.isRunning()) && !this.isTrusting() && this.isFood(itemstack) && player.distanceToSqr((Entity) this) < 9.0D) {
+             this.usePlayerItem(player, hand, itemstack);
+             if (!this.level().isClientSide()) {
+-                if (this.random.nextInt(3) == 0) {
++                if (this.random.nextInt(3) == 0 && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, player).isCancelled()) { // CraftBukkit - added event call and isCancelled check
+                     this.setTrusting(true);
+                     this.spawnTrustingParticles(true);
+                     this.level().broadcastEntityEvent(this, (byte) 41);

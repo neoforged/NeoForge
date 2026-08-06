@@ -1,0 +1,115 @@
+--- a/net/minecraft/server/dedicated/Settings.java
++++ b/net/minecraft/server/dedicated/Settings.java
+@@ -23,17 +23,37 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++import joptsimple.OptionSet; // CraftBukkit
++
+ public abstract class Settings<T extends Settings<T>> {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public final Properties properties;
++    // CraftBukkit start
++    private OptionSet options = null;
+ 
+-    public Settings(Properties properties) {
++    public Settings(Properties properties, final OptionSet options) {
+         this.properties = properties;
++
++        this.options = options;
++    }
++
++    private String getOverride(String name, String value) {
++        if ((this.options != null) && (this.options.has(name))) {
++            return String.valueOf(this.options.valueOf(name));
++        }
++
++        return value;
++        // CraftBukkit end
+     }
+ 
+     public static Properties loadFromFile(Path file) {
+         try {
++            // CraftBukkit start - SPIGOT-7465, MC-264979: Don't load if file doesn't exist
++            if (!file.toFile().exists()) {
++                return new Properties();
++            }
++            // CraftBukkit end
+             try (InputStream inputstream = Files.newInputStream(file)) {
+                 CharsetDecoder charsetdecoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT);
+                 Properties properties = new Properties();
+@@ -57,6 +77,11 @@
+     }
+ 
+     public void store(Path output) {
++        // CraftBukkit start - Don't attempt writing to file if it's read only
++        if (output.toFile().exists() && !output.toFile().canWrite()) {
++            return;
++        }
++        // CraftBukkit end
+         try (Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
+             this.properties.store(writer, "Minecraft server properties");
+         } catch (IOException ioexception) {
+@@ -68,7 +93,7 @@
+     private static <V extends Number> Function<String, @Nullable V> wrapNumberDeserializer(Function<String, V> inner) {
+         return (s) -> {
+             try {
+-                return (Number) inner.apply(s);
++                return (V) inner.apply(s); // CraftBukkit - decompile error
+             } catch (NumberFormatException numberformatexception) {
+                 return null;
+             }
+@@ -86,7 +111,7 @@
+     }
+ 
+     private @Nullable String getStringRaw(String key) {
+-        return (String) this.properties.get(key);
++        return (String) getOverride(key, this.properties.getProperty(key)); // CraftBukkit
+     }
+ 
+     protected <V> @Nullable V getLegacy(String key, Function<String, V> deserializer) {
+@@ -101,6 +126,16 @@
+     }
+ 
+     protected <V> V get(String key, Function<String, @Nullable V> deserializer, Function<V, String> serializer, V defaultValue) {
++        // CraftBukkit start
++        try {
++            return get0(key, deserializer, serializer, defaultValue);
++        } catch (Exception ex) {
++            throw new RuntimeException("Could not load invalidly configured property '" + key + "'", ex);
++        }
++    }
++
++    private <V> V get0(String key, Function<String, @Nullable V> deserializer, Function<V, String> serializer, V defaultValue) {
++        // CraftBukkit end
+         String s1 = this.getStringRaw(key);
+         V v1 = (V) MoreObjects.firstNonNull(s1 != null ? deserializer.apply(s1) : null, defaultValue);
+ 
+@@ -113,7 +148,7 @@
+         V v1 = (V) MoreObjects.firstNonNull(s1 != null ? deserializer.apply(s1) : null, defaultValue);
+ 
+         this.properties.put(key, serializer.apply(v1));
+-        return new Settings.MutableValue<V>(key, v1, serializer);
++        return new Settings.MutableValue(key, v1, serializer); // CraftBukkit - decompile error
+     }
+ 
+     protected <V> V get(String key, Function<String, @Nullable V> deserializer, UnaryOperator<V> validator, Function<V, String> serializer, V defaultValue) {
+@@ -179,7 +214,7 @@
+         return properties;
+     }
+ 
+-    protected abstract T reload(RegistryAccess registryAccess, Properties properties);
++    protected abstract T reload(RegistryAccess registryaccess, Properties properties, OptionSet optionset); // CraftBukkit
+ 
+     public class MutableValue<V> implements Supplier<V> {
+ 
+@@ -203,7 +238,7 @@
+             Properties properties = Settings.this.cloneProperties();
+ 
+             properties.put(this.key, this.serializer.apply(value));
+-            return (T) Settings.this.reload(registryAccess, properties);
++            return (T) Settings.this.reload(registryAccess, properties, Settings.this.options); // CraftBukkit
+         }
+     }
+ }

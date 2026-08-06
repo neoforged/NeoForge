@@ -1,0 +1,55 @@
+--- a/net/minecraft/world/level/storage/loot/LootTable.java
++++ b/net/minecraft/world/level/storage/loot/LootTable.java
+@@ -31,6 +31,13 @@
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.CraftLootTable;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.world.LootGenerateEvent;
++// CraftBukkit end
++
+ public class LootTable implements Validatable {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -50,13 +57,14 @@
+             })).apply(instance, LootTable::new);
+         });
+     });
+-    public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.<Holder<LootTable>>create(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC);
++    public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.<LootTable>create(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC); // CraftBukkit - decompile error
+     public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
+     private final ContextKeySet paramSet;
+     private final Optional<Identifier> randomSequence;
+     private final List<LootPool> pools;
+     private final List<LootItemFunction> functions;
+     private final BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
++    public CraftLootTable craftLootTable; // CraftBukkit
+ 
+     private LootTable(ContextKeySet paramSet, Optional<Identifier> randomSequence, List<LootPool> pools, List<LootItemFunction> functions) {
+         this.paramSet = paramSet;
+@@ -150,9 +158,22 @@
+     }
+ 
+     public void fill(Container container, LootParams params, long optionalRandomSeed) {
++        // CraftBukkit start
++        this.fillInventory(container, params, optionalRandomSeed, false);
++    }
++
++    public void fillInventory(Container container, LootParams params, long optionalRandomSeed, boolean plugin) {
++        // CraftBukkit end
+         LootContext lootcontext = (new LootContext.Builder(params)).withOptionalRandomSeed(optionalRandomSeed).create(this.randomSequence);
+         ObjectArrayList<ItemStack> objectarraylist = this.getRandomItems(lootcontext);
+         RandomSource randomsource = lootcontext.getRandom();
++        // CraftBukkit start
++        LootGenerateEvent event = CraftEventFactory.callLootGenerateEvent(container, this, lootcontext, objectarraylist, plugin);
++        if (event.isCancelled()) {
++            return;
++        }
++        objectarraylist = event.getLoot().stream().map(CraftItemStack::asNMSCopy).collect(ObjectArrayList.toList());
++        // CraftBukkit end
+         List<Integer> list = this.getAvailableSlots(container, randomsource);
+ 
+         this.shuffleAndSplitItems(objectarraylist, list.size(), randomsource);

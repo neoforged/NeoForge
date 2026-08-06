@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/level/block/CauldronBlock.java
++++ b/net/minecraft/world/level/block/CauldronBlock.java
+@@ -13,6 +13,10 @@
+ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.material.Fluids;
+ 
++// CraftBukkit start
++import org.bukkit.event.block.CauldronLevelChangeEvent;
++// CraftBukkit end
++
+ public class CauldronBlock extends AbstractCauldronBlock {
+ 
+     public static final MapCodec<CauldronBlock> CODEC = simpleCodec(CauldronBlock::new);
+@@ -61,14 +65,12 @@
+         if (fluid == Fluids.WATER) {
+             BlockState blockstate1 = Blocks.WATER_CAULDRON.defaultBlockState();
+ 
+-            level.setBlockAndUpdate(pos, blockstate1);
+-            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(blockstate1));
++            LayeredCauldronBlock.changeLevel(state, level, pos, blockstate1, null, CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL); // CraftBukkit
+             level.levelEvent(1047, pos, 0);
+         } else if (fluid == Fluids.LAVA) {
+             BlockState blockstate2 = Blocks.LAVA_CAULDRON.defaultBlockState();
+ 
+-            level.setBlockAndUpdate(pos, blockstate2);
+-            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(blockstate2));
++            LayeredCauldronBlock.changeLevel(state, level, pos, blockstate2, null, CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL); // CraftBukkit
+             level.levelEvent(1046, pos, 0);
+         }
+ 

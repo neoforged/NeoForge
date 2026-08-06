@@ -1,0 +1,155 @@
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -95,6 +95,12 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.Bukkit;
++import org.bukkit.event.entity.EntityTransformEvent;
++import org.bukkit.event.entity.VillagerReplenishTradeEvent;
++// CraftBukkit end
++
+ public class Villager extends AbstractVillager implements VillagerDataHolder, ReputationEventHandler {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -121,7 +127,7 @@
+     private boolean increaseProfessionLevelOnUpdate;
+     private @Nullable Player lastTradedPlayer;
+     private int foodLevel = 0;
+-    private final GossipContainer gossips = new GossipContainer();
++    private final GossipContainer gossips = new GossipContainer(this); // CraftBukkit - add constructor parameter in Reputation
+     private long lastGossipTime;
+     private long lastGossipDecayTime = 0L;
+     private int villagerXp = 0;
+@@ -149,15 +155,18 @@
+         list.add(ActivityData.create(Activity.HIDE, VillagerGoalPackages.getHidePackage(0.5F)));
+         return list;
+     });
+-    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<Villager, Holder<PoiType>>> POI_MEMORIES = ImmutableMap.of(MemoryModuleType.HOME, (BiPredicate) (villager, holder) -> {
++    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<Villager, Holder<PoiType>>> POI_MEMORIES = ImmutableMap.of(MemoryModuleType.HOME, (villager, holder) -> { // CraftBukkit - decompile error
+         return holder.is(PoiTypes.HOME);
+-    }, MemoryModuleType.JOB_SITE, (BiPredicate) (villager, holder) -> {
++    }, MemoryModuleType.JOB_SITE, (villager, holder) -> { // CraftBukkit - decompile error
+         return ((VillagerProfession) villager.getVillagerData().profession().value()).heldJobSite().test(holder);
+-    }, MemoryModuleType.POTENTIAL_JOB_SITE, (BiPredicate) (villager, holder) -> {
++    }, MemoryModuleType.POTENTIAL_JOB_SITE, (villager, holder) -> { // CraftBukkit - decompile error
+         return VillagerProfession.ALL_ACQUIRABLE_JOBS.test(holder);
+-    }, MemoryModuleType.MEETING_POINT, (BiPredicate) (villager, holder) -> {
++    }, MemoryModuleType.MEETING_POINT, (villager, holder) -> { // CraftBukkit - decompile error
+         return holder.is(PoiTypes.MEETING);
+     });
++    // CraftBukkit start
++    public long gossipDecayInterval = GOSSIP_DECAY_INTERVAL;
++    // CraftBukkit end
+ 
+     public Villager(EntityType<? extends Villager> entityType, Level level) {
+         super(entityType, level);
+@@ -169,7 +178,7 @@
+ 
+     @Override
+     public Brain<Villager> getBrain() {
+-        return super.getBrain();
++        return (Brain<Villager>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -234,7 +243,7 @@
+                     this.increaseProfessionLevelOnUpdate = false;
+                 }
+ 
+-                this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 0));
++                this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 0), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.VILLAGER_TRADE); // CraftBukkit
+             }
+         }
+ 
+@@ -357,7 +366,13 @@
+         this.updateDemand();
+ 
+         for (MerchantOffer merchantoffer : this.getOffers()) {
+-            merchantoffer.resetUses();
++            // CraftBukkit start
++            VillagerReplenishTradeEvent event = new VillagerReplenishTradeEvent((org.bukkit.entity.Villager) this.getBukkitEntity(), merchantoffer.asBukkit());
++            Bukkit.getPluginManager().callEvent(event);
++            if (!event.isCancelled()) {
++                merchantoffer.resetUses();
++            }
++            // CraftBukkit end
+         }
+ 
+         this.resendOffersToTradingPlayer();
+@@ -412,7 +427,13 @@
+ 
+         if (i > 0) {
+             for (MerchantOffer merchantoffer : this.getOffers()) {
+-                merchantoffer.resetUses();
++                // CraftBukkit start
++                VillagerReplenishTradeEvent event = new VillagerReplenishTradeEvent((org.bukkit.entity.Villager) this.getBukkitEntity(), merchantoffer.asBukkit());
++                Bukkit.getPluginManager().callEvent(event);
++                if (!event.isCancelled()) {
++                    merchantoffer.resetUses();
++                }
++                // CraftBukkit end
+             }
+         }
+ 
+@@ -495,7 +516,7 @@
+ 
+         this.foodLevel = input.getByteOr("FoodLevel", (byte) 0);
+         this.gossips.clear();
+-        Optional optional1 = input.read("Gossips", GossipContainer.CODEC);
++        Optional<GossipContainer> optional1 = input.read("Gossips", GossipContainer.CODEC); // CraftBukkit - decompile error
+         GossipContainer gossipcontainer = this.gossips;
+ 
+         Objects.requireNonNull(this.gossips);
+@@ -777,7 +798,7 @@
+                 witch1.finalizeSpawn(level, level.getCurrentDifficultyAt(witch1.blockPosition()), EntitySpawnReason.CONVERSION, (SpawnGroupData) null);
+                 witch1.setPersistenceRequired();
+                 this.releaseAllPois();
+-            });
++            }, EntityTransformEvent.TransformReason.LIGHTNING, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING); // CraftBukkit
+ 
+             if (witch == null) {
+                 super.thunderHit(level, lightningBolt);
+@@ -851,7 +872,7 @@
+ 
+         if (this.lastGossipDecayTime == 0L) {
+             this.lastGossipDecayTime = i;
+-        } else if (i >= this.lastGossipDecayTime + 24000L) {
++        } else if (i >= this.lastGossipDecayTime + gossipDecayInterval) { // CraftBukkit - use variable for decay interval
+             this.gossips.decay();
+             this.lastGossipDecayTime = i;
+         }
+@@ -866,7 +887,7 @@
+             }).limit(5L).toList();
+ 
+             if (list1.size() >= villagersNeededToAgree) {
+-                if (!SpawnUtil.trySpawnMob(EntityTypes.IRON_GOLEM, EntitySpawnReason.MOB_SUMMONED, level, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM, false).isEmpty()) {
++                if (!SpawnUtil.trySpawnMob(EntityTypes.IRON_GOLEM, EntitySpawnReason.MOB_SUMMONED, level, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM, false, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE).isEmpty()) { // CraftBukkit
+                     list.forEach(GolemSensor::golemDetected);
+                 }
+             }
+@@ -879,15 +900,18 @@
+ 
+     @Override
+     public void onReputationEventFrom(ReputationEventType type, Entity source) {
++        org.bukkit.entity.Villager.ReputationEvent bukkitReputationEvent = org.bukkit.craftbukkit.entity.CraftVillager.CraftReputationEvent.minecraftToBukkit(type); // CraftBukkit - convert event to bukkit
+         if (type == ReputationEventType.ZOMBIE_VILLAGER_CURED) {
+-            this.gossips.add(source.getUUID(), GossipType.MAJOR_POSITIVE, 20);
+-            this.gossips.add(source.getUUID(), GossipType.MINOR_POSITIVE, 25);
++            // CraftBukkit start - add change reason parameter
++            this.gossips.add(source.getUUID(), GossipType.MAJOR_POSITIVE, 20, bukkitReputationEvent);
++            this.gossips.add(source.getUUID(), GossipType.MINOR_POSITIVE, 25, bukkitReputationEvent);
++            // CraftBukkit end
+         } else if (type == ReputationEventType.TRADE) {
+-            this.gossips.add(source.getUUID(), GossipType.TRADING, 2);
++            this.gossips.add(source.getUUID(), GossipType.TRADING, 2, bukkitReputationEvent); // CraftBukkit - add change reason parameter
+         } else if (type == ReputationEventType.VILLAGER_HURT) {
+-            this.gossips.add(source.getUUID(), GossipType.MINOR_NEGATIVE, 25);
++            this.gossips.add(source.getUUID(), GossipType.MINOR_NEGATIVE, 25, bukkitReputationEvent); // CraftBukkit - add change reason parameter
+         } else if (type == ReputationEventType.VILLAGER_KILLED) {
+-            this.gossips.add(source.getUUID(), GossipType.MAJOR_NEGATIVE, 25);
++            this.gossips.add(source.getUUID(), GossipType.MAJOR_NEGATIVE, 25, bukkitReputationEvent); // CraftBukkit - add change reason parameter
+         }
+ 
+     }

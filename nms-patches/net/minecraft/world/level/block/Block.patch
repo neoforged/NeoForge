@@ -1,0 +1,60 @@
+--- a/net/minecraft/world/level/block/Block.java
++++ b/net/minecraft/world/level/block/Block.java
+@@ -419,7 +419,13 @@
+                 ItemEntity itementity = (ItemEntity) entityFactory.get();
+ 
+                 itementity.setDefaultPickUpDelay();
+-                level.addFreshEntity(itementity);
++                // CraftBukkit start
++                if (level.captureDrops != null) {
++                    level.captureDrops.add(itementity);
++                } else {
++                    level.addFreshEntity(itementity);
++                }
++                // CraftBukkit end
+                 return;
+             }
+         }
+@@ -447,7 +453,7 @@
+ 
+     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack destroyedWith) {
+         player.awardStat(Stats.BLOCK_MINED.get(this));
+-        player.causeFoodExhaustion(0.005F);
++        player.causeFoodExhaustion(0.005F, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.BLOCK_MINED); // CraftBukkit - EntityExhaustionEvent
+         dropResources(state, level, pos, blockEntity, player, destroyedWith);
+     }
+ 
+@@ -554,7 +560,7 @@
+     }
+ 
+     protected Function<BlockState, VoxelShape> getShapeForEachState(Function<BlockState, VoxelShape> shapeCalculator) {
+-        ImmutableMap immutablemap = (ImmutableMap) this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), shapeCalculator));
++        ImmutableMap<BlockState, VoxelShape> immutablemap = (ImmutableMap) this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), shapeCalculator)); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(immutablemap);
+         return immutablemap::get;
+@@ -591,14 +597,22 @@
+         return this.builtInRegistryHolder;
+     }
+ 
+-    protected void tryDropExperience(ServerLevel level, BlockPos pos, ItemStack tool, IntProvider xpRange) {
++    // CraftBukkit start
++    protected int tryDropExperience(ServerLevel level, BlockPos pos, ItemStack tool, IntProvider xpRange) {
+         int i = EnchantmentHelper.processBlockExperience(level, tool, xpRange.sample(level.getRandom()));
+ 
+         if (i > 0) {
+-            this.popExperience(level, pos, i);
++            // this.popExperience(level, pos, i);
++            return i;
+         }
+ 
++        return 0;
++    }
++
++    public int getExpDrop(BlockState blockstate, ServerLevel serverlevel, BlockPos blockpos, ItemStack itemstack, boolean flag) {
++        return 0;
+     }
++    // CraftBukkit end
+ 
+     private static record ShapePairKey(VoxelShape first, VoxelShape second) {
+ 

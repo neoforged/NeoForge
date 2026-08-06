@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/enchantment/effects/ApplyMobEffect.java
++++ b/net/minecraft/world/item/enchantment/effects/ApplyMobEffect.java
+@@ -34,7 +34,7 @@
+                 int j = Math.round(Mth.randomBetween(randomsource, this.minDuration.calculate(enchantmentLevel), this.maxDuration.calculate(enchantmentLevel)) * 20.0F);
+                 int k = Math.max(0, Math.round(Mth.randomBetween(randomsource, this.minAmplifier.calculate(enchantmentLevel), this.maxAmplifier.calculate(enchantmentLevel))));
+ 
+-                livingentity.addEffect(new MobEffectInstance((Holder) optional.get(), j, k));
++                livingentity.addEffect(new MobEffectInstance((Holder) optional.get(), j, k), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
+             }
+         }
+ 

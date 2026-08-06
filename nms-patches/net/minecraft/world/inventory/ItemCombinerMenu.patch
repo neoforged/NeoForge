@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/inventory/ItemCombinerMenu.java
++++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
+@@ -122,6 +122,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return (Boolean) this.access.evaluate((level, blockpos) -> {
+             return !this.isValidBlock(level.getBlockState(blockpos)) ? false : player.isWithinBlockInteractionRange(blockpos, 4.0D);
+         }, true);

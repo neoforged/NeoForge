@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/ScheduleCommand.java
++++ b/net/minecraft/server/commands/ScheduleCommand.java
+@@ -58,7 +58,7 @@
+         } else {
+             long j = source.getLevel().getGameTime() + (long) time;
+             Identifier identifier = (Identifier) callback.getFirst();
+-            TimerQueue<MinecraftServer> timerqueue = source.getServer().getScheduledEvents();
++            TimerQueue<MinecraftServer> timerqueue = source.getLevel().getScheduledEvents(); // CraftBukkit - SPIGOT-6667: Use world specific function timer
+             Optional<CommandFunction<CommandSourceStack>> optional = ((Either) callback.getSecond()).left();
+ 
+             if (optional.isPresent()) {

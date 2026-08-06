@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/entity/animal/equine/SkeletonTrapGoal.java
++++ b/net/minecraft/world/entity/animal/equine/SkeletonTrapGoal.java
+@@ -43,12 +43,12 @@
+         if (lightningbolt != null) {
+             lightningbolt.snapTo(this.horse.getX(), this.horse.getY(), this.horse.getZ());
+             lightningbolt.setVisualOnly(true);
+-            serverlevel.addFreshEntity(lightningbolt);
++            serverlevel.strikeLightning(lightningbolt, org.bukkit.event.weather.LightningStrikeEvent.Cause.TRAP); // CraftBukkit
+             Skeleton skeleton = this.createSkeleton(difficultyinstance, this.horse);
+ 
+             if (skeleton != null) {
+                 skeleton.startRiding(this.horse);
+-                serverlevel.addFreshEntityWithPassengers(skeleton);
++                serverlevel.addFreshEntityWithPassengers(skeleton, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.TRAP); // CraftBukkit
+ 
+                 for (int i = 0; i < 3; ++i) {
+                     AbstractHorse abstracthorse = this.createHorse(difficultyinstance);
+@@ -59,7 +59,7 @@
+                         if (skeleton1 != null) {
+                             skeleton1.startRiding(abstracthorse);
+                             abstracthorse.push(this.horse.getRandom().triangle(0.0D, 1.1485D), 0.0D, this.horse.getRandom().triangle(0.0D, 1.1485D));
+-                            serverlevel.addFreshEntityWithPassengers(abstracthorse);
++                            serverlevel.addFreshEntityWithPassengers(abstracthorse, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.JOCKEY); // CraftBukkit
+                         }
+                     }
+                 }

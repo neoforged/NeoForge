@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/item/ArmorStandItem.java
++++ b/net/minecraft/world/item/ArmorStandItem.java
+@@ -53,6 +53,11 @@
+                     float f = (float) Mth.floor((Mth.wrapDegrees(context.getRotation() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
+ 
+                     armorstand.snapTo(armorstand.getX(), armorstand.getY(), armorstand.getZ(), f, 0.0F);
++                    // CraftBukkit start
++                    if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPlaceEvent(context, armorstand).isCancelled()) {
++                        return InteractionResult.FAIL;
++                    }
++                    // CraftBukkit end
+                     serverlevel.addFreshEntityWithPassengers(armorstand);
+                     level.playSound((Entity) null, armorstand.getX(), armorstand.getY(), armorstand.getZ(), SoundEvents.ARMOR_STAND_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
+                     armorstand.gameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());

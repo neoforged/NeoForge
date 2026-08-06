@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/SpreadingSnowyBlock.java
++++ b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
+@@ -55,6 +55,11 @@
+ 
+         if (!optional.isEmpty()) {
+             if (!canStayAlive(state, level, pos)) {
++                // CraftBukkit start
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(level, pos, ((Block) optional.get()).defaultBlockState()).isCancelled()) {
++                    return;
++                }
++                // CraftBukkit end
+                 level.setBlockAndUpdate(pos, ((Block) optional.get()).defaultBlockState());
+             } else {
+                 if (level.getMaxLocalRawBrightness(pos.above()) >= 9) {

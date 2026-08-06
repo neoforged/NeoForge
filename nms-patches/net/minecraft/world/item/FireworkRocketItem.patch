@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/item/FireworkRocketItem.java
++++ b/net/minecraft/world/item/FireworkRocketItem.java
+@@ -17,6 +17,10 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityUnleashEvent;
++// CraftBukkit end
++
+ public class FireworkRocketItem extends Item implements ProjectileItem {
+ 
+     public static final byte[] CRAFTABLE_DURATIONS = new byte[]{1, 2, 3};
+@@ -56,7 +60,7 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
+-                if (player.dropAllLeashConnections((Player) null)) {
++                if (player.dropAllLeashConnections((Player) null, EntityUnleashEvent.UnleashReason.FIREWORK)) { // CraftBukkit
+                     level.playSound((Entity) null, (Entity) player, SoundEvents.LEAD_BREAK, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                 }
+ 

@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/entity/animal/equine/TraderLlama.java
++++ b/net/minecraft/world/entity/animal/equine/TraderLlama.java
+@@ -24,6 +24,10 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class TraderLlama extends Llama {
+ 
+     private static final int DEFAULT_DESPAWN_DELAY = 47999;
+@@ -67,7 +71,7 @@
+         this.goalSelector.addGoal(1, new PanicGoal(this, 2.0D));
+         this.targetSelector.addGoal(1, new TraderLlama.TraderLlamaDefendWanderingTraderGoal(this));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Zombie.class, true, (livingentity, serverlevel) -> {
+-            return !livingentity.is((Object) EntityTypes.ZOMBIFIED_PIGLIN);
++            return !livingentity.is(EntityTypes.ZOMBIFIED_PIGLIN); // CraftBukkit - decompile error
+         }));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, AbstractIllager.class, true));
+     }
+@@ -99,7 +103,7 @@
+             this.despawnDelay = this.isLeashedToWanderingTrader() ? ((WanderingTrader) this.getLeashHolder()).getDespawnDelay() - 1 : this.despawnDelay - 1;
+             if (this.despawnDelay <= 0) {
+                 this.removeLeash();
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+             }
+ 
+         }
+@@ -164,7 +168,7 @@
+ 
+         @Override
+         public void start() {
+-            this.mob.setTarget(this.ownerLastHurtBy);
++            this.mob.setTarget(this.ownerLastHurtBy, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_OWNER, true); // CraftBukkit
+             Entity entity = this.llama.getLeashHolder();
+ 
+             if (entity instanceof WanderingTrader wanderingtrader) {

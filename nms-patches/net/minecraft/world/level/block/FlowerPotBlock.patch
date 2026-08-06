@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/block/FlowerPotBlock.java
++++ b/net/minecraft/world/level/block/FlowerPotBlock.java
+@@ -138,11 +138,14 @@
+             boolean flag1 = ((TriState) level.environmentAttributes().getValue(EnvironmentAttributes.EYEBLOSSOM_OPEN, pos)).toBoolean(flag);
+ 
+             if (flag != flag1) {
+-                level.setBlock(pos, this.opposite(state), 3);
+-                EyeblossomBlock.Type eyeblossomblock_type = EyeblossomBlock.Type.fromBoolean(flag).transform();
++                // CraftBukkit start - BlockFormEvent
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, this.opposite(state), 3)) {
++                    EyeblossomBlock.Type eyeblossomblock_type = EyeblossomBlock.Type.fromBoolean(flag).transform();
+ 
+-                eyeblossomblock_type.spawnTransformParticle(level, pos, random);
+-                level.playSound((Entity) null, pos, eyeblossomblock_type.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
++                    eyeblossomblock_type.spawnTransformParticle(level, pos, random);
++                    level.playSound((Entity) null, pos, eyeblossomblock_type.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
++                }
++                // CraftBukkit end
+             }
+         }
+ 

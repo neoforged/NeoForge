@@ -1,0 +1,71 @@
+--- a/net/minecraft/world/entity/projectile/Projectile.java
++++ b/net/minecraft/world/entity/projectile/Projectile.java
+@@ -37,6 +37,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.projectiles.ProjectileSource;
++// CraftBukkit end
++
+ public abstract class Projectile extends Entity implements TraceableEntity {
+ 
+     private static final boolean DEFAULT_LEFT_OWNER = false;
+@@ -47,6 +51,10 @@
+     private boolean hasBeenShot = false;
+     private @Nullable Entity lastDeflectedBy;
+ 
++    // CraftBukkit start
++    private boolean hitCancelled = false;
++    // CraftBukkit end
++
+     protected Projectile(EntityType<? extends Projectile> type, Level level) {
+         super(type, level);
+     }
+@@ -57,6 +65,7 @@
+ 
+     public void setOwner(@Nullable Entity owner) {
+         this.setOwner(EntityReference.of(owner));
++        this.projectileSource = (owner != null && owner.getBukkitEntity() instanceof ProjectileSource) ? (ProjectileSource) owner.getBukkitEntity() : null; // CraftBukkit
+     }
+ 
+     @Override
+@@ -201,7 +210,7 @@
+ 
+     public static <T extends Projectile> T spawnProjectile(T projectile, ServerLevel serverLevel, ItemStack itemStack, Consumer<T> shootFunction) {
+         shootFunction.accept(projectile);
+-        serverLevel.addFreshEntity(projectile);
++        if (serverLevel.addFreshEntity(projectile)) // CraftBukkit
+         projectile.applyOnProjectileSpawned(serverLevel, itemStack);
+         return projectile;
+     }
+@@ -220,6 +229,17 @@
+ 
+     }
+ 
++    // CraftBukkit start - call projectile hit event
++    protected ProjectileDeflection preHitTargetOrDeflectSelf(HitResult hitresult) {
++        org.bukkit.event.entity.ProjectileHitEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, hitresult);
++        this.hitCancelled = event != null && event.isCancelled();
++        if (hitresult.getType() == HitResult.Type.BLOCK || !this.hitCancelled) {
++            return this.hitTargetOrDeflectSelf(hitresult);
++        }
++        return ProjectileDeflection.NONE;
++    }
++    // CraftBukkit end
++
+     protected ProjectileDeflection hitTargetOrDeflectSelf(HitResult hitResult) {
+         if (hitResult.getType() == HitResult.Type.ENTITY) {
+             EntityHitResult entityhitresult = (EntityHitResult) hitResult;
+@@ -297,6 +317,11 @@
+     protected void onHitEntity(EntityHitResult hitResult) {}
+ 
+     protected void onHitBlock(BlockHitResult hitResult) {
++        // CraftBukkit start - cancellable hit event
++        if (hitCancelled) {
++            return;
++        }
++        // CraftBukkit end
+         BlockState blockstate = this.level().getBlockState(hitResult.getBlockPos());
+ 
+         blockstate.onProjectileHit(this.level(), blockstate, hitResult, this);

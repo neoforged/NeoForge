@@ -1,0 +1,12 @@
+--- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
++++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
+@@ -16,8 +16,7 @@
+     private static final int MAX_PAYLOAD_SIZE = 32767;
+     public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> STREAM_CODEC = CustomPacketPayload.codec((identifier) -> {
+         return DiscardedPayload.codec(identifier, 32767);
+-    }, (List) Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec[]{new CustomPacketPayload.TypeAndCodec(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)}), (arraylist) -> {
+-    })).map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
++    }, java.util.Collections.emptyList()).map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload); // CraftBukkit - treat all packets the same
+ 
+     @Override
+     public PacketType<ServerboundCustomPayloadPacket> type() {

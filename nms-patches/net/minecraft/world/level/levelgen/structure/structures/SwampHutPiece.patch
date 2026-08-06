@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/SwampHutPiece.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/SwampHutPiece.java
+@@ -100,7 +100,7 @@
+                         witch.setPersistenceRequired();
+                         witch.snapTo((double) blockpos1.getX() + 0.5D, (double) blockpos1.getY(), (double) blockpos1.getZ() + 0.5D, 0.0F, 0.0F);
+                         witch.finalizeSpawn(level, level.getCurrentDifficultyAt(blockpos1), EntitySpawnReason.STRUCTURE, (SpawnGroupData) null);
+-                        level.addFreshEntityWithPassengers(witch);
++                        level.addFreshEntityWithPassengers(witch, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN); // CraftBukkit - add SpawnReason
+                     }
+                 }
+             }
+@@ -121,7 +121,7 @@
+                     cat.setPersistenceRequired();
+                     cat.snapTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY(), (double) blockpos.getZ() + 0.5D, 0.0F, 0.0F);
+                     cat.finalizeSpawn(level, level.getCurrentDifficultyAt(blockpos), EntitySpawnReason.STRUCTURE, (SpawnGroupData) null);
+-                    level.addFreshEntityWithPassengers(cat);
++                    level.addFreshEntityWithPassengers(cat, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN); // CraftBukkit - add SpawnReason
+                 }
+             }
+         }

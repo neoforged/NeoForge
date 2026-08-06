@@ -1,0 +1,32 @@
+--- a/net/minecraft/server/network/ServerConnectionListener.java
++++ b/net/minecraft/server/network/ServerConnectionListener.java
+@@ -86,9 +86,19 @@
+                     connection.configurePacketHandler(channelpipeline);
+                     connection.setListenerForServerboundHandshake(new ServerHandshakePacketListenerImpl(ServerConnectionListener.this.server, connection));
+                 }
+-            }).group(eventloopgroupholder.eventLoopGroup()).localAddress(address, port)).bind().syncUninterruptibly());
++            }).group(eventloopgroupholder.eventLoopGroup()).localAddress(address, port)).option(ChannelOption.AUTO_READ, false).bind().syncUninterruptibly()); // CraftBukkit
++        }
++    }
++
++    // CraftBukkit start
++    public void acceptConnections() {
++        synchronized (this.channels) {
++            for (ChannelFuture future : this.channels) {
++                future.channel().config().setAutoRead(true);
++            }
+         }
+     }
++    // CraftBukkit end
+ 
+     public SocketAddress startMemoryChannel() {
+         ChannelFuture channelfuture;
+@@ -137,7 +147,7 @@
+                         connection.setIntendedProfileId(profileId);
+                         ServerConnectionListener.this.connections.add(connection);
+                     }
+-                }});
++                }}); // CraftBukkit - format error
+         EventLoopGroupHolder.local().eventLoopGroup().register(channel).syncUninterruptibly();
+     }
+ 

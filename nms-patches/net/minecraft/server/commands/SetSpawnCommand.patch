@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/SetSpawnCommand.java
++++ b/net/minecraft/server/commands/SetSpawnCommand.java
+@@ -44,7 +44,7 @@
+         float f1 = Mth.clamp(vec2.x, -90.0F, 90.0F);
+ 
+         for (ServerPlayer serverplayer : targets) {
+-            serverplayer.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(resourcekey, pos, f, f1), true), false);
++            serverplayer.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(resourcekey, pos, f, f1), true), false, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.COMMAND); // CraftBukkit
+         }
+ 
+         String s = resourcekey.identifier().toString();

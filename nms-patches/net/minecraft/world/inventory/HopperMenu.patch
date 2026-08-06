@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/inventory/HopperMenu.java
++++ b/net/minecraft/world/inventory/HopperMenu.java
+@@ -6,11 +6,32 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.inventory.CraftInventory;
++import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++// CraftBukkit end
++
+ public class HopperMenu extends AbstractContainerMenu {
+ 
+     public static final int CONTAINER_SIZE = 5;
+     private final Container hopper;
+ 
++    // CraftBukkit start
++    private CraftInventoryView bukkitEntity = null;
++    private Inventory player;
++
++    @Override
++    public CraftInventoryView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventory inventory = new CraftInventory(this.hopper);
++        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
++
+     public HopperMenu(int containerId, Inventory inventory) {
+         this(containerId, inventory, new SimpleContainer(5));
+     }
+@@ -18,6 +39,7 @@
+     public HopperMenu(int containerId, Inventory inventory, Container hopper) {
+         super(MenuType.HOPPER, containerId);
+         this.hopper = hopper;
++        this.player = inventory; // CraftBukkit - save player
+         checkContainerSize(hopper, 5);
+         hopper.startOpen(inventory.player);
+ 
+@@ -30,6 +52,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return this.hopper.stillValid(player);
+     }
+ 

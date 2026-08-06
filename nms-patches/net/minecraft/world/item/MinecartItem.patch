@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/item/MinecartItem.java
++++ b/net/minecraft/world/item/MinecartItem.java
+@@ -59,7 +59,12 @@
+                 if (level instanceof ServerLevel) {
+                     ServerLevel serverlevel = (ServerLevel) level;
+ 
+-                    serverlevel.addFreshEntity(abstractminecart);
++                    // CraftBukkit start
++                    if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPlaceEvent(context, abstractminecart).isCancelled()) {
++                        return InteractionResult.FAIL;
++                    }
++                    // CraftBukkit end
++                    if (!serverlevel.addFreshEntity(abstractminecart)) return InteractionResult.PASS; // CraftBukkit
+                     serverlevel.gameEvent(GameEvent.ENTITY_PLACE, blockpos, GameEvent.Context.of(context.getPlayer(), serverlevel.getBlockState(blockpos.below())));
+                 }
+ 

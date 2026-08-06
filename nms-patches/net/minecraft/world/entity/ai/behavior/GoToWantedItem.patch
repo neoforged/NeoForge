@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/entity/ai/behavior/GoToWantedItem.java
++++ b/net/minecraft/world/entity/ai/behavior/GoToWantedItem.java
+@@ -28,6 +28,20 @@
+                     ItemEntity itementity = (ItemEntity) behaviorbuilder_instance.get(memoryaccessor2);
+ 
+                     if (behaviorbuilder_instance.tryGet(memoryaccessor3).isEmpty() && predicate.test(livingentity) && itementity.closerThan(livingentity, (double) maxDistToWalk) && livingentity.level().getWorldBorder().isWithinBounds(itementity.blockPosition()) && livingentity.canPickUpLoot()) {
++                        // CraftBukkit start
++                        if (livingentity instanceof net.minecraft.world.entity.animal.allay.Allay) {
++                            org.bukkit.event.entity.EntityTargetEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTargetEvent(livingentity, itementity, org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY);
++
++                            if (event.isCancelled()) {
++                                return false;
++                            }
++                            if (!(event.getTarget() instanceof ItemEntity)) {
++                                memoryaccessor2.erase();
++                            }
++
++                            itementity = (ItemEntity) ((org.bukkit.craftbukkit.entity.CraftEntity) event.getTarget()).getHandle();
++                        }
++                        // CraftBukkit end
+                         WalkTarget walktarget = new WalkTarget(new EntityTracker(itementity, false), speedModifier, 0);
+ 
+                         memoryaccessor.set(new EntityTracker(itementity, true));

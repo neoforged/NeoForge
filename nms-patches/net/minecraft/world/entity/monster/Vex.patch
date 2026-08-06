@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/Vex.java
++++ b/net/minecraft/world/entity/monster/Vex.java
+@@ -111,7 +111,7 @@
+     @Override
+     protected void readAdditionalSaveData(ValueInput input) {
+         super.readAdditionalSaveData(input);
+-        this.boundOrigin = (BlockPos) input.read("bound_pos", BlockPos.CODEC).orElse((Object) null);
++        this.boundOrigin = (BlockPos) input.read("bound_pos", BlockPos.CODEC).orElse(null); // CraftBukkit - decompile error
+         input.getInt("life_ticks").ifPresentOrElse(this::setLimitedLife, () -> {
+             this.hasLimitedLife = false;
+         });
+@@ -407,7 +407,7 @@
+                 livingentity1 = null;
+             }
+ 
+-            vex.setTarget(livingentity1);
++            vex.setTarget(livingentity1, org.bukkit.event.entity.EntityTargetEvent.TargetReason.OWNER_ATTACKED_TARGET, true); // CraftBukkit
+             super.start();
+         }
+     }

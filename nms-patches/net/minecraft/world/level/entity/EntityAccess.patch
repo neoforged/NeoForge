@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/entity/EntityAccess.java
++++ b/net/minecraft/world/level/entity/EntityAccess.java
+@@ -5,6 +5,10 @@
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.phys.AABB;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public interface EntityAccess extends UniquelyIdentifyable {
+ 
+     int getId();
+@@ -21,6 +25,12 @@
+ 
+     void setRemoved(Entity.RemovalReason removalReason);
+ 
++    // CraftBukkit start - add Bukkit remove cause
++    default void setRemoved(Entity.RemovalReason entity_removalreason, EntityRemoveEvent.Cause cause) {
++        setRemoved(entity_removalreason);
++    }
++    // CraftBukkit end
++
+     boolean shouldBeSaved();
+ 
+     boolean isAlwaysTicking();

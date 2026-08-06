@@ -1,0 +1,41 @@
+--- a/net/minecraft/world/entity/TamableAnimal.java
++++ b/net/minecraft/world/entity/TamableAnimal.java
+@@ -32,6 +32,13 @@
+ import net.minecraft.world.scores.PlayerTeam;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityRegainHealthEvent;
++import org.bukkit.event.entity.EntityTeleportEvent;
++// CraftBukkit end
++
+ public abstract class TamableAnimal extends Animal implements OwnableEntity {
+ 
+     public static final int TELEPORT_WHEN_DISTANCE_IS_SQ = 144;
+@@ -143,7 +150,7 @@
+         FoodProperties foodproperties = (FoodProperties) itemStack.get(DataComponents.FOOD);
+ 
+         this.usePlayerItem(player, hand, itemStack);
+-        this.heal(foodproperties != null ? healingFactor * (float) foodproperties.nutrition() : defaultHeal);
++        this.heal(foodproperties != null ? healingFactor * (float) foodproperties.nutrition() : defaultHeal, EntityRegainHealthEvent.RegainReason.EATING); // CraftBukkit
+         this.playEatingSound();
+     }
+ 
+@@ -295,7 +302,14 @@
+         if (!this.canTeleportTo(new BlockPos(x, y, z))) {
+             return false;
+         } else {
+-            this.snapTo((double) x + 0.5D, (double) y, (double) z + 0.5D, this.getYRot(), this.getXRot());
++            // CraftBukkit start
++            EntityTeleportEvent event = CraftEventFactory.callEntityTeleportEvent(this, (double) x + 0.5D, (double) y, (double) z + 0.5D);
++            if (event.isCancelled()) {
++                return false;
++            }
++            Location to = event.getTo();
++            this.snapTo(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch());
++            // CraftBukkit end
+             this.navigation.stop();
+             return true;
+         }

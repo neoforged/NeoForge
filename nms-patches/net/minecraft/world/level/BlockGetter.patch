@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/level/BlockGetter.java
++++ b/net/minecraft/world/level/BlockGetter.java
+@@ -29,7 +29,7 @@
+     default <T extends BlockEntity> Optional<T> getBlockEntity(BlockPos pos, BlockEntityType<T> type) {
+         BlockEntity blockentity = this.getBlockEntity(pos);
+ 
+-        return blockentity != null && blockentity.getType() == type ? Optional.of(blockentity) : Optional.empty();
++        return blockentity != null && blockentity.getType() == type ? (Optional<T>) Optional.of(blockentity) : Optional.empty(); // CraftBukkit - decompile error
+     }
+ 
+     BlockState getBlockState(BlockPos pos);
+@@ -57,8 +57,8 @@
+         });
+     }
+ 
+-    default BlockHitResult clip(ClipContext c) {
+-        return (BlockHitResult) traverseBlocks(c.getFrom(), c.getTo(), c, (clipcontext1, blockpos) -> {
++    // CraftBukkit start - moved block handling into separate method for use by Block#rayTrace
++    default BlockHitResult clip(ClipContext clipcontext1, BlockPos blockpos) {
+             BlockState blockstate = this.getBlockState(blockpos);
+             FluidState fluidstate = this.getFluidState(blockpos);
+             Vec3 vec3 = clipcontext1.getFrom();
+@@ -71,6 +71,12 @@
+             double d1 = blockhitresult1 == null ? Double.MAX_VALUE : clipcontext1.getFrom().distanceToSqr(blockhitresult1.getLocation());
+ 
+             return d0 <= d1 ? blockhitresult : blockhitresult1;
++    }
++    // CraftBukkit end
++
++    default BlockHitResult clip(ClipContext c) {
++        return (BlockHitResult) traverseBlocks(c.getFrom(), c.getTo(), c, (clipcontext1, blockpos) -> {
++            return this.clip(clipcontext1, blockpos); // CraftBukkit - moved into separate method
+         }, (clipcontext1) -> {
+             Vec3 vec3 = clipcontext1.getFrom().subtract(clipcontext1.getTo());
+ 

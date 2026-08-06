@@ -1,0 +1,38 @@
+--- a/net/minecraft/world/level/block/CropBlock.java
++++ b/net/minecraft/world/level/block/CropBlock.java
+@@ -24,6 +24,8 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
+ public class CropBlock extends VegetationBlock implements BonemealableBlock {
+ 
+     public static final MapCodec<CropBlock> CODEC = simpleCodec(CropBlock::new);
+@@ -87,7 +89,7 @@
+                 float f = getGrowthSpeed(this, level, pos);
+ 
+                 if (random.nextInt((int) (25.0F / f) + 1) == 0) {
+-                    level.setBlock(pos, this.getStateForAge(i + 1), 2);
++                    CraftEventFactory.handleBlockGrowEvent(level, pos, this.getStateForAge(i + 1), 2); // CraftBukkit
+                 }
+             }
+         }
+@@ -97,7 +99,7 @@
+     public void growCrops(Level level, BlockPos pos, BlockState state) {
+         int i = Math.min(this.getMaxAge(), this.getAge(state) + this.getBonemealAgeIncrease(level));
+ 
+-        level.setBlock(pos, this.getStateForAge(i), 2);
++        CraftEventFactory.handleBlockGrowEvent(level, pos, this.getStateForAge(i), 2); // CraftBukkit
+     }
+ 
+     protected int getBonemealAgeIncrease(Level level) {
+@@ -160,7 +162,7 @@
+     @Override
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+         if (level instanceof ServerLevel serverlevel) {
+-            if (entity instanceof Ravager && (Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
++            if (entity instanceof Ravager && CraftEventFactory.callEntityChangeBlockEvent(entity, pos, Blocks.AIR.defaultBlockState(), !(Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING))) { // CraftBukkit
+                 serverlevel.destroyBlock(pos, true, entity);
+             }
+         }

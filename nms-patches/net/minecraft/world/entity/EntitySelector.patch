@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/EntitySelector.java
++++ b/net/minecraft/world/entity/EntitySelector.java
+@@ -54,7 +54,7 @@
+         Team.CollisionRule team_collisionrule = team == null ? Team.CollisionRule.ALWAYS : team.getCollisionRule();
+ 
+         return (Predicate<Entity>) (team_collisionrule == Team.CollisionRule.NEVER ? Predicates.alwaysFalse() : EntitySelector.NO_SPECTATORS.and((entity1) -> {
+-            if (!entity1.isPushable()) {
++            if (!entity1.canCollideWithBukkit(entity) || !entity.canCollideWithBukkit(entity1)) { // CraftBukkit - collidable API
+                 return false;
+             } else {
+                 if (entity.level().isClientSide()) {

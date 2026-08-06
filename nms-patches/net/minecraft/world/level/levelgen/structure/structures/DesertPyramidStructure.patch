@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java
+@@ -64,6 +64,15 @@
+ 
+     private static void placeSuspiciousSand(BoundingBox chunkBB, WorldGenLevel level, BlockPos blockPos) {
+         if (chunkBB.isInside(blockPos)) {
++            // CraftBukkit start
++            if (level instanceof org.bukkit.craftbukkit.util.TransformerGeneratorAccess transformerAccess) {
++                org.bukkit.craftbukkit.block.CraftBrushableBlock brushableState = (org.bukkit.craftbukkit.block.CraftBrushableBlock) org.bukkit.craftbukkit.block.CraftBlockStates.getBlockState(level, blockPos, Blocks.SUSPICIOUS_SAND.defaultBlockState(), null);
++                brushableState.setLootTable(org.bukkit.craftbukkit.CraftLootTable.minecraftToBukkit(BuiltInLootTables.DESERT_PYRAMID_ARCHAEOLOGY));
++                brushableState.setSeed(blockPos.asLong());
++                transformerAccess.setCraftBlock(blockPos, brushableState, 2);
++                return;
++            }
++            // CraftBukkit end
+             level.setBlock(blockPos, Blocks.SUSPICIOUS_SAND.defaultBlockState(), 2);
+             level.getBlockEntity(blockPos, BlockEntityTypes.BRUSHABLE_BLOCK).ifPresent((brushableblockentity) -> {
+                 brushableblockentity.setLootTable(BuiltInLootTables.DESERT_PYRAMID_ARCHAEOLOGY, blockPos.asLong());

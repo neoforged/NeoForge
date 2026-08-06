@@ -1,0 +1,38 @@
+--- a/net/minecraft/world/level/block/DoorBlock.java
++++ b/net/minecraft/world/level/block/DoorBlock.java
+@@ -41,6 +41,8 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
++
+ public class DoorBlock extends Block {
+ 
+     public static final MapCodec<DoorBlock> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -203,9 +205,24 @@
+ 
+     @Override
+     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
+-        boolean flag1 = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.relative(state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
++        // CraftBukkit start
++        BlockPos otherHalf = pos.relative(state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
+ 
+-        if (!this.defaultBlockState().is(block) && flag1 != (Boolean) state.getValue(DoorBlock.POWERED)) {
++        org.bukkit.World bworld = level.getWorld();
++        org.bukkit.block.Block bukkitBlock = bworld.getBlockAt(pos.getX(), pos.getY(), pos.getZ());
++        org.bukkit.block.Block blockTop = bworld.getBlockAt(otherHalf.getX(), otherHalf.getY(), otherHalf.getZ());
++
++        int power = bukkitBlock.getBlockPower();
++        int powerTop = blockTop.getBlockPower();
++        if (powerTop > power) power = powerTop;
++        int oldPower = (Boolean) state.getValue(DoorBlock.POWERED) ? 15 : 0;
++
++        if (oldPower == 0 ^ power == 0) {
++            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bukkitBlock, oldPower, power);
++            level.getCraftServer().getPluginManager().callEvent(eventRedstone);
++
++            boolean flag1 = eventRedstone.getNewCurrent() > 0;
++            // CraftBukkit end
+             if (flag1 != (Boolean) state.getValue(DoorBlock.OPEN)) {
+                 this.playSound((Entity) null, level, pos, flag1);
+                 level.gameEvent((Entity) null, (Holder) (flag1 ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE), pos);

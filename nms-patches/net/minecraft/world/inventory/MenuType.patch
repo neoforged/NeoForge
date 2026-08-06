@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/inventory/MenuType.java
++++ b/net/minecraft/world/inventory/MenuType.java
+@@ -28,7 +28,7 @@
+     public static final MenuType<GrindstoneMenu> GRINDSTONE = register("grindstone", GrindstoneMenu::new);
+     public static final MenuType<HopperMenu> HOPPER = register("hopper", HopperMenu::new);
+     public static final MenuType<LecternMenu> LECTERN = register("lectern", (i, inventory) -> {
+-        return new LecternMenu(i);
++        return new LecternMenu(i, inventory); // CraftBukkit
+     });
+     public static final MenuType<LoomMenu> LOOM = register("loom", LoomMenu::new);
+     public static final MenuType<MerchantMenu> MERCHANT = register("merchant", MerchantMenu::new);
+@@ -41,11 +41,11 @@
+     private final MenuType.MenuSupplier<T> constructor;
+ 
+     private static <T extends AbstractContainerMenu> MenuType<T> register(String name, MenuType.MenuSupplier<T> constructor) {
+-        return (MenuType) Registry.register(BuiltInRegistries.MENU, name, new MenuType(constructor, FeatureFlags.VANILLA_SET));
++        return (MenuType) Registry.register(BuiltInRegistries.MENU, name, new MenuType<>(constructor, FeatureFlags.VANILLA_SET)); // CraftBukkit - decompile error
+     }
+ 
+     private static <T extends AbstractContainerMenu> MenuType<T> register(String name, MenuType.MenuSupplier<T> constructor, FeatureFlag... flags) {
+-        return (MenuType) Registry.register(BuiltInRegistries.MENU, name, new MenuType(constructor, FeatureFlags.REGISTRY.subset(flags)));
++        return (MenuType) Registry.register(BuiltInRegistries.MENU, name, new MenuType<>(constructor, FeatureFlags.REGISTRY.subset(flags))); // CraftBukkit - decompile error
+     }
+ 
+     private MenuType(MenuType.MenuSupplier<T> constructor, FeatureFlagSet requiredFeatures) {

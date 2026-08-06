@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/entity/animal/equine/Llama.java
++++ b/net/minecraft/world/entity/animal/equine/Llama.java
+@@ -87,6 +87,11 @@
+         return false;
+     }
+ 
++    // CraftBukkit start
++    public void setStrengthPublic(int i) {
++        this.setStrength(i);
++    }
++    // CraftBukkit end
+     private void setStrength(int strength) {
+         this.entityData.set(Llama.DATA_STRENGTH_ID, Math.max(1, Math.min(5, strength)));
+     }
+@@ -487,8 +492,8 @@
+         }
+ 
+         static {
+-            PrimitiveCodec primitivecodec = Codec.INT;
+-            IntFunction intfunction = Llama.Variant.BY_ID;
++            PrimitiveCodec<Integer> primitivecodec = Codec.INT; // CraftBukkit - decompile error
++            IntFunction<Llama.Variant> intfunction = Llama.Variant.BY_ID; // CraftBukkit - decompile error
+ 
+             Objects.requireNonNull(intfunction);
+             LEGACY_CODEC = primitivecodec.xmap(intfunction::apply, Llama.Variant::getId);

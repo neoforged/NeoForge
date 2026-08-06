@@ -1,0 +1,93 @@
+--- a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
++++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
+@@ -30,6 +30,13 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.level.dimension.LevelStem;
++import org.bukkit.event.entity.CreatureSpawnEvent;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.player.PlayerTeleportEvent;
++// CraftBukkit end
++
+ public class ThrownEnderpearl extends ThrowableItemProjectile {
+ 
+     private long ticketTimer = 0L;
+@@ -120,12 +127,19 @@
+                         ServerPlayer serverplayer = (ServerPlayer) entity;
+ 
+                         if (serverplayer.connection.isAcceptingMessages()) {
++                            // CraftBukkit start
++                            ServerPlayer serverplayer1 = serverplayer.teleport(new TeleportTransition(serverlevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING, PlayerTeleportEvent.TeleportCause.ENDER_PEARL));
++                            if (serverplayer1 == null) {
++                                this.discard(EntityRemoveEvent.Cause.HIT);
++                                return;
++                            }
++                            // CraftBukkit end
+                             if (this.random.nextFloat() < 0.05F && serverlevel.isSpawningMonsters() && serverlevel.getLevelData().getDifficulty() != Difficulty.PEACEFUL) {
+                                 Endermite endermite = (Endermite) EntityTypes.ENDERMITE.create(serverlevel, EntitySpawnReason.TRIGGERED);
+ 
+                                 if (endermite != null) {
+                                     endermite.snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+-                                    serverlevel.addFreshEntity(endermite);
++                                    serverlevel.addFreshEntity(endermite, CreatureSpawnEvent.SpawnReason.ENDER_PEARL);
+                                 }
+                             }
+ 
+@@ -133,12 +147,12 @@
+                                 entity.setPortalCooldown();
+                             }
+ 
+-                            ServerPlayer serverplayer1 = serverplayer.teleport(new TeleportTransition(serverlevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING));
++                            // ServerPlayer serverplayer1 = serverplayer.teleport(new TeleportTransition(serverlevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING)); // CraftBukkit - moved up
+ 
+                             if (serverplayer1 != null) {
+                                 serverplayer1.resetFallDistance();
+                                 serverplayer1.resetCurrentImpulseContext();
+-                                serverplayer1.hurtServer(serverplayer.level(), this.damageSources().enderPearl(), 5.0F);
++                                serverplayer1.hurtServer(serverplayer.level(), this.damageSources().enderPearl().customEntityDamager(this), 5.0F); // CraftBukkit
+                             }
+ 
+                             this.playSound(serverlevel, vec3);
+@@ -159,11 +173,11 @@
+                         this.playSound(serverlevel, vec3);
+                     }
+ 
+-                    this.discard();
++                    this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+                     return;
+                 }
+ 
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+                 return;
+             }
+         }
+@@ -189,7 +203,7 @@
+         Level level = this.level();
+ 
+         if (level instanceof ServerLevel serverlevel) {
+-            int i;
++            int i, j; // CraftBukkit - decompile error
+             Entity entity;
+             label39:
+             {
+@@ -198,7 +212,7 @@
+                 entity = this.owner != null ? findOwnerIncludingDeadPlayer(serverlevel, this.owner.getUUID()) : null;
+                 if (entity instanceof ServerPlayer serverplayer) {
+                     if (!entity.isAlive() && !serverplayer.wonGame && (Boolean) serverplayer.level().getGameRules().get(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
+-                        this.discard();
++                        this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                         break label39;
+                     }
+                 }
+@@ -238,7 +252,7 @@
+ 
+     @Override
+     public boolean canTeleport(Level from, Level to) {
+-        if (from.dimension() == Level.END && to.dimension() == Level.OVERWORLD) {
++        if (from.getTypeKey() == LevelStem.END && to.getTypeKey() == LevelStem.OVERWORLD) { // CraftBukkit
+             Entity entity = this.getOwner();
+ 
+             if (entity instanceof ServerPlayer) {

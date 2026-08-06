@@ -1,0 +1,58 @@
+--- a/net/minecraft/world/level/TicketStorage.java
++++ b/net/minecraft/world/level/TicketStorage.java
+@@ -31,6 +31,10 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.Objects;
++// CraftBukkit end
++
+ public class TicketStorage extends SavedData {
+ 
+     private static final int INITIAL_TICKET_LIST_CAPACITY = 4;
+@@ -96,7 +100,7 @@
+             Long2ObjectMap.Entry<List<Ticket>> long2objectmap_entry = (Entry) objectiterator.next();
+             ChunkPos chunkpos = ChunkPos.unpack(long2objectmap_entry.getLongKey());
+ 
+-            for (Ticket ticket : (List) long2objectmap_entry.getValue()) {
++            for (Ticket ticket : long2objectmap_entry.getValue()) { // CraftBukkit - decompile error
+                 output.accept(chunkpos, ticket);
+             }
+         }
+@@ -109,7 +113,7 @@
+         while (objectiterator.hasNext()) {
+             Long2ObjectMap.Entry<List<Ticket>> long2objectmap_entry = (Entry) objectiterator.next();
+ 
+-            for (Ticket ticket : (List) long2objectmap_entry.getValue()) {
++            for (Ticket ticket : long2objectmap_entry.getValue()) { // CraftBukkit - decompile error
+                 this.addTicket(long2objectmap_entry.getLongKey(), ticket);
+             }
+         }
+@@ -201,7 +205,7 @@
+     }
+ 
+     private static boolean isTicketSameTypeAndLevel(Ticket ticket, Ticket t) {
+-        return t.getType() == ticket.getType() && t.getTicketLevel() == ticket.getTicketLevel();
++        return t.getType() == ticket.getType() && t.getTicketLevel() == ticket.getTicketLevel() && Objects.equals(ticket.key, t.key); // CraftBukkit
+     }
+ 
+     public int getTicketLevelAt(long key, boolean simulation) {
+@@ -402,7 +406,7 @@
+         while (objectiterator.hasNext()) {
+             Long2ObjectMap.Entry<List<Ticket>> long2objectmap_entry = (Entry) objectiterator.next();
+ 
+-            for (Ticket ticket : (List) long2objectmap_entry.getValue()) {
++            for (Ticket ticket : long2objectmap_entry.getValue()) { // CraftBukkit - decompile error
+                 if (ticket.getType() == ticketType) {
+                     list.add(Pair.of(ticket, long2objectmap_entry.getLongKey()));
+                 }
+@@ -438,7 +442,7 @@
+         while (objectiterator.hasNext()) {
+             Long2ObjectMap.Entry<List<Ticket>> long2objectmap_entry = (Entry) objectiterator.next();
+ 
+-            for (Ticket ticket : (List) long2objectmap_entry.getValue()) {
++            for (Ticket ticket : long2objectmap_entry.getValue()) { // CraftBukkit - decompile error
+                 if (ticketCheck.test(ticket)) {
+                     longopenhashset.add(long2objectmap_entry.getLongKey());
+                     break;

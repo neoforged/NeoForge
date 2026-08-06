@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/animal/equine/SkeletonHorse.java
++++ b/net/minecraft/world/entity/animal/equine/SkeletonHorse.java
+@@ -30,6 +30,10 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class SkeletonHorse extends AbstractHorse {
+ 
+     private final SkeletonTrapGoal skeletonTrapGoal = new SkeletonTrapGoal(this);
+@@ -127,7 +131,7 @@
+     public void aiStep() {
+         super.aiStep();
+         if (!this.isPersistenceRequired() && this.isTrap() && this.trapTime++ >= 18000) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }

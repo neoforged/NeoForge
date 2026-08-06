@@ -1,0 +1,139 @@
+--- a/net/minecraft/server/level/ServerEntity.java
++++ b/net/minecraft/server/level/ServerEntity.java
+@@ -49,6 +49,12 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.server.network.ServerPlayerConnection;
++import org.bukkit.entity.Player;
++import org.bukkit.event.player.PlayerVelocityEvent;
++// CraftBukkit end
++
+ public class ServerEntity {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -72,8 +78,12 @@
+     private boolean wasRiding;
+     private boolean wasOnGround;
+     private @Nullable List<SynchedEntityData.DataValue<?>> trackedDataValues;
++    // CraftBukkit start
++    private final Set<ServerPlayerConnection> trackedPlayers;
+ 
+-    public ServerEntity(ServerLevel level, Entity entity, int updateInterval, boolean trackDelta, ServerEntity.Synchronizer synchronizer) {
++    public ServerEntity(ServerLevel level, Entity entity, int updateInterval, boolean trackDelta, ServerEntity.Synchronizer synchronizer, Set<ServerPlayerConnection> trackedPlayers) {
++        this.trackedPlayers = trackedPlayers;
++        // CraftBukkit end
+         this.level = level;
+         this.synchronizer = synchronizer;
+         this.entity = entity;
+@@ -93,7 +103,7 @@
+         List<Entity> list = this.entity.getPassengers();
+ 
+         if (!list.equals(this.lastPassengers)) {
+-            this.synchronizer.sendToTrackingPlayersFiltered(new ClientboundSetPassengersPacket(this.entity), (serverplayer) -> {
++            this.synchronizer.sendToTrackingPlayersFilteredAndSelf(new ClientboundSetPassengersPacket(this.entity), (serverplayer) -> { // CraftBukkit
+                 return list.contains(serverplayer) == this.lastPassengers.contains(serverplayer);
+             });
+             this.lastPassengers = list;
+@@ -102,15 +112,16 @@
+         Entity entity = this.entity;
+ 
+         if (entity instanceof ItemFrame itemframe) {
+-            if (this.tickCount % 10 == 0) {
++            if (true || this.tickCount % 10 == 0) { // CraftBukkit - Moved below, should always enter this block
+                 ItemStack itemstack = itemframe.getItem();
+ 
+-                if (itemstack.getItem() instanceof MapItem) {
++                if (this.tickCount % 10 == 0 && itemstack.getItem() instanceof MapItem) { // CraftBukkit - Moved this.tickCounter % 10 logic here so item frames do not enter the other blocks
+                     MapId mapid = (MapId) itemstack.get(DataComponents.MAP_ID);
+                     MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.level);
+ 
+                     if (mapitemsaveddata != null) {
+-                        for (ServerPlayer serverplayer : this.level.players()) {
++                        for (ServerPlayerConnection connection : this.trackedPlayers) { // CraftBukkit
++                            ServerPlayer serverplayer = connection.getPlayer(); // CraftBukkit
+                             mapitemsaveddata.tickCarriedBy(serverplayer, itemstack, itemframe);
+                             Packet<?> packet = mapitemsaveddata.getUpdatePacket(mapid, serverplayer);
+ 
+@@ -259,6 +270,27 @@
+ 
+         ++this.tickCount;
+         if (this.entity.hurtMarked) {
++            // CraftBukkit start - Create PlayerVelocity event
++            boolean cancelled = false;
++
++            if (this.entity instanceof ServerPlayer) {
++                Player player = (Player) this.entity.getBukkitEntity();
++                org.bukkit.util.Vector velocity = player.getVelocity();
++
++                PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
++                this.entity.level().getCraftServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    cancelled = true;
++                } else if (!velocity.equals(event.getVelocity())) {
++                    player.setVelocity(event.getVelocity());
++                }
++            }
++
++            if (cancelled) {
++                return;
++            }
++            // CraftBukkit end
+             this.entity.hurtMarked = false;
+             this.synchronizer.sendToTrackingPlayersAndSelf(new ClientboundSetEntityMotionPacket(this.entity));
+         }
+@@ -304,7 +336,10 @@
+     public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> broadcast) {
+         this.entity.updateDataBeforeSync();
+         if (this.entity.isRemoved()) {
+-            ServerEntity.LOGGER.warn("Fetching packet for removed entity {}", this.entity);
++            // CraftBukkit start - Remove useless error spam, just return
++            // EntityTrackerEntry.LOGGER.warn("Fetching packet for removed entity {}", this.entity);
++            return;
++            // CraftBukkit end
+         }
+ 
+         Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket(this);
+@@ -319,6 +354,12 @@
+         if (entity instanceof LivingEntity livingentity) {
+             Collection<AttributeInstance> collection = livingentity.getAttributes().getSyncableAttributes();
+ 
++            // CraftBukkit start - If sending own attributes send scaled health instead of current maximum health
++            if (this.entity.getId() == player.getId()) {
++                ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(collection, false);
++            }
++            // CraftBukkit end
++
+             if (!collection.isEmpty()) {
+                 broadcast.accept(new ClientboundUpdateAttributesPacket(this.entity.getId(), collection));
+             }
+@@ -339,6 +380,7 @@
+             if (!list.isEmpty()) {
+                 broadcast.accept(new ClientboundSetEquipmentPacket(this.entity.getId(), list));
+             }
++            ((LivingEntity) this.entity).detectEquipmentUpdatesPublic(); // CraftBukkit - SPIGOT-3789: sync again immediately after sending
+         }
+ 
+         if (!this.entity.getPassengers().isEmpty()) {
+@@ -393,6 +435,11 @@
+             Set<AttributeInstance> set = livingentity.getAttributes().getAttributesToSync();
+ 
+             if (!set.isEmpty()) {
++                // CraftBukkit start - Send scaled max health
++                if (this.entity instanceof ServerPlayer) {
++                    ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(set, false);
++                }
++                // CraftBukkit end
+                 this.synchronizer.sendToTrackingPlayersAndSelf(new ClientboundUpdateAttributesPacket(this.entity.getId(), set));
+             }
+ 
+@@ -408,5 +455,7 @@
+         void sendToTrackingPlayersAndSelf(Packet<? super ClientGamePacketListener> packet);
+ 
+         void sendToTrackingPlayersFiltered(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate);
++
++        void sendToTrackingPlayersFilteredAndSelf(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate); // CraftBukkit
+     }
+ }

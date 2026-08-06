@@ -1,0 +1,62 @@
+--- a/net/minecraft/world/entity/LightningBolt.java
++++ b/net/minecraft/world/entity/LightningBolt.java
+@@ -31,6 +31,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class LightningBolt extends Entity {
+ 
+     private static final int START_LIFE = 2;
+@@ -113,7 +118,7 @@
+                     }
+                 }
+ 
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+             } else if (this.life < -this.random.nextInt(10)) {
+                 --this.flashes;
+                 this.life = 1;
+@@ -122,7 +127,7 @@
+             }
+         }
+ 
+-        if (this.life >= 0) {
++        if (this.life >= 0 && !this.visualOnly) { // CraftBukkit - add !this.visualOnly
+             if (!(this.level() instanceof ServerLevel)) {
+                 this.level().setSkyFlashTime(2);
+             } else if (!this.visualOnly) {
+@@ -162,8 +167,12 @@
+                 BlockState blockstate = BaseFireBlock.getState(serverlevel, blockpos);
+ 
+                 if (serverlevel.getBlockState(blockpos).isAir() && blockstate.canSurvive(serverlevel, blockpos)) {
+-                    serverlevel.setBlockAndUpdate(blockpos, blockstate);
+-                    ++this.blocksSetOnFire;
++                    // CraftBukkit start - add "!visualOnly"
++                    if (!visualOnly && !CraftEventFactory.callBlockIgniteEvent(serverlevel, blockpos, this).isCancelled()) {
++                        serverlevel.setBlockAndUpdate(blockpos, blockstate);
++                        ++this.blocksSetOnFire;
++                    }
++                    // CraftBukkit end
+                 }
+ 
+                 for (int j = 0; j < additionalSources; ++j) {
+@@ -171,8 +180,12 @@
+ 
+                     blockstate = BaseFireBlock.getState(serverlevel, blockpos1);
+                     if (serverlevel.getBlockState(blockpos1).isAir() && blockstate.canSurvive(serverlevel, blockpos1)) {
+-                        serverlevel.setBlockAndUpdate(blockpos1, blockstate);
+-                        ++this.blocksSetOnFire;
++                        // CraftBukkit start - add "!visualOnly"
++                        if (!visualOnly && !CraftEventFactory.callBlockIgniteEvent(serverlevel, blockpos1, this).isCancelled()) {
++                            serverlevel.setBlockAndUpdate(blockpos1, blockstate);
++                            ++this.blocksSetOnFire;
++                        }
++                        // CraftBukkit end
+                     }
+                 }
+ 

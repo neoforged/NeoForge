@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -33,6 +33,11 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.event.block.BlockRedstoneEvent;
++// CraftBukkit end
++
+ public class TripWireHookBlock extends Block {
+ 
+     public static final MapCodec<TripWireHookBlock> CODEC = simpleCodec(TripWireHookBlock::new);
+@@ -161,6 +166,15 @@
+                 emitState(level, blockpos2, flag4, flag5, flag2, flag3);
+             }
+ 
++            // CraftBukkit start
++            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(CraftBlock.at(level, pos), 15, 0);
++            level.getCraftServer().getPluginManager().callEvent(eventRedstone);
++
++            if (eventRedstone.getNewCurrent() > 0) {
++                return;
++            }
++            // CraftBukkit end
++
+             emitState(level, pos, flag4, flag5, flag2, flag3);
+             if (!isBeingDestroyed) {
+                 level.setBlock(pos, (BlockState) blockstate3.setValue(TripWireHookBlock.FACING, direction), 3);

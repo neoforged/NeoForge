@@ -1,0 +1,49 @@
+--- a/net/minecraft/world/level/storage/PlayerDataStorage.java
++++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
+@@ -20,6 +20,11 @@
+ import net.minecraft.world.entity.player.Player;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++// CraftBukkit end
++
+ public class PlayerDataStorage {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -84,6 +89,23 @@
+         return Optional.empty();
+     }
+ 
++    // CraftBukkit start
++    public Optional<CompoundTag> load(Player player) {
++        return load(player.nameAndId()).map((compoundtag) -> {
++            if (player instanceof ServerPlayer) {
++                CraftPlayer craftPlayer = (CraftPlayer) player.getBukkitEntity();
++                // Only update first played if it is older than the one we have
++                long modified = new File(this.playerDir, player.getStringUUID() + ".dat").lastModified();
++                if (modified < craftPlayer.getFirstPlayed()) {
++                    craftPlayer.setFirstPlayed(modified);
++                }
++            }
++
++            return compoundtag;
++        });
++    }
++    // CraftBukkit end
++
+     public Optional<CompoundTag> load(NameAndId nameAndId) {
+         Optional<CompoundTag> optional = this.load(nameAndId, ".dat");
+ 
+@@ -100,4 +122,10 @@
+             return compoundtag;
+         });
+     }
++
++    // CraftBukkit start
++    public File getPlayerDir() {
++        return playerDir;
++    }
++    // CraftBukkit end
+ }

@@ -1,0 +1,259 @@
+--- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
++++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
+@@ -77,6 +77,14 @@
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import java.util.stream.Collectors;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.entity.PiglinBarterEvent;
++// CraftBukkit end
++
+ public class PiglinAi {
+ 
+     public static final int REPELLENT_DETECTION_RANGE_HORIZONTAL = 8;
+@@ -142,7 +150,8 @@
+     private static ActivityData<Piglin> initFightActivity(Piglin body) {
+         return ActivityData.create(Activity.FIGHT, 10, ImmutableList.of(StopAttackingIfTargetInvalid.create((serverlevel, livingentity) -> {
+             return !isNearestValidAttackTarget(serverlevel, body, livingentity);
+-        }), BehaviorBuilder.triggerIf(PiglinAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), new SpearApproach(1.0D, 10.0F), new SpearAttack(1.0D, 1.0D, 2.0F), new SpearRetreat(1.0D), MeleeAttack.create(20), new CrossbowAttack(), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
++            // CraftBukkit - decompile error
++        }), BehaviorBuilder.triggerIf(PiglinAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), new SpearApproach(1.0D, 10.0F), new SpearAttack(1.0D, 1.0D, 2.0F), new SpearRetreat(1.0D), MeleeAttack.create(20), new CrossbowAttack<>(), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+     }
+ 
+     private static ActivityData<Piglin> initCelebrateActivity() {
+@@ -150,7 +159,8 @@
+             return piglin.isAdult();
+         }, PiglinAi::findNearestValidAttackTarget), BehaviorBuilder.triggerIf((piglin) -> {
+             return !piglin.isDancing();
+-        }, GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0F)), BehaviorBuilder.triggerIf(Piglin::isDancing, GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6F)), new RunOne(ImmutableList.of(Pair.of(SetEntityLookTarget.create(EntityTypes.PIGLIN, 8.0F), 1), Pair.of(RandomStroll.stroll(0.6F, 2, 1), 1), Pair.of(new DoNothing(10, 20), 1)))), MemoryModuleType.CELEBRATE_LOCATION);
++            // CraftBukkit - decompile error
++        }, GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0F)), BehaviorBuilder.triggerIf(Piglin::isDancing, GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6F)), new RunOne<>(ImmutableList.of(Pair.of(SetEntityLookTarget.create(EntityTypes.PIGLIN, 8.0F), 1), Pair.of(RandomStroll.stroll(0.6F, 2, 1), 1), Pair.of(new DoNothing(10, 20), 1)))), MemoryModuleType.CELEBRATE_LOCATION);
+     }
+ 
+     private static ActivityData<Piglin> initAdmireItemActivity() {
+@@ -162,7 +172,8 @@
+     }
+ 
+     private static ActivityData<Piglin> initRideHoglinActivity() {
+-        return ActivityData.create(Activity.RIDE, 10, ImmutableList.of(Mount.create(0.8F), SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 8.0F), BehaviorBuilder.sequence(BehaviorBuilder.triggerIf(Entity::isPassenger), TriggerGate.triggerOneShuffled(ImmutableList.builder().addAll(createLookBehaviors()).add(Pair.of(BehaviorBuilder.triggerIf((piglin) -> {
++        // CraftBukkit - decompile error
++        return ActivityData.create(Activity.RIDE, 10, ImmutableList.of(Mount.create(0.8F), SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 8.0F), BehaviorBuilder.sequence(BehaviorBuilder.triggerIf(Entity::isPassenger), TriggerGate.triggerOneShuffled(ImmutableList.<Pair<? extends net.minecraft.world.entity.ai.behavior.declarative.Trigger<? super LivingEntity>, Integer>>builder().addAll(createLookBehaviors()).add(Pair.of(BehaviorBuilder.triggerIf((piglin) -> {
+             return true;
+         }), 1)).build())), DismountOrSkipMounting.create(8, PiglinAi::wantsToStopRiding)), MemoryModuleType.RIDE_TARGET);
+     }
+@@ -172,7 +183,7 @@
+     }
+ 
+     private static RunOne<LivingEntity> createIdleLookBehaviors() {
+-        return new RunOne<LivingEntity>(ImmutableList.builder().addAll(createLookBehaviors()).add(Pair.of(new DoNothing(30, 60), 1)).build());
++        return new RunOne<LivingEntity>(ImmutableList.<Pair<? extends BehaviorControl<? super LivingEntity>, Integer>>builder().addAll(createLookBehaviors()).add(Pair.of(new DoNothing(30, 60), 1)).build()); // CraftBukkit - decompile error
+     }
+ 
+     private static RunOne<Piglin> createIdleMovementBehaviors() {
+@@ -193,13 +204,13 @@
+ 
+     protected static void updateActivity(Piglin body) {
+         Brain<Piglin> brain = body.getBrain();
+-        Activity activity = (Activity) brain.getActiveNonCoreActivity().orElse((Object) null);
++        Activity activity = (Activity) brain.getActiveNonCoreActivity().orElse(null); // CraftBukkit - decompile error
+ 
+         brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
+-        Activity activity1 = (Activity) brain.getActiveNonCoreActivity().orElse((Object) null);
++        Activity activity1 = (Activity) brain.getActiveNonCoreActivity().orElse(null); // CraftBukkit - decompile error
+ 
+         if (activity != activity1) {
+-            Optional optional = getSoundForCurrentActivity(body);
++            Optional<SoundEvent> optional = getSoundForCurrentActivity(body); // CraftBukkit - decompile error
+ 
+             Objects.requireNonNull(body);
+             optional.ifPresent(body::makeSound);
+@@ -255,23 +266,27 @@
+         stopWalking(body);
+         ItemStack itemstack;
+ 
+-        if (itemEntity.getItem().is(Items.GOLD_NUGGET)) {
++        // CraftBukkit start
++        if (itemEntity.getItem().is(Items.GOLD_NUGGET) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPickupItemEvent(body, itemEntity, 0, false).isCancelled()) {
+             body.take(itemEntity, itemEntity.getItem().getCount());
+             itemstack = itemEntity.getItem();
+-            itemEntity.discard();
+-        } else {
++            itemEntity.discard(EntityRemoveEvent.Cause.PICKUP); // CraftBukkit - add Bukkit remove cause
++        } else if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityPickupItemEvent(body, itemEntity, itemEntity.getItem().getCount() - 1, false).isCancelled()) {
+             body.take(itemEntity, 1);
+             itemstack = removeOneItemFromItemEntity(itemEntity);
++        } else {
++            return;
+         }
++        // CraftBukkit end
+ 
+-        if (isLovedItem(itemstack)) {
++        if (isLovedItem(itemstack, body)) { // CraftBukkit - Changes to allow for custom payment in bartering
+             body.getBrain().eraseMemory(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM);
+             holdInOffhand(level, body, itemstack);
+             admireGoldItem(body);
+         } else if (isFood(itemstack) && !hasEatenRecently(body)) {
+             eat(body);
+         } else {
+-            boolean flag = !body.equipItemIfPossible(level, itemstack).equals(ItemStack.EMPTY);
++            boolean flag = !body.equipItemIfPossible(level, itemstack, itemEntity).equals(ItemStack.EMPTY); // CraftBukkit
+ 
+             if (!flag) {
+                 putInInventory(body, itemstack);
+@@ -292,7 +307,7 @@
+         ItemStack itemstack1 = itemstack.split(1);
+ 
+         if (itemstack.isEmpty()) {
+-            itemEntity.discard();
++            itemEntity.discard(EntityRemoveEvent.Cause.PICKUP); // CraftBukkit - add Bukkit remove cause
+         } else {
+             itemEntity.setItem(itemstack);
+         }
+@@ -305,10 +320,15 @@
+ 
+         body.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+         if (body.isAdult()) {
+-            boolean flag1 = isBarterCurrency(itemstack);
++            boolean flag1 = isBarterCurrency(itemstack, body); // CraftBukkit - Changes to allow custom payment for bartering
+ 
+             if (barteringEnabled && flag1) {
+-                throwItems(body, getBarterResponseItems(body));
++                // CraftBukkit start
++                PiglinBarterEvent event = CraftEventFactory.callPiglinBarterEvent(body, getBarterResponseItems(body), itemstack);
++                if (!event.isCancelled()) {
++                    throwItems(body, event.getOutcome().stream().map(CraftItemStack::asNMSCopy).collect(Collectors.toList()));
++                }
++                // CraftBukkit end
+             } else if (!flag1) {
+                 boolean flag2 = !body.equipItemIfPossible(level, itemstack).isEmpty();
+ 
+@@ -322,7 +342,7 @@
+             if (!flag3) {
+                 ItemStack itemstack1 = body.getMainHandItem();
+ 
+-                if (isLovedItem(itemstack1)) {
++                if (isLovedItem(itemstack1, body)) { // CraftBukkit - Changes to allow for custom payment in bartering
+                     putInInventory(body, itemstack1);
+                 } else {
+                     throwItems(body, Collections.singletonList(itemstack1));
+@@ -386,7 +406,7 @@
+     }
+ 
+     private static boolean wantsToDance(LivingEntity body, LivingEntity killedTarget) {
+-        return !killedTarget.is((Object) EntityTypes.HOGLIN) ? false : RandomSource.createThreadLocalInstance(body.level().getGameTime()).nextFloat() < 0.1F;
++        return !killedTarget.is(EntityTypes.HOGLIN) ? false : RandomSource.createThreadLocalInstance(body.level().getGameTime()).nextFloat() < 0.1F; // CraftBukkit - decompile error
+     }
+ 
+     protected static boolean wantsToPickup(Piglin body, ItemStack itemStack) {
+@@ -396,7 +416,7 @@
+             return false;
+         } else if (isAdmiringDisabled(body) && body.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+             return false;
+-        } else if (isBarterCurrency(itemStack)) {
++        } else if (isBarterCurrency(itemStack, body)) { // CraftBukkit
+             return isNotHoldingLovedItemInOffHand(body);
+         } else {
+             boolean flag = body.canAddToInventory(itemStack);
+@@ -405,6 +425,12 @@
+         }
+     }
+ 
++    // CraftBukkit start - Added method to allow checking for custom payment items
++    protected static boolean isLovedItem(ItemStack itemstack, Piglin piglin) {
++        return isLovedItem(itemstack) || (piglin.interestItems.contains(itemstack.getItem()) || piglin.allowedBarterItems.contains(itemstack.getItem()));
++    }
++    // CraftBukkit end
++
+     protected static boolean isLovedItem(ItemStack itemStack) {
+         return itemStack.is(ItemTags.PIGLIN_LOVED);
+     }
+@@ -498,7 +524,7 @@
+     }
+ 
+     protected static boolean canAdmire(Piglin body, ItemStack playerHeldItemStack) {
+-        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && isBarterCurrency(playerHeldItemStack);
++        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && isBarterCurrency(playerHeldItemStack, body); // CraftBukkit
+     }
+ 
+     protected static void wasHurtBy(ServerLevel level, Piglin body, LivingEntity attacker) {
+@@ -528,7 +554,7 @@
+                     broadcastAngerTarget(level, body, attacker);
+                 }
+ 
+-            } else if (attacker.is((Object) EntityTypes.HOGLIN) && hoglinsOutnumberPiglins(body)) {
++            } else if (attacker.is(EntityTypes.HOGLIN) && hoglinsOutnumberPiglins(body)) { // CraftBukkit - decompile error
+                 setAvoidTargetAndDontHuntForAWhile(body, attacker);
+                 broadcastRetreat(body, attacker);
+             } else {
+@@ -541,7 +567,7 @@
+         if (!body.getBrain().isActive(Activity.AVOID)) {
+             if (Sensor.isEntityAttackableIgnoringLineOfSight(level, body, attacker)) {
+                 if (!BehaviorUtils.isOtherTargetMuchFurtherAwayThanCurrentAttackTarget(body, attacker, 4.0D)) {
+-                    if (attacker.is((Object) EntityTypes.PLAYER) && (Boolean) level.getGameRules().get(GameRules.UNIVERSAL_ANGER)) {
++                    if (attacker.is(EntityTypes.PLAYER) && (Boolean) level.getGameRules().get(GameRules.UNIVERSAL_ANGER)) { // CraftBukkit - decompile error
+                         setAngerTargetToNearestTargetablePlayerIfFound(level, body, attacker);
+                         broadcastUniversalAnger(level, body);
+                     } else {
+@@ -625,11 +651,11 @@
+         if (Sensor.isEntityAttackableIgnoringLineOfSight(level, body, target)) {
+             body.getBrain().eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+             body.getBrain().setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, target.getUUID(), 600L);
+-            if (target.is((Object) EntityTypes.HOGLIN) && body.canHunt()) {
++            if (target.is(EntityTypes.HOGLIN) && body.canHunt()) { // CraftBukkit - decompile error
+                 dontKillAnyMoreHoglinsForAWhile(body);
+             }
+ 
+-            if (target.is((Object) EntityTypes.PLAYER) && (Boolean) level.getGameRules().get(GameRules.UNIVERSAL_ANGER)) {
++            if (target.is(EntityTypes.PLAYER) && (Boolean) level.getGameRules().get(GameRules.UNIVERSAL_ANGER)) { // CraftBukkit - decompile error
+                 body.getBrain().setMemoryWithExpiry(MemoryModuleType.UNIVERSAL_ANGER, true, 600L);
+             }
+ 
+@@ -693,7 +719,7 @@
+         } else {
+             LivingEntity livingentity = (LivingEntity) brain.getMemory(MemoryModuleType.AVOID_TARGET).get();
+ 
+-            return livingentity.is((Object) EntityTypes.HOGLIN) ? piglinsEqualOrOutnumberHoglins(body) : (isZombified(livingentity) ? !brain.isMemoryValue(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, livingentity) : false);
++            return livingentity.is(EntityTypes.HOGLIN) ? piglinsEqualOrOutnumberHoglins(body) : (isZombified(livingentity) ? !brain.isMemoryValue(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, livingentity) : false); // CraftBukkit - decompile error
+         }
+     }
+ 
+@@ -750,6 +776,12 @@
+         return body.getBrain().hasMemoryValue(MemoryModuleType.ADMIRING_ITEM);
+     }
+ 
++    // CraftBukkit start - Changes to allow custom payment for bartering
++    private static boolean isBarterCurrency(ItemStack itemstack, Piglin piglin) {
++        return isBarterCurrency(itemstack) || piglin.allowedBarterItems.contains(itemstack.getItem());
++    }
++    // CraftBukkit end
++
+     private static boolean isBarterCurrency(ItemStack itemStack) {
+         return itemStack.is(PiglinAi.BARTERING_ITEM);
+     }
+@@ -771,7 +803,7 @@
+     }
+ 
+     public static boolean isPlayerHoldingLovedItem(LivingEntity entity) {
+-        return entity.is((Object) EntityTypes.PLAYER) && entity.isHolding(PiglinAi::isLovedItem);
++        return entity.is(EntityTypes.PLAYER) && entity.isHolding(PiglinAi::isLovedItem); // CraftBukkit - decompile error
+     }
+ 
+     private static boolean isAdmiringDisabled(Piglin body) {
+@@ -787,11 +819,11 @@
+     }
+ 
+     private static boolean isNotHoldingLovedItemInOffHand(Piglin body) {
+-        return body.getOffhandItem().isEmpty() || !isLovedItem(body.getOffhandItem());
++        return body.getOffhandItem().isEmpty() || !isLovedItem(body.getOffhandItem(), body); // CraftBukkit - Changes to allow custom payment for bartering
+     }
+ 
+     public static boolean isZombified(Entity entity) {
+-        return entity.is((Object) EntityTypes.ZOMBIFIED_PIGLIN) || entity.is((Object) EntityTypes.ZOGLIN);
++        return entity.is(EntityTypes.ZOMBIFIED_PIGLIN) || entity.is(EntityTypes.ZOGLIN); // CraftBukkit - decompile error
+     }
+ 
+     public static List<AbstractPiglin> findNearbyAdultPiglins(Brain<?> brain) {

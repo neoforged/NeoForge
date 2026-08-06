@@ -1,0 +1,28 @@
+--- a/net/minecraft/world/item/FlintAndSteelItem.java
++++ b/net/minecraft/world/item/FlintAndSteelItem.java
+@@ -35,6 +35,12 @@
+             BlockPos blockpos1 = blockpos.relative(context.getClickedFace());
+ 
+             if (BaseFireBlock.canBePlacedAt(level, blockpos1, context.getHorizontalDirection())) {
++                // CraftBukkit start - Store the clicked block
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos1, org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL, player).isCancelled()) {
++                    context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
++                    return InteractionResult.PASS;
++                }
++                // CraftBukkit end
+                 level.playSound(player, blockpos1, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+                 BlockState blockstate1 = BaseFireBlock.getState(level, blockpos1);
+ 
+@@ -54,6 +60,12 @@
+                 return InteractionResult.FAIL;
+             }
+         } else {
++            // CraftBukkit start - Store the clicked block
++            if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos, org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL, player).isCancelled()) {
++                context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
++                return InteractionResult.PASS;
++            }
++            // CraftBukkit end
+             level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+             level.setBlock(blockpos, (BlockState) blockstate.setValue(BlockStateProperties.LIT, true), 11);
+             level.gameEvent(player, (Holder) GameEvent.BLOCK_CHANGE, blockpos);

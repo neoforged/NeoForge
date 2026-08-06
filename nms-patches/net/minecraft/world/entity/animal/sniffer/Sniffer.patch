@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
++++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+@@ -285,6 +285,13 @@
+                 this.dropFromGiftLootTable(serverlevel, BuiltInLootTables.SNIFFER_DIGGING, (serverlevel1, itemstack) -> {
+                     ItemEntity itementity = new ItemEntity(this.level(), (double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ(), itemstack);
+ 
++                    // CraftBukkit start - handle EntityDropItemEvent
++                    org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
++                    org.bukkit.Bukkit.getPluginManager().callEvent(event);
++                    if (event.isCancelled()) {
++                        return;
++                    }
++                    // CraftBukkit end
+                     itementity.setDefaultPickUpDelay();
+                     serverlevel1.addFreshEntity(itementity);
+                 });
+@@ -457,7 +464,7 @@
+ 
+     @Override
+     public Brain<Sniffer> getBrain() {
+-        return super.getBrain();
++        return (Brain<Sniffer>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override

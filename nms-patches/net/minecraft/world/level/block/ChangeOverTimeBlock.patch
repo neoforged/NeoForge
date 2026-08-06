@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/ChangeOverTimeBlock.java
++++ b/net/minecraft/world/level/block/ChangeOverTimeBlock.java
+@@ -19,7 +19,7 @@
+ 
+         if (random.nextFloat() < 0.05688889F) {
+             this.getNextState(state, level, pos, random).ifPresent((blockstate1) -> {
+-                level.setBlockAndUpdate(pos, blockstate1);
++                org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, blockstate1); // CraftBukkit
+             });
+         }
+ 

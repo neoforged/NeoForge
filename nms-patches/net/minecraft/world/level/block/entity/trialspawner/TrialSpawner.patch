@@ -1,0 +1,61 @@
+--- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
++++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
+@@ -53,6 +53,12 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.BlockDispenseLootEvent;
++// CraftBukkit end
++
+ public final class TrialSpawner {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -90,7 +96,7 @@
+     }
+ 
+     public void load(ValueInput input) {
+-        Optional optional = input.read(TrialSpawnerStateData.Packed.MAP_CODEC);
++        Optional<TrialSpawnerStateData.Packed> optional = input.read(TrialSpawnerStateData.Packed.MAP_CODEC); // CraftBukkit - decompile error
+         TrialSpawnerStateData trialspawnerstatedata = this.data;
+ 
+         Objects.requireNonNull(this.data);
+@@ -214,13 +220,18 @@
+                                 }
+ 
+                                 mob.setPersistenceRequired();
+-                                Optional optional1 = spawndata.getEquipment();
++                            Optional<net.minecraft.world.entity.EquipmentTable> optional1 = spawndata.getEquipment(); // CraftBukkit - decompile error
+ 
+                                 Objects.requireNonNull(mob);
+                                 optional1.ifPresent(mob::equip);
+                             }
+ 
+-                            if (!level.tryAddFreshEntityWithPassengers(entity)) {
++                            // CraftBukkit start
++                            if (org.bukkit.craftbukkit.event.CraftEventFactory.callTrialSpawnerSpawnEvent(entity, spawnerPos).isCancelled()) {
++                                return Optional.empty();
++                            }
++                            if (!level.tryAddFreshEntityWithPassengers(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER)) {
++                                // CraftBukkit end
+                                 return Optional.empty();
+                             } else {
+                                 TrialSpawner.FlameParticle trialspawner_flameparticle = this.isOminous ? TrialSpawner.FlameParticle.OMINOUS : TrialSpawner.FlameParticle.NORMAL;
+@@ -243,6 +254,15 @@
+         ObjectArrayList<ItemStack> objectarraylist = loottable.getRandomItems(lootparams);
+ 
+         if (!objectarraylist.isEmpty()) {
++            // CraftBukkit start
++            BlockDispenseLootEvent spawnerDispenseLootEvent = CraftEventFactory.callBlockDispenseLootEvent(level, pos, null, objectarraylist);
++            if (spawnerDispenseLootEvent.isCancelled()) {
++                return;
++            }
++
++            objectarraylist = new ObjectArrayList<>(spawnerDispenseLootEvent.getDispensedLoot().stream().map(CraftItemStack::asNMSCopy).toList());
++            // CraftBukkit end
++
+             ObjectListIterator objectlistiterator = objectarraylist.iterator();
+ 
+             while (objectlistiterator.hasNext()) {

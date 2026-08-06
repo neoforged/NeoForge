@@ -1,0 +1,74 @@
+--- a/net/minecraft/world/inventory/CraftingMenu.java
++++ b/net/minecraft/world/inventory/CraftingMenu.java
+@@ -16,6 +16,11 @@
+ import net.minecraft.world.level.block.Blocks;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.inventory.CraftInventoryCrafting;
++import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++// CraftBukkit end
++
+ public class CraftingMenu extends AbstractCraftingMenu {
+ 
+     private static final int CRAFTING_GRID_WIDTH = 3;
+@@ -31,13 +36,16 @@
+     public final ContainerLevelAccess access;
+     private final Player player;
+     private boolean placingRecipe;
++    // CraftBukkit start
++    private CraftInventoryView bukkitEntity = null;
++    // CraftBukkit end
+ 
+     public CraftingMenu(int containerId, Inventory inventory) {
+         this(containerId, inventory, ContainerLevelAccess.NULL);
+     }
+ 
+     public CraftingMenu(int containerId, Inventory inventory, ContainerLevelAccess access) {
+-        super(MenuType.CRAFTING, containerId, 3, 3);
++        super(MenuType.CRAFTING, containerId, 3, 3, inventory); // CraftBukkit - pass player
+         this.access = access;
+         this.player = inventory.player;
+         this.addResultSlot(this.player, 124, 35);
+@@ -50,6 +58,7 @@
+         ServerPlayer serverplayer = (ServerPlayer) player;
+         ItemStack itemstack = ItemStack.EMPTY;
+         Optional<RecipeHolder<CraftingRecipe>> optional = level.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftinginput, level, recipeHint);
++        container.setCurrentRecipe(optional.orElse(null)); // CraftBukkit
+ 
+         if (optional.isPresent()) {
+             RecipeHolder<CraftingRecipe> recipeholder1 = (RecipeHolder) optional.get();
+@@ -63,6 +72,7 @@
+                 }
+             }
+         }
++        itemstack = org.bukkit.craftbukkit.event.CraftEventFactory.callPreCraftEvent(container, resultSlots, itemstack, menu.getBukkitView(), optional); // CraftBukkit
+ 
+         resultSlots.setItem(0, itemstack);
+         menu.setRemoteSlot(0, itemstack);
+@@ -103,6 +113,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return stillValid(this.access, player, Blocks.CRAFTING_TABLE);
+     }
+ 
+@@ -179,4 +190,17 @@
+     protected Player owner() {
+         return this.player;
+     }
++
++    // CraftBukkit start
++    @Override
++    public CraftInventoryView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryCrafting inventory = new CraftInventoryCrafting(this.craftSlots, this.resultSlots);
++        bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+ }

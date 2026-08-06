@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/Witch.java
++++ b/net/minecraft/world/entity/monster/Witch.java
+@@ -62,7 +62,7 @@
+     protected void registerGoals() {
+         super.registerGoals();
+         this.healRaidersGoal = new NearestHealableRaiderTargetGoal<Raider>(this, Raider.class, true, (livingentity, serverlevel) -> {
+-            return this.hasActiveRaid() && !livingentity.is((Object) EntityTypes.WITCH);
++            return this.hasActiveRaid() && !livingentity.is(EntityTypes.WITCH); // CraftBukkit - decompile error
+         });
+         this.attackPlayersGoal = new NearestAttackableWitchTargetGoal<Player>(this, Player.class, 10, true, false, (TargetingConditions.Selector) null);
+         this.goalSelector.addGoal(1, new FloatGoal(this));
+@@ -127,7 +127,7 @@
+                     PotionContents potioncontents = (PotionContents) itemstack.get(DataComponents.POTION_CONTENTS);
+ 
+                     if (itemstack.is(Items.POTION) && potioncontents != null) {
+-                        potioncontents.forEachEffect(this::addEffect, (Float) itemstack.getOrDefault(DataComponents.POTION_DURATION_SCALE, 1.0F));
++                        potioncontents.forEachEffect((effect) -> this.addEffect(effect, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK), (Float) itemstack.getOrDefault(DataComponents.POTION_DURATION_SCALE, 1.0F)); // CraftBukkit
+                     }
+ 
+                     this.gameEvent(GameEvent.DRINK);

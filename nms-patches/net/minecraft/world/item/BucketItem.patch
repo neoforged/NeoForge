@@ -1,0 +1,93 @@
+--- a/net/minecraft/world/item/BucketItem.java
++++ b/net/minecraft/world/item/BucketItem.java
+@@ -32,6 +32,16 @@
+ import net.minecraft.world.phys.HitResult;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
++import net.minecraft.server.level.ServerLevel;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.craftbukkit.util.DummyGeneratorAccess;
++import org.bukkit.event.player.PlayerBucketEmptyEvent;
++import org.bukkit.event.player.PlayerBucketFillEvent;
++// CraftBukkit end
++
+ public class BucketItem extends Item implements DispensibleContainerItem {
+ 
+     public final Fluid content;
+@@ -59,7 +69,7 @@
+                 BlockState blockstate = level.getBlockState(blockpos);
+                 BlockPos blockpos2 = blockstate.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? blockpos : blockpos1;
+ 
+-                if (this.emptyContents(player, level, blockpos2, blockhitresult)) {
++                if (this.emptyContents(player, level, blockpos2, blockhitresult, blockhitresult.getDirection(), blockpos, itemstack, hand)) { // CraftBukkit
+                     this.checkExtraContent(player, level, itemstack, blockpos2);
+                     if (player instanceof ServerPlayer) {
+                         ServerPlayer serverplayer = (ServerPlayer) player;
+@@ -80,6 +90,16 @@
+ 
+                         if (block instanceof BucketPickup) {
+                             BucketPickup bucketpickup = (BucketPickup) block;
++                            ItemStack dummyFluid = bucketpickup.pickupBlock(player, DummyGeneratorAccess.INSTANCE, blockpos, blockstate);
++                            if (dummyFluid.isEmpty()) return InteractionResult.FAIL; // Don't fire event if the bucket won't be filled.
++                            PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent((ServerLevel) level, player, blockpos, blockpos, blockhitresult.getDirection(), itemstack, dummyFluid.getItem(), hand);
++
++                            if (event.isCancelled()) {
++                                ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, blockpos)); // SPIGOT-5163 (see PlayerInteractManager)
++                                ((ServerPlayer) player).getBukkitEntity().updateInventory(); // SPIGOT-4541
++                                return InteractionResult.FAIL;
++                            }
++                            // CraftBukkit end
+                             ItemStack itemstack2 = bucketpickup.pickupBlock(player, level, blockpos, blockstate1);
+ 
+                             if (!itemstack2.isEmpty()) {
+@@ -88,7 +108,7 @@
+                                     player.playSound(soundevent, 1.0F, 1.0F);
+                                 });
+                                 level.gameEvent(player, (Holder) GameEvent.FLUID_PICKUP, blockpos);
+-                                ItemStack itemstack3 = ItemUtils.createFilledResult(itemstack, player, itemstack2);
++                                ItemStack itemstack3 = ItemUtils.createFilledResult(itemstack, player, CraftItemStack.asNMSCopy(event.getItemStack())); // CraftBukkit
+ 
+                                 if (!level.isClientSide()) {
+                                     CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, itemstack2);
+@@ -120,11 +140,18 @@
+ 
+     @Override
+     public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
++        // CraftBukkit start
++        return emptyContents(user, level, pos, hitResult, null, null, null, InteractionHand.MAIN_HAND);
++    }
++
++    public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, Direction direction, BlockPos clicked, ItemStack itemstack, InteractionHand interactionhand) {
++        // CraftBukkit end
+         Fluid fluid = this.content;
+ 
+         if (!(fluid instanceof FlowingFluid flowingfluid)) {
+             return false;
+         } else {
++            BlockState blockstate; // CraftBukkit - decompile error
+             Block block;
+             boolean flag;
+             boolean flag1;
+@@ -157,8 +184,18 @@
+             boolean flag3 = flag2;
+             boolean flag4 = blockstate.isAir() || flag3 && (!flag1 || hitResult == null);
+ 
++            // CraftBukkit start
++            if (flag3 && user instanceof ServerPlayer serverplayer) {
++                PlayerBucketEmptyEvent event = CraftEventFactory.callPlayerBucketEmptyEvent((ServerLevel) level, serverplayer, pos, clicked, direction, itemstack, interactionhand);
++                if (event.isCancelled()) {
++                    serverplayer.connection.send(new ClientboundBlockUpdatePacket(level, pos)); // SPIGOT-4238: needed when looking through entity
++                    serverplayer.getBukkitEntity().updateInventory(); // SPIGOT-4541
++                    return false;
++                }
++            }
++            // CraftBukkit end
+             if (!flag4) {
+-                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), (BlockHitResult) null);
++                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), (BlockHitResult) null, direction, clicked, itemstack, interactionhand); // CraftBukkit
+             } else if ((Boolean) level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content.is(FluidTags.WATER)) {
+                 int i = pos.getX();
+                 int j = pos.getY();

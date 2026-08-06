@@ -1,0 +1,86 @@
+--- a/net/minecraft/world/level/block/SculkSensorBlock.java
++++ b/net/minecraft/world/level/block/SculkSensorBlock.java
+@@ -44,6 +44,12 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.entity.player.Player;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.event.block.BlockRedstoneEvent;
++// CraftBukkit end
++
+ public class SculkSensorBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+ 
+     public static final MapCodec<SculkSensorBlock> CODEC = simpleCodec(SculkSensorBlock::new);
+@@ -102,7 +108,19 @@
+ 
+     @Override
+     public void stepOn(Level level, BlockPos pos, BlockState onState, Entity entity) {
+-        if (!level.isClientSide() && canActivate(onState) && !entity.is((Object) EntityTypes.WARDEN)) {
++        if (!level.isClientSide() && canActivate(onState) && !entity.is(EntityTypes.WARDEN)) { // CraftBukkit - decompile error
++            // CraftBukkit start
++            org.bukkit.event.Cancellable cancellable;
++            if (entity instanceof Player) {
++                cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null);
++            } else {
++                cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
++                level.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
++            }
++            if (cancellable.isCancelled()) {
++                return;
++            }
++            // CraftBukkit end
+             BlockEntity blockentity = level.getBlockEntity(pos);
+ 
+             if (blockentity instanceof SculkSensorBlockEntity) {
+@@ -196,6 +214,15 @@
+     }
+ 
+     public static void deactivate(Level level, BlockPos pos, BlockState state) {
++        // CraftBukkit start
++        BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(CraftBlock.at(level, pos), state.getValue(SculkSensorBlock.POWER), 0);
++        level.getCraftServer().getPluginManager().callEvent(eventRedstone);
++
++        if (eventRedstone.getNewCurrent() > 0) {
++            level.setBlock(pos, state.setValue(SculkSensorBlock.POWER, eventRedstone.getNewCurrent()), 3);
++            return;
++        }
++        // CraftBukkit end
+         level.setBlock(pos, (BlockState) ((BlockState) state.setValue(SculkSensorBlock.PHASE, SculkSensorPhase.COOLDOWN)).setValue(SculkSensorBlock.POWER, 0), 3);
+         level.scheduleTick(pos, state.getBlock(), 10);
+         updateNeighbours(level, pos, state);
+@@ -207,6 +234,15 @@
+     }
+ 
+     public void activate(@Nullable Entity sourceEntity, Level level, BlockPos pos, BlockState state, int calculatedPower, int vibrationFrequency) {
++        // CraftBukkit start
++        BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(CraftBlock.at(level, pos), state.getValue(SculkSensorBlock.POWER), calculatedPower);
++        level.getCraftServer().getPluginManager().callEvent(eventRedstone);
++
++        if (eventRedstone.getNewCurrent() <= 0) {
++            return;
++        }
++        calculatedPower = eventRedstone.getNewCurrent();
++        // CraftBukkit end
+         level.setBlock(pos, (BlockState) ((BlockState) state.setValue(SculkSensorBlock.PHASE, SculkSensorPhase.ACTIVE)).setValue(SculkSensorBlock.POWER, calculatedPower), 3);
+         level.scheduleTick(pos, state.getBlock(), this.getActiveTicks());
+         updateNeighbours(level, pos, state);
+@@ -283,9 +319,16 @@
+     @Override
+     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
+         super.spawnAfterBreak(state, level, pos, tool, dropExperience);
++        // CraftBukkit start - Delegate to getExpDrop
++    }
++
++    @Override
++    public int getExpDrop(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
+         if (dropExperience) {
+-            this.tryDropExperience(level, pos, tool, ConstantInt.of(5));
++            return this.tryDropExperience(level, pos, tool, ConstantInt.of(5));
+         }
+ 
++        return 0;
++        // CraftBukkit end
+     }
+ }

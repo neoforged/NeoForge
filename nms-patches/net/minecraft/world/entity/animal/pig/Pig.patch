@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/entity/animal/pig/Pig.java
++++ b/net/minecraft/world/entity/animal/pig/Pig.java
+@@ -64,6 +64,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class Pig extends Animal implements ItemSteerable {
+ 
+     private static final EntityDataAccessor<Integer> DATA_BOOST_TIME = SynchedEntityData.<Integer>defineId(Pig.class, EntityDataSerializers.INT);
+@@ -225,7 +230,14 @@
+             ZombifiedPiglin zombifiedpiglin = (ZombifiedPiglin) this.convertTo(EntityTypes.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), (zombifiedpiglin1) -> {
+                 zombifiedpiglin1.populateDefaultEquipmentSlots(this.getRandom(), level.getCurrentDifficultyAt(this.blockPosition()));
+                 zombifiedpiglin1.setPersistenceRequired();
+-            });
++            // CraftBukkit start
++            }, null, null);
++            if (CraftEventFactory.callPigZapEvent(this, lightningBolt, zombifiedpiglin).isCancelled()) {
++                return;
++            }
++            level.addFreshEntity(zombifiedpiglin, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
++            this.discard(EntityRemoveEvent.Cause.TRANSFORMATION); // CraftBukkit - add Bukkit remove cause
++            // CraftBukkit end
+ 
+             if (zombifiedpiglin == null) {
+                 super.thunderHit(level, lightningBolt);

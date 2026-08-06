@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
++++ b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
+@@ -7,6 +7,13 @@
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ import net.minecraft.world.entity.ai.memory.WalkTarget;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
++// CraftBukkit end
++
+ public class BabyFollowAdult {
+ 
+     public BabyFollowAdult() {}
+@@ -27,6 +34,17 @@
+                         LivingEntity livingentity1 = (LivingEntity) behaviorbuilder_instance.get(memoryaccessor);
+ 
+                         if (livingentity.closerThan(livingentity1, (double) (followRange.maxInclusive() + 1)) && !livingentity.closerThan(livingentity1, (double) followRange.minInclusive())) {
++                            // CraftBukkit start
++                            EntityTargetLivingEntityEvent event = CraftEventFactory.callEntityTargetLivingEvent(livingentity, livingentity1, EntityTargetEvent.TargetReason.FOLLOW_LEADER);
++                            if (event.isCancelled()) {
++                                return false;
++                            }
++                            if (event.getTarget() == null) {
++                                memoryaccessor.erase();
++                                return true;
++                            }
++                            livingentity1 = ((CraftLivingEntity) event.getTarget()).getHandle();
++                            // CraftBukkit end
+                             WalkTarget walktarget = new WalkTarget(new EntityTracker(livingentity1, targetEye, targetEye), (Float) speedModifier.apply(livingentity), followRange.minInclusive() - 1);
+ 
+                             memoryaccessor1.set(new EntityTracker(livingentity1, true, targetEye));

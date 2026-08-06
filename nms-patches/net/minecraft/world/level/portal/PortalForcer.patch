@@ -1,0 +1,98 @@
+--- a/net/minecraft/world/level/portal/PortalForcer.java
++++ b/net/minecraft/world/level/portal/PortalForcer.java
+@@ -42,23 +42,35 @@
+     }
+ 
+     public Optional<BlockPos> findClosestPortalPosition(BlockPos approximateExitPos, boolean toNether, WorldBorder worldBorder) {
++        // CraftBukkit start
++        return findClosestPortalPosition(approximateExitPos, worldBorder, toNether ? 16 : 128); // Search Radius
++    }
++
++    public Optional<BlockPos> findClosestPortalPosition(BlockPos approximateExitPos, WorldBorder worldBorder, int i) {
+         PoiManager poimanager = this.level.getPoiManager();
+-        int i = toNether ? 16 : 128;
++        // int i = flag ? 16 : 128;
++        // CraftBukkit end
+ 
+         poimanager.ensureLoadedAndValid(this.level, approximateExitPos, i);
+-        Stream stream = poimanager.getInSquare((holder) -> {
++        Stream<BlockPos> stream = poimanager.getInSquare((holder) -> { // CraftBukkit - decompile error
+             return holder.is(PoiTypes.NETHER_PORTAL);
+         }, approximateExitPos, i, PoiManager.Occupancy.ANY).map(PoiRecord::getPos);
+ 
+         Objects.requireNonNull(worldBorder);
+         return stream.filter(worldBorder::isWithinBounds).filter((blockpos1) -> {
+             return this.level.getBlockState(blockpos1).hasProperty(BlockStateProperties.HORIZONTAL_AXIS);
+-        }).min(Comparator.comparingDouble((blockpos1) -> {
++        }).min(Comparator.comparingDouble((BlockPos blockpos1) -> { // CraftBukkit - decompile error
+             return blockpos1.distSqr(approximateExitPos);
+         }).thenComparingInt(Vec3i::getY));
+     }
+ 
+     public Optional<BlockUtil.FoundRectangle> createPortal(BlockPos origin, Direction.Axis portalAxis) {
++        // CraftBukkit start
++        return this.createPortal(origin, portalAxis, null, 16);
++    }
++
++    public Optional<BlockUtil.FoundRectangle> createPortal(BlockPos origin, Direction.Axis portalAxis, net.minecraft.world.entity.Entity entity, int createRadius) {
++        // CraftBukkit end
+         Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, portalAxis);
+         double d0 = -1.0D;
+         BlockPos blockpos1 = null;
+@@ -69,7 +81,7 @@
+         int j = 1;
+         BlockPos.MutableBlockPos blockpos_mutableblockpos = origin.mutable();
+ 
+-        for (BlockPos.MutableBlockPos blockpos_mutableblockpos1 : BlockPos.spiralAround(origin, 16, Direction.EAST, Direction.SOUTH)) {
++        for (BlockPos.MutableBlockPos blockpos_mutableblockpos1 : BlockPos.spiralAround(origin, createRadius, Direction.EAST, Direction.SOUTH)) { // CraftBukkit
+             int k = Math.min(i, this.level.getHeight(Heightmap.Types.MOTION_BLOCKING, blockpos_mutableblockpos1.getX(), blockpos_mutableblockpos1.getZ()));
+ 
+             if (worldborder.isWithinBounds((BlockPos) blockpos_mutableblockpos1) && worldborder.isWithinBounds((BlockPos) blockpos_mutableblockpos1.move(direction, 1))) {
+@@ -114,6 +126,7 @@
+             d0 = d1;
+         }
+ 
++        org.bukkit.craftbukkit.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.util.BlockStateListPopulator(this.level); // CraftBukkit - Use BlockStateListPopulator
+         if (d0 == -1.0D) {
+             int k1 = Math.max(this.level.getMinY() - -1, 70);
+             int l1 = i - 9;
+@@ -132,7 +145,7 @@
+                         BlockState blockstate = k2 < 0 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.AIR.defaultBlockState();
+ 
+                         blockpos_mutableblockpos.setWithOffset(blockpos1, j2 * direction.getStepX() + i2 * direction1.getStepX(), k2, j2 * direction.getStepZ() + i2 * direction1.getStepZ());
+-                        this.level.setBlockAndUpdate(blockpos_mutableblockpos, blockstate);
++                        blockList.setBlock(blockpos_mutableblockpos, blockstate, 3); // CraftBukkit
+                     }
+                 }
+             }
+@@ -142,7 +155,7 @@
+             for (int i3 = -1; i3 < 4; ++i3) {
+                 if (l2 == -1 || l2 == 2 || i3 == -1 || i3 == 3) {
+                     blockpos_mutableblockpos.setWithOffset(blockpos1, l2 * direction.getStepX(), i3, l2 * direction.getStepZ());
+-                    this.level.setBlock(blockpos_mutableblockpos, Blocks.OBSIDIAN.defaultBlockState(), 3);
++                    blockList.setBlock(blockpos_mutableblockpos, Blocks.OBSIDIAN.defaultBlockState(), 3); // CraftBukkit
+                 }
+             }
+         }
+@@ -152,10 +165,20 @@
+         for (int j3 = 0; j3 < 2; ++j3) {
+             for (int k3 = 0; k3 < 3; ++k3) {
+                 blockpos_mutableblockpos.setWithOffset(blockpos1, j3 * direction.getStepX(), k3, j3 * direction.getStepZ());
+-                this.level.setBlock(blockpos_mutableblockpos, blockstate1, 18);
++                blockList.setBlock(blockpos_mutableblockpos, blockstate1, 18); // CraftBukkit
+             }
+         }
+ 
++        // CraftBukkit start
++        org.bukkit.World bworld = this.level.getWorld();
++        org.bukkit.event.world.PortalCreateEvent event = new org.bukkit.event.world.PortalCreateEvent((java.util.List<org.bukkit.block.BlockState>) (java.util.List) blockList.getList(), bworld, (entity == null) ? null : entity.getBukkitEntity(), org.bukkit.event.world.PortalCreateEvent.CreateReason.NETHER_PAIR);
++
++        this.level.getCraftServer().getPluginManager().callEvent(event);
++        if (event.isCancelled()) {
++            return Optional.empty();
++        }
++        blockList.updateList();
++        // CraftBukkit end
+         return Optional.of(new BlockUtil.FoundRectangle(blockpos1.immutable(), 2, 3));
+     }
+ 

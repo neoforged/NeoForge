@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/entity/decoration/painting/Painting.java
++++ b/net/minecraft/world/entity/decoration/painting/Painting.java
+@@ -95,7 +95,7 @@
+     public static Optional<Painting> create(Level level, BlockPos pos, Direction direction) {
+         Painting painting = new Painting(level, pos);
+         List<Holder<PaintingVariant>> list = new ArrayList();
+-        Iterable iterable = level.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).getTagOrEmpty(PaintingVariantTags.PLACEABLE);
++        Iterable<Holder<PaintingVariant>> iterable = level.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).getTagOrEmpty(PaintingVariantTags.PLACEABLE); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(list);
+         iterable.forEach(list::add);
+@@ -160,22 +160,32 @@
+ 
+     @Override
+     protected AABB calculateBoundingBox(BlockPos pos, Direction direction) {
++        // CraftBukkit start
++        PaintingVariant paintingvariant = (PaintingVariant) this.getVariant().value();
++        return calculateBoundingBoxStatic(pos, direction, paintingvariant.width(), paintingvariant.height());
++    }
++
++    public static AABB calculateBoundingBoxStatic(BlockPos pos, Direction direction, int width, int height) {
++        // CraftBukkit end
+         float f = 0.46875F;
+         Vec3 vec3 = Vec3.atCenterOf(pos).relative(direction, -0.46875D);
+-        PaintingVariant paintingvariant = (PaintingVariant) this.getVariant().value();
+-        double d0 = this.offsetForPaintingSize(paintingvariant.width());
+-        double d1 = this.offsetForPaintingSize(paintingvariant.height());
++        // CraftBukkit start
++        double d0 = offsetForPaintingSize(width);
++        double d1 = offsetForPaintingSize(height);
++        // CraftBukkit end
+         Direction direction1 = direction.getCounterClockWise();
+         Vec3 vec31 = vec3.relative(direction1, d0).relative(Direction.UP, d1);
+         Direction.Axis direction_axis = direction.getAxis();
+-        double d2 = direction_axis == Direction.Axis.X ? 0.0625D : (double) paintingvariant.width();
+-        double d3 = (double) paintingvariant.height();
+-        double d4 = direction_axis == Direction.Axis.Z ? 0.0625D : (double) paintingvariant.width();
++        // CraftBukkit start
++        double d2 = direction_axis == Direction.Axis.X ? 0.0625D : (double) width;
++        double d3 = (double) height;
++        double d4 = direction_axis == Direction.Axis.Z ? 0.0625D : (double) width;
++        // CraftBukkit end
+ 
+         return AABB.ofSize(vec31, d2, d3, d4);
+     }
+ 
+-    private double offsetForPaintingSize(int size) {
++    private static double offsetForPaintingSize(int size) { // CraftBukkit - static
+         return size % 2 == 0 ? 0.5D : 0.0D;
+     }
+ 

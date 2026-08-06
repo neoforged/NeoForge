@@ -1,0 +1,98 @@
+--- a/net/minecraft/world/entity/AreaEffectCloud.java
++++ b/net/minecraft/world/entity/AreaEffectCloud.java
+@@ -28,6 +28,11 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class AreaEffectCloud extends Entity implements TraceableEntity {
+ 
+     private static final int TIME_BETWEEN_APPLICATIONS = 5;
+@@ -212,7 +217,7 @@
+ 
+     private void serverTick(ServerLevel serverLevel) {
+         if (this.duration != -1 && this.tickCount - this.waitTime >= this.duration) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         } else {
+             boolean flag = this.isWaiting();
+             boolean flag1 = this.tickCount < this.waitTime;
+@@ -227,7 +232,7 @@
+                 if (this.radiusPerTick != 0.0F) {
+                     f += this.radiusPerTick;
+                     if (f < 0.5F) {
+-                        this.discard();
++                        this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                         return;
+                     }
+ 
+@@ -249,9 +254,10 @@
+                         List<LivingEntity> list1 = this.level().<LivingEntity>getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
+ 
+                         if (!list1.isEmpty()) {
++                            List<org.bukkit.entity.LivingEntity> entities = new java.util.ArrayList<>(); // CraftBukkit
+                             for (LivingEntity livingentity : list1) {
+                                 if (!this.victims.containsKey(livingentity) && livingentity.isAffectedByPotions()) {
+-                                    Stream stream = list.stream();
++                                    Stream<MobEffectInstance> stream = list.stream(); // CraftBukkit - decompile error
+ 
+                                     Objects.requireNonNull(livingentity);
+                                     if (!stream.noneMatch(livingentity::canBeAffected)) {
+@@ -260,20 +266,33 @@
+                                         double d2 = d0 * d0 + d1 * d1;
+ 
+                                         if (d2 <= (double) (f * f)) {
++                                            // CraftBukkit start
++                                            entities.add((org.bukkit.entity.LivingEntity) livingentity.getBukkitEntity());
++                                        }
++                                    }
++                                }
++                            }
++                            {
++                                org.bukkit.event.entity.AreaEffectCloudApplyEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callAreaEffectCloudApplyEvent(this, entities);
++                                if (!event.isCancelled()) {
++                                    for (org.bukkit.entity.LivingEntity entity : event.getAffectedEntities()) {
++                                        if (entity instanceof CraftLivingEntity) {
++                                            LivingEntity livingentity = ((CraftLivingEntity) entity).getHandle();
++                                            // CraftBukkit end
+                                             this.victims.put(livingentity, this.tickCount + this.reapplicationDelay);
+ 
+                                             for (MobEffectInstance mobeffectinstance : list) {
+                                                 if (((MobEffect) mobeffectinstance.getEffect().value()).isInstantaneous()) {
+                                                     ((MobEffect) mobeffectinstance.getEffect().value()).applyInstantaneousEffect(serverLevel, this, this.getOwner(), livingentity, mobeffectinstance.getAmplifier(), 0.5D);
+                                                 } else {
+-                                                    livingentity.addEffect(new MobEffectInstance(mobeffectinstance), this);
++                                                    livingentity.addEffect(new MobEffectInstance(mobeffectinstance), this, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.AREA_EFFECT_CLOUD); // CraftBukkit
+                                                 }
+                                             }
+ 
+                                             if (this.radiusOnUse != 0.0F) {
+                                                 f += this.radiusOnUse;
+                                                 if (f < 0.5F) {
+-                                                    this.discard();
++                                                    this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                                                     return;
+                                                 }
+ 
+@@ -283,7 +302,7 @@
+                                             if (this.durationOnUse != 0 && this.duration != -1) {
+                                                 this.duration += this.durationOnUse;
+                                                 if (this.duration <= 0) {
+-                                                    this.discard();
++                                                    this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                                                     return;
+                                                 }
+                                             }
+@@ -351,7 +370,7 @@
+         this.radiusPerTick = input.getFloatOr("RadiusPerTick", 0.0F);
+         this.setRadius(input.getFloatOr("Radius", 3.0F));
+         this.owner = EntityReference.<LivingEntity>read(input, "Owner");
+-        this.setCustomParticle((ParticleOptions) input.read("custom_particle", ParticleTypes.CODEC).orElse((Object) null));
++        this.setCustomParticle((ParticleOptions) input.read("custom_particle", ParticleTypes.CODEC).orElse(null)); // CraftBukkit - decompile error
+         this.setPotionContents((PotionContents) input.read("potion_contents", PotionContents.CODEC).orElse(PotionContents.EMPTY));
+         this.potionDurationScale = input.getFloatOr("potion_duration_scale", 1.0F);
+     }

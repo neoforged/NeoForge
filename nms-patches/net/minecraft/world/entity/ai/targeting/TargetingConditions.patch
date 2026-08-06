@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/entity/ai/targeting/TargetingConditions.java
++++ b/net/minecraft/world/entity/ai/targeting/TargetingConditions.java
+@@ -15,7 +15,7 @@
+     private double range = -1.0D;
+     private boolean checkLineOfSight = true;
+     private boolean testInvisible = true;
+-    private TargetingConditions.@Nullable Selector selector;
++    private @Nullable Selector selector; // CraftBukkit - decompile error
+ 
+     private TargetingConditions(boolean isCombat) {
+         this.isCombat = isCombat;
+@@ -54,7 +54,7 @@
+         return this;
+     }
+ 
+-    public TargetingConditions selector(TargetingConditions.@Nullable Selector selector) {
++    public TargetingConditions selector(@Nullable Selector selector) { // CraftBukkit - decompile error
+         this.selector = selector;
+         return this;
+     }
+@@ -93,6 +93,11 @@
+                         return false;
+                     }
+                 }
++                // CraftBukkit start - SPIGOT-7228
++                if (targeter.level() != target.level()) {
++                    return false;
++                }
++                // CraftBukkit end
+             }
+ 
+             return true;

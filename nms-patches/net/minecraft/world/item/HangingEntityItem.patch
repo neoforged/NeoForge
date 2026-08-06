@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/item/HangingEntityItem.java
++++ b/net/minecraft/world/item/HangingEntityItem.java
+@@ -22,6 +22,10 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
++// CraftBukkit start
++import org.bukkit.event.hanging.HangingPlaceEvent;
++// CraftBukkit end
++
+ public class HangingEntityItem extends Item {
+ 
+     private static final Component TOOLTIP_RANDOM_VARIANT = Component.translatable("painting.random").withStyle(ChatFormatting.GRAY);
+@@ -67,6 +71,19 @@
+             EntityType.createDefaultStackConfig(level, itemstack, player).apply(hangingentity);
+             if (hangingentity.survives()) {
+                 if (!level.isClientSide()) {
++                    // CraftBukkit start - fire HangingPlaceEvent
++                    org.bukkit.entity.Player who = (context.getPlayer() == null) ? null : (org.bukkit.entity.Player) context.getPlayer().getBukkitEntity();
++                    org.bukkit.block.Block blockClicked = level.getWorld().getBlockAt(blockpos.getX(), blockpos.getY(), blockpos.getZ());
++                    org.bukkit.block.BlockFace blockFace = org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(direction);
++                    org.bukkit.inventory.EquipmentSlot hand = org.bukkit.craftbukkit.CraftEquipmentSlot.getHand(context.getHand());
++
++                    HangingPlaceEvent event = new HangingPlaceEvent((org.bukkit.entity.Hanging) hangingentity.getBukkitEntity(), who, blockClicked, blockFace, hand, org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(itemstack));
++                    level.getCraftServer().getPluginManager().callEvent(event);
++
++                    if (event.isCancelled()) {
++                        return InteractionResult.FAIL;
++                    }
++                    // CraftBukkit end
+                     hangingentity.playPlacementSound();
+                     level.gameEvent(player, (Holder) GameEvent.ENTITY_PLACE, hangingentity.position());
+                     level.addFreshEntity(hangingentity);

@@ -1,0 +1,69 @@
+--- a/net/minecraft/world/entity/Bucketable.java
++++ b/net/minecraft/world/entity/Bucketable.java
+@@ -16,6 +16,13 @@
+ import net.minecraft.world.item.component.CustomData;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.player.PlayerBucketEntityEvent;
++// CraftBukkit end
++
+ public interface Bucketable {
+ 
+     boolean fromBucket();
+@@ -66,7 +73,7 @@
+     /** @deprecated */
+     @Deprecated
+     static void loadDefaultDataFromBucketTag(Mob entity, CompoundTag tag) {
+-        Optional optional = tag.getBoolean("NoAI");
++        Optional<Boolean> optional = tag.getBoolean("NoAI"); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(entity);
+         optional.ifPresent(entity::setNoAi);
+@@ -88,19 +95,31 @@
+             }
+ 
+         });
+-        optional = tag.getFloat("Health");
++        Optional<Float> optional2 = tag.getFloat("Health"); // CraftBukkit - decompile error
+         Objects.requireNonNull(entity);
+-        optional.ifPresent(entity::setHealth);
++        optional2.ifPresent(entity::setHealth); // CraftBukkit - decompile error
+     }
+ 
+     static <T extends LivingEntity & Bucketable> Optional<InteractionResult> bucketMobPickup(Player player, InteractionHand hand, T pickupEntity) {
+         ItemStack itemstack = player.getItemInHand(hand);
+ 
+         if (((Bucketable) pickupEntity).canBePickedUpWithBucket(itemstack) && pickupEntity.isAlive()) {
+-            pickupEntity.playSound(((Bucketable) pickupEntity).getPickupSound(), 1.0F, 1.0F);
++            // CraftBukkit start
++            // pickupEntity.playSound(((Bucketable) pickupEntity).getPickupSound(), 1.0F, 1.0F); // CraftBukkit - moved down
+             ItemStack itemstack1 = ((Bucketable) pickupEntity).getBucketItemStack();
+ 
+             ((Bucketable) pickupEntity).saveToBucketTag(itemstack1);
++
++            PlayerBucketEntityEvent playerBucketFishEvent = CraftEventFactory.callPlayerFishBucketEvent(pickupEntity, player, itemstack, itemstack1, hand);
++            itemstack1 = CraftItemStack.asNMSCopy(playerBucketFishEvent.getEntityBucket());
++            if (playerBucketFishEvent.isCancelled()) {
++                ((ServerPlayer) player).containerMenu.sendAllDataToRemote(); // We need to update inventory to resync client's bucket
++                pickupEntity.getBukkitEntity().update((ServerPlayer) player); // We need to play out these packets as the client assumes the fish is gone
++                pickupEntity.refreshEntityData((ServerPlayer) player); // Need to send data such as the display name to client
++                return Optional.of(InteractionResult.FAIL);
++            }
++            pickupEntity.playSound(((Bucketable) pickupEntity).getPickupSound(), 1.0F, 1.0F);
++            // CraftBukkit end
+             ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, player, itemstack1, false);
+ 
+             player.setItemInHand(hand, itemstack2);
+@@ -118,7 +137,7 @@
+                 leashable.dropLeash();
+             }
+ 
+-            pickupEntity.discard();
++            pickupEntity.discard(EntityRemoveEvent.Cause.PICKUP); // CraftBukkit - add Bukkit remove cause
+             return Optional.of(InteractionResult.SUCCESS);
+         } else {
+             return Optional.empty();

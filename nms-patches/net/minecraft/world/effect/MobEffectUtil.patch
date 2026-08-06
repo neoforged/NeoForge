@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/effect/MobEffectUtil.java
++++ b/net/minecraft/world/effect/MobEffectUtil.java
+@@ -54,13 +54,19 @@
+     }
+ 
+     public static List<ServerPlayer> addEffectToPlayersAround(ServerLevel level, @Nullable Entity source, Vec3 position, double radius, MobEffectInstance effectInstance, int displayEffectLimit) {
++        // CraftBukkit start
++        return addEffectToPlayersAround(level, source, position, radius, effectInstance, displayEffectLimit, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.UNKNOWN);
++    }
++
++    public static List<ServerPlayer> addEffectToPlayersAround(ServerLevel level, @Nullable Entity source, Vec3 position, double radius, MobEffectInstance effectInstance, int displayEffectLimit, org.bukkit.event.entity.EntityPotionEffectEvent.Cause cause) {
++        // CraftBukkit end
+         Holder<MobEffect> holder = effectInstance.getEffect();
+         List<ServerPlayer> list = level.getPlayers((serverplayer) -> {
+             return serverplayer.gameMode.isSurvival() && (source == null || !source.isAlliedTo((Entity) serverplayer)) && position.closerThan(serverplayer.position(), radius) && (!serverplayer.hasEffect(holder) || serverplayer.getEffect(holder).getAmplifier() < effectInstance.getAmplifier() || serverplayer.getEffect(holder).endsWithin(displayEffectLimit - 1));
+         });
+ 
+         list.forEach((serverplayer) -> {
+-            serverplayer.addEffect(new MobEffectInstance(effectInstance), source);
++            serverplayer.addEffect(new MobEffectInstance(effectInstance), source, cause); // CraftBukkit
+         });
+         return list;
+     }

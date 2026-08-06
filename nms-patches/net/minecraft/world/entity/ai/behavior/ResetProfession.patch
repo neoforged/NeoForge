@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/entity/ai/behavior/ResetProfession.java
++++ b/net/minecraft/world/entity/ai/behavior/ResetProfession.java
+@@ -6,6 +6,12 @@
+ import net.minecraft.world.entity.npc.villager.VillagerData;
+ import net.minecraft.world.entity.npc.villager.VillagerProfession;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftVillager;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.VillagerCareerChangeEvent;
++// CraftBukkit end
++
+ public class ResetProfession {
+ 
+     public ResetProfession() {}
+@@ -18,7 +24,14 @@
+                     boolean flag = !villagerdata.profession().is(VillagerProfession.NONE) && !villagerdata.profession().is(VillagerProfession.NITWIT);
+ 
+                     if (flag && villager.getVillagerXp() == 0 && villagerdata.level() <= 1) {
+-                        villager.setVillagerData(villager.getVillagerData().withProfession(serverlevel.registryAccess(), VillagerProfession.NONE));
++                        // CraftBukkit start
++                        VillagerCareerChangeEvent event = CraftEventFactory.callVillagerCareerChangeEvent(villager, CraftVillager.CraftProfession.minecraftHolderToBukkit(serverlevel.registryAccess().getOrThrow(VillagerProfession.NONE)), VillagerCareerChangeEvent.ChangeReason.LOSING_JOB);
++                        if (event.isCancelled()) {
++                            return false;
++                        }
++
++                        villager.setVillagerData(villager.getVillagerData().withProfession(CraftVillager.CraftProfession.bukkitToMinecraftHolder(event.getProfession())));
++                        // CraftBukkit end
+                         villager.refreshBrain(serverlevel);
+                         return true;
+                     } else {

@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/item/crafting/DyeRecipe.java
++++ b/net/minecraft/world/item/crafting/DyeRecipe.java
+@@ -17,6 +17,13 @@
+ import net.minecraft.world.item.crafting.display.SlotDisplay;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import org.bukkit.NamespacedKey;
++import org.bukkit.craftbukkit.inventory.CraftDyeRecipe;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.craftbukkit.inventory.CraftRecipe;
++// CraftBukkit end
++
+ public class DyeRecipe extends NormalCraftingRecipe {
+ 
+     public static final MapCodec<DyeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -124,6 +131,13 @@
+         }
+     }
+ 
++    // CraftBukkit start
++    @Override
++    public org.bukkit.inventory.Recipe toBukkitRecipe(NamespacedKey id) {
++        return new CraftDyeRecipe(id, CraftItemStack.asCraftMirror(this.result), CraftRecipe.toBukkit(this.target), CraftRecipe.toBukkit(this.dye));
++    }
++    // CraftBukkit end
++
+     @Override
+     public RecipeSerializer<DyeRecipe> getSerializer() {
+         return DyeRecipe.SERIALIZER;

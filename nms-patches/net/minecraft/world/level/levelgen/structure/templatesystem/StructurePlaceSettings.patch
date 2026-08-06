@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings.java
++++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings.java
+@@ -20,7 +20,7 @@
+     private @Nullable BoundingBox boundingBox;
+     private LiquidSettings liquidSettings;
+     private @Nullable RandomSource random;
+-    private int palette;
++    public int palette = -1; // CraftBukkit - Set initial value so we know if the palette has been set forcefully
+     private final List<StructureProcessor> processors;
+     private boolean knownShape;
+     private boolean finalizeEntities;
+@@ -146,6 +146,13 @@
+ 
+         if (i == 0) {
+             throw new IllegalStateException("No palettes");
++        // CraftBukkit start
++        } else if (this.palette >= 0) {
++            if (this.palette >= i) {
++                throw new IllegalArgumentException("Palette index out of bounds. Got " + this.palette + " where there are only " + i + " palettes available.");
++            }
++            return palettes.get(this.palette);
++        // CraftBukkit end
+         } else {
+             return (StructureTemplate.Palette) palettes.get(this.getRandom(pos).nextInt(i));
+         }

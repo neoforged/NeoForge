@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/item/DebugStickItem.java
++++ b/net/minecraft/world/item/DebugStickItem.java
+@@ -1,3 +1,4 @@
++// mc-dev import
+ package net.minecraft.world.item;
+ 
+ import java.util.Collection;
+@@ -92,7 +93,7 @@
+     }
+ 
+     private static <T extends Comparable<T>> BlockState cycleState(BlockState state, Property<T> property, boolean backward) {
+-        return (BlockState) state.setValue(property, (Comparable) getRelative(property.getPossibleValues(), state.getValue(property), backward));
++        return (BlockState) state.setValue(property, getRelative(property.getPossibleValues(), state.getValue(property), backward)); // CraftBukkit - decompile error
+     }
+ 
+     private static <T> T getRelative(Iterable<T> collection, @Nullable T current, boolean backward) {

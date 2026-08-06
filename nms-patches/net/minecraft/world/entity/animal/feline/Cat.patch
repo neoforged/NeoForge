@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/entity/animal/feline/Cat.java
++++ b/net/minecraft/world/entity/animal/feline/Cat.java
+@@ -492,7 +492,7 @@
+     }
+ 
+     private void tryToTame(Player player) {
+-        if (this.random.nextInt(3) == 0) {
++        if (this.random.nextInt(3) == 0 && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, player).isCancelled()) { // CraftBukkit
+             this.tame(player);
+             this.setOrderedToSit(true);
+             this.level().broadcastEntityEvent(this, (byte) 7);
+@@ -529,7 +529,7 @@
+ 
+     private static class CatTemptGoal extends TemptGoal {
+ 
+-        private @Nullable Player selectedPlayer;
++        private @Nullable LivingEntity selectedPlayer; // CraftBukkit
+         private final Cat cat;
+ 
+         public CatTemptGoal(Cat mob, double speedModifier, Predicate<ItemStack> items, boolean canScare) {
+@@ -652,7 +652,15 @@
+             this.cat.randomTeleport((double) (blockpos_mutableblockpos.getX() + randomsource.nextInt(11) - 5), (double) (blockpos_mutableblockpos.getY() + randomsource.nextInt(5) - 2), (double) (blockpos_mutableblockpos.getZ() + randomsource.nextInt(11) - 5), false);
+             blockpos_mutableblockpos.set(this.cat.blockPosition());
+             this.cat.dropFromGiftLootTable(getServerLevel((Entity) this.cat), BuiltInLootTables.CAT_MORNING_GIFT, (serverlevel, itemstack) -> {
+-                serverlevel.addFreshEntity(new ItemEntity(serverlevel, (double) blockpos_mutableblockpos.getX() - (double) Mth.sin((double) (this.cat.yBodyRot * ((float) Math.PI / 180F))), (double) blockpos_mutableblockpos.getY(), (double) blockpos_mutableblockpos.getZ() + (double) Mth.cos((double) (this.cat.yBodyRot * ((float) Math.PI / 180F))), itemstack));
++                // CraftBukkit start
++                ItemEntity itementity = new ItemEntity(serverlevel, (double) blockpos_mutableblockpos.getX() - (double) Mth.sin((double) (this.cat.yBodyRot * ((float) Math.PI / 180F))), (double) blockpos_mutableblockpos.getY(), (double) blockpos_mutableblockpos.getZ() + (double) Mth.cos((double) (this.cat.yBodyRot * ((float) Math.PI / 180F))), itemstack);
++                org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.cat.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
++                itementity.level().getCraftServer().getPluginManager().callEvent(event);
++                if (event.isCancelled()) {
++                    return;
++                }
++                serverlevel.addFreshEntity(itementity);
++                // CraftBukkit end
+             });
+         }
+ 

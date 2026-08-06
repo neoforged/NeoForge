@@ -1,0 +1,92 @@
+--- a/net/minecraft/world/entity/monster/cubemob/AbstractCubeMob.java
++++ b/net/minecraft/world/entity/monster/cubemob/AbstractCubeMob.java
+@@ -39,6 +39,16 @@
+ import net.minecraft.world.scores.PlayerTeam;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import java.util.ArrayList;
++import java.util.List;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.CubeMobSplitEvent;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.entity.EntityTransformEvent;
++import org.bukkit.event.entity.SlimeSplitEvent;
++// CraftBukkit end
++
+ public abstract class AbstractCubeMob extends AgeableMob {
+ 
+     protected static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.<Integer>defineId(AbstractCubeMob.class, EntityDataSerializers.INT);
+@@ -184,11 +194,18 @@
+ 
+     @Override
+     public EntityType<? extends AbstractCubeMob> getType() {
+-        return super.getType();
++        return (EntityType<? extends AbstractCubeMob>) super.getType(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+     public void remove(Entity.RemovalReason reason) {
++        // CraftBukkit start - add Bukkit remove cause
++        this.remove(reason, null);
++    }
++
++    @Override
++    public void remove(Entity.RemovalReason reason, EntityRemoveEvent.Cause cause) {
++        // CraftBukkit end
+         int i = this.getSize();
+ 
+         if (!this.level().isClientSide() && i > 1 && this.isDeadOrDying()) {
+@@ -198,17 +215,49 @@
+             int k = this.getSplitCount();
+             PlayerTeam playerteam = this.getTeam();
+ 
++            // CraftBukkit start
++            CubeMobSplitEvent event;
++            if (this instanceof Slime) {
++                event = new SlimeSplitEvent((org.bukkit.entity.Slime) this.getBukkitEntity(), k);
++            } else {
++                event = new CubeMobSplitEvent((org.bukkit.entity.AbstractCubeMob) this.getBukkitEntity(), k);
++            }
++            this.level().getCraftServer().getPluginManager().callEvent(event);
++
++            if (!event.isCancelled() && event.getCount() > 0) {
++                k = event.getCount();
++            } else {
++                super.remove(reason, cause); // CraftBukkit - add Bukkit remove cause
++                return;
++            }
++            List<LivingEntity> slimes = new ArrayList<>(k);
++            // CraftBukkit end
++
+             for (int l = 0; l < k; ++l) {
+                 float f2 = ((float) (l % 2) - 0.5F) * f1;
+                 float f3 = ((float) (l / 2) - 0.5F) * f1;
+ 
+-                this.convertTo(this.getType(), new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, playerteam), EntitySpawnReason.TRIGGERED, (abstractcubemob) -> {
++                AbstractCubeMob converted = this.convertTo(this.getType(), new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, playerteam), EntitySpawnReason.TRIGGERED, (abstractcubemob) -> { // CraftBukkit
+                     this.setUpSplitCube(abstractcubemob, j, f2, f3);
+-                });
++                // CraftBukkit start
++                }, null, null);
++                if (converted != null) {
++                    slimes.add(converted);
++                }
++                // CraftBukkit end
++            }
++            // CraftBukkit start
++            if (CraftEventFactory.callEntityTransformEvent(this, slimes, EntityTransformEvent.TransformReason.SPLIT).isCancelled()) {
++                super.remove(reason, cause); // CraftBukkit - add Bukkit remove cause
++                return;
++            }
++            for (LivingEntity living : slimes) {
++                this.level().addFreshEntity(living, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SLIME_SPLIT); // CraftBukkit - SpawnReason
+             }
++            // CraftBukkit end
+         }
+ 
+-        super.remove(reason);
++        super.remove(reason, cause); // CraftBukkit - add Bukkit remove cause
+     }
+ 
+     protected void setUpSplitCube(AbstractCubeMob cubeMob, int halfSize, float xd, float zd) {

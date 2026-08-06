@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
++++ b/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
+@@ -29,6 +29,13 @@
+ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++// CraftBukkit end
++
+ public class PrepareRamNearestTarget<E extends PathfinderMob> extends Behavior<E> {
+ 
+     public static final int TIME_OUT_DURATION = 160;
+@@ -61,6 +68,13 @@
+                 return this.ramTargeting.test(level, body, livingentity);
+             });
+         }).ifPresent((livingentity) -> {
++            // CraftBukkit start
++            EntityTargetEvent event = CraftEventFactory.callEntityTargetLivingEvent(body, livingentity, (livingentity instanceof ServerPlayer) ? EntityTargetEvent.TargetReason.CLOSEST_PLAYER : EntityTargetEvent.TargetReason.CLOSEST_ENTITY);
++            if (event.isCancelled() || event.getTarget() == null) {
++                return;
++            }
++            livingentity = ((CraftLivingEntity) event.getTarget()).getHandle();
++            // CraftBukkit end
+             this.chooseRamPosition(body, livingentity);
+         });
+     }
+@@ -142,7 +156,7 @@
+             }
+ 
+             PathNavigation pathnavigation = body.getNavigation();
+-            Stream stream = list.stream();
++            Stream<BlockPos> stream = list.stream(); // CraftBukkit - decompile error
+             BlockPos blockpos1 = body.blockPosition();
+ 
+             Objects.requireNonNull(blockpos1);

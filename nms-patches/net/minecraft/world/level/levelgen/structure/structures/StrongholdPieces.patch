@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/StrongholdPieces.java
+@@ -54,7 +54,7 @@
+                 public boolean doPlace(int depth) {
+                     return super.doPlace(depth) && depth > 5;
+                 }
+-            }};
++            } }; // CraftBukkit - fix decompile styling
+     private static List<StrongholdPieces.PieceWeight> currentPieces;
+     private static @Nullable Class<? extends StrongholdPieces.StrongholdPiece> imposedPiece;
+     private static int totalWeight;
+@@ -1380,6 +1380,8 @@
+ 
+                 if (chunkBB.isInside(blockpos1)) {
+                     this.hasPlacedSpawner = true;
++                    // CraftBukkit start
++                    /*
+                     level.setBlock(blockpos1, Blocks.SPAWNER.defaultBlockState(), 2);
+                     BlockEntity blockentity = level.getBlockEntity(blockpos1);
+ 
+@@ -1388,6 +1390,9 @@
+ 
+                         spawnerblockentity.setEntityId(EntityTypes.SILVERFISH, random);
+                     }
++                    */
++                    placeCraftSpawner(level, blockpos1, org.bukkit.entity.EntityType.SILVERFISH, 2);
++                    // CraftBukkit end
+                 }
+             }
+ 

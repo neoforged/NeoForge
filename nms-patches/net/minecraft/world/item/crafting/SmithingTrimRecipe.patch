@@ -1,0 +1,28 @@
+--- a/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
++++ b/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
+@@ -18,6 +18,13 @@
+ import net.minecraft.world.item.equipment.trim.TrimMaterial;
+ import net.minecraft.world.item.equipment.trim.TrimPattern;
+ 
++// CraftBukkit start
++import org.bukkit.NamespacedKey;
++import org.bukkit.craftbukkit.inventory.CraftRecipe;
++import org.bukkit.craftbukkit.inventory.CraftSmithingTrimRecipe;
++import org.bukkit.craftbukkit.inventory.trim.CraftTrimPattern;
++// CraftBukkit end
++
+ public class SmithingTrimRecipe extends SimpleSmithingRecipe {
+ 
+     public static final MapCodec<SmithingTrimRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -115,4 +122,11 @@
+ 
+         return List.of(new SmithingRecipeDisplay(slotdisplay2, slotdisplay, slotdisplay1, new SlotDisplay.SmithingTrimDemoSlotDisplay(slotdisplay, slotdisplay1, this.pattern), new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)));
+     }
++
++    // CraftBukkit start
++    @Override
++    public org.bukkit.inventory.Recipe toBukkitRecipe(NamespacedKey id) {
++        return new CraftSmithingTrimRecipe(id, CraftRecipe.toBukkit(this.template), CraftRecipe.toBukkit(this.base), CraftRecipe.toBukkit(this.addition), CraftTrimPattern.minecraftHolderToBukkit(this.pattern));
++    }
++    // CraftBukkit end
+ }

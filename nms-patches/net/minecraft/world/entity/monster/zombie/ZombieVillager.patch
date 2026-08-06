@@ -1,0 +1,101 @@
+--- a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
++++ b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
+@@ -59,6 +59,12 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.event.entity.CreatureSpawnEvent;
++import org.bukkit.event.entity.EntityTransformEvent;
++// CraftBukkit end
++
+ public class ZombieVillager extends Zombie implements VillagerDataHolder {
+ 
+     public static final EntityDataAccessor<Boolean> DATA_CONVERTING_ID = SynchedEntityData.<Boolean>defineId(ZombieVillager.class, EntityDataSerializers.BOOLEAN);
+@@ -76,6 +82,7 @@
+     private @Nullable MerchantOffers tradeOffers;
+     private int villagerXp = 0;
+     private static final EntityDimensions BABY_DIMENSIONS = EntityDimensions.scalable(0.49F, 0.98F).withEyeHeight(0.67F).withAttachments(EntityAttachments.builder().attach(EntityAttachment.VEHICLE, 0.0F, 0.125F, 0.0F));
++    private int lastTick = MinecraftServer.currentTick; // CraftBukkit - add field
+ 
+     public ZombieVillager(EntityType<? extends ZombieVillager> type, Level level) {
+         super(type, level);
+@@ -115,12 +122,12 @@
+             this.entityData.set(ZombieVillager.DATA_VILLAGER_DATA, villagerdata);
+         }
+ 
+-        this.tradeOffers = (MerchantOffers) input.read("Offers", MerchantOffers.CODEC).orElse((Object) null);
+-        this.gossips = (GossipContainer) input.read("Gossips", GossipContainer.CODEC).orElse((Object) null);
++        this.tradeOffers = (MerchantOffers) input.read("Offers", MerchantOffers.CODEC).orElse(null); // CraftBukkit - decompile error
++        this.gossips = (GossipContainer) input.read("Gossips", GossipContainer.CODEC).orElse(null); // CraftBukkit - decompile error
+         int i = input.getIntOr("ConversionTime", -1);
+ 
+         if (i != -1) {
+-            UUID uuid = (UUID) input.read("ConversionPlayer", UUIDUtil.CODEC).orElse((Object) null);
++            UUID uuid = (UUID) input.read("ConversionPlayer", UUIDUtil.CODEC).orElse(null); // CraftBukkit - decompile error
+ 
+             this.startConverting(uuid, i);
+         } else {
+@@ -152,6 +159,10 @@
+     public void tick() {
+         if (!this.level().isClientSide() && this.isAlive() && this.isConverting()) {
+             int i = this.getConversionProgress();
++            // CraftBukkit start - Use wall time instead of ticks for villager conversion
++            int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
++            i *= elapsedTicks;
++            // CraftBukkit end
+ 
+             this.villagerConversionTime -= i;
+             if (this.villagerConversionTime <= 0) {
+@@ -160,6 +171,7 @@
+         }
+ 
+         super.tick();
++        this.lastTick = MinecraftServer.currentTick; // CraftBukkit
+     }
+ 
+     @Override
+@@ -200,8 +212,10 @@
+         this.conversionStarter = player;
+         this.villagerConversionTime = time;
+         this.getEntityData().set(ZombieVillager.DATA_CONVERTING_ID, true);
+-        this.removeEffect(MobEffects.WEAKNESS);
+-        this.addEffect(new MobEffectInstance(MobEffects.STRENGTH, time, Math.min(this.level().getDifficulty().getId() - 1, 0)));
++        // CraftBukkit start
++        this.removeEffect(MobEffects.WEAKNESS, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.CONVERSION);
++        this.addEffect(new MobEffectInstance(MobEffects.STRENGTH, time, Math.min(this.level().getDifficulty().getId() - 1, 0)), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.CONVERSION);
++        // CraftBukkit end
+         this.level().broadcastEntityEvent(this, (byte) 16);
+     }
+ 
+@@ -223,7 +237,8 @@
+     }
+ 
+     private void finishConversion(ServerLevel level) {
+-        this.convertTo(EntityTypes.VILLAGER, ConversionParams.single(this, false, false), (villager) -> {
++        Villager converted = this.convertTo(EntityTypes.VILLAGER, ConversionParams.single(this, false, false), (villager) -> { // CraftBukkit
++            this.forceDrops = false; // CraftBukkit
+             for (EquipmentSlot equipmentslot : this.dropPreservedEquipment(level, (itemstack) -> {
+                 return !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE);
+             })) {
+@@ -258,12 +273,16 @@
+                 }
+             }
+ 
+-            villager.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
++            villager.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.CONVERSION); // CraftBukkit
+             if (!this.isSilent()) {
+                 level.levelEvent((Entity) null, 1027, this.blockPosition(), 0);
+             }
+-
+-        });
++        // CraftBukkit start
++        }, EntityTransformEvent.TransformReason.CURED, CreatureSpawnEvent.SpawnReason.CURED);
++        if (converted == null) {
++            ((org.bukkit.entity.ZombieVillager) getBukkitEntity()).setConversionTime(-1); // SPIGOT-5208: End conversion to stop event spam
++        }
++        // CraftBukkit end
+     }
+ 
+     @VisibleForTesting

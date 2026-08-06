@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/entity/monster/skeleton/Bogged.java
++++ b/net/minecraft/world/entity/monster/skeleton/Bogged.java
+@@ -79,6 +79,12 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
++                // CraftBukkit start
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.handlePlayerShearEntityEvent(player, this, itemstack, hand)) {
++                    this.getEntityData().markDirty(Bogged.DATA_SHEARED); // CraftBukkit - mark dirty to restore sheared state to clients
++                    return InteractionResult.PASS;
++                }
++                // CraftBukkit end
+                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                 this.gameEvent(GameEvent.SHEAR, player);
+                 itemstack.hurtAndBreak(1, player, hand.asEquipmentSlot());

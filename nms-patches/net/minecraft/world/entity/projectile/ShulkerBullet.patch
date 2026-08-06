@@ -1,0 +1,110 @@
+--- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
++++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
+@@ -34,6 +34,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class ShulkerBullet extends Projectile {
+ 
+     private static final double SPEED = 0.15D;
+@@ -58,8 +62,21 @@
+         this.finalTarget = EntityReference.of(target);
+         this.currentMoveDirection = Direction.UP;
+         this.selectNextMoveDirection(invalidStartAxis, target);
++        projectileSource = (org.bukkit.entity.LivingEntity) owner.getBukkitEntity(); // CraftBukkit
+     }
+ 
++    // CraftBukkit start
++    public Entity getTarget() {
++        return EntityReference.get(this.finalTarget, this.level(), Entity.class);
++    }
++
++    public void setTarget(Entity e) {
++        this.finalTarget = (e != null) ? EntityReference.of(e) : null;
++        this.currentMoveDirection = Direction.UP;
++        this.selectNextMoveDirection(Direction.Axis.X, e);
++    }
++    // CraftBukkit end
++
+     @Override
+     public SoundSource getSoundSource() {
+         return SoundSource.HOSTILE;
+@@ -86,7 +103,7 @@
+         this.targetDeltaX = input.getDoubleOr("TXD", 0.0D);
+         this.targetDeltaY = input.getDoubleOr("TYD", 0.0D);
+         this.targetDeltaZ = input.getDoubleOr("TZD", 0.0D);
+-        this.currentMoveDirection = (Direction) input.read("Dir", Direction.LEGACY_ID_CODEC).orElse((Object) null);
++        this.currentMoveDirection = (Direction) input.read("Dir", Direction.LEGACY_ID_CODEC).orElse(null); // CraftBukkit - decompile error
+         this.finalTarget = EntityReference.<Entity>read(input, "Target");
+     }
+ 
+@@ -182,7 +199,7 @@
+     @Override
+     public void checkDespawn() {
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }
+@@ -226,7 +243,7 @@
+         }
+ 
+         if (hitresult != null && this.isAlive() && hitresult.getType() != HitResult.Type.MISS) {
+-            this.hitTargetOrDeflectSelf(hitresult);
++            this.preHitTargetOrDeflectSelf(hitresult); // CraftBukkit - projectile hit event
+         }
+ 
+         ProjectileUtil.rotateTowardsMovement(this, 0.5F);
+@@ -312,7 +329,7 @@
+             if (entity instanceof LivingEntity) {
+                 LivingEntity livingentity3 = (LivingEntity) entity;
+ 
+-                livingentity3.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200), (Entity) MoreObjects.firstNonNull(entity1, this));
++                livingentity3.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200), (Entity) MoreObjects.firstNonNull(entity1, this), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
+             }
+         }
+ 
+@@ -326,14 +343,20 @@
+     }
+ 
+     private void destroy() {
+-        this.discard();
++        // CraftBukkit start - add Bukkit remove cause
++        this.destroy(null);
++    }
++
++    private void destroy(EntityRemoveEvent.Cause cause) {
++        this.discard(cause);
++        // CraftBukkit end
+         this.level().gameEvent(GameEvent.ENTITY_DAMAGE, this.position(), GameEvent.Context.of((Entity) this));
+     }
+ 
+     @Override
+     protected void onHit(HitResult hitResult) {
+         super.onHit(hitResult);
+-        this.destroy();
++        this.destroy(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+     }
+ 
+     @Override
+@@ -348,9 +371,14 @@
+ 
+     @Override
+     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
++        // CraftBukkit start
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, damage, false)) {
++            return false;
++        }
++        // CraftBukkit end
+         this.playSound(SoundEvents.SHULKER_BULLET_HURT, 1.0F, 1.0F);
+         level.sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2D, 0.2D, 0.2D, 0.0D);
+-        this.destroy();
++        this.destroy(EntityRemoveEvent.Cause.DEATH); // CraftBukkit - add Bukkit remove cause
+         return true;
+     }
+ 

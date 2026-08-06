@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/illager/Evoker.java
++++ b/net/minecraft/world/entity/monster/illager/Evoker.java
+@@ -291,7 +291,7 @@
+                         serverlevel.getScoreboard().addPlayerToTeam(vex.getScoreboardName(), playerteam);
+                     }
+ 
+-                    serverlevel.addFreshEntityWithPassengers(vex);
++                    serverlevel.addFreshEntityWithPassengers(vex, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPELL); // CraftBukkit - Add SpawnReason
+                     serverlevel.gameEvent(GameEvent.ENTITY_PLACE, blockpos, GameEvent.Context.of((Entity) Evoker.this));
+                 }
+             }

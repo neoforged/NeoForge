@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/level/block/BedBlock.java
++++ b/net/minecraft/world/level/block/BedBlock.java
+@@ -95,8 +95,9 @@
+ 
+             BedRule bedrule = (BedRule) level.environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
+ 
+-            if (bedrule.explodes()) {
+-                Optional optional = bedrule.errorMessage();
++            // CraftBukkit - moved world and biome check into EntityHuman
++            if (false && bedrule.explodes()) {
++                Optional<Component> optional = bedrule.errorMessage(); // CraftBukkit - decompile error
+ 
+                 Objects.requireNonNull(player);
+                 optional.ifPresent(player::sendOverlayMessage);
+@@ -118,7 +119,16 @@
+ 
+                 return InteractionResult.SUCCESS_SERVER;
+             } else {
++                // CraftBukkit start
++                BlockState finaliblockdata = state;
++                BlockPos finalblockposition = pos;
++                // CraftBukkit end
+                 player.startSleepInBed(pos).ifLeft((player_bedsleepingproblem) -> {
++                    // CraftBukkit start - handling bed explosion from below here
++                    if (bedrule.explodes()) {
++                        this.explodeBed(finaliblockdata, level, finalblockposition);
++                    } else
++                    // CraftBukkit end
+                     if (player_bedsleepingproblem.message() != null) {
+                         player.sendOverlayMessage(player_bedsleepingproblem.message());
+                     }
+@@ -129,6 +139,27 @@
+         }
+     }
+ 
++    // CraftBukkit start
++    private InteractionResult explodeBed(BlockState state, Level level, BlockPos pos) {
++        {
++            {
++                org.bukkit.block.BlockState blockState = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos).getState(); // CraftBukkit - capture BlockState before remove block
++                level.removeBlock(pos, false);
++                BlockPos blockpos1 = pos.relative(((Direction) state.getValue(BedBlock.FACING)).getOpposite());
++
++                if (level.getBlockState(blockpos1).getBlock() == this) {
++                    level.removeBlock(blockpos1, false);
++                }
++
++                Vec3 vec3 = Vec3.atCenterOf(pos);
++
++                level.explode((Entity) null, level.damageSources().badRespawnPointExplosion(vec3, blockState), (ExplosionDamageCalculator) null, vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK); // CraftBukkit - add state
++                return InteractionResult.SUCCESS;
++            }
++        }
++    }
++    // CraftBukkit end
++
+     private boolean kickVillagerOutOfBed(Level level, BlockPos pos) {
+         List<Villager> list = level.<Villager>getEntitiesOfClass(Villager.class, new AABB(pos), LivingEntity::isSleeping);
+ 

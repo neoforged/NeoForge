@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/SugarCaneBlock.java
++++ b/net/minecraft/world/level/block/SugarCaneBlock.java
+@@ -61,7 +61,7 @@
+                 int j = (Integer) state.getValue(SugarCaneBlock.AGE);
+ 
+                 if (j == 15) {
+-                    level.setBlockAndUpdate(pos.above(), this.defaultBlockState());
++                    org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(level, pos.above(), this.defaultBlockState()); // CraftBukkit
+                     level.setBlock(pos, (BlockState) state.setValue(SugarCaneBlock.AGE, 0), 260);
+                 } else {
+                     level.setBlock(pos, (BlockState) state.setValue(SugarCaneBlock.AGE, j + 1), 260);

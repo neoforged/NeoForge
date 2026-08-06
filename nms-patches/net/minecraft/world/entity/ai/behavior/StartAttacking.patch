@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/entity/ai/behavior/StartAttacking.java
++++ b/net/minecraft/world/entity/ai/behavior/StartAttacking.java
+@@ -7,6 +7,13 @@
+ import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++// CraftBukkit end
++
+ public class StartAttacking {
+ 
+     public StartAttacking() {}
+@@ -34,6 +41,17 @@
+                             if (!mob.canAttack(livingentity)) {
+                                 return false;
+                             } else {
++                                // CraftBukkit start
++                                EntityTargetEvent event = CraftEventFactory.callEntityTargetLivingEvent(mob, livingentity, (livingentity instanceof ServerPlayer) ? EntityTargetEvent.TargetReason.CLOSEST_PLAYER : EntityTargetEvent.TargetReason.CLOSEST_ENTITY);
++                                if (event.isCancelled()) {
++                                    return false;
++                                }
++                                if (event.getTarget() == null) {
++                                    memoryaccessor.erase();
++                                    return true;
++                                }
++                                livingentity = ((CraftLivingEntity) event.getTarget()).getHandle();
++                                // CraftBukkit end
+                                 memoryaccessor.set(livingentity);
+                                 memoryaccessor1.erase();
+                                 return true;

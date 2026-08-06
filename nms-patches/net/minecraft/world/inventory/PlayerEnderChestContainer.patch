@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/inventory/PlayerEnderChestContainer.java
++++ b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
+@@ -10,12 +10,31 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.util.CraftLocation;
++import org.bukkit.inventory.InventoryHolder;
++// CraftBukkit end
++
+ public class PlayerEnderChestContainer extends SimpleContainer {
+ 
+     private @Nullable EnderChestBlockEntity activeChest;
++    // CraftBukkit start
++    private final Player owner;
+ 
+-    public PlayerEnderChestContainer() {
++    public InventoryHolder getBukkitOwner() {
++        return owner.getBukkitEntity();
++    }
++
++    @Override
++    public Location getLocation() {
++        return this.activeChest != null ? CraftLocation.toBukkit(this.activeChest.getBlockPos(), this.activeChest.getLevel().getWorld()) : null;
++    }
++
++    public PlayerEnderChestContainer(Player owner) {
+         super(27);
++        this.owner = owner;
++        // CraftBukkit end
+     }
+ 
+     public void setActiveChest(EnderChestBlockEntity activeChest) {

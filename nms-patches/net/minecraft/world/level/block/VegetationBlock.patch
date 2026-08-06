@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/level/block/VegetationBlock.java
++++ b/net/minecraft/world/level/block/VegetationBlock.java
+@@ -12,6 +12,10 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.pathfinder.PathComputationType;
+ 
++// CraftBukkit start
++import net.minecraft.world.level.Level;
++// CraftBukkit end
++
+ public abstract class VegetationBlock extends Block {
+ 
+     protected VegetationBlock(BlockBehaviour.Properties properties) {
+@@ -27,7 +31,15 @@
+ 
+     @Override
+     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+-        return !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
++        // CraftBukkit start
++        if (!state.canSurvive(level, pos)) {
++            // Suppress during worldgen
++            if (!(level instanceof Level actualLevel) || !org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPhysicsEvent(actualLevel, pos).isCancelled()) {
++                return Blocks.AIR.defaultBlockState();
++            }
++        }
++        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
++        // CraftBukkit end
+     }
+ 
+     @Override

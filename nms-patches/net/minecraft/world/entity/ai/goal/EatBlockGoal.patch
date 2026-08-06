@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/entity/ai/goal/EatBlockGoal.java
++++ b/net/minecraft/world/entity/ai/goal/EatBlockGoal.java
+@@ -11,6 +11,10 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.gamerules.GameRules;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class EatBlockGoal extends Goal {
+ 
+     private static final int EAT_ANIMATION_TICKS = 40;
+@@ -66,7 +70,7 @@
+             BlockPos blockpos = this.mob.blockPosition();
+ 
+             if (EatBlockGoal.IS_EDIBLE.test(this.level.getBlockState(blockpos))) {
+-                if ((Boolean) getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING)) {
++                if (CraftEventFactory.callEntityChangeBlockEvent(this.mob, blockpos, Blocks.AIR.defaultBlockState(), !(Boolean) getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING))) { // CraftBukkit
+                     this.level.destroyBlock(blockpos, false);
+                 }
+ 
+@@ -75,7 +79,7 @@
+                 BlockPos blockpos1 = blockpos.below();
+ 
+                 if (this.level.getBlockState(blockpos1).is(Blocks.GRASS_BLOCK)) {
+-                    if ((Boolean) getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING)) {
++                    if (CraftEventFactory.callEntityChangeBlockEvent(this.mob, blockpos1, Blocks.AIR.defaultBlockState(), !(Boolean) getServerLevel(this.level).getGameRules().get(GameRules.MOB_GRIEFING))) { // CraftBukkit
+                         this.level.levelEvent(2001, blockpos1, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
+                         this.level.setBlock(blockpos1, Blocks.DIRT.defaultBlockState(), 2);
+                     }

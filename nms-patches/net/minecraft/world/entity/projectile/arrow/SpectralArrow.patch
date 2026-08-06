@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/arrow/SpectralArrow.java
++++ b/net/minecraft/world/entity/projectile/arrow/SpectralArrow.java
+@@ -45,7 +45,7 @@
+         super.doPostHurtEffects(mob);
+         MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.GLOWING, this.duration, 0);
+ 
+-        mob.addEffect(mobeffectinstance, this.getEffectSource());
++        mob.addEffect(mobeffectinstance, this.getEffectSource(), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
+     }
+ 
+     @Override

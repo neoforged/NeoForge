@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/entity/animal/camel/Camel.java
++++ b/net/minecraft/world/entity/animal/camel/Camel.java
+@@ -60,6 +60,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityDamageEvent;
++// CraftBukkit end
++
+ public class Camel extends AbstractHorse {
+ 
+     public static final float BABY_SCALE = 0.6F;
+@@ -147,7 +151,7 @@
+ 
+     @Override
+     public Brain<Camel> getBrain() {
+-        return super.getBrain();
++        return (Brain<Camel>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -485,9 +489,15 @@
+     }
+ 
+     @Override
+-    protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
++    // CraftBukkit start - void -> boolean
++    public boolean actuallyHurt(ServerLevel level, DamageSource source, float dmg, EntityDamageEvent event) {
++        boolean damageResult = super.actuallyHurt(level, source, dmg, event);
++        if (!damageResult) {
++            return false;
++        }
++        // CraftBukkit end
+         this.standUpInstantly();
+-        super.actuallyHurt(level, source, dmg);
++        return true; // CraftBukkit
+     }
+ 
+     @Override

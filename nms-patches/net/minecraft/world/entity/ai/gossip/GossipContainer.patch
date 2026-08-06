@@ -1,0 +1,212 @@
+--- a/net/minecraft/world/entity/ai/gossip/GossipContainer.java
++++ b/net/minecraft/world/entity/ai/gossip/GossipContainer.java
+@@ -25,6 +25,13 @@
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.util.VisibleForDebug;
+ 
++// CraftBukkit start
++import net.minecraft.world.entity.npc.villager.Villager;
++import org.bukkit.craftbukkit.entity.CraftVillager.CraftReputationType;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.VillagerReputationChangeEvent;
++// CraftBukkit end
++
+ public class GossipContainer {
+ 
+     public static final Codec<GossipContainer> CODEC = GossipContainer.GossipEntry.CODEC.listOf().xmap(GossipContainer::new, (gossipcontainer) -> {
+@@ -33,6 +40,14 @@
+     public static final int DISCARD_THRESHOLD = 2;
+     private final Map<UUID, GossipContainer.EntityGossips> gossips = new HashMap();
+ 
++    // CraftBukkit start - store reference to villager entity
++    public Villager villager;
++
++    public GossipContainer(Villager villager) {
++        this.villager = villager;
++    }
++    // CraftBukkit end
++
+     public GossipContainer() {}
+ 
+     private GossipContainer(List<GossipContainer.GossipEntry> entries) {
+@@ -54,15 +69,17 @@
+     }
+ 
+     public void decay() {
+-        Iterator<GossipContainer.EntityGossips> iterator = this.gossips.values().iterator();
++        Iterator<Map.Entry<UUID, GossipContainer.EntityGossips>> iterator = this.gossips.entrySet().iterator(); // CraftBukkit - iterate over entries instead of values to access entity UUID
+ 
+         while (iterator.hasNext()) {
+-            GossipContainer.EntityGossips gossipcontainer_entitygossips = (GossipContainer.EntityGossips) iterator.next();
++            // CraftBukkit start - pass villager and entity UUID to decay method
++            Map.Entry<UUID, GossipContainer.EntityGossips> gossipcontainer_entitygossips = iterator.next();
+ 
+-            gossipcontainer_entitygossips.decay();
+-            if (gossipcontainer_entitygossips.isEmpty()) {
++            gossipcontainer_entitygossips.getValue().decay(villager, gossipcontainer_entitygossips.getKey());
++            if (gossipcontainer_entitygossips.getValue().isEmpty()) {
+                 iterator.remove();
+             }
++            // CraftBukkit end
+         }
+ 
+     }
+@@ -115,16 +132,27 @@
+             int j = gossipcontainer_gossipentry.value - gossipcontainer_gossipentry.type.decayPerTransfer;
+ 
+             if (j >= 2) {
+-                this.getOrCreate(gossipcontainer_gossipentry.target).entries.mergeInt(gossipcontainer_gossipentry.type, j, GossipContainer::mergeValuesForTransfer);
++                // CraftBukkit start - redirect to a method which fires an event before setting value
++                this.set(gossipcontainer_gossipentry.target, gossipcontainer_gossipentry.type, GossipContainer.mergeValuesForTransfer(getReputation(gossipcontainer_gossipentry.target, Predicate.isEqual(gossipcontainer_gossipentry.type), false), j), org.bukkit.entity.Villager.ReputationEvent.GOSSIP);
++                //this.getOrCreate(gossipcontainer_gossipentry.target).entries.mergeInt(gossipcontainer_gossipentry.type, j, Reputation::mergeValuesForTransfer);
++                // CraftBukkit end
+             }
+ 
+         });
+     }
+ 
+     public int getReputation(UUID entity, Predicate<GossipType> types) {
++        // CraftBukkit start - add getReputation overload with additional parameter
++        return getReputation(entity, types, true);
++    }
++
++    public int getReputation(UUID entity, Predicate<GossipType> types, boolean weighted) {
++        // CraftBukkit end
+         GossipContainer.EntityGossips gossipcontainer_entitygossips = (GossipContainer.EntityGossips) this.gossips.get(entity);
+ 
+-        return gossipcontainer_entitygossips != null ? gossipcontainer_entitygossips.weightedValue(types) : 0;
++        // CraftBukkit start - handle weighted parameter
++        return gossipcontainer_entitygossips != null ? (weighted ? gossipcontainer_entitygossips.weightedValue(types) : gossipcontainer_entitygossips.unweightedValue(types)) : 0;
++        // CraftBukkit end
+     }
+ 
+     public long getCountForType(GossipType type, DoublePredicate valueTest) {
+@@ -134,27 +162,58 @@
+     }
+ 
+     public void add(UUID target, GossipType type, int amountToAdd) {
++        // CraftBukkit start - add change reason parameter
++        add(target, type, amountToAdd, org.bukkit.entity.Villager.ReputationEvent.UNSPECIFIED);
++    }
++
++    public void add(UUID target, GossipType type, int amountToAdd, org.bukkit.entity.Villager.ReputationEvent changeReason) {
++        // CraftBukkit end
+         GossipContainer.EntityGossips gossipcontainer_entitygossips = this.getOrCreate(target);
+ 
++        int oldValue = gossipcontainer_entitygossips.entries.getInt(type); // CraftBukkit - store old value
+         gossipcontainer_entitygossips.entries.mergeInt(type, amountToAdd, (j, k) -> {
+             return this.mergeValuesForAddition(type, j, k);
+         });
+-        gossipcontainer_entitygossips.makeSureValueIsntTooLowOrTooHigh(type);
++        // CraftBukkit start - fire reputation change event
++        int newValue = gossipcontainer_entitygossips.entries.getInt(type);
++        newValue = Math.max(0, Math.min(newValue, type.max));
++        gossipcontainer_entitygossips.entries.replace(type, oldValue); // restore old value until the event completed processing
++        VillagerReputationChangeEvent event = CraftEventFactory.callVillagerReputationChangeEvent(villager, target, changeReason, CraftReputationType.minecraftToBukkit(type), oldValue, newValue, type.max);
++        if (!event.isCancelled()) {
++            gossipcontainer_entitygossips.entries.replace(type, event.getNewValue());
++            gossipcontainer_entitygossips.makeSureValueIsntTooLowOrTooHigh(type);
++        }
++        // CraftBukkit end
+         if (gossipcontainer_entitygossips.isEmpty()) {
+             this.gossips.remove(target);
+         }
+ 
+     }
+ 
+-    public void remove(UUID target, GossipType type, int amountToRemove) {
+-        this.add(target, type, -amountToRemove);
++    // CraftBukkit start
++    public void set(UUID target, GossipType type, int amount, org.bukkit.entity.Villager.ReputationEvent changeReason) {
++        int addAmount = amount - getReputation(target, Predicate.isEqual(type), false);
++        if (addAmount == 0) {
++            return;
++        }
++        this.add(target, type, addAmount, changeReason);
+     }
++    // CraftBukkit end
+ 
+-    public void remove(UUID target, GossipType type) {
++    // CraftBukkit start - add change reason parameter
++    public void remove(UUID target, GossipType type, int amountToRemove, org.bukkit.entity.Villager.ReputationEvent changeReason) {
++        this.add(target, type, -amountToRemove, changeReason);
++    }
++    // CraftBukkit end
++
++    public void remove(UUID target, GossipType type, org.bukkit.entity.Villager.ReputationEvent changeReason) { // CraftBukkit - add change reason parameter
+         GossipContainer.EntityGossips gossipcontainer_entitygossips = (GossipContainer.EntityGossips) this.gossips.get(target);
+ 
+         if (gossipcontainer_entitygossips != null) {
+-            gossipcontainer_entitygossips.remove(type);
++            // CraftBukkit start - redirect - set to 0 instead
++            set(target, type, 0, changeReason);
++            //gossipcontainer_entitygossips.remove(gossiptype);
++            // CraftBukkit end
+             if (gossipcontainer_entitygossips.isEmpty()) {
+                 this.gossips.remove(target);
+             }
+@@ -162,7 +221,16 @@
+ 
+     }
+ 
+-    public void remove(GossipType type) {
++    public void remove(GossipType type, org.bukkit.entity.Villager.ReputationEvent changeReason) { // CraftBukkit - add change reason parameter
++        // CraftBukkit start - replace the logic to call the other remove instead
++        Set<UUID> uuids = Sets.newHashSet(this.gossips.keySet());
++        for (UUID uuid : uuids) {
++            remove(uuid, type, changeReason);
++        }
++        if (true) {
++            return;
++        }
++        // CraftBukkit end
+         Iterator<GossipContainer.EntityGossips> iterator = this.gossips.values().iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -197,7 +265,7 @@
+     }
+ 
+     public GossipContainer copy() {
+-        GossipContainer gossipcontainer = new GossipContainer();
++        GossipContainer gossipcontainer = new GossipContainer(this.villager); // CraftBukkit
+ 
+         gossipcontainer.putAll(this);
+         return gossipcontainer;
+@@ -228,18 +296,36 @@
+             }).sum();
+         }
+ 
++        // CraftBukkit start
++        public int unweightedValue(Predicate<GossipType> predicate) {
++            return this.entries.object2IntEntrySet().stream().filter((entry) -> {
++                return predicate.test((GossipType) entry.getKey());
++            }).mapToInt((entry) -> {
++                return entry.getIntValue();
++            }).sum();
++        }
++        // CraftBukkit end
++
+         public Stream<GossipContainer.GossipEntry> unpack(UUID target) {
+             return this.entries.object2IntEntrySet().stream().map((entry) -> {
+                 return new GossipContainer.GossipEntry(target, (GossipType) entry.getKey(), entry.getIntValue());
+             });
+         }
+ 
+-        public void decay() {
++        public void decay(Villager villager, UUID uuid) { // CraftBukkit - add villager and entity uuid parameters
+             ObjectIterator<Object2IntMap.Entry<GossipType>> objectiterator = this.entries.object2IntEntrySet().iterator();
+ 
+             while (objectiterator.hasNext()) {
+                 Object2IntMap.Entry<GossipType> object2intmap_entry = (Entry) objectiterator.next();
+                 int i = object2intmap_entry.getIntValue() - ((GossipType) object2intmap_entry.getKey()).decayPerDay;
++                // CraftBukkit start - fire event
++                VillagerReputationChangeEvent event = CraftEventFactory.callVillagerReputationChangeEvent(villager, uuid, org.bukkit.entity.Villager.ReputationEvent.DECAY, CraftReputationType.minecraftToBukkit(object2intmap_entry.getKey()), object2intmap_entry.getIntValue(), i, object2intmap_entry.getKey().max);
++                if (event.isCancelled()) {
++                    continue;
++                } else {
++                    i = event.getNewValue();
++                }
++                // CraftBukkit end
+ 
+                 if (i < 2) {
+                     objectiterator.remove();

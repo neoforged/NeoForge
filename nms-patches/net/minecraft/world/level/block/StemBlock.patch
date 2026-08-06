@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/level/block/StemBlock.java
++++ b/net/minecraft/world/level/block/StemBlock.java
+@@ -27,6 +27,8 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
+ public class StemBlock extends VegetationBlock implements BonemealableBlock {
+ 
+     public static final MapCodec<StemBlock> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -88,7 +90,7 @@
+ 
+                 if (i < 7) {
+                     state = (BlockState) state.setValue(StemBlock.AGE, i + 1);
+-                    level.setBlock(pos, state, 2);
++                    CraftEventFactory.handleBlockGrowEvent(level, pos, state, 2); // CraftBukkit
+                 } else {
+                     Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+                     BlockPos blockpos1 = pos.relative(direction);
+@@ -100,7 +102,11 @@
+                         Optional<Block> optional1 = registry.getOptional(this.attachedStem);
+ 
+                         if (optional.isPresent() && optional1.isPresent()) {
+-                            level.setBlockAndUpdate(blockpos1, ((Block) optional.get()).defaultBlockState());
++                            // CraftBukkit start
++                            if (!CraftEventFactory.handleBlockGrowEvent(level, blockpos1, ((Block) optional.get()).defaultBlockState())) {
++                                return;
++                            }
++                            // CraftBukkit end
+                             level.setBlockAndUpdate(pos, (BlockState) ((Block) optional1.get()).defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, direction));
+                         }
+                     }
+@@ -130,7 +136,7 @@
+         int i = Math.min(7, (Integer) state.getValue(StemBlock.AGE) + Mth.nextInt(random, 2, 5));
+         BlockState blockstate1 = (BlockState) state.setValue(StemBlock.AGE, i);
+ 
+-        level.setBlock(pos, blockstate1, 2);
++        CraftEventFactory.handleBlockGrowEvent(level, pos, blockstate1, 2); // CraftBukkit
+         if (i == 7) {
+             blockstate1.randomTick(level, pos, random);
+         }

@@ -1,0 +1,88 @@
+--- a/net/minecraft/world/inventory/LoomMenu.java
++++ b/net/minecraft/world/inventory/LoomMenu.java
+@@ -24,8 +24,29 @@
+ import net.minecraft.world.level.block.entity.BannerPattern;
+ import net.minecraft.world.level.block.entity.BannerPatternLayers;
+ 
++// CraftBukkit start
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.inventory.CraftInventoryLoom;
++import org.bukkit.craftbukkit.inventory.view.CraftLoomView;
++// CraftBukkit end
++
+ public class LoomMenu extends AbstractContainerMenu {
+ 
++    // CraftBukkit start
++    private CraftLoomView bukkitEntity = null;
++    private org.bukkit.entity.Player player;
++
++    @Override
++    public CraftLoomView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryLoom inventory = new CraftInventoryLoom(this.inputContainer, this.outputContainer);
++        bukkitEntity = new CraftLoomView(this.player, inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+     private static final int PATTERN_NOT_SET = -1;
+     private static final int INV_SLOT_START = 4;
+     private static final int INV_SLOT_END = 31;
+@@ -65,6 +86,13 @@
+                 LoomMenu.this.slotsChanged(this);
+                 LoomMenu.this.slotUpdateListener.run();
+             }
++
++            // CraftBukkit start
++            @Override
++            public Location getLocation() {
++                return access.getLocation();
++            }
++            // CraftBukkit end
+         };
+         this.outputContainer = new SimpleContainer(1) {
+             {
+@@ -76,6 +104,13 @@
+                 super.setChanged();
+                 LoomMenu.this.slotUpdateListener.run();
+             }
++
++            // CraftBukkit start
++            @Override
++            public Location getLocation() {
++                return access.getLocation();
++            }
++            // CraftBukkit end
+         };
+         this.access = access;
+         this.bannerSlot = this.addSlot(new Slot(this.inputContainer, 0, 13, 26) {
+@@ -141,6 +176,7 @@
+         this.addStandardInventorySlots(inventory, 8, 84);
+         this.addDataSlot(this.selectedBannerPatternIndex);
+         this.patternGetter = inventory.player.registryAccess().lookupOrThrow(Registries.BANNER_PATTERN);
++        player = (org.bukkit.entity.Player) inventory.player.getBukkitEntity(); // CraftBukkit
+     }
+ 
+     private static boolean isPatternItem(ItemStack itemStack) {
+@@ -153,6 +189,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return stillValid(this.access, player, Blocks.LOOM);
+     }
+ 
+@@ -322,6 +359,11 @@
+             if (dyecolor != null) {
+                 itemstack2 = itemstack.copyWithCount(1);
+                 itemstack2.update(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY, (bannerpatternlayers) -> {
++                    // CraftBukkit start
++                    if (bannerpatternlayers.layers().size() > 20) {
++                        bannerpatternlayers = new BannerPatternLayers(List.copyOf(bannerpatternlayers.layers().subList(0, 20)));
++                    }
++                    // CraftBukkit end
+                     return (new BannerPatternLayers.Builder()).addAll(bannerpatternlayers).add(pattern, dyecolor).build();
+                 });
+             }

@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/entity/TestInstanceBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/TestInstanceBlockEntity.java
+@@ -116,12 +116,12 @@
+ 
+     public Component getTestName() {
+         return (Component) this.test().map((resourcekey) -> {
+-            return Component.literal(resourcekey.identifier().toString());
++            return (Component) Component.literal(resourcekey.identifier().toString()); // CraftBukkit - decompile error
+         }).orElse(TestInstanceBlockEntity.INVALID_TEST_NAME);
+     }
+ 
+     private Optional<Holder.Reference<GameTestInstance>> getTestHolder() {
+-        Optional optional = this.test();
++        Optional<ResourceKey<GameTestInstance>> optional = this.test(); // CraftBukkit - decompile error
+         RegistryAccess registryaccess = this.level.registryAccess();
+ 
+         Objects.requireNonNull(registryaccess);
+@@ -398,7 +398,7 @@
+     private void removeEntities() {
+         this.level.getEntities((Entity) null, this.getTestBounds()).stream().filter((entity) -> {
+             return !(entity instanceof Player);
+-        }).forEach(Entity::discard);
++        }).forEach((entity) -> entity.discard(null)); // CraftBukkit - add Bukkit remove cause
+     }
+ 
+     private void forceLoadChunks() {

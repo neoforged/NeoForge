@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/food/FoodProperties.java
++++ b/net/minecraft/world/food/FoodProperties.java
+@@ -19,6 +19,10 @@
+ import net.minecraft.world.item.component.ConsumableListener;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++// CraftBukkit end
++
+ public record FoodProperties(int nutrition, float saturation, boolean canAlwaysEat) implements ConsumableListener {
+ 
+     public static final Codec<FoodProperties> DIRECT_CODEC = RecordCodecBuilder.create((instance) -> {
+@@ -32,7 +36,7 @@
+ 
+         level.playSound((Entity) null, user.getX(), user.getY(), user.getZ(), (SoundEvent) consumable.sound().value(), SoundSource.NEUTRAL, 1.0F, randomsource.triangle(1.0F, 0.4F));
+         if (user instanceof Player player) {
+-            player.getFoodData().eat(this);
++            player.getFoodData().eat(this, stack, (ServerPlayer) player); // CraftBukkit
+             level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, Mth.randomBetween(randomsource, 0.9F, 1.0F));
+         }
+ 

@@ -1,0 +1,93 @@
+--- a/net/minecraft/world/level/block/CrafterBlock.java
++++ b/net/minecraft/world/level/block/CrafterBlock.java
+@@ -40,6 +40,15 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.CompoundContainer;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.CrafterCraftEvent;
++import org.bukkit.event.inventory.InventoryMoveItemEvent;
++import org.bukkit.inventory.Inventory;
++// CraftBukkit end
++
+ public class CrafterBlock extends BaseEntityBlock {
+ 
+     public static final MapCodec<CrafterBlock> CODEC = simpleCodec(CrafterBlock::new);
+@@ -187,6 +196,13 @@
+                 RecipeHolder<CraftingRecipe> recipeholder = (RecipeHolder) optional.get();
+                 ItemStack itemstack = (recipeholder.value()).assemble(craftinginput);
+ 
++                // CraftBukkit start
++                CrafterCraftEvent event = CraftEventFactory.callCrafterCraftEvent(pos, level, crafterblockentity, itemstack, recipeholder.value().getRemainingItems(craftinginput), recipeholder);
++                if (event.isCancelled()) {
++                    return;
++                }
++                itemstack = CraftItemStack.asNMSCopy(event.getResult());
++                // CraftBukkit end
+                 if (itemstack.isEmpty()) {
+                     level.levelEvent(1050, pos, 0);
+                 } else {
+@@ -195,7 +211,7 @@
+                     itemstack.onCraftedBySystem(level);
+                     this.dispenseItem(level, pos, crafterblockentity, itemstack, state, recipeholder);
+ 
+-                    for (ItemStack itemstack1 : (recipeholder.value()).getRemainingItems(craftinginput)) {
++                    for (ItemStack itemstack1 : event.getRemainingItems().stream().map(CraftItemStack::asNMSCopy).toList()) { // CraftBukkit
+                         if (!itemstack1.isEmpty()) {
+                             this.dispenseItem(level, pos, crafterblockentity, itemstack1, state, recipeholder);
+                         }
+@@ -222,7 +238,25 @@
+         ItemStack itemstack1 = results.copy();
+ 
+         if (container != null && (container instanceof CrafterBlockEntity || results.getCount() > container.getMaxStackSize(results))) {
++            // CraftBukkit start - InventoryMoveItemEvent
++            CraftItemStack oitemstack = CraftItemStack.asCraftMirror(itemstack1);
++
++            Inventory destinationInventory;
++            // Have to special case large chests as they work oddly
++            if (container instanceof CompoundContainer) {
++                destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((CompoundContainer) container);
++            } else {
++                destinationInventory = container.getOwner().getInventory();
++            }
++
++            InventoryMoveItemEvent event = new InventoryMoveItemEvent(blockEntity.getOwner().getInventory(), oitemstack, destinationInventory, true);
++            level.getCraftServer().getPluginManager().callEvent(event);
++            itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
+             while (!itemstack1.isEmpty()) {
++                if (event.isCancelled()) {
++                    break;
++                }
++                // CraftBukkit end
+                 ItemStack itemstack2 = itemstack1.copyWithCount(1);
+                 ItemStack itemstack3 = HopperBlockEntity.addItem(blockEntity, container, itemstack2, direction.getOpposite());
+ 
+@@ -233,7 +267,25 @@
+                 itemstack1.shrink(1);
+             }
+         } else if (container != null) {
++            // CraftBukkit start - InventoryMoveItemEvent
++            CraftItemStack oitemstack = CraftItemStack.asCraftMirror(itemstack1);
++
++            Inventory destinationInventory;
++            // Have to special case large chests as they work oddly
++            if (container instanceof CompoundContainer) {
++                destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((CompoundContainer) container);
++            } else {
++                destinationInventory = container.getOwner().getInventory();
++            }
++
++            InventoryMoveItemEvent event = new InventoryMoveItemEvent(blockEntity.getOwner().getInventory(), oitemstack, destinationInventory, true);
++            level.getCraftServer().getPluginManager().callEvent(event);
++            itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
+             while (!itemstack1.isEmpty()) {
++                if (event.isCancelled()) {
++                    break;
++                }
++                // CraftBukkit end
+                 int i = itemstack1.getCount();
+ 
+                 itemstack1 = HopperBlockEntity.addItem(blockEntity, container, itemstack1, direction.getOpposite());

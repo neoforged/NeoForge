@@ -1,0 +1,36 @@
+--- a/net/minecraft/world/entity/ai/behavior/HarvestFarmland.java
++++ b/net/minecraft/world/entity/ai/behavior/HarvestFarmland.java
+@@ -26,6 +26,11 @@
+ import net.minecraft.world.level.gamerules.GameRules;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.level.block.Blocks;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class HarvestFarmland extends Behavior<Villager> {
+ 
+     private static final int HARVEST_DURATION = 200;
+@@ -119,7 +124,9 @@
+                     CropBlock cropblock = (CropBlock) block;
+ 
+                     if (cropblock.isMaxAge(blockstate)) {
++                        if (CraftEventFactory.callEntityChangeBlockEvent(body, this.aboveFarmlandPos, Blocks.AIR.defaultBlockState())) { // CraftBukkit
+                         level.destroyBlock(this.aboveFarmlandPos, true, body);
++                        } // CraftBukkit
+                     }
+                 }
+ 
+@@ -137,9 +144,11 @@
+                                 BlockItem blockitem = (BlockItem) item;
+                                 BlockState blockstate1 = blockitem.getBlock().defaultBlockState();
+ 
++                                if (CraftEventFactory.callEntityChangeBlockEvent(body, this.aboveFarmlandPos, blockstate1)) { // CraftBukkit
+                                 level.setBlockAndUpdate(this.aboveFarmlandPos, blockstate1);
+                                 level.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(body, blockstate1));
+                                 flag = true;
++                                } // CraftBukkit
+                             }
+                         }
+ 

@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/entity/Interaction.java
++++ b/net/minecraft/world/entity/Interaction.java
+@@ -22,6 +22,12 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.damagesource.DamageSource;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityDamageEvent;
++// CraftBukkit end
++
+ public class Interaction extends Entity implements Attackable, Targeting {
+ 
+     private static final EntityDataAccessor<Float> DATA_WIDTH_ID = SynchedEntityData.<Float>defineId(Interaction.class, EntityDataSerializers.FLOAT);
+@@ -54,8 +60,8 @@
+     protected void readAdditionalSaveData(ValueInput input) {
+         this.setWidth(input.getFloatOr("width", 1.0F));
+         this.setHeight(input.getFloatOr("height", 1.0F));
+-        this.attack = (Interaction.PlayerAction) input.read("attack", Interaction.PlayerAction.CODEC).orElse((Object) null);
+-        this.interaction = (Interaction.PlayerAction) input.read("interaction", Interaction.PlayerAction.CODEC).orElse((Object) null);
++        this.attack = (Interaction.PlayerAction) input.read("attack", Interaction.PlayerAction.CODEC).orElse(null); // CraftBukkit - decompile error
++        this.interaction = (Interaction.PlayerAction) input.read("interaction", Interaction.PlayerAction.CODEC).orElse(null); // CraftBukkit - decompile error
+         this.setResponse(input.getBooleanOr("response", false));
+         this.setBoundingBox(this.makeBoundingBox());
+     }
+@@ -101,9 +107,16 @@
+     @Override
+     public boolean skipAttackInteraction(Entity source) {
+         if (source instanceof Player player) {
++            // CraftBukkit start
++            DamageSource damageSource = player.damageSources().playerAttack(player);
++            EntityDamageEvent event = CraftEventFactory.callNonLivingEntityDamageEvent(this, damageSource, 1.0F, false);
++            if (event.isCancelled()) {
++                return true;
++            }
++            // CraftBukkit end
+             this.attack = new Interaction.PlayerAction(player.getUUID(), this.level().getGameTime());
+             if (player instanceof ServerPlayer serverplayer) {
+-                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(serverplayer, this, player.damageSources().generic(), 1.0F, 1.0F, false);
++                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(serverplayer, this, damageSource, (float) event.getFinalDamage(), 1.0F, false); // CraftBukkit
+             }
+ 
+             return !this.getResponse();

@@ -1,0 +1,70 @@
+--- a/net/minecraft/world/inventory/BeaconMenu.java
++++ b/net/minecraft/world/inventory/BeaconMenu.java
+@@ -15,6 +15,11 @@
+ import net.minecraft.world.level.block.entity.BeaconBlockEntity;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.world.entity.player.Inventory;
++import org.bukkit.craftbukkit.inventory.view.CraftBeaconView;
++// CraftBukkit end
++
+ public class BeaconMenu extends AbstractContainerMenu {
+ 
+     private static final int PAYMENT_SLOT = 0;
+@@ -29,6 +34,10 @@
+     private final BeaconMenu.PaymentSlot paymentSlot;
+     private final ContainerLevelAccess access;
+     private final ContainerData beaconData;
++    // CraftBukkit start
++    private CraftBeaconView bukkitEntity = null;
++    private Inventory player;
++    // CraftBukkit end
+ 
+     public BeaconMenu(int containerId, Container inventory) {
+         this(containerId, inventory, new SimpleContainerData(3), ContainerLevelAccess.NULL);
+@@ -36,6 +45,7 @@
+ 
+     public BeaconMenu(int containerId, Container inventory, ContainerData beaconData, ContainerLevelAccess access) {
+         super(MenuType.BEACON, containerId);
++        player = (Inventory) inventory; // CraftBukkit - TODO: check this
+         this.beacon = new SimpleContainer(1) {
+             {
+                 Objects.requireNonNull(BeaconMenu.this);
+@@ -75,6 +85,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return stillValid(this.access, player, Blocks.BEACON);
+     }
+ 
+@@ -154,8 +165,8 @@
+     public boolean updateEffects(Optional<Holder<MobEffect>> primary, Optional<Holder<MobEffect>> secondary) {
+         if (this.paymentSlot.hasItem()) {
+             int i = this.getLevels();
+-            Holder<MobEffect> holder = (Holder) primary.orElse((Object) null);
+-            Holder<MobEffect> holder1 = (Holder) secondary.orElse((Object) null);
++            Holder<MobEffect> holder = (Holder) primary.orElse(null); // CraftBukkit - decompile error
++            Holder<MobEffect> holder1 = (Holder) secondary.orElse(null); // CraftBukkit - decompile error
+ 
+             if (!BeaconBlockEntity.validateEffects(holder, holder1, i)) {
+                 return false;
+@@ -191,4 +202,17 @@
+             return 1;
+         }
+     }
++
++    // CraftBukkit start
++    @Override
++    public CraftBeaconView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        org.bukkit.craftbukkit.inventory.CraftInventoryBeacon inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryBeacon(this.beacon);
++        bukkitEntity = new CraftBeaconView(this.player.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+ }

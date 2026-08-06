@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/MineshaftPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/MineshaftPieces.java
+@@ -516,6 +516,8 @@
+ 
+                         if (chunkBB.isInside(blockpos1) && this.isInterior(level, 1, 0, i2, chunkBB)) {
+                             this.hasPlacedSpider = true;
++                            // CraftBukkit start
++                            /*
+                             level.setBlock(blockpos1, Blocks.SPAWNER.defaultBlockState(), 2);
+                             BlockEntity blockentity = level.getBlockEntity(blockpos1);
+ 
+@@ -524,6 +526,9 @@
+ 
+                                 spawnerblockentity.setEntityId(EntityTypes.CAVE_SPIDER, random);
+                             }
++                            */
++                            placeCraftSpawner(level, blockpos1, org.bukkit.entity.EntityType.CAVE_SPIDER, 2);
++                            // CraftBukkit end
+                         }
+                     }
+                 }

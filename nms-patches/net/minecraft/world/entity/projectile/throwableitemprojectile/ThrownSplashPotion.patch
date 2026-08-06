@@ -1,0 +1,72 @@
+--- a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownSplashPotion.java
++++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownSplashPotion.java
+@@ -19,6 +19,14 @@
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.HitResult;
+ 
++// CraftBukkit start
++import java.util.HashMap;
++import java.util.Map;
++import net.minecraft.server.level.ServerPlayer;
++import net.minecraft.world.effect.MobEffects;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++// CraftBukkit end
++
+ public class ThrownSplashPotion extends AbstractThrownPotion {
+ 
+     public ThrownSplashPotion(EntityType<? extends ThrownSplashPotion> type, Level level) {
+@@ -47,6 +55,7 @@
+         AABB aabb1 = aabb.inflate(4.0D, 2.0D, 4.0D);
+         List<LivingEntity> list = this.level().<LivingEntity>getEntitiesOfClass(LivingEntity.class, aabb1);
+         float f1 = ProjectileUtil.computeMargin(this);
++        Map<org.bukkit.entity.LivingEntity, Double> affected = new HashMap<>(); // CraftBukkit
+ 
+         if (!list.isEmpty()) {
+             Entity entity = this.getEffectSource();
+@@ -58,8 +67,37 @@
+                     if (d0 < 16.0D) {
+                         double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
+ 
++                        // CraftBukkit start
++                        affected.put((org.bukkit.entity.LivingEntity) livingentity.getBukkitEntity(), d1);
++                    }
++                }
++            }
++        }
++
++        {
++            {
++                org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPotionSplashEvent(this, hitResult, affected);
++                if (!event.isCancelled() && list != null && !list.isEmpty()) { // do not process effects if there are no effects to process
++                    Entity entity1 = this.getEffectSource();
++                    for (org.bukkit.entity.LivingEntity victim : event.getAffectedEntities()) {
++                        if (!(victim instanceof CraftLivingEntity)) {
++                            continue;
++                        }
++
++                        LivingEntity livingentity = ((CraftLivingEntity) victim).getHandle();
++                        double d1 = event.getIntensity(victim);
++                        // CraftBukkit end
++
+                         for (MobEffectInstance mobeffectinstance : iterable) {
+                             Holder<MobEffect> holder = mobeffectinstance.getEffect();
++                            // CraftBukkit start - Abide by PVP settings - for players only!
++                            if (!this.level().getWorld().getPVP() && this.getOwner() instanceof ServerPlayer && livingentity instanceof ServerPlayer && livingentity != this.getOwner()) {
++                                if (holder == MobEffects.SLOWNESS || holder == MobEffects.MINING_FATIGUE || holder == MobEffects.INSTANT_DAMAGE || holder == MobEffects.BLINDNESS
++                                        || holder == MobEffects.HUNGER || holder == MobEffects.WEAKNESS || holder == MobEffects.POISON) {
++                                    continue;
++                                }
++                            }
++                            // CraftBukkit end
+ 
+                             if (((MobEffect) holder.value()).isInstantaneous()) {
+                                 ((MobEffect) holder.value()).applyInstantaneousEffect(level, this, this.getOwner(), livingentity, mobeffectinstance.getAmplifier(), d1);
+@@ -70,7 +108,7 @@
+                                 MobEffectInstance mobeffectinstance1 = new MobEffectInstance(holder, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible());
+ 
+                                 if (!mobeffectinstance1.endsWithin(20)) {
+-                                    livingentity.addEffect(mobeffectinstance1, entity);
++                                    livingentity.addEffect(mobeffectinstance1, entity1, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.POTION_SPLASH); // CraftBukkit
+                                 }
+                             }
+                         }

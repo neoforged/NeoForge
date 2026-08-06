@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/level/storage/loot/LootDataType.java
++++ b/net/minecraft/world/level/storage/loot/LootDataType.java
+@@ -13,22 +13,34 @@
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+ 
+-public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter) {
++// CraftBukkit start
++import java.util.function.BiConsumer;
++import org.bukkit.craftbukkit.CraftLootTable;
++import org.bukkit.craftbukkit.util.CraftNamespacedKey;
++// CraftBukkit end
++
++// CraftBukkit start
++public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter, BiConsumer<ResourceKey<T>, T> postValidate) {
+ 
++    public LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.ContextGetter<T> contextGetter) {
++        this(registryKey, codec, contextGetter, (k, v) -> {});
++    }
++    // CraftBukkit end
+     public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<LootItemCondition>(Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS));
+     public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<LootItemFunction>(Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS));
+-    public static final LootDataType<LootTable> TABLE = new LootDataType<LootTable>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, LootTable::getParamSet);
++    public static final LootDataType<LootTable> TABLE = new LootDataType<LootTable>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, LootTable::getParamSet, (k, v) -> v.craftLootTable = new CraftLootTable(CraftNamespacedKey.fromMinecraft(k.identifier()), v)); // CraftBukkit
+ 
+     public void runValidation(ValidationContextSource contextSource, ResourceKey<T> key, T value) {
+         ContextKeySet contextkeyset = this.contextGetter.context(value);
+         ValidationContext validationcontext = contextSource.context(contextkeyset).enterElement(new ProblemReporter.RootElementPathElement(key), key);
+ 
+         value.validate(validationcontext);
++        this.postValidate.accept(key, value); // CraftBukkit
+     }
+ 
+     public void runValidation(ValidationContextSource contextSource, HolderLookup<T> lookup) {
+         lookup.listElements().forEach((holder_reference) -> {
+-            this.runValidation(contextSource, holder_reference.key(), (Validatable) holder_reference.value());
++            this.runValidation(contextSource, holder_reference.key(), holder_reference.value()); // CraftBukkit - decompile error
+         });
+     }
+ 

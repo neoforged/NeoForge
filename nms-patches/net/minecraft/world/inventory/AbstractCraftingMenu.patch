@@ -1,0 +1,41 @@
+--- a/net/minecraft/world/inventory/AbstractCraftingMenu.java
++++ b/net/minecraft/world/inventory/AbstractCraftingMenu.java
+@@ -14,14 +14,17 @@
+ 
+     private final int width;
+     private final int height;
+-    public final CraftingContainer craftSlots;
++    public final TransientCraftingContainer craftSlots; // CraftBukkit
+     public final ResultContainer resultSlots = new ResultContainer();
+ 
+-    public AbstractCraftingMenu(MenuType<?> menuType, int containerId, int width, int height) {
++    public AbstractCraftingMenu(MenuType<?> menuType, int containerId, int width, int height, Inventory playerInventory) { // CraftBukkit
+         super(menuType, containerId);
+         this.width = width;
+         this.height = height;
+-        this.craftSlots = new TransientCraftingContainer(this, width, height);
++        // CraftBukkit start
++        this.craftSlots = new TransientCraftingContainer(this, width, height, playerInventory.player); // CraftBukkit - pass player
++        this.craftSlots.resultInventory = this.resultSlots; // CraftBukkit - let InventoryCrafting know about its result slot
++        // CraftBukkit end
+     }
+ 
+     protected Slot addResultSlot(Player player, int x, int y) {
+@@ -39,7 +42,7 @@
+ 
+     @Override
+     public RecipeBookMenu.PostPlaceAction handlePlacement(boolean useMaxItems, boolean allowDroppingItemsToClear, RecipeHolder<?> recipe, ServerLevel level, Inventory inventory) {
+-        RecipeHolder<CraftingRecipe> recipeholder1 = recipe;
++        RecipeHolder<CraftingRecipe> recipeholder1 = (RecipeHolder<CraftingRecipe>) recipe; // CraftBukkit - decompile error
+ 
+         this.beginPlacingRecipe();
+ 
+@@ -70,7 +73,7 @@
+                 }
+             }, this.width, this.height, list, list, inventory, recipeholder1, useMaxItems, allowDroppingItemsToClear);
+         } finally {
+-            this.finishPlacingRecipe(level, recipe);
++            this.finishPlacingRecipe(level, recipeholder1); // CraftBukkit - decompile error
+         }
+ 
+         return recipebookmenu_postplaceaction;

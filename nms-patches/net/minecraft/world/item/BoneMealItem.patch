@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/item/BoneMealItem.java
++++ b/net/minecraft/world/item/BoneMealItem.java
+@@ -35,6 +35,12 @@
+ 
+     @Override
+     public InteractionResult useOn(UseOnContext context) {
++        // CraftBukkit start - extract bonemeal application logic to separate, static method
++        return applyBonemeal(context);
++    }
++
++    public static InteractionResult applyBonemeal(UseOnContext context) {
++        // CraftBukkit end
+         Level level = context.getLevel();
+         BlockPos blockpos = context.getClickedPos();
+         BlockPos blockpos1 = blockpos.relative(context.getClickedFace());
+@@ -42,7 +48,7 @@
+ 
+         if (growCrop(itemstack, level, blockpos)) {
+             if (!level.isClientSide()) {
+-                itemstack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH);
++                if (context.getPlayer() != null) itemstack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH); // CraftBukkit - SPIGOT-7518
+                 level.levelEvent(1505, blockpos, 15);
+                 return InteractionResult.SUCCESS_SERVER;
+             } else {
+@@ -54,7 +60,7 @@
+ 
+             if (flag && growWaterPlant(itemstack, level, blockpos1, context.getClickedFace())) {
+                 if (!level.isClientSide()) {
+-                    itemstack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH);
++                    if (context.getPlayer() != null) itemstack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH); // CraftBukkit - SPIGOT-7518
+                     level.levelEvent(1505, blockpos1, 15);
+                 }
+ 

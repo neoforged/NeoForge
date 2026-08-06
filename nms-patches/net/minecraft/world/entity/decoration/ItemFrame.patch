@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/entity/decoration/ItemFrame.java
++++ b/net/minecraft/world/entity/decoration/ItemFrame.java
+@@ -116,7 +116,7 @@
+         return this.createBoundingBox(this.pos, this.getDirection(), false);
+     }
+ 
+-    private AABB createBoundingBox(BlockPos blockPos, Direction direction, boolean hasFramedMap) {
++    public static AABB createBoundingBox(BlockPos blockPos, Direction direction, boolean hasFramedMap) { // CraftBukkit - static
+         float f = 0.46875F;
+         Vec3 vec3 = Vec3.atCenterOf(blockPos).relative(direction, -0.46875D);
+         float f1 = hasFramedMap ? 1.0F : 0.75F;
+@@ -183,6 +183,11 @@
+             if (this.isInvulnerableToBase(source)) {
+                 return false;
+             } else if (this.shouldDamageDropItem(source)) {
++                // CraftBukkit start - fire EntityDamageEvent
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, damage, false) || this.isRemoved()) {
++                    return true;
++                }
++                // CraftBukkit end
+                 this.dropItem(level, source.getEntity(), false);
+                 this.gameEvent(GameEvent.BLOCK_CHANGE, source.getEntity());
+                 this.playSound(this.getRemoveItemSound(), 1.0F, 1.0F);
+@@ -293,13 +298,19 @@
+     }
+ 
+     public void setItem(ItemStack itemStack, boolean updateNeighbours) {
++        // CraftBukkit start
++        this.setItem(itemStack, updateNeighbours, true);
++    }
++
++    public void setItem(ItemStack itemStack, boolean updateNeighbours, boolean playSound) {
++        // CraftBukkit end
+         if (!itemStack.isEmpty()) {
+             itemStack = itemStack.copyWithCount(1);
+         }
+ 
+         this.onItemChanged(itemStack);
+         this.getEntityData().set(ItemFrame.DATA_ITEM, itemStack);
+-        if (!itemStack.isEmpty()) {
++        if (!itemStack.isEmpty() && playSound) { // CraftBukkit
+             this.playSound(this.getAddItemSound(), 1.0F, 1.0F);
+         }
+ 

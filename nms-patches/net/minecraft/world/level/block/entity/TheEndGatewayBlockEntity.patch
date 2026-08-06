@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
+@@ -27,6 +27,10 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.world.level.dimension.LevelStem;
++// CraftBukkit end
++
+ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -61,7 +65,7 @@
+     protected void loadAdditional(ValueInput input) {
+         super.loadAdditional(input);
+         this.age = input.getLongOr("Age", 0L);
+-        this.exitPortal = (BlockPos) input.read("exit_portal", BlockPos.CODEC).filter(Level::isInSpawnableBounds).orElse((Object) null);
++        this.exitPortal = (BlockPos) input.read("exit_portal", BlockPos.CODEC).filter(Level::isInSpawnableBounds).orElse(null); // CraftBukkit - decompile error
+         this.exactTeleport = input.getBooleanOr("ExactTeleport", false);
+     }
+ 
+@@ -136,7 +140,7 @@
+     }
+ 
+     public @Nullable Vec3 getPortalPosition(ServerLevel currentLevel, BlockPos portalEntryPos) {
+-        if (this.exitPortal == null && currentLevel.dimension() == Level.END) {
++        if (this.exitPortal == null && currentLevel.getTypeKey() == LevelStem.END) { // CraftBukkit - work in alternate worlds
+             BlockPos blockpos1 = findOrCreateValidTeleportPos(currentLevel, portalEntryPos);
+ 
+             blockpos1 = blockpos1.above(10);

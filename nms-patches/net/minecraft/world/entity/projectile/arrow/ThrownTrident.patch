@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/entity/projectile/arrow/ThrownTrident.java
++++ b/net/minecraft/world/entity/projectile/arrow/ThrownTrident.java
+@@ -29,6 +29,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class ThrownTrident extends AbstractArrow {
+ 
+     private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.<Byte>defineId(ThrownTrident.class, EntityDataSerializers.BYTE);
+@@ -82,10 +86,10 @@
+                     }
+                 }
+ 
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.DROP); // CraftBukkit - add Bukkit remove cause
+             } else {
+                 if (!(entity instanceof Player) && this.position().distanceTo(entity.getEyePosition()) < (double) entity.getBbWidth() + 1.0D) {
+-                    this.discard();
++                    this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                     return;
+                 }
+ 
+@@ -143,7 +147,7 @@
+ 
+         this.dealtDamage = true;
+         if (entity.hurtOrSimulate(damagesource, f)) {
+-            if (entity.is((Object) EntityTypes.ENDERMAN)) {
++            if (entity.is(EntityTypes.ENDERMAN)) { // CraftBukkit - decompile error
+                 return;
+             }
+ 

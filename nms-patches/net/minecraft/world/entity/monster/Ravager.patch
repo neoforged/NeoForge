@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/entity/monster/Ravager.java
++++ b/net/minecraft/world/entity/monster/Ravager.java
+@@ -44,13 +44,17 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class Ravager extends Raider {
+ 
+     private static final Predicate<Entity> ROAR_TARGET_WITH_GRIEFING = (entity) -> {
+         return !(entity instanceof Ravager) && entity.isAlive();
+     };
+     private static final Predicate<Entity> ROAR_TARGET_WITHOUT_GRIEFING = (entity) -> {
+-        return Ravager.ROAR_TARGET_WITH_GRIEFING.test(entity) && !entity.is((Object) EntityTypes.ARMOR_STAND);
++        return Ravager.ROAR_TARGET_WITH_GRIEFING.test(entity) && !entity.is(EntityTypes.ARMOR_STAND); // CraftBukkit - decompile error
+     };
+     private static final Predicate<LivingEntity> ROAR_TARGET_ON_CLIENT = (livingentity) -> {
+         return !(livingentity instanceof Ravager) && livingentity.isAlive() && livingentity.isLocalInstanceAuthoritative();
+@@ -160,6 +164,11 @@
+                         Block block = blockstate.getBlock();
+ 
+                         if (block instanceof LeavesBlock) {
++                            // CraftBukkit start
++                            if (!CraftEventFactory.callEntityChangeBlockEvent(this, blockpos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState())) {
++                                continue;
++                            }
++                            // CraftBukkit end
+                             flag = serverlevel.destroyBlock(blockpos, true, this) || flag;
+                         }
+                     }

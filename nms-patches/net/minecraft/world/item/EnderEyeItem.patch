@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/item/EnderEyeItem.java
++++ b/net/minecraft/world/item/EnderEyeItem.java
+@@ -102,7 +102,11 @@
+                 eyeofender.setItem(itemstack);
+                 eyeofender.signalTo(Vec3.atLowerCornerOf(blockpos));
+                 level.gameEvent(GameEvent.PROJECTILE_SHOOT, eyeofender.position(), GameEvent.Context.of((Entity) player));
+-                level.addFreshEntity(eyeofender);
++                // CraftBukkit start
++                if (!level.addFreshEntity(eyeofender)) {
++                    return InteractionResult.FAIL;
++                }
++                // CraftBukkit end
+                 if (player instanceof ServerPlayer) {
+                     ServerPlayer serverplayer = (ServerPlayer) player;
+ 

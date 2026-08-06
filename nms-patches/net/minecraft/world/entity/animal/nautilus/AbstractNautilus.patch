@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/nautilus/AbstractNautilus.java
++++ b/net/minecraft/world/entity/animal/nautilus/AbstractNautilus.java
+@@ -485,7 +485,7 @@
+     protected void createInventory() {
+         SimpleContainer simplecontainer = this.inventory;
+ 
+-        this.inventory = new SimpleContainer(this.getInventorySize());
++        this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractNautilus) this.getBukkitEntity()); // CraftBukkit - store entity
+         if (simplecontainer != null) {
+             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
+ 

@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/entity/ai/behavior/TryLaySpawnOnFluidNearLand.java
++++ b/net/minecraft/world/entity/ai/behavior/TryLaySpawnOnFluidNearLand.java
+@@ -34,6 +34,12 @@
+                                 if (serverlevel.getBlockState(blockpos2).isAir()) {
+                                     BlockState blockstate = spawnBlock.defaultBlockState();
+ 
++                                    // CraftBukkit start
++                                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(livingentity, blockpos2, blockstate)) {
++                                        memoryaccessor2.erase();
++                                        return true;
++                                    }
++                                    // CraftBukkit end
+                                     serverlevel.setBlock(blockpos2, blockstate, 3);
+                                     serverlevel.gameEvent(GameEvent.BLOCK_PLACE, blockpos2, GameEvent.Context.of(livingentity, blockstate));
+                                     serverlevel.playSound((Entity) null, (Entity) livingentity, SoundEvents.FROG_LAY_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F);

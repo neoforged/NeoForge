@@ -1,0 +1,76 @@
+--- a/net/minecraft/world/entity/raid/Raider.java
++++ b/net/minecraft/world/entity/raid/Raider.java
+@@ -42,6 +42,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public abstract class Raider extends PatrollingMonster {
+ 
+     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.<Boolean>defineId(Raider.class, EntityDataSerializers.BOOLEAN);
+@@ -104,7 +108,7 @@
+                     } else {
+                         LivingEntity livingentity = this.getTarget();
+ 
+-                        if (livingentity != null && (livingentity.is((Object) EntityTypes.PLAYER) || livingentity.is((Object) EntityTypes.IRON_GOLEM))) {
++                        if (livingentity != null && (livingentity.is(EntityTypes.PLAYER) || livingentity.is(EntityTypes.IRON_GOLEM))) { // CraftBukkit - decompile error
+                             this.noActionTime = 0;
+                         }
+                     }
+@@ -133,7 +137,7 @@
+                     raid.removeLeader(this.getWave());
+                 }
+ 
+-                if (entity != null && entity.is((Object) EntityTypes.PLAYER)) {
++                if (entity != null && entity.is(EntityTypes.PLAYER)) { // CraftBukkit - decompile error
+                     raid.addHeroOfTheVillage(entity);
+                 }
+ 
+@@ -253,7 +257,7 @@
+             this.onItemPickup(entity);
+             this.setItemSlot(equipmentslot, itemstack);
+             this.take(entity, itemstack.getCount());
+-            entity.discard();
++            entity.discard(EntityRemoveEvent.Cause.PICKUP); // CraftBukkit - add Bukkit remove cause
+             this.getCurrentRaid().setLeader(this.getWave(), this);
+             this.setPatrolLeader(true);
+         } else {
+@@ -291,7 +295,7 @@
+ 
+     @Override
+     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData) {
+-        this.setCanJoinRaid(!this.is((Object) EntityTypes.WITCH) || spawnReason != EntitySpawnReason.NATURAL);
++        this.setCanJoinRaid(!this.is(EntityTypes.WITCH) || spawnReason != EntitySpawnReason.NATURAL); // CraftBukkit - decompile error
+         return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
+     }
+ 
+@@ -444,7 +448,7 @@
+         public boolean canUse() {
+             LivingEntity livingentity = this.mob.getLastHurtByMob();
+ 
+-            return this.mob.getCurrentRaid() == null && this.mob.isPatrolling() && this.mob.getTarget() != null && !this.mob.isAggressive() && (livingentity == null || !livingentity.is((Object) EntityTypes.PLAYER));
++            return this.mob.getCurrentRaid() == null && this.mob.isPatrolling() && this.mob.getTarget() != null && !this.mob.isAggressive() && (livingentity == null || !livingentity.is(EntityTypes.PLAYER)); // CraftBukkit - decompile error
+         }
+ 
+         @Override
+@@ -453,7 +457,7 @@
+             this.mob.getNavigation().stop();
+ 
+             for (Raider raider : getServerLevel((Entity) this.mob).getNearbyEntities(Raider.class, this.shoutTargeting, this.mob, this.mob.getBoundingBox().inflate(8.0D, 8.0D, 8.0D))) {
+-                raider.setTarget(this.mob.getTarget());
++                raider.setTarget(this.mob.getTarget(), org.bukkit.event.entity.EntityTargetEvent.TargetReason.FOLLOW_LEADER, true); // CraftBukkit
+             }
+ 
+         }
+@@ -465,7 +469,7 @@
+ 
+             if (livingentity != null) {
+                 for (Raider raider : getServerLevel((Entity) this.mob).getNearbyEntities(Raider.class, this.shoutTargeting, this.mob, this.mob.getBoundingBox().inflate(8.0D, 8.0D, 8.0D))) {
+-                    raider.setTarget(livingentity);
++                    raider.setTarget(livingentity, org.bukkit.event.entity.EntityTargetEvent.TargetReason.FOLLOW_LEADER, true); // CraftBukkit
+                     raider.setAggressive(true);
+                 }
+ 

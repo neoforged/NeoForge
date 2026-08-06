@@ -1,0 +1,20 @@
+--- a/net/minecraft/network/FriendlyByteBuf.java
++++ b/net/minecraft/network/FriendlyByteBuf.java
+@@ -173,7 +173,7 @@
+ 
+     public void writeIntIdList(IntList ids) {
+         this.writeVarInt(ids.size());
+-        ids.forEach(this::writeVarInt);
++        ids.forEach((java.util.function.IntConsumer) this::writeVarInt); // CraftBukkit - decompile error
+     }
+ 
+     public <K, V, M extends Map<K, V>> M readMap(IntFunction<M> ctor, StreamDecoder<? super FriendlyByteBuf, K> keyDecoder, StreamDecoder<? super FriendlyByteBuf, V> valueDecoder) {
+@@ -551,7 +551,7 @@
+ 
+         try {
+             NbtIo.writeAnyTag(tag, new ByteBufOutputStream(output));
+-        } catch (IOException ioexception) {
++        } catch (Exception ioexception) { // CraftBukkit - IOException -> Exception
+             throw new EncoderException(ioexception);
+         }
+     }

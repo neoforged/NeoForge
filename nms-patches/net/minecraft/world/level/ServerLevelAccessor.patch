@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/ServerLevelAccessor.java
++++ b/net/minecraft/world/level/ServerLevelAccessor.java
+@@ -12,6 +12,17 @@
+     DifficultyInstance getCurrentDifficultyAt(BlockPos pos);
+ 
+     default void addFreshEntityWithPassengers(Entity entity) {
+-        entity.getSelfAndPassengers().forEach(this::addFreshEntity);
++        // CraftBukkit start
++        this.addFreshEntityWithPassengers(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    default void addFreshEntityWithPassengers(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++        entity.getSelfAndPassengers().forEach((e) -> this.addFreshEntity(e, reason));
+     }
++
++    @Override
++    default ServerLevel getMinecraftWorld() {
++        return getLevel();
++    }
++    // CraftBukkit end
+ }

@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/entity/ai/village/ReputationEventType.java
++++ b/net/minecraft/world/entity/ai/village/ReputationEventType.java
+@@ -2,14 +2,26 @@
+ 
+ public interface ReputationEventType {
+ 
++    java.util.Map<String, ReputationEventType> BY_ID = com.google.common.collect.Maps.newHashMap(); // CraftBukkit - map with all values
+     ReputationEventType ZOMBIE_VILLAGER_CURED = register("zombie_villager_cured");
+     ReputationEventType GOLEM_KILLED = register("golem_killed");
+     ReputationEventType VILLAGER_HURT = register("villager_hurt");
+     ReputationEventType VILLAGER_KILLED = register("villager_killed");
+     ReputationEventType TRADE = register("trade");
++    // CraftBukkit start - additional events added in the API
++    ReputationEventType GOSSIP = register("bukkit_gossip");
++    ReputationEventType DECAY = register("bukkit_decay");
++    ReputationEventType UNSPECIFIED = register("bukkit_unspecified");
++    // CraftBukkit end
+ 
+     static ReputationEventType register(final String name) {
+         return new ReputationEventType() {
++            // CraftBukkit start - add new value to map
++            {
++                BY_ID.put(name, this);
++            }
++            // CraftBukkit end
++
+             public String toString() {
+                 return name;
+             }

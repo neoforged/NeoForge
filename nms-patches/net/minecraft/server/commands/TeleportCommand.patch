@@ -1,0 +1,49 @@
+--- a/net/minecraft/server/commands/TeleportCommand.java
++++ b/net/minecraft/server/commands/TeleportCommand.java
+@@ -31,6 +31,14 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.event.entity.EntityTeleportEvent;
++import org.bukkit.event.player.PlayerTeleportEvent;
++// CraftBukkit end
++
+ public class TeleportCommand {
+ 
+     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.teleport.invalidPosition"));
+@@ -130,7 +138,30 @@
+             float f4 = Mth.wrapDegrees(f2);
+             float f5 = Mth.wrapDegrees(f3);
+ 
+-            if (victim.teleportTo(level, d3, d4, d5, relatives, f4, f5, true)) {
++            // CraftBukkit start - Teleport event
++            boolean result;
++            if (victim instanceof ServerPlayer player) {
++                result = player.teleportTo(level, d3, d4, d5, relatives, f4, f5, true, PlayerTeleportEvent.TeleportCause.COMMAND);
++            } else {
++                Location to = new Location(level.getWorld(), d3, d4, d5, f4, f5);
++                EntityTeleportEvent event = new EntityTeleportEvent(victim.getBukkitEntity(), victim.getBukkitEntity().getLocation(), to);
++                level.getCraftServer().getPluginManager().callEvent(event);
++                if (event.isCancelled()) {
++                    return;
++                }
++
++                d3 = to.getX();
++                d4 = to.getY();
++                d5 = to.getZ();
++                f4 = to.getYaw();
++                f5 = to.getPitch();
++                level = ((CraftWorld) to.getWorld()).getHandle();
++
++                result = victim.teleportTo(level, d3, d4, d5, relatives, f4, f5, true);
++            }
++
++            if (result) {
++                // CraftBukkit end
+                 if (lookAt != null) {
+                     lookAt.perform(source, victim);
+                 }

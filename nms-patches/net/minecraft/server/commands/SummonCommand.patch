@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/SummonCommand.java
++++ b/net/minecraft/server/commands/SummonCommand.java
+@@ -73,7 +73,7 @@
+                     mob.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.COMMAND, (SpawnGroupData) null);
+                 }
+ 
+-                if (!serverlevel.tryAddFreshEntityWithPassengers(entity)) {
++                if (!serverlevel.tryAddFreshEntityWithPassengers(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.COMMAND)) { // CraftBukkit - pass a spawn reason of "COMMAND"
+                     throw SummonCommand.ERROR_DUPLICATE_UUID.create();
+                 } else {
+                     return entity;

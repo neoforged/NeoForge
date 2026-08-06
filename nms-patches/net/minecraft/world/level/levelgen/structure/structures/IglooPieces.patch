@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/IglooPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/IglooPieces.java
+@@ -86,6 +86,8 @@
+         protected void handleDataMarker(String markerId, BlockPos position, ServerLevelAccessor level, RandomSource random, BoundingBox chunkBB) {
+             if ("chest".equals(markerId)) {
+                 level.setBlock(position, Blocks.AIR.defaultBlockState(), 3);
++                // CraftBukkit start - ensure block transformation
++                /*
+                 BlockEntity blockentity = level.getBlockEntity(position.below());
+ 
+                 if (blockentity instanceof ChestBlockEntity) {
+@@ -93,6 +95,9 @@
+ 
+                     chestblockentity.setLootTable(BuiltInLootTables.IGLOO_CHEST, random.nextLong());
+                 }
++                */
++                setCraftLootTable(level, position.below(), random, BuiltInLootTables.IGLOO_CHEST);
++                // CraftBukkit end
+ 
+             }
+         }

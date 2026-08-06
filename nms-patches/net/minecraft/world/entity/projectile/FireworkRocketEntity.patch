@@ -1,0 +1,70 @@
+--- a/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
++++ b/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
+@@ -34,6 +34,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class FireworkRocketEntity extends Projectile implements ItemSupplier {
+ 
+     public static final EntityDataAccessor<ItemStack> DATA_ID_FIREWORKS_ITEM = SynchedEntityData.<ItemStack>defineId(FireworkRocketEntity.class, EntityDataSerializers.ITEM_STACK);
+@@ -161,7 +165,7 @@
+         }
+ 
+         if (!this.noPhysics && this.isAlive() && hitresult.getType() != HitResult.Type.MISS) {
+-            this.hitTargetOrDeflectSelf(hitresult);
++            this.preHitTargetOrDeflectSelf(hitresult); // CraftBukkit - projectile hit event
+             this.needsSync = true;
+         }
+ 
+@@ -181,7 +185,11 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
+-                this.explode(serverlevel);
++                // CraftBukkit start
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callFireworkExplodeEvent(this).isCancelled()) {
++                    this.explode(serverlevel);
++                }
++                // CraftBukkit end
+             }
+         }
+ 
+@@ -191,7 +199,7 @@
+         level.broadcastEntityEvent(this, (byte) 17);
+         this.gameEvent(GameEvent.EXPLODE, this.getOwner());
+         this.dealExplosionDamage(level);
+-        this.discard();
++        this.discard(EntityRemoveEvent.Cause.EXPLODE); // CraftBukkit - add Bukkit remove cause
+     }
+ 
+     @Override
+@@ -200,7 +208,11 @@
+         Level level = this.level();
+ 
+         if (level instanceof ServerLevel serverlevel) {
+-            this.explode(serverlevel);
++            // CraftBukkit start
++            if (!org.bukkit.craftbukkit.event.CraftEventFactory.callFireworkExplodeEvent(this).isCancelled()) {
++                this.explode(serverlevel);
++            }
++            // CraftBukkit end
+         }
+ 
+     }
+@@ -214,7 +226,11 @@
+ 
+         if (level instanceof ServerLevel serverlevel) {
+             if (this.hasExplosion()) {
+-                this.explode(serverlevel);
++                // CraftBukkit start
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callFireworkExplodeEvent(this).isCancelled()) {
++                    this.explode(serverlevel);
++                }
++                // CraftBukkit end
+             }
+         }
+ 

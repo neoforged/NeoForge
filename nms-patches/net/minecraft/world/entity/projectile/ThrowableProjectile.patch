@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
++++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
+@@ -63,7 +63,7 @@
+         this.applyEffectsFromBlocks();
+         super.tick();
+         if (hitresult.getType() != HitResult.Type.MISS && this.isAlive()) {
+-            this.hitTargetOrDeflectSelf(hitresult);
++            this.preHitTargetOrDeflectSelf(hitresult); // CraftBukkit - projectile hit event
+         }
+ 
+     }

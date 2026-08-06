@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/commands/PlaceCommand.java
++++ b/net/minecraft/server/commands/PlaceCommand.java
+@@ -133,6 +133,7 @@
+         if (!structurestart.isValid()) {
+             throw PlaceCommand.ERROR_STRUCTURE_FAILED.create();
+         } else {
++            structurestart.generationEventCause = org.bukkit.event.world.AsyncStructureGenerateEvent.Cause.COMMAND; // CraftBukkit - set AsyncStructureGenerateEvent.Cause.COMMAND as generation cause
+             BoundingBox boundingbox = structurestart.getBoundingBox();
+             ChunkPos chunkpos = new ChunkPos(SectionPos.blockToSectionCoord(boundingbox.minX()), SectionPos.blockToSectionCoord(boundingbox.minZ()));
+             ChunkPos chunkpos1 = new ChunkPos(SectionPos.blockToSectionCoord(boundingbox.maxX()), SectionPos.blockToSectionCoord(boundingbox.maxZ()));

@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/effect/HealOrHarmMobEffect.java
++++ b/net/minecraft/world/effect/HealOrHarmMobEffect.java
+@@ -17,7 +17,7 @@
+     @Override
+     public boolean applyEffectTick(ServerLevel level, LivingEntity mob, int amplification) {
+         if (this.isHarm == mob.isInvertedHealAndHarm()) {
+-            mob.heal((float) Math.max(4 << amplification, 0));
++            mob.heal((float) Math.max(4 << amplification, 0), org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC); // CraftBukkit
+         } else {
+             mob.hurtServer(level, mob.damageSources().magic(), (float) (6 << amplification));
+         }
+@@ -30,7 +30,7 @@
+         if (this.isHarm == mob.isInvertedHealAndHarm()) {
+             int j = (int) (scale * (double) (4 << amplification) + 0.5D);
+ 
+-            mob.heal((float) j);
++            mob.heal((float) j, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC); // CraftBukkit
+         } else {
+             int k = (int) (scale * (double) (6 << amplification) + 0.5D);
+ 

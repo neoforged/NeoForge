@@ -1,0 +1,18 @@
+--- a/net/minecraft/server/level/Ticket.java
++++ b/net/minecraft/server/level/Ticket.java
+@@ -17,6 +17,15 @@
+     private final TicketType type;
+     private final int ticketLevel;
+     private long ticksLeft;
++    // CraftBukkit start
++    public Object key;
++
++    public static Ticket of(TicketType tickettype, int i, Object key) {
++        Ticket ticket = new Ticket(tickettype, i);
++        ticket.key = key;
++        return ticket;
++    }
++    // CraftBukkit end
+ 
+     public Ticket(TicketType type, int ticketLevel) {
+         this(type, ticketLevel, type.timeout());

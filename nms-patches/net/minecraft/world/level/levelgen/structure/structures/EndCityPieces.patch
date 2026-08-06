@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/EndCityPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/EndCityPieces.java
+@@ -274,7 +274,12 @@
+                 BlockPos blockpos1 = position.below();
+ 
+                 if (chunkBB.isInside(blockpos1)) {
++                    // CraftBukkit start - ensure block transformation
++                    /*
+                     RandomizableContainer.setBlockEntityLootTable(level, random, blockpos1, BuiltInLootTables.END_CITY_TREASURE);
++                    */
++                    setCraftLootTable(level, blockpos1, random, BuiltInLootTables.END_CITY_TREASURE);
++                    // CraftBukkit end
+                 }
+             } else if (chunkBB.isInside(position) && Level.isInSpawnableBounds(position)) {
+                 if (markerId.startsWith("Sentry")) {

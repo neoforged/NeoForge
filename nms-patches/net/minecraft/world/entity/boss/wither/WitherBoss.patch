@@ -1,0 +1,102 @@
+--- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -59,6 +59,17 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.world.level.block.Blocks;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityRegainHealthEvent;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.entity.EntityTargetEvent;
++import org.bukkit.event.entity.ExplosionPrimeEvent;
++// CraftBukkit end
++
+ public class WitherBoss extends Monster implements RangedAttackMob {
+ 
+     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.<Integer>defineId(WitherBoss.class, EntityDataSerializers.INT);
+@@ -252,15 +263,40 @@
+ 
+             this.bossEvent.setProgress(1.0F - (float) i / 220.0F);
+             if (i <= 0) {
+-                level.explode(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, Level.ExplosionInteraction.MOB);
++                // CraftBukkit start
++                // worldserver.explode(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, World.a.MOB);
++                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), 7.0F, false);
++                level.getCraftServer().getPluginManager().callEvent(event);
++
++                if (!event.isCancelled()) {
++                    level.explode(this, this.getX(), this.getEyeY(), this.getZ(), event.getRadius(), event.getFire(), Level.ExplosionInteraction.MOB);
++                }
++                // CraftBukkit end
++
+                 if (!this.isSilent()) {
+-                    level.globalLevelEvent(1023, this.blockPosition(), 0);
++                    // CraftBukkit start - Use relative location for far away sounds
++                    // worldserver.globalLevelEvent(1023, new BlockPosition(this), 0);
++                    int viewDistance = level.getCraftServer().getViewDistance() * 16;
++                    for (ServerPlayer player : (List<ServerPlayer>) MinecraftServer.getServer().getPlayerList().players) {
++                        double deltaX = this.getX() - player.getX();
++                        double deltaZ = this.getZ() - player.getZ();
++                        double distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
++                        if (distanceSquared > viewDistance * viewDistance) {
++                            double deltaLength = Math.sqrt(distanceSquared);
++                            double relativeX = player.getX() + (deltaX / deltaLength) * viewDistance;
++                            double relativeZ = player.getZ() + (deltaZ / deltaLength) * viewDistance;
++                            player.connection.send(new ClientboundLevelEventPacket(1023, new BlockPos((int) relativeX, (int) this.getY(), (int) relativeZ), 0, true));
++                        } else {
++                            player.connection.send(new ClientboundLevelEventPacket(1023, this.blockPosition(), 0, true));
++                        }
++                    }
++                    // CraftBukkit end
+                 }
+             }
+ 
+             this.setInvulnerableTicks(i);
+             if (this.tickCount % 10 == 0) {
+-                this.heal(10.0F);
++                this.heal(10.0F, EntityRegainHealthEvent.RegainReason.WITHER_SPAWN); // CraftBukkit
+             }
+ 
+         } else {
+@@ -304,6 +340,7 @@
+                         if (!list.isEmpty()) {
+                             LivingEntity livingentity1 = (LivingEntity) list.get(this.random.nextInt(list.size()));
+ 
++                            if (CraftEventFactory.callEntityTargetLivingEvent(this, livingentity1, EntityTargetEvent.TargetReason.CLOSEST_ENTITY).isCancelled()) continue; // CraftBukkit
+                             this.setAlternativeTarget(j, livingentity1.getId());
+                         }
+                     }
+@@ -327,6 +364,11 @@
+                         BlockState blockstate = level.getBlockState(blockpos);
+ 
+                         if (canDestroy(blockstate)) {
++                            // CraftBukkit start
++                            if (!CraftEventFactory.callEntityChangeBlockEvent(this, blockpos, Blocks.AIR.defaultBlockState())) {
++                                continue;
++                            }
++                            // CraftBukkit end
+                             flag = level.destroyBlock(blockpos, true, this) || flag;
+                         }
+                     }
+@@ -338,7 +380,7 @@
+             }
+ 
+             if (this.tickCount % 20 == 0) {
+-                this.heal(1.0F);
++                this.heal(1.0F, EntityRegainHealthEvent.RegainReason.REGEN); // CraftBukkit
+             }
+ 
+             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+@@ -495,7 +537,7 @@
+     @Override
+     public void checkDespawn() {
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         } else {
+             this.noActionTime = 0;
+         }

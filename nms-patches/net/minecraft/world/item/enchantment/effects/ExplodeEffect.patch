@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/enchantment/effects/ExplodeEffect.java
++++ b/net/minecraft/world/item/enchantment/effects/ExplodeEffect.java
+@@ -41,7 +41,7 @@
+     }
+ 
+     private @Nullable DamageSource getDamageSource(Entity entity, Vec3 position) {
+-        return this.damageType.isEmpty() ? null : (this.attributeToUser ? new DamageSource((Holder) this.damageType.get(), entity) : new DamageSource((Holder) this.damageType.get(), position));
++        return this.damageType.isEmpty() ? (entity == null ? null : entity.level().damageSources().explosion(null).customCausingEntityDamager(entity)) : (this.attributeToUser ? new DamageSource((Holder) this.damageType.get(), entity) : new DamageSource((Holder) this.damageType.get(), position)); // CraftBukkit - copy from explosion default damagesource to allow tracking entity behind the effect
+     }
+ 
+     @Override

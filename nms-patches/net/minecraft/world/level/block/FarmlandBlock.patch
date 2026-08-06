@@ -1,0 +1,69 @@
+--- a/net/minecraft/world/level/block/FarmlandBlock.java
++++ b/net/minecraft/world/level/block/FarmlandBlock.java
+@@ -27,6 +27,11 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityInteractEvent;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class FarmlandBlock extends Block {
+ 
+     public static final MapCodec<FarmlandBlock> CODEC = simpleCodec(FarmlandBlock::new);
+@@ -89,28 +94,51 @@
+ 
+         if (!isNearWater(level, pos) && !level.isRainingAt(pos.above())) {
+             if (i > 0) {
+-                level.setBlock(pos, (BlockState) state.setValue(FarmlandBlock.MOISTURE, i - 1), 2);
++                org.bukkit.craftbukkit.event.CraftEventFactory.handleMoistureChangeEvent(level, pos, (BlockState) state.setValue(FarmlandBlock.MOISTURE, i - 1), 2); // CraftBukkit
+             } else if (!shouldMaintainFarmland(level, pos)) {
+                 turnToDirt((Entity) null, state, level, pos);
+             }
+         } else if (i < 7) {
+-            level.setBlock(pos, (BlockState) state.setValue(FarmlandBlock.MOISTURE, 7), 2);
++            org.bukkit.craftbukkit.event.CraftEventFactory.handleMoistureChangeEvent(level, pos, (BlockState) state.setValue(FarmlandBlock.MOISTURE, 7), 2); // CraftBukkit
+         }
+ 
+     }
+ 
+     @Override
+     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
++        super.fallOn(level, state, pos, entity, fallDistance); // CraftBukkit - moved here as game rules / events shouldn't affect fall damage.
+         if (level instanceof ServerLevel serverlevel) {
+             if ((double) level.getRandom().nextFloat() < fallDistance - 0.5D && entity instanceof LivingEntity && (entity instanceof Player || (Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING)) && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
++                // CraftBukkit start - Interact soil
++                org.bukkit.event.Cancellable cancellable;
++                if (entity instanceof Player) {
++                    cancellable = CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null);
++                } else {
++                    cancellable = new EntityInteractEvent(entity.getBukkitEntity(), level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
++                    level.getCraftServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
++                }
++
++                if (cancellable.isCancelled()) {
++                    return;
++                }
++
++                if (!CraftEventFactory.callEntityChangeBlockEvent(entity, pos, Blocks.DIRT.defaultBlockState())) {
++                    return;
++                }
++                // CraftBukkit end
+                 turnToDirt(entity, state, level, pos);
+             }
+         }
+ 
+-        super.fallOn(level, state, pos, entity, fallDistance);
++        // super.fallOn(level, state, pos, entity, fallDistance); // CraftBukkit - moved up
+     }
+ 
+     public static void turnToDirt(@Nullable Entity sourceEntity, BlockState state, Level level, BlockPos pos) {
++        // CraftBukkit start
++        if (CraftEventFactory.callBlockFadeEvent(level, pos, Blocks.DIRT.defaultBlockState()).isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         BlockState blockstate1 = pushEntitiesUp(state, Blocks.DIRT.defaultBlockState(), level, pos);
+ 
+         level.setBlockAndUpdate(pos, blockstate1);

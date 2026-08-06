@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/item/MaceItem.java
++++ b/net/minecraft/world/item/MaceItem.java
+@@ -24,6 +24,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.util.CraftVector;
++// CraftBukkit end
++
+ public class MaceItem extends Item {
+ 
+     private static final int DEFAULT_ATTACK_DAMAGE = 5;
+@@ -133,7 +137,15 @@
+             Vec3 vec31 = vec3.normalize().scale(d0);
+ 
+             if (d0 > 0.0D) {
+-                livingentity.push(vec31.x, (double) 0.7F, vec31.z);
++                // entityliving.push(vec3d1.x, 0.7F, vec3d1.z); // CraftBukkit - moved below
++                // CraftBukkit start - EntityKnockbackEvent
++                Vec3 vec3Push = new Vec3(vec31.x, 0.7F, vec31.z);
++                Vec3 result = attacker.getDeltaMovement().add(vec3Push);
++                org.bukkit.event.entity.EntityKnockbackEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityKnockbackEvent((org.bukkit.craftbukkit.entity.CraftLivingEntity) livingentity.getBukkitEntity(), attacker, org.bukkit.event.entity.EntityKnockbackEvent.KnockbackCause.ENTITY_ATTACK, d0, result, vec3Push.x, vec3Push.y, vec3Push.z);
++                if (!event.isCancelled()) {
++                    livingentity.push(CraftVector.toNMS(event.getFinalKnockback()));
++                }
++                // CraftBukkit end
+                 if (livingentity instanceof ServerPlayer) {
+                     ServerPlayer serverplayer = (ServerPlayer) livingentity;
+ 

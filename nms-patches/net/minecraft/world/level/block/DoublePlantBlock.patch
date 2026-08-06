@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/DoublePlantBlock.java
++++ b/net/minecraft/world/level/block/DoublePlantBlock.java
+@@ -101,6 +101,11 @@
+     }
+ 
+     protected static void preventDropFromBottomPart(Level level, BlockPos pos, BlockState state, Player player) {
++        // CraftBukkit start
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPhysicsEvent(level, pos).isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         DoubleBlockHalf doubleblockhalf = (DoubleBlockHalf) state.getValue(DoublePlantBlock.HALF);
+ 
+         if (doubleblockhalf == DoubleBlockHalf.UPPER) {

@@ -1,0 +1,19 @@
+--- a/net/minecraft/commands/arguments/EntityArgument.java
++++ b/net/minecraft/commands/arguments/EntityArgument.java
+@@ -104,9 +104,15 @@
+     }
+ 
+     private EntitySelector parse(StringReader reader, boolean allowSelectors) throws CommandSyntaxException {
++        // CraftBukkit start
++        return parse(reader, allowSelectors, false);
++    }
++
++    public EntitySelector parse(StringReader reader, boolean allowSelectors, boolean overridePermissions) throws CommandSyntaxException {
++        // CraftBukkit end
+         int i = 0;
+         EntitySelectorParser entityselectorparser = new EntitySelectorParser(reader, allowSelectors);
+-        EntitySelector entityselector = entityselectorparser.parse();
++        EntitySelector entityselector = entityselectorparser.parse(overridePermissions); // CraftBukkit
+ 
+         if (entityselector.getMaxResults() > 1 && this.single) {
+             if (this.playersOnly) {

@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
++++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
+@@ -44,7 +44,7 @@
+ 
+     public static boolean targetIsValid(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memory, EntityType<?> targetType) {
+         return targetIsValid(brain, memory, (livingentity) -> {
+-            return livingentity.is((Object) targetType);
++            return livingentity.is(targetType); // CraftBukkit - decompile error
+         });
+     }
+ 
+@@ -90,6 +90,7 @@
+     }
+ 
+     public static void throwItem(LivingEntity thrower, ItemStack item, Vec3 targetPos, Vec3 throwVelocity, float handYDistanceFromEye) {
++        if (item.isEmpty()) return; // CraftBukkit - SPIGOT-4940: no empty loot
+         double d0 = thrower.getEyeY() - (double) handYDistanceFromEye;
+         ItemEntity itementity = new ItemEntity(thrower.level(), thrower.getX(), d0, thrower.getZ(), item);
+ 
+@@ -99,12 +100,19 @@
+         vec32 = vec32.normalize().multiply(throwVelocity.x, throwVelocity.y, throwVelocity.z);
+         itementity.setDeltaMovement(vec32);
+         itementity.setDefaultPickUpDelay();
++        // CraftBukkit start
++        org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(thrower.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
++        itementity.level().getCraftServer().getPluginManager().callEvent(event);
++        if (event.isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         thrower.level().addFreshEntity(itementity);
+     }
+ 
+     public static SectionPos findSectionClosestToVillage(ServerLevel level, SectionPos center, int radius) {
+         int j = level.sectionsToVillage(center);
+-        Stream stream = SectionPos.cube(center, radius).filter((sectionpos1) -> {
++        Stream<SectionPos> stream = SectionPos.cube(center, radius).filter((sectionpos1) -> { // CraftBukkit - decompile error
+             return level.sectionsToVillage(sectionpos1) < j;
+         });
+ 

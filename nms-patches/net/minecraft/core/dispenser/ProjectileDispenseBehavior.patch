@@ -1,0 +1,58 @@
+--- a/net/minecraft/core/dispenser/ProjectileDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/ProjectileDispenseBehavior.java
+@@ -9,6 +9,12 @@
+ import net.minecraft.world.item.ProjectileItem;
+ import net.minecraft.world.level.block.DispenserBlock;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.BlockDispenseEvent;
++// CraftBukkit end
++
+ public class ProjectileDispenseBehavior extends DefaultDispenseItemBehavior {
+ 
+     private final ProjectileItem projectileItem;
+@@ -31,8 +37,40 @@
+         Direction direction = (Direction) source.state().getValue(DispenserBlock.FACING);
+         Position position = this.dispenseConfig.positionFunction().getDispensePosition(source, direction);
+ 
+-        Projectile.spawnProjectileUsingShoot(this.projectileItem.asProjectile(serverlevel, position, dispensed, direction), serverlevel, dispensed, (double) direction.getStepX(), (double) direction.getStepY(), (double) direction.getStepZ(), this.dispenseConfig.power(), this.dispenseConfig.uncertainty());
+-        dispensed.shrink(1);
++        // CraftBukkit start
++        // IProjectile.spawnProjectileUsingShoot(this.projectileItem.asProjectile(worldserver, iposition, itemstack, enumdirection), worldserver, itemstack, (double) enumdirection.getStepX(), (double) enumdirection.getStepY(), (double) enumdirection.getStepZ(), this.dispenseConfig.power(), this.dispenseConfig.uncertainty()); // CraftBukkit - call when finish the BlockDispenseEvent
++        ItemStack itemstack1 = dispensed.split(1);
++        org.bukkit.block.Block block = CraftBlock.at(serverlevel, source.pos());
++        CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
++
++        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector((double) direction.getStepX(), (double) direction.getStepY(), (double) direction.getStepZ()));
++        if (!DispenserBlock.eventFired) {
++            serverlevel.getCraftServer().getPluginManager().callEvent(event);
++        }
++
++        if (event.isCancelled()) {
++            dispensed.grow(1);
++            return dispensed;
++        }
++
++        if (!event.getItem().equals(craftItem)) {
++            dispensed.grow(1);
++            // Chain to handler for new item
++            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            DispenseItemBehavior dispenseitembehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
++            if (dispenseitembehavior != DispenseItemBehavior.NOOP && dispenseitembehavior != this) {
++                dispenseitembehavior.dispense(source, eventStack);
++                return dispensed;
++            }
++        }
++
++        // SPIGOT-7923: Avoid create projectiles with empty item
++        if (!itemstack1.isEmpty()) {
++            Projectile projectile = Projectile.spawnProjectileUsingShoot(this.projectileItem.asProjectile(serverlevel, position, itemstack1, direction), serverlevel, itemstack1, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), this.dispenseConfig.power(), this.dispenseConfig.uncertainty());
++            projectile.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource(source.blockEntity());
++        }
++        // itemstack.shrink(1); // CraftBukkit - Handled during event processing
++        // CraftBukkit end
+         return dispensed;
+     }
+ 

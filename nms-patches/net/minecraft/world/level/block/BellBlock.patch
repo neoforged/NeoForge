@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/BellBlock.java
++++ b/net/minecraft/world/level/block/BellBlock.java
+@@ -157,6 +157,11 @@
+             if (direction == null) {
+                 direction = (Direction) level.getBlockState(pos).getValue(BellBlock.FACING);
+             }
++            // CraftBukkit start
++            if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBellRingEvent(level, pos, direction, ringingEntity)) {
++                return false;
++            }
++            // CraftBukkit end
+ 
+             bellblockentity.onHit(direction);
+             level.playSound((Entity) null, pos, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2.0F, 1.0F);

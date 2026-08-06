@@ -1,0 +1,20 @@
+--- a/net/minecraft/commands/arguments/blocks/BlockStateParser.java
++++ b/net/minecraft/commands/arguments/blocks/BlockStateParser.java
+@@ -66,7 +66,7 @@
+     private final StringReader reader;
+     private final boolean forTesting;
+     private final boolean allowNbt;
+-    private final Map<Property<?>, Comparable<?>> properties = Maps.newHashMap();
++    private final Map<Property<?>, Comparable<?>> properties = Maps.newLinkedHashMap(); // CraftBukkit - stable
+     private final Map<String, String> vagueProperties = Maps.newHashMap();
+     private Identifier id = Identifier.withDefaultNamespace("");
+     private @Nullable StateDefinition<Block, BlockState> definition;
+@@ -513,7 +513,7 @@
+         Optional<T> optional = property.getValue(raw);
+ 
+         if (optional.isPresent()) {
+-            this.state = (BlockState) this.state.setValue(property, (Comparable) optional.get());
++            this.state = (BlockState) this.state.setValue(property, (T) optional.get()); // CraftBukkit - decompile error
+             this.properties.put(property, (Comparable) optional.get());
+         } else {
+             this.reader.setCursor(start);

@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/animal/parrot/ShoulderRidingEntity.java
++++ b/net/minecraft/world/entity/animal/parrot/ShoulderRidingEntity.java
+@@ -9,6 +9,10 @@
+ import net.minecraft.world.level.storage.TagValueOutput;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public abstract class ShoulderRidingEntity extends TamableAnimal {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -26,7 +30,7 @@
+             this.saveWithoutId(tagvalueoutput);
+             tagvalueoutput.putString("id", this.getEncodeId());
+             if (player.setEntityOnShoulder(tagvalueoutput.buildResult())) {
+-                this.discard();
++                this.discard(EntityRemoveEvent.Cause.PICKUP); // CraftBukkit - add Bukkit remove cause
+                 return true;
+             }
+         }

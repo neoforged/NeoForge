@@ -1,0 +1,66 @@
+--- a/net/minecraft/world/entity/npc/villager/AbstractVillager.java
++++ b/net/minecraft/world/entity/npc/villager/AbstractVillager.java
+@@ -52,13 +52,26 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.inventory.CraftMerchant;
++import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe;
++import org.bukkit.event.entity.VillagerAcquireTradeEvent;
++// CraftBukkit end
++
+ public abstract class AbstractVillager extends AgeableMob implements Npc, Merchant, InventoryCarrier {
+ 
++    // CraftBukkit start
++    @Override
++    public CraftMerchant getCraftMerchant() {
++        return (org.bukkit.craftbukkit.entity.CraftAbstractVillager) getBukkitEntity();
++    }
++    // CraftBukkit end
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final EntityDataAccessor<Integer> DATA_UNHAPPY_COUNTER = SynchedEntityData.<Integer>defineId(AbstractVillager.class, EntityDataSerializers.INT);
+     private @Nullable Player tradingPlayer;
+     protected @Nullable MerchantOffers offers;
+-    private final SimpleContainer inventory = new SimpleContainer(8);
++    private final SimpleContainer inventory = new SimpleContainer(8, (org.bukkit.craftbukkit.entity.CraftAbstractVillager) this.getBukkitEntity()); // CraftBukkit add argument
+ 
+     public AbstractVillager(EntityType<? extends AbstractVillager> type, Level level) {
+         super(type, level);
+@@ -183,7 +196,7 @@
+     @Override
+     protected void readAdditionalSaveData(ValueInput input) {
+         super.readAdditionalSaveData(input);
+-        this.offers = (MerchantOffers) input.read("Offers", MerchantOffers.CODEC).orElse((Object) null);
++        this.offers = (MerchantOffers) input.read("Offers", MerchantOffers.CODEC).orElse(null); // CraftBukkit - decompile error
+         this.readInventoryFromTag(input);
+     }
+ 
+@@ -272,7 +285,7 @@
+ 
+     }
+ 
+-    private static void addOffersFromItemListingsWithoutDuplicates(LootContext lootContext, MerchantOffers merchantOffers, HolderSet<VillagerTrade> potentialOffers, int numberOfOffers) {
++    private void addOffersFromItemListingsWithoutDuplicates(LootContext lootContext, MerchantOffers merchantOffers, HolderSet<VillagerTrade> potentialOffers, int numberOfOffers) { // CraftBukkit
+         List<Holder<VillagerTrade>> list = Lists.newArrayList(potentialOffers);
+         int j = 0;
+ 
+@@ -281,7 +294,16 @@
+             MerchantOffer merchantoffer = ((VillagerTrade) holder.value()).getOffer(lootContext);
+ 
+             if (merchantoffer != null) {
+-                merchantOffers.add(merchantoffer);
++                // CraftBukkit start
++                VillagerAcquireTradeEvent event = new VillagerAcquireTradeEvent((org.bukkit.entity.AbstractVillager) getBukkitEntity(), merchantoffer.asBukkit());
++                // Suppress during worldgen
++                if (this.valid) {
++                    Bukkit.getPluginManager().callEvent(event);
++                }
++                if (!event.isCancelled()) {
++                    merchantOffers.add(CraftMerchantRecipe.fromBukkit(event.getRecipe()).toMinecraft());
++                }
++                // CraftBukkit end
+                 ++j;
+             }
+         }

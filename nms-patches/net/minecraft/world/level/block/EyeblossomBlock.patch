@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/block/EyeblossomBlock.java
++++ b/net/minecraft/world/level/block/EyeblossomBlock.java
+@@ -90,7 +90,11 @@
+         } else {
+             EyeblossomBlock.Type eyeblossomblock_type = this.type.transform();
+ 
+-            level.setBlock(pos, eyeblossomblock_type.state(), 3);
++            // CraftBukkit start - BlockFormEvent
++            if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, eyeblossomblock_type.state(), 3)) {
++                return false;
++            }
++            // CraftBukkit end
+             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+             eyeblossomblock_type.spawnTransformParticle(level, pos, random);
+             BlockPos.betweenClosed(pos.offset(-3, -2, -3), pos.offset(3, 2, 3)).forEach((blockpos1) -> {

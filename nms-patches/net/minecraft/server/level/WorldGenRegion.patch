@@ -1,0 +1,16 @@
+--- a/net/minecraft/server/level/WorldGenRegion.java
++++ b/net/minecraft/server/level/WorldGenRegion.java
+@@ -352,6 +352,13 @@
+ 
+     @Override
+     public boolean addFreshEntity(Entity entity) {
++        // CraftBukkit start
++        return addFreshEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    @Override
++    public boolean addFreshEntity(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++        // CraftBukkit end
+         int i = SectionPos.blockToSectionCoord(entity.getBlockX());
+         int j = SectionPos.blockToSectionCoord(entity.getBlockZ());
+ 

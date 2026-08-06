@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/item/component/DeathProtection.java
++++ b/net/minecraft/world/item/component/DeathProtection.java
+@@ -14,6 +14,10 @@
+ import net.minecraft.world.item.consume_effects.ClearAllStatusEffectsConsumeEffect;
+ import net.minecraft.world.item.consume_effects.ConsumeEffect;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityPotionEffectEvent;
++// CraftBukkit end
++
+ public record DeathProtection(List<ConsumeEffect> deathEffects) {
+ 
+     public static final Codec<DeathProtection> CODEC = RecordCodecBuilder.create((instance) -> {
+@@ -24,7 +28,7 @@
+ 
+     public void applyEffects(ItemStack itemStack, LivingEntity entity) {
+         for (ConsumeEffect consumeeffect : this.deathEffects) {
+-            consumeeffect.apply(entity.level(), itemStack, entity);
++            consumeeffect.apply(entity.level(), itemStack, entity, EntityPotionEffectEvent.Cause.TOTEM); // CraftBukkit
+         }
+ 
+     }

@@ -1,0 +1,29 @@
+--- a/net/minecraft/server/commands/EffectCommands.java
++++ b/net/minecraft/server/commands/EffectCommands.java
+@@ -78,7 +78,7 @@
+             if (entity instanceof LivingEntity livingentity) {
+                 MobEffectInstance mobeffectinstance = new MobEffectInstance(effectHolder, k, amplifier, false, particles);
+ 
+-                if (livingentity.addEffect(mobeffectinstance, source.getEntity())) {
++                if (livingentity.addEffect(mobeffectinstance, source.getEntity(), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.COMMAND)) { // CraftBukkit
+                     ++j;
+                 }
+             }
+@@ -106,7 +106,7 @@
+ 
+         for (Entity entity : entities) {
+             if (entity instanceof LivingEntity livingentity) {
+-                if (livingentity.removeAllEffects()) {
++                if (livingentity.removeAllEffects(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.COMMAND)) { // CraftBukkit
+                     ++i;
+                 }
+             }
+@@ -135,7 +135,7 @@
+ 
+         for (Entity entity : entities) {
+             if (entity instanceof LivingEntity livingentity) {
+-                if (livingentity.removeEffect(effectHolder)) {
++                if (livingentity.removeEffect(effectHolder, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.COMMAND)) { // CraftBukkit
+                     ++i;
+                 }
+             }

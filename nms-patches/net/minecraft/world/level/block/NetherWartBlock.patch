@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/NetherWartBlock.java
++++ b/net/minecraft/world/level/block/NetherWartBlock.java
+@@ -57,7 +57,7 @@
+ 
+         if (i < 3 && random.nextInt(10) == 0) {
+             state = (BlockState) state.setValue(NetherWartBlock.AGE, i + 1);
+-            level.setBlock(pos, state, 2);
++            org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(level, pos, state, 2); // CraftBukkit
+         }
+ 
+     }

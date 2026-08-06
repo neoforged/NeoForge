@@ -1,0 +1,19 @@
+--- a/net/minecraft/server/level/TicketType.java
++++ b/net/minecraft/server/level/TicketType.java
+@@ -24,6 +24,16 @@
+     public static final TicketType PORTAL = register("portal", 300L, 15);
+     public static final TicketType ENDER_PEARL = register("ender_pearl", 40L, 14);
+     public static final TicketType UNKNOWN = register("unknown", 1L, 18);
++    // CraftBukkit start
++    public static long pluginTimeout = 0L;
++    public static final TicketType PLUGIN = register("plugin", 0L, 14);
++    public static final TicketType PLUGIN_TICKET = register("plugin_ticket", 0L, 14);
++
++    @Override
++    public long timeout() {
++        return (this != TicketType.PLUGIN) ? this.timeout : TicketType.pluginTimeout;
++    }
++    // CraftBukkit end
+ 
+     private static TicketType register(String name, long timeout, @TicketType.Flags int flags) {
+         return (TicketType) Registry.register(BuiltInRegistries.TICKET_TYPE, name, new TicketType(timeout, flags));

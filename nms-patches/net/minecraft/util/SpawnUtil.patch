@@ -1,0 +1,36 @@
+--- a/net/minecraft/util/SpawnUtil.java
++++ b/net/minecraft/util/SpawnUtil.java
+@@ -21,6 +21,12 @@
+     public SpawnUtil() {}
+ 
+     public static <T extends Mob> Optional<T> trySpawnMob(EntityType<T> entityType, EntitySpawnReason spawnReason, ServerLevel level, BlockPos start, int spawnAttempts, int spawnRangeXZ, int spawnRangeY, SpawnUtil.Strategy strategy, boolean checkCollisions) {
++        // CraftBukkit start
++        return trySpawnMob(entityType, spawnReason, level, start, spawnAttempts, spawnRangeXZ, spawnRangeY, strategy, checkCollisions, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    public static <T extends Mob> Optional<T> trySpawnMob(EntityType<T> entityType, EntitySpawnReason spawnReason, ServerLevel level, BlockPos start, int spawnAttempts, int spawnRangeXZ, int spawnRangeY, SpawnUtil.Strategy strategy, boolean checkCollisions, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++        // CraftBukkit end
+         BlockPos.MutableBlockPos blockpos_mutableblockpos = start.mutable();
+         RandomSource randomsource = level.getRandom();
+ 
+@@ -30,16 +36,17 @@
+ 
+             blockpos_mutableblockpos.setWithOffset(start, i1, spawnRangeY, j1);
+             if (level.getWorldBorder().isWithinBounds((BlockPos) blockpos_mutableblockpos) && moveToPossibleSpawnPosition(level, spawnRangeY, blockpos_mutableblockpos, strategy) && (!checkCollisions || level.noCollision(entityType.getSpawnAABB((double) blockpos_mutableblockpos.getX() + 0.5D, (double) blockpos_mutableblockpos.getY(), (double) blockpos_mutableblockpos.getZ() + 0.5D)))) {
+-                T t0 = entityType.create(level, (PostSpawnProcessor) null, blockpos_mutableblockpos, spawnReason, false, false);
++                T t0 = entityType.create(level, (PostSpawnProcessor<T>) null, blockpos_mutableblockpos, spawnReason, false, false); // CraftBukkit - decompile error
+ 
+                 if (t0 != null) {
+                     if (t0.checkSpawnRules(level, spawnReason) && t0.checkSpawnObstruction(level)) {
+-                        level.addFreshEntityWithPassengers(t0);
++                        level.addFreshEntityWithPassengers(t0, reason); // CraftBukkit
++                        if (t0.isRemoved()) return Optional.empty(); // CraftBukkit
+                         t0.playAmbientSound();
+                         return Optional.of(t0);
+                     }
+ 
+-                    t0.discard();
++                    t0.discard(null); // CraftBukkit - add Bukkit remove cause
+                 }
+             }
+         }

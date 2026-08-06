@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/item/TridentItem.java
++++ b/net/minecraft/world/item/TridentItem.java
+@@ -77,10 +77,20 @@
+                         if (level instanceof ServerLevel) {
+                             ServerLevel serverlevel = (ServerLevel) level;
+ 
+-                            itemStack.hurtWithoutBreaking(1, player);
++                            // itemstack.hurtWithoutBreaking(1, entityhuman); // CraftBukkit - moved down
+                             if (f == 0.0F) {
++                                // CraftBukkit start
++                                ThrownTrident throwntrident = (ThrownTrident) Projectile.spawnProjectileFromRotation(ThrownTrident::new, serverlevel, itemStack, player, 0.0F, 2.5F, 1.0F);
++                                if (throwntrident.isRemoved()) {
++                                    if (player instanceof net.minecraft.server.level.ServerPlayer) {
++                                        ((net.minecraft.server.level.ServerPlayer) player).getBukkitEntity().updateInventory();
++                                    }
++                                    return false;
++                                }
++                                itemStack.hurtWithoutBreaking(1, player);
+                                 ItemStack itemstack1 = itemStack.consumeAndReturn(1, player);
+-                                ThrownTrident throwntrident = (ThrownTrident) Projectile.spawnProjectileFromRotation(ThrownTrident::new, serverlevel, itemstack1, player, 0.0F, 2.5F, 1.0F);
++                                throwntrident.pickupItemStack = itemstack1.copy(); // SPIGOT-4511 update since damage call moved
++                                // CraftBukkit end
+ 
+                                 if (player.hasInfiniteMaterials()) {
+                                     throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+@@ -88,6 +98,10 @@
+ 
+                                 level.playSound((Entity) null, (Entity) throwntrident, holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                                 return true;
++                                // CraftBukkit start - SPIGOT-5458 also need in this branch :(
++                            } else {
++                                itemStack.hurtWithoutBreaking(1, player);
++                                // CraftBukkkit end
+                             }
+                         }
+ 
+@@ -102,6 +116,7 @@
+                             f3 *= f / f6;
+                             f4 *= f / f6;
+                             f5 *= f / f6;
++                            org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerRiptideEvent(player, itemStack, f3, f4, f5); // CraftBukkit
+                             player.push((double) f3, (double) f4, (double) f5);
+                             player.startAutoSpinAttack(20, 8.0F, itemStack);
+                             if (player.onGround()) {

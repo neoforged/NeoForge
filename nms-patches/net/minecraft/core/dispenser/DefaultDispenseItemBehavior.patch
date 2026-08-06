@@ -1,0 +1,100 @@
+--- a/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
++++ b/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
+@@ -8,10 +8,25 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.DispenserBlock;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.craftbukkit.util.CraftVector;
++import org.bukkit.event.block.BlockDispenseEvent;
++// CraftBukkit end
++
+ public class DefaultDispenseItemBehavior implements DispenseItemBehavior {
+ 
+     private static final int DEFAULT_ACCURACY = 6;
+ 
++    // CraftBukkit start
++    private boolean dropper;
++
++    public DefaultDispenseItemBehavior(boolean dropper) {
++        this.dropper = dropper;
++    }
++    // CraftBukkit end
++
+     public DefaultDispenseItemBehavior() {}
+ 
+     @Override
+@@ -28,11 +43,22 @@
+         Position position = DispenserBlock.getDispensePosition(source);
+         ItemStack itemstack1 = dispensed.split(1);
+ 
+-        spawnItem(source.level(), itemstack1, 6, direction, position);
++        // CraftBukkit start
++        if (!spawnItem(source.level(), itemstack1, 6, direction, source, dropper)) {
++            dispensed.grow(1);
++        }
++        // CraftBukkit end
+         return dispensed;
+     }
+ 
+     public static void spawnItem(Level level, ItemStack itemStack, int accuracy, Direction direction, Position position) {
++        // CraftBukkit start
++        ItemEntity itementity = prepareItem(level, itemStack, accuracy, direction, position);
++        level.addFreshEntity(itementity);
++    }
++
++    private static ItemEntity prepareItem(Level level, ItemStack itemStack, int accuracy, Direction direction, Position position) {
++        // CraftBukkit end
+         double d0 = position.x();
+         double d1 = position.y();
+         double d2 = position.z();
+@@ -48,7 +74,47 @@
+         double d3 = randomsource.nextDouble() * 0.1D + 0.2D;
+ 
+         itementity.setDeltaMovement(randomsource.triangle((double) direction.getStepX() * d3, 0.0172275D * (double) accuracy), randomsource.triangle(0.2D, 0.0172275D * (double) accuracy), randomsource.triangle((double) direction.getStepZ() * d3, 0.0172275D * (double) accuracy));
++        // CraftBukkit start
++        return itementity;
++    }
++
++    // CraftBukkit - void -> boolean return, IPosition -> ISourceBlock last argument, dropper
++    public static boolean spawnItem(Level level, ItemStack itemstack, int i, Direction direction, BlockSource blocksource, boolean dropper) {
++        if (itemstack.isEmpty()) return true;
++        Position position = DispenserBlock.getDispensePosition(blocksource);
++        ItemEntity itementity = prepareItem(level, itemstack, i, direction, position);
++
++        org.bukkit.block.Block block = CraftBlock.at(level, blocksource.pos());
++        CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack);
++
++        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), CraftVector.toBukkit(itementity.getDeltaMovement()));
++        if (!DispenserBlock.eventFired) {
++            level.getCraftServer().getPluginManager().callEvent(event);
++        }
++
++        if (event.isCancelled()) {
++            return false;
++        }
++
++        itementity.setItem(CraftItemStack.asNMSCopy(event.getItem()));
++        itementity.setDeltaMovement(CraftVector.toNMS(event.getVelocity()));
++
++        if (!dropper && !event.getItem().getType().equals(craftItem.getType())) {
++            // Chain to handler for new item
++            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            DispenseItemBehavior dispenseitembehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
++            if (dispenseitembehavior != DispenseItemBehavior.NOOP && dispenseitembehavior.getClass() != DefaultDispenseItemBehavior.class) {
++                dispenseitembehavior.dispense(blocksource, eventStack);
++            } else {
++                level.addFreshEntity(itementity);
++            }
++            return false;
++        }
++
+         level.addFreshEntity(itementity);
++
++        return true;
++        // CraftBukkit end
+     }
+ 
+     protected void playSound(BlockSource source) {

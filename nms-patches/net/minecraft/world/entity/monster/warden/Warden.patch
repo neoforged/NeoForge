@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/entity/monster/warden/Warden.java
++++ b/net/minecraft/world/entity/monster/warden/Warden.java
+@@ -372,7 +372,7 @@
+ 
+     @Override
+     public Brain<Warden> getBrain() {
+-        return super.getBrain();
++        return (Brain<Warden>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -395,7 +395,8 @@
+         boolean flag;
+ 
+         if (entity instanceof LivingEntity livingentity) {
+-            if (this.level() == entity.level() && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(entity) && !this.isAlliedTo(entity) && !livingentity.is((Object) EntityTypes.ARMOR_STAND) && !livingentity.is((Object) EntityTypes.WARDEN) && !livingentity.isInvulnerable() && !livingentity.isDeadOrDying() && this.level().getWorldBorder().isWithinBounds(livingentity.getBoundingBox())) {
++            // CraftBukkit - decompile error
++            if (this.level() == entity.level() && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(entity) && !this.isAlliedTo(entity) && !livingentity.is(EntityTypes.ARMOR_STAND) && !livingentity.is(EntityTypes.WARDEN) && !livingentity.isInvulnerable() && !livingentity.isDeadOrDying() && this.level().getWorldBorder().isWithinBounds(livingentity.getBoundingBox())) {
+                 flag = true;
+                 return flag;
+             }
+@@ -408,7 +409,7 @@
+     public static void applyDarknessAround(ServerLevel level, Vec3 position, @Nullable Entity source, int darknessRadius) {
+         MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DARKNESS, 260, 0, false, false);
+ 
+-        MobEffectUtil.addEffectToPlayersAround(level, source, position, (double) darknessRadius, mobeffectinstance, 200);
++        MobEffectUtil.addEffectToPlayersAround(level, source, position, (double) darknessRadius, mobeffectinstance, 200, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.WARDEN); // CraftBukkit - Add EntityPotionEffectEvent.Cause
+     }
+ 
+     @Override

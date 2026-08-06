@@ -1,0 +1,49 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/windcharge/AbstractWindCharge.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/windcharge/AbstractWindCharge.java
+@@ -26,6 +26,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public abstract class AbstractWindCharge extends AbstractHurtingProjectile implements ItemSupplier {
+ 
+     public static final ExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(true, false, Optional.empty(), BuiltInRegistries.BLOCK.get(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity()));
+@@ -63,7 +67,7 @@
+ 
+     @Override
+     protected boolean canHitEntity(Entity entity) {
+-        return entity instanceof AbstractWindCharge ? false : (entity.is((Object) EntityTypes.END_CRYSTAL) ? false : super.canHitEntity(entity));
++        return entity instanceof AbstractWindCharge ? false : (entity.is(EntityTypes.END_CRYSTAL) ? false : super.canHitEntity(entity)); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -112,7 +116,7 @@
+             Vec3 vec31 = hitResult.getLocation().add(vec3);
+ 
+             this.explode(vec31);
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }
+@@ -121,7 +125,7 @@
+     protected void onHit(HitResult hitResult) {
+         super.onHit(hitResult);
+         if (!this.level().isClientSide()) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }
+@@ -155,7 +159,7 @@
+     public void tick() {
+         if (!this.level().isClientSide() && this.getBlockY() > this.level().getMaxY() + 30) {
+             this.explode(this.position());
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.OUT_OF_WORLD); // CraftBukkit - add Bukkit remove cause
+         } else {
+             super.tick();
+         }

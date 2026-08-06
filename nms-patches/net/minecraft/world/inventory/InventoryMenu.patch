@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/inventory/InventoryMenu.java
++++ b/net/minecraft/world/inventory/InventoryMenu.java
+@@ -13,6 +13,12 @@
+ import net.minecraft.world.item.crafting.RecipeHolder;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import net.minecraft.network.chat.Component;
++import org.bukkit.craftbukkit.inventory.CraftInventoryCrafting;
++import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++// CraftBukkit end
++
+ public class InventoryMenu extends AbstractCraftingMenu {
+ 
+     public static final int CONTAINER_ID = 0;
+@@ -39,9 +45,15 @@
+     private static final EquipmentSlot[] SLOT_IDS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+     public final boolean active;
+     private final Player owner;
++    // CraftBukkit start
++    private CraftInventoryView bukkitEntity = null;
++    // CraftBukkit end
+ 
+     public InventoryMenu(Inventory inventory, boolean active, final Player owner) {
+-        super((MenuType) null, 0, 2, 2);
++        // CraftBukkit start
++        super((MenuType) null, 0, 2, 2, inventory); // CraftBukkit - save player
++        setTitle(Component.translatable("container.crafting")); // SPIGOT-4722: Allocate title for player inventory
++        // CraftBukkit end
+         this.active = active;
+         this.owner = owner;
+         this.addResultSlot(owner, 154, 28);
+@@ -195,4 +207,17 @@
+     protected Player owner() {
+         return this.owner;
+     }
++
++    // CraftBukkit start
++    @Override
++    public CraftInventoryView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryCrafting inventory = new CraftInventoryCrafting(this.craftSlots, this.resultSlots);
++        bukkitEntity = new CraftInventoryView(this.owner.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+ }

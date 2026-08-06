@@ -1,0 +1,81 @@
+--- a/net/minecraft/world/entity/ConversionType.java
++++ b/net/minecraft/world/entity/ConversionType.java
+@@ -13,6 +13,11 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.scores.Scoreboard;
+ 
++// CraftBukkit start
++import net.minecraft.core.BlockPos;
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public enum ConversionType {
+ 
+     SINGLE(true) {
+@@ -28,7 +33,7 @@
+ 
+                 for (Entity entity1 : to.getPassengers()) {
+                     entity1.stopRiding();
+-                    entity1.remove(Entity.RemovalReason.DISCARDED);
++                    entity1.remove(Entity.RemovalReason.DISCARDED, EntityRemoveEvent.Cause.TRANSFORMATION); // CraftBukkit - add Bukkit remove cause
+                 }
+ 
+                 entity.startRiding(to);
+@@ -46,7 +51,7 @@
+                     ItemStack itemstack = from.getItemBySlot(equipmentslot);
+ 
+                     if (!itemstack.isEmpty()) {
+-                        to.setItemSlot(equipmentslot, itemstack.copyAndClear());
++                        to.setItemSlot(equipmentslot, itemstack.copy()); // CraftBukkit - SPIGOT-7996: don't clear yet
+                         to.setDropChance(equipmentslot, from.getDropChances().byEquipment(equipmentslot));
+                     }
+                 }
+@@ -58,7 +63,7 @@
+             to.hurtTime = from.hurtTime;
+             to.yBodyRot = from.yBodyRot;
+             to.setOnGround(from.onGround());
+-            Optional optional = from.getSleepingPos();
++            Optional<BlockPos> optional = from.getSleepingPos(); // CraftBukkit - decompile error
+ 
+             Objects.requireNonNull(to);
+             optional.ifPresent(to::setSleepingPos);
+@@ -70,6 +75,21 @@
+ 
+             ConversionType.convertCommon(from, to, params);
+         }
++
++        // CraftBukkit start
++        @Override
++        void postConvert(Mob mob, Mob mob1, ConversionParams conversionparams) {
++            if (conversionparams.keepEquipment()) {
++                for (EquipmentSlot equipmentslot : EquipmentSlot.VALUES) {
++                    ItemStack itemstack = mob.getItemBySlot(equipmentslot);
++
++                    if (!itemstack.isEmpty()) {
++                        itemstack.setCount(0); // SPIGOT-7996: clear after conversion
++                    }
++                }
++            }
++        }
++        // CraftBukkit end
+     },
+     SPLIT_ON_DEATH(false) {
+         @Override
+@@ -103,6 +123,8 @@
+ 
+     public abstract void convert(Mob from, Mob to, ConversionParams params);
+ 
++    void postConvert(Mob from, Mob to, ConversionParams params) {} // CraftBukkit
++
+     private static void convertCommon(Mob from, Mob to, ConversionParams params) {
+         to.setAbsorptionAmount(from.getAbsorptionAmount());
+ 
+@@ -145,7 +167,7 @@
+         to.setNoGravity(from.isNoGravity());
+         to.setPortalCooldown(from.getPortalCooldown());
+         to.setSilent(from.isSilent());
+-        Set set = from.entityTags();
++        Set<String> set = from.entityTags(); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(to);
+         set.forEach(to::addTag);

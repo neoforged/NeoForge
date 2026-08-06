@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/InfestedBlock.java
++++ b/net/minecraft/world/level/block/InfestedBlock.java
+@@ -19,6 +19,8 @@
+ import net.minecraft.world.level.block.state.properties.Property;
+ import net.minecraft.world.level.gamerules.GameRules;
+ 
++import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason; // CraftBukkit
++
+ public class InfestedBlock extends Block {
+ 
+     public static final MapCodec<InfestedBlock> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -53,7 +55,7 @@
+ 
+         if (silverfish != null) {
+             silverfish.snapTo((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, 0.0F, 0.0F);
+-            level.addFreshEntity(silverfish);
++            level.addFreshEntity(silverfish, SpawnReason.SILVERFISH_BLOCK); // CraftBukkit - add SpawnReason
+             silverfish.spawnAnim();
+         }
+ 

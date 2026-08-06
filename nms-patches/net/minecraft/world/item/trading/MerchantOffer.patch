@@ -1,0 +1,43 @@
+--- a/net/minecraft/world/item/trading/MerchantOffer.java
++++ b/net/minecraft/world/item/trading/MerchantOffer.java
+@@ -8,6 +8,8 @@
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.item.ItemStack;
+ 
++import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe; // CraftBukkit
++
+ public class MerchantOffer {
+ 
+     public static final Codec<MerchantOffer> CODEC = RecordCodecBuilder.create((instance) -> {
+@@ -44,6 +46,18 @@
+     public int demand;
+     public float priceMultiplier;
+     public int xp;
++    // CraftBukkit start
++    private CraftMerchantRecipe bukkitHandle;
++
++    public CraftMerchantRecipe asBukkit() {
++        return (bukkitHandle == null) ? bukkitHandle = new CraftMerchantRecipe(this) : bukkitHandle;
++    }
++
++    public MerchantOffer(ItemCost baseCostA, Optional<ItemCost> costB, ItemStack result, int uses, int maxUses, int experience, float priceMultiplier, int demand, CraftMerchantRecipe bukkit) {
++        this(baseCostA, costB, result, uses, maxUses, experience, priceMultiplier, demand);
++        this.bukkitHandle = bukkit;
++    }
++    // CraftBukkit end
+ 
+     private MerchantOffer(ItemCost baseCostA, Optional<ItemCost> costB, ItemStack result, int uses, int maxUses, boolean rewardExp, int specialPriceDiff, int demand, float priceMultiplier, int xp) {
+         this.baseCostA = baseCostA;
+@@ -185,7 +199,11 @@
+         if (!this.satisfiedBy(buyA, buyB)) {
+             return false;
+         } else {
+-            buyA.shrink(this.getCostA().getCount());
++            // CraftBukkit start
++            if (!this.getCostA().isEmpty()) {
++                buyA.shrink(this.getCostA().getCount());
++            }
++            // CraftBukkit end
+             if (!this.getCostB().isEmpty()) {
+                 buyB.shrink(this.getCostB().getCount());
+             }

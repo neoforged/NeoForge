@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/creaking/Creaking.java
++++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
+@@ -203,7 +203,7 @@
+ 
+     @Override
+     public Brain<Creaking> getBrain() {
+-        return super.getBrain();
++        return (Brain<Creaking>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -326,7 +326,7 @@
+         }
+ 
+         this.makeSound(this.getDeathSound());
+-        this.remove(Entity.RemovalReason.DISCARDED);
++        this.remove(Entity.RemovalReason.DISCARDED, null); // CraftBukkit - add Bukkit remove cause
+     }
+ 
+     public void creakingDeathEffects(DamageSource source) {

@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
++++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
+@@ -21,6 +21,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class RemoveBlockGoal extends MoveToBlockGoal {
+ 
+     private final Block blockToRemove;
+@@ -96,6 +101,11 @@
+             }
+ 
+             if (this.ticksSinceReachedGoal > 60) {
++                // CraftBukkit start - Step on eggs
++                if (!CraftEventFactory.callEntityInteractEvent(this.removerMob, CraftBlock.at(level, blockpos1))) {
++                    return;
++                }
++                // CraftBukkit end
+                 level.removeBlock(blockpos1, false);
+                 if (!level.isClientSide()) {
+                     for (int i = 0; i < 20; ++i) {

@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/block/LilyPadBlock.java
++++ b/net/minecraft/world/level/block/LilyPadBlock.java
+@@ -17,6 +17,10 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class LilyPadBlock extends VegetationBlock {
+ 
+     public static final MapCodec<LilyPadBlock> CODEC = simpleCodec(LilyPadBlock::new);
+@@ -35,6 +39,11 @@
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+         super.entityInside(state, level, pos, entity, effectApplier, isPrecise);
+         if (level instanceof ServerLevel && entity instanceof AbstractBoat) {
++            // CraftBukkit start
++            if (!CraftEventFactory.callEntityChangeBlockEvent(entity, pos, Blocks.AIR.defaultBlockState())) {
++                return;
++            }
++            // CraftBukkit end
+             level.destroyBlock(new BlockPos(pos), true, entity);
+         }
+ 

@@ -1,0 +1,56 @@
+--- a/net/minecraft/world/level/dimension/end/DragonRespawnStage.java
++++ b/net/minecraft/world/level/dimension/end/DragonRespawnStage.java
+@@ -14,6 +14,10 @@
+ import net.minecraft.world.level.levelgen.feature.Feature;
+ import net.minecraft.world.level.levelgen.feature.configurations.EndSpikeConfiguration;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public enum DragonRespawnStage implements StringRepresentable {
+ 
+     START("start") {
+@@ -25,7 +29,7 @@
+                 endcrystal.setBeamTarget(blockpos);
+             }
+ 
+-            fight.setRespawnStage(null.PREPARING_TO_SUMMON_PILLARS);
++            fight.setRespawnStage(PREPARING_TO_SUMMON_PILLARS); // CraftBukkit - decompile error
+         }
+     },
+     PREPARING_TO_SUMMON_PILLARS("preparing_to_summon_pillars") {
+@@ -36,7 +40,7 @@
+                     level.levelEvent(3001, new BlockPos(0, 128, 0), 0);
+                 }
+             } else {
+-                fight.setRespawnStage(null.SUMMONING_PILLARS);
++                fight.setRespawnStage(SUMMONING_PILLARS); // CraftBukkit - decompile error
+             }
+ 
+         }
+@@ -72,7 +76,7 @@
+                         Feature.END_SPIKE.place(endspikeconfiguration, level, level.getChunkSource().getGenerator(), RandomSource.create(), new BlockPos(endspikefeature_endspike.getCenterX(), 45, endspikefeature_endspike.getCenterZ()));
+                     }
+                 } else if (flag) {
+-                    fight.setRespawnStage(null.SUMMONING_DRAGON);
++                    fight.setRespawnStage(SUMMONING_DRAGON); // CraftBukkit - decompile error
+                 }
+             }
+ 
+@@ -82,13 +86,13 @@
+         @Override
+         public void tick(ServerLevel level, EnderDragonFight fight, List<EndCrystal> crystals, int time) {
+             if (time >= 100) {
+-                fight.setRespawnStage(null.END);
++                fight.setRespawnStage(END); // CraftBukkit - decompile error
+                 fight.resetSpikeCrystals();
+ 
+                 for (EndCrystal endcrystal : crystals) {
+                     endcrystal.setBeamTarget((BlockPos) null);
+                     level.explode(endcrystal, endcrystal.getX(), endcrystal.getY(), endcrystal.getZ(), 6.0F, Level.ExplosionInteraction.NONE);
+-                    endcrystal.discard();
++                    endcrystal.discard(EntityRemoveEvent.Cause.EXPLODE); // CraftBukkit - add Bukkit remove cause
+                 }
+             } else if (time >= 80) {
+                 level.levelEvent(3001, new BlockPos(0, 128, 0), 0);

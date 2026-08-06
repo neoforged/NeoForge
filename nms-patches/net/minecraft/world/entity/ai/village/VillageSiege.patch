@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/village/VillageSiege.java
++++ b/net/minecraft/world/entity/ai/village/VillageSiege.java
+@@ -118,7 +118,7 @@
+             }
+ 
+             zombie.snapTo(vec3.x, vec3.y, vec3.z, level.getRandom().nextFloat() * 360.0F, 0.0F);
+-            level.addFreshEntityWithPassengers(zombie);
++            level.addFreshEntityWithPassengers(zombie, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_INVASION); // CraftBukkit
+         }
+     }
+ 

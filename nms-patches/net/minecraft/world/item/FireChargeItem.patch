@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/item/FireChargeItem.java
++++ b/net/minecraft/world/item/FireChargeItem.java
+@@ -39,12 +39,28 @@
+         if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) && !CandleCakeBlock.canLight(blockstate)) {
+             blockpos = blockpos.relative(context.getClickedFace());
+             if (BaseFireBlock.canBePlacedAt(level, blockpos, context.getHorizontalDirection())) {
++                // CraftBukkit start - fire BlockIgniteEvent
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos, org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FIREBALL, context.getPlayer()).isCancelled()) {
++                    if (!context.getPlayer().getAbilities().instabuild) {
++                        context.getItemInHand().shrink(1);
++                    }
++                    return InteractionResult.PASS;
++                }
++                // CraftBukkit end
+                 this.playSound(level, blockpos);
+                 level.setBlockAndUpdate(blockpos, BaseFireBlock.getState(level, blockpos));
+                 level.gameEvent(context.getPlayer(), (Holder) GameEvent.BLOCK_PLACE, blockpos);
+                 flag = true;
+             }
+         } else {
++            // CraftBukkit start - fire BlockIgniteEvent
++            if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos, org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FIREBALL, context.getPlayer()).isCancelled()) {
++                if (!context.getPlayer().getAbilities().instabuild) {
++                    context.getItemInHand().shrink(1);
++                }
++                return InteractionResult.PASS;
++            }
++            // CraftBukkit end
+             this.playSound(level, blockpos);
+             level.setBlockAndUpdate(blockpos, (BlockState) blockstate.setValue(BlockStateProperties.LIT, true));
+             level.gameEvent(context.getPlayer(), (Holder) GameEvent.BLOCK_CHANGE, blockpos);

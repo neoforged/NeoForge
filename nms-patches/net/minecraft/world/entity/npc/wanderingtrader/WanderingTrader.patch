@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
++++ b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
+@@ -48,6 +48,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class WanderingTrader extends AbstractVillager implements Consumable.OverrideConsumeSound {
+ 
+     private static final int DEFAULT_DESPAWN_DELAY = 0;
+@@ -56,15 +60,16 @@
+ 
+     public WanderingTrader(EntityType<? extends WanderingTrader> type, Level level) {
+         super(type, level);
++        this.setDespawnDelay(48000); // CraftBukkit - set default from MobSpawnerTrader
+     }
+ 
+     @Override
+     protected void registerGoals() {
+         this.goalSelector.addGoal(0, new FloatGoal(this));
+-        this.goalSelector.addGoal(0, new UseItemGoal(this, PotionContents.createItemStack(Items.POTION, Potions.INVISIBILITY), SoundEvents.WANDERING_TRADER_DISAPPEARED, (wanderingtrader) -> {
++        this.goalSelector.addGoal(0, new UseItemGoal<>(this, PotionContents.createItemStack(Items.POTION, Potions.INVISIBILITY), SoundEvents.WANDERING_TRADER_DISAPPEARED, (wanderingtrader) -> { // CraftBukkit - decompile error
+             return this.level().isDarkOutside() && !wanderingtrader.isInvisible();
+         }));
+-        this.goalSelector.addGoal(0, new UseItemGoal(this, new ItemStack(Items.MILK_BUCKET), SoundEvents.WANDERING_TRADER_REAPPEARED, (wanderingtrader) -> {
++        this.goalSelector.addGoal(0, new UseItemGoal<>(this, new ItemStack(Items.MILK_BUCKET), SoundEvents.WANDERING_TRADER_REAPPEARED, (wanderingtrader) -> { // CraftBukkit - decompile error
+             return this.level().isBrightOutside() && wanderingtrader.isInvisible();
+         }));
+         this.goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
+@@ -138,7 +143,7 @@
+     protected void readAdditionalSaveData(ValueInput input) {
+         super.readAdditionalSaveData(input);
+         this.despawnDelay = input.getIntOr("DespawnDelay", 0);
+-        this.wanderTarget = (BlockPos) input.read("wander_target", BlockPos.CODEC).orElse((Object) null);
++        this.wanderTarget = (BlockPos) input.read("wander_target", BlockPos.CODEC).orElse(null); // CraftBukkit - decompile error
+         this.setAge(Math.max(0, this.getAge()));
+     }
+ 
+@@ -206,7 +211,7 @@
+ 
+     private void maybeDespawn() {
+         if (this.despawnDelay > 0 && !this.isTrading() && --this.despawnDelay == 0) {
+-            this.discard();
++            this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }

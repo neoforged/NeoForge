@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/enchantment/effects/ReplaceDisk.java
++++ b/net/minecraft/world/item/enchantment/effects/ReplaceDisk.java
+@@ -33,7 +33,7 @@
+         for (BlockPos blockpos1 : BlockPos.betweenClosed(blockpos.offset(-j, 0, -j), blockpos.offset(j, Math.min(k - 1, 0), j))) {
+             if (blockpos1.distToCenterSqr(position.x(), (double) blockpos1.getY() + 0.5D, position.z()) < (double) Mth.square(j) && (Boolean) this.predicate.map((blockpredicate) -> {
+                 return blockpredicate.test(serverLevel, blockpos1);
+-            }).orElse(true) && serverLevel.setBlockAndUpdate(blockpos1, this.blockState.getState(serverLevel, randomsource, blockpos1))) {
++            }).orElse(true) && org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(serverLevel, blockpos1, this.blockState.getState(serverLevel, randomsource, blockpos1), entity)) { // CraftBukkit - Call EntityBlockFormEvent for Frost Walker
+                 this.triggerGameEvent.ifPresent((holder) -> {
+                     serverLevel.gameEvent(entity, holder, blockpos1);
+                 });

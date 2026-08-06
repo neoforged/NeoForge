@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/ShipwreckPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/ShipwreckPieces.java
+@@ -81,7 +81,12 @@
+             ResourceKey<LootTable> resourcekey = (ResourceKey) ShipwreckPieces.MARKERS_TO_LOOT.get(markerId);
+ 
+             if (resourcekey != null) {
++                // CraftBukkit start - ensure block transformation
++                /*
+                 RandomizableContainer.setBlockEntityLootTable(level, random, position.below(), resourcekey);
++                */
++                setCraftLootTable(level, position.below(), random, resourcekey);
++                // CraftBukkit end
+             }
+ 
+         }

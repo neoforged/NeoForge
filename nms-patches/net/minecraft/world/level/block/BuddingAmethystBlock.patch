@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/BuddingAmethystBlock.java
++++ b/net/minecraft/world/level/block/BuddingAmethystBlock.java
+@@ -45,7 +45,7 @@
+             if (block != null) {
+                 BlockState blockstate2 = (BlockState) ((BlockState) block.defaultBlockState().setValue(AmethystClusterBlock.FACING, direction)).setValue(AmethystClusterBlock.WATERLOGGED, blockstate1.getFluidState().is(Fluids.WATER));
+ 
+-                level.setBlockAndUpdate(blockpos1, blockstate2);
++                org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(level, pos, blockpos1, blockstate2); // CraftBukkit
+             }
+ 
+         }

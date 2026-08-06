@@ -1,0 +1,67 @@
+--- a/net/minecraft/world/inventory/StonecutterMenu.java
++++ b/net/minecraft/world/inventory/StonecutterMenu.java
+@@ -19,6 +19,12 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Blocks;
+ 
++// CraftBukkit start
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.inventory.CraftInventoryStonecutter;
++import org.bukkit.craftbukkit.inventory.view.CraftStonecutterView;
++// CraftBukkit end
++
+ public class StonecutterMenu extends AbstractContainerMenu {
+ 
+     public static final int INPUT_SLOT = 0;
+@@ -38,6 +44,21 @@
+     private Runnable slotUpdateListener;
+     public final Container container;
+     private final ResultContainer resultContainer;
++    // CraftBukkit start
++    private CraftStonecutterView bukkitEntity = null;
++    private org.bukkit.entity.Player player;
++
++    @Override
++    public CraftStonecutterView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryStonecutter inventory = new CraftInventoryStonecutter(this.container, this.resultContainer);
++        bukkitEntity = new CraftStonecutterView(this.player, inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+ 
+     public StonecutterMenu(int containerId, Inventory inventory) {
+         this(containerId, inventory, ContainerLevelAccess.NULL);
+@@ -61,6 +82,13 @@
+                 StonecutterMenu.this.slotsChanged(this);
+                 StonecutterMenu.this.slotUpdateListener.run();
+             }
++
++            // CraftBukkit start
++            @Override
++            public Location getLocation() {
++                return access.getLocation();
++            }
++            // CraftBukkit end
+         };
+         this.resultContainer = new ResultContainer();
+         this.access = access;
+@@ -104,6 +132,7 @@
+         });
+         this.addStandardInventorySlots(inventory, 8, 84);
+         this.addDataSlot(this.selectedRecipeIndex);
++        player = (org.bukkit.entity.Player) inventory.player.getBukkitEntity(); // CraftBukkit
+     }
+ 
+     public int getSelectedRecipeIndex() {
+@@ -124,6 +153,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return stillValid(this.access, player, Blocks.STONECUTTER);
+     }
+ 

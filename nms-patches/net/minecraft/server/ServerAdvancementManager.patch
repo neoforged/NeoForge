@@ -1,0 +1,27 @@
+--- a/net/minecraft/server/ServerAdvancementManager.java
++++ b/net/minecraft/server/ServerAdvancementManager.java
+@@ -19,10 +19,14 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.HashMap;
++// CraftBukkit end
++
+ public class ServerAdvancementManager extends SimpleJsonResourceReloadListener<Advancement> {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public Map<Identifier, AdvancementHolder> advancements = Map.of();
++    public Map<Identifier, AdvancementHolder> advancements = new HashMap<>(); // CraftBukkit - SPIGOT-7734: mutable
+     private AdvancementTree tree = new AdvancementTree();
+     private final HolderLookup.Provider registries;
+ 
+@@ -38,7 +42,7 @@
+             this.validate(identifier, advancement);
+             immutablemap_builder.put(identifier, new AdvancementHolder(identifier, advancement));
+         });
+-        this.advancements = immutablemap_builder.buildOrThrow();
++        this.advancements = new HashMap<>(immutablemap_builder.buildOrThrow()); // CraftBukkit - SPIGOT-7734: mutable
+         AdvancementTree advancementtree = new AdvancementTree();
+ 
+         advancementtree.addAll(this.advancements.values());

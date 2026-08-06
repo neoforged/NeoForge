@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/effect/SaturationMobEffect.java
++++ b/net/minecraft/world/effect/SaturationMobEffect.java
+@@ -4,6 +4,11 @@
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ class SaturationMobEffect extends InstantaneousMobEffect {
+ 
+     protected SaturationMobEffect(MobEffectCategory category, int color) {
+@@ -13,7 +18,15 @@
+     @Override
+     public boolean applyEffectTick(ServerLevel level, LivingEntity mob, int amplification) {
+         if (mob instanceof Player player) {
+-            player.getFoodData().eat(amplification + 1, 1.0F);
++            // CraftBukkit start
++            int oldFoodLevel = player.getFoodData().foodLevel;
++            org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(player, amplification + 1 + oldFoodLevel);
++            if (!event.isCancelled()) {
++                player.getFoodData().eat(event.getFoodLevel() - oldFoodLevel, 1.0F);
++            }
++
++            ((CraftPlayer) player.getBukkitEntity()).sendHealthUpdate();
++            // CraftBukkit end
+         }
+ 
+         return true;

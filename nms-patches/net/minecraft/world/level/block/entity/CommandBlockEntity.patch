@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/block/entity/CommandBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/CommandBlockEntity.java
+@@ -35,6 +35,13 @@
+             Objects.requireNonNull(CommandBlockEntity.this);
+         }
+ 
++        // CraftBukkit start
++        @Override
++        public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++            return new org.bukkit.craftbukkit.command.CraftBlockCommandSender(wrapper, CommandBlockEntity.this);
++        }
++        // CraftBukkit end
++
+         @Override
+         public void setCommand(String command) {
+             super.setCommand(command);

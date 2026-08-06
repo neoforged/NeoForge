@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/item/consume_effects/RemoveStatusEffectsConsumeEffect.java
++++ b/net/minecraft/world/item/consume_effects/RemoveStatusEffectsConsumeEffect.java
+@@ -14,6 +14,10 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityPotionEffectEvent;
++// CraftBukkit end
++
+ public record RemoveStatusEffectsConsumeEffect(HolderSet<MobEffect> effects) implements ConsumeEffect {
+ 
+     public static final MapCodec<RemoveStatusEffectsConsumeEffect> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -31,11 +35,11 @@
+     }
+ 
+     @Override
+-    public boolean apply(Level level, ItemStack stack, LivingEntity user) {
++    public boolean apply(Level level, ItemStack stack, LivingEntity user, EntityPotionEffectEvent.Cause cause) { // CraftBukkit
+         boolean flag = false;
+ 
+         for (Holder<MobEffect> holder : this.effects) {
+-            if (user.removeEffect(holder)) {
++            if (user.removeEffect(holder, cause)) { // CraftBukkit
+                 flag = true;
+             }
+         }

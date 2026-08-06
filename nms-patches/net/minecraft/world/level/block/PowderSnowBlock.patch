@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/block/PowderSnowBlock.java
++++ b/net/minecraft/world/level/block/PowderSnowBlock.java
+@@ -77,7 +77,12 @@
+ 
+         effectApplier.runBefore(InsideBlockEffectType.EXTINGUISH, (entity1) -> {
+             if (level instanceof ServerLevel serverlevel) {
+-                if (entity1.isOnFire() && ((Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING) || entity1 instanceof Player) && entity1.mayInteract(serverlevel, blockpos1)) {
++                // CraftBukkit start
++                if (entity1.isOnFire() && entity1.mayInteract(serverlevel, blockpos1)) {
++                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity1, blockpos1, Blocks.AIR.defaultBlockState(), !((Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING) || entity1 instanceof Player))) {
++                        return;
++                    }
++                    // CraftBukkit end
+                     level.destroyBlock(blockpos1, false);
+                 }
+             }

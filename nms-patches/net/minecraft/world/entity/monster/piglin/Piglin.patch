@@ -1,0 +1,104 @@
+--- a/net/minecraft/world/entity/monster/piglin/Piglin.java
++++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
+@@ -61,6 +61,15 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import com.mojang.serialization.Codec;
++import java.util.stream.Collectors;
++import java.util.HashSet;
++import java.util.Set;
++import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.world.item.Item;
++// CraftBukkit end
++
+ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, InventoryCarrier {
+ 
+     private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.<Boolean>defineId(Piglin.class, EntityDataSerializers.BOOLEAN);
+@@ -83,6 +92,10 @@
+     public final SimpleContainer inventory = new SimpleContainer(8);
+     public boolean cannotHunt = false;
+     private static final Brain.Provider<Piglin> BRAIN_PROVIDER = Brain.<Piglin>provider(List.of(MemoryModuleType.UNIVERSAL_ANGER, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.SPEAR_FLEEING_TIME, MemoryModuleType.SPEAR_FLEEING_POSITION, MemoryModuleType.SPEAR_CHARGE_POSITION, MemoryModuleType.SPEAR_ENGAGE_TIME), List.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_SPECIFIC_SENSOR), PiglinAi::getActivities);
++    // CraftBukkit start - Custom bartering and interest list
++    public Set<Item> allowedBarterItems = new HashSet<>();
++    public Set<Item> interestItems = new HashSet<>();
++    // CraftBukkit end
+ 
+     public Piglin(EntityType<? extends AbstractPiglin> type, Level level) {
+         super(type, level);
+@@ -95,6 +108,12 @@
+         output.putBoolean("IsBaby", this.isBaby());
+         output.putBoolean("CannotHunt", this.cannotHunt);
+         this.writeInventoryToTag(output);
++        // CraftBukkit start
++        ValueOutput.TypedOutputList<String> barterList = output.list("Bukkit.BarterList", Codec.STRING);
++        allowedBarterItems.stream().map(BuiltInRegistries.ITEM::getKey).map(Identifier::toString).forEach(barterList::add);
++        ValueOutput.TypedOutputList<String> interestList = output.list("Bukkit.InterestList", Codec.STRING);
++        interestItems.stream().map(BuiltInRegistries.ITEM::getKey).map(Identifier::toString).forEach(interestList::add);
++        // CraftBukkit end
+     }
+ 
+     @Override
+@@ -103,6 +122,14 @@
+         this.setBaby(input.getBooleanOr("IsBaby", false));
+         this.setCannotHunt(input.getBooleanOr("CannotHunt", false));
+         this.readInventoryFromTag(input);
++        // CraftBukkit start
++        input.list("Bukkit.BarterList", Codec.STRING).ifPresent((list -> {
++            this.allowedBarterItems = list.stream().map(Identifier::tryParse).map(BuiltInRegistries.ITEM::getValue).collect(Collectors.toCollection(HashSet::new));
++        }));
++        input.list("Bukkit.InterestList", Codec.STRING).ifPresent((list -> {
++            this.interestItems = list.stream().map(Identifier::tryParse).map(BuiltInRegistries.ITEM::getValue).collect(Collectors.toCollection(HashSet::new));
++        }));
++        // CraftBukkit end
+     }
+ 
+     @VisibleForDebug
+@@ -207,7 +234,7 @@
+ 
+     @Override
+     public Brain<Piglin> getBrain() {
+-        return super.getBrain();
++        return (Brain<Piglin>) super.getBrain(); // CraftBukkit - Decompile error
+     }
+ 
+     @Override
+@@ -359,7 +386,7 @@
+ 
+     protected void holdInOffHand(ItemStack itemStack) {
+         this.setItemSlotAndDropWhenKilled(EquipmentSlot.OFFHAND, itemStack);
+-        if (!itemStack.is(PiglinAi.BARTERING_ITEM)) {
++        if (!itemStack.is(PiglinAi.BARTERING_ITEM) && !allowedBarterItems.contains(itemStack.getItem())) { // CraftBukkit - Changes to accept custom payment items
+             this.setPersistenceRequired();
+         }
+ 
+@@ -383,8 +410,8 @@
+             return false;
+         } else {
+             TagKey<Item> tagkey = this.getPreferredWeaponType();
+-            boolean flag = PiglinAi.isLovedItem(newItemStack) || tagkey != null && newItemStack.is(tagkey);
+-            boolean flag1 = PiglinAi.isLovedItem(currentItemStack) || tagkey != null && currentItemStack.is(tagkey);
++            boolean flag = PiglinAi.isLovedItem(newItemStack, this) || tagkey != null && newItemStack.is(tagkey); // CraftBukkit
++            boolean flag1 = PiglinAi.isLovedItem(currentItemStack, this) || tagkey != null && currentItemStack.is(tagkey); // CraftBukkit
+ 
+             return flag && !flag1 ? true : (!flag && flag1 ? false : super.canReplaceCurrentItem(newItemStack, currentItemStack, slot));
+         }
+@@ -398,7 +425,7 @@
+ 
+     @Override
+     public boolean startRiding(Entity entityToRide, boolean force, boolean sendEventAndTriggers) {
+-        if (this.isBaby() && entityToRide.is((Object) EntityTypes.HOGLIN)) {
++        if (this.isBaby() && entityToRide.is(EntityTypes.HOGLIN)) { // CraftBukkit - decompile error
+             entityToRide = this.getTopPassenger(entityToRide, 3);
+         }
+ 
+@@ -413,7 +440,7 @@
+ 
+     @Override
+     protected @Nullable SoundEvent getAmbientSound() {
+-        return this.level().isClientSide() ? null : (SoundEvent) PiglinAi.getSoundForCurrentActivity(this).orElse((Object) null);
++        return this.level().isClientSide() ? null : (SoundEvent) PiglinAi.getSoundForCurrentActivity(this).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     @Override

@@ -1,0 +1,177 @@
+--- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
+@@ -34,6 +34,15 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.Objects;
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.block.sign.Side;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.util.CraftChatMessage;
++import org.bukkit.event.block.SignChangeEvent;
++// CraftBukkit end
++
+ public class SignBlockEntity extends BlockEntity {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -140,12 +149,13 @@
+     public void updateSignText(Player player, boolean frontText, List<FilteredText> lines) {
+         if (!this.isWaxed() && player.getUUID().equals(this.getPlayerWhoMayEdit()) && this.level != null) {
+             this.updateText((signtext) -> {
+-                return this.setMessages(player, lines, signtext);
++                return this.setMessages(player, lines, signtext, frontText); // CraftBukkit
+             }, frontText);
+             this.setAllowedPlayerEditor((UUID) null);
+             this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
+         } else {
+             SignBlockEntity.LOGGER.warn("Player {} just tried to change non-editable sign", player.getPlainTextName());
++            ((ServerPlayer) player).connection.send(this.getUpdatePacket()); // CraftBukkit
+         }
+     }
+ 
+@@ -155,7 +165,8 @@
+         return this.setText((SignText) function.apply(signtext), isFrontText);
+     }
+ 
+-    private SignText setMessages(Player player, List<FilteredText> lines, SignText text) {
++    private SignText setMessages(Player player, List<FilteredText> lines, SignText text, boolean front) { // CraftBukkit
++        SignText originalText = text; // CraftBukkit
+         for (int i = 0; i < lines.size(); ++i) {
+             FilteredText filteredtext = (FilteredText) lines.get(i);
+             Style style = text.getMessage(i, player.isTextFilteringEnabled()).getStyle();
+@@ -167,6 +178,29 @@
+             }
+         }
+ 
++        // CraftBukkit start
++        org.bukkit.entity.Player bukkitPlayer = ((ServerPlayer) player).getBukkitEntity();
++        String[] linesArray = new String[4];
++
++        for (int i = 0; i < lines.size(); ++i) {
++            linesArray[i] = CraftChatMessage.fromComponent(text.getMessage(i, player.isTextFilteringEnabled()));
++        }
++
++        SignChangeEvent event = new SignChangeEvent(CraftBlock.at(this.level, this.worldPosition), bukkitPlayer, linesArray.clone(), (front) ? Side.FRONT : Side.BACK);
++        player.level().getCraftServer().getPluginManager().callEvent(event);
++
++        if (event.isCancelled()) {
++            return originalText;
++        }
++
++        Component[] components = org.bukkit.craftbukkit.block.CraftSign.sanitizeLines(event.getLines());
++        for (int i = 0; i < components.length; i++) {
++            if (!Objects.equals(linesArray[i], event.getLine(i))) {
++                text = text.setMessage(i, components[i]);
++            }
++        }
++        // CraftBukkit end
++
+         return text;
+     }
+ 
+@@ -201,6 +235,7 @@
+     public boolean executeClickCommandsIfPresent(ServerLevel level, Player player, BlockPos pos, boolean isFrontText) {
+         boolean flag1 = false;
+ 
++        // CraftBukkit start - decompile error
+         for(Component component : this.getText(isFrontText).getMessages(player.isTextFilteringEnabled())) {
+             Style style = component.getStyle();
+             ClickEvent clickevent = style.getClickEvent();
+@@ -210,38 +245,64 @@
+             //0->net/minecraft/network/chat/ClickEvent$RunCommand
+             //1->net/minecraft/network/chat/ClickEvent$ShowDialog
+             //2->net/minecraft/network/chat/ClickEvent$Custom
+-            switch (clickevent.typeSwitch<invokedynamic>(clickevent, b0)) {
+-                case -1:
+-                default:
+-                    break;
+-                case 0:
++            {
++                if (clickevent instanceof ClickEvent.RunCommand) {
+                     ClickEvent.RunCommand clickevent_runcommand = (ClickEvent.RunCommand)clickevent;
+ 
+                     level.getServer().getCommands().performPrefixedCommand(createCommandSourceStack(player, level, pos), clickevent_runcommand.command());
+                     flag1 = true;
+-                    break;
+-                case 1:
++                } else if (clickevent instanceof ClickEvent.ShowDialog) {
+                     ClickEvent.ShowDialog clickevent_showdialog = (ClickEvent.ShowDialog)clickevent;
+ 
+                     player.openDialog(clickevent_showdialog.dialog());
+                     flag1 = true;
+-                    break;
+-                case 2:
++                } else if (clickevent instanceof ClickEvent.Custom) {
+                     ClickEvent.Custom clickevent_custom = (ClickEvent.Custom)clickevent;
+ 
+-                    level.getServer().handleCustomClickAction(clickevent_custom.id(), clickevent_custom.payload());
++                    level.getServer().handleCustomClickAction(clickevent_custom.id(), clickevent_custom.payload(), (ServerPlayer) player); // CraftBukkit - add player
+                     flag1 = true;
++                }
++                // CraftBukkit end
+             }
+         }
+ 
+         return flag1;
+     }
+ 
+-    private static CommandSourceStack createCommandSourceStack(@Nullable Player player, ServerLevel level, BlockPos pos) {
++    // CraftBukkit start
++    private final CommandSource commandSource = new CommandSource() {
++
++        @Override
++        public void sendSystemMessage(Component component) {}
++
++        @Override
++        public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++            return wrapper.getEntity() != null ? wrapper.getEntity().getBukkitEntity() : new org.bukkit.craftbukkit.command.CraftBlockCommandSender(wrapper, SignBlockEntity.this);
++        }
++
++        @Override
++        public boolean acceptsSuccess() {
++            return false;
++        }
++
++        @Override
++        public boolean acceptsFailure() {
++            return false;
++        }
++
++        @Override
++        public boolean shouldInformAdmins() {
++            return false;
++        }
++    };
++
++    private CommandSourceStack createCommandSourceStack(@Nullable Player player, ServerLevel level, BlockPos pos) {
++        // CraftBukkit end
+         String s = player == null ? "Sign" : player.getPlainTextName();
+         Component component = (Component) (player == null ? Component.literal("Sign") : player.getDisplayName());
+ 
+-        return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pos), Vec2.ZERO, level, LevelBasedPermissionSet.GAMEMASTER, s, component, level.getServer(), player);
++        // CraftBukkit - commandSource
++        return new CommandSourceStack(commandSource, Vec3.atCenterOf(pos), Vec2.ZERO, level, LevelBasedPermissionSet.GAMEMASTER, s, component, level.getServer(), player);
+     }
+ 
+     @Override
+@@ -259,12 +320,17 @@
+     }
+ 
+     public @Nullable UUID getPlayerWhoMayEdit() {
++        // CraftBukkit start - unnecessary sign ticking removed, so do this lazily
++        if (this.level != null && this.playerWhoMayEdit != null) {
++            clearInvalidPlayerWhoMayEdit(this, this.level, this.playerWhoMayEdit);
++        }
++        // CraftBukkit end
+         return this.playerWhoMayEdit;
+     }
+ 
+     private void markUpdated() {
+         this.setChanged();
+-        this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
++        if (this.level != null) this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3); // CraftBukkit - skip notify if world is null (SPIGOT-5122)
+     }
+ 
+     public boolean isWaxed() {

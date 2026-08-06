@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/level/block/CactusBlock.java
++++ b/net/minecraft/world/level/block/CactusBlock.java
+@@ -23,6 +23,8 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
+ public class CactusBlock extends Block {
+ 
+     public static final MapCodec<CactusBlock> CODEC = simpleCodec(CactusBlock::new);
+@@ -72,10 +74,10 @@
+                 double d0 = i >= 3 ? 0.25D : 0.1D;
+ 
+                 if (random.nextDouble() <= d0) {
+-                    level.setBlockAndUpdate(blockpos1, Blocks.CACTUS_FLOWER.defaultBlockState());
++                    CraftEventFactory.handleBlockGrowEvent(level, blockpos1, Blocks.CACTUS_FLOWER.defaultBlockState()); // CraftBukkit
+                 }
+             } else if (j == 15 && i < 3) {
+-                level.setBlockAndUpdate(blockpos1, this.defaultBlockState());
++                CraftEventFactory.handleBlockGrowEvent(level, blockpos1, this.defaultBlockState()); // CraftBukkit
+                 BlockState blockstate1 = (BlockState) state.setValue(CactusBlock.AGE, 0);
+ 
+                 level.setBlock(pos, blockstate1, 260);
+@@ -125,7 +127,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+-        entity.hurt(level.damageSources().cactus(), 1.0F);
++        entity.hurt(level.damageSources().cactus().directBlock(level, pos), 1.0F); // CraftBukkit
+     }
+ 
+     @Override

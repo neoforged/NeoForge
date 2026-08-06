@@ -1,0 +1,48 @@
+--- a/net/minecraft/world/entity/monster/Shulker.java
++++ b/net/minecraft/world/entity/monster/Shulker.java
+@@ -64,6 +64,12 @@
+ import org.joml.Vector3fc;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.util.CraftLocation;
++import org.bukkit.event.entity.EntityTeleportEvent;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class Shulker extends AbstractGolem implements Enemy {
+ 
+     private static final Identifier COVERED_ARMOR_MODIFIER_ID = Identifier.withDefaultNamespace("covered");
+@@ -403,6 +409,14 @@
+                     Direction direction = this.findAttachableSurface(blockpos1);
+ 
+                     if (direction != null) {
++                        // CraftBukkit start
++                        EntityTeleportEvent teleportEvent = CraftEventFactory.callEntityTeleportEvent(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
++                        if (teleportEvent.isCancelled()) {
++                            return false;
++                        } else {
++                            blockpos1 = CraftLocation.toBlockPosition(teleportEvent.getTo());
++                        }
++                        // CraftBukkit end
+                         this.unRide();
+                         this.setAttachFace(direction);
+                         this.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
+@@ -444,7 +458,7 @@
+             } else if (source.is(DamageTypeTags.IS_PROJECTILE)) {
+                 Entity entity1 = source.getDirectEntity();
+ 
+-                if (entity1 != null && entity1.is((Object) EntityTypes.SHULKER_BULLET)) {
++                if (entity1 != null && entity1.is(EntityTypes.SHULKER_BULLET)) { // CraftBukkit - decompile error
+                     this.hitByShulkerBullet();
+                 }
+             }
+@@ -471,7 +485,7 @@
+                 if (shulker != null) {
+                     shulker.setVariant(this.getVariant());
+                     shulker.snapTo(vec3);
+-                    this.level().addFreshEntity(shulker);
++                    this.level().addFreshEntity(shulker, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); // CraftBukkit - the mysteries of life
+                 }
+ 
+             }

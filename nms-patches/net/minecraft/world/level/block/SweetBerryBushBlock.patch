@@ -1,0 +1,65 @@
+--- a/net/minecraft/world/level/block/SweetBerryBushBlock.java
++++ b/net/minecraft/world/level/block/SweetBerryBushBlock.java
+@@ -32,6 +32,14 @@
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++// CraftBukkit start
++import java.util.LinkedList;
++import java.util.List;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.player.PlayerHarvestBlockEvent;
++// CraftBukkit end
++
+ public class SweetBerryBushBlock extends VegetationBlock implements BonemealableBlock {
+ 
+     public static final MapCodec<SweetBerryBushBlock> CODEC = simpleCodec(SweetBerryBushBlock::new);
+@@ -86,7 +94,7 @@
+         if (i < 3 && random.nextInt(5) == 0 && level.getRawBrightness(pos.above(), 0) >= 9) {
+             BlockState blockstate1 = (BlockState) state.setValue(SweetBerryBushBlock.AGE, i + 1);
+ 
+-            level.setBlock(pos, blockstate1, 2);
++            if (!CraftEventFactory.handleBlockGrowEvent(level, pos, blockstate1, 2)) return; // CraftBukkit
+             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(blockstate1));
+         }
+ 
+@@ -94,7 +102,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+-        if (entity instanceof LivingEntity && !entity.is((Object) EntityTypes.FOX) && !entity.is((Object) EntityTypes.BEE)) {
++        if (entity instanceof LivingEntity && !entity.is(EntityTypes.FOX) && !entity.is(EntityTypes.BEE)) { // CraftBukkit - decompile error
+             entity.makeStuckInBlock(state, new Vec3((double) 0.8F, 0.75D, (double) 0.8F));
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+@@ -107,7 +115,7 @@
+                         double d1 = Math.abs(vec3.z());
+ 
+                         if (d0 >= (double) 0.003F || d1 >= (double) 0.003F) {
+-                            entity.hurtServer(serverlevel, level.damageSources().sweetBerryBush(), 1.0F);
++                            entity.hurtServer(serverlevel, level.damageSources().sweetBerryBush().directBlock(level, pos), 1.0F); // CraftBukkit
+                         }
+                     }
+ 
+@@ -132,9 +140,19 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
++                // CraftBukkit start - useWithoutItem is always MAIN_HAND
++                List<ItemStack> dropped = new LinkedList<>();
+                 Block.dropFromBlockInteractLootTable(serverlevel, BuiltInLootTables.HARVEST_SWEET_BERRY_BUSH, state, level.getBlockEntity(pos), (ItemInstance) null, player, (serverlevel1, itemstack) -> {
+-                    Block.popResource(serverlevel1, pos, itemstack);
++                    dropped.add(itemstack);
+                 });
++                PlayerHarvestBlockEvent event = CraftEventFactory.callPlayerHarvestBlockEvent(level, pos, player, InteractionHand.MAIN_HAND, dropped);
++                if (event.isCancelled()) {
++                    return InteractionResult.SUCCESS; // We need to return a success either way, because making it PASS or FAIL will result in a bug where cancelling while harvesting w/ block in hand places block
++                }
++                for (org.bukkit.inventory.ItemStack itemStack : event.getItemsHarvested()) {
++                    Block.popResource(level, pos, CraftItemStack.asNMSCopy(itemStack));
++                }
++                // CraftBukkit end
+                 serverlevel.playSound((Entity) null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + serverlevel.getRandom().nextFloat() * 0.4F);
+                 BlockState blockstate1 = (BlockState) state.setValue(SweetBerryBushBlock.AGE, 1);
+ 

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/ScaffoldingBlock.java
++++ b/net/minecraft/world/level/block/ScaffoldingBlock.java
+@@ -102,7 +102,7 @@
+         int i = getDistance(level, pos);
+         BlockState blockstate1 = (BlockState) ((BlockState) state.setValue(ScaffoldingBlock.DISTANCE, i)).setValue(ScaffoldingBlock.BOTTOM, this.isBottom(level, pos, i));
+ 
+-        if ((Integer) blockstate1.getValue(ScaffoldingBlock.DISTANCE) == 7) {
++        if ((Integer) blockstate1.getValue(ScaffoldingBlock.DISTANCE) == 7 && !org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(level, pos, Blocks.AIR.defaultBlockState()).isCancelled()) { // CraftBukkit - BlockFadeEvent
+             if ((Integer) state.getValue(ScaffoldingBlock.DISTANCE) == 7) {
+                 FallingBlockEntity.fall(level, pos, blockstate1);
+             } else {

@@ -1,0 +1,56 @@
+--- a/net/minecraft/world/entity/projectile/hurtingprojectile/LargeFireball.java
++++ b/net/minecraft/world/entity/projectile/hurtingprojectile/LargeFireball.java
+@@ -15,6 +15,11 @@
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.entity.ExplosionPrimeEvent;
++// CraftBukkit end
++
+ public class LargeFireball extends Fireball {
+ 
+     private static final byte DEFAULT_EXPLOSION_POWER = 1;
+@@ -22,11 +27,13 @@
+ 
+     public LargeFireball(EntityType<? extends LargeFireball> type, Level level) {
+         super(type, level);
++        isIncendiary = (level instanceof ServerLevel serverlevel) && serverlevel.getGameRules().get(GameRules.MOB_GRIEFING); // CraftBukkit
+     }
+ 
+     public LargeFireball(Level level, LivingEntity mob, Vec3 direction, int explosionPower) {
+         super(EntityTypes.FIREBALL, mob, direction, level);
+         this.explosionPower = explosionPower;
++        isIncendiary = (level instanceof ServerLevel serverlevel) && serverlevel.getGameRules().get(GameRules.MOB_GRIEFING); // CraftBukkit
+     }
+ 
+     @Override
+@@ -37,8 +44,16 @@
+         if (level instanceof ServerLevel serverlevel) {
+             boolean flag = (Boolean) serverlevel.getGameRules().get(GameRules.MOB_GRIEFING);
+ 
+-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionPower, flag, Level.ExplosionInteraction.MOB);
+-            this.discard();
++            // CraftBukkit start - fire ExplosionPrimeEvent
++            ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) this.getBukkitEntity());
++            this.level().getCraftServer().getPluginManager().callEvent(event);
++
++            if (!event.isCancelled()) {
++                // give 'this' instead of (Entity) null so we know what causes the damage
++                this.level().explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), event.getFire(), Level.ExplosionInteraction.MOB);
++            }
++            // CraftBukkit end
++            this.discard(EntityRemoveEvent.Cause.HIT); // CraftBukkit - add Bukkit remove cause
+         }
+ 
+     }
+@@ -67,6 +82,7 @@
+     @Override
+     protected void readAdditionalSaveData(ValueInput input) {
+         super.readAdditionalSaveData(input);
+-        this.explosionPower = input.getByteOr("ExplosionPower", (byte) 1);
++        // CraftBukkit - set bukkitYield when setting explosionpower
++        bukkitYield = this.explosionPower = input.getByteOr("ExplosionPower", (byte) 1);
+     }
+ }

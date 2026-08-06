@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
++++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
+@@ -81,6 +81,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class Rabbit extends Animal {
+ 
+     private static final EntityDimensions BABY_DIMENSIONS = EntityDimensions.scalable(0.24F, 0.4F).withEyeHeight(0.39F);
+@@ -118,7 +122,6 @@
+         this.moreCarrotTicks = 0;
+         this.jumpControl = new Rabbit.RabbitJumpControl(this);
+         this.moveControl = new Rabbit.RabbitMoveControl(this);
+-        this.setSpeedModifier(0.0D);
+     }
+ 
+     @Override
+@@ -547,8 +550,8 @@
+         }
+ 
+         static {
+-            PrimitiveCodec primitivecodec = Codec.INT;
+-            IntFunction intfunction = Rabbit.Variant.BY_ID;
++            PrimitiveCodec<Integer> primitivecodec = Codec.INT; // CraftBukkit - decompile error
++            IntFunction<Rabbit.Variant> intfunction = Rabbit.Variant.BY_ID; // CraftBukkit - decompile error
+ 
+             Objects.requireNonNull(intfunction);
+             LEGACY_CODEC = primitivecodec.xmap(intfunction::apply, Rabbit.Variant::id);
+@@ -690,9 +693,19 @@
+                     int i = (Integer) blockstate.getValue(CarrotBlock.AGE);
+ 
+                     if (i == 0) {
++                        // CraftBukkit start
++                        if (!CraftEventFactory.callEntityChangeBlockEvent(this.rabbit, blockpos, Blocks.AIR.defaultBlockState())) {
++                            return;
++                        }
++                        // CraftBukkit end
+                         level.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 2);
+                         level.destroyBlock(blockpos, true, this.rabbit);
+                     } else {
++                        // CraftBukkit start
++                        if (!CraftEventFactory.callEntityChangeBlockEvent(this.rabbit, blockpos, blockstate.setValue(CarrotBlock.AGE, i - 1))) {
++                            return;
++                        }
++                        // CraftBukkit end
+                         level.setBlock(blockpos, (BlockState) blockstate.setValue(CarrotBlock.AGE, i - 1), 2);
+                         level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of((Entity) this.rabbit));
+                         level.levelEvent(2001, blockpos, Block.getId(blockstate));

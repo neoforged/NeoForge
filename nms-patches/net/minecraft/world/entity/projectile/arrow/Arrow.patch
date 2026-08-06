@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/arrow/Arrow.java
++++ b/net/minecraft/world/entity/projectile/arrow/Arrow.java
+@@ -114,7 +114,7 @@
+         float f = this.getPotionDurationScale();
+ 
+         potioncontents.forEachEffect((mobeffectinstance) -> {
+-            mob.addEffect(mobeffectinstance, entity);
++            mob.addEffect(mobeffectinstance, entity, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
+         }, f);
+     }
+ 

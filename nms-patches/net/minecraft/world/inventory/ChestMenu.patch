@@ -1,0 +1,68 @@
+--- a/net/minecraft/world/inventory/ChestMenu.java
++++ b/net/minecraft/world/inventory/ChestMenu.java
+@@ -6,10 +6,45 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ 
++// CraftBukkit start
++import net.minecraft.world.CompoundContainer;
++import org.bukkit.craftbukkit.inventory.CraftInventory;
++import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++// CraftBukkit end
++
+ public class ChestMenu extends AbstractContainerMenu {
+ 
+     private final Container container;
+     private final int containerRows;
++    // CraftBukkit start
++    private CraftInventoryView bukkitEntity = null;
++    private Inventory player;
++
++    @Override
++    public CraftInventoryView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventory inventory;
++        if (this.container instanceof Inventory) {
++            inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryPlayer((Inventory) this.container);
++        } else if (this.container instanceof CompoundContainer) {
++            inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((CompoundContainer) this.container);
++        } else {
++            inventory = new CraftInventory(this.container);
++        }
++
++        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++
++    @Override
++    public void startOpen() {
++        super.startOpen();
++        this.container.startOpen(this.player.player);
++    }
++    // CraftBukkit end
+ 
+     private ChestMenu(MenuType<?> menuType, int containerId, Inventory inventory, int rows) {
+         this(menuType, containerId, inventory, new SimpleContainer(9 * rows), rows);
+@@ -52,7 +87,10 @@
+         checkContainerSize(container, rows * 9);
+         this.container = container;
+         this.containerRows = rows;
+-        container.startOpen(inventory.player);
++        // iinventory.startOpen(playerinventory.player); // CraftBukkit - don't startOpen until menu actually opens
++        // CraftBukkit start - Save player
++        this.player = inventory;
++        // CraftBukkit end
+         int k = 18;
+ 
+         this.addChestGrid(container, 8, 18);
+@@ -72,6 +110,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return this.container.stillValid(player);
+     }
+ 

@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/entity/animal/cow/MushroomCow.java
++++ b/net/minecraft/world/entity/animal/cow/MushroomCow.java
+@@ -56,6 +56,13 @@
+ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityDropItemEvent;
++import org.bukkit.event.entity.EntityTransformEvent;
++// CraftBukkit end
++
+ public class MushroomCow extends AbstractCow implements Shearable {
+ 
+     private static final EntityDataAccessor<Integer> DATA_TYPE = SynchedEntityData.<Integer>defineId(MushroomCow.class, EntityDataSerializers.INT);
+@@ -132,6 +139,11 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
++                // CraftBukkit start
++                if (!CraftEventFactory.handlePlayerShearEntityEvent(player, this, itemstack, hand)) {
++                    return InteractionResult.PASS;
++                }
++                // CraftBukkit end
+                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                 this.gameEvent(GameEvent.SHEAR, player);
+                 itemstack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+@@ -174,11 +186,19 @@
+             level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5D), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+             this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_MOOSHROOM, tool, (serverlevel1, itemstack1) -> {
+                 for (int i = 0; i < itemstack1.getCount(); ++i) {
+-                    serverlevel1.addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(1.0D), this.getZ(), itemstack1.copyWithCount(1)));
++                    // CraftBukkit start
++                    ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY(1.0D), this.getZ(), itemstack1.copyWithCount(1));
++                    EntityDropItemEvent event = new EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
++                    Bukkit.getPluginManager().callEvent(event);
++                    if (event.isCancelled()) {
++                        continue;
++                    }
++                    serverlevel1.addFreshEntity(itementity);
++                    // CraftBukkit end
+                 }
+ 
+             });
+-        });
++        }, EntityTransformEvent.TransformReason.SHEARED, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SHEARED); // CraftBukkit
+     }
+ 
+     @Override
+@@ -197,7 +217,7 @@
+     protected void readAdditionalSaveData(ValueInput input) {
+         super.readAdditionalSaveData(input);
+         this.setVariant((MushroomCow.Variant) input.read("Type", MushroomCow.Variant.CODEC).orElse(MushroomCow.Variant.DEFAULT));
+-        this.stewEffects = (SuspiciousStewEffects) input.read("stew_effects", SuspiciousStewEffects.CODEC).orElse((Object) null);
++        this.stewEffects = (SuspiciousStewEffects) input.read("stew_effects", SuspiciousStewEffects.CODEC).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     private Optional<SuspiciousStewEffects> getEffectsFromItemStack(ItemStack itemStack) {

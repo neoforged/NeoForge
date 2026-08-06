@@ -1,0 +1,99 @@
+--- a/net/minecraft/world/entity/EntityType.java
++++ b/net/minecraft/world/entity/EntityType.java
+@@ -99,6 +99,12 @@
+     }
+ 
+     public @Nullable T spawn(ServerLevel level, @Nullable ItemStack itemStack, @Nullable LivingEntity user, BlockPos spawnPos, EntitySpawnReason spawnReason, boolean tryMoveDown, boolean movedUp) {
++        // CraftBukkit start
++        return this.spawn(level, itemStack, user, spawnPos, spawnReason, tryMoveDown, movedUp, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++    }
++
++    public @Nullable T spawn(ServerLevel level, @Nullable ItemStack itemStack, @Nullable LivingEntity user, BlockPos spawnPos, EntitySpawnReason spawnReason, boolean tryMoveDown, boolean movedUp, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason bukkitSpawnReason) {
++        // CraftBukkit end
+         PostSpawnProcessor<T> postspawnprocessor;
+ 
+         if (itemStack != null) {
+@@ -107,7 +113,7 @@
+             postspawnprocessor = PostSpawnProcessor.<T>nop();
+         }
+ 
+-        return (T) this.spawn(level, postspawnprocessor, spawnPos, spawnReason, tryMoveDown, movedUp);
++        return (T) this.spawn(level, postspawnprocessor, spawnPos, spawnReason, tryMoveDown, movedUp, bukkitSpawnReason); // CraftBukkit
+     }
+ 
+     public static <T extends Entity> PostSpawnProcessor<T> createDefaultStackConfig(Level level, ItemStack itemStack, @Nullable LivingEntity user) {
+@@ -128,19 +134,36 @@
+         TypedEntityData<EntityType<?>> typedentitydata = (TypedEntityData) itemStack.get(DataComponents.ENTITY_DATA);
+ 
+         return typedentitydata != null ? initialConfig.andThen((entity) -> {
+-            updateCustomEntityTag(level, user, entity, typedentitydata);
++            try { updateCustomEntityTag(level, user, entity, typedentitydata); } catch (Throwable t) { LOGGER.warn("Error loading spawn egg NBT", t); } // CraftBukkit - SPIGOT-5665
+         }) : initialConfig;
+     }
+ 
+     public @Nullable T spawn(ServerLevel level, BlockPos spawnPos, EntitySpawnReason spawnReason) {
+-        return (T) this.spawn(level, (PostSpawnProcessor) null, spawnPos, spawnReason, false, false);
++        // CraftBukkit start
++        return (T) this.spawn(level, spawnPos, spawnReason, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    public @Nullable T spawn(ServerLevel level, BlockPos spawnPos, EntitySpawnReason spawnReason, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason bukkitSpawnReason) {
++        return (T) this.spawn(level, (PostSpawnProcessor) null, spawnPos, spawnReason, false, false, bukkitSpawnReason); // CraftBukkit
++        // CraftBukkit end
+     }
+ 
+     public @Nullable T spawn(ServerLevel level, @Nullable PostSpawnProcessor<T> postSpawnConfig, BlockPos spawnPos, EntitySpawnReason spawnReason, boolean tryMoveDown, boolean movedUp) {
++        // CraftBukkit start
++        return this.spawn(level, postSpawnConfig, spawnPos, spawnReason, tryMoveDown, movedUp, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    public @Nullable T spawn(ServerLevel level, @Nullable PostSpawnProcessor<T> postSpawnConfig, BlockPos spawnPos, EntitySpawnReason spawnReason, boolean tryMoveDown, boolean movedUp, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason bukkitSpawnReason) {
++        // CraftBukkit end
+         T t0 = this.create(level, postSpawnConfig, spawnPos, spawnReason, tryMoveDown, movedUp);
+ 
+         if (t0 != null) {
+-            level.addFreshEntityWithPassengers(t0);
++            // CraftBukkit start
++            level.addFreshEntityWithPassengers(t0, bukkitSpawnReason);
++            if (t0.isRemoved()) {
++                return null; // Don't return an entity when CreatureSpawnEvent is canceled
++            }
++            // CraftBukkit end
+             if (t0 instanceof Mob) {
+                 Mob mob = (Mob) t0;
+ 
+@@ -343,21 +366,21 @@
+     }
+ 
+     public static @Nullable Entity loadEntityRecursive(ValueInput input, Level level, EntitySpawnRequest request, EntityProcessor postLoad) {
+-        Optional optional = loadStaticEntity(input, level, request);
++        Optional<Entity> optional = loadStaticEntity(input, level, request); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(postLoad);
+         return (Entity) optional.map(postLoad::process).map((entity) -> {
+             return loadPassengersRecursive(entity, input, level, request, postLoad);
+-        }).orElse((Object) null);
++        }).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     public static @Nullable Entity loadEntityRecursive(EntityType<?> type, ValueInput input, Level level, EntitySpawnReason reason, EntityProcessor postLoad) {
+-        Optional optional = loadStaticEntity(type, input, level, reason);
++        Optional<Entity> optional = loadStaticEntity(type, input, level, reason); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(postLoad);
+         return (Entity) optional.map(postLoad::process).map((entity) -> {
+             return loadPassengersRecursive(entity, input, level, new EntitySpawnRequest(reason, false), postLoad);
+-        }).orElse((Object) null);
++        }).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     private static Entity loadPassengersRecursive(Entity entity, ValueInput input, Level level, EntitySpawnRequest request, EntityProcessor postLoad) {
+@@ -475,7 +498,7 @@
+             this.canSpawnFarFromPlayer = category == MobCategory.CREATURE || category == MobCategory.MISC;
+         }
+ 
+-        public static <T extends Entity> EntityType.Builder<T> of(EntityType.EntityFactory<T> factory, MobCategory category) {
++        public static <T extends Entity> EntityType.Builder<T> of(EntityType.EntityFactory factory, MobCategory category) { // CraftBukkit - decompile error
+             return new EntityType.Builder<T>(factory, category);
+         }
+ 

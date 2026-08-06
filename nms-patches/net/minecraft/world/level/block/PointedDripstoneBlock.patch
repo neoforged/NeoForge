@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
++++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
+@@ -66,7 +66,7 @@
+     @Override
+     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
+         if (state.getValue(PointedDripstoneBlock.TIP_DIRECTION) == Direction.UP && state.getValue(PointedDripstoneBlock.THICKNESS) == SpeleothemThickness.TIP) {
+-            entity.causeFallDamage(fallDistance + 2.5D, 2.0F, level.damageSources().stalagmite());
++            entity.causeFallDamage(fallDistance + 2.5D, 2.0F, level.damageSources().stalagmite().directBlock(level, pos)); // CraftBukkit
+         } else {
+             super.fallOn(level, state, pos, entity, fallDistance);
+         }
+@@ -180,7 +180,7 @@
+             return canDripThrough(level, blockpos1, blockstate);
+         };
+ 
+-        return (BlockPos) findBlockVertical(level, stalactiteTipPos, Direction.DOWN.getAxisDirection(), bipredicate, predicate, 11).orElse((Object) null);
++        return (BlockPos) findBlockVertical(level, stalactiteTipPos, Direction.DOWN.getAxisDirection(), bipredicate, predicate, 11).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     public static @Nullable BlockPos findStalactiteTipAboveCauldron(Level level, BlockPos cauldronPos) {
+@@ -188,7 +188,7 @@
+             return canDripThrough(level, blockpos1, blockstate);
+         };
+ 
+-        return (BlockPos) findBlockVertical(level, cauldronPos, Direction.UP.getAxisDirection(), bipredicate, SpeleothemBlock::isFreeHangingStalactite, 11).orElse((Object) null);
++        return (BlockPos) findBlockVertical(level, cauldronPos, Direction.UP.getAxisDirection(), bipredicate, SpeleothemBlock::isFreeHangingStalactite, 11).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     public static Fluid getCauldronFillFluidType(ServerLevel level, BlockPos stalactitePos) {

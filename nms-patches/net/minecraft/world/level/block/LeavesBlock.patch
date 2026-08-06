@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/LeavesBlock.java
++++ b/net/minecraft/world/level/block/LeavesBlock.java
+@@ -27,6 +27,8 @@
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++import org.bukkit.event.block.LeavesDecayEvent; // CraftBukkit
++
+ public abstract class LeavesBlock extends Block implements SimpleWaterloggedBlock {
+ 
+     public static final int DECAY_DISTANCE = 7;
+@@ -68,6 +70,14 @@
+     @Override
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+         if (this.decaying(state)) {
++            // CraftBukkit start
++            LeavesDecayEvent event = new LeavesDecayEvent(level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
++            level.getCraftServer().getPluginManager().callEvent(event);
++
++            if (event.isCancelled() || level.getBlockState(pos).getBlock() != this) {
++                return;
++            }
++            // CraftBukkit end
+             dropResources(state, level, pos);
+             level.removeBlock(pos, false);
+         }

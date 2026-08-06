@@ -1,0 +1,34 @@
+--- a/net/minecraft/commands/CommandSource.java
++++ b/net/minecraft/commands/CommandSource.java
+@@ -2,6 +2,10 @@
+ 
+ import net.minecraft.network.chat.Component;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.command.NullCommandSender;
++// CraftBukkit end
++
+ public interface CommandSource {
+ 
+     CommandSource NULL = new CommandSource() {
+@@ -22,6 +26,13 @@
+         public boolean shouldInformAdmins() {
+             return false;
+         }
++
++        // CraftBukkit start
++        @Override
++        public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++            return NullCommandSender.INSTANCE;
++        }
++        // CraftBukkit end
+     };
+ 
+     void sendSystemMessage(Component message);
+@@ -35,4 +46,6 @@
+     default boolean alwaysAccepts() {
+         return false;
+     }
++
++    org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper); // CraftBukkit
+ }

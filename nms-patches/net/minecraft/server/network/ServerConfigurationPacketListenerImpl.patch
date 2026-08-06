@@ -1,0 +1,77 @@
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -42,6 +42,12 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.CraftServerLinks;
++import org.bukkit.event.player.PlayerLinksSendEvent;
++// CraftBukkit end
++
+ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements ServerConfigurationPacketListener, TickablePacketListener {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -54,8 +60,10 @@
+     private @Nullable SynchronizeRegistriesTask synchronizeRegistriesTask;
+     private @Nullable PrepareSpawnTask prepareSpawnTask;
+ 
+-    public ServerConfigurationPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie) {
+-        super(server, connection, cookie);
++    // CraftBukkit start
++    public ServerConfigurationPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie, ServerPlayer player) {
++        super(server, connection, cookie, player);
++        // CraftBukkit end
+         this.gameProfile = cookie.gameProfile();
+         this.clientInformation = cookie.clientInformation();
+     }
+@@ -84,6 +92,12 @@
+     public void startConfiguration() {
+         this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
+         ServerLinks serverlinks = this.server.serverLinks();
++        // CraftBukkit start
++        CraftServerLinks wrapper = new CraftServerLinks(serverlinks);
++        PlayerLinksSendEvent event = new PlayerLinksSendEvent(player.getBukkitEntity(), wrapper);
++        player.getBukkitEntity().getServer().getPluginManager().callEvent(event);
++        serverlinks = wrapper.getServerLinks();
++        // CraftBukkit end
+ 
+         if (!serverlinks.isEmpty()) {
+             this.send(new ClientboundServerLinksPacket(serverlinks.untrust()));
+@@ -102,7 +116,7 @@
+     }
+ 
+     public void returnToWorld() {
+-        this.prepareSpawnTask = new PrepareSpawnTask(this.server, new NameAndId(this.gameProfile));
++        this.prepareSpawnTask = new PrepareSpawnTask(this.server, this.player); // CraftBukkit
+         this.configurationTasks.add(this.prepareSpawnTask);
+         this.configurationTasks.add(new JoinWorldTask());
+         this.startNextTask();
+@@ -159,6 +173,7 @@
+ 
+     @Override
+     public void handleAcceptCodeOfConduct(ServerboundAcceptCodeOfConductPacket packet) {
++        PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
+         this.finishCurrentTask(ServerCodeOfConductConfigurationTask.TYPE);
+     }
+ 
+@@ -176,13 +191,17 @@
+                 return;
+             }
+ 
+-            Component component = playerlist.canPlayerLogin(this.connection.getRemoteAddress(), new NameAndId(this.gameProfile));
++            Component component = null; // CraftBukkit - login checks already completed
+ 
+             if (component != null) {
+                 this.disconnect(component);
+                 return;
+             }
+ 
++            // CraftBukkit start
++            ServerPlayer serverplayer = this.player;
++            serverplayer.updateOptions(this.clientInformation);
++            // CraftBukkit end
+             ((PrepareSpawnTask) Objects.requireNonNull(this.prepareSpawnTask)).spawnPlayer(this.connection, this.createCookie(this.clientInformation));
+         } catch (Exception exception) {
+             ServerConfigurationPacketListenerImpl.LOGGER.error("Couldn't place player in world", exception);

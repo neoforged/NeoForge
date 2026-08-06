@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/animal/frog/ShootTongue.java
++++ b/net/minecraft/world/entity/animal/frog/ShootTongue.java
+@@ -18,6 +18,10 @@
+ import net.minecraft.world.entity.ai.memory.WalkTarget;
+ import net.minecraft.world.level.pathfinder.Path;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class ShootTongue extends Behavior<Frog> {
+ 
+     public static final int TIME_OUT_DURATION = 100;
+@@ -82,7 +86,7 @@
+             if (entity.isAlive()) {
+                 body.doHurtTarget(level, entity);
+                 if (!entity.isAlive()) {
+-                    entity.remove(Entity.RemovalReason.KILLED);
++                    entity.remove(Entity.RemovalReason.KILLED, EntityRemoveEvent.Cause.DEATH); // CraftBukkit - add Bukkit remove cause
+                 }
+             }
+         }

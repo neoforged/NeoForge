@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
++++ b/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
+@@ -61,6 +61,13 @@
+                             DoorBlock doorblock = (DoorBlock) blockstate.getBlock();
+ 
+                             if (!doorblock.isOpen(blockstate)) {
++                                // CraftBukkit start - entities opening doors
++                                org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(livingentity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(livingentity.level(), blockpos));
++                                livingentity.level().getCraftServer().getPluginManager().callEvent(event);
++                                if (event.isCancelled()) {
++                                    return false;
++                                }
++                                // CraftBukkit end
+                                 doorblock.setOpen(livingentity, serverlevel, blockstate, blockpos, true);
+                             }
+ 
+@@ -76,6 +83,13 @@
+                             DoorBlock doorblock1 = (DoorBlock) blockstate1.getBlock();
+ 
+                             if (!doorblock1.isOpen(blockstate1)) {
++                                // CraftBukkit start - entities opening doors
++                                org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(livingentity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(livingentity.level(), blockpos1));
++                                livingentity.level().getCraftServer().getPluginManager().callEvent(event);
++                                if (event.isCancelled()) {
++                                    return false;
++                                }
++                                // CraftBukkit end
+                                 doorblock1.setOpen(livingentity, serverlevel, blockstate1, blockpos1, true);
+                                 optional = rememberDoorToClose(memoryaccessor1, optional, serverlevel, blockpos1);
+                             }
+@@ -129,7 +143,7 @@
+     }
+ 
+     private static boolean areOtherMobsComingThroughDoor(LivingEntity body, BlockPos doorPos, Optional<List<LivingEntity>> nearestEntities) {
+-        return nearestEntities.isEmpty() ? false : ((List) nearestEntities.get()).stream().filter((livingentity1) -> {
++        return nearestEntities.isEmpty() ? false : (nearestEntities.get()).stream().filter((livingentity1) -> { // CraftBukkit - decompile error
+             return livingentity1.getType() == body.getType();
+         }).filter((livingentity1) -> {
+             return doorPos.closerToCenterThan(livingentity1.position(), 2.0D);

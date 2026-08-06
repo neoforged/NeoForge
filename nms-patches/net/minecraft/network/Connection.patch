@@ -1,0 +1,37 @@
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -89,6 +89,7 @@
+     private volatile @Nullable DisconnectionDetails delayedDisconnect;
+     private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
+     private @Nullable UUID intendedProfileId;
++    public String hostname = ""; // CraftBukkit - add field
+ 
+     public Connection(PacketFlow receiving) {
+         this.receiving = receiving;
+@@ -180,7 +181,7 @@
+     }
+ 
+     private static <T extends PacketListener> void genericsFtw(Packet<T> packet, PacketListener listener) {
+-        packet.handle(listener);
++        packet.handle((T) listener); // CraftBukkit - decompile error
+     }
+ 
+     private void validateListener(ProtocolInfo<?> protocol, PacketListener packetListener) {
+@@ -307,7 +308,7 @@
+             this.flushQueue();
+             this.sendPacket(packet, listener, flush);
+         } else {
+-            this.pendingActions.add((Consumer) (connection) -> {
++            this.pendingActions.add((connection) -> { // CraftBukkit - decompile error
+                 connection.sendPacket(packet, listener, flush);
+             });
+         }
+@@ -433,7 +434,7 @@
+         }
+ 
+         if (this.isConnected()) {
+-            this.channel.close().awaitUninterruptibly();
++            this.channel.close(); // We can't wait as this may be called from an event loop.
+             this.disconnectionDetails = details;
+         }
+ 

@@ -1,0 +1,92 @@
+--- a/net/minecraft/world/entity/animal/wolf/Wolf.java
++++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
+@@ -90,6 +90,13 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityDamageEvent;
++import org.bukkit.event.entity.EntityRegainHealthEvent;
++import org.bukkit.event.entity.EntityTargetEvent;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++// CraftBukkit end
++
+ public class Wolf extends TamableAnimal implements NeutralMob {
+ 
+     private static final EntityDataAccessor<Boolean> DATA_INTERESTED_ID = SynchedEntityData.<Boolean>defineId(Wolf.class, EntityDataSerializers.BOOLEAN);
+@@ -98,7 +105,7 @@
+     private static final EntityDataAccessor<Holder<WolfVariant>> DATA_VARIANT_ID = SynchedEntityData.<Holder<WolfVariant>>defineId(Wolf.class, EntityDataSerializers.WOLF_VARIANT);
+     private static final EntityDataAccessor<Holder<WolfSoundVariant>> DATA_SOUND_VARIANT_ID = SynchedEntityData.<Holder<WolfSoundVariant>>defineId(Wolf.class, EntityDataSerializers.WOLF_SOUND_VARIANT);
+     public static final TargetingConditions.Selector PREY_SELECTOR = (livingentity, serverlevel) -> {
+-        return livingentity.is((Object) EntityTypes.SHEEP) || livingentity.is((Object) EntityTypes.RABBIT) || livingentity.is((Object) EntityTypes.FOX);
++        return livingentity.is(EntityTypes.SHEEP) || livingentity.is(EntityTypes.RABBIT) || livingentity.is(EntityTypes.FOX); // CraftBukkit - decompile error
+     };
+     private static final EntityDimensions BABY_DIMENSIONS = EntityDimensions.scalable(0.3F, 0.425F).withEyeHeight(0.34375F).withAttachments(EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F, 0.4375F, 0.0F));
+     private static final float START_HEALTH = 8.0F;
+@@ -388,16 +395,27 @@
+         if (this.isInvulnerableTo(level, source)) {
+             return false;
+         } else {
++            // CraftBukkit start
++            boolean result = super.hurtServer(level, source, damage);
++            if (!result) {
++                return result;
++            }
++            // CraftBukkit end
+             this.setOrderedToSit(false);
+-            return super.hurtServer(level, source, damage);
++            return result; // CraftBukkit
+         }
+     }
+ 
+     @Override
+-    protected void actuallyHurt(ServerLevel level, DamageSource source, float damage) {
++    public boolean actuallyHurt(ServerLevel level, DamageSource source, float damage, EntityDamageEvent event) { // CraftBukkit - void -> boolean
+         if (!this.canArmorAbsorb(source)) {
+-            super.actuallyHurt(level, source, damage);
++            return super.actuallyHurt(level, source, damage, event); // CraftBukkit
+         } else {
++            // CraftBukkit start - SPIGOT-7815: if the damage was cancelled, no need to run the wolf armor behaviour
++            if (event.isCancelled()) {
++                return false;
++            }
++            // CraftBukkit end
+             ItemStack itemstack = this.getBodyArmorItem();
+             int i = itemstack.getDamageValue();
+             int j = itemstack.getMaxDamage();
+@@ -409,6 +427,7 @@
+             }
+ 
+         }
++        return false; // CraftBukkit
+     }
+ 
+     private boolean canArmorAbsorb(DamageSource source) {
+@@ -419,7 +438,7 @@
+     protected void applyTamingSideEffects() {
+         if (this.isTame()) {
+             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0D);
+-            this.setHealth(40.0F);
++            this.setHealth(this.getMaxHealth()); // CraftBukkit - 40.0 -> getMaxHealth()
+         } else {
+             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(8.0D);
+         }
+@@ -469,7 +488,7 @@
+                     this.setOrderedToSit(!this.isOrderedToSit());
+                     this.jumping = false;
+                     this.navigation.stop();
+-                    this.setTarget((LivingEntity) null);
++                    this.setTarget((LivingEntity) null, EntityTargetEvent.TargetReason.FORGOT_TARGET, true); // CraftBukkit - reason
+                     return InteractionResult.SUCCESS.withoutItem();
+                 }
+ 
+@@ -493,7 +512,8 @@
+     }
+ 
+     private void tryToTame(Player player) {
+-        if (this.random.nextInt(3) == 0) {
++        // CraftBukkit - added event call and isCancelled check.
++        if (this.random.nextInt(3) == 0 && !CraftEventFactory.callEntityTameEvent(this, player).isCancelled()) {
+             this.tame(player);
+             this.navigation.stop();
+             this.setTarget((LivingEntity) null);

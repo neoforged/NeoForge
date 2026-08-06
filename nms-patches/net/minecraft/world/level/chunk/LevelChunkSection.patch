@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/level/chunk/LevelChunkSection.java
++++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
+@@ -18,7 +18,7 @@
+     private short tickingBlockCount;
+     private short tickingFluidCount;
+     private final PalettedContainer<BlockState> states;
+-    private PalettedContainerRO<Holder<Biome>> biomes;
++    private PalettedContainer<Holder<Biome>> biomes; // CraftBukkit - read/write
+ 
+     private LevelChunkSection(LevelChunkSection source) {
+         this.nonEmptyBlockCount = source.nonEmptyBlockCount;
+@@ -29,7 +29,7 @@
+         this.biomes = source.biomes.copy();
+     }
+ 
+-    public LevelChunkSection(PalettedContainer<BlockState> states, PalettedContainerRO<Holder<Biome>> biomes) {
++    public LevelChunkSection(PalettedContainer<BlockState> states, PalettedContainer<Holder<Biome>> biomes) { // CraftBukkit - read/write
+         this.states = states;
+         this.biomes = biomes;
+         this.recalcBlockCounts();
+@@ -210,6 +210,12 @@
+         return this.biomes.get(quartX, quartY, quartZ);
+     }
+ 
++    // CraftBukkit start
++    public void setBiome(int i, int j, int k, Holder<Biome> biome) {
++        this.biomes.set(i, j, k, biome);
++    }
++    // CraftBukkit end
++
+     public void fillBiomesFromNoise(BiomeResolver biomeResolver, Climate.Sampler sampler, int quartMinX, int quartMinY, int quartMinZ) {
+         PalettedContainer<Holder<Biome>> palettedcontainer = this.biomes.recreate();
+         int l = 4;

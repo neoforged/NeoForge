@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/AbstractCandleBlock.java
++++ b/net/minecraft/world/level/block/AbstractCandleBlock.java
+@@ -47,6 +47,11 @@
+     @Override
+     protected void onProjectileHit(Level level, BlockState state, BlockHitResult blockHit, Projectile projectile) {
+         if (!level.isClientSide() && projectile.isOnFire() && this.canBeLit(state)) {
++            // CraftBukkit start
++            if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockHit.getBlockPos(), projectile).isCancelled()) {
++                return;
++            }
++            // CraftBukkit end
+             setLit(level, state, blockHit.getBlockPos(), true);
+         }
+ 

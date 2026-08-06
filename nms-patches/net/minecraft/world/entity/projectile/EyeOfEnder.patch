@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/projectile/EyeOfEnder.java
++++ b/net/minecraft/world/entity/projectile/EyeOfEnder.java
+@@ -20,6 +20,10 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityRemoveEvent;
++// CraftBukkit end
++
+ public class EyeOfEnder extends Entity implements ItemSupplier {
+ 
+     private static final float MIN_CAMERA_DISTANCE_SQUARED = 12.25F;
+@@ -108,7 +112,7 @@
+             ++this.life;
+             if (this.life > 80 && !this.level().isClientSide()) {
+                 this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F);
+-                this.discard();
++                this.discard(this.surviveAfterDeath ? EntityRemoveEvent.Cause.DROP : EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+                 if (this.surviveAfterDeath) {
+                     this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()));
+                 } else {

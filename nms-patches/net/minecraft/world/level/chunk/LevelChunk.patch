@@ -1,0 +1,155 @@
+--- a/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -88,7 +88,7 @@
+     };
+     private final Map<BlockPos, LevelChunk.RebindableTickingBlockEntityWrapper> tickersInLevel;
+     public boolean loaded;
+-    public final Level level;
++    public final ServerLevel level; // CraftBukkit - type
+     private @Nullable Supplier<FullChunkStatus> fullStatus;
+     private LevelChunk.@Nullable PostLoadProcessor postLoad;
+     private final Int2ObjectMap<GameEventListenerRegistry> gameEventListenerRegistrySections;
+@@ -105,7 +105,7 @@
+         this.tickersInLevel = Maps.newHashMap();
+         this.unsavedListener = (chunkpos1) -> {
+         };
+-        this.level = level;
++        this.level = (ServerLevel) level; // CraftBukkit - type
+         this.gameEventListenerRegistrySections = new Int2ObjectOpenHashMap();
+ 
+         for (Heightmap.Types heightmap_types : Heightmap.Types.values()) {
+@@ -119,6 +119,11 @@
+         this.fluidTicks = fluidTicks;
+     }
+ 
++    // CraftBukkit start
++    public boolean mustNotSave;
++    public boolean needsDecoration;
++    // CraftBukkit end
++
+     public LevelChunk(ServerLevel level, ProtoChunk protoChunk, LevelChunk.@Nullable PostLoadProcessor postLoad) {
+         this(level, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.unpackBlockTicks(), protoChunk.unpackFluidTicks(), protoChunk.getInhabitedTime(), protoChunk.getSections(), postLoad, protoChunk.getBlendingData());
+         if (!Collections.disjoint(protoChunk.pendingBlockEntities.keySet(), protoChunk.blockEntities.keySet())) {
+@@ -147,6 +152,10 @@
+         this.skyLightSources = protoChunk.skyLightSources;
+         this.setLightCorrect(protoChunk.isLightCorrect());
+         this.markUnsaved();
++        this.needsDecoration = true; // CraftBukkit
++        // CraftBukkit start
++        this.persistentDataContainer = protoChunk.persistentDataContainer; // SPIGOT-6814: copy PDC to account for 1.17 to 1.18 chunk upgrading.
++        // CraftBukkit end
+     }
+ 
+     public void setUnsavedListener(LevelChunk.UnsavedListener unsavedListener) {
+@@ -339,7 +348,8 @@
+                 if (!levelchunksection.getBlockState(k, l, i1).is(block)) {
+                     return null;
+                 } else {
+-                    if (!this.level.isClientSide() && (flags & 512) == 0) {
++                    // CraftBukkit - Don't place while processing the BlockPlaceEvent, unless it's a BlockContainer. Prevents blocks such as TNT from activating when cancelled.
++                    if (!this.level.isClientSide() && (flags & 512) == 0 && (!this.level.captureBlockStates || block instanceof net.minecraft.world.level.block.BaseEntityBlock)) {
+                         state.onPlace(this.level, pos, blockstate1, flag3);
+                     }
+ 
+@@ -387,7 +397,12 @@
+     }
+ 
+     public @Nullable BlockEntity getBlockEntity(BlockPos pos, LevelChunk.EntityCreationType creationType) {
+-        BlockEntity blockentity = (BlockEntity) this.blockEntities.get(pos);
++        // CraftBukkit start
++        BlockEntity blockentity = level.capturedTileEntities.get(pos);
++        if (blockentity == null) {
++            blockentity = (BlockEntity) this.blockEntities.get(pos);
++        }
++        // CraftBukkit end
+ 
+         if (blockentity == null) {
+             CompoundTag compoundtag = (CompoundTag) this.pendingBlockEntities.remove(pos);
+@@ -460,6 +475,7 @@
+ 
+         if (!blockstate.hasBlockEntity()) {
+             LevelChunk.LOGGER.warn("Trying to set block entity {} at position {}, but state {} does not allow it", new Object[]{blockEntity, blockpos, blockstate});
++            new Exception().printStackTrace(); // CraftBukkit
+         } else {
+             BlockState blockstate1 = blockEntity.getBlockState();
+ 
+@@ -513,6 +529,12 @@
+         if (this.isInLevel()) {
+             BlockEntity blockentity = (BlockEntity) this.blockEntities.remove(pos);
+ 
++            // CraftBukkit start - SPIGOT-5561: Also remove from pending map
++            if (!pendingBlockEntities.isEmpty()) {
++                pendingBlockEntities.remove(pos);
++            }
++            // CraftBukkit end
++
+             if (blockentity != null) {
+                 Level level = this.level;
+ 
+@@ -567,6 +589,57 @@
+ 
+     }
+ 
++    // CraftBukkit start
++    public void loadCallback() {
++        org.bukkit.Server server = this.level.getCraftServer();
++        if (server != null) {
++            /*
++             * If it's a new world, the first few chunks are generated inside
++             * the World constructor. We can't reliably alter that, so we have
++             * no way of creating a CraftWorld/CraftServer at that point.
++             */
++            org.bukkit.Chunk bukkitChunk = new org.bukkit.craftbukkit.CraftChunk(this);
++            server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(bukkitChunk, this.needsDecoration));
++
++            if (this.needsDecoration) {
++                this.needsDecoration = false;
++                java.util.Random random = new java.util.Random();
++                random.setSeed(level.getSeed());
++                long xRand = random.nextLong() / 2L * 2L + 1L;
++                long zRand = random.nextLong() / 2L * 2L + 1L;
++                random.setSeed((long) this.chunkPos.x() * xRand + (long) this.chunkPos.z() * zRand ^ level.getSeed());
++
++                org.bukkit.World world = this.level.getWorld();
++                if (world != null) {
++                    this.level.populating = true;
++                    try {
++                        for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
++                            populator.populate(world, random, bukkitChunk);
++                        }
++                    } finally {
++                        this.level.populating = false;
++                    }
++                }
++                server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkPopulateEvent(bukkitChunk));
++            }
++        }
++    }
++
++    public void unloadCallback() {
++        org.bukkit.Server server = this.level.getCraftServer();
++        org.bukkit.Chunk bukkitChunk = new org.bukkit.craftbukkit.CraftChunk(this);
++        org.bukkit.event.world.ChunkUnloadEvent unloadEvent = new org.bukkit.event.world.ChunkUnloadEvent(bukkitChunk, this.isUnsaved());
++        server.getPluginManager().callEvent(unloadEvent);
++        // note: saving can be prevented, but not forced if no saving is actually required
++        this.mustNotSave = !unloadEvent.isSaveChunk();
++    }
++
++    @Override
++    public boolean isUnsaved() {
++        return super.isUnsaved() && !this.mustNotSave;
++    }
++    // CraftBukkit end
++
+     public boolean isEmpty() {
+         return false;
+     }
+@@ -778,7 +851,7 @@
+ 
+     private <T extends BlockEntity> void updateBlockEntityTicker(T blockEntity) {
+         BlockState blockstate = blockEntity.getBlockState();
+-        BlockEntityTicker<T> blockentityticker = blockstate.<T>getTicker(this.level, ((BlockEntity) blockEntity).getType());
++        BlockEntityTicker<T> blockentityticker = blockstate.<T>getTicker(this.level, (net.minecraft.world.level.block.entity.BlockEntityType<T>) ((BlockEntity) blockEntity).getType()); // CraftBukkit - decompile error
+ 
+         if (blockentityticker == null) {
+             this.removeBlockEntityTicker(blockEntity.getBlockPos());

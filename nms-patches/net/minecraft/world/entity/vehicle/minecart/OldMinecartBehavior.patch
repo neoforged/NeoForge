@@ -1,0 +1,84 @@
+--- a/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
++++ b/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
+@@ -25,6 +25,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.entity.Vehicle;
++import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
++// CraftBukkit end
++
+ public class OldMinecartBehavior extends MinecartBehavior {
+ 
+     private static final double MINECART_RIDABLE_THRESHOLD = 0.01D;
+@@ -270,7 +275,7 @@
+             if (d23 > 0.01D) {
+                 double d24 = 0.06D;
+ 
+-                this.setDeltaMovement(vec37.add(vec37.x / d23 * 0.06D, 0.0D, vec37.z / d23 * 0.06D));
++                this.setDeltaMovement(vec37.add(vec37.x / d23 * 0.06D * minecart.powRailAccelMult, 0.0D, vec37.z / d23 * 0.06D * minecart.powRailAccelMult)); // CraftBukkit - added acceleration multiplier
+             } else {
+                 Vec3 vec38 = this.getDeltaMovement();
+                 double d25 = vec38.x;
+@@ -410,8 +415,26 @@
+             if (!list.isEmpty()) {
+                 for (Entity entity : list) {
+                     if (!(entity instanceof Player) && !(entity instanceof IronGolem) && !(entity instanceof AbstractMinecart) && !this.minecart.isVehicle() && !entity.isPassenger()) {
++                        // CraftBukkit start
++                        VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent((Vehicle) this.minecart.getBukkitEntity(), entity.getBukkitEntity());
++                        this.level().getCraftServer().getPluginManager().callEvent(collisionEvent);
++
++                        if (collisionEvent.isCancelled()) {
++                            continue;
++                        }
++                        // CraftBukkit end
+                         entity.startRiding(this.minecart);
+                     } else {
++                        // CraftBukkit start
++                        if (!this.minecart.isPassengerOfSameVehicle(entity)) {
++                            VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent((Vehicle) this.minecart.getBukkitEntity(), entity.getBukkitEntity());
++                            this.level().getCraftServer().getPluginManager().callEvent(collisionEvent);
++
++                            if (collisionEvent.isCancelled()) {
++                                continue;
++                            }
++                        }
++                        // CraftBukkit end
+                         entity.push((Entity) this.minecart);
+                     }
+                 }
+@@ -419,6 +442,14 @@
+         } else {
+             for (Entity entity1 : this.level().getEntities(this.minecart, aabb)) {
+                 if (!this.minecart.hasPassenger(entity1) && entity1.isPushable() && entity1 instanceof AbstractMinecart) {
++                    // CraftBukkit start
++                    VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent((Vehicle) this.minecart.getBukkitEntity(), entity1.getBukkitEntity());
++                    this.level().getCraftServer().getPluginManager().callEvent(collisionEvent);
++
++                    if (collisionEvent.isCancelled()) {
++                        continue;
++                    }
++                    // CraftBukkit end
+                     entity1.push((Entity) this.minecart);
+                 }
+             }
+@@ -439,11 +470,17 @@
+ 
+     @Override
+     public double getMaxSpeed(ServerLevel level) {
++        // CraftBukkit start
++        Double maxSpeed = this.minecart.maxSpeed;
++        if (maxSpeed != null) {
++            return (this.minecart.isInWater() ? maxSpeed / 2.0D : maxSpeed);
++        }
++        // CraftBukkit end
+         return this.minecart.isInWater() ? 0.2D : 0.4D;
+     }
+ 
+     @Override
+     public double getSlowdownFactor() {
+-        return this.minecart.isVehicle() ? 0.997D : 0.96D;
++        return this.minecart.isVehicle() || !this.minecart.slowWhenEmpty ? 0.997D : 0.96D; // CraftBukkit - add !this.slowWhenEmpty
+     }
+ }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Ghast.java
++++ b/net/minecraft/world/entity/monster/Ghast.java
+@@ -483,6 +483,8 @@
+ 
+                         LargeFireball largefireball = new LargeFireball(level, this.ghast, vec31.normalize(), this.ghast.getExplosionPower());
+ 
++                        // CraftBukkit - set bukkitYield when setting explosionpower
++                        largefireball.bukkitYield = largefireball.explosionPower = this.ghast.getExplosionPower();
+                         largefireball.setPos(this.ghast.getX() + vec3.x * 4.0D, this.ghast.getY(0.5D) + 0.5D, largefireball.getZ() + vec3.z * 4.0D);
+                         level.addFreshEntity(largefireball);
+                         this.chargeTime = -40;

@@ -1,0 +1,7 @@
+--- a/net/minecraft/world/entity/AgeableMob.java
++++ b/net/minecraft/world/entity/AgeableMob.java
+@@ -1,3 +1,4 @@
++// mc-dev import
+ package net.minecraft.world.entity;
+ 
+ import com.google.common.annotations.VisibleForTesting;

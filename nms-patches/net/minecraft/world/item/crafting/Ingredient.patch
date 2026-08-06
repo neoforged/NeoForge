@@ -1,0 +1,66 @@
+--- a/net/minecraft/world/item/crafting/Ingredient.java
++++ b/net/minecraft/world/item/crafting/Ingredient.java
+@@ -22,6 +22,11 @@
+ import net.minecraft.world.item.crafting.display.SlotDisplay;
+ import net.minecraft.world.level.ItemLike;
+ 
++// CraftBukkit start
++import java.util.List;
++import org.jspecify.annotations.Nullable;
++// CraftBukkit end
++
+ public final class Ingredient implements Predicate<ItemStack>, StackedContents.IngredientInfo<Holder<Item>> {
+ 
+     public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = ByteBufCodecs.holderSet(Registries.ITEM).map(Ingredient::new, (ingredient) -> {
+@@ -39,6 +44,24 @@
+         return ingredient.values;
+     });
+     private final HolderSet<Item> values;
++    // CraftBukkit start
++    @Nullable
++    private List<ItemStack> itemStacks;
++
++    public boolean isExact() {
++        return this.itemStacks != null;
++    }
++
++    public List<ItemStack> itemStacks() {
++        return this.itemStacks;
++    }
++
++    public static Ingredient ofStacks(List<ItemStack> stacks) {
++        Ingredient recipe = Ingredient.of(stacks.stream().map(ItemStack::getItem));
++        recipe.itemStacks = stacks;
++        return recipe;
++    }
++    // CraftBukkit end
+ 
+     private Ingredient(HolderSet<Item> values) {
+         values.unwrap().ifRight((list) -> {
+@@ -71,6 +94,17 @@
+     }
+ 
+     public boolean test(ItemStack input) {
++        // CraftBukkit start
++        if (this.isExact()) {
++            for (ItemStack itemstack1 : this.itemStacks()) {
++                if (itemstack1.getItem() == input.getItem() && ItemStack.isSameItemSameComponents(input, itemstack1)) {
++                    return true;
++                }
++            }
++
++            return false;
++        }
++        // CraftBukkit end
+         return input.is(this.values);
+     }
+ 
+@@ -80,7 +114,7 @@
+ 
+     public boolean equals(Object o) {
+         if (o instanceof Ingredient ingredient) {
+-            return Objects.equals(this.values, ingredient.values);
++            return Objects.equals(this.values, ingredient.values) && Objects.equals(this.itemStacks, ingredient.itemStacks); // CraftBukkit
+         } else {
+             return false;
+         }

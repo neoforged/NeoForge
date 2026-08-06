@@ -1,0 +1,128 @@
+--- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
++++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+@@ -72,7 +72,12 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
+-public record SerializableChunkData(PalettedContainerFactory containerFactory, ChunkPos chunkPos, int minSectionY, long lastUpdateTime, long inhabitedTime, ChunkStatus chunkStatus, BlendingData.@Nullable Packed blendingData, @Nullable BelowZeroRetrogen belowZeroRetrogen, UpgradeData upgradeData, long @Nullable [] carvingMask, Map<Heightmap.Types, long[]> heightmaps, ChunkAccess.PackedTicks packedTicks, @Nullable ShortList[] postProcessingSections, boolean lightCorrect, List<SerializableChunkData.SectionData> sectionData, List<CompoundTag> entities, List<CompoundTag> blockEntities, CompoundTag structureData) {
++// CraftBukkit start
++import net.minecraft.nbt.Tag;
++// CraftBukkit end
++
++// CraftBukkit - persistentDataContainer
++public record SerializableChunkData(PalettedContainerFactory containerFactory, ChunkPos chunkPos, int minSectionY, long lastUpdateTime, long inhabitedTime, ChunkStatus chunkStatus, BlendingData.@Nullable Packed blendingData, @Nullable BelowZeroRetrogen belowZeroRetrogen, UpgradeData upgradeData, long @Nullable [] carvingMask, Map<Heightmap.Types, long[]> heightmaps, ChunkAccess.PackedTicks packedTicks, @Nullable ShortList[] postProcessingSections, boolean lightCorrect, List<SerializableChunkData.SectionData> sectionData, List<CompoundTag> entities, List<CompoundTag> blockEntities, CompoundTag structureData, @Nullable Tag persistentDataContainer) {
+ 
+     private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
+     private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
+@@ -100,9 +105,9 @@
+                 return new UpgradeData(compoundtag1, levelHeight);
+             }).orElse(UpgradeData.EMPTY);
+             boolean flag = chunkData.getBooleanOr("isLightOn", false);
+-            BlendingData.Packed blendingdata_packed = (BlendingData.Packed) chunkData.read("blending_data", BlendingData.Packed.CODEC).orElse((Object) null);
+-            BelowZeroRetrogen belowzeroretrogen = (BelowZeroRetrogen) chunkData.read("below_zero_retrogen", BelowZeroRetrogen.CODEC).orElse((Object) null);
+-            long[] along = (long[]) chunkData.getLongArray("carving_mask").orElse((Object) null);
++            BlendingData.Packed blendingdata_packed = (BlendingData.Packed) chunkData.read("blending_data", BlendingData.Packed.CODEC).orElse(null); // CraftBukkit - decompile error
++            BelowZeroRetrogen belowzeroretrogen = (BelowZeroRetrogen) chunkData.read("below_zero_retrogen", BelowZeroRetrogen.CODEC).orElse(null); // CraftBukkit - decompile error
++            long[] along = (long[]) chunkData.getLongArray("carving_mask").orElse(null); // CraftBukkit - decompile error
+             Map<Heightmap.Types, long[]> map = new EnumMap(Heightmap.Types.class);
+ 
+             chunkData.getCompound("Heightmaps").ifPresent((compoundtag1) -> {
+@@ -120,7 +125,7 @@
+             ShortList[] ashortlist = new ShortList[listtag.size()];
+ 
+             for (int k = 0; k < listtag.size(); ++k) {
+-                ListTag listtag1 = (ListTag) listtag.getList(k).orElse((Object) null);
++                ListTag listtag1 = (ListTag) listtag.getList(k).orElse(null); // CraftBukkit - decompile error
+ 
+                 if (listtag1 != null && !listtag1.isEmpty()) {
+                     ShortList shortlist = new ShortArrayList(listtag1.size());
+@@ -138,7 +143,7 @@
+             CompoundTag compoundtag1 = chunkData.getCompoundOrEmpty("structures");
+             ListTag listtag2 = chunkData.getListOrEmpty("sections");
+             List<SerializableChunkData.SectionData> list4 = new ArrayList(listtag2.size());
+-            Codec<PalettedContainerRO<Holder<Biome>>> codec = containerFactory.biomeContainerCodec();
++            Codec<PalettedContainer<Holder<Biome>>> codec = containerFactory.biomeContainerCodecRW(); // CraftBukkit - read/write
+             Codec<PalettedContainer<BlockState>> codec1 = containerFactory.blockStatesContainerCodec();
+ 
+             for (int i1 = 0; i1 < listtag2.size(); ++i1) {
+@@ -165,21 +170,22 @@
+                             }).getOrThrow(SerializableChunkData.ChunkReadException::new);
+                         });
+                         Objects.requireNonNull(containerFactory);
+-                        PalettedContainerRO<Holder<Biome>> palettedcontainerro = (PalettedContainerRO) optional1.orElseGet(containerFactory::createForBiomes);
++                        PalettedContainer<Holder<Biome>> palettedcontainerro = (PalettedContainer) optional1.orElseGet(containerFactory::createForBiomes); // CraftBukkit - read/write
+ 
+                         levelchunksection = new LevelChunkSection(palettedcontainer, palettedcontainerro);
+                     } else {
+                         levelchunksection = null;
+                     }
+ 
+-                    DataLayer datalayer = (DataLayer) compoundtag2.getByteArray("BlockLight").map(DataLayer::new).orElse((Object) null);
+-                    DataLayer datalayer1 = (DataLayer) compoundtag2.getByteArray("SkyLight").map(DataLayer::new).orElse((Object) null);
++                    DataLayer datalayer = (DataLayer) compoundtag2.getByteArray("BlockLight").map(DataLayer::new).orElse(null); // CraftBukkit - decompile error
++                    DataLayer datalayer1 = (DataLayer) compoundtag2.getByteArray("SkyLight").map(DataLayer::new).orElse(null); // CraftBukkit - decompile error
+ 
+                     list4.add(new SerializableChunkData.SectionData(j1, levelchunksection, datalayer, datalayer1));
+                 }
+             }
+ 
+-            return new SerializableChunkData(containerFactory, chunkpos, levelHeight.getMinSectionY(), i, j, chunkstatus, blendingdata_packed, belowzeroretrogen, upgradedata, along, map, chunkaccess_packedticks, ashortlist, flag, list4, list2, list3, compoundtag1);
++            // CraftBukkit - ChunkBukkitValues
++            return new SerializableChunkData(containerFactory, chunkpos, levelHeight.getMinSectionY(), i, j, chunkstatus, blendingdata_packed, belowzeroretrogen, upgradedata, along, map, chunkaccess_packedticks, ashortlist, flag, list4, list2, list3, compoundtag1, chunkData.get("ChunkBukkitValues"));
+         }
+     }
+ 
+@@ -249,6 +255,12 @@
+             }
+         }
+ 
++        // CraftBukkit start - load chunk persistent data from nbt - SPIGOT-6814: Already load PDC here to account for 1.17 to 1.18 chunk upgrading.
++        if (persistentDataContainer instanceof CompoundTag) {
++            chunkaccess.persistentDataContainer.putAll((CompoundTag) persistentDataContainer);
++        }
++        // CraftBukkit end
++
+         chunkaccess.setLightCorrect(this.lightCorrect);
+         EnumSet<Heightmap.Types> enumset = EnumSet.noneOf(Heightmap.Types.class);
+ 
+@@ -365,7 +377,14 @@
+             });
+             CompoundTag compoundtag1 = packStructureData(StructurePieceSerializationContext.fromLevel(level), chunkpos, chunk.getAllStarts(), chunk.getAllReferences());
+ 
+-            return new SerializableChunkData(level.palettedContainerFactory(), chunkpos, chunk.getMinSectionY(), level.getGameTime(), chunk.getInhabitedTime(), chunk.getPersistedStatus(), (BlendingData.Packed) Optionull.map(chunk.getBlendingData(), BlendingData::pack), chunk.getBelowZeroRetrogen(), chunk.getUpgradeData().copy(), along, map, chunkaccess_packedticks, ashortlist, chunk.isLightCorrect(), list, list2, list1, compoundtag1);
++            // CraftBukkit start - store chunk persistent data in nbt
++            CompoundTag persistentDataContainer = null;
++            if (!chunk.persistentDataContainer.isEmpty()) { // SPIGOT-6814: Always save PDC to account for 1.17 to 1.18 chunk upgrading.
++                persistentDataContainer = chunk.persistentDataContainer.toTagCompound();
++            }
++
++            return new SerializableChunkData(level.palettedContainerFactory(), chunkpos, chunk.getMinSectionY(), level.getGameTime(), chunk.getInhabitedTime(), chunk.getPersistedStatus(), (BlendingData.Packed) Optionull.map(chunk.getBlendingData(), BlendingData::pack), chunk.getBelowZeroRetrogen(), chunk.getUpgradeData().copy(), along, map, chunkaccess_packedticks, ashortlist, chunk.isLightCorrect(), list, list2, list1, compoundtag1, persistentDataContainer);
++            // CraftBukkit end
+         }
+     }
+ 
+@@ -439,6 +458,11 @@
+         });
+         compoundtag.put("Heightmaps", compoundtag2);
+         compoundtag.put("structures", this.structureData);
++        // CraftBukkit start - store chunk persistent data in nbt
++        if (persistentDataContainer != null) { // SPIGOT-6814: Always save PDC to account for 1.17 to 1.18 chunk upgrading.
++            compoundtag.put("ChunkBukkitValues", persistentDataContainer);
++        }
++        // CraftBukkit end
+         return compoundtag;
+     }
+ 
+@@ -518,6 +542,12 @@
+                 StructureStart structurestart = StructureStart.loadStaticStart(context, compoundtag1.getCompoundOrEmpty(s), seed);
+ 
+                 if (structurestart != null) {
++                    // CraftBukkit start - load persistent data for structure start
++                    net.minecraft.nbt.Tag persistentBase = compoundtag1.getCompoundOrEmpty(s).get("StructureBukkitValues");
++                    if (persistentBase instanceof CompoundTag) {
++                        structurestart.persistentDataContainer.putAll((CompoundTag) persistentBase);
++                    }
++                    // CraftBukkit end
+                     map.put(structure, structurestart);
+                 }
+             }

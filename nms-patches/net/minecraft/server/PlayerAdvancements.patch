@@ -1,0 +1,18 @@
+--- a/net/minecraft/server/PlayerAdvancements.java
++++ b/net/minecraft/server/PlayerAdvancements.java
+@@ -151,6 +151,7 @@
+             AdvancementHolder advancementholder = manager.get(identifier);
+ 
+             if (advancementholder == null) {
++                if (!identifier.getNamespace().equals("minecraft")) return; // CraftBukkit
+                 PlayerAdvancements.LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", identifier, this.playerSavePath);
+             } else {
+                 this.startProgress(advancementholder, advancementprogress);
+@@ -182,6 +183,7 @@
+             this.progressChanged.add(holder);
+             flag = true;
+             if (!flag1 && advancementprogress.isDone()) {
++                this.player.level().getCraftServer().getPluginManager().callEvent(new org.bukkit.event.player.PlayerAdvancementDoneEvent(this.player.getBukkitEntity(), holder.toBukkit())); // CraftBukkit
+                 holder.value().rewards().grant(this.player);
+                 holder.value().display().ifPresent((displayinfo) -> {
+                     if (displayinfo.shouldAnnounceChat() && (Boolean) this.player.level().getGameRules().get(GameRules.SHOW_ADVANCEMENT_MESSAGES)) {

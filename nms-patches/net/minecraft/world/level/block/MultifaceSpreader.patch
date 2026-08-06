@@ -1,0 +1,43 @@
+--- a/net/minecraft/world/level/block/MultifaceSpreader.java
++++ b/net/minecraft/world/level/block/MultifaceSpreader.java
+@@ -95,7 +95,7 @@
+         return this.config.placeBlock(level, spreadPos, blockstate, postProcess) ? Optional.of(spreadPos) : Optional.empty();
+     }
+ 
+-    public static record SpreadPos(BlockPos pos, Direction face) {
++    public static record SpreadPos(BlockPos pos, Direction face, BlockPos source) { // CraftBukkit
+ 
+     }
+ 
+@@ -130,7 +130,7 @@
+                     level.getChunk(spreadPos.pos()).markPosForPostProcessing(spreadPos.pos());
+                 }
+ 
+-                return level.setBlock(spreadPos.pos(), blockstate1, 2);
++                return org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(level, spreadPos.source(), spreadPos.pos(), blockstate1, 2); // CraftBukkit
+             } else {
+                 return false;
+             }
+@@ -167,19 +167,19 @@
+         SAME_POSITION {
+             @Override
+             public MultifaceSpreader.SpreadPos getSpreadPos(BlockPos pos, Direction spreadDirection, Direction fromFace) {
+-                return new MultifaceSpreader.SpreadPos(pos, spreadDirection);
++                return new MultifaceSpreader.SpreadPos(pos, spreadDirection, pos); // CraftBukkit
+             }
+         },
+         SAME_PLANE {
+             @Override
+             public MultifaceSpreader.SpreadPos getSpreadPos(BlockPos pos, Direction spreadDirection, Direction fromFace) {
+-                return new MultifaceSpreader.SpreadPos(pos.relative(spreadDirection), fromFace);
++                return new MultifaceSpreader.SpreadPos(pos.relative(spreadDirection), fromFace, pos); // CraftBukkit
+             }
+         },
+         WRAP_AROUND {
+             @Override
+             public MultifaceSpreader.SpreadPos getSpreadPos(BlockPos pos, Direction spreadDirection, Direction fromFace) {
+-                return new MultifaceSpreader.SpreadPos(pos.relative(spreadDirection).relative(fromFace), spreadDirection.getOpposite());
++                return new MultifaceSpreader.SpreadPos(pos.relative(spreadDirection).relative(fromFace), spreadDirection.getOpposite(), pos); // CraftBukkit
+             }
+         };
+ 

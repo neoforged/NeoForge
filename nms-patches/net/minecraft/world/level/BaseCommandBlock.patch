@@ -1,0 +1,48 @@
+--- a/net/minecraft/world/level/BaseCommandBlock.java
++++ b/net/minecraft/world/level/BaseCommandBlock.java
+@@ -31,6 +31,9 @@
+     private @Nullable Component lastOutput;
+     private String command = "";
+     private @Nullable Component customName;
++    // CraftBukkit start
++    public abstract org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper);
++    // CraftBukkit end
+ 
+     public BaseCommandBlock() {}
+ 
+@@ -113,7 +116,7 @@
+ 
+                         });
+ 
+-                        level.getServer().getCommands().performPrefixedCommand(commandsourcestack, this.command);
++                        level.getServer().getCommands().dispatchServerCommand(commandsourcestack, this.command); // CraftBukkit
+                     }
+                 } catch (Throwable throwable) {
+                     CrashReport crashreport = CrashReport.forThrowable(throwable, "Executing command block");
+@@ -138,7 +141,11 @@
+     }
+ 
+     public BaseCommandBlock.@Nullable CloseableCommandBlockSource createSource(ServerLevel level) {
+-        return this.trackOutput ? new BaseCommandBlock.CloseableCommandBlockSource(level) : null;
++        // CraftBukkit start - don't use a null source with no output as we still need the Bukkit sender, just close it immediately to give the same effect
++        BaseCommandBlock.CloseableCommandBlockSource source = new BaseCommandBlock.CloseableCommandBlockSource(level);
++        source.closed = !this.trackOutput;
++        return source;
++        // CraftBukkit end
+     }
+ 
+     public Component getName() {
+@@ -183,6 +190,13 @@
+             this.level = level;
+         }
+ 
++        // CraftBukkit start
++        @Override
++        public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++            return BaseCommandBlock.this.getBukkitSender(wrapper);
++        }
++        // CraftBukkit end
++
+         @Override
+         public boolean acceptsSuccess() {
+             return !this.closed && (Boolean) this.level.getGameRules().get(GameRules.SEND_COMMAND_FEEDBACK);

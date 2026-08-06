@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/SculkVeinBlock.java
++++ b/net/minecraft/world/level/block/SculkVeinBlock.java
+@@ -93,10 +93,11 @@
+ 
+     @Override
+     public int attemptUseCharge(SculkSpreader.ChargeCursor cursor, LevelAccessor level, BlockPos originPos, RandomSource random, SculkSpreader spreader, boolean spreadVeins) {
+-        return spreadVeins && this.attemptPlaceSculk(spreader, level, cursor.getPos(), random) ? cursor.getCharge() - 1 : (random.nextInt(spreader.chargeDecayRate()) == 0 ? Mth.floor((float) cursor.getCharge() * 0.5F) : cursor.getCharge());
++        // CraftBukkit - add source block
++        return spreadVeins && this.attemptPlaceSculk(spreader, level, cursor.getPos(), random, originPos) ? cursor.getCharge() - 1 : (random.nextInt(spreader.chargeDecayRate()) == 0 ? Mth.floor((float) cursor.getCharge() * 0.5F) : cursor.getCharge());
+     }
+ 
+-    private boolean attemptPlaceSculk(SculkSpreader spreader, LevelAccessor level, BlockPos pos, RandomSource random) {
++    private boolean attemptPlaceSculk(SculkSpreader spreader, LevelAccessor level, BlockPos pos, RandomSource random, BlockPos sourceBlock) { // CraftBukkit
+         BlockState blockstate = level.getBlockState(pos);
+         TagKey<Block> tagkey = spreader.replaceableBlocks();
+ 
+@@ -108,7 +109,11 @@
+                 if (blockstate1.is(tagkey)) {
+                     BlockState blockstate2 = Blocks.SCULK.defaultBlockState();
+ 
+-                    level.setBlock(blockpos1, blockstate2, 3);
++                    // CraftBukkit start - Call BlockSpreadEvent
++                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(level, sourceBlock, blockpos1, blockstate2, 3)) {
++                        return false;
++                    }
++                    // CraftBukkit end
+                     Block.pushEntitiesUp(blockstate1, blockstate2, level, blockpos1);
+                     level.playSound((Entity) null, blockpos1, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     this.veinSpreader.spreadAll(blockstate2, level, blockpos1, spreader.isWorldGeneration());

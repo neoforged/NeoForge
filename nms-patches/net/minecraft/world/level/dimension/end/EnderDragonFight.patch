@@ -1,0 +1,83 @@
+--- a/net/minecraft/world/level/dimension/end/EnderDragonFight.java
++++ b/net/minecraft/world/level/dimension/end/EnderDragonFight.java
+@@ -113,9 +113,9 @@
+             return Optional.ofNullable(enderdragonfight.dragonUUID);
+         }), BlockPos.CODEC.lenientOptionalFieldOf("exit_portal_location").forGetter((enderdragonfight) -> {
+             return Optional.ofNullable(enderdragonfight.exitPortalLocation);
+-        }), Codec.list(Codec.INT).lenientOptionalFieldOf("gateways", new ArrayList()).forGetter((enderdragonfight) -> {
++        }), Codec.list(Codec.INT).lenientOptionalFieldOf("gateways", new ArrayList<>()).forGetter((enderdragonfight) -> { // CraftBukkit - decompile error
+             return enderdragonfight.gateways;
+-        }), Codec.list(EntityReference.codec()).optionalFieldOf("respawn_crystals", List.of()).forGetter((enderdragonfight) -> {
++        }), Codec.list(EntityReference.<EndCrystal>codec()).optionalFieldOf("respawn_crystals", List.of()).forGetter((enderdragonfight) -> { // CrraftBukkit - decompile error
+             return enderdragonfight.respawnCrystals;
+         })).apply(instance, EnderDragonFight::new);
+     });
+@@ -130,12 +130,12 @@
+         this.ticksSinceLastPlayerScan = 21;
+         this.skipArenaLoadedCheck = false;
+         this.needsStateScanning = needsStateScanning;
+-        this.dragonUUID = (UUID) dragonUUID.orElse((Object) null);
++        this.dragonUUID = (UUID) dragonUUID.orElse(null); // CraftBukkit - decompile error
+         this.dragonKilled = dragonKilled;
+         this.hasPreviouslyKilledDragon = previouslyKilled;
+-        this.respawnStage = (DragonRespawnStage) respawnStage.orElse((Object) null);
++        this.respawnStage = (DragonRespawnStage) respawnStage.orElse(null); // CraftBukkit - decompile error
+         this.respawnTime = respawnTime;
+-        this.exitPortalLocation = (BlockPos) exitPortalLocation.orElse((Object) null);
++        this.exitPortalLocation = (BlockPos) exitPortalLocation.orElse(null); // CraftBukkit - decompile error
+         this.gateways = new ObjectArrayList(gateways);
+         this.respawnCrystals = respawnCrystals;
+     }
+@@ -240,7 +240,7 @@
+             this.dragonKilled = false;
+             if (!flag) {
+                 EnderDragonFight.LOGGER.info("But we didn't have a portal, let's remove it.");
+-                enderdragon.discard();
++                enderdragon.discard(null); // CraftBukkit - add Bukkit remove cause
+                 this.dragonUUID = null;
+             }
+         }
+@@ -540,7 +540,7 @@
+         return this.hasPreviouslyKilledDragon;
+     }
+ 
+-    public void tryRespawn() {
++    public boolean tryRespawn() { // CraftBukkit - return boolean
+         if (this.dragonKilled && this.respawnStage == null) {
+             BlockPos blockpos = this.exitPortalLocation;
+ 
+@@ -565,19 +565,20 @@
+                 List<EndCrystal> list1 = this.level.<EndCrystal>getEntitiesOfClass(EndCrystal.class, new AABB(blockpos1.relative(direction, 3)));
+ 
+                 if (list1.isEmpty()) {
+-                    return;
++                    return false; // CraftBukkit - return value
+                 }
+ 
+                 list.addAll(list1);
+             }
+ 
+             EnderDragonFight.LOGGER.debug("Found all crystals, respawning dragon.");
+-            this.respawnDragon(list);
++            return this.respawnDragon(list); // CraftBukkit - return value
+         }
+ 
++        return false; // CraftBukkit - return value
+     }
+ 
+-    public void respawnDragon(List<EndCrystal> crystals) {
++    public boolean respawnDragon(List<EndCrystal> crystals) { // CraftBukkit - return boolean
+         if (this.dragonKilled && this.respawnStage == null) {
+             for (BlockPattern.BlockPatternMatch blockpattern_blockpatternmatch = this.findExitPortal(); blockpattern_blockpatternmatch != null; blockpattern_blockpatternmatch = this.findExitPortal()) {
+                 for (int i = 0; i < this.exitPortalPattern.getWidth(); ++i) {
+@@ -598,8 +599,10 @@
+             this.spawnExitPortal(false);
+             this.respawnCrystals = crystals.stream().map(EntityReference::of).toList();
+             this.setDirty();
++            return true; // CraftBukkit - return value
+         }
+ 
++        return false; // CraftBukkit - return value
+     }
+ 
+     public void resetSpikeCrystals() {

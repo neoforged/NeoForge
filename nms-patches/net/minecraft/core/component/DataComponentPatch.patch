@@ -1,0 +1,72 @@
+--- a/net/minecraft/core/component/DataComponentPatch.java
++++ b/net/minecraft/core/component/DataComponentPatch.java
+@@ -61,7 +61,7 @@
+             }
+         }
+ 
+-        return reference2objectmap;
++        return (Reference2ObjectMap) reference2objectmap; // CraftBukkit - decompile error
+     });
+     public static final StreamCodec<RegistryFriendlyByteBuf, DataComponentPatch> STREAM_CODEC = createStreamCodec(new DataComponentPatch.CodecGetter() {
+         @Override
+@@ -160,7 +160,7 @@
+             }
+ 
+             private <T> void encodeComponent(RegistryFriendlyByteBuf output, DataComponentType<T> type, Object value) {
+-                codecGetter.apply(type).encode(output, value);
++                codecGetter.apply(type).encode(output, (T) value); // CraftBukkit - decompile error
+             }
+         };
+     }
+@@ -180,7 +180,7 @@
+     static <T> @Nullable T getFromPatchAndPrototype(Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch, DataComponentGetter prototype, DataComponentType<? extends T> type) {
+         Optional<? extends T> optional = (Optional) patch.get(type);
+ 
+-        return (T) (optional != null ? optional.orElse((Object) null) : prototype.get(type));
++        return (T) (optional != null ? optional.orElse(null) : prototype.get(type)); // CraftBukkit - decompile error
+     }
+ 
+     public Set<Map.Entry<DataComponentType<?>, Optional<?>>> entrySet() {
+@@ -327,6 +327,42 @@
+ 
+         private Builder() {}
+ 
++        // CraftBukkit start
++        public void copy(DataComponentPatch orig) {
++            this.map.putAll(orig.map);
++        }
++
++        public void clear(DataComponentType<?> type) {
++            this.map.remove(type);
++        }
++
++        public boolean isSet(DataComponentType<?> type) {
++            return map.containsKey(type);
++        }
++
++        public boolean isEmpty() {
++            return this.map.isEmpty();
++        }
++
++        @Override
++        public boolean equals(Object object) {
++            if (this == object) {
++                return true;
++            }
++
++            if (object instanceof DataComponentPatch.Builder patch) {
++                return this.map.equals(patch.map);
++            }
++
++            return false;
++        }
++
++        @Override
++        public int hashCode() {
++            return this.map.hashCode();
++        }
++        // CraftBukkit end
++
+         public <T> DataComponentPatch.Builder set(DataComponentType<T> type, T value) {
+             this.map.put(type, Optional.of(value));
+             return this;

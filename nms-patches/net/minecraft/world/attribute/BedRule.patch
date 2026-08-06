@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/attribute/BedRule.java
++++ b/net/minecraft/world/attribute/BedRule.java
+@@ -9,10 +9,17 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.level.Level;
+ 
+-public record BedRule(BedRule.Rule canSleep, BedRule.Rule canSetSpawn, boolean explodes, Optional<Component> errorMessage) {
++// CraftBukkit start
++import org.bukkit.event.player.PlayerBedEnterEvent;
+ 
+-    public static final BedRule CAN_SLEEP_WHEN_DARK = new BedRule(BedRule.Rule.WHEN_DARK, BedRule.Rule.ALWAYS, false, Optional.of(Component.translatable("block.minecraft.bed.no_sleep")));
+-    public static final BedRule EXPLODES = new BedRule(BedRule.Rule.NEVER, BedRule.Rule.NEVER, true, Optional.empty());
++public record BedRule(BedRule.Rule canSleep, BedRule.Rule canSetSpawn, boolean explodes, Optional<Component> errorMessage, PlayerBedEnterEvent.BedEnterResult bukkit) {
++
++    public BedRule(BedRule.Rule canSleep, BedRule.Rule canSetSpawn, boolean explodes, Optional<Component> errorMessage) {
++        this(canSleep, canSetSpawn, explodes, errorMessage, PlayerBedEnterEvent.BedEnterResult.OTHER_PROBLEM);
++    }
++    public static final BedRule CAN_SLEEP_WHEN_DARK = new BedRule(BedRule.Rule.WHEN_DARK, BedRule.Rule.ALWAYS, false, Optional.of(Component.translatable("block.minecraft.bed.no_sleep")), PlayerBedEnterEvent.BedEnterResult.NOT_POSSIBLE_NOW);
++    public static final BedRule EXPLODES = new BedRule(BedRule.Rule.NEVER, BedRule.Rule.NEVER, true, Optional.empty(), PlayerBedEnterEvent.BedEnterResult.NOT_POSSIBLE_HERE);
++    // CraftBukkit end
+     public static final Codec<BedRule> CODEC = RecordCodecBuilder.create((instance) -> {
+         return instance.group(BedRule.Rule.CODEC.fieldOf("can_sleep").forGetter(BedRule::canSleep), BedRule.Rule.CODEC.fieldOf("can_set_spawn").forGetter(BedRule::canSetSpawn), Codec.BOOL.optionalFieldOf("explodes", false).forGetter(BedRule::explodes), ComponentSerialization.CODEC.optionalFieldOf("error_message").forGetter(BedRule::errorMessage)).apply(instance, BedRule::new);
+     });
+@@ -26,7 +33,7 @@
+     }
+ 
+     public Player.BedSleepingProblem asProblem() {
+-        return new Player.BedSleepingProblem((Component) this.errorMessage.orElse((Object) null));
++        return new Player.BedSleepingProblem((Component) this.errorMessage.orElse(null), bukkit); // CraftBukkit - decompile error
+     }
+ 
+     public static enum Rule implements StringRepresentable {

@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
++++ b/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
+@@ -7,6 +7,12 @@
+ import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetEvent;
++// CraftBukkit end
++
+ public class StopAttackingIfTargetInvalid {
+ 
+     private static final int TIMEOUT_TO_GET_WITHIN_ATTACK_RANGE = 200;
+@@ -40,6 +46,17 @@
+                     if (mob.canAttack(livingentity) && (!canGrowTiredOfTryingToReachTarget || !isTiredOfTryingToReachTarget(mob, behaviorbuilder_instance.tryGet(memoryaccessor1))) && livingentity.isAlive() && livingentity.level() == mob.level() && !stopAttackingWhen.test(serverlevel, livingentity)) {
+                         return true;
+                     } else {
++                        // CraftBukkit start
++                        LivingEntity old = mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
++                        EntityTargetEvent event = CraftEventFactory.callEntityTargetLivingEvent(mob, null, (old != null && !old.isAlive()) ? EntityTargetEvent.TargetReason.TARGET_DIED : EntityTargetEvent.TargetReason.FORGOT_TARGET);
++                        if (event.isCancelled()) {
++                            return false;
++                        }
++                        if (event.getTarget() != null) {
++                            mob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, ((CraftLivingEntity) event.getTarget()).getHandle());
++                            return true;
++                        }
++                        // CraftBukkit end
+                         onTargetErased.accept(serverlevel, mob, livingentity);
+                         memoryaccessor.erase();
+                         return true;

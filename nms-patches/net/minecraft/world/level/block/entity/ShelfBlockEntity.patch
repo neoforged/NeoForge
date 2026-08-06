@@ -1,0 +1,63 @@
+--- a/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ShelfBlockEntity.java
+@@ -29,6 +29,13 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.List;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.entity.HumanEntity;
++// CraftBukkit end
++
+ public class ShelfBlockEntity extends BlockEntity implements ListBackedContainer, ItemOwner {
+ 
+     public static final int MAX_ITEMS = 3;
+@@ -36,6 +43,46 @@
+     private static final String ALIGN_ITEMS_TO_BOTTOM_TAG = "align_items_to_bottom";
+     private final NonNullList<ItemStack> items;
+     private boolean alignItemsToBottom;
++    // CraftBukkit start - add fields and methods
++    public List<HumanEntity> transaction = new java.util.ArrayList<>();
++    private int maxStack = MAX_STACK;
++
++    @Override
++    public List<ItemStack> getContents() {
++        return this.items;
++    }
++
++    @Override
++    public void onOpen(CraftHumanEntity who) {
++        this.transaction.add(who);
++    }
++
++    @Override
++    public void onClose(CraftHumanEntity who) {
++        this.transaction.remove(who);
++    }
++
++    @Override
++    public List<HumanEntity> getViewers() {
++        return this.transaction;
++    }
++
++    @Override
++    public void setMaxStackSize(int size) {
++        this.maxStack = size;
++    }
++
++    @Override
++    public Location getLocation() {
++        if (this.level == null) return null;
++        return new org.bukkit.Location(this.level.getWorld(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
++    }
++
++    @Override
++    public int getMaxStackSize() {
++        return this.maxStack;
++    }
++    // CraftBukkit end
+ 
+     public ShelfBlockEntity(BlockPos worldPosition, BlockState blockState) {
+         super(BlockEntityTypes.SHELF, worldPosition, blockState);

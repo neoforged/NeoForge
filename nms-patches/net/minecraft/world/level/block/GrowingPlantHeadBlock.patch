@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
++++ b/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
+@@ -48,7 +48,7 @@
+             BlockPos blockpos1 = pos.relative(this.growthDirection);
+ 
+             if (this.canGrowInto(level.getBlockState(blockpos1))) {
+-                level.setBlockAndUpdate(blockpos1, this.getGrowIntoState(state, level.getRandom()));
++                org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(level, pos, blockpos1, this.getGrowIntoState(state, level.getRandom())); // CraftBukkit
+             }
+         }
+ 

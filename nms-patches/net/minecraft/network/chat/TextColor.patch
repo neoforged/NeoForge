@@ -1,0 +1,73 @@
+--- a/net/minecraft/network/chat/TextColor.java
++++ b/net/minecraft/network/chat/TextColor.java
+@@ -15,26 +15,37 @@
+     private static final String CUSTOM_COLOR_PREFIX = "#";
+     public static final Codec<TextColor> CODEC = Codec.STRING.comapFlatMap(TextColor::parseColor, TextColor::serialize);
+     private static final Map<String, TextColor> NAMED_COLORS = new HashMap();
+-    public static final TextColor BLACK = named("black", 0);
+-    public static final TextColor DARK_BLUE = named("dark_blue", 170);
+-    public static final TextColor DARK_GREEN = named("dark_green", 43520);
+-    public static final TextColor DARK_AQUA = named("dark_aqua", 43690);
+-    public static final TextColor DARK_RED = named("dark_red", 11141120);
+-    public static final TextColor DARK_PURPLE = named("dark_purple", 11141290);
+-    public static final TextColor GOLD = named("gold", 16755200);
+-    public static final TextColor GRAY = named("gray", 11184810);
+-    public static final TextColor DARK_GRAY = named("dark_gray", 5592405);
+-    public static final TextColor BLUE = named("blue", 5592575);
+-    public static final TextColor GREEN = named("green", 5635925);
+-    public static final TextColor AQUA = named("aqua", 5636095);
+-    public static final TextColor RED = named("red", 16733525);
+-    public static final TextColor LIGHT_PURPLE = named("light_purple", 16733695);
+-    public static final TextColor YELLOW = named("yellow", 16777045);
+-    public static final TextColor WHITE = named("white", 16777215);
++    // CraftBukkit start
++    public static final TextColor BLACK = named("black", 0, ChatFormatting.BLACK);
++    public static final TextColor DARK_BLUE = named("dark_blue", 170, ChatFormatting.DARK_BLUE);
++    public static final TextColor DARK_GREEN = named("dark_green", 43520, ChatFormatting.DARK_GREEN);
++    public static final TextColor DARK_AQUA = named("dark_aqua", 43690, ChatFormatting.DARK_AQUA);
++    public static final TextColor DARK_RED = named("dark_red", 11141120, ChatFormatting.DARK_RED);
++    public static final TextColor DARK_PURPLE = named("dark_purple", 11141290, ChatFormatting.DARK_PURPLE);
++    public static final TextColor GOLD = named("gold", 16755200, ChatFormatting.GOLD);
++    public static final TextColor GRAY = named("gray", 11184810, ChatFormatting.GRAY);
++    public static final TextColor DARK_GRAY = named("dark_gray", 5592405, ChatFormatting.DARK_GRAY);
++    public static final TextColor BLUE = named("blue", 5592575, ChatFormatting.BLUE);
++    public static final TextColor GREEN = named("green", 5635925, ChatFormatting.GREEN);
++    public static final TextColor AQUA = named("aqua", 5636095, ChatFormatting.AQUA);
++    public static final TextColor RED = named("red", 16733525, ChatFormatting.RED);
++    public static final TextColor LIGHT_PURPLE = named("light_purple", 16733695, ChatFormatting.LIGHT_PURPLE);
++    public static final TextColor YELLOW = named("yellow", 16777045, ChatFormatting.YELLOW);
++    public static final TextColor WHITE = named("white", 16777215, ChatFormatting.WHITE);
++    // CraftBukkit end
+     private final int value;
+     public final @Nullable String name;
++    // CraftBukkit start
++    @Nullable
++    public final ChatFormatting format;
+ 
+-    private TextColor(int value, String name) {
++    public ChatFormatting getFormat() {
++        return format;
++    }
++
++    private TextColor(int value, String name, ChatFormatting format) {
++        this.format = format;
++        // CraftBukkit end
+         this.value = value & 16777215;
+         this.name = name;
+     }
+@@ -42,10 +53,13 @@
+     private TextColor(int value) {
+         this.value = value & 16777215;
+         this.name = null;
++        // CraftBukkit start
++        this.format = null;
+     }
+ 
+-    private static TextColor named(String name, int rgb) {
+-        TextColor textcolor = new TextColor(rgb, name);
++    private static TextColor named(String name, int rgb, ChatFormatting format) {
++        TextColor textcolor = new TextColor(rgb, name, format);
++        // CraftBukkit end
+ 
+         TextColor.NAMED_COLORS.put(name, textcolor);
+         return textcolor;

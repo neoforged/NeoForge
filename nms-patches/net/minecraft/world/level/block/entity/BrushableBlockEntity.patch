@@ -1,0 +1,92 @@
+--- a/net/minecraft/world/level/block/entity/BrushableBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BrushableBlockEntity.java
+@@ -35,6 +35,13 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.Arrays;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.block.BlockBrushEvent;
++// CraftBukkit end
++
+ public class BrushableBlockEntity extends BlockEntity {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -82,7 +89,12 @@
+                     BlockState blockstate = this.getBlockState();
+                     BlockState blockstate1 = (BlockState) blockstate.setValue(BlockStateProperties.DUSTED, k);
+ 
+-                    level.setBlock(this.getBlockPos(), blockstate1, 3);
++                    // CraftBukkit start
++                    BlockBrushEvent event = CraftEventFactory.callBlockBrushEvent(level, this.getBlockPos(), blockstate1, 3, (ServerPlayer) user);
++                    if (!event.isCancelled()) {
++                        event.getNewState().update(true);
++                    }
++                    // CraftBukkit end
+                 }
+ 
+                 return false;
+@@ -123,10 +135,10 @@
+     }
+ 
+     private void brushingCompleted(ServerLevel level, LivingEntity user, ItemStack brush) {
+-        this.dropContent(level, user, brush);
++        // this.dropContent(serverlevel, livingentity, itemstack); // CraftBukkit - moved down
+         BlockState blockstate = this.getBlockState();
+ 
+-        level.levelEvent(3008, this.getBlockPos(), Block.getId(blockstate));
++        // worldserver.levelEvent(3008, this.getBlockPos(), Block.getId(iblockdata)); // CraftBukkit - moved down
+         Block block = this.getBlockState().getBlock();
+         Block block1;
+ 
+@@ -136,7 +148,15 @@
+             block1 = Blocks.AIR;
+         }
+ 
+-        level.setBlock(this.worldPosition, block1.defaultBlockState(), 3);
++        // CraftBukkit start
++        BlockBrushEvent event = CraftEventFactory.callBlockBrushEvent(level, this.worldPosition, block1.defaultBlockState(), 3, (ServerPlayer) user);
++        if (!event.isCancelled()) {
++            this.dropContent(level, user, brush); // CraftBukkit - from above
++            level.levelEvent(3008, this.getBlockPos(), Block.getId(blockstate)); // CraftBukkit - from above
++
++            event.getNewState().update(true);
++        }
++        // CraftBukkit end
+     }
+ 
+     private void dropContent(ServerLevel level, LivingEntity user, ItemStack brush) {
+@@ -153,7 +173,12 @@
+             ItemEntity itementity = new ItemEntity(level, d3, d4, d5, this.item.split(level.getRandom().nextInt(21) + 10));
+ 
+             itementity.setDeltaMovement(Vec3.ZERO);
+-            level.addFreshEntity(itementity);
++            // CraftBukkit start
++            if (user instanceof ServerPlayer serverplayer) {
++                org.bukkit.block.Block bblock = CraftBlock.at(this.level, this.worldPosition);
++                CraftEventFactory.handleBlockDropItemEvent(bblock, bblock.getState(), serverplayer, Arrays.asList(itementity));
++            }
++            // CraftBukkit end
+             this.item = ItemStack.EMPTY;
+         }
+ 
+@@ -186,7 +211,7 @@
+     }
+ 
+     private boolean tryLoadLootTable(ValueInput input) {
+-        this.lootTable = (ResourceKey) input.read("LootTable", LootTable.KEY_CODEC).orElse((Object) null);
++        this.lootTable = (ResourceKey) input.read("LootTable", LootTable.KEY_CODEC).orElse(null); // CraftBukkit - decompile error
+         this.lootTableSeed = input.getLongOr("LootTableSeed", 0L);
+         return this.lootTable != null;
+     }
+@@ -232,7 +257,7 @@
+             this.item = ItemStack.EMPTY;
+         }
+ 
+-        this.hitDirection = (Direction) input.read("hit_direction", Direction.LEGACY_ID_CODEC).orElse((Object) null);
++        this.hitDirection = (Direction) input.read("hit_direction", Direction.LEGACY_ID_CODEC).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     @Override

@@ -1,0 +1,41 @@
+--- a/net/minecraft/world/entity/animal/goat/Goat.java
++++ b/net/minecraft/world/entity/animal/goat/Goat.java
+@@ -54,6 +54,12 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.player.PlayerBucketFillEvent;
++// CraftBukkit end
++
+ public class Goat extends Animal {
+ 
+     public static final float LONG_JUMPING_DIMENSION_SCALE_FACTOR = 0.7F;
+@@ -184,7 +190,7 @@
+ 
+     @Override
+     public Brain<Goat> getBrain() {
+-        return super.getBrain();
++        return (Brain<Goat>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -229,8 +235,15 @@
+         ItemStack itemstack = player.getItemInHand(hand);
+ 
+         if (itemstack.is(Items.BUCKET) && !this.isBaby()) {
++            // CraftBukkit start - Got milk?
++            PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent((ServerLevel) player.level(), player, this.blockPosition(), this.blockPosition(), null, itemstack, Items.MILK_BUCKET, hand);
++
++            if (event.isCancelled()) {
++                return InteractionResult.PASS;
++            }
++            // CraftBukkit end
+             player.playSound(this.getMilkingSound(), 1.0F, 1.0F);
+-            ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, player, Items.MILK_BUCKET.getDefaultInstance());
++            ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, player, CraftItemStack.asNMSCopy(event.getItemStack())); // CraftBukkit
+ 
+             player.setItemInHand(hand, itemstack1);
+             return InteractionResult.SUCCESS;

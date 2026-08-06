@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/item/enchantment/effects/Ignite.java
++++ b/net/minecraft/world/item/enchantment/effects/Ignite.java
+@@ -8,6 +8,11 @@
+ import net.minecraft.world.item.enchantment.LevelBasedValue;
+ import net.minecraft.world.phys.Vec3;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityCombustByEntityEvent;
++import org.bukkit.event.entity.EntityCombustEvent;
++// CraftBukkit end
++
+ public record Ignite(LevelBasedValue duration) implements EnchantmentEntityEffect {
+ 
+     public static final MapCodec<Ignite> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -18,7 +23,21 @@
+ 
+     @Override
+     public void apply(ServerLevel serverLevel, int enchantmentLevel, EnchantedItemInUse item, Entity entity, Vec3 position) {
+-        entity.igniteForSeconds(this.duration.calculate(enchantmentLevel));
++        // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
++        EntityCombustEvent entityCombustEvent;
++        if (item.owner() != null) {
++            entityCombustEvent = new EntityCombustByEntityEvent(item.owner().getBukkitEntity(), entity.getBukkitEntity(), this.duration.calculate(enchantmentLevel));
++        } else {
++            entityCombustEvent = new EntityCombustEvent(entity.getBukkitEntity(), this.duration.calculate(enchantmentLevel));
++        }
++
++        org.bukkit.Bukkit.getPluginManager().callEvent(entityCombustEvent);
++        if (entityCombustEvent.isCancelled()) {
++            return;
++        }
++
++        entity.igniteForSeconds(entityCombustEvent.getDuration(), false);
++        // CraftBukkit end
+     }
+ 
+     @Override

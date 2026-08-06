@@ -1,0 +1,82 @@
+--- a/net/minecraft/server/network/config/PrepareSpawnTask.java
++++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
+@@ -28,17 +28,22 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.resources.ResourceKey;
++import net.minecraft.world.level.Level;
++// CraftBukkit end
++
+ public class PrepareSpawnTask implements ConfigurationTask {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final ConfigurationTask.Type TYPE = new ConfigurationTask.Type("prepare_spawn");
+     public static final int PREPARE_CHUNK_RADIUS = 3;
+     private final MinecraftServer server;
+-    private final NameAndId nameAndId;
++    private final ServerPlayer nameAndId; // CraftBukkit
+     private final LevelLoadListener loadListener;
+     private PrepareSpawnTask.@Nullable State state;
+ 
+-    public PrepareSpawnTask(MinecraftServer server, NameAndId nameAndId) {
++    public PrepareSpawnTask(MinecraftServer server, ServerPlayer nameAndId) { // CraftBukkit
+         this.server = server;
+         this.nameAndId = nameAndId;
+         this.loadListener = server.getLevelLoadListener();
+@@ -53,8 +58,8 @@
+             ServerPlayer.SavedPosition serverplayer_savedposition = (ServerPlayer.SavedPosition) optional.flatMap((valueinput) -> {
+                 return valueinput.read(ServerPlayer.SavedPosition.MAP_CODEC);
+             }).orElse(ServerPlayer.SavedPosition.EMPTY);
+-            LevelData.RespawnData leveldata_respawndata = this.server.getWorldData().overworldData().getRespawnData();
+-            Optional optional1 = serverplayer_savedposition.dimension();
++            LevelData.RespawnData leveldata_respawndata = this.nameAndId.level().getRespawnData(); // CraftBukkit - SPIGOT-7507: If no dimension, fall back to existing dimension loaded from "WorldUUID", which in turn defaults to World.OVERWORLD
++            Optional<ResourceKey<Level>> optional1 = serverplayer_savedposition.dimension(); // CraftBukkit - decompile error
+             MinecraftServer minecraftserver = this.server;
+ 
+             Objects.requireNonNull(this.server);
+@@ -82,11 +87,9 @@
+         //$FF: b0->value
+         //0->net/minecraft/server/network/config/PrepareSpawnTask$Preparing
+         //1->net/minecraft/server/network/config/PrepareSpawnTask$Ready
+-        switch (preparespawntask_state.typeSwitch<invokedynamic>(preparespawntask_state, b0)) {
+-            case -1:
+-                flag = false;
+-                break;
+-            case 0:
++        // CraftBukkit start - decompile error
++        {
++            if (preparespawntask_state instanceof PrepareSpawnTask.Preparing) {
+                 PrepareSpawnTask.Preparing preparespawntask_preparing = (PrepareSpawnTask.Preparing)preparespawntask_state;
+                 PrepareSpawnTask.Ready preparespawntask_ready = preparespawntask_preparing.tick();
+ 
+@@ -96,14 +99,14 @@
+                 } else {
+                     flag = false;
+                 }
+-                break;
+-            case 1:
++            } else if (preparespawntask_state instanceof PrepareSpawnTask.Ready) {
+                 PrepareSpawnTask.Ready preparespawntask_ready1 = (PrepareSpawnTask.Ready)preparespawntask_state;
+ 
+                 flag = true;
+-                break;
+-            default:
+-                throw new MatchException((String)null, (Throwable)null);
++            } else {
++                flag = false;
++            }
++            // CraftBukkit
+         }
+ 
+         return flag;
+@@ -213,7 +216,7 @@
+             ChunkPos chunkpos = ChunkPos.containing(BlockPos.containing(this.spawnPosition));
+ 
+             this.spawnLevel.waitForEntities(chunkpos, 3);
+-            ServerPlayer serverplayer = new ServerPlayer(PrepareSpawnTask.this.server, this.spawnLevel, cookie.gameProfile(), cookie.clientInformation());
++            ServerPlayer serverplayer = nameAndId; // CraftBukkit
+ 
+             try (ProblemReporter.ScopedCollector problemreporter_scopedcollector = new ProblemReporter.ScopedCollector(serverplayer.problemPath(), PrepareSpawnTask.LOGGER)) {
+                 Optional<ValueInput> optional = PrepareSpawnTask.this.server.getPlayerList().loadPlayerData(PrepareSpawnTask.this.nameAndId).map((compoundtag) -> {

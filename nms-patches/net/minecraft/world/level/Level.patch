@@ -1,0 +1,240 @@
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -92,6 +92,22 @@
+ import org.apache.commons.lang3.mutable.MutableBoolean;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import java.util.HashMap;
++import java.util.Map;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.world.entity.item.ItemEntity;
++import net.minecraft.world.level.dimension.LevelStem;
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.block.CapturedBlockState;
++import org.bukkit.craftbukkit.block.data.CraftBlockData;
++import org.bukkit.craftbukkit.util.CraftSpawnCategory;
++import org.bukkit.entity.SpawnCategory;
++import org.bukkit.event.block.BlockPhysicsEvent;
++// CraftBukkit end
++
+ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
+@@ -133,7 +149,41 @@
+     private final PalettedContainerFactory palettedContainerFactory;
+     private long subTickCount;
+ 
+-    protected Level(WritableLevelData levelData, ResourceKey<Level> dimension, RegistryAccess registryAccess, Holder<DimensionType> dimensionTypeRegistration, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChainedNeighborUpdates) {
++    // CraftBukkit start Added the following
++    private final CraftWorld world;
++    public org.bukkit.generator.ChunkGenerator generator;
++
++    public boolean preventPoiUpdated = false; // CraftBukkit - SPIGOT-5710
++    public boolean captureBlockStates = false;
++    public boolean captureTreeGeneration = false;
++    public Map<BlockPos, CapturedBlockState> capturedBlockStates = new java.util.LinkedHashMap<>();
++    public Map<BlockPos, BlockEntity> capturedTileEntities = new HashMap<>();
++    public List<ItemEntity> captureDrops;
++    public final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<SpawnCategory> ticksPerSpawnCategory = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
++    public boolean populating;
++
++    public CraftWorld getWorld() {
++        return this.world;
++    }
++
++    public CraftServer getCraftServer() {
++        return (CraftServer) Bukkit.getServer();
++    }
++
++    public abstract ResourceKey<LevelStem> getTypeKey();
++
++    protected Level(WritableLevelData levelData, ResourceKey<Level> dimension, RegistryAccess registryAccess, Holder<DimensionType> dimensionTypeRegistration, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChainedNeighborUpdates, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env) {
++        this.generator = gen;
++        this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
++
++        // CraftBukkit Ticks things
++        for (SpawnCategory spawnCategory : SpawnCategory.values()) {
++            if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
++                this.ticksPerSpawnCategory.put(spawnCategory, (long) this.getCraftServer().getTicksPerSpawns(spawnCategory));
++            }
++        }
++
++        // CraftBukkit end
+         this.levelData = levelData;
+         this.dimensionTypeRegistration = dimensionTypeRegistration;
+         this.dimension = dimension;
+@@ -215,6 +265,18 @@
+ 
+     @Override
+     public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {
++        // CraftBukkit start - tree generation
++        if (this.captureTreeGeneration) {
++            CapturedBlockState capturedBlockState = capturedBlockStates.get(pos);
++            if (capturedBlockState == null) {
++                capturedBlockState = CapturedBlockState.getTreeBlockState(this, pos, updateFlags);
++                this.capturedBlockStates.put(pos.immutable(), capturedBlockState);
++            }
++            capturedBlockState.setData(blockState);
++            capturedBlockState.setFlag(updateFlags);
++            return true;
++        }
++        // CraftBukkit end
+         if (!this.isInValidBounds(pos)) {
+             return false;
+         } else if (!this.isClientSide() && this.isDebug()) {
+@@ -222,13 +284,29 @@
+         } else {
+             LevelChunk levelchunk = this.getChunkAt(pos);
+             Block block = blockState.getBlock();
++
++            // CraftBukkit start - capture blockstates
++            boolean captured = false;
++            if (this.captureBlockStates && !this.capturedBlockStates.containsKey(pos)) {
++                CapturedBlockState capturedBlockState = CapturedBlockState.getBlockState(this, pos, updateFlags);
++                this.capturedBlockStates.put(pos.immutable(), capturedBlockState);
++                captured = true;
++            }
++            // CraftBukkit end
++
+             BlockState blockstate1 = levelchunk.setBlockState(pos, blockState, updateFlags);
+ 
+             if (blockstate1 == null) {
++                // CraftBukkit start - remove blockstate if failed (or the same)
++                if (this.captureBlockStates && captured) {
++                    this.capturedBlockStates.remove(pos);
++                }
++                // CraftBukkit end
+                 return false;
+             } else {
+                 BlockState blockstate2 = this.getBlockState(pos);
+ 
++                /*
+                 if (blockstate2 == blockState) {
+                     if (blockstate1 != blockstate2) {
+                         this.setBlocksDirty(pos, blockstate1, blockstate2);
+@@ -255,12 +333,69 @@
+ 
+                     this.updatePOIOnBlockStateChange(pos, blockstate1, blockstate2);
+                 }
++                */
++
++                // CraftBukkit start
++                if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
++                    // Modularize client and physic updates
++                    notifyAndUpdatePhysics(pos, levelchunk, blockstate1, blockState, blockstate2, updateFlags, updateLimit);
++                }
++                // CraftBukkit end
+ 
+                 return true;
+             }
+         }
+     }
+ 
++    // CraftBukkit start - Split off from above in order to directly send client and physic updates
++    public void notifyAndUpdatePhysics(BlockPos blockpos, LevelChunk levelchunk, BlockState oldBlock, BlockState newBlock, BlockState actualBlock, int i, int j) {
++        BlockState blockstate = newBlock;
++        BlockState blockstate1 = oldBlock;
++        BlockState blockstate2 = actualBlock;
++        if (blockstate2 == blockstate) {
++            if (blockstate1 != blockstate2) {
++                this.setBlocksDirty(blockpos, blockstate1, blockstate2);
++            }
++
++            if ((i & 2) != 0 && (!this.isClientSide || (i & 4) == 0) && (this.isClientSide || levelchunk == null || (levelchunk.getFullStatus() != null && levelchunk.getFullStatus().isOrAfter(FullChunkStatus.BLOCK_TICKING)))) { // allow chunk to be null here as chunk.isReady() is false when we send our notification during block placement
++                this.sendBlockUpdated(blockpos, blockstate1, blockstate, i);
++            }
++
++            if ((i & 1) != 0) {
++                this.updateNeighborsAt(blockpos, blockstate1.getBlock());
++                if (!this.isClientSide && blockstate.hasAnalogOutputSignal()) {
++                    this.updateNeighbourForOutputSignal(blockpos, newBlock.getBlock());
++                }
++            }
++
++            if ((i & 16) == 0 && j > 0) {
++                int k = i & -34;
++
++                // CraftBukkit start
++                blockstate1.updateIndirectNeighbourShapes(this, blockpos, k, j - 1); // Don't call an event for the old block to limit event spam
++                CraftWorld world = ((ServerLevel) this).getWorld();
++                if (world != null) {
++                    BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(blockpos.getX(), blockpos.getY(), blockpos.getZ()), CraftBlockData.fromData(blockstate));
++                    this.getCraftServer().getPluginManager().callEvent(event);
++
++                    if (event.isCancelled()) {
++                        return;
++                    }
++                }
++                // CraftBukkit end
++                blockstate.updateNeighbourShapes(this, blockpos, k, j - 1);
++                blockstate.updateIndirectNeighbourShapes(this, blockpos, k, j - 1);
++            }
++
++            // CraftBukkit start - SPIGOT-5710
++            if (!preventPoiUpdated) {
++                this.updatePOIOnBlockStateChange(blockpos, blockstate1, blockstate2);
++            }
++            // CraftBukkit end
++        }
++    }
++    // CraftBukkit end
++
+     public void updatePOIOnBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {}
+ 
+     @Override
+@@ -346,6 +481,14 @@
+ 
+     @Override
+     public BlockState getBlockState(BlockPos pos) {
++        // CraftBukkit start - tree generation
++        if (captureTreeGeneration) {
++            CapturedBlockState previous = capturedBlockStates.get(pos);
++            if (previous != null) {
++                return previous.getHandle();
++            }
++        }
++        // CraftBukkit end
+         if (!this.isInValidBounds(pos)) {
+             return Blocks.VOID_AIR.defaultBlockState();
+         } else {
+@@ -495,6 +638,15 @@
+ 
+     @Override
+     public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
++        // CraftBukkit start
++        return getBlockEntity(pos, true);
++    }
++
++    public @Nullable BlockEntity getBlockEntity(BlockPos pos, boolean validate) {
++        if (capturedTileEntities.containsKey(pos)) {
++            return capturedTileEntities.get(pos);
++        }
++        // CraftBukkit end
+         return !this.isInValidBounds(pos) ? null : (!this.isClientSide() && Thread.currentThread() != this.thread ? null : this.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE));
+     }
+ 
+@@ -502,6 +654,12 @@
+         BlockPos blockpos = blockEntity.getBlockPos();
+ 
+         if (this.isInValidBounds(blockpos)) {
++            // CraftBukkit start
++            if (captureBlockStates) {
++                capturedTileEntities.put(blockpos.immutable(), blockEntity);
++                return;
++            }
++            // CraftBukkit end
+             this.getChunkAt(blockpos).addAndRegisterBlockEntity(blockEntity);
+         }
+     }
+@@ -921,7 +1079,7 @@
+ 
+     public static enum ExplosionInteraction implements StringRepresentable {
+ 
+-        NONE("none"), BLOCK("block"), MOB("mob"), TNT("tnt"), TRIGGER("trigger");
++        NONE("none"), BLOCK("block"), MOB("mob"), TNT("tnt"), TRIGGER("trigger"), STANDARD("standard"); // CraftBukkit - Add STANDARD which will always use Explosion.Effect.DESTROY
+ 
+         public static final Codec<Level.ExplosionInteraction> CODEC = StringRepresentable.<Level.ExplosionInteraction>fromEnum(Level.ExplosionInteraction::values);
+         private final String id;

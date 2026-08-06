@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
++++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+@@ -137,7 +137,7 @@
+ 
+     @Override
+     public Brain<Hoglin> getBrain() {
+-        return super.getBrain();
++        return (Brain<Hoglin>) super.getBrain(); // CraftBukkit - decompile error
+     }
+ 
+     @Override
+@@ -249,7 +249,7 @@
+     private void finishConversion() {
+         this.convertTo(EntityTypes.ZOGLIN, ConversionParams.single(this, true, false), (zoglin) -> {
+             zoglin.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
+-        });
++        }, org.bukkit.event.entity.EntityTransformEvent.TransformReason.PIGLIN_ZOMBIFIED, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PIGLIN_ZOMBIFIED); // CraftBukkit - add spawn and transform reasons
+     }
+ 
+     @Override
+@@ -326,7 +326,7 @@
+ 
+     @Override
+     protected SoundEvent getAmbientSound() {
+-        return this.level().isClientSide() ? null : (SoundEvent) HoglinAi.getSoundForCurrentActivity(this).orElse((Object) null);
++        return this.level().isClientSide() ? null : (SoundEvent) HoglinAi.getSoundForCurrentActivity(this).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     @Override

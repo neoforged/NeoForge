@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/spider/Spider.java
++++ b/net/minecraft/world/entity/monster/spider/Spider.java
+@@ -174,7 +174,7 @@
+             Holder<MobEffect> holder = spider_spidereffectsgroupdata.effect;
+ 
+             if (holder != null) {
+-                this.addEffect(new MobEffectInstance(holder, -1));
++                this.addEffect(new MobEffectInstance(holder, -1), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.SPIDER_SPAWN); // CraftBukkit
+             }
+         }
+ 

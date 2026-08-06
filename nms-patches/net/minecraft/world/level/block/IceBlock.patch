@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/IceBlock.java
++++ b/net/minecraft/world/level/block/IceBlock.java
+@@ -61,6 +61,11 @@
+     }
+ 
+     protected void melt(BlockState state, Level level, BlockPos pos) {
++        // CraftBukkit start
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(level, pos, level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) ? Blocks.AIR.defaultBlockState() : meltsInto()).isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         if ((Boolean) level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos)) {
+             level.removeBlock(pos, false);
+         } else {

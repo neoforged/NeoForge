@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/item/component/SuspiciousStewEffects.java
++++ b/net/minecraft/world/item/component/SuspiciousStewEffects.java
+@@ -40,6 +40,15 @@
+ 
+     }
+ 
++    // CraftBukkit start
++    @Override
++    public void cancelUsingItem(net.minecraft.server.level.ServerPlayer serverplayer, ItemStack itemstack) {
++        for (SuspiciousStewEffects.Entry suspicioussteweffects_a : this.effects) {
++            serverplayer.connection.send(new net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket(serverplayer.getId(), suspicioussteweffects_a.effect()));
++        }
++    }
++    // CraftBukkit end
++
+     @Override
+     public void addToTooltip(Item.TooltipContext context, Consumer<Component> consumer, TooltipFlag flag, DataComponentGetter components) {
+         if (flag.isCreative()) {

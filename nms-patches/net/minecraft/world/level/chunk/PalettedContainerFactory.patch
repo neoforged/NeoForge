@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/chunk/PalettedContainerFactory.java
++++ b/net/minecraft/world/level/chunk/PalettedContainerFactory.java
+@@ -11,7 +11,8 @@
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ 
+-public record PalettedContainerFactory(Strategy<BlockState> blockStatesStrategy, BlockState defaultBlockState, Codec<PalettedContainer<BlockState>> blockStatesContainerCodec, Strategy<Holder<Biome>> biomeStrategy, Holder<Biome> defaultBiome, Codec<PalettedContainerRO<Holder<Biome>>> biomeContainerCodec) {
++// CraftBukkit - read/write
++public record PalettedContainerFactory(Strategy<BlockState> blockStatesStrategy, BlockState defaultBlockState, Codec<PalettedContainer<BlockState>> blockStatesContainerCodec, Strategy<Holder<Biome>> biomeStrategy, Holder<Biome> defaultBiome, Codec<PalettedContainerRO<Holder<Biome>>> biomeContainerCodec, Codec<PalettedContainer<Holder<Biome>>> biomeContainerCodecRW) {
+ 
+     public static PalettedContainerFactory create(RegistryAccess registries) {
+         Strategy<BlockState> strategy = Strategy.<BlockState>createForBlockStates(Block.BLOCK_STATE_REGISTRY);
+@@ -20,7 +21,7 @@
+         Strategy<Holder<Biome>> strategy1 = Strategy.<Holder<Biome>>createForBiomes(registry.asHolderIdMap());
+         Holder.Reference<Biome> holder_reference = registry.getOrThrow(Biomes.PLAINS);
+ 
+-        return new PalettedContainerFactory(strategy, blockstate, PalettedContainer.codecRW(BlockState.CODEC, strategy, blockstate), strategy1, holder_reference, PalettedContainer.codecRO(registry.holderByNameCodec(), strategy1, holder_reference));
++        return new PalettedContainerFactory(strategy, blockstate, PalettedContainer.codecRW(BlockState.CODEC, strategy, blockstate), strategy1, holder_reference, PalettedContainer.codecRO(registry.holderByNameCodec(), strategy1, holder_reference), PalettedContainer.codecRW(registry.holderByNameCodec(), strategy1, holder_reference)); // CraftBukkit - read/write
+     }
+ 
+     public PalettedContainer<BlockState> createForBlockStates() {

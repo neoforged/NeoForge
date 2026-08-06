@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java
++++ b/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java
+@@ -29,7 +29,7 @@
+     public boolean canUse() {
+         AABB aabb = this.golem.getBoundingBox().inflate(10.0D, 8.0D, 10.0D);
+         ServerLevel serverlevel = getServerLevel((Entity) this.golem);
+-        List<? extends LivingEntity> list = serverlevel.<LivingEntity>getNearbyEntities(Villager.class, this.attackTargeting, this.golem, aabb);
++        List<? extends LivingEntity> list = serverlevel.getNearbyEntities(Villager.class, this.attackTargeting, this.golem, aabb); // CraftBukkit - decompile error
+         List<Player> list1 = serverlevel.getNearbyPlayers(this.attackTargeting, this.golem, aabb);
+ 
+         for (LivingEntity livingentity : list) {
+@@ -63,7 +63,7 @@
+ 
+     @Override
+     public void start() {
+-        this.golem.setTarget(this.potentialTarget);
++        this.golem.setTarget(this.potentialTarget, org.bukkit.event.entity.EntityTargetEvent.TargetReason.DEFEND_VILLAGE, true); // CraftBukkit - reason
+         super.start();
+     }
+ }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/BeehiveBlock.java
++++ b/net/minecraft/world/level/block/BeehiveBlock.java
+@@ -125,7 +125,7 @@
+                 if (bee.getTarget() == null) {
+                     Player player = (Player) Util.getRandom(list1, level.getRandom());
+ 
+-                    bee.setTarget(player);
++                    bee.setTarget(player, org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true); // CraftBukkit
+                 }
+             }
+         }

@@ -1,0 +1,102 @@
+--- a/net/minecraft/world/level/storage/PrimaryLevelData.java
++++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
+@@ -29,6 +29,16 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.core.Registry;
++import net.minecraft.nbt.Tag;
++import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
++import net.minecraft.server.level.ServerPlayer;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.world.level.dimension.LevelStem;
++import org.bukkit.Bukkit;
++// CraftBukkit end
++
+ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -47,6 +57,20 @@
+     private final Set<String> knownServerBrands;
+     private boolean wasModded;
+     private final Set<String> removedFeatureFlags;
++    // CraftBukkit start - Add world and pdc
++    public Registry<LevelStem> customDimensions;
++    private ServerLevel world;
++    protected Tag pdc;
++
++    public void setWorld(ServerLevel world) {
++        if (this.world != null) {
++            return;
++        }
++        this.world = world;
++        world.getWorld().readBukkitValues(pdc);
++        pdc = null;
++    }
++    // CraftBukkit end
+ 
+     private PrimaryLevelData(@Nullable UUID singlePlayerUUID, boolean wasModded, LevelData.RespawnData respawnData, long gameTime, int version, boolean initialized, Set<String> knownServerBrands, Set<String> removedFeatureFlags, LevelSettings settings, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, Lifecycle worldGenSettingsLifecycle) {
+         this.wasModded = wasModded;
+@@ -69,11 +93,12 @@
+     public static <T> PrimaryLevelData parse(Dynamic<T> input, LevelSettings settings, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, Lifecycle worldGenSettingsLifecycle) {
+         long i = input.get("Time").asLong(0L);
+         LevelVersion levelversion = LevelVersion.parse(input);
+-        OptionalDynamic optionaldynamic = input.get("singleplayer_uuid");
+-        Codec codec = UUIDUtil.CODEC;
++        OptionalDynamic<T> optionaldynamic = input.get("singleplayer_uuid"); // CraftBukkit - decompile error
++        Codec<UUID> codec = UUIDUtil.CODEC; // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(codec);
+-        return new PrimaryLevelData((UUID) optionaldynamic.flatMap(codec::parse).result().orElse((Object) null), input.get("WasModded").asBoolean(false), (LevelData.RespawnData) input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT), i, levelversion.levelDataVersion(), input.get("initialized").asBoolean(true), (Set) input.get("ServerBrands").asStream().flatMap((dynamic1) -> {
++        // CraftBukkit - decompile error
++        return new PrimaryLevelData((UUID) optionaldynamic.flatMap(codec::parse).result().orElse(null), input.get("WasModded").asBoolean(false), (LevelData.RespawnData) input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT), i, levelversion.levelDataVersion(), input.get("initialized").asBoolean(true), (Set) input.get("ServerBrands").asStream().flatMap((dynamic1) -> {
+             return dynamic1.asString().result().stream();
+         }).collect(Collectors.toCollection(Sets::newLinkedHashSet)), (Set) input.get("removed_features").asStream().flatMap((dynamic1) -> {
+             return dynamic1.asString().result().stream();
+@@ -115,6 +140,8 @@
+         }
+ 
+         tag.store(WorldDataConfiguration.MAP_CODEC, this.settings.dataConfiguration());
++        tag.putString("Bukkit.Version", Bukkit.getName() + "/" + Bukkit.getVersion() + "/" + Bukkit.getBukkitVersion()); // CraftBukkit
++        world.getWorld().storeBukkitValues(tag); // CraftBukkit - add pdc
+     }
+ 
+     public static void writeLastPlayed(CompoundTag tag) {
+@@ -143,7 +170,7 @@
+ 
+     private static ListTag stringCollectionToTag(Set<String> values) {
+         ListTag listtag = new ListTag();
+-        Stream stream = values.stream().map(StringTag::valueOf);
++        Stream<StringTag> stream = values.stream().map(StringTag::valueOf); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(listtag);
+         stream.forEach(listtag::add);
+@@ -228,6 +255,12 @@
+     @Override
+     public void setDifficulty(Difficulty difficulty) {
+         this.settings = this.settings.withDifficulty(difficulty);
++        // CraftBukkit start
++        ClientboundChangeDifficultyPacket packet = new ClientboundChangeDifficultyPacket(this.getDifficulty(), this.isDifficultyLocked());
++        for (ServerPlayer player : (java.util.List<ServerPlayer>) (java.util.List) world.players()) {
++            player.connection.send(packet);
++        }
++        // CraftBukkit end
+     }
+ 
+     @Override
+@@ -302,6 +335,14 @@
+         return this.settings.copy();
+     }
+ 
++    // CraftBukkit start - Check if the name stored in NBT is the correct one
++    public void checkName(String name) {
++        if (!this.settings.levelName.equals(name)) {
++            this.settings.levelName = name;
++        }
++    }
++    // CraftBukkit end
++
+     /** @deprecated */
+     @Deprecated
+     public static enum SpecialWorldProperty {

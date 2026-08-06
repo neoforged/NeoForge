@@ -1,0 +1,36 @@
+--- a/net/minecraft/world/entity/ai/goal/target/TargetGoal.java
++++ b/net/minecraft/world/entity/ai/goal/target/TargetGoal.java
+@@ -11,6 +11,10 @@
+ import net.minecraft.world.scores.Team;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityTargetEvent;
++// CraftBukkit end
++
+ public abstract class TargetGoal extends Goal {
+ 
+     private static final int EMPTY_REACH_CACHE = 0;
+@@ -68,7 +72,12 @@
+                         }
+                     }
+ 
+-                    this.mob.setTarget(livingentity);
++                    // CraftBukkit start - SPIGOT-7228
++                    if (this.mob.level() != livingentity.level()) {
++                        return false;
++                    }
++                    // CraftBukkit end
++                    this.mob.setTarget(livingentity, EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true); // CraftBukkit
+                     return true;
+                 }
+             }
+@@ -88,7 +97,7 @@
+ 
+     @Override
+     public void stop() {
+-        this.mob.setTarget((LivingEntity) null);
++        this.mob.setTarget((LivingEntity) null, EntityTargetEvent.TargetReason.FORGOT_TARGET, true); // CraftBukkit
+         this.targetMob = null;
+     }
+ 

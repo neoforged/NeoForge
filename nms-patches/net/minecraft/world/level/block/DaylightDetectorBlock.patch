@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/level/block/DaylightDetectorBlock.java
++++ b/net/minecraft/world/level/block/DaylightDetectorBlock.java
+@@ -68,6 +68,7 @@
+ 
+         i = Mth.clamp(i, 0, 15);
+         if ((Integer) state.getValue(DaylightDetectorBlock.POWER) != i) {
++            i = org.bukkit.craftbukkit.event.CraftEventFactory.callRedstoneChange(level, pos, ((Integer) state.getValue(POWER)), i).getNewCurrent(); // CraftBukkit - Call BlockRedstoneEvent
+             level.setBlock(pos, (BlockState) state.setValue(DaylightDetectorBlock.POWER, i), 3);
+         }
+ 

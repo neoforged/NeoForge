@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/TrapDoorBlock.java
++++ b/net/minecraft/world/level/block/TrapDoorBlock.java
+@@ -39,6 +39,8 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
++
+ public class TrapDoorBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+ 
+     public static final MapCodec<TrapDoorBlock> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+@@ -131,6 +133,19 @@
+             boolean flag1 = level.hasNeighborSignal(pos);
+ 
+             if (flag1 != (Boolean) state.getValue(TrapDoorBlock.POWERED)) {
++                // CraftBukkit start
++                org.bukkit.World bworld = level.getWorld();
++                org.bukkit.block.Block bblock = bworld.getBlockAt(pos.getX(), pos.getY(), pos.getZ());
++
++                int power = bblock.getBlockPower();
++                int oldPower = (Boolean) state.getValue(OPEN) ? 15 : 0;
++
++                if (oldPower == 0 ^ power == 0 || block.defaultBlockState().isSignalSource()) {
++                    BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bblock, oldPower, power);
++                    level.getCraftServer().getPluginManager().callEvent(eventRedstone);
++                    flag1 = eventRedstone.getNewCurrent() > 0;
++                }
++                // CraftBukkit end
+                 if ((Boolean) state.getValue(TrapDoorBlock.OPEN) != flag1) {
+                     state = (BlockState) state.setValue(TrapDoorBlock.OPEN, flag1);
+                     this.playSound((Player) null, level, pos, flag1);

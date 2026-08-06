@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/CocoaBlock.java
++++ b/net/minecraft/world/level/block/CocoaBlock.java
+@@ -25,6 +25,8 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jspecify.annotations.Nullable;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
+ public class CocoaBlock extends HorizontalDirectionalBlock implements BonemealableBlock {
+ 
+     public static final MapCodec<CocoaBlock> CODEC = simpleCodec(CocoaBlock::new);
+@@ -55,7 +57,7 @@
+             int i = (Integer) state.getValue(CocoaBlock.AGE);
+ 
+             if (i < 2) {
+-                level.setBlock(pos, (BlockState) state.setValue(CocoaBlock.AGE, i + 1), 2);
++                CraftEventFactory.handleBlockGrowEvent(level, pos, (BlockState) state.setValue(CocoaBlock.AGE, i + 1), 2); // CraftBukkkit
+             }
+         }
+ 
+@@ -108,7 +110,7 @@
+ 
+     @Override
+     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+-        level.setBlock(pos, (BlockState) state.setValue(CocoaBlock.AGE, (Integer) state.getValue(CocoaBlock.AGE) + 1), 2);
++        CraftEventFactory.handleBlockGrowEvent(level, pos, (BlockState) state.setValue(CocoaBlock.AGE, (Integer) state.getValue(CocoaBlock.AGE) + 1), 2); // CraftBukkit
+     }
+ 
+     @Override

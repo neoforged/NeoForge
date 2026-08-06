@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/RespawnAnchorBlock.java
++++ b/net/minecraft/world/level/block/RespawnAnchorBlock.java
+@@ -92,7 +92,7 @@
+                     ServerPlayer.RespawnConfig serverplayer_respawnconfig1 = new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(serverlevel.dimension(), pos, 0.0F, 0.0F), false);
+ 
+                     if (serverplayer_respawnconfig == null || !serverplayer_respawnconfig.isSamePosition(serverplayer_respawnconfig1)) {
+-                        serverplayer.setRespawnPosition(serverplayer_respawnconfig1, true);
++                        serverplayer.setRespawnPosition(serverplayer_respawnconfig1, true, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.RESPAWN_ANCHOR); // CraftBukkit
+                         serverlevel.playSound((Entity) null, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                         return InteractionResult.SUCCESS_SERVER;
+                     }
+@@ -134,8 +134,9 @@
+     }
+ 
+     private void explode(BlockState state, ServerLevel level, final BlockPos pos) {
++        org.bukkit.block.BlockState blockState = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos).getState(); // CraftBukkit - capture BlockState before remove block
+         level.removeBlock(pos, false);
+-        Stream stream = Direction.Plane.HORIZONTAL.stream();
++        Stream<Direction> stream = Direction.Plane.HORIZONTAL.stream(); // CraftBukkit - decompile error
+ 
+         Objects.requireNonNull(pos);
+         boolean flag = stream.map(pos::relative).anyMatch((blockpos1) -> {
+@@ -154,7 +155,7 @@
+         };
+         Vec3 vec3 = Vec3.atCenterOf(pos);
+ 
+-        level.explode((Entity) null, level.damageSources().badRespawnPointExplosion(vec3), explosiondamagecalculator, vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK);
++        level.explode((Entity) null, level.damageSources().badRespawnPointExplosion(vec3, blockState), explosiondamagecalculator, vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK); // CraftBukkit - add state
+     }
+ 
+     public static boolean canSetSpawn(ServerLevel level, BlockPos pos) {

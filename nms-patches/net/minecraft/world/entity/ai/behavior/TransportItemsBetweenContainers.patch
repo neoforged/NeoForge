@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/entity/ai/behavior/TransportItemsBetweenContainers.java
++++ b/net/minecraft/world/entity/ai/behavior/TransportItemsBetweenContainers.java
+@@ -40,6 +40,12 @@
+ import org.apache.commons.lang3.function.TriConsumer;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityTargetBlockEvent;
++// CraftBukkit end
++
+ public class TransportItemsBetweenContainers extends Behavior<PathfinderMob> {
+ 
+     public static final int TARGET_INTERACTION_TIME = 60;
+@@ -271,6 +277,17 @@
+                             TransportItemsBetweenContainers.TransportItemTarget transportitemsbetweencontainers_transportitemtarget1 = this.isTargetValidToPick(body, level, chestblockentity, set, set1, aabb);
+ 
+                             if (transportitemsbetweencontainers_transportitemtarget1 != null) {
++                                // CraftBukkit start
++                                EntityTargetBlockEvent event = CraftEventFactory.callEntityTargetBlockEvent(body, level, transportitemsbetweencontainers_transportitemtarget1.pos());
++                                if (event.isCancelled()) {
++                                    return Optional.empty();
++                                }
++                                org.bukkit.block.Block newTarget = event.getTarget();
++                                if (newTarget == null) {
++                                    continue;
++                                }
++                                transportitemsbetweencontainers_transportitemtarget1 = TransportItemsBetweenContainers.TransportItemTarget.tryCreatePossibleTarget(((CraftBlock) newTarget).getPosition(), level);
++                                // CraftBukkit end
+                                 transportitemsbetweencontainers_transportitemtarget = transportitemsbetweencontainers_transportitemtarget1;
+                                 d0 = d1;
+                             }

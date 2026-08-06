@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/SpawnEggItem.java
++++ b/net/minecraft/world/item/SpawnEggItem.java
+@@ -179,7 +179,7 @@
+                 } else {
+                     mob1.snapTo(pos.x(), pos.y(), pos.z(), 0.0F, 0.0F);
+                     mob1.applyComponentsFromItemStack(spawnEggStack);
+-                    level.addFreshEntityWithPassengers(mob1);
++                    level.addFreshEntityWithPassengers(mob1, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG); // CraftBukkit
+                     spawnEggStack.consume(1, player);
+                     return Optional.of(mob1);
+                 }

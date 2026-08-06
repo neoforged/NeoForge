@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/level/block/CaveVines.java
++++ b/net/minecraft/world/level/block/CaveVines.java
+@@ -17,6 +17,16 @@
+ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
++// CraftBukkit start
++import java.util.LinkedList;
++import java.util.List;
++import net.minecraft.world.entity.player.Player;
++import net.minecraft.world.item.ItemStack;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.player.PlayerHarvestBlockEvent;
++// CraftBukkit end
++
+ public interface CaveVines {
+ 
+     VoxelShape SHAPE = Block.column(14.0D, 0.0D, 16.0D);
+@@ -27,9 +37,29 @@
+             if (level instanceof ServerLevel) {
+                 ServerLevel serverlevel = (ServerLevel) level;
+ 
+-                Block.dropFromBlockInteractLootTable(serverlevel, BuiltInLootTables.HARVEST_CAVE_VINE, state, level.getBlockEntity(pos), (ItemInstance) null, sourceEntity, (serverlevel1, itemstack) -> {
+-                    Block.popResource(serverlevel1, pos, itemstack);
+-                });
++                // CraftBukkit start
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(sourceEntity, pos, (BlockState) state.setValue(CaveVines.BERRIES, false))) {
++                    return InteractionResult.SUCCESS;
++                }
++
++                if (sourceEntity instanceof Player) {
++                    List<ItemStack> dropped = new LinkedList<>();
++                    Block.dropFromBlockInteractLootTable(serverlevel, BuiltInLootTables.HARVEST_CAVE_VINE, state, level.getBlockEntity(pos), (ItemInstance) null, sourceEntity, (serverlevel1, itemstack) -> {
++                        dropped.add(itemstack);
++                    });
++                    PlayerHarvestBlockEvent event = CraftEventFactory.callPlayerHarvestBlockEvent(level, pos, (Player) sourceEntity, net.minecraft.world.InteractionHand.MAIN_HAND, dropped);
++                    if (event.isCancelled()) {
++                        return InteractionResult.SUCCESS; // We need to return a success either way, because making it PASS or FAIL will result in a bug where cancelling while harvesting w/ block in hand places block
++                    }
++                    for (org.bukkit.inventory.ItemStack itemStack : event.getItemsHarvested()) {
++                        Block.popResource(level, pos, CraftItemStack.asNMSCopy(itemStack));
++                    }
++                } else {
++                    Block.dropFromBlockInteractLootTable(serverlevel, BuiltInLootTables.HARVEST_CAVE_VINE, state, level.getBlockEntity(pos), (ItemInstance) null, sourceEntity, (serverlevel1, itemstack) -> {
++                        Block.popResource(serverlevel1, pos, itemstack);
++                    });
++                }
++                // CraftBukkit end
+                 float f = Mth.randomBetween(serverlevel.getRandom(), 0.8F, 1.2F);
+ 
+                 serverlevel.playSound((Entity) null, pos, SoundEvents.CAVE_VINES_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, f);

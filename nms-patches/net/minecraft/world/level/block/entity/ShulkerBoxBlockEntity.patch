@@ -1,0 +1,68 @@
+--- a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
+@@ -33,6 +33,11 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.entity.HumanEntity;
++// CraftBukkit end
++
+ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer {
+ 
+     public static final int COLUMNS = 9;
+@@ -51,6 +56,37 @@
+     private float progressOld;
+     private final @Nullable DyeColor color;
+ 
++    // CraftBukkit start - add fields and methods
++    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++    private int maxStack = MAX_STACK;
++    public boolean opened;
++
++    public List<ItemStack> getContents() {
++        return this.itemStacks;
++    }
++
++    public void onOpen(CraftHumanEntity who) {
++        transaction.add(who);
++    }
++
++    public void onClose(CraftHumanEntity who) {
++        transaction.remove(who);
++    }
++
++    public List<HumanEntity> getViewers() {
++        return transaction;
++    }
++
++    @Override
++    public int getMaxStackSize() {
++        return maxStack;
++    }
++
++    public void setMaxStackSize(int size) {
++        maxStack = size;
++    }
++    // CraftBukkit end
++
+     public ShulkerBoxBlockEntity(@Nullable DyeColor color, BlockPos worldPosition, BlockState blockState) {
+         super(BlockEntityTypes.SHULKER_BOX, worldPosition, blockState);
+         this.itemStacks = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
+@@ -182,6 +218,7 @@
+             }
+ 
+             ++this.openCount;
++            if (opened) return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
+             this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
+             if (this.openCount == 1) {
+                 this.level.gameEvent(containerUser.getLivingEntity(), (Holder) GameEvent.CONTAINER_OPEN, this.worldPosition);
+@@ -195,6 +232,7 @@
+     public void stopOpen(ContainerUser containerUser) {
+         if (!this.remove && !containerUser.getLivingEntity().isSpectator()) {
+             --this.openCount;
++            if (opened) return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
+             this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
+             if (this.openCount <= 0) {
+                 this.level.gameEvent(containerUser.getLivingEntity(), (Holder) GameEvent.CONTAINER_CLOSE, this.worldPosition);

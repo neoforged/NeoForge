@@ -1,0 +1,386 @@
+--- a/net/minecraft/world/entity/player/Player.java
++++ b/net/minecraft/world/entity/player/Player.java
+@@ -125,6 +125,17 @@
+ import net.minecraft.world.scores.Team;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.util.CraftVector;
++import org.bukkit.event.entity.EntityDamageEvent;
++import org.bukkit.event.entity.EntityExhaustionEvent;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.player.PlayerBedEnterEvent;
++import org.bukkit.event.player.PlayerVelocityEvent;
++// CraftBukkit end
++
+ public abstract class Player extends Avatar implements ContainerUser {
+ 
+     public static final int MAX_HEALTH = 20;
+@@ -148,7 +159,7 @@
+     private static final int DEFAULT_SCORE = 0;
+     public static final float CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_VALUE = 2.0F;
+     private final Inventory inventory;
+-    protected PlayerEnderChestContainer enderChestInventory = new PlayerEnderChestContainer();
++    protected PlayerEnderChestContainer enderChestInventory = new PlayerEnderChestContainer(this); // CraftBukkit - add "this" to constructor
+     public final InventoryMenu inventoryMenu;
+     public AbstractContainerMenu containerMenu;
+     protected FoodData foodData = new FoodData();
+@@ -171,6 +182,16 @@
+     public @Nullable FishingHook fishing;
+     protected float hurtDir;
+ 
++    // CraftBukkit start
++    public boolean fauxSleeping;
++    public int oldLevel = -1;
++
++    @Override
++    public CraftHumanEntity getBukkitEntity() {
++        return (CraftHumanEntity) super.getBukkitEntity();
++    }
++    // CraftBukkit end
++
+     public Player(Level level, GameProfile gameProfile) {
+         super(EntityTypes.PLAYER, level);
+         this.lastItemInMainHand = ItemStack.EMPTY;
+@@ -311,7 +332,7 @@
+     }
+ 
+     private void turtleHelmetTick() {
+-        this.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 200, 0, false, false, true));
++        this.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 200, 0, false, false, true), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.TURTLE_HELMET); // CraftBukkit
+     }
+ 
+     private boolean isEquipped(Item item) {
+@@ -417,7 +438,13 @@
+     public void rideTick() {
+         if (!this.level().isClientSide() && this.wantsToStopRiding() && this.isPassenger()) {
+             this.stopRiding();
+-        } else {
++            // CraftBukkit start - SPIGOT-7316: no longer passenger, dismount and return
++            if (!this.isPassenger()) {
++                return;
++            }
++        }
++        {
++            // CraftBukkit end
+             super.rideTick();
+         }
+     }
+@@ -451,7 +478,7 @@
+             List<Entity> list1 = Lists.newArrayList();
+ 
+             for (Entity entity : list) {
+-                if (entity.is((Object) EntityTypes.EXPERIENCE_ORB)) {
++                if (entity.is(EntityTypes.EXPERIENCE_ORB)) { // CraftBukkit - decompile error
+                     list1.add(entity);
+                 } else if (!entity.isRemoved()) {
+                     this.touch(entity);
+@@ -637,7 +664,7 @@
+ 
+         this.setScore(input.getIntOr("Score", 0));
+         this.foodData.readAdditionalSaveData(input);
+-        Optional optional = input.read("abilities", Abilities.Packed.CODEC);
++        Optional<Abilities.Packed> optional = input.read("abilities", Abilities.Packed.CODEC); // CraftBukkit - decompile error
+         Abilities abilities = this.abilities;
+ 
+         Objects.requireNonNull(this.abilities);
+@@ -683,10 +710,10 @@
+             if (this.isDeadOrDying()) {
+                 return false;
+             } else {
+-                this.removeEntitiesOnShoulder();
++                // this.removeEntitiesOnShoulder(); // CraftBukkit - moved down
+                 if (source.scalesWithDifficulty()) {
+                     if (level.getDifficulty() == Difficulty.PEACEFUL) {
+-                        damage = 0.0F;
++                        return false; // CraftBukkit - f = 0.0f -> return false
+                     }
+ 
+                     if (level.getDifficulty() == Difficulty.EASY) {
+@@ -698,7 +725,13 @@
+                     }
+                 }
+ 
+-                return damage == 0.0F ? false : super.hurtServer(level, source, damage);
++                // CraftBukkit start - Don't filter out 0 damage
++                boolean damaged = super.hurtServer(level, source, damage);
++                if (damaged) {
++                    this.removeEntitiesOnShoulder();
++                }
++                return damaged;
++                // CraftBukkit end
+             }
+         }
+     }
+@@ -722,10 +755,29 @@
+     }
+ 
+     public boolean canHarmPlayer(Player target) {
+-        Team team = this.getTeam();
+-        Team team1 = target.getTeam();
++        // CraftBukkit start - Change to check OTHER player's scoreboard team according to API
++        // To summarize this method's logic, it's "Can parameter hurt this"
++        org.bukkit.scoreboard.Team team;
++        if (target instanceof ServerPlayer) {
++            ServerPlayer thatPlayer = (ServerPlayer) target;
++            team = thatPlayer.getBukkitEntity().getScoreboard().getPlayerTeam(thatPlayer.getBukkitEntity());
++            if (team == null || team.allowFriendlyFire()) {
++                return true;
++            }
++        } else {
++            // This should never be called, but is implemented anyway
++            org.bukkit.OfflinePlayer thisPlayer = target.level().getCraftServer().getOfflinePlayer(target.getScoreboardName());
++            team = target.level().getCraftServer().getScoreboardManager().getMainScoreboard().getPlayerTeam(thisPlayer);
++            if (team == null || team.allowFriendlyFire()) {
++                return true;
++            }
++        }
+ 
+-        return team == null ? true : (!team.isAlliedTo(team1) ? true : team.isAllowFriendlyFire());
++        if (this instanceof ServerPlayer) {
++            return !team.hasPlayer(((ServerPlayer) this).getBukkitEntity());
++        }
++        return !team.hasPlayer(this.level().getCraftServer().getOfflinePlayer(this.getScoreboardName()));
++        // CraftBukkit end
+     }
+ 
+     @Override
+@@ -739,7 +791,12 @@
+     }
+ 
+     @Override
+-    protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
++    // CraftBukkit start
++    protected boolean actuallyHurt(ServerLevel level, DamageSource source, float dmg, EntityDamageEvent event) { // void -> boolean
++        if (true) {
++            return super.actuallyHurt(level, source, dmg, event);
++        }
++        // CraftBukkit end
+         if (!this.isInvulnerableTo(level, source)) {
+             dmg = this.getDamageAfterArmorAbsorb(source, dmg);
+             dmg = this.getDamageAfterMagicAbsorb(source, dmg);
+@@ -754,7 +811,7 @@
+             }
+ 
+             if (dmg != 0.0F) {
+-                this.causeFoodExhaustion(source.getFoodExhaustion());
++                this.causeFoodExhaustion(source.getFoodExhaustion(), EntityExhaustionEvent.ExhaustionReason.DAMAGED); // CraftBukkit - EntityExhaustionEvent
+                 this.getCombatTracker().recordDamage(source, dmg);
+                 this.setHealth(this.getHealth() - dmg);
+                 if (dmg < 3.4028235E37F) {
+@@ -764,6 +821,7 @@
+                 this.gameEvent(GameEvent.ENTITY_DAMAGE);
+             }
+         }
++        return false; // CraftBukkit
+     }
+ 
+     public boolean isTextFilteringEnabled() {
+@@ -927,7 +985,7 @@
+ 
+             f *= this.baseDamageScaleFactor();
+             this.onAttack();
+-            if (!this.deflectProjectile(entity)) {
++            if (!this.deflectProjectile(entity, damagesource, f2)) { // CraftBukkit
+                 if (f > 0.0F || f2 > 0.0F) {
+                     boolean flag = f1 > 0.9F;
+                     boolean flag1;
+@@ -972,6 +1030,11 @@
+                         this.causeFoodExhaustion(0.1F);
+                     } else {
+                         this.playServerSideSound(SoundEvents.PLAYER_ATTACK_NODAMAGE);
++                        // CraftBukkit start - resync on cancelled event
++                        if (this instanceof ServerPlayer) {
++                            ((ServerPlayer) this).getBukkitEntity().updateInventory();
++                        }
++                        // CraftBukkit end
+                     }
+                 }
+ 
+@@ -992,8 +1055,13 @@
+         return !entity.isAttackable() ? true : entity.skipAttackInteraction(this);
+     }
+ 
+-    private boolean deflectProjectile(Entity entity) {
++    private boolean deflectProjectile(Entity entity, DamageSource damagesource, float f1) { // CraftBukkit
+         if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
++            // CraftBukkit start
++            if (CraftEventFactory.handleNonLivingEntityDamageEvent(entity, damagesource, f1, false)) {
++                return true;
++            }
++            // CraftBukkit end
+             if (projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, EntityReference.of(this), true)) {
+                 this.level().playSound((Entity) null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, this.getSoundSource());
+                 return true;
+@@ -1092,7 +1160,7 @@
+             if (entity instanceof LivingEntity) {
+                 LivingEntity livingentity = (LivingEntity) entity;
+ 
+-                livingentity.knockback((double) knockbackAmount, (double) Mth.sin((double) (this.getYRot() * ((float) Math.PI / 180F))), (double) (-Mth.cos((double) (this.getYRot() * ((float) Math.PI / 180F)))), damageSource, damage, comesFromEffect);
++                livingentity.knockback((double) knockbackAmount, (double) Mth.sin((double) (this.getYRot() * ((float) Math.PI / 180F))), (double) (-Mth.cos((double) (this.getYRot() * ((float) Math.PI / 180F)))), damageSource, damage, comesFromEffect, org.bukkit.event.entity.EntityKnockbackEvent.KnockbackCause.ENTITY_ATTACK); // CraftBukkit
+             } else {
+                 entity.push((double) (-Mth.sin((double) (this.getYRot() * ((float) Math.PI / 180F))) * knockbackAmount), 0.1D, (double) (Mth.cos((double) (this.getYRot() * ((float) Math.PI / 180F))) * knockbackAmount));
+             }
+@@ -1103,6 +1171,24 @@
+ 
+         if (entity instanceof ServerPlayer serverplayer) {
+             if (entity.hurtMarked) {
++                // CraftBukkit start - Add Velocity Event
++                boolean cancelled = false;
++                org.bukkit.entity.Player player = (org.bukkit.entity.Player) entity.getBukkitEntity();
++                org.bukkit.util.Vector velocity = CraftVector.toBukkit(oldMovement);
++
++                PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
++                this.level().getCraftServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    cancelled = true;
++                } else if (!velocity.equals(event.getVelocity())) {
++                    player.setVelocity(event.getVelocity());
++                }
++
++                if (cancelled) {
++                    return;
++                }
++                // CraftBukkit end
+                 serverplayer.connection.send(new ClientboundSetEntityMotionPacket(entity));
+                 entity.hurtMarked = false;
+                 entity.setDeltaMovement(oldMovement);
+@@ -1137,7 +1223,7 @@
+                         float f3 = this.getEnchantedDamage(livingentity, f2, damageSource) * attackStrengthScale;
+ 
+                         if (livingentity.hurtServer(serverlevel, damageSource, f3)) {
+-                            livingentity.knockback((double) 0.4F, (double) Mth.sin((double) (this.getYRot() * ((float) Math.PI / 180F))), (double) (-Mth.cos((double) (this.getYRot() * ((float) Math.PI / 180F)))), damageSource, f3);
++                            livingentity.knockback((double) 0.4F, (double) Mth.sin((double) (this.getYRot() * ((float) Math.PI / 180F))), (double) (-Mth.cos((double) (this.getYRot() * ((float) Math.PI / 180F)))), damageSource, f3, org.bukkit.event.entity.EntityKnockbackEvent.KnockbackCause.SWEEP_ATTACK); // CraftBukkit
+                             EnchantmentHelper.doPostAttackEffects(serverlevel, livingentity, damageSource);
+                         }
+                     }
+@@ -1182,7 +1268,7 @@
+                 baseDamage *= this.baseDamageScaleFactor();
+             }
+ 
+-            if (dealsKnockback && this.deflectProjectile(target)) {
++            if (dealsKnockback && this.deflectProjectile(target, damagesource, f1)) { // CraftBukkit
+                 return true;
+             } else {
+                 float f2 = dealsDamage ? baseDamage + f1 : 0.0F;
+@@ -1216,7 +1302,7 @@
+                     this.setLastHurtMob(target);
+                     this.itemAttackInteraction(target, itemstack, damagesource, flag3);
+                     this.damageStatsAndHearts(target, f3);
+-                    this.causeFoodExhaustion(0.1F);
++                    this.causeFoodExhaustion(0.1F, EntityExhaustionEvent.ExhaustionReason.ATTACK); // CraftBukkit - EntityExhaustionEvent
+                     return true;
+                 }
+             }
+@@ -1227,7 +1313,14 @@
+ 
+     @Override
+     public void remove(Entity.RemovalReason reason) {
+-        super.remove(reason);
++        // CraftBukkit start - add Bukkit remove cause
++        this.remove(reason, null);
++    }
++
++    @Override
++    public void remove(Entity.RemovalReason entity_removalreason, EntityRemoveEvent.Cause cause) {
++        super.remove(entity_removalreason, cause);
++        // CraftBukkit end
+         this.inventoryMenu.removed(this);
+         if (this.hasContainerOpen()) {
+             this.doCloseContainer();
+@@ -1295,6 +1388,12 @@
+     }
+ 
+     public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos pos) {
++        // CraftBukkit start
++        return this.startSleepInBed(pos, false);
++    }
++
++    public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos pos, boolean force) {
++        // CraftBukkit end
+         this.startSleeping(pos);
+         this.sleepCounter = 0;
+         return Either.right(Unit.INSTANCE);
+@@ -1429,7 +1528,15 @@
+     }
+ 
+     public void startFallFlying() {
+-        this.setSharedFlag(7, true);
++        // CraftBukkit start
++        if (!org.bukkit.craftbukkit.event.CraftEventFactory.callToggleGlideEvent(this, true).isCancelled()) {
++            this.setSharedFlag(7, true);
++        } else {
++            // SPIGOT-5542: must toggle like below
++            this.setSharedFlag(7, true);
++            this.setSharedFlag(7, false);
++        }
++        // CraftBukkit end
+     }
+ 
+     @Override
+@@ -1544,10 +1651,21 @@
+         return this.experienceLevel >= 30 ? 112 + (this.experienceLevel - 30) * 9 : (this.experienceLevel >= 15 ? 37 + (this.experienceLevel - 15) * 5 : 7 + this.experienceLevel * 2);
+     }
+ 
++    // CraftBukkit start
+     public void causeFoodExhaustion(float amount) {
++        this.causeFoodExhaustion(amount, EntityExhaustionEvent.ExhaustionReason.UNKNOWN);
++    }
++
++    public void causeFoodExhaustion(float f, EntityExhaustionEvent.ExhaustionReason reason) {
++        // CraftBukkit end
+         if (!this.abilities.invulnerable) {
+             if (!this.level().isClientSide()) {
+-                this.foodData.addExhaustion(amount);
++                // CraftBukkit start
++                EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(this, reason, f);
++                if (!event.isCancelled()) {
++                    this.foodData.addExhaustion(event.getExhaustion());
++                }
++                // CraftBukkit end
+             }
+ 
+         }
+@@ -1754,7 +1872,7 @@
+ 
+     protected static Optional<Parrot.Variant> extractParrotVariant(CompoundTag tag) {
+         if (!tag.isEmpty()) {
+-            EntityType<?> entitytype = (EntityType) tag.read("id", EntityType.CODEC).orElse((Object) null);
++            EntityType<?> entitytype = (EntityType) tag.read("id", EntityType.CODEC).orElse(null); // CraftBukkit - decompile error
+ 
+             if (entitytype == EntityTypes.PARROT) {
+                 return tag.read("Variant", Parrot.Variant.LEGACY_CODEC);
+@@ -1816,7 +1934,7 @@
+ 
+     @Override
+     public void onAttack() {
+-        this.resetOnlyAttackStrengthTicker();
++        // this.resetAttackStrengthTicker(); // CraftBukkit - Moved to EntityLiving to reset the cooldown after the damage is dealt
+         super.onAttack();
+     }
+ 
+@@ -2025,11 +2143,16 @@
+         return this.damageSources().playerAttack(this);
+     }
+ 
+-    public static record BedSleepingProblem(@Nullable Component message) {
++    // CraftBukkit start
++    public static record BedSleepingProblem(@Nullable Component message, PlayerBedEnterEvent.BedEnterResult bukkit) {
+ 
+-        public static final Player.BedSleepingProblem TOO_FAR_AWAY = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.too_far_away"));
+-        public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
+-        public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem((Component) null);
+-        public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
++        public BedSleepingProblem(@Nullable Component message) {
++            this(message, PlayerBedEnterEvent.BedEnterResult.OTHER_PROBLEM);
++        }
++        public static final Player.BedSleepingProblem TOO_FAR_AWAY = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.too_far_away"), PlayerBedEnterEvent.BedEnterResult.TOO_FAR_AWAY);
++        public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"), PlayerBedEnterEvent.BedEnterResult.OTHER_PROBLEM);
++        public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem((Component) null, PlayerBedEnterEvent.BedEnterResult.OTHER_PROBLEM);
++        public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"), PlayerBedEnterEvent.BedEnterResult.NOT_SAFE);
++        // CraftBukkit end
+     }
+ }

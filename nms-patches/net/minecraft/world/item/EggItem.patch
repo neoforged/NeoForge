@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/item/EggItem.java
++++ b/net/minecraft/world/item/EggItem.java
+@@ -26,10 +26,18 @@
+     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+         ItemStack itemstack = player.getItemInHand(hand);
+ 
+-        level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
++        // level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+         if (level instanceof ServerLevel serverlevel) {
+-            Projectile.spawnProjectileFromRotation(ThrownEgg::new, serverlevel, itemstack, player, 0.0F, 1.5F, 1.0F);
++            // CraftBukkit start
++            if (Projectile.spawnProjectileFromRotation(ThrownEgg::new, serverlevel, itemstack, player, 0.0F, 1.5F, 1.0F).isRemoved()) {
++                if (player instanceof net.minecraft.server.level.ServerPlayer) {
++                    ((net.minecraft.server.level.ServerPlayer) player).getBukkitEntity().updateInventory();
++                }
++                return InteractionResult.FAIL;
++            }
++            // CraftBukkit end
+         }
++        level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+ 
+         player.awardStat(Stats.ITEM_USED.get(this));
+         itemstack.consume(1, player);

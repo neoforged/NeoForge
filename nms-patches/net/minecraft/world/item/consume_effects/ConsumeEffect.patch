@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/item/consume_effects/ConsumeEffect.java
++++ b/net/minecraft/world/item/consume_effects/ConsumeEffect.java
+@@ -12,6 +12,10 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+ 
++// CraftBukkit start
++import org.bukkit.event.entity.EntityPotionEffectEvent;
++// CraftBukkit end
++
+ public interface ConsumeEffect {
+ 
+     Codec<ConsumeEffect> CODEC = BuiltInRegistries.CONSUME_EFFECT_TYPE.byNameCodec().dispatch(ConsumeEffect::getType, ConsumeEffect.Type::codec);
+@@ -19,7 +23,15 @@
+ 
+     ConsumeEffect.Type<? extends ConsumeEffect> getType();
+ 
+-    boolean apply(Level level, ItemStack stack, LivingEntity user);
++    // CraftBukkit start
++    default boolean apply(Level level, ItemStack stack, LivingEntity user) {
++        return this.apply(level, stack, user, EntityPotionEffectEvent.Cause.UNKNOWN);
++    }
++
++    default boolean apply(Level level, ItemStack stack, LivingEntity user, EntityPotionEffectEvent.Cause cause) {
++        return this.apply(level, stack, user);
++    }
++    // CraftBukkit end
+ 
+     public static record Type<T extends ConsumeEffect>(MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+ 
+@@ -30,7 +42,7 @@
+         public static final ConsumeEffect.Type<PlaySoundConsumeEffect> PLAY_SOUND = register("play_sound", PlaySoundConsumeEffect.CODEC, PlaySoundConsumeEffect.STREAM_CODEC);
+ 
+         private static <T extends ConsumeEffect> ConsumeEffect.Type<T> register(String name, MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+-            return (ConsumeEffect.Type) Registry.register(BuiltInRegistries.CONSUME_EFFECT_TYPE, name, new ConsumeEffect.Type(codec, streamCodec));
++            return (ConsumeEffect.Type) Registry.register(BuiltInRegistries.CONSUME_EFFECT_TYPE, name, new ConsumeEffect.Type<>(codec, streamCodec)); // CraftBukkit - decompile error
+         }
+     }
+ }

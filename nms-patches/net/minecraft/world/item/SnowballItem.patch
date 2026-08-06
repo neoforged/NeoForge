@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/item/SnowballItem.java
++++ b/net/minecraft/world/item/SnowballItem.java
+@@ -26,13 +26,21 @@
+     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+         ItemStack itemstack = player.getItemInHand(hand);
+ 
+-        level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
++        // CraftBukkit start - moved down
++        // level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+         if (level instanceof ServerLevel serverlevel) {
+-            Projectile.spawnProjectileFromRotation(Snowball::new, serverlevel, itemstack, player, 0.0F, 1.5F, 1.0F);
++            if (Projectile.spawnProjectileFromRotation(Snowball::new, serverlevel, itemstack, player, 0.0F, 1.5F, 1.0F).isAlive()) {
++                itemstack.consume(1, player);
++
++                level.playSound((Entity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
++            } else if (player instanceof net.minecraft.server.level.ServerPlayer) {
++                ((net.minecraft.server.level.ServerPlayer) player).getBukkitEntity().updateInventory();
++            }
++            // CraftBukkit end
+         }
+ 
+         player.awardStat(Stats.ITEM_USED.get(this));
+-        itemstack.consume(1, player);
++        // itemstack.consume(1, player); // CraftBukkit - moved up
+         return InteractionResult.SUCCESS;
+     }
+ 

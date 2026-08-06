@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/inventory/BrewingStandMenu.java
++++ b/net/minecraft/world/inventory/BrewingStandMenu.java
+@@ -17,6 +17,11 @@
+ import net.minecraft.world.item.alchemy.PotionBrewing;
+ import net.minecraft.world.item.alchemy.PotionContents;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.inventory.CraftInventoryBrewer;
++import org.bukkit.craftbukkit.inventory.view.CraftBrewingStandView;
++// CraftBukkit end
++
+ public class BrewingStandMenu extends AbstractContainerMenu {
+ 
+     private static final Identifier EMPTY_SLOT_FUEL = Identifier.withDefaultNamespace("container/slot/brewing_fuel");
+@@ -35,12 +40,18 @@
+     private final ContainerData brewingStandData;
+     private final Slot ingredientSlot;
+ 
++    // CraftBukkit start
++    private CraftBrewingStandView bukkitEntity = null;
++    private Inventory player;
++    // CraftBukkit end
++
+     public BrewingStandMenu(int containerId, Inventory inventory) {
+         this(containerId, inventory, new SimpleContainer(5), new SimpleContainerData(2));
+     }
+ 
+     public BrewingStandMenu(int containerId, Inventory inventory, Container brewingStand, ContainerData brewingStandData) {
+         super(MenuType.BREWING_STAND, containerId);
++        player = inventory; // CraftBukkit
+         checkContainerSize(brewingStand, 5);
+         checkContainerDataCount(brewingStandData, 2);
+         this.brewingStand = brewingStand;
+@@ -58,6 +69,7 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return this.brewingStand.stillValid(player);
+     }
+ 
+@@ -198,4 +210,17 @@
+             return BrewingStandMenu.EMPTY_SLOT_FUEL;
+         }
+     }
++
++    // CraftBukkit start
++    @Override
++    public CraftBrewingStandView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryBrewer inventory = new CraftInventoryBrewer(this.brewingStand);
++        bukkitEntity = new CraftBrewingStandView(this.player.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
+ }

@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/level/material/LavaFluid.java
++++ b/net/minecraft/world/level/material/LavaFluid.java
+@@ -90,6 +90,13 @@
+ 
+                     if (blockstate.isAir()) {
+                         if (this.hasFlammableNeighbours(level, blockpos1)) {
++                            // CraftBukkit start - Prevent lava putting something on fire
++                            if (level.getBlockState(blockpos1).getBlock() != Blocks.FIRE) {
++                                if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos1, pos).isCancelled()) {
++                                    continue;
++                                }
++                            }
++                            // CraftBukkit end
+                             level.setBlockAndUpdate(blockpos1, BaseFireBlock.getState(level, blockpos1));
+                             return;
+                         }
+@@ -106,6 +113,14 @@
+                     }
+ 
+                     if (level.isEmptyBlock(blockpos2.above()) && this.isFlammable(level, blockpos2)) {
++                        // CraftBukkit start - Prevent lava putting something on fire
++                        BlockPos up = blockpos2.above();
++                        if (level.getBlockState(up).getBlock() != Blocks.FIRE) {
++                            if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(level, up, pos).isCancelled()) {
++                                continue;
++                            }
++                        }
++                        // CraftBukkit end
+                         level.setBlockAndUpdate(blockpos2.above(), BaseFireBlock.getState(level, blockpos2));
+                     }
+                 }
+@@ -202,7 +217,11 @@
+ 
+             if (this.is(FluidTags.LAVA) && fluidstate1.is(FluidTags.WATER)) {
+                 if (state.getBlock() instanceof LiquidBlock) {
+-                    level.setBlock(pos, Blocks.STONE.defaultBlockState(), 3);
++                    // CraftBukkit start
++                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level.getMinecraftWorld(), pos, Blocks.STONE.defaultBlockState(), 3)) {
++                        return;
++                    }
++                    // CraftBukkit end
+                 }
+ 
+                 this.fizz(level, pos);
