@@ -1,5 +1,13 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
+@@ -34,6 +_,7 @@
+     public CrashReport(String title, Throwable t) {
+         this.title = title;
+         this.exception = t;
++        this.systemReport.setDetail("CraftBukkit Information", new org.bukkit.craftbukkit.CraftCrashReport()); // CraftBukkit
+     }
+ 
+     public String getTitle() {
 @@ -58,14 +_,8 @@
          if (this.uncategorizedStackTrace.length > 0) {
              builder.append("-- Head --\n");
