@@ -1,0 +1,21 @@
+package org.bukkit.craftbukkit.entity;
+
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.entity.Drowned;
+
+public class CraftDrowned extends CraftZombie implements Drowned {
+
+    public CraftDrowned(CraftServer server, net.minecraft.world.entity.monster.zombie.Drowned entity) {
+        super(server, entity);
+    }
+
+    @Override
+    public net.minecraft.world.entity.monster.zombie.Drowned getHandle() {
+        return (net.minecraft.world.entity.monster.zombie.Drowned) entity;
+    }
+
+    @Override
+    public String toString() {
+        return "CraftDrowned";
+    }
+}
