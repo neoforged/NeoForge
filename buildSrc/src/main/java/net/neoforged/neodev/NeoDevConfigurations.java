@@ -119,6 +119,7 @@ class NeoDevConfigurations {
         neoFormData = dependencyScope(configurations, "neoFormData");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
+        libraries.setCanBeResolved(true); // Slime
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
         minecraftDependencies = dependencyScope(configurations, "minecraftDependencies");

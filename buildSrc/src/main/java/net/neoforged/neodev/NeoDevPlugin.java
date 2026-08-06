@@ -181,7 +181,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.getLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevClasspath));
             task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
-            task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
             task.getBinpatcherGav().set(Tools.BINPATCHER.asGav(project));
         });
 
@@ -689,6 +688,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             var mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
             task.from(mainSourceSet.getJava().getClassesDirectory(), spec -> {
                 spec.exclude("net/neoforged/**");
+                // Slime start
+                spec.exclude("org/**");
+                spec.exclude("io/papermc/**");
+                spec.exclude("com/mohistmc/**");
+                spec.exclude("com/destroystokyo/**");
+                spec.exclude("ca/spottedleaf/**");
+                spec.exclude("alternate/current/wire/**");
+                spec.exclude("co/aikar/util/**");
+                spec.exclude("com/mojang/brigadier/**");
+                spec.exclude("gg/pufferfish/**");
+                // Slime end
             });
             if (type == BinaryPatchBaseType.CLIENT || type == BinaryPatchBaseType.JOINED) {
                 var clientSourceSet = sourceSets.getByName("client");

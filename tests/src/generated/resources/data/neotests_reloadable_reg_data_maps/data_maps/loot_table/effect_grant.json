@@ -1,9 +1,0 @@
-{
-  "values": {
-    "minecraft:blocks/copper_block": {
-      "duration": 100,
-      "id": "minecraft:nausea",
-      "show_icon": true
-    }
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "": {
-      "model": "neotests_retracting_connected_block:block/destroy_on_piston_move"
-    }
-  }
-}

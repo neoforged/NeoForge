@@ -1,8 +1,0 @@
-{
-  "providers": [
-    {
-      "type": "neotests:reference_2",
-      "what": "minecraft:uniform"
-    }
-  ]
-}

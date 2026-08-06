@@ -1,7 +1,0 @@
-{
-  "death_message_type": "neotests:msgtype",
-  "effects": "neotests:effects",
-  "exhaustion": 0.0,
-  "message_id": "test_mod",
-  "scaling": "neotests:scaling"
-}

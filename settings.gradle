@@ -22,6 +22,10 @@ dependencyResolutionManagement {
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         mavenCentral()
+        mavenLocal()
+        maven { url = 'https://hub.spigotmc.org/nexus/content/groups/public/' }
+        maven { url = "https://repo.papermc.io/repository/maven-public/" }
+        maven { url = "https://jitpack.io" }
     }
 }
 
@@ -35,10 +39,6 @@ project(':base').projectDir = file('projects/base')
 include ':neoforge'
 project(':neoforge').projectDir = file('projects/neoforge')
 
-include ':tests'
-project(":tests").projectDir = file("tests")
-
-include ':testframework'
 include ':coremods'
 // Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
 // another external dependency.

@@ -1,5 +1,0 @@
-{
-  "type": "neotests_biome_modifier_sync_test:modify_biome_effects",
-  "biomes": "#minecraft:is_taiga",
-  "water_color": 255
-}

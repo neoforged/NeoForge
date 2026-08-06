@@ -1,9 +1,0 @@
-{
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "doesnt_exist"
-    }
-  ],
-  "random_sequence": "neotests_conditional_loot_table:table_1"
-}
