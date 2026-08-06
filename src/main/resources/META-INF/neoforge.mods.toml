@@ -1,20 +1,19 @@
 modLoader="javafml"
 loaderVersion="[3,]"
-issueTrackerURL="https://github.com/neoforged/NeoForge/issues"
-logoFile="neoforged_logo.png"
+issueTrackerURL="https://github.com/ClmentCch/RakuForge/issues"
+logoFile="rakuforge_logo.png"
 license="LGPL v2.1"
 
 [[mods]]
-    modId="neoforge"
-    # We use the global NeoForge version
+    modId="rakuforge"
+    # We use the global RakuForge version
     version="${global.neoForgeVersion}"
-    #updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
-    displayName="NeoForge"
-    credits="Anyone who has contributed on Github and supports our development"
-    authors="The NeoForged Team"
+    displayName="RakuForge"
+    credits="Anyone who has contributed to the project and supports our development"
+    authors="The RakuForge Team"
     description='''
-    NeoForge, a NEW broad compatibility API.
+    RakuForge, a new Minecraft modding compatibility platform powered by innovation.
     '''
 
 [[mixins]]
-    config = "neoforge.mixins.json"
+    config = "rakuforge.mixins.json"
