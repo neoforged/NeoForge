@@ -1,0 +1,25 @@
+--- a/net/minecraft/advancements/AdvancementHolder.java
++++ b/net/minecraft/advancements/AdvancementHolder.java
+@@ -6,6 +_,11 @@
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.resources.Identifier;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.advancement.CraftAdvancement;
++import org.bukkit.craftbukkit.util.CraftNamespacedKey;
++// CraftBukkit end
++
+ public record AdvancementHolder(Identifier id, Advancement value) {
+     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancementHolder> STREAM_CODEC = StreamCodec.composite(
+         Identifier.STREAM_CODEC, AdvancementHolder::id, Advancement.STREAM_CODEC, AdvancementHolder::value, AdvancementHolder::new
+@@ -26,4 +_,10 @@
+     public String toString() {
+         return this.id.toString();
+     }
++
++    // CraftBukkit start
++    public final org.bukkit.advancement.Advancement toBukkit() {
++        return new CraftAdvancement(this);
++    }
++    // CraftBukkit end
+ }
