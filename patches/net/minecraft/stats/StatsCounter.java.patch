@@ -1,6 +1,17 @@
 --- a/net/minecraft/stats/StatsCounter.java
 +++ b/net/minecraft/stats/StatsCounter.java
-@@ -18,7 +_,8 @@
+@@ -14,11 +_,19 @@
+ 
+     public void increment(Player player, Stat<?> stat, int count) {
+         int result = (int)Math.min((long)this.getValue(stat) + count, 2147483647L);
++
++        // CraftBukkit start - fire Statistic events
++        org.bukkit.event.Cancellable cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.handleStatisticsIncrease(player, stat, this.getValue(stat), result);
++        if (cancellable != null && cancellable.isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         this.setValue(player, stat, result);
      }
  
      public void setValue(Player player, Stat<?> stat, int count) {

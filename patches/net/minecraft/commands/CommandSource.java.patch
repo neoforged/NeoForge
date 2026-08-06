@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/CommandSource.java
 +++ b/net/minecraft/commands/CommandSource.java
-@@ -2,6 +2,10 @@
+@@ -2,6 +_,10 @@
  
  import net.minecraft.network.chat.Component;
  
@@ -8,10 +8,10 @@
 +import org.bukkit.craftbukkit.command.NullCommandSender;
 +// CraftBukkit end
 +
- public interface CommandSource {
+ import net.neoforged.neoforge.common.extensions.ICommandSourceExtension;
  
-     CommandSource NULL = new CommandSource() {
-@@ -22,6 +26,13 @@
+ public interface CommandSource extends ICommandSourceExtension {
+@@ -24,6 +_,13 @@
          public boolean shouldInformAdmins() {
              return false;
          }
@@ -25,7 +25,7 @@
      };
  
      void sendSystemMessage(Component message);
-@@ -35,4 +46,6 @@
+@@ -37,4 +_,6 @@
      default boolean alwaysAccepts() {
          return false;
      }

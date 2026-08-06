@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/CommandSourceStack.java
 +++ b/net/minecraft/commands/CommandSourceStack.java
-@@ -48,6 +48,12 @@
+@@ -48,6 +_,12 @@
  import net.minecraft.world.phys.Vec3;
  import org.jspecify.annotations.Nullable;
  
@@ -10,10 +10,10 @@
 +import net.minecraft.server.permissions.Permissions;
 +// CraftBukkit end
 +
- public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCommandSource<CommandSourceStack> {
+ import net.neoforged.neoforge.common.extensions.ICommandSourceStackExtension;
  
-     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
-@@ -66,6 +72,10 @@
+ public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCommandSource<CommandSourceStack>, ICommandSourceStackExtension {
+@@ -67,6 +_,10 @@
      private final Vec2 rotation;
      private final CommandSigningContext signingContext;
      private final TaskChainer chatMessageChainer;
@@ -22,16 +22,17 @@
 +    public volatile CommandNode currentCommand;
 +    // CraftBukkit end
  
-     public CommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, ServerLevel level, PermissionSet permissions, String textName, Component displayName, MinecraftServer server, @Nullable Entity entity) {
-         this(source, position, rotation, level, permissions, textName, displayName, server, entity, false, CommandResultCallback.EMPTY, EntityAnchorArgument.Anchor.FEET, CommandSigningContext.ANONYMOUS, TaskChainer.immediate(server));
-@@ -86,8 +96,41 @@
+     public CommandSourceStack(
+         CommandSource source,
+@@ -127,7 +_,40 @@
          this.rotation = rotation;
          this.signingContext = signingContext;
          this.chatMessageChainer = chatMessageChainer;
+-    }
 +        // CraftBukkit start
 +        this.bukkitPermissions = new DelegatePermissionSet(permissions);
-     }
- 
++    }
++
 +    private class DelegatePermissionSet implements PermissionSet {
 +
 +        private final PermissionSet handle;
@@ -62,11 +63,10 @@
 +        }
 +    }
 +    // CraftBukkit end
-+
+ 
      public CommandSourceStack withSource(CommandSource source) {
-         return this.source == source ? this : new CommandSourceStack(source, this.worldPosition, this.rotation, this.level, this.permissions, this.textName, this.displayName, this.server, this.entity, this.silent, this.resultCallback, this.anchor, this.signingContext, this.chatMessageChainer);
-     }
-@@ -172,7 +215,7 @@
+         return this.source == source
+@@ -377,7 +_,7 @@
  
      @Override
      public PermissionSet permissions() {
@@ -75,16 +75,7 @@
      }
  
      public Vec3 getPosition() {
-@@ -298,7 +341,7 @@
- 
-         if ((Boolean) gamerules.get(GameRules.SEND_COMMAND_FEEDBACK)) {
-             for (ServerPlayer serverplayer : this.server.getPlayerList().getPlayers()) {
--                if (serverplayer.commandSource() != this.source && this.server.getPlayerList().isOp(serverplayer.nameAndId())) {
-+                if (serverplayer.commandSource() != this.source && serverplayer.getBukkitEntity().hasPermission("minecraft.admin.command_feedback")) { // CraftBukkit
-                     serverplayer.sendSystemMessage(component1);
-                 }
-             }
-@@ -402,4 +445,10 @@
+@@ -582,4 +_,10 @@
      public boolean isSilent() {
          return this.silent;
      }

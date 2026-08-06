@@ -1,5 +1,22 @@
 --- a/net/minecraft/commands/arguments/EntityArgument.java
 +++ b/net/minecraft/commands/arguments/EntityArgument.java
+@@ -104,9 +_,15 @@
+     }
+ 
+     private EntitySelector parse(StringReader reader, boolean allowSelectors) throws CommandSyntaxException {
++        // CraftBukkit start
++        return parse(reader, allowSelectors, false);
++    }
++
++    public EntitySelector parse(StringReader reader, boolean allowSelectors, boolean overridePermissions) throws CommandSyntaxException {
++        // CraftBukkit end
+         int start = 0;
+         EntitySelectorParser parser = new EntitySelectorParser(reader, allowSelectors);
+-        EntitySelector selector = parser.parse();
++        EntitySelector selector = parser.parse(overridePermissions); // CraftBukkit
+         if (selector.getMaxResults() > 1 && this.single) {
+             if (this.playersOnly) {
+                 reader.setCursor(0);
 @@ -128,7 +_,7 @@
          if (contextBuilder.getSource() instanceof SharedSuggestionProvider source) {
              StringReader reader = new StringReader(builder.getInput());

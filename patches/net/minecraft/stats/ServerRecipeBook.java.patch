@@ -1,0 +1,38 @@
+--- a/net/minecraft/stats/ServerRecipeBook.java
++++ b/net/minecraft/stats/ServerRecipeBook.java
+@@ -24,6 +_,8 @@
+ import net.minecraft.world.item.crafting.display.RecipeDisplayId;
+ import org.slf4j.Logger;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
+ public class ServerRecipeBook extends RecipeBook {
+     public static final String RECIPE_BOOK_TAG = "recipeBook";
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -63,7 +_,7 @@
+ 
+         for (RecipeHolder<?> recipe : recipes) {
+             ResourceKey<Recipe<?>> id = recipe.id();
+-            if (!this.known.contains(id) && !recipe.value().isSpecial()) {
++            if (!this.known.contains(id) && !recipe.value().isSpecial() && CraftEventFactory.handlePlayerRecipeListUpdateEvent(player, id.location())) { // CraftBukkit
+                 this.add(id);
+                 this.addHighlight(id);
+                 this.displayResolver
+@@ -74,7 +_,7 @@
+             }
+         }
+ 
+-        if (!recipesToAdd.isEmpty()) {
++        if (!recipesToAdd.isEmpty() && player.connection != null) { // SPIGOT-4478 during PlayerLoginEvent
+             player.connection.send(new ClientboundRecipeBookAddPacket(recipesToAdd, false));
+         }
+ 
+@@ -92,7 +_,7 @@
+             }
+         }
+ 
+-        if (!recipesToRemove.isEmpty()) {
++        if (!recipesToRemove.isEmpty() && player.connection != null) { // SPIGOT-4478 during PlayerLoginEvent
+             player.connection.send(new ClientboundRecipeBookRemovePacket(recipesToRemove));
+         }
+ 

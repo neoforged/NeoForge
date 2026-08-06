@@ -1,15 +1,43 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
-@@ -465,6 +_,9 @@
+@@ -194,8 +_,10 @@
+         };
+     }
+ 
+-    protected void parseSelector() throws CommandSyntaxException {
+-        this.usesSelectors = true;
++    // CraftBukkit start
++    protected void parseSelector(boolean overridePermissions) throws CommandSyntaxException {
++        this.usesSelectors = !overridePermissions;
++        // CraftBukkit end
+         this.suggestions = this::suggestSelector;
+         if (!this.reader.canRead()) {
+             throw ERROR_MISSING_SELECTOR_TYPE.createWithContext(this.reader);
+@@ -457,6 +_,12 @@
+     }
+ 
+     public EntitySelector parse() throws CommandSyntaxException {
++        // CraftBukkit start
++        return parse(false);
++    }
++
++    public EntitySelector parse(boolean overridePermissions) throws CommandSyntaxException {
++        // CraftBukkit end
+         this.startPosition = this.reader.getCursor();
+         this.suggestions = this::suggestNameOrSelector;
+         if (this.reader.canRead() && this.reader.peek() == '@') {
+@@ -465,7 +_,10 @@
              }
  
              this.reader.skip();
+-            this.parseSelector();
 +            EntitySelector forgeSelector = net.neoforged.neoforge.common.command.EntitySelectorManager.parseSelector(this);
 +            if (forgeSelector != null)
 +                return forgeSelector;
-             this.parseSelector();
++            this.parseSelector(overridePermissions); // CraftBukkit
          } else {
              this.parseNameOrUUID();
+         }
 @@ -481,6 +_,7 @@
          builder.suggest("@s", Component.translatable("argument.entity.selector.self"));
          builder.suggest("@e", Component.translatable("argument.entity.selector.allEntities"));
