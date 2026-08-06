@@ -28,6 +28,7 @@ abstract class GeneratePackageInfos extends DefaultTask {
         }
     }
 }
+
 final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePackageInfos) {
     it.files.from fileTree("src/main/java")
     if (file("src/client/java").exists()) {
@@ -70,7 +71,7 @@ immaculate {
 
         custom 'jspecifyNullable', { String fileContents ->
             fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
-            fileContents.replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
+                    .replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
         }
     }
 }
