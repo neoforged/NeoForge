@@ -4,7 +4,7 @@
      }
  
      private boolean tryItemClickBehaviourOverride(Player player, ClickAction clickAction, Slot slot, ItemStack clicked, ItemStack carried) {
-+        // Neo: Fire the ItemStackedOnOtherEvent, and return the event's handled value if it was cancelled. Returning true will trigger the container to stop processing further logic.
++        // Neo: Fire the ItemStackedOnOtherEvent, and return the event's cancel result if it was cancelled. Returning true will trigger the container to stop processing further logic.
 +        // The first parameter to onItemStackedOn is the "carried" (under-mouse) item, which is the second ItemStack parameter to this method.
 +        var event = net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(carried, clicked, slot, clickAction, player, createCarriedSlotAccess());
 +        if (event.isCanceled()) {
