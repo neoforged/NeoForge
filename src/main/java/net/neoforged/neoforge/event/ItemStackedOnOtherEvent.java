@@ -88,6 +88,7 @@ public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent 
     /// event is [cancelled][#setCanceled(boolean)]. See the javadocs of this class for more details.
     ///
     /// @param cancelResult the cancel result
+    /// @see #cancelWithResult(boolean)
     public void setCancellationResult(boolean cancelResult) {
         this.cancelResult = cancelResult;
     }
@@ -96,5 +97,14 @@ public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent 
     /// the javadocs of this class for more details.
     public boolean getCancellationResult() {
         return this.cancelResult;
+    }
+
+    /// [Cancels](ICancellableEvent#setCanceled(boolean)) this event and [sets the cancellation result](#setCancellationResult(boolean)).
+    ///
+    /// @param cancelResult the cancel result
+    /// @see #setCancellationResult(boolean)
+    public void cancelWithResult(boolean cancelResult) {
+        this.setCancellationResult(cancelResult);
+        this.setCanceled(true);
     }
 }
