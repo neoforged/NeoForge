@@ -57,14 +57,14 @@ import org.jspecify.annotations.Nullable;
 public class ServerLifecycleHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker SERVERHOOKS = MarkerManager.getMarker("SERVERHOOKS");
-    private static final LevelResource SERVERCONFIG = new LevelResource("serverconfig");
+    private static final LevelResource SYNCEDCONFIG = new LevelResource("syncedconfig");
     @Nullable
     private static volatile CountDownLatch exitLatch = null;
     @Nullable
     private static MinecraftServer currentServer;
 
-    private static Path getServerConfigPath(final MinecraftServer server) {
-        final Path serverConfig = server.getWorldPath(SERVERCONFIG);
+    private static Path getSyncedConfigPath(final MinecraftServer server) {
+        final Path serverConfig = server.getWorldPath(SYNCEDCONFIG);
         if (!Files.isDirectory(serverConfig)) {
             try {
                 Files.createDirectories(serverConfig);
@@ -76,9 +76,9 @@ public class ServerLifecycleHooks {
         if (!Files.exists(explanation)) {
             try {
                 Files.writeString(explanation, """
-                        Any server configs put in this folder will override the corresponding server config from <instance path>/config/<config path>.
+                        Any synced configs put in this folder will override the corresponding synced config from <instance path>/config/<config path>.
                         If the config being transferred is in a subfolder of the base config folder make sure to include that folder here in the path to the file you are overwriting.
-                        For example if you are overwriting a config with the path <instance path>/config/ExampleMod/config-server.toml, you would need to put it in serverconfig/ExampleMod/config-server.toml
+                        For example if you are overwriting a config with the path <instance path>/config/ExampleMod/config-synced.toml, you would need to put it in serverconfig/ExampleMod/config-shared.toml
                         """, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -90,7 +90,7 @@ public class ServerLifecycleHooks {
     public static void handleServerAboutToStart(final MinecraftServer server) {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SYNCED, FMLPaths.CONFIGDIR.get(), getSyncedConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
@@ -124,7 +124,7 @@ public class ServerLifecycleHooks {
             latch.countDown();
             exitLatch = null;
         }
-        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SYNCED);
     }
 
     @Nullable

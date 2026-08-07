@@ -251,7 +251,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         }
 
         // We are on the client, connected to a vanilla server, We have to load the default configs.
-        ConfigTracker.INSTANCE.loadDefaultServerConfigs();
+        ConfigTracker.INSTANCE.loadDefaultSyncedConfigs();
 
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
