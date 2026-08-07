@@ -14,7 +14,7 @@
 +                } else {
 +                    var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
 +                    if (!fluidType.isAir()) {
-+                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, submitNodeCollector);
++                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, bufferSource);
 +                    }
              }
  

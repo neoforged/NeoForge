@@ -21,7 +21,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -687,10 +686,10 @@ public class EntityFluidInteractionTests {
 
         helper.startSequence()
                 .thenExecuteAfter(2, () -> {
-                    final Pig milkPassenger = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 3);
-                    final Pig waterPassenger = helper.spawnWithNoFreeWill(EntityTypes.PIG, 3, 2, 3);
-                    final Pig lavaPassenger = helper.spawnWithNoFreeWill(EntityTypes.PIG, 5, 2, 3);
-                    final Pig dryPassenger = helper.spawnWithNoFreeWill(EntityTypes.PIG, 7, 2, 3);
+                    final Pig milkPassenger = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 3);
+                    final Pig waterPassenger = helper.spawnWithNoFreeWill(EntityType.PIG, 3, 2, 3);
+                    final Pig lavaPassenger = helper.spawnWithNoFreeWill(EntityType.PIG, 5, 2, 3);
+                    final Pig dryPassenger = helper.spawnWithNoFreeWill(EntityType.PIG, 7, 2, 3);
                     helper.assertFalse(milkPassenger.startRiding(milkBoat), "Boat in eye-deep water-like custom fluid should reject passengers");
                     helper.assertFalse(waterPassenger.startRiding(waterBoat), "Boat in eye-deep water should reject passengers");
                     helper.assertTrue(lavaPassenger.startRiding(lavaBoat), "Boat in lava should accept passengers");
@@ -1087,13 +1086,13 @@ public class EntityFluidInteractionTests {
         }
 
         Zombie spawnZombieWithNoFreeWill(BlockPos pos) {
-            final Zombie zombie = this.spawnWithNoFreeWill(EntityTypes.ZOMBIE, pos.getX(), pos.getY(), pos.getZ());
+            final Zombie zombie = this.spawnWithNoFreeWill(EntityType.ZOMBIE, pos.getX(), pos.getY(), pos.getZ());
             zombie.snapTo(this.feetAt(pos));
             return zombie;
         }
 
         Zombie spawnTickingZombie(BlockPos pos) {
-            final Zombie zombie = this.spawn(EntityTypes.ZOMBIE, pos);
+            final Zombie zombie = this.spawn(EntityType.ZOMBIE, pos);
             zombie.snapTo(this.feetAt(pos));
             return zombie;
         }
@@ -1112,13 +1111,13 @@ public class EntityFluidInteractionTests {
         }
 
         Cod spawnCod(BlockPos pos) {
-            final Cod cod = this.spawnWithNoFreeWill(EntityTypes.COD, pos.getX(), pos.getY(), pos.getZ());
+            final Cod cod = this.spawnWithNoFreeWill(EntityType.COD, pos.getX(), pos.getY(), pos.getZ());
             cod.snapTo(this.feetAt(pos));
             return cod;
         }
 
         Boat spawnBoat(BlockPos pos) {
-            final Boat boat = this.spawn(EntityTypes.OAK_BOAT, pos);
+            final Boat boat = this.spawn(EntityType.OAK_BOAT, pos);
             boat.snapTo(this.feetAt(pos));
             return boat;
         }
@@ -1304,7 +1303,7 @@ public class EntityFluidInteractionTests {
 
     private static class NoisySkeletonHorse extends SkeletonHorse {
         private NoisySkeletonHorse(Level level) {
-            super(EntityTypes.SKELETON_HORSE, level);
+            super(EntityType.SKELETON_HORSE, level);
         }
 
         private SoundEvent exposedAmbientSound() {
@@ -1317,7 +1316,7 @@ public class EntityFluidInteractionTests {
         private boolean giant;
 
         private CalciumAbsorbingSkeletonHorse(Level level) {
-            super(EntityTypes.SKELETON_HORSE, level);
+            super(EntityType.SKELETON_HORSE, level);
         }
 
         private boolean absorbCalciumFromCurrentFluid() {
