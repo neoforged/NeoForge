@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/commands/GiveCommand.java
++++ b/net/minecraft/server/commands/GiveCommand.java
+@@ -63,7 +_,7 @@
+                 ItemStack copyToDrop = prototypeItemStack.copyWithCount(size);
+                 boolean added = player.getInventory().add(copyToDrop);
+                 if (added && copyToDrop.isEmpty()) {
+-                    ItemEntity drop = player.drop(prototypeItemStack.copy(), false);
++                    ItemEntity drop = player.drop(prototypeItemStack.copy(), false, false, false); // CraftBukkit - SPIGOT-2942: Add boolean to call event
+                     if (drop != null) {
+                         drop.makeFakeItem();
+                     }
+@@ -81,7 +_,7 @@
+                         );
+                     player.containerMenu.broadcastChanges();
+                 } else {
+-                    ItemEntity drop = player.drop(copyToDrop, false);
++                    ItemEntity drop = player.drop(copyToDrop, false, false, false); // CraftBukkit - SPIGOT-2942: Add boolean to call event
+                     if (drop != null) {
+                         drop.setNoPickUpDelay();
+                         drop.setTarget(player.getUUID());

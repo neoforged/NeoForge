@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/commands/SetSpawnCommand.java
 +++ b/net/minecraft/server/commands/SetSpawnCommand.java
+@@ -75,7 +_,7 @@
+         float pitch = Mth.clamp(rotationVector.x, -90.0F, 90.0F);
+ 
+         for (ServerPlayer target : targets) {
+-            target.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(dimension, pos, yaw, pitch), true), false);
++            target.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(dimension, pos, yaw, pitch), true), false, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.COMMAND); // CraftBukkit
+         }
+ 
+         String dimensionName = dimension.identifier().toString();
 @@ -88,7 +_,7 @@
                      pos.getZ(),
                      yaw,

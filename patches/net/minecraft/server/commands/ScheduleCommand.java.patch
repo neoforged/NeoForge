@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/commands/ScheduleCommand.java
++++ b/net/minecraft/server/commands/ScheduleCommand.java
+@@ -102,7 +_,7 @@
+ 
+         long tickTime = source.getLevel().getGameTime() + time;
+         Identifier callbackId = callback.getFirst();
+-        TimerQueue<MinecraftServer> queue = source.getServer().getScheduledEvents();
++        TimerQueue<MinecraftServer> queue = source.getLevel().getScheduledEvents(); // CraftBukkit - SPIGOT-6667: Use world specific function timer
+         Optional<CommandFunction<CommandSourceStack>> function = callback.getSecond().left();
+         if (function.isPresent()) {
+             if (function.get() instanceof MacroFunction) {
+@@ -130,7 +_,7 @@
+     }
+ 
+     private static int remove(CommandSourceStack source, String id) throws CommandSyntaxException {
+-        int count = source.getServer().getScheduledEvents().remove(id);
++        int count = source.getLevel().getScheduledEvents().remove(id); // CraftBukkit - SPIGOT-6667: Use world specific function timer
+         if (count == 0) {
+             throw ERROR_CANT_REMOVE.create(id);
+         }

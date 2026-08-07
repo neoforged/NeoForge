@@ -1,0 +1,44 @@
+--- a/net/minecraft/server/players/SleepStatus.java
++++ b/net/minecraft/server/players/SleepStatus.java
+@@ -14,8 +_,12 @@
+     }
+ 
+     public boolean areEnoughDeepSleeping(int sleepPercentageNeeded, List<ServerPlayer> players) {
+-        int deepSleepers = (int)players.stream().filter(Player::isSleepingLongEnough).count();
+-        return deepSleepers >= this.sleepersNeeded(sleepPercentageNeeded);
++        // CraftBukkit start
++        int j = (int) players.stream().filter((eh) -> { return eh.isSleepingLongEnough() || eh.fauxSleeping; }).count();
++        boolean anyDeepSleep = players.stream().anyMatch(Player::isSleepingLongEnough);
++
++        return anyDeepSleep && j >= this.sleepersNeeded(sleepPercentageNeeded);
++        // CraftBukkit end
+     }
+ 
+     public int sleepersNeeded(int sleepPercentageNeeded) {
+@@ -35,16 +_,22 @@
+         int oldSleepingPlayers = this.sleepingPlayers;
+         this.activePlayers = 0;
+         this.sleepingPlayers = 0;
++        boolean anySleep = false; // CraftBukkit
+ 
+-        for (ServerPlayer player : players) {
+-            if (!player.isSpectator()) {
++        for (ServerPlayer serverplayer : players) {
++            if (!serverplayer.isSpectator()) {
+                 this.activePlayers++;
+-                if (player.isSleeping()) {
++                if (serverplayer.isSleeping() || serverplayer.fauxSleeping) { // CraftBukkit
+                     this.sleepingPlayers++;
+                 }
++                // CraftBukkit start
++                if (serverplayer.isSleeping()) {
++                    anySleep = true;
++                }
++                // CraftBukkit end
+             }
+         }
+ 
+-        return (oldSleepingPlayers > 0 || this.sleepingPlayers > 0) && (oldActivePlayers != this.activePlayers || oldSleepingPlayers != this.sleepingPlayers);
++        return anySleep && (oldSleepingPlayers > 0 || this.sleepingPlayers > 0) && (oldActivePlayers != this.activePlayers || oldSleepingPlayers != this.sleepingPlayers); // CraftBukkit
+     }
+ }

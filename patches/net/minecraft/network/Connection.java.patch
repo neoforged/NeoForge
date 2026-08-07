@@ -1,9 +1,10 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -81,6 +_,8 @@
+@@ -81,6 +_,9 @@
      private volatile @Nullable DisconnectionDetails delayedDisconnect;
      private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
      private @Nullable UUID intendedProfileId;
++    public String hostname = ""; // CraftBukkit - add field
 +    @Nullable
 +    private ProtocolInfo<?> inboundProtocol;
  

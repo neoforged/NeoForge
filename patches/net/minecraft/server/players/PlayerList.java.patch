@@ -1,13 +1,70 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -128,6 +_,7 @@
+@@ -101,6 +_,27 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import com.mojang.authlib.GameProfile;
++import java.util.stream.Collectors;
++import net.minecraft.server.dedicated.DedicatedServer;
++import net.minecraft.server.level.ClientInformation;
++import net.minecraft.server.network.ServerLoginPacketListenerImpl;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.craftbukkit.util.CraftChatMessage;
++import org.bukkit.craftbukkit.util.CraftLocation;
++import org.bukkit.event.entity.EntityRemoveEvent;
++import org.bukkit.event.player.PlayerChangedWorldEvent;
++import org.bukkit.event.player.PlayerJoinEvent;
++import org.bukkit.event.player.PlayerLoginEvent;
++import org.bukkit.event.player.PlayerQuitEvent;
++import org.bukkit.event.player.PlayerRespawnEvent.RespawnReason;
++import org.bukkit.event.player.PlayerSpawnChangeEvent;
++// CraftBukkit end
++
+ import net.neoforged.neoforge.common.extensions.IPlayerListExtension;
+ 
+ public abstract class PlayerList implements IPlayerListExtension {
+@@ -114,24 +_,33 @@
+     private static final int SEND_PLAYER_INFO_INTERVAL = 600;
+     private static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z", Locale.ROOT);
+     private final MinecraftServer server;
+-    private final List<ServerPlayer> players = Lists.newArrayList();
++    public final List<ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+     private final Map<UUID, ServerPlayer> playersByUUID = Maps.newHashMap();
+     private final UserBanList bans;
+     private final IpBanList ipBans;
+     private final ServerOpList ops;
+     private final UserWhiteList whitelist;
+-    private final Map<UUID, ServerStatsCounter> stats = Maps.newHashMap();
+-    private final Map<UUID, PlayerAdvancements> advancements = Maps.newHashMap();
++    // CraftBukkit start
++    // private final Map<UUID, ServerStatisticManager> stats = Maps.newHashMap();
++    // private final Map<UUID, AdvancementDataPlayer> advancements = Maps.newHashMap();
++    // CraftBukkit end
+     private final PlayerDataStorage playerIo;
+     private final LayeredRegistryAccess<RegistryLayer> registries;
+     private int viewDistance;
      private int simulationDistance;
      private boolean allowCommandsForAllPlayers;
      private int sendAllPlayerInfoIn;
 +    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(players);
++
++    // CraftBukkit start
++    private CraftServer cserver;
  
      public PlayerList(
          MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService
+     ) {
++        this.cserver = server.server = new CraftServer((DedicatedServer) server, this);
++        server.console = org.bukkit.craftbukkit.command.ColouredConsoleSender.getInstance();
++        // CraftBukkit end
+         this.server = server;
+         this.registries = registries;
+         this.playerIo = playerIo;
 @@ -161,7 +_,7 @@
          LevelData levelData = level.getLevelData();
          ServerGamePacketListenerImpl playerConnection = new ServerGamePacketListenerImpl(this.server, connection, player, cookie);
@@ -17,7 +74,11 @@
          );
          playerConnection.suspendFlushing();
          GameRules gameRules = level.getGameRules();
-@@ -187,10 +_,12 @@
+@@ -184,13 +_,16 @@
+                 this.server.enforceSecureProfile()
+             )
+         );
++        player.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
          playerConnection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
          playerConnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerConnection.send(new ClientboundSetHeldSlotPacket(player.getInventory().getSelectedSlot()));
@@ -40,7 +101,21 @@
      }
  
      protected void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
-@@ -290,6 +_,7 @@
+@@ -279,17 +_,18 @@
+         });
+     }
+ 
+-    public Optional<CompoundTag> loadPlayerData(NameAndId nameAndId) {
++    public Optional<CompoundTag> loadPlayerData(Player nameAndId) { // CraftBukkit
+         UUID lastSingleplayerOwnerUUID = this.server.getWorldData().getSinglePlayerUUID();
+-        if (this.server.isSingleplayerOwner(nameAndId) && lastSingleplayerOwnerUUID != null) {
++        if (this.server.isSingleplayerOwner(nameAndId.nameAndId()) && lastSingleplayerOwnerUUID != null) { // CraftBukkit
+             LOGGER.debug("loading single player");
+             return this.playerIo.load(new NameAndId(lastSingleplayerOwnerUUID, "<singleplayer owner>"));
+         } else {
+-            return this.playerIo.load(nameAndId);
++            return this.playerIo.load(nameAndId.nameAndId()); // CraftBukkit
+         }
      }
  
      protected void save(ServerPlayer player) {
@@ -56,7 +131,117 @@
          ServerLevel level = player.level();
          player.awardStat(Stats.LEAVE_GAME);
          this.save(player);
-@@ -392,13 +_,20 @@
+@@ -337,6 +_,70 @@
+         this.broadcastAll(new ClientboundPlayerInfoRemovePacket(List.of(player.getUUID())));
+     }
+ 
++    // CraftBukkit start - Whole method, SocketAddress to LoginListener, added hostname to signature, return EntityPlayer
++    public @Nullable ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverloginpacketlistenerimpl, GameProfile gameprofile) {
++        // Moved from processLogin
++        NameAndId nameAndId = new NameAndId(gameprofile);
++        UUID uuid = gameprofile.id();
++        Set<ServerPlayer> set = Sets.newIdentityHashSet();
++
++        for (ServerPlayer serverplayer : this.players) {
++            if (serverplayer.getUUID().equals(uuid)) {
++                set.add(serverplayer);
++            }
++        }
++
++        for (ServerPlayer serverplayer2 : set) {
++            save(serverplayer2); // CraftBukkit - Force the player's inventory to be saved
++            serverplayer2.connection.disconnect(PlayerList.DUPLICATE_LOGIN_DISCONNECT_MESSAGE);
++        }
++
++        // Instead of kicking then returning, we need to store the kick reason
++        // in the event, check with plugins to see if it's ok, and THEN kick
++        // depending on the outcome.
++        SocketAddress address = serverloginpacketlistenerimpl.connection.getRemoteAddress();
++
++        ServerPlayer entity = new ServerPlayer(this.server, this.server.getLevel(Level.OVERWORLD), gameprofile, ClientInformation.createDefault());
++        entity.transferCookieConnection = serverloginpacketlistenerimpl;
++        org.bukkit.entity.Player player = entity.getBukkitEntity();
++        PlayerLoginEvent event = new PlayerLoginEvent(player, serverloginpacketlistenerimpl.connection.hostname, ((java.net.InetSocketAddress) address).getAddress());
++
++        if (this.bans.isBanned(nameAndId)) {
++            UserBanListEntry userbanlistentry = (UserBanListEntry) this.bans.get(nameAndId);
++            MutableComponent mutablecomponent = Component.translatable("multiplayer.disconnect.banned.reason", userbanlistentry.getReasonMessage());
++            if (userbanlistentry.getExpires() != null) {
++                mutablecomponent.append((Component) Component.translatable("multiplayer.disconnect.banned.expiration", PlayerList.BAN_DATE_FORMAT.format(userbanlistentry.getExpires())));
++            }
++
++            // return ichatmutablecomponent;
++            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(mutablecomponent));
++        } else if (!this.isWhiteListed(nameAndId)) {
++            MutableComponent mutablecomponent = Component.translatable("multiplayer.disconnect.not_whitelisted");
++            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, CraftChatMessage.fromComponent(mutablecomponent));
++        } else if (this.ipBans.isBanned(address)) {
++            IpBanListEntry ipbanlistentry = this.ipBans.get(address);
++            MutableComponent mutablecomponent1 = Component.translatable("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.getReasonMessage());
++            if (ipbanlistentry.getExpires() != null) {
++                mutablecomponent1.append((Component) Component.translatable("multiplayer.disconnect.banned_ip.expiration", PlayerList.BAN_DATE_FORMAT.format(ipbanlistentry.getExpires())));
++            }
++
++            // return ichatmutablecomponent1;
++            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(mutablecomponent1));
++        } else {
++            // return this.players.size() >= this.getMaxPlayers() && !this.canBypassPlayerLimit(nameandid) ? IChatBaseComponent.translatable("multiplayer.disconnect.server_full") : null;
++            if (this.players.size() >= this.getMaxPlayers() && !this.canBypassPlayerLimit(nameAndId)) {
++                event.disallow(PlayerLoginEvent.Result.KICK_FULL, "The server is full");
++            }
++        }
++
++        cserver.getPluginManager().callEvent(event);
++        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
++            serverloginpacketlistenerimpl.disconnect(event.getKickMessage());
++            return null;
++        }
++        return entity;
++    }
++
+     public @Nullable Component canPlayerLogin(SocketAddress address, NameAndId nameAndId) {
+         if (this.bans.isBanned(nameAndId)) {
+             UserBanListEntry ban = this.bans.get(nameAndId);
+@@ -368,37 +_,52 @@
+     }
+ 
+     public boolean disconnectAllPlayersWithProfile(UUID playerId) {
+-        Set<ServerPlayer> dupes = Sets.newIdentityHashSet();
++        return disconnectAllPlayersWithProfile(playerId, null);
++    }
++    
++    public boolean disconnectAllPlayersWithProfile(UUID playerId, ServerPlayer player) { // CraftBukkit - added EntityPlayer
++        /* CraftBukkit start - Moved up
++        Set<ServerPlayer> set = Sets.newIdentityHashSet();
+ 
+-        for (ServerPlayer player : this.players) {
+-            if (player.getUUID().equals(playerId)) {
+-                dupes.add(player);
++        for (ServerPlayer serverplayer : this.players) {
++            if (serverplayer.getUUID().equals(playerId)) {
++                set.add(serverplayer);
+             }
+         }
+ 
+         ServerPlayer serverPlayer = this.playersByUUID.get(playerId);
+         if (serverPlayer != null) {
+-            dupes.add(serverPlayer);
++            set.add(serverPlayer);
+         }
+ 
+-        for (ServerPlayer player : dupes) {
++        for (ServerPlayer player : set) {
+             player.connection.disconnect(DUPLICATE_LOGIN_DISCONNECT_MESSAGE);
+         }
+ 
+-        return !dupes.isEmpty();
++        return !set.isEmpty();
++        */
++        return player == null;
++        // CraftBukkit end
+     }
+ 
+     public ServerPlayer respawn(ServerPlayer serverPlayer, boolean keepAllPlayerData, Entity.RemovalReason removalReason) {
          TeleportTransition respawnInfo = serverPlayer.findRespawnPositionAndUseSpawnBlock(!keepAllPlayerData, TeleportTransition.DO_NOTHING);
          this.players.remove(serverPlayer);
          serverPlayer.level().removePlayerImmediately(serverPlayer, removalReason);

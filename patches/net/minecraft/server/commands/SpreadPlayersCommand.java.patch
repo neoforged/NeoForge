@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
-@@ -252,16 +_,23 @@
+@@ -252,16 +_,24 @@
                  position = positions[positionIndex++];
              }
  
@@ -27,8 +27,9 @@
 +                        Set.of(),
 +                        entity.getYRot(),
 +                        entity.getXRot(),
-+                        true
-+                );
++                        true,
++                        org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND
++                ); // CraftBukkit - handle teleport reason
 +            }
              double closest = Double.MAX_VALUE;
  

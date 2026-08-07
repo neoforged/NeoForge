@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -277,7 +_,7 @@
+     private int clientLoadedTimeoutTimer;
+ 
+     public ServerGamePacketListenerImpl(MinecraftServer server, Connection connection, ServerPlayer player, CommonListenerCookie cookie) {
+-        super(server, connection, cookie);
++        super(server, connection, cookie, player);
+         this.commandSpamThrottler = new TickThrottler(20, 20 * server.getCommandSpamThresholdSeconds());
+         this.chatSpamThrottler = new TickThrottler(20, 20 * server.getChatSpamThresholdSeconds());
+         this.restartClientLoadTimerAfterRespawn();
 @@ -496,18 +_,21 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
@@ -155,7 +164,7 @@
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
 -                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation()))
-+                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType))
++                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType), this.player)
              );
      }
  

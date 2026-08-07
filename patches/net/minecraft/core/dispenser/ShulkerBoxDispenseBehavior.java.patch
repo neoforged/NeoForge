@@ -1,0 +1,50 @@
+--- a/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
+@@ -6,9 +_,16 @@
+ import net.minecraft.world.item.BlockItem;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.context.DirectionalPlaceContext;
++import net.minecraft.core.dispenser.DispenseItemBehavior;
+ import net.minecraft.world.level.block.DispenserBlock;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.BlockDispenseEvent;
++// CraftBukkit end
++
+ public class ShulkerBoxDispenseBehavior extends OptionalDispenseItemBehavior {
+     private static final Logger LOGGER = LogUtils.getLogger();
+ 
+@@ -19,6 +_,30 @@
+             Direction facing = source.state().getValue(DispenserBlock.FACING);
+             BlockPos relativePos = source.pos().relative(facing);
+             Direction clickedFace = source.level().isEmptyBlock(relativePos.below()) ? facing : Direction.UP;
++
++            // CraftBukkit start
++            org.bukkit.block.Block bukkitBlock = CraftBlock.at(source.level(), source.pos());
++            CraftItemStack craftItem = CraftItemStack.asCraftMirror(dispensed);
++
++            BlockDispenseEvent event = new BlockDispenseEvent(bukkitBlock, craftItem.clone(), new org.bukkit.util.Vector(relativePos.getX(), relativePos.getY(), relativePos.getZ()));
++            if (!DispenserBlock.eventFired) {
++                source.level().getCraftServer().getPluginManager().callEvent(event);
++            }
++
++            if (event.isCancelled()) {
++                return dispensed;
++            }
++
++            if (!event.getItem().equals(craftItem)) {
++                // Chain to handler for new item
++                ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++                DispenseItemBehavior dispensitembehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
++                if (dispensitembehavior != DispenseItemBehavior.NOOP && dispensitembehavior != this) {
++                    dispensitembehavior.dispense(source, eventStack);
++                    return dispensed;
++                }
++            }
++            // CraftBukkit end
+ 
+             try {
+                 this.setSuccess(blockItem.place(new DirectionalPlaceContext(source.level(), relativePos, facing, dispensed, clickedFace)).consumesAction());

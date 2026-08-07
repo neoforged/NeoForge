@@ -1,5 +1,13 @@
 --- a/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/net/minecraft/server/network/ServerConnectionListener.java
+@@ -9,6 +_,7 @@
+ import io.netty.channel.ChannelFuture;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.channel.ChannelInboundHandlerAdapter;
++import io.netty.channel.ChannelOption;
+ import io.netty.channel.ChannelInitializer;
+ import io.netty.channel.ChannelOption;
+ import io.netty.channel.ChannelPipeline;
 @@ -41,6 +_,7 @@
  
  public class ServerConnectionListener {
@@ -26,15 +34,33 @@
                                      if (ServerConnectionListener.this.server.repliesToStatus()) {
                                          pipeline.addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
                                      }
-@@ -86,7 +_,7 @@
+@@ -86,14 +_,23 @@
                                  }
                              }
                          )
 -                        .group(eventLoopGroupHolder.eventLoopGroup())
 +                        .group(eventLoopGroupHolder.serverEventLoopGroup())
                          .localAddress(address, port)
-                         .bind()
-                         .syncUninterruptibly()
+-                        .bind()
+-                        .syncUninterruptibly()
++                        .option(ChannelOption.AUTO_READ, false).bind().syncUninterruptibly() // CraftBukkit
+                 );
+         }
+     }
+ 
++    // CraftBukkit start
++    public void acceptConnections() {
++        synchronized (this.channels) {
++            for (ChannelFuture future : this.channels) {
++                future.channel().config().setAutoRead(true);
++            }
++        }
++    }
++    // CraftBukkit end
++
+     public SocketAddress startMemoryChannel() {
+         ChannelFuture newChannel;
+         synchronized (this.channels) {
 @@ -121,7 +_,7 @@
                          }
                      }

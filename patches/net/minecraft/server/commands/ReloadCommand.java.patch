@@ -1,10 +1,22 @@
 --- a/net/minecraft/server/commands/ReloadCommand.java
 +++ b/net/minecraft/server/commands/ReloadCommand.java
-@@ -34,6 +_,7 @@
+@@ -34,8 +_,19 @@
              }
          }
  
 +        net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(selected, currentPacks, packRepository);
          return selected;
      }
++
++    // CraftBukkit start
++    public static void reload(MinecraftServer minecraftserver) {
++        PackRepository packrepository = minecraftserver.getPackRepository();
++        WorldData worlddata = minecraftserver.getWorldData();
++        Collection<String> collection = packrepository.getSelectedIds();
++        Collection<String> collection1 = discoverNewPacks(packrepository, worlddata, collection);
++        minecraftserver.reloadResources(collection1);
++    }
++    // CraftBukkit end
  
+     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+         dispatcher.register(Commands.literal("reload").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)).executes(s -> {

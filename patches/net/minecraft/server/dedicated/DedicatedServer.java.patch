@@ -1,5 +1,36 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -72,13 +_,29 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import java.util.LinkedHashMap;
++import net.minecraft.server.WorldLoader;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.io.IoBuilder;
++import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.util.TerminalConsoleWriterThread;
++import org.bukkit.event.server.ServerCommandEvent;
++import org.bukkit.event.server.RemoteServerCommandEvent;
++import org.jline.reader.EndOfFileException;
++import org.jline.reader.LineReader;
++import org.jline.reader.LineReaderBuilder;
++import org.jline.reader.UserInterruptException;
++// CraftBukkit end
++
+ public class DedicatedServer extends MinecraftServer implements ServerInterface {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final int CONVERSION_RETRY_DELAY_MS = 5000;
+     private static final int CONVERSION_RETRIES = 2;
+     private final List<ConsoleInput> consoleInput = Collections.synchronizedList(Lists.newArrayList());
+     private @Nullable QueryThreadGs4 queryThreadGs4;
+-    private final RconConsoleSource rconConsoleSource;
++    // private final RconConsoleSource rconConsoleSource; // CraftBukkit - remove field
+     private @Nullable RconThread rconThread;
+     private final DedicatedServerSettings settings;
+     private @Nullable MinecraftServerGui gui;
 @@ -88,6 +_,7 @@
      private final ServerLinks serverLinks;
      private final Map<String, String> codeOfConductTexts;

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/PlaceCommand.java
++++ b/net/minecraft/server/commands/PlaceCommand.java
+@@ -294,6 +_,8 @@
+         );
+         if (!start.isValid()) {
+             throw ERROR_STRUCTURE_FAILED.create();
++        } else {
++            start.generationEventCause = org.bukkit.event.world.AsyncStructureGenerateEvent.Cause.COMMAND; // CraftBukkit - set AsyncStructureGenerateEvent.Cause.COMMAND as generation cause
+         }
+ 
+         BoundingBox boundingBox = start.getBoundingBox();

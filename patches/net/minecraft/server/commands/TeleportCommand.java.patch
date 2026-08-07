@@ -1,5 +1,20 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
+@@ -29,6 +_,14 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.jspecify.annotations.Nullable;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.event.entity.EntityTeleportEvent;
++import org.bukkit.event.player.PlayerTeleportEvent;
++// CraftBukkit end
++
+ public class TeleportCommand {
+     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(
+         Component.translatable("commands.teleport.invalidPosition")
 @@ -244,6 +_,14 @@
          float xRot,
          @Nullable LookAt lookAt
@@ -15,3 +30,40 @@
          BlockPos blockPos = BlockPos.containing(x, y, z);
          if (!Level.isInSpawnableBounds(blockPos)) {
              throw INVALID_POSITION.create();
+@@ -256,10 +_,33 @@
+         float relativeOrAbsoluteXRot = relatives.contains(Relative.X_ROT) ? xRot - victim.getXRot() : xRot;
+         float newYRot = Mth.wrapDegrees(relativeOrAbsoluteYRot);
+         float newXRot = Mth.wrapDegrees(relativeOrAbsoluteXRot);
+-        if (victim.teleportTo(level, relativeOrAbsoluteX, relativeOrAbsoluteY, relativeOrAbsoluteZ, relatives, newYRot, newXRot, true)) {
+-            if (lookAt != null) {
+-                lookAt.perform(source, victim);
++            // CraftBukkit start - Teleport event
++            boolean result;
++            if (victim instanceof ServerPlayer player) {
++                result = player.teleportTo(level, relativeOrAbsoluteX, relativeOrAbsoluteY, relativeOrAbsoluteZ, relatives, newYRot, newXRot, true, PlayerTeleportEvent.TeleportCause.COMMAND);
++            } else {
++                Location to = new Location(level.getWorld(), relativeOrAbsoluteX, relativeOrAbsoluteY, relativeOrAbsoluteZ, newYRot, newXRot);
++                EntityTeleportEvent event = new EntityTeleportEvent(victim.getBukkitEntity(), victim.getBukkitEntity().getLocation(), to);
++                level.getCraftServer().getPluginManager().callEvent(event);
++                if (event.isCancelled()) {
++                    return;
++                }
++
++                relativeOrAbsoluteX = to.getX();
++                relativeOrAbsoluteY = to.getY();
++                relativeOrAbsoluteZ = to.getZ();
++                newYRot = to.getYaw();
++                newXRot = to.getPitch();
++                level = ((CraftWorld) to.getWorld()).getHandle();
++
++                result = victim.teleportTo(level, relativeOrAbsoluteX, relativeOrAbsoluteY, relativeOrAbsoluteZ, relatives, newYRot, newXRot, true);
+             }
++
++            if (result) {
++                // CraftBukkit end
++                if (lookAt != null) {
++                    lookAt.perform(source, victim);
++                }
+ 
+             if (!(victim instanceof LivingEntity living && living.isFallFlying())) {
+                 victim.setDeltaMovement(victim.getDeltaMovement().multiply(1.0, 0.0, 1.0));

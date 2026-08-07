@@ -1,5 +1,49 @@
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
+@@ -27,16 +_,21 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.resources.ResourceKey;
++import net.minecraft.world.level.Level;
++// CraftBukkit end
++
+ public class PrepareSpawnTask implements ConfigurationTask {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final ConfigurationTask.Type TYPE = new ConfigurationTask.Type("prepare_spawn");
+     public static final int PREPARE_CHUNK_RADIUS = 3;
+     private final MinecraftServer server;
+-    private final NameAndId nameAndId;
++    private final ServerPlayer nameAndId; // CraftBukkit
+     private final LevelLoadListener loadListener;
+     private PrepareSpawnTask.@Nullable State state;
+ 
+-    public PrepareSpawnTask(MinecraftServer server, NameAndId nameAndId) {
++    public PrepareSpawnTask(MinecraftServer server, ServerPlayer nameAndId) { // CraftBukkit
+         this.server = server;
+         this.nameAndId = nameAndId;
+         this.loadListener = server.getLevelLoadListener();
+@@ -51,8 +_,8 @@
+                 .map(tag -> TagValueInput.create(reporter, this.server.registryAccess(), tag));
+             ServerPlayer.SavedPosition loadedPosition = loadedData.<ServerPlayer.SavedPosition>flatMap(tag -> tag.read(ServerPlayer.SavedPosition.MAP_CODEC))
+                 .orElse(ServerPlayer.SavedPosition.EMPTY);
+-            LevelData.RespawnData respawnData = this.server.getWorldData().overworldData().getRespawnData();
+-            ServerLevel spawnLevel = loadedPosition.dimension().map(this.server::getLevel).orElseGet(() -> {
++            LevelData.RespawnData respawnData = this.nameAndId.level().getRespawnData(); // CraftBukkit - SPIGOT-7507: If no dimension, fall back to existing dimension loaded from "WorldUUID", which in turn defaults to World.OVERWORLD
++            ServerLevel spawnLevel = loadedPosition.dimension().map(this.server::getLevel).orElseGet(() -> { // CraftBukkit - decompile error
+                 ServerLevel spawnDataLevel = this.server.getLevel(respawnData.dimension());
+                 return spawnDataLevel != null ? spawnDataLevel : this.server.overworld();
+             });
+@@ -172,7 +_,7 @@
+         public ServerPlayer spawn(Connection connection, CommonListenerCookie cookie) {
+             ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(this.spawnPosition));
+             this.spawnLevel.waitForEntities(spawnChunk, 3);
+-            ServerPlayer player = new ServerPlayer(PrepareSpawnTask.this.server, this.spawnLevel, cookie.gameProfile(), cookie.clientInformation());
++            ServerPlayer player = nameAndId; // CraftBukkit
+ 
+             try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(player.problemPath(), PrepareSpawnTask.LOGGER)) {
+                 Optional<ValueInput> input = PrepareSpawnTask.this.server
 @@ -180,6 +_,7 @@
                      .loadPlayerData(PrepareSpawnTask.this.nameAndId)
                      .map(tag -> TagValueInput.create(reporter, PrepareSpawnTask.this.server.registryAccess(), tag));

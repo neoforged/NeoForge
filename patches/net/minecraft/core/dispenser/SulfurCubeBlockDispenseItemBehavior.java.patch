@@ -1,0 +1,63 @@
+--- a/net/minecraft/core/dispenser/SulfurCubeBlockDispenseItemBehavior.java
++++ b/net/minecraft/core/dispenser/SulfurCubeBlockDispenseItemBehavior.java
+@@ -4,23 +_,56 @@
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.monster.cubemob.SulfurCube;
+ import net.minecraft.world.item.ItemStack;
++import net.minecraft.core.dispenser.DispenseItemBehavior;
++import net.minecraft.core.dispenser.EquipmentDispenseItemBehavior;
+ import net.minecraft.world.level.block.DispenserBlock;
+ import net.minecraft.world.phys.AABB;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.BlockDispenseArmorEvent;
++// CraftBukkit end
++
+ public class SulfurCubeBlockDispenseItemBehavior extends DefaultDispenseItemBehavior {
+     public static final SulfurCubeBlockDispenseItemBehavior INSTANCE = new SulfurCubeBlockDispenseItemBehavior();
+ 
+     @Override
+     protected ItemStack execute(BlockSource source, ItemStack dispensed) {
+-        return dispenseBlock(source.level(), source.pos().relative(source.state().getValue(DispenserBlock.FACING)), dispensed)
++        return dispenseBlock(source.level(), source.pos().relative(source.state().getValue(DispenserBlock.FACING)), dispensed, source) // CraftBukkit
+             ? dispensed
+             : super.execute(source, dispensed);
+     }
+ 
+-    public static boolean dispenseBlock(ServerLevel level, BlockPos pos, ItemStack dispensed) {
++    public static boolean dispenseBlock(ServerLevel level, BlockPos pos, ItemStack dispensed, BlockSource source) {
+         for (SulfurCube entity : level.getEntitiesOfClass(SulfurCube.class, new AABB(pos))) {
+-            if (entity.equipItem(dispensed)) {
+-                dispensed.shrink(1);
++            ItemStack itemstack1 = dispensed.split(1);
++            org.bukkit.block.Block block = CraftBlock.at(level, source.pos());
++            CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
++
++            BlockDispenseArmorEvent event = new BlockDispenseArmorEvent(block, craftItem.clone(), (org.bukkit.craftbukkit.entity.CraftLivingEntity) entity.getBukkitEntity());
++            if (!DispenserBlock.eventFired) {
++                level.getCraftServer().getPluginManager().callEvent(event);
++            }
++
++            if (event.isCancelled()) {
++                dispensed.grow(1);
++                return false;
++            }
++
++            if (!event.getItem().equals(craftItem)) {
++                dispensed.grow(1);
++                // Chain to handler for new item
++                ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++                DispenseItemBehavior dispensitembehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
++                if (dispensitembehavior != DispenseItemBehavior.NOOP && dispensitembehavior != EquipmentDispenseItemBehavior.INSTANCE) {
++                    dispensitembehavior.dispense(source, eventStack);
++                    return true;
++                }
++            }
++            if (entity.equipItem(itemstack1)) {
++                // dispensed.shrink(1); // CraftBukkit - handled above
++                // CraftBukkit end
+                 return true;
+             }
+         }

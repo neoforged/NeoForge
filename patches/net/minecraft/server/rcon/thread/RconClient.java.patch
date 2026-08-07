@@ -1,5 +1,51 @@
 --- a/net/minecraft/server/rcon/thread/RconClient.java
 +++ b/net/minecraft/server/rcon/thread/RconClient.java
+@@ -12,6 +_,11 @@
+ import net.minecraft.server.rcon.PktUtils;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.server.dedicated.DedicatedServer;
++import net.minecraft.server.rcon.RconConsoleSource;
++// CraftBukkit end
++
+ public class RconClient extends GenericThread {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final int SERVERDATA_AUTH = 3;
+@@ -23,11 +_,14 @@
+     private final Socket client;
+     private final byte[] buf = new byte[1460];
+     private final String rconPassword;
+-    private final ServerInterface serverInterface;
++    // CraftBukkit start
++    private final DedicatedServer serverInterface;
++    private final RconConsoleSource rconConsoleSource;
++    // CraftBukkit end
+ 
+     public RconClient(ServerInterface serverInterface, String rconPassword, Socket socket) {
+         super("RCON Client " + socket.getInetAddress());
+-        this.serverInterface = serverInterface;
++        this.serverInterface = (DedicatedServer) serverInterface; // CraftBukkit
+         this.client = socket;
+ 
+         try {
+@@ -37,6 +_,7 @@
+         }
+ 
+         this.rconPassword = rconPassword;
++        this.rconConsoleSource = new net.minecraft.server.rcon.RconConsoleSource(this.serverInterface, socket.getRemoteSocketAddress()); // CraftBukkit
+     }
+ 
+     @Override
+@@ -67,7 +_,7 @@
+                                 String command = PktUtils.stringFromByteArray(this.buf, offset, read);
+ 
+                                 try {
+-                                    this.sendCmdResponse(requestid, this.serverInterface.runCommand(command));
++                                    this.sendCmdResponse(requestid, this.serverInterface.runCommand(this.rconConsoleSource, command)); // CraftBukkit
+                                 } catch (Exception e) {
+                                     this.sendCmdResponse(requestid, "Error executing: " + command + " (" + e.getMessage() + ")");
+                                 }
 @@ -123,13 +_,14 @@
      }
  

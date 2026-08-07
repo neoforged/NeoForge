@@ -1,66 +1,18 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -92,6 +_,13 @@
-                 parser.printHelpOn(System.err);
-                 return;
-             }
-+            Path eulaFile = Paths.get("eula.txt");
-+            Eula eula = new Eula(eulaFile);
+@@ -62,6 +_,15 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import com.google.common.base.Charsets;
++import java.io.InputStreamReader;
++import java.util.concurrent.atomic.AtomicReference;
++import net.minecraft.server.packs.PackType;
++import net.minecraft.world.level.storage.LevelResource;
++import org.bukkit.configuration.file.YamlConfiguration;
++// CraftBukkit end
 +
-+            if (!eula.hasAgreedToEULA()) {
-+                LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
-+                return;
-+            }
+ public class Main {
+     private static final Logger LOGGER = LogUtils.getLogger();
  
-             Path pidFilePath = options.valueOf(pidFile);
-             if (pidFilePath != null) {
-@@ -107,26 +_,24 @@
-             Bootstrap.validate();
-             Util.startTimerHackThread();
-             Path settingsFile = Paths.get("server.properties");
-+            if (!options.has(initSettings)) net.neoforged.neoforge.server.loading.ServerModLoader.load(false); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
-             DedicatedServerSettings settings = new DedicatedServerSettings(settingsFile);
-             settings.forceSave();
-             RegionFileVersion.configure(settings.getProperties().regionFileComression);
--            Path eulaFile = Paths.get("eula.txt");
--            Eula eula = new Eula(eulaFile);
-             if (options.has(initSettings)) {
-                 LOGGER.info("Initialized '{}' and '{}'", settingsFile.toAbsolutePath(), eulaFile.toAbsolutePath());
-                 return;
-             }
- 
--            if (!eula.hasAgreedToEULA()) {
--                LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
--                return;
--            }
--
-             File universePath = new File(options.valueOf(universe));
-             Services services = Services.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), universePath);
-             NotificationManager notificationManager = new NotificationManager();
-             ManagementServer jsonRpcServer = JsonRpc.create(settings, notificationManager);
-             String levelName = Optional.ofNullable(options.valueOf(worldName)).orElse(settings.getProperties().levelName);
-+            if (levelName == null || levelName.isEmpty() || new File(universePath, levelName).getAbsolutePath().equals(new File(levelName).getAbsolutePath())) {
-+                LOGGER.error("Invalid world directory specified, must not be null, empty or the same directory as your universe! {}", levelName);
-+                return;
-+            }
-             LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
-             LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
-             Dynamic<?> levelDataTag;
-@@ -233,6 +_,7 @@
-                 @Override
-                 public void run() {
-                     dedicatedServer.halt(true);
-+                    org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
-                 }
-             };
-             shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
-@@ -265,6 +_,9 @@
-             dimensions = properties.createDimensions(context.datapackWorldgen());
-         }
- 
-+        // Neo: Do a write-read-cycle to inject modded dimensions on first start of a dedicated server into its generated world dimensions list.
-+        var registryOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, context.datapackWorldgen());
-+        dimensions = WorldDimensions.CODEC.encoder().encodeStart(registryOps, dimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(registryOps, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(dimensions);
-         WorldDimensions.Complete finalDimensions = dimensions.bake(datapackDimensions);
-         Lifecycle lifecycle = finalDimensions.lifecycle().add(context.datapackWorldgen().allRegistriesLifecycle());
-         PrimaryLevelData primaryLevelData = new PrimaryLevelData(createLevelSettings, finalDimensions.specialWorldProperty(), lifecycle);

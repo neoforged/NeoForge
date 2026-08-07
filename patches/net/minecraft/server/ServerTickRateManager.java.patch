@@ -1,0 +1,53 @@
+--- a/net/minecraft/server/ServerTickRateManager.java
++++ b/net/minecraft/server/ServerTickRateManager.java
+@@ -59,8 +_,14 @@
+     }
+ 
+     public boolean stopSprinting() {
++        // CraftBukkit start, add sendLog parameter
++        return stopSprinting(true);
++    }
++
++    public boolean stopSprinting(boolean sendLog) {
++        // CraftBukkit end
+         if (this.remainingSprintTicks > 0L) {
+-            this.finishTickSprint();
++            this.finishTickSprint(sendLog); // CraftBukkit - add sendLog parameter
+             return true;
+         } else {
+             return false;
+@@ -77,7 +_,7 @@
+         return interrupted;
+     }
+ 
+-    private void finishTickSprint() {
++    private void finishTickSprint(boolean sendLog) { // CraftBukkit - add sendLog parameter
+         long completedTicks = this.scheduledCurrentSprintTicks - this.remainingSprintTicks;
+         double millisecondsToComplete = Math.max(1.0, this.sprintTimeSpend) / TimeUtil.NANOSECONDS_PER_MILLISECOND;
+         int ticksPerSecond = (int)(TimeUtil.MILLISECONDS_PER_SECOND * completedTicks / millisecondsToComplete);
+@@ -86,9 +_,13 @@
+         );
+         this.scheduledCurrentSprintTicks = 0L;
+         this.sprintTimeSpend = 0L;
+-        this.server
+-            .createCommandSourceStack()
+-            .sendSuccess(() -> Component.translatable("commands.tick.sprint.report", ticksPerSecond, millisecondsPerTick), true);
++        // CraftBukkit start - add sendLog parameter
++        if (sendLog) {
++            this.server
++                .createCommandSourceStack()
++                .sendSuccess(() -> Component.translatable("commands.tick.sprint.report", ticksPerSecond, millisecondsPerTick), true);
++        }
++        // CraftBukkit end
+         this.remainingSprintTicks = 0L;
+         this.setFrozen(this.previousIsFrozen);
+         this.server.onTickRateChanged();
+@@ -102,7 +_,7 @@
+             this.remainingSprintTicks--;
+             return true;
+         } else {
+-            this.finishTickSprint();
++            this.finishTickSprint(true); // CraftBukkit - add sendLog parameter
+             return false;
+         }
+     }

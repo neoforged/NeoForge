@@ -1,6 +1,17 @@
 --- a/net/minecraft/core/cauldron/CauldronInteractions.java
 +++ b/net/minecraft/core/cauldron/CauldronInteractions.java
-@@ -38,10 +_,18 @@
+@@ -30,6 +_,10 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.material.FluidState;
+ 
++// CraftBukkit start
++import org.bukkit.event.block.CauldronLevelChangeEvent;
++// CraftBukkit end
++
+ public class CauldronInteractions {
+     private static final ExtraCodecs.LateBoundIdMapper<String, CauldronInteraction.Dispatcher> ID_MAPPER = new ExtraCodecs.LateBoundIdMapper<>();
+     public static final Codec<CauldronInteraction.Dispatcher> CODEC = ID_MAPPER.codec(Codec.STRING);
+@@ -38,23 +_,36 @@
      public static final CauldronInteraction.Dispatcher LAVA = newDispatcher("lava");
      public static final CauldronInteraction.Dispatcher POWDER_SNOW = newDispatcher("powder_snow");
  
@@ -10,12 +21,135 @@
          CauldronInteraction.Dispatcher result = new CauldronInteraction.Dispatcher();
          ID_MAPPER.put(name, result);
          return result;
-+    }
-+
+     }
+ 
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void registerCustomInteractions() {
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterCauldronInteractionEvent.Dispatcher(ID_MAPPER));
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterCauldronInteractionEvent.Interaction(ID_MAPPER));
-     }
- 
++    }
++
      public static void bootStrap() {
+         addDefaultInteractions(EMPTY);
+         EMPTY.put(Items.POTION, (var0, level, pos, player, hand, itemInHand) -> {
+             PotionContents potion = itemInHand.get(DataComponents.POTION_CONTENTS);
+             if (potion != null && potion.is(Potions.WATER)) {
+                 if (!level.isClientSide()) {
++                    // CraftBukkit start
++                    if (!LayeredCauldronBlock.changeLevel(var0, level, pos, Blocks.WATER_CAULDRON.defaultBlockState(), player, CauldronLevelChangeEvent.ChangeReason.BOTTLE_EMPTY)) {
++                        return InteractionResult.SUCCESS;
++                    }
++                    // CraftBukkit end
+                     Item usedItem = itemInHand.getItem();
+                     player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, new ItemStack(Items.GLASS_BOTTLE)));
+                     player.awardStat(Stats.USE_CAULDRON);
+                     player.awardStat(Stats.ITEM_USED.get(usedItem));
+-                    level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState());
++                    // level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState()); // CraftBukkit
+                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
+                 }
+@@ -81,11 +_,16 @@
+         );
+         WATER.put(Items.GLASS_BOTTLE, (state, level, pos, player, hand, itemInHand) -> {
+             if (!level.isClientSide()) {
++                // CraftBukkit start
++                if (!LayeredCauldronBlock.lowerFillLevel(state, level, pos, player, CauldronLevelChangeEvent.ChangeReason.BOTTLE_FILL)) {
++                    return InteractionResult.SUCCESS;
++                }
++                // CraftBukkit end
+                 Item usedItem = itemInHand.getItem();
+                 player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, PotionContents.createItemStack(Items.POTION, Potions.WATER)));
+                 player.awardStat(Stats.USE_CAULDRON);
+                 player.awardStat(Stats.ITEM_USED.get(usedItem));
+-                LayeredCauldronBlock.lowerFillLevel(state, level, pos);
++                // LayeredCauldronBlock.lowerFillLevel(state, level, pos); // CraftBukkit
+                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 level.gameEvent(null, GameEvent.FLUID_PICKUP, pos);
+             }
+@@ -100,10 +_,15 @@
+             PotionContents potion = itemInHand.get(DataComponents.POTION_CONTENTS);
+             if (potion != null && potion.is(Potions.WATER)) {
+                 if (!level.isClientSide()) {
++                    // CraftBukkit start
++                    if (!LayeredCauldronBlock.changeLevel(state, level, pos, state.cycle(LayeredCauldronBlock.LEVEL), player, CauldronLevelChangeEvent.ChangeReason.BOTTLE_EMPTY)) {
++                        return InteractionResult.SUCCESS;
++                    }
++                    // CraftBukkit end
+                     player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, new ItemStack(Items.GLASS_BOTTLE)));
+                     player.awardStat(Stats.USE_CAULDRON);
+                     player.awardStat(Stats.ITEM_USED.get(itemInHand.getItem()));
+-                    level.setBlockAndUpdate(pos, state.cycle(LayeredCauldronBlock.LEVEL));
++                    // level.setBlockAndUpdate(pos, state.cycle(LayeredCauldronBlock.LEVEL)); // CraftBukkit
+                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
+                 }
+@@ -178,11 +_,16 @@
+         Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack itemInHand, BlockState newState, SoundEvent soundEvent
+     ) {
+         if (!level.isClientSide()) {
++            // CraftBukkit start
++            if (!LayeredCauldronBlock.changeLevel(newState, level, pos, newState, player, CauldronLevelChangeEvent.ChangeReason.BUCKET_EMPTY)) {
++                return InteractionResult.SUCCESS;
++            }
++            // CraftBukkit end
+             Item itemUsed = itemInHand.getItem();
+             player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, new ItemStack(Items.BUCKET)));
+             player.awardStat(Stats.FILL_CAULDRON);
+             player.awardStat(Stats.ITEM_USED.get(itemUsed));
+-            level.setBlockAndUpdate(pos, newState);
++            // level.setBlockAndUpdate(pos, newState); // CraftBukkit
+             level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
+         }
+@@ -229,10 +_,15 @@
+         }
+ 
+         if (!level.isClientSide()) {
++            // CraftBukkit start
++            if (!LayeredCauldronBlock.changeLevel(state, level, pos, Blocks.CAULDRON.defaultBlockState(), player, CauldronLevelChangeEvent.ChangeReason.BUCKET_FILL)) {
++                return InteractionResult.SUCCESS;
++            }
++            // CraftBukkit end
+             ItemStack cleanedShulkerBox = itemInHand.transmuteCopy(Blocks.SHULKER_BOX, 1);
+             player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, cleanedShulkerBox, false));
+             player.awardStat(Stats.CLEAN_SHULKER_BOX);
+-            LayeredCauldronBlock.lowerFillLevel(state, level, pos);
++            // LayeredCauldronBlock.lowerFillLevel(state, level, pos); // CraftBukkit
+         }
+ 
+         return InteractionResult.SUCCESS;
+@@ -245,11 +_,16 @@
+         }
+ 
+         if (!level.isClientSide()) {
++            // CraftBukkit start
++            if (!LayeredCauldronBlock.lowerFillLevel(state, level, pos, player, CauldronLevelChangeEvent.ChangeReason.BANNER_WASH)) {
++                return InteractionResult.SUCCESS;
++            }
++            // CraftBukkit end
+             ItemStack cleanedBanner = itemInHand.copyWithCount(1);
+             cleanedBanner.set(DataComponents.BANNER_PATTERNS, patterns.removeLast());
+             player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player, cleanedBanner, false));
+             player.awardStat(Stats.CLEAN_BANNER);
+-            LayeredCauldronBlock.lowerFillLevel(state, level, pos);
++            // LayeredCauldronBlock.lowerFillLevel(state, level, pos); // CraftBukkit
+         }
+ 
+         return InteractionResult.SUCCESS;
+@@ -261,9 +_,14 @@
+         }
+ 
+         if (!level.isClientSide()) {
++            // CraftBukkit start
++            if (!LayeredCauldronBlock.lowerFillLevel(state, level, pos, player, CauldronLevelChangeEvent.ChangeReason.ARMOR_WASH)) {
++                return InteractionResult.SUCCESS;
++            }
++            // CraftBukkit end
+             itemInHand.remove(DataComponents.DYED_COLOR);
+             player.awardStat(Stats.CLEAN_ARMOR);
+-            LayeredCauldronBlock.lowerFillLevel(state, level, pos);
++            // LayeredCauldronBlock.lowerFillLevel(state, level, pos); // CraftBukkit
+         }
+ 
+         return InteractionResult.SUCCESS;

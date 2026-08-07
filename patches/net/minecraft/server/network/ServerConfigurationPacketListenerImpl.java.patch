@@ -1,5 +1,31 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -42,6 +_,12 @@
+ import org.jspecify.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
++// CraftBukkit start
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.CraftServerLinks;
++import org.bukkit.event.player.PlayerLinksSendEvent;
++// CraftBukkit end
++
+ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements ServerConfigurationPacketListener, TickablePacketListener {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final Component DISCONNECT_REASON_INVALID_DATA = Component.translatable("multiplayer.disconnect.invalid_player_data");
+@@ -53,8 +_,10 @@
+     private @Nullable SynchronizeRegistriesTask synchronizeRegistriesTask;
+     private @Nullable PrepareSpawnTask prepareSpawnTask;
+ 
+-    public ServerConfigurationPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie) {
+-        super(server, connection, cookie);
++    // CraftBukkit start
++    public ServerConfigurationPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie, ServerPlayer player) {
++        super(server, connection, cookie, player);
++        // CraftBukkit end
+         this.gameProfile = cookie.gameProfile();
+         this.clientInformation = cookie.clientInformation();
+     }
 @@ -81,6 +_,15 @@
      }
  
@@ -25,6 +51,15 @@
          this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(knownPacks, registries);
          this.configurationTasks.add(this.synchronizeRegistriesTask);
          this.addOptionalTasks();
+@@ -101,7 +_,7 @@
+     }
+ 
+     public void returnToWorld() {
+-        this.prepareSpawnTask = new PrepareSpawnTask(this.server, new NameAndId(this.gameProfile));
++        this.prepareSpawnTask = new PrepareSpawnTask(this.server, this.player); // CraftBukkit
+         this.configurationTasks.add(this.prepareSpawnTask);
+         this.configurationTasks.add(new JoinWorldTask());
+         this.startNextTask();
 @@ -125,6 +_,32 @@
          }
  
