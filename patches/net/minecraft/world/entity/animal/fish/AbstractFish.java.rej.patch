@@ -1,0 +1,13 @@
+--- /dev/null
++++ b/net/minecraft/world/entity/animal/fish/AbstractFish.java.rej
+@@ -1,0 +_,10 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/world/entity/animal/fish/AbstractFish.java b/projects/neoforge/src/main/java/net/minecraft/world/entity/animal/fish/AbstractFish.java	(rejected hunks)
++@@ -167,7 +167,7 @@ public abstract class AbstractFish extends WaterAnimal implements Bucketable {
++ 
++         @Override
++         public void tick() {
++-            if (this.mob.isEyeInFluid(FluidTags.WATER)) {
+++            if (this.mob.getFluidInteraction().isEyeInFluidMatching(this.mob, (_, type, _) -> type.getIsWaterLike())) {
++                 this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0, 0.005, 0.0));
++             }
++ 

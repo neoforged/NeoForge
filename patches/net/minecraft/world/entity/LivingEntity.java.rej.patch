@@ -1,0 +1,33 @@
+--- /dev/null
++++ b/net/minecraft/world/entity/LivingEntity.java.rej
+@@ -1,0 +_,30 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/world/entity/LivingEntity.java b/projects/neoforge/src/main/java/net/minecraft/world/entity/LivingEntity.java	(rejected hunks)
++@@ -2598,22 +2601,19 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
++         return computeModifiedFriction(this.omnidirectionalAirMover() ? 0.91F : 0.98F, (float)this.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
++     }
++ 
++-    /**
++-     * @deprecated Neo: use {@link #travelInFluid(Vec3, FluidState)} instead
++-     */
++-    @Deprecated
++     protected void travelInFluid(Vec3 input) {
++-        travelInFluid(input, net.minecraft.world.level.material.Fluids.EMPTY.defaultFluidState());
++-    }
++-
++-    private void travelInFluid(Vec3 input, FluidState fluidState) {
++         boolean isFalling = this.getDeltaMovement().y <= 0.0;
++         double oldY = this.getY();
++         double baseGravity = this.getEffectiveGravity();
+++        if (this.isInFluidType((entity, type, _) -> !type.isVanilla() && entity.isEyeInFluid(type))) {
+++            if (this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity)) {
+++                return;
+++            }
+++        }
++         if (this.isInWater()) {
++             this.travelInWater(input, baseGravity, isFalling, oldY);
++             this.floatInWaterWhileRidden();
++-        } else {
+++        } else if (this.isInLava()) { // Neo: only apply lava movement if the player is actually in lava and not another fluid
++             this.travelInLava(input, baseGravity, isFalling, oldY);
++         }
++     }

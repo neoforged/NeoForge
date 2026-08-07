@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -60,19 +_,21 @@
+@@ -60,19 +_,26 @@
          Player player = this.minecraft.player;
          if (isFirstPerson && !isSleeping) {
              if (!player.noPhysics) {
@@ -11,6 +11,11 @@
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
 +                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
                  }
++                } else {
++                    var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
++                    if (!fluidType.isAir()) {
++                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, submitNodeCollector);
++                    }
              }
  
              if (!this.minecraft.player.isSpectator()) {
