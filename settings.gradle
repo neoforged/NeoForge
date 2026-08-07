@@ -57,5 +57,5 @@ project(":coremods").name = "neoforge-coremods"
 // See this Gradle issue for tracking a more permanent solution:
 // https://github.com/gradle/gradle/issues/27260
 gradle.settingsEvaluated {
-    gradle.extensions.add("repositoryBaseUrls", dependencyResolutionManagement.repositories.findAll { it instanceof MavenArtifactRepository }.collect { it.url }.toArray(URI[]::new))
+    gradle.extensions.add("repositoryBaseUrls", dependencyResolutionManagement.repositories.withType(MavenArtifactRepository).collect { it.url }.toArray(URI[]::new))
 }

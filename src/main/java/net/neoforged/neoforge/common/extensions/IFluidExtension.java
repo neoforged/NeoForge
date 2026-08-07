@@ -58,7 +58,8 @@ public interface IFluidExtension {
     /**
      * Performs how an entity moves when within the fluid. If using custom
      * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water.
+     * movement logic will default to water if {@link FluidType#getIsWaterLike()} returns
+     * {@code true} or no movement if it returns {@code false}.
      *
      * @param state          the state of the fluid
      * @param entity         the entity moving within the fluid

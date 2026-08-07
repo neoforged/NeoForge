@@ -96,6 +96,31 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
+@@ -1487,13 +_,24 @@
+     @Override
+     public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
++
++        if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
++            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
++        }
++
+         if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
+             if (this.player.getInventory().getSelectedSlot() != packet.getSlot() && this.player.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+                 this.player.stopUsingItem();
+             }
+ 
++            int cachedOldSlotIndex = this.player.getInventory().getSelectedSlot();
++
+             this.player.getInventory().setSelectedSlot(packet.getSlot());
+             this.player.resetLastActionTime();
++
++            if (cachedOldSlotIndex != packet.getSlot()) {
++                net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPost(this.player, cachedOldSlotIndex, packet.getSlot());
++            }
+         } else {
+             LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
+         }
 @@ -1513,8 +_,9 @@
                  }
  
@@ -107,19 +132,6 @@
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -1853,7 +_,11 @@
-                     ItemStack tool = this.player.getItemInHand(hand);
-                     if (tool.isItemEnabled(level.enabledFeatures())) {
-                         ItemStack usedItemStack = tool.copy();
--                        if (this.player.interactOn(target, hand, location) instanceof InteractionResult.Success success) {
-+                        var interactionResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, target, location, hand);
-+                        if (interactionResult == null) {
-+                            interactionResult = this.player.interactOn(target, hand, location);
-+                        }
-+                        if (interactionResult instanceof InteractionResult.Success success) {
-                             ItemStack awardedForStack = success.wasItemInteraction() ? usedItemStack : ItemStack.EMPTY;
-                             CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(this.player, awardedForStack, target);
-                             if (success.swingSource() == InteractionResult.SwingSource.SERVER) {
 @@ -2075,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
