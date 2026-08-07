@@ -30,7 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
 /// will not be called. The remaining logic depends on the [cancellation result][#getCancellationResult()]:
 ///
 ///   - If it is `true`, then the container's logic halts, the carried item and the slot will not be swapped, and
-///     handling is assumed to have been done by the mod.
+///     handling is assumed to have been done by the event listener.
 ///   - If it is `false`, vanilla processing continues except for the two vanilla methods mentioned above.
 public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent {
     private final ItemStack carriedItem;
