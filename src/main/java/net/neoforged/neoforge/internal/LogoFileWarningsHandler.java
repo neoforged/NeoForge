@@ -21,7 +21,11 @@ public class LogoFileWarningsHandler {
         if (FMLEnvironment.isProduction() || HIDE_WARNING_SCREEN) return;
 
         ModList.get().getMods().forEach(info -> {
-            if (info.getLogoFile().isPresent()) {
+            // See DefaultModDisplayInfo#banner()
+            var logoFile = info.getLogoFile()
+                    .or(() -> info.getOwningFile().getConfig().getConfigElement("logoFile"));
+
+            if (logoFile.isPresent()) {
                 // This shouldn't need to be translated, as it will only ever show for developers
                 //noinspection UnstableApiUsage
                 ModLoader.addLoadingIssue(ModLoadingIssue.warning("Mod %s uses the deprecated `logoFile` property; change to `bannerFile` and/or (for square icons) `iconFile`", info.getModId()).withAffectedMod(info));
