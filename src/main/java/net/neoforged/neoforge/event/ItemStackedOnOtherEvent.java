@@ -53,44 +53,34 @@ public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent 
         this.carriedSlotAccess = carriedSlotAccess;
     }
 
-    /**
-     * {@return the stack being carried by the mouse} This may be empty!
-     */
+    /// {@return the stack being carried by the mouse, which may be empty}
     public ItemStack getCarriedItem() {
         return carriedItem;
     }
 
-    /**
-     * {@return the stack currently in the slot being clicked on} This may be empty!
-     */
+    /// {@return the stack currently in the slot being clicked on, which may be empty}
     public ItemStack getStackedOnItem() {
         return stackedOnItem;
     }
 
-    /**
-     * {@return the slot being clicked on}
-     */
+    /// {@return the slot being clicked on}
     public Slot getSlot() {
         return slot;
     }
 
-    /**
-     * {@return the click action being used} By default {@linkplain ClickAction#PRIMARY} corresponds to left-click, and {@linkplain ClickAction#SECONDARY} is right-click.
-     */
+    /// {@return the click action being used} The click actions do not necessarily map to specific mouse buttons, as
+    /// they may be rebound by the client. For default key mappings, [the primary click action][ClickAction#PRIMARY]
+    /// corresponds to a mouse left-click, and [the secondary click action][ClickAction#SECONDARY] to a mouse right-click.
     public ClickAction getClickAction() {
         return action;
     }
 
-    /**
-     * {@return the player doing the item swap attempt}
-     */
+    /// {@return the player doing the item swap attempt}
     public Player getPlayer() {
         return player;
     }
 
-    /**
-     * {@return a fake slot allowing the listener to see and change what item is being carried}
-     */
+    /// {@return a fake slot allowing the listener to see and change what item is being carried}
     public SlotAccess getCarriedSlotAccess() {
         return carriedSlotAccess;
     }
