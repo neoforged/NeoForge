@@ -169,6 +169,8 @@ modId="add_pack_finders_test"
 [[mods]]
 modId="custom_tooltip_test"
 [[mods]]
+modId="tooltip_negotiation_test"
+[[mods]]
 modId="full_pots_accessor_demo"
 [[mods]]
 modId="permissiontest"

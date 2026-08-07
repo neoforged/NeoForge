@@ -187,23 +187,22 @@
      public <T extends TooltipProvider> void addToTooltip(
          DataComponentType<T> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag
      ) {
-@@ -854,6 +_,7 @@
+@@ -853,7 +_,8 @@
+         } else {
              List<Component> lines = Lists.newArrayList();
              lines.add(this.getStyledHoverName());
-             this.addDetailsToTooltip(context, display, player, tooltipFlag, lines::add);
-+            net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, player, lines, tooltipFlag, context, display);
+-            this.addDetailsToTooltip(context, display, player, tooltipFlag, lines::add);
++            var tooltipSections = net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltip(this, context, display, player, tooltipFlag, lines::add, lines.size());
++            net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, player, lines, tooltipFlag, context, display, tooltipSections);
              return lines;
          }
      }
-@@ -861,7 +_,16 @@
+@@ -861,7 +_,12 @@
      public void addDetailsToTooltip(
          Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
      ) {
-+        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipHead(this, context, display, player, tooltipFlag, builder);
-         this.getItem().appendHoverText(this, context, display, builder, tooltipFlag);
-+        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipMiddle(this, context, display, player, tooltipFlag, builder);
-+        this.addDetailsToTooltipTail(context, display, player, tooltipFlag, builder);
-+        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltipTail(this, context, display, player, tooltipFlag, builder);
+-        this.getItem().appendHoverText(this, context, display, builder, tooltipFlag);
++        net.neoforged.neoforge.common.tooltip.ItemTooltipHandler.addDetailsToTooltip(this, context, display, player, tooltipFlag, builder);
 +    }
 +
 +    private void addDetailsToTooltipComponents(
@@ -219,7 +218,7 @@
 +        }
 +    }
  
-+    private void addDetailsToTooltipTail(Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder) {
++    public void addDetailsToTooltipTail(Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder) {
 +        if (tooltipFlag.isAdvanced()) {
              builder.accept(Component.literal(BuiltInRegistries.ITEM.getKey(this.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY));
              int count = this.components.size();

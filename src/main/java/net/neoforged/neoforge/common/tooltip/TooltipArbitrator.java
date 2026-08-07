@@ -21,16 +21,20 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// Resolves a {@link TooltipSnapshot} against a list of {@link TooltipIntent}s into the final list of top-level
-/// {@link TooltipGroup}s, in strict listener-fire-independent phases:
+/// Resolves a {@link TooltipDocument.Snapshot} against a list of {@link TooltipIntent}s into the final list of
+/// top-level {@link TooltipNode.Group}s, in strict listener-fire-independent phases:
 ///
 /// 1. **Candidate** &mdash; negotiated tags resolved by their {@link TooltipResolver}; survivors render where
 ///    the first candidate stood, non-survivors are dropped.
 /// 2. **Modification** &mdash; {@code remove}/{@code replace} targets resolved against the post-candidate
 ///    working doc (0 matches =&gt; noop, &gt;1 =&gt; diagnostic + drop that intent); at most one intent wins per
 ///    target node (priority, then Replace&gt;Remove, then provider, then ordinal); atomic, no partial application.
-/// 3. **Ordering** &mdash; {@code add} anchors become constraints in a runtime graph sorted by stable document
-///    ordinal; cycles broken by dropping the least-preferred constraint.
+/// 3. **Ordering** &mdash; {@code add} anchors resolve to {@code (parentGroup, anchorChild)}, so content anchored
+///    <em>inside</em> a group is inserted as a child of that group (wrapped in its own source group). Sorting runs
+///    independently at every level of the tree: existing children keep their relative document order, added units
+///    are ordered by the cross-listener {@link TooltipIntent.Key#PREFERENCE} total order, and anchor constraints
+///    become edges in a per-level soft topological sort; cycles are broken by dropping the least-preferred
+///    constraint.
 ///
 /// Every action is expressed as a replacement node list per node (an empty list drops the node), applied
 /// recursively by {@link #applyActions}.
@@ -42,18 +46,18 @@ public final class TooltipArbitrator {
 
     /// @param diagnostics receives human-readable negotiation diagnostics (ambiguous targets, dropped intents,
     ///                    broken cycles)
-    public static List<TooltipGroup> resolve(TooltipSnapshot snapshot, List<TooltipIntent> intents, Consumer<String> diagnostics) {
+    public static List<TooltipNode.Group> resolve(TooltipDocument.Snapshot snapshot, List<TooltipIntent> intents, Consumer<String> diagnostics) {
         // Phase 1: candidate resolution.
         Map<TooltipNode, List<TooltipNode>> actions = new IdentityHashMap<>();
         resolveCandidates(snapshot, collectPreferences(intents), actions);
-        List<TooltipGroup> afterCandidates = applyActions(snapshot.groups(), actions);
+        List<TooltipNode.Group> afterCandidates = applyActions(snapshot.groups(), actions);
         if (afterCandidates.isEmpty()) {
             return List.of();
         }
 
         // Phase 2: exact-match + modification.
-        TooltipSnapshot working = TooltipSnapshot.of(afterCandidates);
-        List<TooltipGroup> afterMods = applyActions(afterCandidates, runModifications(working, intents, diagnostics));
+        TooltipDocument.Snapshot working = TooltipDocument.Snapshot.of(afterCandidates);
+        List<TooltipNode.Group> afterMods = applyActions(afterCandidates, runModifications(working, intents, diagnostics));
 
         // Phase 3: ordering of added content.
         List<TooltipIntent.Add> adds = new ArrayList<>();
@@ -78,14 +82,14 @@ public final class TooltipArbitrator {
         return preferences;
     }
 
-    private static void resolveCandidates(TooltipSnapshot snapshot, Map<Identifier, List<TooltipResolver.Context.Vote>> preferences, Map<TooltipNode, List<TooltipNode>> actions) {
+    private static void resolveCandidates(TooltipDocument.Snapshot snapshot, Map<Identifier, List<TooltipResolver.Context.Vote>> preferences, Map<TooltipNode, List<TooltipNode>> actions) {
         for (Identifier id : snapshot.negotiatedTagIds()) {
-            var type = snapshot.negotiatedType(id);
-            if (type == null) continue;
+            var resolver = snapshot.resolverFor(id);
+            if (resolver == null) continue;
             List<TooltipNode> candidates = snapshot.candidatesFor(id);
             if (candidates.isEmpty()) continue;
             var context = new TooltipResolver.Context(preferences.getOrDefault(id, List.of()), snapshot.documentOrder());
-            List<TooltipNode> survivors = type.resolver().resolve(type, candidates, context);
+            List<TooltipNode> survivors = resolver.resolve(id, candidates, context);
             if (survivors.size() == candidates.size()) {
                 Set<TooltipNode> survivorSet = Collections.newSetFromMap(new IdentityHashMap<>());
                 survivorSet.addAll(survivors);
@@ -103,7 +107,7 @@ public final class TooltipArbitrator {
 
     // ---- Phase 2: exact-match + modifications --------------------------------------
 
-    private static Map<TooltipNode, List<TooltipNode>> runModifications(TooltipSnapshot working, List<TooltipIntent> intents, Consumer<String> diagnostics) {
+    private static Map<TooltipNode, List<TooltipNode>> runModifications(TooltipDocument.Snapshot working, List<TooltipIntent> intents, Consumer<String> diagnostics) {
         // Resolve each remove/replace intent to its target node set, then pick one winner per node.
         Map<TooltipNode, TooltipIntent> winners = new IdentityHashMap<>();
         for (TooltipIntent intent : intents) {
@@ -160,7 +164,7 @@ public final class TooltipArbitrator {
         if (c != 0) return c;
         c = Boolean.compare(a instanceof TooltipIntent.Remove, b instanceof TooltipIntent.Remove);
         if (c != 0) return c;
-        return TooltipIntentKey.PREFERENCE.compare(a.key(), b.key());
+        return TooltipIntent.Key.PREFERENCE.compare(a.key(), b.key());
     };
 
     private static String kind(TooltipIntent intent) {
@@ -168,7 +172,7 @@ public final class TooltipArbitrator {
     }
 
     private static String describe(TooltipNode node) {
-        if (node instanceof TooltipEntry entry) {
+        if (node instanceof TooltipNode.Entry entry) {
             return "entry '" + entry.component().getString() + "'";
         }
         return "group";
@@ -176,15 +180,15 @@ public final class TooltipArbitrator {
 
     // ---- Apply actions recursively --------------------------------------------------
 
-    private static List<TooltipGroup> applyActions(List<TooltipGroup> groups, Map<TooltipNode, List<TooltipNode>> actions) {
-        List<TooltipGroup> out = new ArrayList<>();
-        for (TooltipGroup group : groups) {
+    private static List<TooltipNode.Group> applyActions(List<TooltipNode.Group> groups, Map<TooltipNode, List<TooltipNode>> actions) {
+        List<TooltipNode.Group> out = new ArrayList<>();
+        for (TooltipNode.Group group : groups) {
             for (TooltipNode node : expand(group, actions)) {
-                if (node instanceof TooltipGroup expandedGroup) {
+                if (node instanceof TooltipNode.Group expandedGroup) {
                     out.add(expandedGroup);
-                } else if (node instanceof TooltipEntry entry) {
+                } else if (node instanceof TooltipNode.Entry entry) {
                     // A replaced/stray entry at top level: wrap into a source group to keep structure.
-                    out.add(new TooltipGroup(List.of(entry), entry.metadata()));
+                    out.add(new TooltipNode.Group(List.of(entry), entry.metadata()));
                 }
             }
         }
@@ -196,120 +200,263 @@ public final class TooltipArbitrator {
         if (replacement != null) {
             return replacement;
         }
-        if (node instanceof TooltipGroup group) {
+        if (node instanceof TooltipNode.Group group) {
             List<TooltipNode> children = new ArrayList<>();
             for (TooltipNode child : group.children()) {
                 children.addAll(expand(child, actions));
             }
-            return List.of(new TooltipGroup(children, group.metadata()));
+            return List.of(new TooltipNode.Group(children, group.metadata()));
         }
         return List.of(node);
     }
 
     // ---- Phase 3: ordering of added content ------------------------------------------
 
-    private record Unit(TooltipGroup group, long ordinal) {
-    }
+    /// A resolved anchor: the matched node ({@code child}) and its direct parent group
+    /// ({@code parent} == {@code null} means the top level).
+    private record Anchor(@Nullable TooltipNode parent, TooltipNode child) {}
 
-    private record Edge(int from, int to, TooltipIntentKey key, String label) {
-    }
+    /// One add placed at one level of the tree. {@code parent} == {@code null} means the top level (root).
+    private record Placement(
+            TooltipIntent.Add add,
+            TooltipNode.Group unit,
+            @Nullable TooltipNode parent,
+            @Nullable TooltipNode afterChild,
+            @Nullable TooltipNode beforeChild,
+            boolean headFallback) {}
 
-    private static List<TooltipGroup> runOrdering(List<TooltipGroup> groups, List<TooltipIntent.Add> adds, Consumer<String> diagnostics) {
-        TooltipSnapshot working = TooltipSnapshot.of(groups);
+    private record Edge(int from, int to, TooltipIntent.Key key, String label) {}
 
-        // Each top-level group is a placement unit with a stable ordinal. Adds become new units at the tail.
-        List<Unit> units = new ArrayList<>();
-        for (TooltipGroup group : groups) {
-            units.add(new Unit(group, units.size()));
+    private static List<TooltipNode.Group> runOrdering(List<TooltipNode.Group> groups, List<TooltipIntent.Add> adds, Consumer<String> diagnostics) {
+        TooltipDocument.Snapshot working = TooltipDocument.Snapshot.of(groups);
+
+        // Direct-parent map for every node below the top level; absence means "top level".
+        IdentityHashMap<TooltipNode, TooltipNode.Group> parents = new IdentityHashMap<>();
+        for (TooltipNode.Group group : groups) {
+            indexParents(group, parents);
         }
-        int existingCount = units.size();
-        List<Edge> edges = new ArrayList<>();
 
+        // Resolve every add to a placement at exactly one level of the tree.
+        List<Placement> placements = new ArrayList<>();
         for (TooltipIntent.Add add : adds) {
             String provider = add.key().providerId();
-            Unit unit = new Unit(
-                    new TooltipGroup(toEntries(add.content(), provider), TooltipMetadata.builder().providerModId(provider).build()),
-                    existingCount + add.key().declarationOrdinal());
+            TooltipNode.Group unit = new TooltipNode.Group(toEntries(add.content(), provider), TooltipNode.Metadata.builder().providerModId(provider).build());
 
-            TooltipTag<?, ?> afterTag = add.after();
-            TooltipTag<?, ?> beforeTag = add.before();
-            Integer afterUnit = resolveAnchorUnit(working, groups, afterTag);
-            Integer beforeUnit = resolveAnchorUnit(working, groups, beforeTag);
-            boolean anchorFailed = (afterTag != null && afterUnit == null) || (beforeTag != null && beforeUnit == null);
+            Anchor afterAnchor = resolveAnchor(working, parents, add.after());
+            Anchor beforeAnchor = resolveAnchor(working, parents, add.before());
+            boolean anchorFailed = (add.after() != null && afterAnchor == null) || (add.before() != null && beforeAnchor == null);
+            // The after/before anchors of one add must live in the same parent group.
+            if (afterAnchor != null && beforeAnchor != null && afterAnchor.parent() != beforeAnchor.parent()) {
+                diagnostics.accept("irreconcilable: add by '" + provider + "': after(" + add.after() + ") and before(" + add.before()
+                        + ") anchors belong to different groups.");
+                anchorFailed = true;
+            }
 
             if (anchorFailed && add.fallbackTag() != null) {
-                Integer fallbackUnit = resolveAnchorUnit(working, groups, add.fallbackTag());
-                if (fallbackUnit != null) {
+                Anchor fallbackAnchor = resolveAnchor(working, parents, add.fallbackTag());
+                if (fallbackAnchor != null) {
                     if (add.fallbackAfter()) {
-                        afterUnit = fallbackUnit;
-                        afterTag = add.fallbackTag();
+                        afterAnchor = fallbackAnchor;
                     } else {
-                        beforeUnit = fallbackUnit;
-                        beforeTag = add.fallbackTag();
+                        beforeAnchor = fallbackAnchor;
                     }
-                    anchorFailed = false;
+                    boolean unresolved = (add.after() != null && afterAnchor == null) || (add.before() != null && beforeAnchor == null);
+                    boolean mismatched = afterAnchor != null && beforeAnchor != null && afterAnchor.parent() != beforeAnchor.parent();
+                    anchorFailed = unresolved || mismatched;
                 }
             }
 
             if (anchorFailed) {
-                if (add.fallback() == TooltipFallback.HEAD) {
-                    unit = new Unit(unit.group(), -1L - add.key().declarationOrdinal());
-                } else if (add.fallback() != TooltipFallback.TAIL) {
+                if (add.fallback() == TooltipNegotiation.Fallback.HEAD) {
+                    placements.add(new Placement(add, unit, null, null, null, true));
+                } else if (add.fallback() == TooltipNegotiation.Fallback.TAIL) {
+                    placements.add(new Placement(add, unit, null, null, null, false));
+                } else {
                     diagnostics.accept("dropped: add by '" + provider + "': anchor unresolved and no fallback; intent dropped.");
-                    continue;
                 }
-            } else {
-                int addId = units.size();
-                if (afterUnit != null) {
-                    edges.add(new Edge(afterUnit, addId, add.key(), "after(" + afterTag + ")"));
-                }
-                if (beforeUnit != null) {
-                    edges.add(new Edge(addId, beforeUnit, add.key(), "before(" + beforeTag + ")"));
-                }
+                continue;
             }
-            units.add(unit);
+
+            TooltipNode parent = afterAnchor != null ? afterAnchor.parent() : beforeAnchor != null ? beforeAnchor.parent() : null;
+            placements.add(new Placement(add, unit, parent,
+                    afterAnchor == null ? null : afterAnchor.child(),
+                    beforeAnchor == null ? null : beforeAnchor.child(),
+                    false));
         }
 
-        List<TooltipGroup> result = new ArrayList<>();
-        for (int id : softTopoSort(units, edges, diagnostics)) {
-            result.add(units.get(id).group());
+        // Every group on the path to a touched level must be rebuilt (records are immutable).
+        Set<TooltipNode> dirty = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Placement placement : placements) {
+            for (TooltipNode node = placement.parent(); node != null && dirty.add(node); node = parents.get(node)) {
+                // walk up to the root
+            }
+        }
+
+        // Structural rebuild of dirty groups (child order unchanged), tracking old -> new instances so that
+        // anchors and parents pointing at rebuilt groups can be translated to the new tree.
+        IdentityHashMap<TooltipNode, TooltipNode> rebuilt = new IdentityHashMap<>();
+        List<TooltipNode> rootChildren = new ArrayList<>();
+        for (TooltipNode.Group group : groups) {
+            rootChildren.add(rebuildStructure(group, dirty, rebuilt));
+        }
+
+        // Translate placements to the rebuilt tree and group them by (new) parent; null parent = root level.
+        // dirtyNew holds the rebuilt instances of every dirty group, so applyLevel can recurse through
+        // intermediate groups that have no placements of their own.
+        Map<TooltipNode, List<Placement>> byParent = new IdentityHashMap<>();
+        List<Placement> rootPlacements = new ArrayList<>();
+        for (Placement placement : placements) {
+            Placement translated = new Placement(
+                    placement.add(),
+                    placement.unit(),
+                    translate(placement.parent(), rebuilt),
+                    translate(placement.afterChild(), rebuilt),
+                    translate(placement.beforeChild(), rebuilt),
+                    placement.headFallback());
+            if (translated.parent() == null) {
+                rootPlacements.add(translated);
+            } else {
+                byParent.computeIfAbsent(translated.parent(), k -> new ArrayList<>()).add(translated);
+            }
+        }
+        Set<TooltipNode> dirtyNew = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (TooltipNode group : dirty) {
+            dirtyNew.add(rebuilt.get(group));
+        }
+
+        List<TooltipNode> newRoot = applyLevel(rootChildren, rootPlacements, byParent, dirtyNew, diagnostics);
+
+        List<TooltipNode.Group> result = new ArrayList<>(newRoot.size());
+        for (TooltipNode node : newRoot) {
+            result.add((TooltipNode.Group) node);
         }
         return result;
     }
 
-    /// Resolve a tag to the top-level group containing (or being) the single matched node; null if unresolved/ambiguous.
-    private static @Nullable Integer resolveAnchorUnit(TooltipSnapshot working, List<TooltipGroup> groups, @Nullable TooltipTag<?, ?> tag) {
+    private static @Nullable TooltipNode translate(@Nullable TooltipNode node, IdentityHashMap<TooltipNode, TooltipNode> rebuilt) {
+        return node == null ? null : rebuilt.getOrDefault(node, node);
+    }
+
+    private static void indexParents(TooltipNode.Group group, IdentityHashMap<TooltipNode, TooltipNode.Group> parents) {
+        for (TooltipNode child : group.children()) {
+            parents.put(child, group);
+            if (child instanceof TooltipNode.Group childGroup) {
+                indexParents(childGroup, parents);
+            }
+        }
+    }
+
+    /// Rebuild {@code group} structurally if it or a descendant received insertions (child order unchanged);
+    /// untouched subtrees are returned as-is.
+    private static TooltipNode.Group rebuildStructure(TooltipNode.Group group, Set<TooltipNode> dirty, IdentityHashMap<TooltipNode, TooltipNode> rebuilt) {
+        if (!dirty.contains(group)) {
+            return group;
+        }
+        List<TooltipNode> children = new ArrayList<>();
+        for (TooltipNode child : group.children()) {
+            children.add(child instanceof TooltipNode.Group childGroup ? rebuildStructure(childGroup, dirty, rebuilt) : child);
+        }
+        TooltipNode.Group copy = new TooltipNode.Group(children, group.metadata());
+        rebuilt.put(group, copy);
+        return copy;
+    }
+
+    /// Sort one level and recurse into every dirty child group, whether or not it has placements of its own
+    /// (placements may sit several levels down).
+    private static List<TooltipNode> applyLevel(List<TooltipNode> children, List<Placement> placements, Map<TooltipNode, List<Placement>> byParent, Set<TooltipNode> dirty, Consumer<String> diagnostics) {
+        List<TooltipNode> sorted = new ArrayList<>(sortLevel(children, placements, diagnostics));
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i) instanceof TooltipNode.Group group && dirty.contains(group)) {
+                sorted.set(i, new TooltipNode.Group(applyLevel(group.children(), byParent.getOrDefault(group, List.of()), byParent, dirty, diagnostics), group.metadata()));
+            }
+        }
+        return sorted;
+    }
+
+    /// Soft-sort one level of the tree. Existing children keep their relative document order; an anchored add is
+    /// positioned directly at its anchor (adds sharing one anchor stack in the cross-listener
+    /// {@link TooltipIntent.Key#PREFERENCE} total order), unanchored adds go to the tail (head-fallback adds
+    /// precede everything), and anchor constraints become edges so contradictory constraints still break as
+    /// cycles. Keys are unique fractions of {@code scale}: child {@code i} sits at {@code i * scale}, an add after
+    /// anchor {@code a} at {@code a * scale + rank + 1}, an add before anchor {@code b} at
+    /// {@code b * scale - rank - 1}.
+    private static List<TooltipNode> sortLevel(List<TooltipNode> existing, List<Placement> placements, Consumer<String> diagnostics) {
+        if (placements.isEmpty()) {
+            return existing;
+        }
+        List<Placement> ordered = new ArrayList<>(placements);
+        ordered.sort((a, b) -> TooltipIntent.Key.PREFERENCE.compare(a.add().key(), b.add().key()));
+
+        int existingCount = existing.size();
+        long scale = ordered.size() + 1L;
+        int headCount = 0;
+        for (Placement placement : ordered) {
+            if (placement.headFallback()) headCount++;
+        }
+
+        List<TooltipNode> units = new ArrayList<>(existing);
+        long[] keys = new long[existingCount + ordered.size()];
+        IdentityHashMap<TooltipNode, Integer> indexOf = new IdentityHashMap<>();
+        for (int i = 0; i < existingCount; i++) {
+            keys[i] = i * scale;
+            indexOf.put(existing.get(i), i);
+        }
+
+        List<Edge> edges = new ArrayList<>();
+        IdentityHashMap<TooltipNode, Integer> afterRanks = new IdentityHashMap<>();
+        IdentityHashMap<TooltipNode, Integer> beforeRanks = new IdentityHashMap<>();
+        int headRank = 0;
+        int tailRank = 0;
+        for (Placement placement : ordered) {
+            int unitId = units.size();
+            units.add(placement.unit());
+            if (placement.headFallback()) {
+                keys[unitId] = -(scale * headCount) + headRank++;
+            } else if (placement.afterChild() != null) {
+                int rank = afterRanks.getOrDefault(placement.afterChild(), 0);
+                afterRanks.put(placement.afterChild(), rank + 1);
+                keys[unitId] = indexOf.get(placement.afterChild()) * scale + rank + 1;
+            } else if (placement.beforeChild() != null) {
+                int rank = beforeRanks.getOrDefault(placement.beforeChild(), 0);
+                beforeRanks.put(placement.beforeChild(), rank + 1);
+                keys[unitId] = indexOf.get(placement.beforeChild()) * scale - rank - 1;
+            } else {
+                keys[unitId] = existingCount * scale + tailRank++;
+            }
+            if (placement.afterChild() != null) {
+                edges.add(new Edge(indexOf.get(placement.afterChild()), unitId, placement.add().key(), "after(" + placement.add().after() + ")"));
+            }
+            if (placement.beforeChild() != null) {
+                edges.add(new Edge(unitId, indexOf.get(placement.beforeChild()), placement.add().key(), "before(" + placement.add().before() + ")"));
+            }
+        }
+
+        List<TooltipNode> result = new ArrayList<>(units.size());
+        for (int id : softTopoSort(units.size(), keys, edges, diagnostics)) {
+            result.add(units.get(id));
+        }
+        return result;
+    }
+
+    /// Resolve a tag to the single matched node plus its direct parent group; null if absent, ambiguous, or the
+    /// tag is null (ambiguous matches are treated as unresolved by the caller: drop or fallback).
+    private static @Nullable Anchor resolveAnchor(TooltipDocument.Snapshot working, IdentityHashMap<TooltipNode, TooltipNode.Group> parents, @Nullable TooltipTag<?, ?> tag) {
         if (tag == null || working.count(tag) > 1) {
-            return null; // absent or ambiguous; caller treats as unresolved -> drop or fallback
+            return null;
         }
         TooltipNode node = working.findFirst(tag);
         if (node == null) {
             return null;
         }
-        for (int i = 0; i < groups.size(); i++) {
-            if (contains(groups.get(i), node)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    private static boolean contains(TooltipNode haystack, TooltipNode needle) {
-        if (haystack == needle) return true;
-        if (haystack instanceof TooltipGroup group) {
-            for (TooltipNode child : group.children()) {
-                if (contains(child, needle)) return true;
-            }
-        }
-        return false;
+        return new Anchor(parents.get(node), node);
     }
 
     // ---- Soft topological sort with cycle breaking ------------------------------------
 
-    private static List<Integer> softTopoSort(List<Unit> units, List<Edge> edges, Consumer<String> diagnostics) {
+    private static List<Integer> softTopoSort(int nodeCount, long[] keys, List<Edge> edges, Consumer<String> diagnostics) {
         List<Edge> active = new ArrayList<>(edges);
         Set<Integer> nodes = new HashSet<>();
-        for (int i = 0; i < units.size(); i++) {
+        for (int i = 0; i < nodeCount; i++) {
             nodes.add(i);
         }
         while (true) {
@@ -323,7 +470,7 @@ public final class TooltipArbitrator {
                 successors.get(edge.from()).add(edge.to());
                 indegree.merge(edge.to(), 1, Integer::sum);
             }
-            PriorityQueue<Integer> ready = new PriorityQueue<>(Comparator.comparingLong(id -> units.get(id).ordinal()));
+            PriorityQueue<Integer> ready = new PriorityQueue<>(Comparator.comparingLong(id -> keys[id]));
             for (int node : nodes) {
                 if (indegree.get(node) == 0) {
                     ready.add(node);
@@ -348,7 +495,7 @@ public final class TooltipArbitrator {
             Edge drop = null;
             for (Edge edge : active) {
                 if (unemitted.contains(edge.from()) && unemitted.contains(edge.to())) {
-                    if (drop == null || TooltipIntentKey.PREFERENCE.compare(edge.key(), drop.key()) > 0) {
+                    if (drop == null || TooltipIntent.Key.PREFERENCE.compare(edge.key(), drop.key()) > 0) {
                         drop = edge;
                     }
                 }
@@ -356,7 +503,7 @@ public final class TooltipArbitrator {
             if (drop == null) {
                 diagnostics.accept("cycle: Ordering cycle could not be resolved; emitting remaining nodes in document order.");
                 List<Integer> rest = new ArrayList<>(emitted);
-                unemitted.stream().sorted(Comparator.comparingLong(id -> units.get(id).ordinal())).forEach(rest::add);
+                unemitted.stream().sorted(Comparator.comparingLong(id -> keys[id])).forEach(rest::add);
                 return rest;
             }
             active.remove(drop);
@@ -369,7 +516,7 @@ public final class TooltipArbitrator {
     private static List<TooltipNode> toEntries(List<Component> lines, String providerModId) {
         List<TooltipNode> entries = new ArrayList<>(lines.size());
         for (Component line : lines) {
-            entries.add(new TooltipEntry(line, TooltipMetadata.builder().providerModId(providerModId).build()));
+            entries.add(new TooltipNode.Entry(line, TooltipNode.Metadata.builder().providerModId(providerModId).build()));
         }
         return entries;
     }

@@ -10,6 +10,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,41 +37,77 @@ public final class ItemTooltipHandler {
     private static final List<TooltipAppender> HEAD_APPENDERS = new ArrayList<>();
     private static final List<TooltipAppender> MIDDLE_APPENDERS = new ArrayList<>();
     private static final List<TooltipAppender> TAIL_APPENDERS = new ArrayList<>();
+    private static final Map<TooltipAppender, DataComponentType<?>> COMPONENT_TYPES = new IdentityHashMap<>();
 
-    public static void addDetailsToTooltipHead(
+    public static List<Section> addDetailsToTooltip(
             ItemStack stack,
             Item.TooltipContext context,
             TooltipDisplay display,
             @Nullable Player player,
             TooltipFlag tooltipFlag,
             Consumer<Component> builder) {
+        return addDetailsToTooltip(stack, context, display, player, tooltipFlag, builder, 0);
+    }
+
+    public static List<Section> addDetailsToTooltip(
+            ItemStack stack,
+            Item.TooltipContext context,
+            TooltipDisplay display,
+            @Nullable Player player,
+            TooltipFlag tooltipFlag,
+            Consumer<Component> builder,
+            int initialLineCount) {
+        List<Section> sections = new ArrayList<>();
+        int[] count = { initialLineCount };
+        Consumer<Component> sink = component -> {
+            builder.accept(component);
+            count[0]++;
+        };
         for (TooltipAppender appender : HEAD_APPENDERS) {
-            appender.append(stack, context, display, player, tooltipFlag, builder);
+            appendSection(appender, stack, context, display, player, tooltipFlag, sink, count, sections, null);
         }
-    }
-
-    public static void addDetailsToTooltipMiddle(
-            ItemStack stack,
-            Item.TooltipContext context,
-            TooltipDisplay display,
-            @Nullable Player player,
-            TooltipFlag tooltipFlag,
-            Consumer<Component> builder) {
+        int hoverFrom = count[0];
+        stack.getItem().appendHoverText(stack, context, display, sink, tooltipFlag);
+        addSection(sections, Phase.HOVER_TEXT, hoverFrom, count[0]);
         for (TooltipAppender appender : MIDDLE_APPENDERS) {
-            appender.append(stack, context, display, player, tooltipFlag, builder);
+            appendSection(appender, stack, context, display, player, tooltipFlag, sink, count, sections, COMPONENT_TYPES.get(appender));
         }
+        int tailFrom = count[0];
+        stack.addDetailsToTooltipTail(context, display, player, tooltipFlag, sink);
+        addSection(sections, Phase.TAIL, tailFrom, count[0]);
+        for (TooltipAppender appender : TAIL_APPENDERS) {
+            appendSection(appender, stack, context, display, player, tooltipFlag, sink, count, sections, null);
+        }
+        return sections;
     }
 
-    public static void addDetailsToTooltipTail(
+    private static void appendSection(
+            TooltipAppender appender,
             ItemStack stack,
             Item.TooltipContext context,
             TooltipDisplay display,
             @Nullable Player player,
             TooltipFlag tooltipFlag,
-            Consumer<Component> builder) {
-        for (TooltipAppender appender : TAIL_APPENDERS) {
-            appender.append(stack, context, display, player, tooltipFlag, builder);
+            Consumer<Component> sink,
+            int[] count,
+            List<Section> sections,
+            @Nullable Object key) {
+        int from = count[0];
+        appender.append(stack, context, display, player, tooltipFlag, sink);
+        addSection(sections, key, from, count[0]);
+    }
+
+    private static void addSection(List<Section> sections, @Nullable Object key, int from, int to) {
+        if (to > from) {
+            sections.add(new Section(key, from, to));
         }
+    }
+
+    public record Section(@Nullable Object key, int from, int to) {}
+
+    public enum Phase {
+        HOVER_TEXT,
+        TAIL
     }
 
     public static void init() {
@@ -115,7 +152,9 @@ public final class ItemTooltipHandler {
     private static void addDataComponentAppenders(SequencedMap<DataComponentType<?>, TooltipAppender> appenders, MutableGraph<DataComponentType<?>> graph) {
         List<DataComponentType<?>> sorted = CommonHooks.sortGraphChecked(graph, appenders.keySet(), "component tooltip appenders", Function.identity());
         for (DataComponentType<?> type : sorted) {
-            MIDDLE_APPENDERS.add(appenders.get(type));
+            TooltipAppender appender = appenders.get(type);
+            COMPONENT_TYPES.put(appender, type);
+            MIDDLE_APPENDERS.add(appender);
         }
     }
 

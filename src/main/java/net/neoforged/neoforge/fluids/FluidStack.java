@@ -11,6 +11,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
 
@@ -375,8 +377,8 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
      * <ul>
      * <li>The styled hover name</li>
      * <li>Additional lines provided by the fluid itself</li>
-     * <li>Lines added by {@link EventHooks#onFluidTooltip}</li>
      * <li>The registry name when advanced tooltips are enabled</li>
+     * <li>Lines added by {@link EventHooks#onFluidTooltip}</li>
      * </ul>
      * </p>
      *
@@ -396,8 +398,13 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
             Fluid fluid = getFluid();
             List<Component> list = Lists.newArrayList();
             list.add(this.getHoverName());
+            List<ItemTooltipHandler.Section> tooltipSections = new ArrayList<>();
+            int hoverTextFrom = list.size();
             fluid.appendHoverText(this, context, tooltipDisplay, list::add, flag);
-            EventHooks.onFluidTooltip(this, player, list, flag, context);
+            if (list.size() > hoverTextFrom) {
+                tooltipSections.add(new ItemTooltipHandler.Section(ItemTooltipHandler.Phase.HOVER_TEXT, hoverTextFrom, list.size()));
+            }
+            int tailFrom = list.size();
             if (flag.isAdvanced()) {
                 list.add(Component.literal(BuiltInRegistries.FLUID.getKey(fluid).toString()).withStyle(ChatFormatting.DARK_GRAY));
                 int componentCount = this.components.size();
@@ -405,6 +412,11 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
                     list.add(Component.translatable("item.components", componentCount).withStyle(ChatFormatting.DARK_GRAY));
                 }
             }
+            if (list.size() > tailFrom) {
+                tooltipSections.add(new ItemTooltipHandler.Section(ItemTooltipHandler.Phase.TAIL, tailFrom, list.size()));
+            }
+            // Fired after the advanced lines so the negotiation pipeline and the legacy event see the full list.
+            EventHooks.onFluidTooltip(this, player, list, flag, context, tooltipDisplay, tooltipSections);
             return list;
         }
     }

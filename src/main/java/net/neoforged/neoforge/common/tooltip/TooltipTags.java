@@ -13,8 +13,11 @@ import net.minecraft.resources.Identifier;
 /// - <b>Vanilla content tags</b> ({@code minecraft:}): semantic only (which lore line, which enchantment, which
 ///   data component) &mdash; never structural. Factory methods return ready {@link TooltipTag}s for use in
 ///   {@code remove}/{@code replace}/{@code addBefore}/{@code addAfter} and in {@code output.add(x).tag(...)}.
-///   v1 populates: {@code item_name}, {@code lore}+{@code loreLine}, {@code enchantments}, {@code attributes}
-///   (group-only), {@code damage}, {@code itemId}, plus the auto {@code component(type)} and source tags. Per-key
+///   Populated by the negotiation pipeline from the recorded emission sections: {@code item_name} (the styled
+///   hover name), {@code lore}+{@code loreLine} (the {@code appendHoverText} phase), {@code enchantments} and
+///   {@code attributes} (group-only), {@code damage}, {@code itemId} (the advanced registry-id line), plus the
+///   auto {@code component(type)} per component-appender section. {@code item_name}/{@code item_id} name the
+///   tooltip <em>subject</em> and apply to fluid tooltips as well (the fluid's name / registry id). Per-key
 ///   enchantment and per-modifier attribute tags exist as factories but are not yet populated by the vanilla
 ///   taggers (they require deeper emission context; tracked as follow-up).
 /// - <b>Cross-mod negotiated channels</b> ({@code c:}): channels shared by mods that agree on a meaning. The
@@ -25,8 +28,7 @@ import net.minecraft.resources.Identifier;
 /// declaration of the same channel.
 public final class TooltipTags {
     /// Value = the claimant mod id; resolved by {@link TooltipResolver#chooseOne()}.
-    public static final TooltipTag<TooltipNode.Entry, String> MOD_NAME =
-            TooltipTag.negotiated(Identifier.fromNamespaceAndPath("c", "mod_name"), TooltipNode.Entry.class, TooltipResolver.chooseOne());
+    public static final TooltipTag<TooltipNode.Entry, String> MOD_NAME = TooltipTag.negotiated(Identifier.fromNamespaceAndPath("c", "mod_name"), TooltipNode.Entry.class, TooltipResolver.chooseOne());
 
     private static final TooltipTag<TooltipNode.Entry, Void> ITEM_NAME = TooltipTag.plain(id("item_name"), TooltipNode.Entry.class);
     private static final TooltipTag<TooltipNode.Group, Void> LORE = TooltipTag.plain(id("lore"), TooltipNode.Group.class);

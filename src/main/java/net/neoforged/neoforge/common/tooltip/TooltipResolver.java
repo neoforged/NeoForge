@@ -8,27 +8,30 @@ package net.neoforged.neoforge.common.tooltip;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// Resolves the candidate set of a negotiated tag to survivors. Implementations must be pure functions of
-/// {@code (tag, candidates, context)}. Built-in resolvers are exposed via the static factories; custom ones are
-/// registered as new channels via {@code TooltipTagType.Negotiated.create(id, nodeType, resolver)} +
-/// {@link TooltipTagType#register}.
+/// Resolves the candidate set of a negotiated channel to survivors. Implementations must be pure functions of
+/// {@code (channel, candidates, context)}. Built-in resolvers are exposed via the static factories; custom ones
+/// become channels via {@code TooltipTag.negotiated(id, nodeType, resolver)}.
 ///
-/// Every factory returns a <em>singleton</em>. Sharing the instance is what lets independent mods agree on a
-/// convention channel: {@link TooltipTagType#register} accepts a second registration of the same id only when it
-/// carries the exact same resolver instance, so a custom resolver used as a convention must also be a shared
-/// singleton (e.g. from a common library), never a per-mod lambda or freshly-constructed object.
-@ApiStatus.NonExtendable
+/// Every resolver carries a stable {@link #id()}: resolvers with the same id are assumed to have the same
+/// semantics, so resolver <em>instance</em> identity never participates in any equality or conflict decision.
+/// When independent mods declare the same channel with different resolvers, the declarations are adjudicated
+/// deterministically (priority, then explicit preempts/defersTo constraints, then resolver id) instead of
+/// crashing &mdash; see {@link TooltipTag}.
 public interface TooltipResolver {
-    List<TooltipNode> resolve(TooltipTagType.Negotiated<?, ?> tag, List<TooltipNode> candidates, Context context);
+    /// Stable semantic identity of this resolver. Two resolvers with the same id must behave identically.
+    Identifier id();
+
+    List<TooltipNode> resolve(Identifier channel, List<TooltipNode> candidates, Context context);
 
     /// Context handed to a resolver: {@code prefer(...)} votes plus a stable document-order comparator.
     record Context(List<Vote> preferences, Comparator<TooltipNode> documentOrder) {
         /// One {@code prefer(channel, provider)} vote.
         public record Vote(String providerId, int priority, long declarationOrdinal) {
-            /// {@code compare(a, b) < 0} means {@code a} is preferred. Mirrors {@link TooltipIntentKey#PREFERENCE}.
+            /// {@code compare(a, b) < 0} means {@code a} is preferred. Mirrors {@link TooltipIntent.Key#PREFERENCE}.
             public static final Comparator<Vote> PREFERENCE = (a, b) -> {
                 int c = Integer.compare(b.priority(), a.priority());
                 if (c != 0) return c;
@@ -41,82 +44,103 @@ public interface TooltipResolver {
 
     /// All candidates survive.
     static TooltipResolver keepAll() {
-        return BuiltIn.KEEP_ALL;
+        return Builtin.KEEP_ALL;
     }
 
     /// One candidate survives: the most-preferred voted provider, else the first in document order.
     static TooltipResolver chooseOne() {
-        return BuiltIn.CHOOSE_ONE;
+        return Builtin.CHOOSE_ONE;
     }
 
     /// All candidate groups are merged into a single group preserving document order of children.
     static TooltipResolver mergeGroups() {
-        return BuiltIn.MERGE_GROUPS;
+        return Builtin.MERGE_GROUPS;
     }
 
     /// The candidate from the lexicographically-smallest provider (then earliest declaration) survives.
     static TooltipResolver highestPriority() {
-        return BuiltIn.HIGHEST;
+        return Builtin.HIGHEST;
     }
 
+    /// The built-in resolvers, each with a fixed {@code neoforge:} id.
     @ApiStatus.Internal
-    final class BuiltIn {
-        private BuiltIn() {}
-
-        static final TooltipResolver KEEP_ALL = (_, candidates, _) -> candidates;
-
-        static final TooltipResolver CHOOSE_ONE = (_, candidates, context) -> {
-            if (candidates.isEmpty()) {
-                return List.of();
+    enum Builtin implements TooltipResolver {
+        KEEP_ALL("keep_all") {
+            @Override
+            public List<TooltipNode> resolve(Identifier channel, List<TooltipNode> candidates, Context context) {
+                return candidates;
             }
-            String winnerProvider = winner(context.preferences());
-            if (winnerProvider != null) {
+        },
+        CHOOSE_ONE("choose_one") {
+            @Override
+            public List<TooltipNode> resolve(Identifier channel, List<TooltipNode> candidates, Context context) {
+                if (candidates.isEmpty()) {
+                    return List.of();
+                }
+                String winnerProvider = winner(context.preferences());
+                if (winnerProvider != null) {
+                    for (TooltipNode node : candidates) {
+                        if (winnerProvider.equals(node.metadata().providerModId())) {
+                            return List.of(node);
+                        }
+                    }
+                }
+                return List.of(candidates.getFirst());
+            }
+        },
+        MERGE_GROUPS("merge_groups") {
+            @Override
+            public List<TooltipNode> resolve(Identifier channel, List<TooltipNode> candidates, Context context) {
+                if (candidates.size() <= 1) {
+                    return List.copyOf(candidates);
+                }
+                List<TooltipNode> mergedChildren = new ArrayList<>();
+                TooltipNode.Group firstGroup = null;
                 for (TooltipNode node : candidates) {
-                    if (winnerProvider.equals(node.metadata().providerModId())) {
-                        return List.of(node);
+                    if (node instanceof TooltipNode.Group group) {
+                        if (firstGroup == null) {
+                            firstGroup = group;
+                        }
+                        mergedChildren.addAll(group.children());
+                    } else {
+                        mergedChildren.add(node);
                     }
                 }
+                if (firstGroup == null) {
+                    return List.copyOf(candidates);
+                }
+                return List.of(new TooltipNode.Group(mergedChildren, firstGroup.metadata()));
             }
-            return List.of(candidates.getFirst());
-        };
-
-        static final TooltipResolver MERGE_GROUPS = (_, candidates, _) -> {
-            if (candidates.size() <= 1) {
-                return List.copyOf(candidates);
-            }
-            List<TooltipNode> mergedChildren = new ArrayList<>();
-            TooltipGroup firstGroup = null;
-            for (TooltipNode node : candidates) {
-                if (node instanceof TooltipGroup group) {
-                    if (firstGroup == null) {
-                        firstGroup = group;
+        },
+        HIGHEST("highest_priority") {
+            @Override
+            public List<TooltipNode> resolve(Identifier channel, List<TooltipNode> candidates, Context context) {
+                if (candidates.isEmpty()) {
+                    return List.of();
+                }
+                TooltipNode best = candidates.get(0);
+                for (TooltipNode node : candidates) {
+                    String provider = node.metadata().providerModId();
+                    String bestProvider = best.metadata().providerModId();
+                    if (provider.compareTo(bestProvider) < 0
+                            || (provider.equals(bestProvider) && node.metadata().declarationOrdinal() < best.metadata().declarationOrdinal())) {
+                        best = node;
                     }
-                    mergedChildren.addAll(group.children());
-                } else {
-                    mergedChildren.add(node);
                 }
+                return List.of(best);
             }
-            if (firstGroup == null) {
-                return List.copyOf(candidates);
-            }
-            return List.of(new TooltipGroup(mergedChildren, firstGroup.metadata()));
         };
 
-        static final TooltipResolver HIGHEST = (_, candidates, _) -> {
-            if (candidates.isEmpty()) {
-                return List.of();
-            }
-            TooltipNode best = candidates.get(0);
-            for (TooltipNode node : candidates) {
-                String provider = node.metadata().providerModId();
-                String bestProvider = best.metadata().providerModId();
-                if (provider.compareTo(bestProvider) < 0
-                        || (provider.equals(bestProvider) && node.metadata().declarationOrdinal() < best.metadata().declarationOrdinal())) {
-                    best = node;
-                }
-            }
-            return List.of(best);
-        };
+        private final Identifier id;
+
+        Builtin(String path) {
+            this.id = Identifier.fromNamespaceAndPath("neoforge", path);
+        }
+
+        @Override
+        public Identifier id() {
+            return id;
+        }
 
         private static @Nullable String winner(List<Context.Vote> preferences) {
             Context.Vote best = null;

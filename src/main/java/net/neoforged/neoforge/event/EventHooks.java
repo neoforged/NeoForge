@@ -124,6 +124,8 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
+import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
+import net.neoforged.neoforge.common.tooltip.TooltipPipeline;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.ClockAdjustment;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
@@ -456,13 +458,15 @@ public class EventHooks {
         return event.getNewState();
     }
 
-    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context, TooltipDisplay display) {
+    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context, TooltipDisplay display, List<ItemTooltipHandler.Section> sections) {
+        TooltipPipeline.negotiateItemTooltip(itemStack, entityPlayer, list, flags, context, display, sections);
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context, display);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
-    public static FluidTooltipEvent onFluidTooltip(FluidStack fluidStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
+    public static FluidTooltipEvent onFluidTooltip(FluidStack fluidStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context, TooltipDisplay display, List<ItemTooltipHandler.Section> sections) {
+        TooltipPipeline.negotiateFluidTooltip(fluidStack, entityPlayer, list, flags, context, display, sections);
         FluidTooltipEvent event = new FluidTooltipEvent(fluidStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
