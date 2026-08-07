@@ -24,8 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 /// This event is fired before either of the above are called, when a carried item is clicked on top of another in a GUI slot.
 ///
 /// This event (and items stacking on others in general) is fired on both [sides][LogicalSide], but only on [the client][LogicalSide#CLIENT]
-/// in the creative menu. Practically, that means that listeners of this event should require the player to be in
-/// survival mode if using capabilities that are not synced.
+/// in the creative menu.
 ///
 /// This event is [cancellable][ICancellableEvent]. If the event is cancelled, the two vanilla methods described above
 /// will not be called. The remaining logic depends on the [cancellation result][#getCancellationResult()]:
