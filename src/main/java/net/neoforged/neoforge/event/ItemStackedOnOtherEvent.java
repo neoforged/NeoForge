@@ -16,21 +16,23 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * This event provides the functionality of the pair of functions used for the Bundle, in one event:
- * <ul>
- * <li>{@link Item#overrideOtherStackedOnMe(ItemStack, ItemStack, Slot, ClickAction, Player, SlotAccess)}</li>
- * <li>{@link Item#overrideStackedOnOther(ItemStack, Slot, ClickAction, Player)}</li>
- * </ul>
- *
- * This event is fired before either of the above are called, when a carried item is clicked on top of another in a GUI slot.
- * This event (and items stacking on others in general) is fired on both {@linkplain LogicalSide sides}, but only on {@linkplain LogicalSide#CLIENT the client} in the creative menu.
- * Practically, that means that listeners of this event should require the player to be in survival mode if using capabilities that are not synced.
- * <p>
- * This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
- * If the event is cancelled, the container's logic halts, the carried item and the slot will not be swapped, and handling is assumed to have been done by the mod.
- * This also means that the two vanilla checks described above will not be called.
- */
+/// This event provides the functionality of the pair of functions used for the Bundle, in one event:
+///
+///   - [Item#overrideOtherStackedOnMe(ItemStack, ItemStack, Slot, ClickAction, Player, SlotAccess)]
+///   - [Item#overrideStackedOnOther(ItemStack, Slot, ClickAction, Player)]
+///
+/// This event is fired before either of the above are called, when a carried item is clicked on top of another in a GUI slot.
+///
+/// This event (and items stacking on others in general) is fired on both [sides][LogicalSide], but only on [the client][LogicalSide#CLIENT]
+/// in the creative menu. Practically, that means that listeners of this event should require the player to be in
+/// survival mode if using capabilities that are not synced.
+///
+/// This event is [cancellable][ICancellableEvent]. If the event is cancelled, the two vanilla methods described above
+/// will not be called. The remaining logic depends on the [cancellation result][#getCancellationResult()]:
+///
+///   - If it is `true`, then the container's logic halts, the carried item and the slot will not be swapped, and
+///     handling is assumed to have been done by the mod.
+///   - If it is `false`, vanilla processing continues except for the two vanilla methods mentioned above.
 public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent {
     private final ItemStack carriedItem;
     private final ItemStack stackedOnItem;
@@ -38,6 +40,8 @@ public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent 
     private final ClickAction action;
     private final Player player;
     private final SlotAccess carriedSlotAccess;
+    // Default to true to skip vanilla processing
+    private boolean cancelResult = true;
 
     @ApiStatus.Internal
     public ItemStackedOnOtherEvent(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
@@ -89,5 +93,19 @@ public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent 
      */
     public SlotAccess getCarriedSlotAccess() {
         return carriedSlotAccess;
+    }
+
+    /// Sets the cancellation result of this event, which is used to determine further processing of the click when this
+    /// event is [cancelled][#setCanceled(boolean)]. See the javadocs of this class for more details.
+    ///
+    /// @param cancelResult the cancel result
+    public void setCancellationResult(boolean cancelResult) {
+        this.cancelResult = cancelResult;
+    }
+
+    /// {@return the cancellation result}. This is used only when the event is [cancelled][#setCanceled(boolean)]; see
+    /// the javadocs of this class for more details.
+    public boolean getCancellationResult() {
+        return this.cancelResult;
     }
 }
