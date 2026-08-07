@@ -1,7 +1,6 @@
 modLoader="javafml"
 loaderVersion="[3,]"
 issueTrackerURL="https://github.com/neoforged/NeoForge/issues"
-logoFile="neoforged_logo.png"
 license="LGPL v2.1"
 
 [[mods]]
@@ -10,11 +9,12 @@ license="LGPL v2.1"
     version="${version}"
     #updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
     displayName="NeoForge"
-    credits="Anyone who has contributed on Github and supports our development"
+    credits="Everyone who contributed on GitHub and supports our development"
     authors="The NeoForged Team"
-    description='''
-    NeoForge, a NEW broad compatibility API.
-    '''
+    description="A free, open-source, community-oriented modding API for Minecraft: Java Edition."
+    displayURL="https://neoforged.net"
+    bannerFile="neoforged_logo.png"
+    iconFile="neoforged_icon.png"
 
 [[mixins]]
     config = "neoforge.mixins.json"
