@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -59,20 +_,22 @@
+@@ -59,20 +_,27 @@
          PoseStack poseStack = new PoseStack();
          Player player = this.minecraft.player;
          if (isFirstPerson && !isSleeping) {
@@ -18,6 +18,11 @@
                  if (this.minecraft.player.isEyeInFluid(FluidTags.WATER)) {
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, submitNodeCollector))
                      submitWater(this.minecraft, poseStack, submitNodeCollector);
++                } else {
++                    var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
++                    if (!fluidType.isAir()) {
++                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, submitNodeCollector);
++                    }
                  }
  
                  if (this.minecraft.player.isOnFire()) {
