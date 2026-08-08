@@ -12,13 +12,11 @@ import java.util.Objects;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforgespi.language.IModFileInfo;
-import net.neoforged.neoforgespi.locating.IModFile;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -124,29 +122,15 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return null;
     }
 
-    /// Converts a given path string into an [ImageResource].
-    ///
-    /// The logic for converting a path is as follows, in order:
-    /// - If the path contains a pound sign (`#`), it is taken as a [root resource][ImageResource#packRoot(String, String)] with the parts before and after the pound sign taken as the pack ID and the resource path, respectively.
-    /// - If the path has a colon (`:`), is it taken as a [pack asset][ImageResource#packAsset(Identifier)].
-    /// - Otherwise, it is assumed to be a root resource with the mod's resource pack as determined by [ResourcePackLoader#getPackName(IModFile)].
+    /// Converts a given path string into an [ImageResource], using this mod's resource pack for unqualified root paths.
     ///
     /// @param path the path to convert
     /// @return the image resource
+    /// @see ImageResource#fromPath(String, String)
     public ImageResource convertPath(String path) {
-        if (path.indexOf('#') > 0) {
-            // Contains a pound sign -- it's a root resource, with parts of "<pack ID>#<path>"
-            String[] split = path.split("#", 2);
-            return ImageResource.packRoot(split[0], split[1]);
-        } else if (path.indexOf(Identifier.NAMESPACE_SEPARATOR) > 0) {
-            // Contains a colon, therefore an identifier -- it's a pack resource
-            return ImageResource.packAsset(Identifier.parse(path));
-        } else {
-            // It's a root resource; get from the mod's resource pack
-            IModFileInfo modFileInfo = ModList.get().getModFileById(id());
-            String packId = ResourcePackLoader.getPackName(modFileInfo.getFile());
-            return ImageResource.packRoot(packId, path);
-        }
+        IModFileInfo modFileInfo = ModList.get().getModFileById(id());
+        String packId = ResourcePackLoader.getPackName(modFileInfo.getFile());
+        return ImageResource.fromPath(path, packId);
     }
 
     /// {@inheritDoc} This uses the `displayURL` or, if not available, the `modUrl` key from the mod info.

@@ -89,7 +89,8 @@ public class ModListScreen extends Screen {
     private static final int SIDEBAR_MODS_LIST_WIDTH = 150;
     static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
-    static final int ICON_SIZE = 24;
+    static final int ICON_SIZE = 16;
+    private static final int MOD_ENTRY_HEIGHT = 28;
     static final int BANNER_HEIGHT = 50;
 
     private final @Nullable Screen lastScreen;
@@ -224,6 +225,9 @@ public class ModListScreen extends Screen {
         this.displayPanel = new ModInfoPanel(INFO_PANEL_WIDTH, this.layout.getContentHeight());
         main.addChild(this.displayPanel.getMainLayout());
 
+        for (ModsList.Entry entry : this.allEntries) {
+            entry.close();
+        }
         this.allEntries.clear();
         for (ModDisplayInfo mod : mods) {
             this.allEntries.add(this.displayList.new Entry(this.versionCheck.get(mod.id()), mod));
@@ -249,11 +253,8 @@ public class ModListScreen extends Screen {
 
     @Override
     public void onClose() {
-        final TextureManager textureManager = this.minecraft.getTextureManager();
         for (ModsList.Entry entry : this.allEntries) {
-            if (entry.iconData != null) {
-                textureManager.release(entry.iconData.sprite);
-            }
+            entry.close();
         }
         assert this.displayPanel != null;
         this.displayPanel.close();
@@ -310,8 +311,8 @@ public class ModListScreen extends Screen {
     private class ModsList extends ObjectSelectionList<ModsList.Entry> {
         public ModsList(int height) {
             // minecraft, width, height, y, itemHeight
-            super(ModListScreen.this.minecraft, SIDEBAR_MODS_LIST_WIDTH, height, 0, ICON_SIZE + 4);
-            // 24 pixels for the icon, 4 pixels padding for top and bottom (2 pixels each)
+            super(ModListScreen.this.minecraft, SIDEBAR_MODS_LIST_WIDTH, height, 0, MOD_ENTRY_HEIGHT);
+            // 24 pixels for the two text lines, 4 pixels padding for top and bottom (2 pixels each)
         }
 
         @Override
@@ -352,17 +353,16 @@ public class ModListScreen extends Screen {
             private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
             final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
-            @Nullable
-            final ImageData iconData;
+            final ModListIcon icon;
 
             Entry(VersionChecker.@Nullable CheckResult checkResult, ModDisplayInfo displayInfo) {
                 this.checkResult = checkResult;
                 this.displayInfo = displayInfo;
-                if (displayInfo.icon() != null) {
-                    this.iconData = ModListScreen.this.loadImage("icon", displayInfo.id(), Objects.requireNonNull(displayInfo.icon()));
-                } else {
-                    this.iconData = null;
-                }
+                this.icon = new ModListIcon(ModListScreen.this.minecraft, displayInfo);
+            }
+
+            void close() {
+                icon.close();
             }
 
             @Override
@@ -376,8 +376,21 @@ public class ModListScreen extends Screen {
                 int top = this.getContentY();
                 int textLeft = left + 2;
 
+                ModListIcon.Data iconData = icon.data();
                 if (iconData != null) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, iconData.sprite, left, top, 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+                    graphics.blit(
+                            RenderPipelines.GUI_TEXTURED,
+                            iconData.sprite(),
+                            left,
+                            top + 4,
+                            0.0F,
+                            0.0F,
+                            ICON_SIZE,
+                            ICON_SIZE,
+                            iconData.width(),
+                            iconData.height(),
+                            iconData.width(),
+                            iconData.height());
                     textLeft += ICON_SIZE + 4;
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
@@ -633,8 +646,8 @@ public class ModListScreen extends Screen {
                 } else {
                     this.bannerData = loadImage("banner", displayInfo.id(), bannerResource);
                     if (this.bannerData != null) {
-                        float widthScaleFactor = Math.min(1F, (float) this.width / this.bannerData.width());
-                        float heightScaleFactor = Math.min(1F, (float) BANNER_HEIGHT / this.bannerData.height());
+                        float widthScaleFactor = (float) this.width / this.bannerData.width();
+                        float heightScaleFactor = (float) BANNER_HEIGHT / this.bannerData.height();
                         float scaleFactor = Math.min(widthScaleFactor, heightScaleFactor);
                         int bannerWidth = (int) (this.bannerData.width() * scaleFactor);
                         int bannerHeight = (int) (this.bannerData.height() * scaleFactor);
