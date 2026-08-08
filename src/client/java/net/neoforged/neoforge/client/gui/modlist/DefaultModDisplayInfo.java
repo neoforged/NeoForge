@@ -127,10 +127,8 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
     /// {@inheritDoc} This uses the `iconBlur` key of the mod info or, if not available, the mod file info.
     @Override
     public boolean iconBlur() {
-        return container.getModInfo().getConfig().<Object>getConfigElement("iconBlur")
+        return container.getModInfo().getConfig().<Boolean>getConfigElement("iconBlur")
                 .or(() -> container.getModInfo().getOwningFile().getConfig().getConfigElement("iconBlur"))
-                .filter(Boolean.class::isInstance)
-                .map(Boolean.class::cast)
                 .orElse(false);
     }
 

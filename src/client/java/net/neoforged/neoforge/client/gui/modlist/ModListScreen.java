@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
@@ -227,9 +226,6 @@ public class ModListScreen extends Screen {
         this.displayPanel = new ModInfoPanel(INFO_PANEL_WIDTH, this.layout.getContentHeight());
         main.addChild(this.displayPanel.getMainLayout());
 
-        for (ModsList.Entry entry : this.allEntries) {
-            entry.close();
-        }
         this.allEntries.clear();
         for (ModDisplayInfo mod : mods) {
             this.allEntries.add(this.displayList.new Entry(this.versionCheck.get(mod.id()), mod));
@@ -255,8 +251,11 @@ public class ModListScreen extends Screen {
 
     @Override
     public void onClose() {
+        final TextureManager textureManager = this.minecraft.getTextureManager();
         for (ModsList.Entry entry : this.allEntries) {
-            entry.close();
+            if (entry.iconData != null) {
+                textureManager.release(entry.iconData.sprite);
+            }
         }
         assert this.displayPanel != null;
         this.displayPanel.close();
@@ -308,8 +307,7 @@ public class ModListScreen extends Screen {
         textureManager.register(sprite, new DynamicTexture(sprite::toString, image) {
             @Override
             public void upload() {
-                var filter = blurred ? FilterMode.LINEAR : FilterMode.NEAREST;
-                sampler = RenderSystem.getSamplerCache().getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, filter, filter, false);
+                sampler = RenderSystem.getSamplerCache().getClampToEdge(blurred ? FilterMode.LINEAR : FilterMode.NEAREST);
                 super.upload();
             }
         });
@@ -362,18 +360,16 @@ public class ModListScreen extends Screen {
             private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
             final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
-            final @Nullable ImageData iconData;
+            @Nullable
+            final ImageData iconData;
 
             Entry(VersionChecker.@Nullable CheckResult checkResult, ModDisplayInfo displayInfo) {
                 this.checkResult = checkResult;
                 this.displayInfo = displayInfo;
-                ImageResource icon = displayInfo.icon();
-                this.iconData = icon == null ? null : ModListScreen.this.loadImage("icon", displayInfo.id(), icon, displayInfo.iconBlur());
-            }
-
-            void close() {
-                if (iconData != null) {
-                    ModListScreen.this.minecraft.getTextureManager().release(iconData.sprite());
+                if (displayInfo.icon() != null) {
+                    this.iconData = ModListScreen.this.loadImage("icon", displayInfo.id(), Objects.requireNonNull(displayInfo.icon()), displayInfo.iconBlur());
+                } else {
+                    this.iconData = null;
                 }
             }
 
@@ -389,19 +385,7 @@ public class ModListScreen extends Screen {
                 int textLeft = left + 2;
 
                 if (iconData != null) {
-                    graphics.blit(
-                            RenderPipelines.GUI_TEXTURED,
-                            iconData.sprite(),
-                            left,
-                            top,
-                            0.0F,
-                            0.0F,
-                            ICON_SIZE,
-                            ICON_SIZE,
-                            iconData.width(),
-                            iconData.height(),
-                            iconData.width(),
-                            iconData.height());
+                    graphics.blit(iconData.sprite, left, top, left + ICON_SIZE, top + ICON_SIZE, 0.0F, 1.0F, 0.0F, 1.0F);
                     textLeft += ICON_SIZE + 4;
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
