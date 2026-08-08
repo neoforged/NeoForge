@@ -29,7 +29,7 @@
 -            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
 +            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, net.minecraft.util.CommonColors.WHITE)) // Neo: Re-align coordinates the same way as vanilla extractText does
 +            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
-+            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE)) // Neo: Re-align coordinates the same way as vanilla extractText does
++            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE)) // Neo: Re-align coordinates the same way as vanilla call to blitSprite
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
