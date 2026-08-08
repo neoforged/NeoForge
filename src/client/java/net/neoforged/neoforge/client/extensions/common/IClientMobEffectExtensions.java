@@ -26,17 +26,15 @@ public interface IClientMobEffectExtensions {
         return ClientExtensionsManager.MOB_EFFECT_EXTENSIONS.getOrDefault(effect, DEFAULT);
     }
 
-    /// {@return whether the given effect should be shown in the player's inventory}
+    /// @return whether the given effect should be shown in the player's inventory.
     /// By default, this returns `true`.
     default boolean isVisibleInInventory(MobEffectInstance instance) {
         return true;
     }
 
-    /// Queries whether the given effect should be shown in the HUD.
-    ///
-    /// By default, this returns `true`
-    /// {@return whether the given effect should be shown in the HUD}
+    /// @return whether the given effect should be shown in the HUD.
     /// By default, this returns `true`.
+    default boolean isVisibleInGui(MobEffectInstance instance) {
         return true;
     }
 
@@ -56,7 +54,7 @@ public interface IClientMobEffectExtensions {
     }
 
     /// Renders the text of the specified effect in the player's inventory.
-	///
+    ///
     /// @param instance    The effect instance
     /// @param screen      The effect-rendering screen
     /// @param graphics    The gui graphics
