@@ -216,6 +216,7 @@
   "neoforge.swim_speed": "Schwimmgeschwindigkeit",
   "neoforge.name_tag_distance": "Namensschild-Renderdistanz",
   "neoforge.creative_flight": "Kreativmodus-Flug",
+  "neoforge.gliding_flight": "Gliding Flight",
   "fluid_type.minecraft.milk": "Milch",
   "fluid_type.minecraft.flowing_milk": "Milch",
   "neoforge.froge.warningScreen.title": "Information zu NeoForge-Snapshots",

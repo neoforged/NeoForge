@@ -347,6 +347,15 @@
              Profiler.get().pop();
          }
      }
+@@ -906,7 +_,7 @@
+     private void extractAirBubbles(GuiGraphicsExtractor graphics, Player player, int vehicleHearts, int yLineAir, int xRight) {
+         int maxAirSupplyTicks = player.getMaxAirSupply();
+         int currentAirSupplyTicks = Math.clamp(player.getAirSupply(), 0, maxAirSupplyTicks);
+-        boolean isUnderWater = player.isEyeInFluid(FluidTags.WATER);
++        boolean isUnderWater = player.getFluidInteraction().isEyeInFluidMatching(player, (e, type, _) -> e.canDrownInFluidType(type));
+         if (isUnderWater || currentAirSupplyTicks < maxAirSupplyTicks) {
+             yLineAir = this.getAirBubbleYLine(vehicleHearts, yLineAir);
+             int fullAirBubbles = getCurrentAirSupplyBubble(currentAirSupplyTicks, maxAirSupplyTicks, -2);
 @@ -930,6 +_,8 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }

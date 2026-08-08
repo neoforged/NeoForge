@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.platform.Transparency;
+import com.mojang.math.MatrixUtil;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
@@ -34,8 +35,10 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry;
 import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
+import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
@@ -308,7 +311,15 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         return Collections.unmodifiableCollection(parts.values());
     }
 
-    private Pair<BakedQuad, @Nullable Direction> makeQuad(ModelBaker baker, int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, Material.Baked material, Transparency transparency, Transformation transform) {
+    private Pair<BakedQuad, @Nullable Direction> makeQuad(
+            ModelBaker baker,
+            int[][] indices,
+            int tintIndex,
+            Vector4f colorTint,
+            Vector4f ambientColor,
+            Material.Baked material,
+            Transparency transparency,
+            ModelState modelState) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
             needsNormalRecalculation |= ints.length < 3;
@@ -340,12 +351,15 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             quadBaker.setShade(shadeQuads);
         }
 
+        Transformation transform = modelState.transformation();
         boolean hasTransform = !transform.isIdentity();
         // The incoming transform is referenced on the center of the block, but our coords are referenced on the corner
         Transformation transformation = hasTransform ? transform.blockCenterToCorner() : transform;
 
         Vector4f[] pos = new Vector4f[4];
         Vector3f[] norm = new Vector3f[4];
+        Vector3f uv = new Vector3f();
+        Matrix4fc uvTransform = null;
 
         for (int i = 0; i < 4; i++) {
             int[] index = indices[Math.min(i, indices.length - 1)];
@@ -359,6 +373,11 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
                 transformation.transformPosition(position);
                 transformation.transformNormal(normal);
             }
+            if (i == 0) {
+                Direction normalDir = Direction.getApproximateNearest(normal.x(), normal.y(), normal.z());
+                quadBaker.setDirection(normalDir);
+                uvTransform = modelState.inverseFaceTransformation(normalDir);
+            }
             Vector4f tintedColor = new Vector4f(
                     color.x() * colorTint.x(),
                     color.y() * colorTint.y(),
@@ -366,13 +385,16 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
                     color.w() * colorTint.w());
             quadBaker.addVertex(position.x(), position.y(), position.z());
             quadBaker.setColor(tintedColor.x(), tintedColor.y(), tintedColor.z(), tintedColor.w());
-            quadBaker.setUv(
-                    material.sprite().getU(texCoord.x),
-                    material.sprite().getV((flipV ? 1 - texCoord.y : texCoord.y)));
-            quadBaker.setNormal(normal.x(), normal.y(), normal.z());
-            if (i == 0) {
-                quadBaker.setDirection(Direction.getApproximateNearest(normal.x(), normal.y(), normal.z()));
+            float u = texCoord.x;
+            float v = flipV ? 1 - texCoord.y : texCoord.y;
+            if (!MatrixUtil.isIdentity(uvTransform)) {
+                uv.set(u - .5F, v - .5F, 0);
+                uvTransform.transformPosition(uv, uv);
+                u = uv.x + .5F;
+                v = uv.y + .5F;
             }
+            quadBaker.setUv(material.sprite().getU(u), material.sprite().getV(v));
+            quadBaker.setNormal(normal.x(), normal.y(), normal.z());
             pos[i] = position;
             norm[i] = normal;
         }
@@ -496,9 +518,9 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             Vector4f colorTint = mat.diffuseColor;
 
             var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
-            var transform = rootTransform.isIdentity() ? state.transformation() : state.transformation().compose(rootTransform);
+            state = UnbakedElementsHelper.composeRootTransformIntoModelState(state, rootTransform);
             for (int[][] face : faces) {
-                Pair<BakedQuad, @Nullable Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, transform);
+                Pair<BakedQuad, @Nullable Direction> quad = makeQuad(baker, face, tintIndex, colorTint, mat.ambientColor, texture, transparency, state);
                 if (quad.getRight() == null)
                     builder.addUnculledFace(quad.getLeft());
                 else
