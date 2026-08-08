@@ -122,6 +122,16 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
         return null;
     }
 
+    /// {@inheritDoc} This uses the `iconBlur` key of the mod info or, if not available, the mod file info.
+    @Override
+    public boolean iconBlur() {
+        return container.getModInfo().getConfig().<Object>getConfigElement("iconBlur")
+                .or(() -> container.getModInfo().getOwningFile().getConfig().getConfigElement("iconBlur"))
+                .filter(Boolean.class::isInstance)
+                .map(Boolean.class::cast)
+                .orElse(false);
+    }
+
     /// Converts a given path string into an [ImageResource], using this mod's resource pack for unqualified root paths.
     ///
     /// @param path the path to convert
