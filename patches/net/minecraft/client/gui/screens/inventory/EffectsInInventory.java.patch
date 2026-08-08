@@ -27,9 +27,9 @@
              Component duration = MobEffectUtil.formatDuration(effect, 1.0F, this.minecraft.level.tickRateManager().tickrate());
              int textureWidth = this.extractBackground(graphics, font, effectText, duration, x0, y0, isAmbient, maxWidth);
 -            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
-+            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, -1))
++            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, net.minecraft.util.CommonColors.WHITE))
 +            this.renderText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
-+            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, -1))
++            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE))
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
