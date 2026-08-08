@@ -89,7 +89,7 @@ public class ModListScreen extends Screen {
     private static final int SIDEBAR_MODS_LIST_WIDTH = 150;
     static final int INFO_PANEL_WIDTH = 250;
     private static final int INFO_PANEL_FRAME_PADDING = 2;
-    static final int ICON_SIZE = 16;
+    static final int ICON_SIZE = 24;
     private static final int MOD_ENTRY_HEIGHT = 28;
     static final int BANNER_HEIGHT = 50;
 
@@ -382,7 +382,7 @@ public class ModListScreen extends Screen {
                             RenderPipelines.GUI_TEXTURED,
                             iconData.sprite(),
                             left,
-                            top + 4,
+                            top,
                             0.0F,
                             0.0F,
                             ICON_SIZE,
