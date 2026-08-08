@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/Container.java
++++ b/net/minecraft/world/Container.java
+@@ -99,7 +_,7 @@
+         if (level == null) {
+             return false;
+         } else {
+-            return level.getBlockEntity(worldPosition) != blockEntity ? false : player.isWithinBlockInteractionRange(worldPosition, distanceBuffer);
++            return level.getBlockEntity(worldPosition) != blockEntity ? false : net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, level, worldPosition, distanceBuffer);
+         }
+     }
+ 
