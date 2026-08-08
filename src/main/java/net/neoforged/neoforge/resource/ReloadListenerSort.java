@@ -9,19 +9,11 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.MutableGraph;
 import com.google.common.graph.Traverser;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.neoforged.fml.loading.toposort.CyclePresentException;
-import net.neoforged.fml.loading.toposort.TopologicalSort;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.SortedReloadListenerEvent;
 import net.neoforged.neoforge.event.SortedReloadListenerEvent.NameLookup;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,46 +52,7 @@ public class ReloadListenerSort {
             }
         }
 
-        // Then build the index mapping in a way that can be used as a comparator to preserve insertion order.
-        Object2IntMap<PreparableReloadListener> insertionOrder = new Object2IntOpenHashMap<>();
-        int idx = 0;
-        for (PreparableReloadListener listener : registry.values()) {
-            insertionOrder.put(listener, idx++);
-        }
-
-        // Then do the sort.
-        try {
-            List<PreparableReloadListener> sorted = TopologicalSort.topologicalSort(graph, Comparator.comparingInt(insertionOrder::getInt));
-            return Collections.unmodifiableList(sorted);
-        } catch (CyclePresentException ex) {
-            // If a cycle is found, we have to transform the information in the exception back into the registered keys.
-            Set<Set<PreparableReloadListener>> cycles = ex.getCycles();
-            Set<Set<Identifier>> keyedCycles = cycles.stream().map(set -> {
-                return set.stream().map(lookup::apply).collect(Collectors.toCollection(LinkedHashSet::new));
-            }).collect(Collectors.toSet());
-
-            // Finally, build a real error message and re-throw.
-            StringBuilder sb = new StringBuilder();
-            sb.append("Cycles were detected during reload listener sorting:").append('\n');
-
-            idx = 0;
-            for (Set<Identifier> cycle : keyedCycles) {
-                StringBuilder msg = new StringBuilder();
-
-                msg.append(idx++).append(": ");
-
-                for (Identifier key : cycle) {
-                    msg.append(key).append("->");
-                }
-
-                msg.append(cycle.iterator().next());
-
-                sb.append(msg);
-                sb.append('\n');
-            }
-
-            throw new IllegalArgumentException(sb.toString());
-        }
+        return CommonHooks.sortGraphChecked(graph, registry.values(), "reload listener", lookup);
     }
 
     /**

@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -47,14 +46,14 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
         BlockPos targetPos = source.pos().relative(dispenserFacing);
 
         // First try to pick up fluid in front of the dispenser, then try to drain a filled container and place the fluid in front of the dispenser
-        if (!FluidUtil.tryPickupFluid(resourceHandler, null, source.level(), targetPos, dispenserFacing.getOpposite()).isEmpty()
-                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), InteractionHand.MAIN_HAND, targetPos).isEmpty()) {
+        if (!FluidUtil.tryPickupFluid(resourceHandler, null, source.level(), targetPos, dispenserFacing.getOpposite(), null).isEmpty()
+                || !FluidUtil.tryPlaceFluid(resourceHandler, null, source.level(), targetPos, false, null).isEmpty()) {
             var stack0 = ItemUtil.getStack(containingHandler, 0);
             var stack1 = ItemUtil.getStack(containingHandler, 1);
 
             // Grow by 1 to match the shrink in consumeWithRemainder
             stack0.grow(1);
-            return this.consumeWithRemainder(source, stack, stack1);
+            return this.consumeWithRemainder(source, stack0, stack1);
         } else {
             return super.execute(source, stack);
         }

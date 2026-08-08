@@ -45,6 +45,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
@@ -810,5 +811,15 @@ public interface IBlockStateExtension {
      */
     default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
         return self().getBlock().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
+    }
+
+    /// Declares whether a block may be relocated and under what circumstances.
+    ///
+    /// @param level LevelReader where this blockstate is being relocated from
+    /// @param pos BlockPos of this blockstate being relocated
+    /// @return BlockRelocability declaring whether the block may be relocated
+    /// @see IBlockExtension#getRelocability
+    default BlockRelocability getRelocability(LevelReader level, BlockPos pos) {
+        return self().getBlock().getRelocability(level, pos, self());
     }
 }

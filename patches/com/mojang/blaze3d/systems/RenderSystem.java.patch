@@ -8,6 +8,14 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
+@@ -121,6 +_,7 @@
+ 
+         dynamicUniforms.reset();
+         Minecraft.getInstance().levelRenderer.endFrame();
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.FlipFrameEvent());
+     }
+ 
+     public static void setShaderFog(GpuBufferSlice fog) {
 @@ -379,4 +_,38 @@
      @OnlyIn(Dist.CLIENT)
      record GpuAsyncTask(Runnable callback, GpuFence fence) {
