@@ -282,10 +282,10 @@ public class CommonHooks {
      * @param action            The click action being performed
      * @param player            The player who clicked the slot
      * @param carriedSlotAccess A slot access permitting changing the carried item.
-     * @return True if the event was cancelled, indicating that a mod has handled the click; false otherwise
+     * @return the event itself
      */
-    public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
-        return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
+    public static ItemStackedOnOtherEvent onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
+        return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess));
     }
 
     public static void onDifficultyChange(Difficulty difficulty, Difficulty oldDifficulty) {
