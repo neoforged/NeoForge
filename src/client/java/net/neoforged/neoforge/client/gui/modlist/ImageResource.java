@@ -17,7 +17,6 @@ import org.jspecify.annotations.Nullable;
 
 /// An image resource. This is primarily used for [mod display info][ModDisplayInfo].
 ///
-/// @see #fromPath(String, String)
 /// @see #packRoot(String, String)
 /// @see #packAsset(Identifier)
 public sealed interface ImageResource {
@@ -27,27 +26,6 @@ public sealed interface ImageResource {
     /// @return the supplier for the image bytes
     @Nullable
     IoSupplier<InputStream> get(ResourceManager resourceManager);
-
-    /// Converts a path string into an image resource.
-    ///
-    /// The path is resolved as follows, in order:
-    /// - A path containing a pound sign (`#`) uses the text before it as a pack ID and the text after it as a root path.
-    /// - A path containing a colon (`:`) is treated as a pack asset identifier.
-    /// - Any other path is treated as a root path in the given default pack.
-    ///
-    /// @param path          the path to convert
-    /// @param defaultPackId the pack ID used for an unqualified root path
-    /// @return the resolved image resource
-    static ImageResource fromPath(String path, String defaultPackId) {
-        if (path.indexOf('#') > 0) {
-            String[] split = path.split("#", 2);
-            return packRoot(split[0], split[1]);
-        } else if (path.indexOf(Identifier.NAMESPACE_SEPARATOR) > 0) {
-            return packAsset(Identifier.parse(path));
-        } else {
-            return packRoot(defaultPackId, path);
-        }
-    }
 
     /// Creates an image resource that exists within a specific pack and path.
     ///
