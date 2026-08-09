@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/TurtleEggBlock.java
++++ b/net/minecraft/world/level/block/TurtleEggBlock.java
+@@ -166,7 +_,7 @@
+         } else if (entity instanceof Player player) {
+             return !level.getServer().isUnderSpawnProtection(level, pos, player);
+         } else {
+-            return entity instanceof LivingEntity ? level.getGameRules().get(GameRules.MOB_GRIEFING) : false;
++            return entity instanceof LivingEntity ? net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, entity) : false;
+         }
+     }
+ }

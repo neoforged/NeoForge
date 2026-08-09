@@ -1,5 +1,37 @@
 --- a/net/minecraft/world/level/biome/Biome.java
 +++ b/net/minecraft/world/level/biome/Biome.java
+@@ -38,9 +_,9 @@
+ public final class Biome {
+     public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
+         i -> i.group(
+-                Biome.ClimateSettings.CODEC.forGetter(b -> b.climateSettings),
++                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
+                 EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
+-                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.specialEffects),
++                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // FORGE: Patch codec to ignore field redirect coremods.
+                 BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
+             )
+             .apply(i, Biome::new)
+@@ -70,9 +_,11 @@
+     @Deprecated(forRemoval = true)
+     public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
+     private static final int TEMPERATURE_CACHE_SIZE = 1024;
++    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
+     private final Biome.ClimateSettings climateSettings;
+     private final BiomeGenerationSettings generationSettings;
+     private final EnvironmentAttributeMap attributes;
++    /// Neo: Field accesses are redirected to [#getModifiedSpecialEffects()] with a coremod.
+     private final BiomeSpecialEffects specialEffects;
+     private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
+         Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
+@@ -94,6 +_,7 @@
+         this.attributes = attributes;
+         this.specialEffects = specialEffects;
+         this.generationSettings = generationSettings;
++        this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(climateSettings, specialEffects, generationSettings)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
+     }
+ 
+     public boolean hasPrecipitation() {
 @@ -195,7 +_,7 @@
      }
  

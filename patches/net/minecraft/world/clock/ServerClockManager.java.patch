@@ -5,7 +5,7 @@
              .lookupOrThrow(Registries.WORLD_CLOCK)
              .listElements()
 -            .forEach(definition -> this.clocks.put(definition, new ServerClockManager.ServerClockInstance()));
-+            .forEach(definition -> this.clocks.put(definition, new ServerClockManager.ClockInstance(definition)));
++            .forEach(definition -> this.clocks.put(definition, new ServerClockManager.ServerClockInstance(definition)));
          server.registryAccess()
              .lookupOrThrow(Registries.TIMELINE)
              .listElements()
@@ -52,13 +52,13 @@
          private boolean paused;
 +        private final @org.jspecify.annotations.Nullable Holder<WorldClock> holder;
 +
-+        public ClockInstance(Holder<WorldClock> holder) {
++        public ServerClockInstance(Holder<WorldClock> holder) {
 +            this.holder = holder;
 +        }
 +
-+        /// @deprecated Neo: Use [#ClockInstance(Holder)] instead
++        /// @deprecated Neo: Use [#ServerClockInstance(Holder)] instead
 +        @Deprecated
-+        public ClockInstance() {
++        public ServerClockInstance() {
 +            holder = null;
 +        }
  

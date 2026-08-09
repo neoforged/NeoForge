@@ -1,5 +1,41 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
+@@ -30,12 +_,33 @@
+ public class FlowerPotBlock extends Block {
+     private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
+     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
++    /// Neo: Field accesses are redirected to [#getPotted()] with a coremod.
+     private final Block potted;
+ 
++    /// @deprecated Neo: use [#FlowerPotBlock()] instead
++    @Deprecated
+     public FlowerPotBlock(Block potted, BlockBehaviour.Properties properties) {
++        this(Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT, () -> potted, properties);
++        if (Blocks.FLOWER_POT != null) {
++            ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(potted), () -> this);
++        }
++    }
++
++    /// For mod use, eliminates the need to extend this class, and prevents modded
++    /// flower pots from altering vanilla behavior.
++    ///
++    /// @param emptyPot The empty pot for this pot, or null for self.
++    public FlowerPotBlock(java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
+         super(properties);
+-        this.potted = potted;
+-        POTTED_BY_CONTENT.put(potted, this);
++        this.potted = null; // Unused, redirected by coremod
++        this.flowerDelegate = potted;
++        if (emptyPot == null) {
++            this.fullPots = Maps.newHashMap();
++            this.emptyPot = null;
++        } else {
++            this.fullPots = java.util.Collections.emptyMap();
++            this.emptyPot = emptyPot;
++        }
+     }
+ 
+     @Override
 @@ -48,7 +_,7 @@
          ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult
      ) {
@@ -9,6 +45,15 @@
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
+@@ -77,7 +_,7 @@
+             player.drop(plant, false, Prediction.PREDICTED);
+         }
+ 
+-        level.setBlockAndUpdate(pos, Blocks.FLOWER_POT.defaultBlockState());
++        level.setBlockAndUpdate(pos, getEmptyPot().defaultBlockState());
+         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+         return InteractionResult.SUCCESS;
+     }
 @@ -108,12 +_,44 @@
      }
  

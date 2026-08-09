@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -123,7 +152,7 @@
-         long[] carvingMask = chunkData.getLongArray("carving_mask").orElse(null);
-         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
-         chunkData.getCompound("Heightmaps").ifPresent(heightmapsTag -> {
--            for (Heightmap.Types type : status.heightmapsAfter()) {
-+            for (Heightmap.Types type : status.getChunkSaveHeightmaps()) {
-                 heightmapsTag.getLongArray(type.getSerializationKey()).ifPresent(longs -> heightmaps.put(type, longs));
-             }
-         });
 @@ -284,7 +321,7 @@
          chunk.setLightCorrect(this.lightCorrect);
          EnumSet<Heightmap.Types> toPrime = EnumSet.noneOf(Heightmap.Types.class);

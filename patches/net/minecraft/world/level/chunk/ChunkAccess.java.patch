@@ -1,9 +1,26 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -482,6 +_,83 @@
-         return this.skyLightSources;
+@@ -323,10 +_,14 @@
+ 
+     @Override
+     public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
+-        this.findBlocks(state -> state.getLightEmission() != 0, consumer);
++        this.findBlocks(state -> state.hasDynamicLightEmission() || state.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (state, pos) -> state.getLightEmission(this, pos) != 0, consumer);
      }
  
+     public void findBlocks(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
++        findBlocks(predicate, (state, _) -> predicate.test(state), consumer);
++    }
++
++    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
+         BlockStateConsumer blockStateConsumer = (pos, state) -> {
+             consumer.accept(pos, state);
+             return Continuation.CONTINUE;
+@@ -481,6 +_,83 @@
+     public ChunkSkyLightSources getSkyLightSources() {
+         return this.skyLightSources;
+     }
++
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +
@@ -80,7 +97,6 @@
 +
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
 +    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
-+
+ 
      public static ProblemReporter.PathElement problemPath(ChunkPos pos) {
          return new ChunkAccess.ChunkPathElement(pos);
-     }

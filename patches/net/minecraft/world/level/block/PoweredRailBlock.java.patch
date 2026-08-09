@@ -1,5 +1,26 @@
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
+@@ -15,8 +_,20 @@
+     public static final EnumProperty<RailShape> SHAPE = BlockStateProperties.RAIL_SHAPE_STRAIGHT;
+     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+ 
++    /// Neo: `true` for an activator rail, `false` for powered rail
++    private final boolean isActivator;
++
+     public PoweredRailBlock(BlockBehaviour.Properties properties) {
++        this(properties, false);
++    }
++
++    public PoweredRailBlock(BlockBehaviour.Properties properties, boolean isPoweredRail) {
+         super(true, properties);
++        this.isActivator = !isPoweredRail;
++        this.registerDefaultState();
++    }
++
++    protected void registerDefaultState() {
+         this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(POWERED, false).setValue(WATERLOGGED, false));
+     }
+ 
 @@ -29,7 +_,7 @@
          int y = pos.getY();
          int z = pos.getZ();

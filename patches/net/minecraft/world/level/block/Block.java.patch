@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
+@@ -79,7 +_,7 @@
+ public class Block extends BlockBehaviour implements ItemLike, IBlockExtension {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
+-    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
++    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
+     private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
+         .maximumSize(512L)
+         .weakKeys()
 @@ -229,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
@@ -97,6 +106,15 @@
 +    @Deprecated //Forge: Use more sensitive version
      public float getExplosionResistance() {
          return this.explosionResistance;
+     }
+@@ -463,6 +_,8 @@
+     public void bounceOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
+     }
+ 
++    /// @deprecated NeoForge: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)]
++    @Deprecated
+     public float getBounceRestitution() {
+         return this.bounceRestitution;
      }
 @@ -504,6 +_,7 @@
      public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {

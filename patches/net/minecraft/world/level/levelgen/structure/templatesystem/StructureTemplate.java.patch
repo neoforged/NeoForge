@@ -123,8 +123,8 @@
 +
 +    private void addEntitiesToWorld(ServerLevelAccessor level, BlockPos position, StructurePlaceSettings placementIn, ProblemReporter problemReporter) {
 +        for(StructureTemplate.StructureEntityInfo entityInfo : processEntityInfos(this, level, position, placementIn, this.entityInfoList)) {
-+            BlockPos blockpos = entityInfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
-+            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
++            BlockPos blockPos = entityInfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
++            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockPos)) {
                  CompoundTag tag = entityInfo.nbt.copy();
 -                Vec3 relativePos = transform(entityInfo.pos, mirror, rotation, pivot);
 -                Vec3 pos = relativePos.add(position.getX(), position.getY(), position.getZ());
@@ -132,6 +132,22 @@
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
+@@ -491,12 +_,12 @@
+                 }
+ 
+                 createEntityIgnoreException(problemReporter, level, tag).ifPresent(entity -> {
+-                    float yRot = entity.rotate(rotation);
+-                    yRot += entity.mirror(mirror) - entity.getYRot();
++                    float yRot = entity.rotate(placementIn.getRotation());
++                    yRot += entity.mirror(placementIn.getMirror()) - entity.getYRot();
+                     entity.snapTo(pos.x, pos.y, pos.z, yRot, entity.getXRot());
+                     entity.setYBodyRot(yRot);
+                     entity.setYHeadRot(yRot);
+-                    if (finalizeEntities && entity instanceof Mob mob) {
++                    if (placementIn.shouldFinalizeEntities() && entity instanceof Mob mob) {
+                         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos)), EntitySpawnReason.STRUCTURE, null);
+                     }
+ 
 @@ -811,7 +_,7 @@
  
      public static final class Palette {
