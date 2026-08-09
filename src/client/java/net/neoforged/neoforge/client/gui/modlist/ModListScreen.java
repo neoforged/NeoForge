@@ -553,7 +553,7 @@ public class ModListScreen extends Screen {
                 case ClickEvent.OpenUrl(URI uri) -> ConfirmLinkScreen.confirmLinkNow(ModListScreen.this, uri);
                 case ClickEvent.OpenFile openFile -> Util.getPlatform().openFile(openFile.file());
                 case ClickEvent.CopyToClipboard(String value) -> minecraft.keyboardHandler.setClipboard(value);
-                default -> LOGGER.error("Don't know how to handle {}", event);
+                default -> LOGGER.error("Unable to handle click event ‘{}’", event);
             }
         }
 
