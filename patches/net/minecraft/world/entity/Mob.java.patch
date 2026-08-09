@@ -81,6 +81,16 @@
          return attributeModifiers.compute(attribute, baseValue, slot);
      }
  
+@@ -686,6 +_,9 @@
+ 
+     @Override
+     public void checkDespawn() {
++        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) {
++            return;
++        }
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
+             this.discard();
+         } else {
 @@ -1082,6 +_,11 @@
          }
      }
@@ -109,7 +119,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }
-@@ -1403,12 +_,22 @@
+@@ -1403,14 +_,24 @@
      }
  
      @Override
@@ -125,11 +135,49 @@
          } else {
              this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.3, 0.0));
          }
-+    }
-+
+     }
+ 
 +    @Override
 +    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
 +        this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
-     }
- 
++    }
++
      @VisibleForTesting
+     public void removeFreeWill() {
+         this.removeAllGoals(goal -> true);
+@@ -1485,5 +_,35 @@
+ 
+     public void swing(InteractionHand hand, SwingAnimation animation) {
+         this.swing(hand, animation, false);
++    }
++
++    /// {@return the type of spawn that created this mob, if applicable}
++    /// If it could not be determined, this will return null.
++    ///
++    /// This is set via [Mob#finalizeSpawn], so you should not call this from within that method, instead using the parameter.
++    @Nullable
++    public final EntitySpawnReason getSpawnType() {
++        return this.spawnType;
++    }
++
++    /// This method exists so that spawns can be canceled from the [`FinalizeSpawnEvent`][net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent]
++    /// without needing to hook up an additional handler for the [`EntityJoinLevelEvent`][net.neoforged.neoforge.event.entity.EntityJoinLevelEvent].
++    /// @return if this mob will be blocked from spawning during [Level#addFreshEntity(Entity)]
++    /// @apiNote Not public-facing API.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final boolean isSpawnCancelled() {
++        return this.spawnCancelled;
++    }
++
++    /// Marks this mob as being disallowed to spawn during [Level#addFreshEntity(Entity)].
++    ///
++    /// @throws UnsupportedOperationException if this entity has already been [Entity#isAddedToLevel()] added to the level.
++    /// @apiNote Not public-facing API.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void setSpawnCancelled(boolean cancel) {
++        if (this.isAddedToLevel()) {
++            throw new UnsupportedOperationException("Late invocations of Mob#setSpawnCancelled are not permitted.");
++        }
++        this.spawnCancelled = cancel;
+     }
+ }

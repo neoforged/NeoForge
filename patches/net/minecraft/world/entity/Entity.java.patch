@@ -69,6 +69,15 @@
          double restitution = this.isSuppressingBounce() ? 0.0 : this.getEntityBounciness();
          Vec3 currentMovement = this.getDeltaMovement();
          Vec3 movementAfterBounce = currentMovement;
+@@ -846,7 +_,7 @@
+                 restitution = !(-currentMovement.y <= this.getEffectiveGravity())
+                         && !this.isSuppressingBounce()
+                         && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
+-                    ? Math.max(restitution, this.getBlockBounciness(effectState.getBlock()))
++                    ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // NeoForge: Allow bounciness to be state and position specific
+                     : 0.0;
+             }
+ 
 @@ -874,6 +_,8 @@
          this.setDeltaMovement(movementAfterBounce);
      }
@@ -222,6 +231,15 @@
              this.addAdditionalSaveData(output);
              if (this.isVehicle()) {
                  ValueOutput.ValueOutputList passengersList = output.childrenList("Passengers");
+@@ -2211,6 +_,8 @@
+                 this.setTicksFrozen(input.getIntOr("TicksFrozen", 0));
+                 this.hasVisualFire = input.getBooleanOr("HasVisualFire", false);
+                 this.customData = input.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
++                input.read("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(neoData -> this.persistentData = neoData);
++                input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
+                 this.tags.clear();
+                 input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
+                 input.getString("Team").ifPresent(teamName -> {
 @@ -2268,6 +_,8 @@
  
          ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
@@ -373,12 +391,10 @@
      }
  
      public void checkDespawn() {
-@@ -4052,6 +_,90 @@
- 
-     public boolean mayInteract(ServerLevel level, BlockPos pos) {
+@@ -4054,6 +_,90 @@
          return true;
-+    }
-+
+     }
+ 
 +    /**
 +     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
 +     * <p>
@@ -461,6 +477,20 @@
 +    @Nullable
 +    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, @org.jspecify.annotations.Nullable Void> capability) {
 +        return capability.getCapability(this, null);
++    }
++
+     public boolean isFlyingVehicle() {
+         return false;
+     }
+@@ -4173,6 +_,11 @@
+ 
+     public void setInvulnerableTime(int invulnerableTime) {
+         this.invulnerableTime = invulnerableTime;
++    }
++
++    /// Neo: returns the [EntityFluidInteraction] tracking this entity's interactions with fluids
++    public EntityFluidInteraction getFluidInteraction() {
++        return this.fluidInteraction;
      }
  
-     public boolean isFlyingVehicle() {
+     protected @Nullable AABB modifyPassengerFluidInteractionBox(AABB passengerBox) {

@@ -515,6 +515,17 @@
          }
      }
  
+@@ -2015,6 +_,10 @@
+     }
+ 
+     public boolean swing(InteractionHand hand, SwingAnimation animation, boolean sendToSwingingEntity) {
++        ItemStack stack = this.getItemInHand(hand);
++        if (!stack.isEmpty() && stack.onEntitySwing(this, hand)) {
++            return true;
++        }
+         if (this.swingState.startIfAble(hand, animation, this.getModifiedSwingDuration(animation))) {
+             if (this.level() instanceof ServerLevel serverLevel) {
+                 ClientboundSwingAnimationPacket packet = new ClientboundSwingAnimationPacket(this, hand, animation);
 @@ -2158,8 +_,10 @@
  
      private void swapHandItems() {

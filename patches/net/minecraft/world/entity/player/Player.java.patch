@@ -37,6 +37,15 @@
          this.noPhysics = this.isSpectator();
          if (this.isSpectator() || this.isPassenger()) {
              this.setOnGround(false);
+@@ -250,7 +_,7 @@
+ 
+             if (!this.level().isClientSide()
+                 && this.getInBlockState().getBlock() instanceof AbstractBedBlock abstractBedBlock
+-                && !abstractBedBlock.getBedRule(this.level(), this.blockPosition()).canSleep(this.level())) {
++                && net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, !abstractBedBlock.getBedRule(this.level(), this.blockPosition()).canSleep(this.level()) ? BedSleepingProblem.OTHER_PROBLEM : null)) {
+                 this.stopSleepInBed(false, true);
+             }
+         } else if (this.sleepCounter > 0) {
 @@ -280,12 +_,13 @@
              this.lastItemInMainHand = mainHandItemStack.copy();
          }
@@ -80,6 +89,20 @@
          super.die(source);
          this.reapplyPosition();
          if (!this.isSpectator() && this.level() instanceof ServerLevel level) {
+@@ -582,7 +_,13 @@
+     public void handleCreativeModeItemDrop(ItemStack stack) {
+     }
+ 
++    /// @deprecated Neo: [#getDestroySpeed(BlockState, BlockPos)] instead
++    @Deprecated
+     public float getDestroySpeed(BlockState state) {
++        return getDestroySpeed(state, null);
++    }
++
++    public float getDestroySpeed(BlockState state, @Nullable BlockPos pos) {
+         float speed = this.inventory.getSelectedItem().getDestroySpeed(state);
+         if (speed > 1.0F) {
+             speed += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
 @@ -599,7 +_,7 @@
          }
  
@@ -394,6 +417,15 @@
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, amount);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
+@@ -1554,7 +_,7 @@
+     }
+ 
+     protected boolean hasEnoughFoodToDoExhaustiveManoeuvres() {
+-        return this.getFoodData().hasEnoughFood() || this.getAbilities().mayfly;
++        return this.getFoodData().hasEnoughFood() || this.mayFly();
+     }
+ 
+     public FoodData getFoodData() {
 @@ -1657,7 +_,11 @@
  
      @Override
