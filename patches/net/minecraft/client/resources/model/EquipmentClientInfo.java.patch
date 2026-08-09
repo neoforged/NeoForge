@@ -17,3 +17,14 @@
          }
  
          @Override
+@@ -161,6 +_,10 @@
+ 
+         public String trimAssetPrefix() {
+             return "trims/entity/" + this.id;
++        }
++
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(LayerType.class);
+         }
+     }
+ 

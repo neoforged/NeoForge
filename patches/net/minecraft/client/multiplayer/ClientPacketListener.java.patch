@@ -8,6 +8,14 @@
      private @Nullable LevelLoadTracker levelLoadTracker;
      private boolean serverEnforcesSecureChat;
      private boolean onlineMode;
+@@ -452,6 +_,7 @@
+             minecraft.gui.hud.getChat().restoreState(cookie.chatState());
+         }
+ 
++        this.connectionType = cookie.connectionType();
+         this.levelLoadTracker = cookie.levelLoadTracker();
+         this.clockManager = new ClientClockManager();
+     }
 @@ -529,12 +_,13 @@
          this.debugSubscriber.clear();
          this.minecraft.levelExtractor.debugRenderer.refreshRendererList();
@@ -97,7 +105,21 @@
          PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
          this.recipes = new ClientRecipeContainer(packet.itemSets(), packet.stonecutterRecipes());
 +
-+        net.neoforged.neoforge.client.ClientHooks.handleUpdateRecipes(this, v -> this.fuelValues = v);
++        net.neoforged.neoforge.client.ClientHooks.handleUpdateRecipes(this);
+     }
+ 
+     @Override
+@@ -1831,8 +_,11 @@
+             pendingTags.forEach(Registry.PendingTags::apply);
+         }
+ 
+-        List<ItemStack> searchItems = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
+-        this.searchTrees.updateCreativeTags(searchItems);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent.ClientPacketReceived(this.registryAccess, this.connection.isMemoryConnection()));
++        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
++            List<ItemStack> stacks = List.copyOf(tab.getDisplayItems());
++            this.searchTrees.updateCreativeTags(stacks, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
++        });
      }
  
      @Override

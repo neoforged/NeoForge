@@ -6,7 +6,7 @@
          if (isFirstPerson && !isSleeping) {
 -            BlockState blockState = getViewBlockingState(player, frustum);
 -            if (blockState != null) {
-+            var overlay = getViewBlockingStateAndPos(player);
++            var overlay = getViewBlockingStateAndPos(player, frustum);
 +            if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, submitNodeCollector)) {
                  BlockStateModelSet blockStateModelSet = this.minecraft.getModelManager().getBlockStateModelSet();
 -                TextureAtlasSprite sprite = blockStateModelSet.getParticleMaterial(blockState).sprite();
@@ -31,6 +31,29 @@
                      submitFire(poseStack, submitNodeCollector, fireSprite);
                  }
              }
+@@ -126,16 +_,20 @@
+     }
+ 
+     private static BlockState getViewBlockingState(Player player, Frustum frustum) {
++        return net.minecraft.Optionull.map(getViewBlockingStateAndPos(player, frustum), org.apache.commons.lang3.tuple.Pair::getLeft);
++    }
++
++    private static org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos> getViewBlockingStateAndPos(Player player, Frustum frustum) {
+         if (player.noPhysics) {
+             return null;
+         }
+ 
+         Level level = player.level();
+         AABB nearPlaneBB = frustum.getNearPlaneBounds().move(player.getEyePosition());
+-        BlockState[] outState = new BlockState[]{null};
++        org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos>[] outState = new org.apache.commons.lang3.tuple.@Nullable Pair[]{null};
+         level.findBlocksIn(nearPlaneBB).filterState(state -> state.getRenderShape() != RenderShape.INVISIBLE).forEachUntil((pos, state) -> {
+             if (state.isViewBlocking(level, pos, nearPlaneBB)) {
+-                outState[0] = state;
++                outState[0] = org.apache.commons.lang3.tuple.Pair.of(state, pos.immutable());
+                 return Continuation.ABORT;
+             } else {
+                 return Continuation.CONTINUE;
 @@ -153,13 +_,17 @@
      }
  

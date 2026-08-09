@@ -117,6 +117,40 @@
      private static CompletableFuture<ModelManager.ReloadState> loadModels(
          SpriteLoader.Preparations blockAtlas,
          SpriteLoader.Preparations itemAtlas,
+@@ -210,16 +_,32 @@
+         EntityModelSet entityModelSet,
+         Executor taskExecutor
+     ) {
++        return loadModels(blockAtlas, itemAtlas, bakery, blockModels, modelGroups, entityModelSet, taskExecutor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++    }
++
++    private static CompletableFuture<ModelManager.ReloadState> loadModels(
++        SpriteLoader.Preparations blockAtlas,
++        SpriteLoader.Preparations itemAtlas,
++        ModelBakery bakery,
++        LoadedBlockModels blockModels,
++        Object2IntMap<BlockState> modelGroups,
++        EntityModelSet entityModelSet,
++        Executor taskExecutor,
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++    ) {
+         MaterialBaker materialBaker = new MaterialBaker(blockAtlas, itemAtlas);
+         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(materialBaker, taskExecutor);
+         CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
+-            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
++            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
+         );
+         return bakedStateResults.thenCombine(
+             bakedModelsFuture,
+             (bakingResult, bakedModels) -> {
+                 Map<Fluid, FluidModel> fluidModels = FluidStateModelSet.bake(materialBaker);
+                 materialBaker.logMissingTextures();
++                try (Zone ignored = Profiler.get().zone("neoforge_modify_baking_result")) {
++                    net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(bakingResult, blockAtlas, bakery);
++                }
+                 Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
+                     bakingResult.blockStateModels(), bakingResult.missingModels().block()
+                 );
 @@ -262,6 +_,9 @@
          this.blockModelSet = new BlockModelSet(this.blockStateModelSet, preparations.blockModels, this.blockColors);
          this.fluidStateModelSet = new FluidStateModelSet(preparations.fluidModels, this.missingModels.fluid());
@@ -127,3 +161,19 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
+@@ -284,6 +_,15 @@
+ 
+     public Supplier<EntityModelSet> entityModels() {
+         return () -> this.entityModelSet;
++    }
++
++    public ModelBakery getModelBakery() {
++        return this.modelBakery.get();
++    }
++
++    @Nullable
++    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
++        return this.bakedStandaloneModels.get(modelKey);
+     }
+ 
+     private record ReloadState(

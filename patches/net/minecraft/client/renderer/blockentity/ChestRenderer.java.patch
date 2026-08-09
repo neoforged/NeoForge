@@ -9,6 +9,15 @@
      }
  
      public void submit(ChestRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+@@ -88,7 +_,7 @@
+         float open = state.open;
+         open = 1.0F - open;
+         open = 1.0F - open * open * open;
+-        SpriteId spriteId = Sheets.chooseSprite(state.material, state.type);
++        SpriteId spriteId = state.customSprite != null ? state.customSprite : Sheets.chooseSprite(state.material, state.type);
+         ChestModel model = this.models.select(state.type);
+         submitNodeCollector.submitModel(model, open, poseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, spriteId, this.sprites, 0);
+         if (state.breakProgress != null) {
 @@ -124,5 +_,20 @@
  
      private static Transformation createModelTransformation(Direction facing) {

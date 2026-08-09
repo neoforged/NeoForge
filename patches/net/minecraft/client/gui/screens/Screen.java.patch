@@ -58,6 +58,17 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
+@@ -473,6 +_,10 @@
+     public void onFilesDrop(List<Path> files) {
+     }
+ 
++    public Minecraft getMinecraft() {
++        return this.minecraft;
++    }
++
+     private void scheduleNarration(long delay, boolean ignoreSuppression, NarrationTrigger narrationTrigger) {
+         this.nextNarrationTime = Util.getMillis() + delay;
+         this.nextNarrationTriggeredBy = narrationTrigger;
 @@ -621,6 +_,16 @@
  
      public @Nullable Music getBackgroundMusic() {

@@ -16,13 +16,14 @@
          OptionSpec<String> versionOption = parser.accepts("version").withRequiredArg().required();
          OptionSpec<Integer> widthOption = parser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
          OptionSpec<Integer> heightOption = parser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
-@@ -159,10 +_,12 @@
+@@ -159,10 +_,13 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
              stage = "Bootstrap";
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
 +            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(() -> Bootstrap.bootStrap(), net.neoforged.fml.loading.ImmediateWindowHandler::renderTick);
++            com.mojang.renderpearl.backend.vulkan.VulkanFeatureSets.bootstrap(); // Neo: extract Vk feature set bootstrap from client bootstrap to run it before renderer setup
              GameLoadTimesEvent.INSTANCE.setBootstrapTime(Bootstrap.bootstrapDuration.get());
              Bootstrap.validate();
 +

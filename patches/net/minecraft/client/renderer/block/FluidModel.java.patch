@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/FluidModel.java
 +++ b/net/minecraft/client/renderer/block/FluidModel.java
-@@ -16,9 +16,44 @@
+@@ -17,9 +_,44 @@
      Material.Baked stillMaterial,
      Material.Baked flowingMaterial,
      Material.@Nullable Baked overlayMaterial,
@@ -45,9 +45,9 @@
 +        }
 +
          public FluidModel bake(MaterialBaker materials, ModelDebugName modelName) {
-             Material.Baked stillMaterial = materials.get(this.stillMaterial, modelName);
-             Material.Baked flowingMaterial = materials.get(this.flowingMaterial, modelName);
-@@ -28,7 +63,7 @@
+             Material.Baked stillMaterial = this.getAndValidateMaterial(this.stillMaterial, materials, "still", modelName);
+             Material.Baked flowingMaterial = this.getAndValidateMaterial(this.flowingMaterial, materials, "flowing", modelName);
+@@ -31,7 +_,7 @@
                  transparency = transparency.or(getTransparency(overlayMaterial));
              }
  
@@ -55,4 +55,4 @@
 +            return new FluidModel(ChunkSectionLayer.byTransparency(transparency), stillMaterial, flowingMaterial, overlayMaterial, this.fluidTintSource, this.customRenderer);
          }
  
-         private static Transparency getTransparency(Material.Baked material) {
+         private Material.Baked getAndValidateMaterial(Material material, MaterialBaker materials, String textureName, ModelDebugName modelName) {
