@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
-@@ -432,7 +_,7 @@
+@@ -433,7 +_,7 @@
          }
      }
  
@@ -9,7 +9,7 @@
          return level.getBlockState(pos.below()).is(BlockTags.RABBITS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
-@@ -599,7 +_,7 @@
+@@ -600,7 +_,7 @@
          @Override
          public boolean canUse() {
              if (this.nextStartTick <= 0) {

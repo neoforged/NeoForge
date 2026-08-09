@@ -9,7 +9,7 @@
      private @Nullable Runnable onReload;
  
      public ParticleResources() {
-@@ -183,14 +_,18 @@
+@@ -186,14 +_,18 @@
          this.register(ParticleTypes.SULFUR_CUBE_GOO, BreakingItemParticle.SulfurCubeProvider::new);
      }
  
@@ -30,7 +30,7 @@
      }
  
      @Override
-@@ -280,7 +_,7 @@
+@@ -283,7 +_,7 @@
          }
      }
  

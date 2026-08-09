@@ -40,7 +40,7 @@
                  carried = Block.updateFromNeighbourShapes(carried, this.enderman.level(), pos);
 -                if (this.canPlaceBlock(level, pos, carried, targetState, belowState, below)) {
 +                if (this.canPlaceBlock(level, pos, carried, targetState, belowState, below) && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, below), net.minecraft.core.Direction.UP)) {
-                     level.setBlock(pos, carried, 3);
+                     level.setBlockAndUpdate(pos, carried);
                      level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(this.enderman, carried));
                      this.enderman.setCarriedBlock(null);
 @@ -473,6 +_,7 @@

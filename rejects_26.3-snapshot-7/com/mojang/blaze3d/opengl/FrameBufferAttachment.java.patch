@@ -1,0 +1,12 @@
+++++ Target missing
+--- a/com/mojang/blaze3d/opengl/FrameBufferAttachment.java
++++ b/com/mojang/blaze3d/opengl/FrameBufferAttachment.java
+@@ -12,4 +12,8 @@
+     void addAssociatedFbo(FrameBufferCache.CacheKey fboKey);
+ 
+     void removeAssociatedFbo(FrameBufferCache.CacheKey fboKey);
++
++    default boolean hasStencilAspect() {
++        return false;
++    }
+ }

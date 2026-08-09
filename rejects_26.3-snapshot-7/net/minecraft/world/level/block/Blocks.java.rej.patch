@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/block/Blocks.java
++++ b/net/minecraft/world/level/block/Blocks.java
+@@ -5995,7 +5995,8 @@
+     static {
+         for (Block block : BuiltInRegistries.BLOCK) {
+             for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+-                Block.BLOCK_STATE_REGISTRY.add(state);
++                // Neo: comment out, it's done in NeoForgeRegistryCallbacks
++                //Block.BLOCK_STATE_REGISTRY.add(blockstate);
+                 state.initCache();
+             }
+         }

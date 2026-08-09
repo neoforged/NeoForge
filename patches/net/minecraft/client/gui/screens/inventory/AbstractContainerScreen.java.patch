@@ -12,7 +12,7 @@
              ItemStack item = this.hoveredSlot.getItem();
              if (this.menu.getCarried().isEmpty() || this.showTooltipWithItemInHand(item)) {
                  graphics.setTooltipForNextFrame(
--                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE)
+-                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE), true
 +                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), item, mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE)
                  );
              }
@@ -51,7 +51,7 @@
          }
      }
  
-@@ -285,7 +_,8 @@
+@@ -297,7 +_,8 @@
              return true;
          }
  
@@ -61,7 +61,7 @@
          Slot slot = this.getHoveredSlot(event.x(), event.y());
          this.doubleclick = this.lastClickSlot == slot && doubleClick;
          this.skipNextRelease = false;
-@@ -295,6 +_,7 @@
+@@ -307,6 +_,7 @@
              int xo = this.leftPos;
              int yo = this.topPos;
              boolean clickedOutside = this.hasClickedOutside(event.x(), event.y(), xo, yo);
@@ -69,7 +69,7 @@
              int slotId = -1;
              if (slot != null) {
                  slotId = slot.index;
-@@ -374,10 +_,13 @@
+@@ -386,10 +_,13 @@
  
      @Override
      public boolean mouseReleased(MouseButtonEvent event) {
@@ -83,25 +83,25 @@
          int slotId = -1;
          if (slot != null) {
              slotId = slot.index;
-@@ -394,7 +_,7 @@
+@@ -406,7 +_,7 @@
                          if (target != null
                              && target.mayPickup(this.minecraft.player)
                              && target.hasItem()
 -                            && target.container == slot.container
 +                            && target.isSameInventory(slot)
                              && AbstractContainerMenu.canItemQuickReplace(target, this.lastQuickMoved, true)) {
-                             this.slotClicked(target, target.index, event.button(), ContainerInput.QUICK_MOVE);
+                             this.slotClicked(target, target.index, event, ContainerInput.QUICK_MOVE);
                          }
-@@ -421,7 +_,7 @@
+@@ -433,7 +_,7 @@
              if (this.isQuickCrafting && !this.quickCraftSlots.isEmpty()) {
                  this.quickCraftToSlots();
              } else if (!this.menu.getCarried().isEmpty()) {
 -                if (this.minecraft.options.keyPickItem.matchesMouse(event)) {
 +                if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
-                     this.slotClicked(slot, slotId, event.button(), ContainerInput.CLONE);
+                     this.slotClicked(slot, slotId, event, ContainerInput.CLONE);
                  } else {
                      boolean quickKey = slotId != -999 && event.hasShiftDown();
-@@ -489,32 +_,38 @@
+@@ -501,32 +_,38 @@
              return true;
          }
  
@@ -146,7 +146,7 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -576,6 +_,59 @@
+@@ -588,6 +_,59 @@
      @Override
      public T getMenu() {
          return this.menu;

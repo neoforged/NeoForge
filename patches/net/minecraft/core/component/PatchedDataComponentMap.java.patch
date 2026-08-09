@@ -1,13 +1,5 @@
 --- a/net/minecraft/core/component/PatchedDataComponentMap.java
 +++ b/net/minecraft/core/component/PatchedDataComponentMap.java
-@@ -65,6 +_,7 @@
-     }
- 
-     public <T> @Nullable T set(DataComponentType<T> type, @Nullable T value) {
-+        net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
-         this.ensureMapOwnership();
-         T defaultValue = this.prototype.get(type);
-         Optional<T> lastValue;
 @@ -199,6 +_,10 @@
          return size;
      }

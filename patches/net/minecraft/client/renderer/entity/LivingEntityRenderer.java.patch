@@ -8,7 +8,7 @@
          poseStack.pushPose();
          if (state.hasPose(Pose.SLEEPING)) {
              Direction bedOrientation = state.bedOrientation;
-@@ -110,6 +_,7 @@
+@@ -108,6 +_,7 @@
  
          poseStack.popPose();
          super.submit(state, poseStack, submitNodeCollector, camera);
@@ -16,7 +16,7 @@
      }
  
      protected boolean shouldRenderLayers(S state) {
-@@ -278,7 +_,7 @@
+@@ -276,7 +_,7 @@
  
          state.isFullyFrozen = entity.isFullyFrozen();
          state.isBaby = entity.isBaby();

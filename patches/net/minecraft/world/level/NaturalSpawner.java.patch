@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -72,7 +_,7 @@
+@@ -74,7 +_,7 @@
  
          for (Entity entity : entities) {
              if (!(entity instanceof Mob mob && (mob.isPersistenceRequired() || mob.requiresCustomPersistence()))) {
@@ -9,7 +9,7 @@
                  if (category != MobCategory.MISC) {
                      BlockPos pos = entity.blockPosition();
                      chunkGetter.query(ChunkPos.pack(pos), chunk -> {
-@@ -200,7 +_,7 @@
+@@ -199,7 +_,7 @@
                                      groupSize++;
                                      level.addFreshEntityWithPassengers(mob);
                                      spawnCallback.run(mob, chunk);
@@ -18,7 +18,7 @@
                                          return;
                                      }
  
-@@ -277,7 +_,7 @@
+@@ -276,7 +_,7 @@
          return nearestPlayerDistanceSqr > mob.getType().getCategory().getDespawnDistance() * mob.getType().getCategory().getDespawnDistance()
                  && mob.removeWhenFarAway(nearestPlayerDistanceSqr)
              ? false
@@ -27,31 +27,3 @@
      }
  
      private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
-@@ -303,9 +_,14 @@
-     private static WeightedList<MobSpawnSettings.SpawnerData> mobsAt(
-         ServerLevel level, StructureManager structureManager, ChunkGenerator generator, MobCategory mobCategory, BlockPos pos, @Nullable Holder<Biome> biome
-     ) {
--        return isInNetherFortressBounds(pos, level, mobCategory, structureManager)
--            ? NetherFortressStructure.FORTRESS_ENEMIES
--            : generator.getMobsAt(biome != null ? biome : level.getBiome(pos), structureManager, mobCategory, pos);
-+        // Forge: Add in potential spawns, and replace hardcoded nether fortress mob list
-+        if (isInNetherFortressBounds(pos, level, mobCategory, structureManager)) {
-+            var monsterSpawns = structureManager.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER);
-+            if (monsterSpawns != null) { // structure modifiers can clear the spawn overrides
-+                return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(level, mobCategory, pos, monsterSpawns.spawns());
-+            }
-+        }
-+        return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(level, mobCategory, pos, generator.getMobsAt(biome != null ? biome : level.getBiome(pos), structureManager, mobCategory, pos));
-     }
- 
-     public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
-@@ -390,8 +_,7 @@
- 
-                                 entity.snapTo(fx, pos.getY(), fz, random.nextFloat() * 360.0F, 0.0F);
-                                 if (entity instanceof Mob mob
--                                    && mob.checkSpawnRules(level, EntitySpawnReason.CHUNK_GENERATION)
--                                    && mob.checkSpawnObstruction(level)) {
-+                                    && net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, level, EntitySpawnReason.CHUNK_GENERATION)) {
-                                     groupSpawnData = mob.finalizeSpawn(
-                                         level, level.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.CHUNK_GENERATION, groupSpawnData
-                                     );

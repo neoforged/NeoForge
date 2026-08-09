@@ -1,0 +1,54 @@
+--- a/net/minecraft/client/resources/model/ModelManager.java
++++ b/net/minecraft/client/resources/model/ModelManager.java
+@@ -211,11 +239,24 @@
+         EntityModelSet entityModelSet,
+         Executor taskExecutor
+     ) {
++        return loadModels(blockAtlas, itemAtlas, bakery, blockModels, modelGroups, entityModelSet, taskExecutor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++    }
++
++    private static CompletableFuture<ModelManager.ReloadState> loadModels(
++        SpriteLoader.Preparations blockAtlas,
++        SpriteLoader.Preparations itemAtlas,
++        ModelBakery bakery,
++        LoadedBlockModels blockModels,
++        Object2IntMap<BlockState> modelGroups,
++        EntityModelSet entityModelSet,
++        Executor taskExecutor,
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++    ) {
+         MaterialBaker blockItemMaterialBaker = new ModelManager.CombinedBlockItemMaterialBaker(blockAtlas, itemAtlas);
+         MaterialBaker blockOnlyMaterialBaker = new ModelManager.BlockOnlyMaterialBaker(blockAtlas);
+         CompletableFuture<ModelBakery.BakingResult> bakedStateResults = bakery.bakeModels(blockItemMaterialBaker, taskExecutor);
+         CompletableFuture<Map<BlockState, BlockModel>> bakedModelsFuture = bakedStateResults.thenCompose(
+-            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor)
++            bakingResult -> blockModels.bake(bakingResult::getBlockStateModel, bakingResult.missingModels().block(), taskExecutor, pendingAnimations)
+         );
+         return bakedStateResults.thenCombine(
+             bakedModelsFuture,
+@@ -223,6 +264,9 @@
+                 blockItemMaterialBaker.logMissingTextures();
+                 Map<Fluid, FluidModel> fluidModels = FluidStateModelSet.bake(blockOnlyMaterialBaker);
+                 blockOnlyMaterialBaker.logMissingTextures();
++                try (Zone ignored = Profiler.get().zone("neoforge_modify_baking_result")) {
++                    net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(bakingResult, blockAtlas, bakery);
++                }
+                 Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
+                     bakingResult.blockStateModels(), bakingResult.missingModels().block()
+                 );
+@@ -287,6 +334,15 @@
+ 
+     public Supplier<EntityModelSet> entityModels() {
+         return () -> this.entityModelSet;
++    }
++
++    public ModelBakery getModelBakery() {
++        return this.modelBakery.get();
++    }
++
++    @Nullable
++    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
++        return this.bakedStandaloneModels.get(modelKey);
+     }
+ 
+     private static class BlockOnlyMaterialBaker extends MaterialBaker {

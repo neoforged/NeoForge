@@ -21,20 +21,7 @@
              Proxy.NO_PROXY,
              DataFixers.getDataFixer(),
              NO_SERVICES,
-@@ -176,10 +_,12 @@
-     protected boolean initServer() {
-         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()) {});
-         Gizmos.withCollector(GizmoCollector.NOOP);
-+        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
-         this.loadLevel();
-         ServerLevel level = this.overworld();
-         this.testBatches = this.evaluateTestsToRun(level);
-         LOGGER.info("Started game test server");
-+        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
-         return true;
-     }
- 
-@@ -258,8 +_,14 @@
+@@ -257,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,7 +37,7 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -275,11 +_,11 @@
+@@ -274,11 +_,11 @@
  
      private static void logFailedTest(GameTestInfo testInfo) {
          if (testInfo.getRotation() != Rotation.NONE) {

@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/data/models/EquipmentAssetProvider.java
++++ b/net/minecraft/client/data/models/EquipmentAssetProvider.java
+@@ -127,21 +131,21 @@
+     }
+ 
+     public static EquipmentClientInfo onlyHumanoid(String name) {
+-        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.withDefaultNamespace(name)).build();
++        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.parse(name)).build();
+     }
+ 
+     public static EquipmentClientInfo humanoidAndMountArmor(String name) {
+         return EquipmentClientInfo.builder()
+-            .addHumanoidLayers(Identifier.withDefaultNamespace(name))
+-            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false))
+-            .addLayers(EquipmentClientInfo.LayerType.NAUTILUS_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false))
++            .addHumanoidLayers(Identifier.parse(name))
++            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.parse(name), false))
++            .addLayers(EquipmentClientInfo.LayerType.NAUTILUS_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.parse(name), false))
+             .build();
+     }
+ 
+     @Override
+     public CompletableFuture<?> run(CachedOutput cache) {
+         Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> equipmentAssets = new HashMap<>();
+-        bootstrap((id, asset) -> {
++        registerModels((id, asset) -> {
+             if (equipmentAssets.putIfAbsent(id, asset) != null) {
+                 throw new IllegalStateException("Tried to register equipment asset twice for id: " + id);
+             }

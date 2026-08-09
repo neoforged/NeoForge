@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
-@@ -201,6 +_,14 @@
+@@ -205,6 +_,14 @@
          return this.itemInHandRenderer;
      }
  
@@ -15,7 +15,7 @@
      @Override
      public void onResourceManagerReload(ResourceManager resourceManager) {
          EntityRendererProvider.Context context = new EntityRendererProvider.Context(
-@@ -218,5 +_,8 @@
+@@ -223,5 +_,8 @@
          this.renderers = EntityRenderers.createEntityRenderers(context);
          this.playerRenderers = EntityRenderers.createAvatarRenderers(context);
          this.mannequinRenderers = EntityRenderers.createAvatarRenderers(context);

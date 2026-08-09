@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -35,7 +_,7 @@
+@@ -23,7 +_,7 @@
  
      @Override
      public void onLand(Level level, BlockPos pos, BlockState state, BlockState replacedBlock, FallingBlockEntity entity) {
 -        if (shouldSolidify(level, pos, replacedBlock)) {
 +        if (shouldSolidify(level, pos, state, replacedBlock.getFluidState())) { // Forge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
-             level.setBlock(pos, this.concrete.defaultBlockState(), 3);
+             level.setBlockAndUpdate(pos, this.concrete.defaultBlockState());
          }
      }
-@@ -48,20 +_,24 @@
+@@ -36,20 +_,24 @@
          return shouldSolidify(level, pos, replacedBlock) ? this.concrete.defaultBlockState() : super.getStateForPlacement(context);
      }
  
@@ -38,7 +38,7 @@
                      touchesLiquid = true;
                      break;
                  }
-@@ -86,7 +_,7 @@
+@@ -74,7 +_,7 @@
          BlockState neighbourState,
          RandomSource random
      ) {

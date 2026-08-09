@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -154,6 +_,7 @@
+@@ -151,6 +_,7 @@
          if (!oldState.is(state.getBlock())) {
              if (inPortalDimension(level)) {
                  Optional<PortalShape> optionalShape = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X);
@@ -8,7 +8,7 @@
                  if (optionalShape.isPresent()) {
                      optionalShape.get().createPortalBlocks(level);
                      return;
-@@ -197,7 +_,7 @@
+@@ -194,7 +_,7 @@
          boolean hasObsidian = false;
  
          for (Direction face : Direction.values()) {

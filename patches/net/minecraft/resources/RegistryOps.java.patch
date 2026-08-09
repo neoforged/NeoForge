@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
-@@ -35,6 +_,11 @@
+@@ -34,6 +_,11 @@
          this.lookupProvider = lookupProvider;
      }
  
@@ -12,10 +12,10 @@
      public <U> RegistryOps<U> withParent(DynamicOps<U> parent) {
          return (RegistryOps<U>)(parent == this.delegate ? this : new RegistryOps<>(parent, this.lookupProvider));
      }
-@@ -74,6 +_,20 @@
+@@ -69,6 +_,20 @@
                      : DataResult.error(() -> "Not a registry ops")
              )
-             .forGetter(e -> null);
+             .forGetter(var0 -> null);
 +    }
 +
 +    public static <E> com.mojang.serialization.MapCodec<HolderLookup.RegistryLookup<E>> retrieveRegistryLookup(ResourceKey<? extends Registry<? extends E>> resourceKey) {

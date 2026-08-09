@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/entity/player/Player.java
++++ b/net/minecraft/world/entity/player/Player.java
+@@ -248,7 +255,7 @@
+             }
+ 
+             if (!this.level().isClientSide()
+-                && !this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, this.position()).canSleep(this.level())) {
++                && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, !this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, this.position()).canSleep(this.level()) ? BedSleepingProblem.OTHER_PROBLEM : null)) {
+                 this.stopSleepInBed(false, true);
+             }
+         } else if (this.sleepCounter > 0) {
+@@ -582,10 +595,18 @@
+     }
+ 
+     public @Nullable ItemEntity drop(ItemStack itemStack, boolean thrownFromHand) {
+-        return this.drop(itemStack, false, thrownFromHand);
++        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemStack, false, thrownFromHand);
+     }
+ 
++    /**
++     * @deprecated Neo: {@link #getDestroySpeed(BlockState, BlockPos)} instead
++     */
++    @Deprecated
+     public float getDestroySpeed(BlockState state) {
++        return getDestroySpeed(state, null);
++    }
++
++    public float getDestroySpeed(BlockState state, @Nullable BlockPos pos) {
+         float speed = this.inventory.getSelectedItem().getDestroySpeed(state);
+         if (speed > 1.0F) {
+             speed += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
+@@ -1571,7 +1659,7 @@
+     }
+ 
+     protected boolean hasEnoughFoodToDoExhaustiveManoeuvres() {
+-        return this.getFoodData().hasEnoughFood() || this.getAbilities().mayfly;
++        return this.getFoodData().hasEnoughFood() || this.mayFly();
+     }
+ 
+     public Optional<WardenSpawnTracker> getWardenSpawnTracker() {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
 +++ b/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
-@@ -96,7 +_,9 @@
+@@ -105,7 +_,9 @@
          if (this.texture == null) {
              this.texture = device.createTexture(() -> "UI " + this.getTextureLabel() + " texture", 13, GpuFormat.RGBA8_UNORM, width, height, 1, 1);
              this.textureView = device.createTextureView(this.texture);
@@ -11,7 +11,7 @@
              this.depthTextureView = device.createTextureView(this.depthTexture);
          }
  
-@@ -139,4 +_,11 @@
+@@ -148,4 +_,11 @@
      protected abstract void renderToTexture(T renderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector);
  
      protected abstract String getTextureLabel();

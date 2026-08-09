@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -496,18 +_,21 @@
+@@ -500,18 +_,21 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
@@ -22,31 +22,7 @@
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
-@@ -521,6 +_,23 @@
-         }
-     }
- 
-+    private void resyncPlayerWithVehicle(Entity vehicle) {
-+        Vec3 oldPos = this.player.position();
-+        float yRot = this.player.getYRot();
-+        float xRot = this.player.getXRot();
-+        float yHeadRot = this.player.getYHeadRot();
-+
-+        vehicle.positionRider(this.player);
-+
-+        // preserve old rotation and store old position in xo/yo/zo
-+        this.player.setYRot(yRot);
-+        this.player.setXRot(xRot);
-+        this.player.setYHeadRot(yHeadRot);
-+        this.player.xo = oldPos.x;
-+        this.player.yo = oldPos.y;
-+        this.player.zo = oldPos.z;
-+    }
-+
-     private boolean noBlocksAround(Entity entity) {
-         return entity.level()
-             .getBlockStates(entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -704,7 +_,7 @@
+@@ -700,7 +_,7 @@
              if (level.isLoaded(pos)) {
                  BlockState blockState = level.getBlockState(pos);
                  boolean includeData = this.player.hasInfiniteMaterials() && packet.includeData();
@@ -55,7 +31,7 @@
                  if (!itemStack.isEmpty()) {
                      if (includeData) {
                          addBlockDataToItem(blockState, level, pos, itemStack);
-@@ -1164,7 +_,7 @@
+@@ -1160,7 +_,7 @@
                                          && !playerStandsOnSomething
                                          && !this.player.isSpectator()
                                          && !this.server.allowFlight()
@@ -64,7 +40,7 @@
                                          && !this.player.hasEffect(MobEffects.LEVITATION)
                                          && !isFallFlying
                                          && !isAutoSpinAttack
-@@ -1295,9 +_,10 @@
+@@ -1291,9 +_,10 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -78,7 +54,7 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1321,7 +_,7 @@
+@@ -1317,7 +_,7 @@
                  case ABORT_DESTROY_BLOCK:
                  case STOP_DESTROY_BLOCK:
                      this.player.gameMode.handleBlockBreakAction(pos, action, packet.getDirection(), this.player.level().getMaxY(), packet.getSequence());
@@ -87,7 +63,7 @@
                      return;
                  default:
                      throw new IllegalArgumentException("Invalid player action");
-@@ -1343,7 +_,7 @@
+@@ -1339,7 +_,7 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
@@ -96,7 +72,7 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.getHand();
              ItemStack itemStack = this.player.getItemInHand(hand);
-@@ -1487,13 +_,24 @@
+@@ -1484,13 +_,24 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -121,7 +97,7 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1513,8 +_,9 @@
+@@ -1510,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());

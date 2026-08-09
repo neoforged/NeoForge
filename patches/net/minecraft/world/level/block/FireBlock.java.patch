@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -115,13 +_,13 @@
+@@ -108,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();
          BlockState belowState = level.getBlockState(below);
@@ -16,7 +16,7 @@
                  }
              }
  
-@@ -146,7 +_,7 @@
+@@ -139,7 +_,7 @@
              }
  
              BlockState belowState = level.getBlockState(pos.below());
@@ -25,7 +25,7 @@
              int age = state.getValue(AGE);
              if (!infiniBurn && level.isRaining() && this.isNearRain(level, pos) && random.nextFloat() < 0.2F + age * 0.03F) {
                  level.removeBlock(pos, false);
-@@ -167,7 +_,7 @@
+@@ -160,7 +_,7 @@
                          return;
                      }
  
@@ -34,7 +34,7 @@
                          level.removeBlock(pos, false);
                          return;
                      }
-@@ -175,12 +_,12 @@
+@@ -168,12 +_,12 @@
  
                  boolean increasedBurnout = level.environmentAttributes().getValue(EnvironmentAttributes.INCREASED_FIRE_BURNOUT, pos);
                  int extra = increasedBurnout ? -50 : 0;
@@ -53,7 +53,7 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -221,33 +_,32 @@
+@@ -214,33 +_,32 @@
              || level.isRainingAt(testPos.south());
      }
  
@@ -81,7 +81,7 @@
 +
              if (random.nextInt(age + 10) < 5 && !level.isRainingAt(pos)) {
                  int newAge = Math.min(age + random.nextInt(5) / 4, 15);
-                 level.setBlock(pos, this.getStateWithAge(level, pos, newAge), 3);
+                 level.setBlockAndUpdate(pos, this.getStateWithAge(level, pos, newAge));
              } else {
                  level.removeBlock(pos, false);
              }
@@ -93,7 +93,7 @@
          }
      }
  
-@@ -258,7 +_,7 @@
+@@ -251,7 +_,7 @@
  
      private boolean isValidFireLocation(BlockGetter level, BlockPos pos) {
          for (Direction direction : Direction.values()) {
@@ -102,7 +102,7 @@
                  return true;
              }
          }
-@@ -275,13 +_,14 @@
+@@ -268,13 +_,14 @@
  
          for (Direction direction : Direction.values()) {
              BlockState blockState = level.getBlockState(pos.relative(direction));
@@ -118,7 +118,7 @@
      protected boolean canBurn(BlockState state) {
          return this.getIgniteOdds(state) > 0;
      }
-@@ -302,8 +_,21 @@
+@@ -295,8 +_,21 @@
      }
  
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {

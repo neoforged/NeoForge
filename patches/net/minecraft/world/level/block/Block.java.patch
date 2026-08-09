@@ -1,15 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -81,7 +_,7 @@
-     public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
--    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
-+    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
-     private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
-         .maximumSize(512L)
-         .weakKeys()
-@@ -236,7 +_,7 @@
+@@ -229,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -18,7 +9,7 @@
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", className);
-@@ -289,7 +_,15 @@
+@@ -284,7 +_,15 @@
          }
      }
  
@@ -34,7 +25,7 @@
          VoxelShape occluder = neighborState.getFaceOcclusionShape(direction.getOpposite());
          if (occluder == Shapes.block()) {
              return false;
-@@ -299,6 +_,10 @@
+@@ -294,6 +_,10 @@
              return false;
          }
  
@@ -45,7 +36,7 @@
          if (occluder == Shapes.empty()) {
              return true;
          }
-@@ -371,22 +_,28 @@
+@@ -366,22 +_,28 @@
  
      public static void dropResources(BlockState state, Level level, BlockPos pos) {
          if (level instanceof ServerLevel serverLevel) {
@@ -77,7 +68,7 @@
          }
      }
  
-@@ -416,19 +_,26 @@
+@@ -411,19 +_,26 @@
      }
  
      private static void popResource(Level level, Supplier<ItemEntity> entityFactory, ItemStack itemStack) {
@@ -107,16 +98,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -464,6 +_,8 @@
-         entity.causeFallDamage(fallDistance, 1.0F, entity.damageSources().fall());
-     }
- 
-+    /// @deprecated NeoForge: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution()]
-+    @Deprecated
-     public float getBounceRestitution() {
-         return this.bounceRestitution;
-     }
-@@ -497,6 +_,7 @@
+@@ -504,6 +_,7 @@
      public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
      }
  
@@ -124,7 +106,7 @@
      public boolean dropFromExplosion(Explosion explosion) {
          return true;
      }
-@@ -579,6 +_,35 @@
+@@ -580,6 +_,35 @@
          return state.setValue(property, (T)value);
      }
  

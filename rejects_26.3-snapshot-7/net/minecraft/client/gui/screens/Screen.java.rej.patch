@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/screens/Screen.java
++++ b/net/minecraft/client/gui/screens/Screen.java
+@@ -466,6 +476,10 @@
+     public void onFilesDrop(List<Path> files) {
+     }
+ 
++    public Minecraft getMinecraft() {
++        return this.minecraft;
++    }
++
+     private void scheduleNarration(long delay, boolean ignoreSuppression) {
+         this.nextNarrationTime = Util.getMillis() + delay;
+         if (ignoreSuppression) {

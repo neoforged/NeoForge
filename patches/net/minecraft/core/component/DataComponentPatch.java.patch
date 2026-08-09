@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
-@@ -156,6 +_,14 @@
+@@ -143,6 +_,14 @@
          return new DataComponentPatch.Builder();
      }
  
@@ -15,11 +15,11 @@
      public <T> @Nullable T get(DataComponentGetter prototype, DataComponentType<? extends T> type) {
          return getFromPatchAndPrototype(this.map, prototype, type);
      }
-@@ -255,6 +_,7 @@
+@@ -238,6 +_,7 @@
          }
  
          public <T> DataComponentPatch.Builder set(DataComponentType<T> type, T value) {
 +            net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
-             this.map.put(type, Optional.of(value));
+             this.map.put(type, value);
              return this;
          }

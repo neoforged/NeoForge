@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
++++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+@@ -123,7 +152,7 @@
+         long[] carvingMask = chunkData.getLongArray("carving_mask").orElse(null);
+         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
+         chunkData.getCompound("Heightmaps").ifPresent(heightmapsTag -> {
+-            for (Heightmap.Types type : status.heightmapsAfter()) {
++            for (Heightmap.Types type : status.getChunkSaveHeightmaps()) {
+                 heightmapsTag.getLongArray(type.getSerializationKey()).ifPresent(longs -> heightmaps.put(type, longs));
+             }
+         });
+@@ -284,7 +321,7 @@
+         chunk.setLightCorrect(this.lightCorrect);
+         EnumSet<Heightmap.Types> toPrime = EnumSet.noneOf(Heightmap.Types.class);
+ 
+-        for (Heightmap.Types type : chunk.getPersistedStatus().heightmapsAfter()) {
++        for (Heightmap.Types type : chunk.getPersistedStatus().getChunkSaveHeightmaps()) {
+             long[] heightmap = this.heightmaps.get(type);
+             if (heightmap != null) {
+                 chunk.setHeightmap(type, heightmap);
+@@ -375,7 +416,7 @@
+         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
+ 
+         for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
+-            if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
++            if (chunk.getPersistedStatus().getChunkSaveHeightmaps().contains(entry.getKey())) {
+                 long[] data = entry.getValue().getRawData();
+                 heightmaps.put(entry.getKey(), (long[])data.clone());
+             }

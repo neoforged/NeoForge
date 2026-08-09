@@ -1,29 +1,6 @@
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
-@@ -22,8 +_,22 @@
-         return CODEC;
-     }
- 
-+    /**
-+     * Neo: {@code true} for an activator rail, {@code false} for powered rail
-+     */
-+    private final boolean isActivator;
-+
-     public PoweredRailBlock(BlockBehaviour.Properties properties) {
-+        this(properties, false);
-+    }
-+
-+    public PoweredRailBlock(BlockBehaviour.Properties properties, boolean isPoweredRail) {
-         super(true, properties);
-+        this.isActivator = !isPoweredRail;
-+        this.registerDefaultState();
-+    }
-+
-+    protected void registerDefaultState() {
-         this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(POWERED, false).setValue(WATERLOGGED, false));
-     }
- 
-@@ -36,7 +_,7 @@
+@@ -29,7 +_,7 @@
          int y = pos.getY();
          int z = pos.getZ();
          boolean checkBelow = true;
@@ -32,7 +9,7 @@
          switch (shape) {
              case NORTH_SOUTH:
                  if (forward) {
-@@ -104,17 +_,17 @@
+@@ -97,17 +_,17 @@
  
      protected boolean isSameRailWithPower(Level level, BlockPos pos, boolean forward, int searchDepth, RailShape dir) {
          BlockState state = level.getBlockState(pos);
@@ -54,16 +31,16 @@
                  }
              } else {
                  return false;
-@@ -133,7 +_,7 @@
+@@ -126,7 +_,7 @@
          if (shouldPower != isPowered) {
-             level.setBlock(pos, state.setValue(POWERED, shouldPower), 3);
+             level.setBlockAndUpdate(pos, state.setValue(POWERED, shouldPower));
              level.updateNeighborsAt(pos.below(), this);
 -            if (state.getValue(SHAPE).isSlope()) {
 +            if (((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null).isSlope()) {
                  level.updateNeighborsAt(pos.above(), this);
              }
          }
-@@ -160,6 +_,10 @@
+@@ -153,6 +_,10 @@
  
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

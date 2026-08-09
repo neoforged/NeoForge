@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ItemInHandRenderer.java
 +++ b/net/minecraft/client/renderer/ItemInHandRenderer.java
-@@ -157,11 +_,11 @@
+@@ -156,11 +_,11 @@
          Identifier skinTexture = this.minecraft.player.getSkin().body().texturePath();
          if (arm == HumanoidArm.RIGHT) {
              avatarRenderer.renderRightHand(
@@ -14,7 +14,7 @@
              );
          }
  
-@@ -231,7 +_,7 @@
+@@ -230,7 +_,7 @@
          poseStack.translate(-0.5F, -0.5F, 0.0F);
          poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
          MapId id = itemStack.get(DataComponents.MAP_ID);
@@ -23,7 +23,7 @@
          RenderType renderType = data == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD;
          submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
              buffer.addVertex(pose, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(lightCoords);
-@@ -270,9 +_,9 @@
+@@ -269,9 +_,9 @@
          AvatarRenderer<AbstractClientPlayer> avatarRenderer = this.entityRenderDispatcher.getPlayerRenderer(player);
          Identifier skinTexture = player.getSkin().body().texturePath();
          if (isRightArm) {
@@ -36,7 +36,7 @@
      }
  
 @@ -345,6 +_,7 @@
-             float mainHandAttack = attackHand == InteractionHand.MAIN_HAND ? attackValue : 0.0F;
+             float mainHandSwing = swingHand == InteractionHand.MAIN_HAND ? swingAnimation : 0.0F;
              float mainhandInverseArmHeight = this.itemModelResolver.swapAnimationScale(this.mainHandItem)
                  * (1.0F - Mth.lerp(frameInterp, this.oMainHandHeight, this.mainHandHeight));
 +            if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, poseStack, submitNodeCollector, lightCoords, frameInterp, xRot, mainHandAttack, mainhandInverseArmHeight, this.mainHandItem))
@@ -44,7 +44,7 @@
                  player,
                  frameInterp,
 @@ -363,6 +_,7 @@
-             float offHandAttack = attackHand == InteractionHand.OFF_HAND ? attackValue : 0.0F;
+             float offHandSwing = swingHand == InteractionHand.OFF_HAND ? swingAnimation : 0.0F;
              float offhandInverseArmHeight = this.itemModelResolver.swapAnimationScale(this.offHandItem)
                  * (1.0F - Mth.lerp(frameInterp, this.oOffHandHeight, this.offHandHeight));
 +            if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, poseStack, submitNodeCollector, lightCoords, frameInterp, xRot, offHandAttack, offhandInverseArmHeight, this.offHandItem))
@@ -53,14 +53,14 @@
                  frameInterp,
 @@ -431,13 +_,13 @@
                  if (isMainHand && !player.isInvisible()) {
-                     this.renderPlayerArm(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm);
+                     this.renderPlayerArm(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, swingAnimation, arm);
                  }
 -            } else if (itemStack.has(DataComponents.MAP_ID)) {
 +            } else if (itemStack.getItem() instanceof MapItem) {
                  if (isMainHand && this.offHandItem.isEmpty()) {
-                     this.renderTwoHandedMap(poseStack, submitNodeCollector, lightCoords, xRot, inverseArmHeight, attack);
+                     this.renderTwoHandedMap(poseStack, submitNodeCollector, lightCoords, xRot, inverseArmHeight, swingAnimation);
                  } else {
-                     this.renderOneHandedMap(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, arm, attack, itemStack);
+                     this.renderOneHandedMap(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, arm, swingAnimation, itemStack);
                  }
 -            } else if (itemStack.is(Items.CROSSBOW)) {
 +            } else if (itemStack.getItem() instanceof CrossbowItem) {

@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -784,7 +785,10 @@
+     @Override
+     public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+         Item item = itemStack.getItem();
+-        return (itemStack.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().profession().value().requestedItems().contains(item))
++        // Neo: Allow Farmer Villagers to pick up SpecialPlantable items.
++        boolean isFarmerDesiredSeed = (itemStack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this))
++                && this.getVillagerData().profession().value().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
++        return (itemStack.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().profession().value().requestedItems().contains(item) || isFarmerDesiredSeed)
+             && this.getInventory().canAddItem(itemStack);
+     }
+ 

@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -59,20 +_,27 @@
+@@ -63,20 +_,27 @@
          PoseStack poseStack = new PoseStack();
          Player player = this.minecraft.player;
          if (isFirstPerson && !isSleeping) {
--            BlockState blockState = getViewBlockingState(player);
+-            BlockState blockState = getViewBlockingState(player, frustum);
 -            if (blockState != null) {
 +            var overlay = getViewBlockingStateAndPos(player);
 +            if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, submitNodeCollector)) {
@@ -31,27 +31,7 @@
                      submitFire(poseStack, submitNodeCollector, fireSprite);
                  }
              }
-@@ -122,6 +_,10 @@
-     }
- 
-     private static @Nullable BlockState getViewBlockingState(Player player) {
-+        return net.minecraft.Optionull.map(getViewBlockingStateAndPos(player), org.apache.commons.lang3.tuple.Pair::getLeft);
-+    }
-+
-+    private static org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos> getViewBlockingStateAndPos(Player player) {
-         if (player.noPhysics) {
-             return null;
-         }
-@@ -136,7 +_,7 @@
-             );
-             BlockState blockState = player.level().getBlockState(testPos);
-             if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos)) {
--                return blockState;
-+                return org.apache.commons.lang3.tuple.Pair.of(blockState, testPos.immutable());
-             }
-         }
- 
-@@ -152,13 +_,17 @@
+@@ -153,13 +_,17 @@
      }
  
      private static void submitWater(Minecraft minecraft, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {

@@ -1,0 +1,53 @@
+--- a/net/minecraft/world/level/block/FlowerPotBlock.java
++++ b/net/minecraft/world/level/block/FlowerPotBlock.java
+@@ -35,6 +35,7 @@
+     );
+     private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
+     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
++    /** Neo: Field accesses are redirected to {@link #getPotted()} with a coremod. */
+     private final Block potted;
+ 
+     @Override
+@@ -42,10 +43,31 @@
+         return CODEC;
+     }
+ 
++    @Deprecated // Mods should use the constructor below
+     public FlowerPotBlock(Block potted, BlockBehaviour.Properties properties) {
++        this(Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT, () -> potted, properties);
++        if (Blocks.FLOWER_POT != null) {
++            ((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(potted), () -> this);
++        }
++    }
++
++    /**
++     * For mod use, eliminates the need to extend this class, and prevents modded
++     * flower pots from altering vanilla behavior.
++     *
++     * @param emptyPot The empty pot for this pot, or null for self.
++     */
++    public FlowerPotBlock(java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
+         super(properties);
+-        this.potted = potted;
+-        POTTED_BY_CONTENT.put(potted, this);
++        this.potted = null; // Unused, redirected by coremod
++        this.flowerDelegate = potted;
++        if (emptyPot == null) {
++            this.fullPots = Maps.newHashMap();
++            this.emptyPot = null;
++        } else {
++            this.fullPots = java.util.Collections.emptyMap();
++            this.emptyPot = emptyPot;
++        }
+     }
+ 
+     @Override
+@@ -87,7 +109,7 @@
+             player.drop(plant, false);
+         }
+ 
+-        level.setBlock(pos, Blocks.FLOWER_POT.defaultBlockState(), 3);
++        level.setBlock(pos, getEmptyPot().defaultBlockState(), 3);
+         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+         return InteractionResult.SUCCESS;
+     }

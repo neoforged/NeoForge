@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DoorBlock.java
 +++ b/net/minecraft/world/level/block/DoorBlock.java
-@@ -118,7 +_,7 @@
+@@ -108,7 +_,7 @@
  
      @Override
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
@@ -9,7 +9,7 @@
              DoublePlantBlock.preventDropFromBottomPart(level, pos, state, player);
          }
  
-@@ -270,5 +_,21 @@
+@@ -260,5 +_,21 @@
  
      public static boolean isWoodenDoor(BlockState state) {
          return state.getBlock() instanceof DoorBlock door && door.type().canOpenByHand();

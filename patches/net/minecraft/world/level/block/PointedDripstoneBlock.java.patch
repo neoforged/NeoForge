@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -89,7 +_,7 @@
+@@ -79,7 +_,7 @@
  
      @VisibleForTesting
      public static void maybeTransferFluid(BlockState state, ServerLevel level, BlockPos pos, float randomValue) {
@@ -9,7 +9,7 @@
              if (isStalactiteStartPos(state, level, pos)) {
                  Optional<PointedDripstoneBlock.FluidInfo> fluidInfo = getFluidAboveStalactite(level, pos, state);
                  if (!fluidInfo.isEmpty()) {
-@@ -98,14 +_,12 @@
+@@ -88,14 +_,12 @@
                      if (fluid == Fluids.WATER) {
                          transferProbability = 0.17578125F;
                      } else {
@@ -26,7 +26,7 @@
                          BlockPos stalactiteTipPos = findTip(state, level, pos, 11, false);
                          if (stalactiteTipPos != null) {
                              if (fluidInfo.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -190,7 +_,7 @@
+@@ -180,7 +_,7 @@
      }
  
      private static boolean canFillCauldron(Fluid fluidAbove) {
@@ -35,7 +35,7 @@
      }
  
      @Override
-@@ -203,7 +_,9 @@
+@@ -193,7 +_,9 @@
          if (fluidAbove.isSame(Fluids.EMPTY)) {
              return level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
          } else {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/material/LavaFluid.java
++++ b/net/minecraft/world/level/material/LavaFluid.java
+@@ -93,7 +93,7 @@
+                     BlockState blockState = level.getBlockState(testPos);
+                     if (blockState.isAir()) {
+                         if (this.hasFlammableNeighbours(level, testPos)) {
+-                            level.setBlockAndUpdate(testPos, BaseFireBlock.getState(level, testPos));
++                            level.setBlockAndUpdate(testPos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, testPos, pos, BaseFireBlock.getState(level, testPos)));
+                             return;
+                         }
+                     } else if (blockState.blocksMotion()) {

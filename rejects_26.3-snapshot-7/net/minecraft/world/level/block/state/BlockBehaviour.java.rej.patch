@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -984,7 +1007,7 @@
+         private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, entityType) -> state.isFaceSturdy(
+                 level, pos, Direction.UP
+             )
+-            && state.getLightEmission() < 14;
++            && state.getLightEmission(level, pos) < 14;
+         private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
+         private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.blocksMotion() && state.isCollisionShapeFullBlock(level, pos);
+         private BlockBehaviour.StatePredicate isViewBlocking = this.isSuffocating;

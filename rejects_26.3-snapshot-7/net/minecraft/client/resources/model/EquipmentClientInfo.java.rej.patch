@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/resources/model/EquipmentClientInfo.java
++++ b/net/minecraft/client/resources/model/EquipmentClientInfo.java
+@@ -143,6 +144,10 @@
+ 
+         public String trimAssetPrefix() {
+             return "trims/entity/" + this.id;
++        }
++
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(LayerType.class);
+         }
+     }
+ }

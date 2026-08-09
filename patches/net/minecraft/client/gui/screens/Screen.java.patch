@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -107,8 +_,12 @@
+@@ -109,8 +_,12 @@
      public final void extractRenderStateWithTooltipAndSubtitles(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
          graphics.nextStratum();
          this.extractBackground(graphics, mouseX, mouseY, a);
@@ -13,7 +13,7 @@
          graphics.extractDeferredElements(mouseX, mouseY, a);
      }
  
-@@ -196,7 +_,7 @@
+@@ -203,7 +_,7 @@
      }
  
      public void onClose() {
@@ -22,7 +22,7 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
-@@ -239,9 +_,9 @@
+@@ -246,9 +_,9 @@
  
      public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(
@@ -34,7 +34,7 @@
          );
      }
  
-@@ -327,8 +_,11 @@
+@@ -334,8 +_,11 @@
          this.width = width;
          this.height = height;
          if (!this.initialized) {
@@ -46,7 +46,7 @@
          } else {
              this.repositionElements();
          }
-@@ -345,8 +_,11 @@
+@@ -352,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -58,18 +58,7 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
-@@ -466,6 +_,10 @@
-     public void onFilesDrop(List<Path> files) {
-     }
- 
-+    public Minecraft getMinecraft() {
-+        return this.minecraft;
-+    }
-+
-     private void scheduleNarration(long delay, boolean ignoreSuppression) {
-         this.nextNarrationTime = Util.getMillis() + delay;
-         if (ignoreSuppression) {
-@@ -613,6 +_,16 @@
+@@ -621,6 +_,16 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;

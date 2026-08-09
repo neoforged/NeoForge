@@ -9,7 +9,7 @@
      public static final ContextKeySet COMMAND = register(
          "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
      );
-@@ -33,7 +_,7 @@
+@@ -37,7 +_,7 @@
              .required(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED)
      );
      public static final ContextKeySet FISHING = register(

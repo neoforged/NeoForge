@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -172,6 +_,36 @@
+@@ -207,6 +_,36 @@
          }
      }
  

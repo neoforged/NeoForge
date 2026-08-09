@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -73,6 +_,11 @@
-     private final FeatureFlagSet requiredFeatures;
+@@ -74,6 +_,11 @@
      private final boolean allowedInPeaceful;
+     private final boolean trackDeltas;
  
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
@@ -12,41 +12,10 @@
      public static Identifier getKey(EntityType<?> type) {
          return BuiltInRegistries.ENTITY_TYPE.getKey(type);
      }
-@@ -94,6 +_,30 @@
-         FeatureFlagSet requiredFeatures,
-         boolean allowedInPeaceful
-     ) {
-+        this(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, dimensions, spawnDimensionsScale, clientTrackingRange, updateInterval, descriptionId, lootTable, requiredFeatures, allowedInPeaceful, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, false);
-+    }
-+
-+    public EntityType(
-+            EntityType.EntityFactory<T> factory,
-+            MobCategory category,
-+            boolean serialize,
-+            boolean summon,
-+            boolean fireImmune,
-+            boolean canSpawnFarFromPlayer,
-+            TagKey<Block> immuneTo,
-+            EntityDimensions dimensions,
-+            float spawnDimensionsScale,
-+            int clientTrackingRange,
-+            int updateInterval,
-+            String descriptionId,
-+            Optional<ResourceKey<LootTable>> lootTable,
-+            FeatureFlagSet requiredFeatures,
-+            boolean allowedInPeaceful,
-+            final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
-+            final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+            final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+            boolean onlyOpCanSetNbt
-+    ) {
-         this.factory = factory;
-         this.category = category;
-         this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
-@@ -109,6 +_,10 @@
-         this.lootTable = lootTable;
+@@ -112,6 +_,10 @@
          this.requiredFeatures = requiredFeatures;
          this.allowedInPeaceful = allowedInPeaceful;
+         this.trackDeltas = trackDeltas;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
@@ -54,7 +23,7 @@
      }
  
      public @Nullable T spawn(
-@@ -200,6 +_,13 @@
+@@ -203,6 +_,13 @@
              mob.yHeadRot = mob.getYRot();
              mob.yBodyRot = mob.getYRot();
              mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), spawnReason, null);
@@ -68,31 +37,7 @@
          }
  
          if (postSpawnConfig != null) {
-@@ -408,14 +_,23 @@
-     }
- 
-     public int clientTrackingRange() {
-+        return trackingRangeSupplier.applyAsInt(this);
-+    }
-+    private int defaultTrackingRangeSupplier() {
-         return this.clientTrackingRange;
-     }
- 
-     public int updateInterval() {
-+        return updateIntervalSupplier.applyAsInt(this);
-+    }
-+    private int defaultUpdateIntervalSupplier() {
-         return this.updateInterval;
-     }
- 
-     public boolean trackDeltas() {
-+        return this.trackDeltasSupplier.test(this);
-+    }
-+    private boolean defaultTrackDeltasSupplier() {
-         return this != EntityTypes.PLAYER
-             && this != EntityTypes.LLAMA_SPIT
-             && this != EntityTypes.WITHER
-@@ -447,9 +_,12 @@
+@@ -445,9 +_,12 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -105,10 +50,10 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -469,6 +_,10 @@
-         );
+@@ -468,6 +_,10 @@
          private final DependantName<EntityType<?>, String> descriptionId = id -> Util.makeDescriptionId("entity", id.identifier());
          private boolean allowedInPeaceful = true;
+         private boolean trackDeltas = true;
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
@@ -116,10 +61,13 @@
  
          private Builder(EntityType.EntityFactory<T> factory, MobCategory category) {
              this.factory = factory;
-@@ -587,6 +_,26 @@
-             return this;
-         }
+@@ -588,6 +_,26 @@
  
+         public EntityType.Builder<T> dontTrackDeltas() {
+             this.trackDeltas = false;
++            return this;
++        }
++
 +        public EntityType.Builder<T> setUpdateInterval(int interval) {
 +            this.updateIntervalSupplier = t->interval;
 +            return this;
@@ -137,22 +85,6 @@
 +
 +        public EntityType.Builder<T> setOnlyOpCanSetNbt(boolean onlyOpCanSetNbt) {
 +            this.onlyOpCanSetNbt = onlyOpCanSetNbt;
-+            return this;
-+        }
-+
-         public EntityType<T> build(ResourceKey<EntityType<?>> name) {
-             if (this.serialize) {
-                 Util.fetchChoiceType(References.ENTITY_TREE, name.identifier().toString());
-@@ -607,7 +_,11 @@
-                 this.descriptionId.get(name),
-                 this.lootTable.get(name),
-                 this.requiredFeatures,
--                this.allowedInPeaceful
-+                this.allowedInPeaceful,
-+                this.velocityUpdateSupplier,
-+                this.trackingRangeSupplier,
-+                this.updateIntervalSupplier,
-+                this.onlyOpCanSetNbt
-             );
+             return this;
          }
-     }
+ 

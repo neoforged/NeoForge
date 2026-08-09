@@ -90,7 +90,7 @@
          public QuadCollection compute(ModelBaker modelBakery) {
              QuadCollection.Builder builder = new QuadCollection.Builder();
              BakedQuad.MaterialInfo materialInfo = modelBakery.interner()
--                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, 0));
+-                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, null, 0));
 -            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo);
 +                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion()));
 +            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo, faceData);
