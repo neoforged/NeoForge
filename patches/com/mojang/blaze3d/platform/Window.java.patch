@@ -1,0 +1,37 @@
+--- a/com/mojang/blaze3d/platform/Window.java
++++ b/com/mojang/blaze3d/platform/Window.java
+@@ -99,6 +_,18 @@
+         this.windowedWidth = this.width = allowedWindowMinSize(displayData.width(), 320);
+         this.windowedHeight = this.height = allowedWindowMinSize(displayData.height(), 240);
+         this.handle = this.createWindow(backend, this.width, this.height, title);
++        // Neo: If the window was taken over from EarlyLoadingScreen, inherit a potentially resized window size
++        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
++        if (earlyLoadingScreen != null) {
++            try (MemoryStack stack = MemoryStack.stackPush()) {
++                IntBuffer width = stack.mallocInt(1);
++                IntBuffer height = stack.mallocInt(1);
++                SDLVideo.SDL_GetWindowSize(this.handle, width, height);
++                // The window height and width can be 0 if minimized
++                this.width = this.windowedWidth = Math.max(width.get(0), 1);
++                this.height = this.windowedHeight = Math.max(height.get(0), 1);
++            }
++        }
+         this.backend = backend;
+         if (Util.getPlatform() == Util.OS.OSX) {
+             MacosUtil.disableCloseWindowMenuItem();
+@@ -135,7 +_,14 @@
+     private long createWindow(GpuBackend backend, int width, int height, String title) throws BackendCreationException {
+         backend.setWindowHints();
+         long flags = backend.getWindowFlags() | 8L | 32L | 8192L;
+-        long windowHandle = SDLVideo.SDL_CreateWindow(title, width, height, flags);
++        long windowHandle;
++        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
++        if (earlyLoadingScreen != null) {
++            windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
++            SDLVideo.SDL_SetWindowTitle(windowHandle, title);
++        } else {
++            windowHandle = SDLVideo.SDL_CreateWindow(title, width, height, flags);
++        }
+         if (windowHandle == 0L) {
+             backend.handleWindowCreationErrors(SDLError.SDL_GetError());
+         }
