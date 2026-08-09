@@ -1,6 +1,39 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -47,13 +_,18 @@
+@@ -22,18 +_,26 @@
+ public class ClientLanguage extends Language {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final Map<String, String> storage;
++    private final Map<String, net.minecraft.network.chat.Component> componentStorage;
+     private final boolean defaultRightToLeft;
+ 
+     private ClientLanguage(Map<String, String> storage, boolean defaultRightToLeft) {
++        this(storage, defaultRightToLeft, Map.of());
++    }
++
++    private ClientLanguage(Map<String, String> storage, boolean defaultRightToLeft, Map<String, net.minecraft.network.chat.Component> componentStorage) {
+         this.storage = storage;
+         this.defaultRightToLeft = defaultRightToLeft;
++        this.componentStorage = componentStorage;
+     }
+ 
+     public static ClientLanguage loadFrom(ResourceManager resourceManager, List<String> languageStack, boolean defaultRightToLeft) {
+         Map<String, String> translations = new HashMap<>();
++        Map<String, net.minecraft.network.chat.Component> componentMap = new HashMap<>();
+ 
+         for (String languageCode : languageStack) {
+             String path = String.format(Locale.ROOT, "lang/%s.json", languageCode);
++            translations.putAll(net.neoforged.fml.i18n.I18nManager.loadTranslations(languageCode));
+ 
+             for (String namespace : resourceManager.getNamespaces()) {
+                 Identifier location = Identifier.fromNamespaceAndPath(namespace, path);
+@@ -42,18 +_,23 @@
+                     throw new EmptyTranslationsException(languageCode);
+                 }
+ 
+-                appendFrom(languageCode, resourceStack, translations);
++                appendFrom(languageCode, resourceStack, translations, componentMap);
+             }
          }
  
          DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);

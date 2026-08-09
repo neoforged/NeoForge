@@ -38,6 +38,19 @@
      }
  
      public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo) {
+@@ -1040,11 +_,7 @@
+         @Nullable Identifier style,
+         boolean extraSpaceAfterFirstLine
+     ) {
+-        List<ClientTooltipComponent> components = texts.stream()
+-            .map(Component::getVisualOrderText)
+-            .map(ClientTooltipComponent::create)
+-            .collect(Util.toMutableList());
+-        optionalImage.ifPresent(image -> components.add(components.isEmpty() ? 0 : 1, ClientTooltipComponent.create(image)));
++        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, texts, optionalImage, xo, guiWidth(), guiHeight(), font);
+         this.setTooltipForNextFrameInternal(font, components, xo, yo, DefaultTooltipPositioner.INSTANCE, style, false, extraSpaceAfterFirstLine);
+     }
+ 
 @@ -1072,13 +_,14 @@
      }
  
@@ -84,6 +97,43 @@
      public void setTooltipForNextFrame(Font font, List<? extends FormattedCharSequence> lines, int xo, int yo) {
          this.setTooltipForNextFrame(font, lines, xo, yo, null);
      }
+@@ -1123,7 +_,8 @@
+     ) {
+         if (!lines.isEmpty()) {
+             if (this.deferredTooltip == null || replaceExisting) {
+-                this.deferredTooltip = () -> this.tooltip(font, lines, xo, yo, positioner, style, extraSpaceAfterFirstLine);
++                ItemStack capturedTooltipStack = this.tooltipStack;
++                this.deferredTooltip = () -> this.tooltip(font, lines, xo, yo, positioner, style, extraSpaceAfterFirstLine, capturedTooltipStack);
+             }
+         }
+     }
+@@ -1137,6 +_,26 @@
+         @Nullable Identifier style,
+         boolean extraSpaceAfterFirstLine
+     ) {
++        this.tooltip(font, lines, xo, yo, positioner, style, extraSpaceAfterFirstLine, ItemStack.EMPTY);
++    }
++
++    public void tooltip(
++            Font font,
++            List<ClientTooltipComponent> lines,
++            int xo,
++            int yo,
++            ClientTooltipPositioner positioner,
++            @Nullable Identifier style,
++            boolean extraSpaceAfterFirstLine,
++            ItemStack tooltipStack
++    ) {
++        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, xo, yo, guiWidth(), guiHeight(), lines, font, positioner);
++        if (preEvent.isCanceled()) return;
++
++        font = preEvent.getFont();
++        xo = preEvent.getX();
++        yo = preEvent.getY();
++
+         int textWidth = 0;
+         int tempHeight = extraSpaceAfterFirstLine && lines.size() != 1 ? 0 : -2;
+ 
 @@ -1155,7 +_,8 @@
          int x = positionedTooltip.x();
          int y = positionedTooltip.y();
