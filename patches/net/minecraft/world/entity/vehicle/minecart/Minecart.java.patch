@@ -1,11 +1,13 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/Minecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/Minecart.java
-@@ -23,6 +23,8 @@
+@@ -23,6 +_,10 @@
  
      @Override
      public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
 +        InteractionResult ret = super.interact(player, hand, location);
-+        if (ret.consumesAction()) return ret;
-         if (!player.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide() || player.startRiding(this))) {
++        if (ret.consumesAction()) {
++            return ret;
++        }
+         if (!player.isSecondaryUseActive() && !this.isVehicle()) {
              this.playerRotationOffset = this.rotationOffset;
-             if (!this.level().isClientSide()) {
+             return !this.level().isClientSide() && player.startRiding(this) ? InteractionResult.SUCCESS_SERVER : InteractionResult.CONSUME;
