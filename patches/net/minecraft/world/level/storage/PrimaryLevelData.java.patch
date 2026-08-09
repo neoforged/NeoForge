@@ -17,6 +17,26 @@
              input.get("singleplayer_uuid").flatMap(UUIDUtil.CODEC::parse).result().orElse(null),
              input.get("WasModded").asBoolean(false),
              input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
+@@ -104,12 +_,17 @@
+             levelVersion.levelDataVersion(),
+             input.get("initialized").asBoolean(true),
+             input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+-            input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toSet()),
++            // Neo: Append removed modded feature flags
++            updateRemovedFeatureFlags(input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()), input.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
+             settings,
+             specialWorldProperty,
+             worldGenSettingsLifecycle,
+             input.get("version_history").orElseEmptyList().asList(d -> d.asInt(-1))
+-        );
++        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false));
++        // Neo:
++        result.setDayTimeFraction(input.get("neoDayTimeFraction").asFloat(0f));
++        result.setDayTimePerTick(input.get("neoDayTimePerTick").asFloat(-1f));
++        return result;
+     }
+ 
+     @Override
 @@ -147,6 +_,12 @@
          }
  

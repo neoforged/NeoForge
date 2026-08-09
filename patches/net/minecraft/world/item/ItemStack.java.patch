@@ -179,6 +179,14 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              hoverName.withStyle(ChatFormatting.ITALIC);
          }
+@@ -851,6 +_,7 @@
+         }
+     }
+ 
++    @Override // Neo: Add override annotation to ensure our extension method signature always matches vanilla
+     public <T extends TooltipProvider> void addToTooltip(
+         DataComponentType<T> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag
+     ) {
 @@ -866,6 +_,7 @@
              List<Component> lines = Lists.newArrayList();
              lines.add(this.getStyledHoverName());

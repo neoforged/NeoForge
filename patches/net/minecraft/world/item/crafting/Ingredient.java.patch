@@ -126,3 +126,13 @@
      }
  
      public static Ingredient of(ItemLike itemLike) {
+@@ -95,6 +_,9 @@
+     }
+ 
+     public SlotDisplay display() {
++        if (this.customIngredient != null) {
++            return this.customIngredient.display();
++        }
+         return new SlotDisplay.TagSlotDisplay(this.values);
+     }
+ 

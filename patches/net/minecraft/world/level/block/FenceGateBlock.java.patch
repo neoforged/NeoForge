@@ -1,5 +1,33 @@
 --- a/net/minecraft/world/level/block/FenceGateBlock.java
 +++ b/net/minecraft/world/level/block/FenceGateBlock.java
+@@ -51,11 +_,25 @@
+     private static final Map<Direction.Axis, VoxelShape> SHAPE_OCCLUSION_WALL = Maps.newEnumMap(
+         Util.mapValues(SHAPE_OCCLUSION, v -> v.move(0.0, -0.1875, 0.0).optimize())
+     );
++    public final net.minecraft.sounds.SoundEvent openSound;
++    public final net.minecraft.sounds.SoundEvent closeSound;
++    @org.jspecify.annotations.Nullable
+     private final WoodType type;
+ 
+     public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
+-        super(properties.sound(type.soundType()));
+-        this.type = type;
++        this(java.util.Optional.of(type), properties.sound(type.soundType()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
++    }
++
++    public FenceGateBlock(BlockBehaviour.Properties properties, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
++        this(java.util.Optional.empty(), properties, java.util.Optional.of(openSound), java.util.Optional.of(closeSound));
++    }
++
++    public FenceGateBlock(java.util.Optional<WoodType> type, BlockBehaviour.Properties properties, java.util.Optional<net.minecraft.sounds.SoundEvent> openSound, java.util.Optional<net.minecraft.sounds.SoundEvent> closeSound) {
++        super(properties);
++        com.google.common.base.Preconditions.checkArgument(type.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
++        this.type = type.orElse(null);
++        this.openSound = openSound.orElseGet(() -> this.type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
++        this.closeSound = closeSound.orElseGet(() -> this.type.fenceGateClose());
+         this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false).setValue(POWERED, false).setValue(IN_WALL, false));
+     }
+ 
 @@ -146,7 +_,7 @@
  
          boolean opens = state.getValue(OPEN);

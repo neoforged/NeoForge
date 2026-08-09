@@ -9,3 +9,13 @@
      );
      public static final Block DETECTOR_RAIL = register(
          BlockItemIds.DETECTOR_RAIL, DetectorRailBlock::new, BlockBehaviour.Properties.of().noCollision().strength(0.7F).sound(SoundType.METAL)
+@@ -5932,7 +_,8 @@
+         SolidDebugger.runAndDump(() -> {
+             for (Block block : BuiltInRegistries.BLOCK) {
+                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+-                    Block.BLOCK_STATE_REGISTRY.add(state);
++                    // Neo: comment out, it's done in NeoForgeRegistryCallbacks
++                    //Block.BLOCK_STATE_REGISTRY.add(blockstate);
+                     state.initCache();
+                 }
+             }
