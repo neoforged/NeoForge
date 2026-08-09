@@ -21,7 +21,7 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -73,18 +_,67 @@
+@@ -77,18 +_,67 @@
      @Override
      public boolean keyPressed(KeyEvent event) {
          if (this.selectedKey != null) {

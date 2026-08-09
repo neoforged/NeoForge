@@ -9,7 +9,7 @@
                  return;
              }
  
-@@ -136,7 +_,7 @@
+@@ -141,7 +_,7 @@
      @Override
      protected InteractionResult mobInteract(Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);

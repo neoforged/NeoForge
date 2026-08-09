@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -80,7 +_,10 @@
+@@ -84,7 +_,10 @@
          this.previousGameModeForPlayer = previousGameModeForPlayer;
          this.gameModeForPlayer = gameModeForPlayer;
          Abilities abilities = this.player.getAbilities();
@@ -11,7 +11,7 @@
      }
  
      private boolean isInRangeOfGround() {
-@@ -148,6 +_,10 @@
+@@ -152,6 +_,10 @@
      }
  
      public void handleBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction direction, int maxY, int sequence) {
@@ -22,7 +22,7 @@
          if (!this.player.isWithinBlockInteractionRange(pos, 1.0)) {
              this.debugLogging(pos, false, sequence, "too far");
          } else if (pos.getY() > maxY) {
-@@ -192,6 +_,7 @@
+@@ -196,6 +_,7 @@
                          blockState,
                          item -> this.player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND)
                      );
@@ -30,7 +30,7 @@
                      blockState.attack(this.level, pos, this.player);
                      progress = blockState.getDestroyProgress(this.player, this.player.level(), pos);
                  }
-@@ -258,8 +_,10 @@
+@@ -262,8 +_,10 @@
      }
  
      public boolean destroyBlock(BlockPos pos) {
@@ -42,7 +42,7 @@
              return false;
          }
  
-@@ -275,30 +_,46 @@
+@@ -279,30 +_,46 @@
          }
  
          BlockState adjustedState = block.playerWillDestroy(this.level, pos, state, this.player);
@@ -98,7 +98,7 @@
      public InteractionResult useItem(ServerPlayer player, Level level, ItemStack itemStack, InteractionHand hand) {
          if (this.gameModeForPlayer == GameType.SPECTATOR) {
              return InteractionResult.PASS;
-@@ -308,6 +_,9 @@
+@@ -312,6 +_,9 @@
              return InteractionResult.PASS;
          }
  
@@ -108,7 +108,7 @@
          int oldCount = itemStack.getCount();
          int oldDamage = itemStack.getDamageValue();
          InteractionResult result = itemStack.use(level, player, hand);
-@@ -351,6 +_,8 @@
+@@ -355,6 +_,8 @@
              return InteractionResult.FAIL;
          }
  
@@ -117,7 +117,7 @@
          if (this.gameModeForPlayer == GameType.SPECTATOR) {
              MenuProvider menuProvider = state.getMenuProvider(level, pos);
              if (menuProvider != null) {
-@@ -360,10 +_,15 @@
+@@ -380,10 +_,15 @@
                  return InteractionResult.PASS;
              }
          } else {
@@ -135,7 +135,7 @@
                  InteractionResult itemUse = state.useItemOn(player.getItemInHand(hand), level, player, hand, hitResult);
                  if (itemUse.consumesAction()) {
                      CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, pos, usedItemStack);
-@@ -379,8 +_,8 @@
+@@ -399,8 +_,8 @@
                  }
              }
  

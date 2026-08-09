@@ -1,0 +1,69 @@
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -1068,7 +1104,7 @@
+             }
+ 
+             if (!forced) {
+-                return Optional.empty();
++                return blockState.getRespawnPosition(EntityTypes.PLAYER, level, pos, yaw);
+             }
+ 
+             boolean freeBottom = block.isPossibleToRespawnInThis(blockState);
+@@ -1184,8 +1225,19 @@
+ 
+     @Override
+     public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos pos) {
++        // Neo: Encapsulate the vanilla check logic to supply to the CanPlayerSleepEvent
++        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> {
++        // Guard against modded beds that may not have the FACING property.
++        // We just return success (Unit) here. Modders will need to implement conditions in the CanPlayerSleepEvent
++        if (!this.level().getBlockState(pos).hasProperty(HorizontalDirectionalBlock.FACING)) {
++            return Either.right(Unit.INSTANCE);
++        }
++
++        // Start vanilla code
+         Direction direction = this.level().getBlockState(pos).getValue(HorizontalDirectionalBlock.FACING);
+-        if (!this.isSleeping() && this.isAlive()) {
++        if (this.isSleeping() || !this.isAlive()) {
++            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
++        } else {
+             BedRule rule = this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
+             boolean canSleep = rule.canSleep(this.level());
+             boolean canSetSpawn = rule.canSetSpawn(this.level());
+@@ -1226,6 +1278,19 @@
+                 }
+             }
+ 
++            // End vanilla code
++        }
++        return Either.right(Unit.INSTANCE);
++        }).get();
++
++        // Neo: Fire the event, and return the error if one exists
++        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, pos, vanillaResult);
++        if (vanillaResult.left().isPresent()) {
++            return vanillaResult;
++        }
++
++        {
++            // Neo: Continue with the vanilla code to start sleeping
+             Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(pos).ifRight(unit -> {
+                 this.awardStat(Stats.SLEEP_IN_BED);
+                 CriteriaTriggers.SLEPT_IN_BED.trigger(this);
+@@ -2028,6 +2211,7 @@
+     }
+ 
+     private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
++        if (isFakePlayer()) return GameType.SURVIVAL; // Neo: Always default fake players to survival
+         GameType forcedGameType = this.server.getForcedGameType();
+         if (forcedGameType != null) {
+             return forcedGameType;
+@@ -2072,7 +2258,7 @@
+             this.stopUsingItem();
+         }
+ 
+-        this.drop(removed, false, true);
++        net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, removed, false, true);
+     }
+ 
+     @Override

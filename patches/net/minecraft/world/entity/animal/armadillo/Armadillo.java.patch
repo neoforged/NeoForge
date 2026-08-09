@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -236,7 +_,7 @@
+@@ -237,7 +_,7 @@
      }
  
      public static boolean checkArmadilloSpawnRules(
@@ -9,7 +9,7 @@
      ) {
          return level.getBlockState(pos.below()).is(BlockTags.ARMADILLO_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
-@@ -314,7 +_,7 @@
+@@ -315,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);

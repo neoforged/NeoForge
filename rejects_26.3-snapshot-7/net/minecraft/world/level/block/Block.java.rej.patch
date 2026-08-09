@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/Block.java
++++ b/net/minecraft/world/level/block/Block.java
+@@ -81,7 +81,7 @@
+     public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
+-    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
++    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
+     private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
+         .maximumSize(512L)
+         .weakKeys()
+@@ -464,6 +489,8 @@
+         entity.causeFallDamage(fallDistance, 1.0F, entity.damageSources().fall());
+     }
+ 
++    /// @deprecated NeoForge: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution()]
++    @Deprecated
+     public float getBounceRestitution() {
+         return this.bounceRestitution;
+     }

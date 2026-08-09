@@ -9,7 +9,7 @@
          return !level.getBlockState(pos.below()).is(Blocks.NETHER_WART_BLOCK);
      }
  
-@@ -321,7 +_,7 @@
+@@ -316,7 +_,7 @@
          } else if (this.isChargingCrossbow()) {
              return PiglinArmPose.CROSSBOW_CHARGE;
          } else {
@@ -18,7 +18,7 @@
          }
      }
  
-@@ -350,7 +_,7 @@
+@@ -345,7 +_,7 @@
  
      @Override
      public boolean canUseNonMeleeWeapon(ItemStack item) {
@@ -27,7 +27,7 @@
      }
  
      protected void holdInMainHand(ItemStack itemStack) {
-@@ -360,14 +_,14 @@
+@@ -355,14 +_,14 @@
  
      protected void holdInOffHand(ItemStack itemStack) {
          this.setItemSlotAndDropWhenKilled(EquipmentSlot.OFFHAND, itemStack);

@@ -1,19 +1,9 @@
 --- a/net/minecraft/world/level/block/grower/TreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/TreeGrower.java
-@@ -131,6 +_,9 @@
-                 .lookupOrThrow(Registries.CONFIGURED_FEATURE)
-                 .get(megaFeatureKey)
-                 .orElse(null);
-+            var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
-+            featureHolder = event.getFeature();
-+            if (event.isCanceled()) return false;
-             if (featureHolder != null) {
-                 for (int dx = 0; dx >= -1; dx--) {
-                     for (int dz = 0; dz >= -1; dz--) {
-@@ -162,6 +_,9 @@
+@@ -138,6 +_,9 @@
          }
  
-         Holder<ConfiguredFeature<?, ?>> featureHolder = level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);
+         Holder<Feature> featureHolder = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(featureKey).orElse(null);
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
 +        if (event.isCanceled()) return false;
 +        featureHolder = event.getFeature();

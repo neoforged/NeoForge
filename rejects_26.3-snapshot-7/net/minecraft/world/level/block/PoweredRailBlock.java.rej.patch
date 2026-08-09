@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/block/PoweredRailBlock.java
++++ b/net/minecraft/world/level/block/PoweredRailBlock.java
+@@ -22,8 +22,22 @@
+         return CODEC;
+     }
+ 
++    /**
++     * Neo: {@code true} for an activator rail, {@code false} for powered rail
++     */
++    private final boolean isActivator;
++
+     public PoweredRailBlock(BlockBehaviour.Properties properties) {
++        this(properties, false);
++    }
++
++    public PoweredRailBlock(BlockBehaviour.Properties properties, boolean isPoweredRail) {
+         super(true, properties);
++        this.isActivator = !isPoweredRail;
++        this.registerDefaultState();
++    }
++
++    protected void registerDefaultState() {
+         this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(POWERED, false).setValue(WATERLOGGED, false));
+     }
+ 

@@ -26,4 +26,4 @@
 +                                if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(level), this.silverfish)) {
                                      level.destroyBlock(testPos, true, this.silverfish);
                                  } else {
-                                     level.setBlock(testPos, infestedBlock.hostStateByInfested(level.getBlockState(testPos)), 3);
+                                     level.setBlockAndUpdate(testPos, infestedBlock.hostStateByInfested(level.getBlockState(testPos)));

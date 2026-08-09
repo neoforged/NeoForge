@@ -9,7 +9,7 @@
              int width = minecraft.font.width(name);
              if (width > this.maxNameWidth) {
                  this.maxNameWidth = width;
-@@ -123,6 +_,7 @@
+@@ -125,6 +_,7 @@
                  )
                  .build();
              this.resetButton = Button.builder(RESET_BUTTON_TITLE, button -> {
@@ -17,7 +17,7 @@
                  key.setKey(key.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(defaultNarrationSupplier -> Component.translatable("narrator.controls.reset", name)).build();
-@@ -164,13 +_,13 @@
+@@ -166,13 +_,13 @@
              MutableComponent tooltip = Component.empty();
              if (!this.key.isUnbound()) {
                  for (KeyMapping otherKey : KeyBindsList.this.minecraft.options.keyMappings) {

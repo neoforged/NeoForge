@@ -33,7 +33,7 @@
          this.serverLevelData = levelData;
          ChunkGenerator generator = levelStem.generator();
          boolean syncWrites = server.forceSynchronousWrites();
-@@ -280,7 +_,7 @@
+@@ -279,7 +_,7 @@
  
          WorldGenSettings worldGenSettings = server.getWorldGenSettings();
          WorldOptions options = worldGenSettings.options();
@@ -42,7 +42,7 @@
          this.structureCheck = new StructureCheck(
              this.chunkSource.chunkScanner(),
              this.registryAccess(),
-@@ -304,6 +_,11 @@
+@@ -303,6 +_,11 @@
          this.waypointManager = new ServerWaypointManager();
          this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
          this.updateSkyBrightness();
@@ -54,7 +54,7 @@
      }
  
      @Override
-@@ -367,7 +_,11 @@
+@@ -366,7 +_,11 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
              if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
@@ -67,7 +67,7 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -405,7 +_,7 @@
+@@ -404,7 +_,7 @@
  
          this.handlingTick = false;
          profiler.pop();
@@ -76,7 +76,7 @@
          if (isActive) {
              this.resetEmptyTime();
          }
-@@ -442,7 +_,9 @@
+@@ -441,7 +_,9 @@
                                      }
  
                                      profiler.push("tick");
@@ -87,7 +87,7 @@
                                      profiler.pop();
                                  }
                              }
-@@ -581,6 +_,7 @@
+@@ -580,6 +_,7 @@
          BlockPos topPos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
          BlockPos belowPos = topPos.below();
          Biome biome = this.getBiome(topPos).value();
@@ -95,7 +95,7 @@
          if (biome.shouldFreeze(this, belowPos)) {
              this.setBlockAndUpdate(belowPos, Blocks.ICE.defaultBlockState());
          }
-@@ -783,15 +_,19 @@
+@@ -782,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -119,7 +119,7 @@
          }
      }
  
-@@ -829,7 +_,11 @@
+@@ -828,7 +_,11 @@
          entity.tickCount++;
          profiler.push(entity.typeHolder()::getRegisteredName);
          profiler.incrementCounter("tickNonPassenger");
@@ -132,7 +132,7 @@
          profiler.pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -892,6 +_,7 @@
+@@ -891,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -140,7 +140,7 @@
          }
      }
  
-@@ -981,6 +_,7 @@
+@@ -980,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer player) {
@@ -148,7 +148,7 @@
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -988,7 +_,8 @@
+@@ -987,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)existing, Entity.RemovalReason.DISCARDED);
          }
  
@@ -158,7 +158,7 @@
      }
  
      private boolean addEntity(Entity entity) {
-@@ -996,7 +_,12 @@
+@@ -995,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", entity.typeHolder().getRegisteredName());
              return false;
          } else {
@@ -172,7 +172,7 @@
          }
      }
  
-@@ -1037,6 +_,12 @@
+@@ -1036,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -185,7 +185,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1054,6 +_,12 @@
+@@ -1053,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -198,7 +198,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1112,6 +_,7 @@
+@@ -1111,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
@@ -206,7 +206,7 @@
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
-@@ -1150,6 +_,7 @@
+@@ -1149,6 +_,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos pos, Block sourceBlock) {
@@ -214,7 +214,7 @@
          this.updateNeighborsAt(pos, sourceBlock, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1160,6 +_,10 @@
+@@ -1159,6 +_,10 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
@@ -225,7 +225,7 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
-@@ -1206,7 +_,7 @@
+@@ -1205,7 +_,7 @@
          Explosion.BlockInteraction blockInteraction = switch (interactionType) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
@@ -234,7 +234,7 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-@@ -1214,6 +_,7 @@
+@@ -1213,6 +_,7 @@
          };
          Vec3 center = new Vec3(x, y, z);
          ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
@@ -242,7 +242,7 @@
          int blockCount = explosion.explode();
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
-@@ -1391,7 +_,7 @@
+@@ -1395,7 +_,7 @@
      }
  
      @Override
@@ -251,7 +251,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1648,7 +_,8 @@
+@@ -1652,7 +_,8 @@
  
      @Override
      public long getSeed() {
@@ -261,7 +261,7 @@
      }
  
      public @Nullable EnderDragonFight getDragonFight() {
-@@ -1907,8 +_,8 @@
+@@ -1901,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -272,7 +272,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -1928,25 +_,62 @@
+@@ -1922,25 +_,62 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String message = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

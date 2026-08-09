@@ -8,8 +8,8 @@
      public static final int MAX_HEALTH = 20;
      public static final int SLEEP_DURATION = 100;
      public static final int WAKE_UP_DURATION = 10;
-@@ -173,6 +_,10 @@
-     private Optional<GlobalPos> lastDeathLocation = Optional.empty();
+@@ -174,6 +_,10 @@
+     protected final List<Identifier> postEffects = new ArrayList<>();
      public @Nullable FishingHook fishing;
      protected float hurtDir;
 +    private final java.util.Collection<MutableComponent> prefixes = new java.util.LinkedList<>();
@@ -19,7 +19,7 @@
  
      public Player(Level level, GameProfile gameProfile) {
          super(EntityTypes.PLAYER, level);
-@@ -218,7 +_,8 @@
+@@ -219,7 +_,8 @@
              .add(Attributes.MINING_EFFICIENCY)
              .add(Attributes.SWEEPING_DAMAGE_RATIO)
              .add(Attributes.WAYPOINT_TRANSMIT_RANGE, 6.0E7)
@@ -29,7 +29,7 @@
      }
  
      @Override
-@@ -232,6 +_,7 @@
+@@ -233,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -37,16 +37,7 @@
          this.noPhysics = this.isSpectator();
          if (this.isSpectator() || this.isPassenger()) {
              this.setOnGround(false);
-@@ -248,7 +_,7 @@
-             }
- 
-             if (!this.level().isClientSide()
--                && !this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, this.position()).canSleep(this.level())) {
-+                && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, !this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, this.position()).canSleep(this.level()) ? BedSleepingProblem.OTHER_PROBLEM : null)) {
-                 this.stopSleepInBed(false, true);
-             }
-         } else if (this.sleepCounter > 0) {
-@@ -278,12 +_,13 @@
+@@ -280,12 +_,13 @@
              this.lastItemInMainHand = mainHandItemStack.copy();
          }
  
@@ -61,7 +52,7 @@
      }
  
      @Override
-@@ -304,7 +_,7 @@
+@@ -306,7 +_,7 @@
      }
  
      protected boolean updateIsUnderwater() {
@@ -70,7 +61,7 @@
          return this.wasUnderwater;
      }
  
-@@ -343,6 +_,10 @@
+@@ -345,6 +_,10 @@
      }
  
      protected void updatePlayerPose() {
@@ -81,7 +72,7 @@
          if (this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.SWIMMING)) {
              Pose desiredPose = this.getDesiredPose();
              Pose actualPose;
-@@ -526,6 +_,7 @@
+@@ -527,6 +_,7 @@
  
      @Override
      public void die(DamageSource source) {
@@ -89,27 +80,7 @@
          super.die(source);
          this.reapplyPosition();
          if (!this.isSpectator() && this.level() instanceof ServerLevel level) {
-@@ -582,10 +_,18 @@
-     }
- 
-     public @Nullable ItemEntity drop(ItemStack itemStack, boolean thrownFromHand) {
--        return this.drop(itemStack, false, thrownFromHand);
-+        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemStack, false, thrownFromHand);
-     }
- 
-+    /**
-+     * @deprecated Neo: {@link #getDestroySpeed(BlockState, BlockPos)} instead
-+     */
-+    @Deprecated
-     public float getDestroySpeed(BlockState state) {
-+        return getDestroySpeed(state, null);
-+    }
-+
-+    public float getDestroySpeed(BlockState state, @Nullable BlockPos pos) {
-         float speed = this.inventory.getSelectedItem().getDestroySpeed(state);
-         if (speed > 1.0F) {
-             speed += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
-@@ -606,7 +_,7 @@
+@@ -599,7 +_,7 @@
          }
  
          speed *= (float)this.getAttributeValue(Attributes.BLOCK_BREAK_SPEED);
@@ -118,7 +89,7 @@
              speed *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
          }
  
-@@ -614,13 +_,19 @@
+@@ -607,13 +_,19 @@
              speed /= 5.0F;
          }
  
@@ -138,7 +109,7 @@
      @Override
      protected void readAdditionalSaveData(ValueInput input) {
          super.readAdditionalSaveData(input);
-@@ -693,6 +_,8 @@
+@@ -686,6 +_,8 @@
          }
  
          this.removeEntitiesOnShoulder();
@@ -147,7 +118,7 @@
          if (source.scalesWithDifficulty()) {
              if (level.getDifficulty() == Difficulty.PEACEFUL) {
                  damage = 0.0F;
-@@ -749,16 +_,31 @@
+@@ -736,16 +_,31 @@
      @Override
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
@@ -185,7 +156,7 @@
              if (dmg != 0.0F) {
                  this.causeFoodExhaustion(source.getFoodExhaustion());
                  this.getCombatTracker().recordDamage(source, dmg);
-@@ -769,6 +_,8 @@
+@@ -756,6 +_,8 @@
  
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
              }
@@ -194,7 +165,7 @@
          }
      }
  
-@@ -824,6 +_,8 @@
+@@ -811,6 +_,8 @@
  
              return InteractionResult.PASS;
          } else {
@@ -203,7 +174,7 @@
              ItemStack itemStack = this.getItemInHand(hand);
              ItemStack itemStackClone = itemStack.copy();
              InteractionResult interact = entity.interact(this, hand, location);
-@@ -832,6 +_,10 @@
+@@ -819,6 +_,10 @@
                      itemStack.setCount(itemStackClone.getCount());
                  }
  
@@ -214,7 +185,7 @@
                  return interact;
              } else {
                  if (!itemStack.isEmpty() && entity instanceof LivingEntity livingEntity) {
-@@ -843,6 +_,7 @@
+@@ -830,6 +_,7 @@
                      if (interactionResult.consumesAction()) {
                          this.level().gameEvent(GameEvent.ENTITY_INTERACT, entity.position(), GameEvent.Context.of(this));
                          if (itemStack.isEmpty() && !this.hasInfiniteMaterials()) {
@@ -222,7 +193,7 @@
                              this.setItemInHand(hand, ItemStack.EMPTY);
                          }
  
-@@ -872,6 +_,7 @@
+@@ -859,6 +_,7 @@
      }
  
      @Override
@@ -230,7 +201,7 @@
      protected Vec3 maybeBackOffFromEdge(Vec3 delta, MoverType moverType) {
          float maxDownStep = this.maxUpStep();
          if (!this.abilities.flying
-@@ -923,6 +_,7 @@
+@@ -910,6 +_,7 @@
          }
      }
  
@@ -238,7 +209,7 @@
      private boolean isAboveGround(float maxDownStep) {
          return this.onGround() || this.fallDistance < maxDownStep && !this.canFallAtLeast(0.0, 0.0, maxDownStep - this.fallDistance);
      }
-@@ -944,6 +_,7 @@
+@@ -931,6 +_,7 @@
      }
  
      public void attack(Entity entity) {
@@ -246,7 +217,7 @@
          if (!this.cannotAttack(entity)) {
              float baseDamage = this.isAutoSpinAttack() ? this.autoSpinAttackDmg : (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
              ItemStack attackingItemStack = this.getWeaponItem();
-@@ -951,7 +_,6 @@
+@@ -938,7 +_,6 @@
              float attackStrengthScale = this.getAttackStrengthScale(0.5F);
              float magicBoost = attackStrengthScale * (this.getEnchantedDamage(entity, baseDamage, damageSource) - baseDamage);
              baseDamage *= this.baseDamageScaleFactor();
@@ -254,7 +225,7 @@
              if (!this.deflectProjectile(entity)) {
                  if (baseDamage > 0.0F || magicBoost > 0.0F) {
                      boolean fullStrengthAttack = attackStrengthScale > 0.9F;
-@@ -965,12 +_,22 @@
+@@ -952,12 +_,22 @@
  
                      baseDamage += attackingItemStack.getItem().getAttackDamageBonus(entity, baseDamage, damageSource);
                      boolean criticalAttack = fullStrengthAttack && this.canCriticalAttack(entity);
@@ -279,7 +250,7 @@
                      float oldLivingEntityHealth = 0.0F;
                      if (entity instanceof LivingEntity livingTarget) {
                          oldLivingEntityHealth = livingTarget.getHealth();
-@@ -983,7 +_,8 @@
+@@ -970,7 +_,8 @@
                              entity, this.getKnockback(entity, damageSource) + (knockbackAttack ? 0.5F : 0.0F), oldMovement, damageSource, totalDamage, true
                          );
                          if (sweepAttack) {
@@ -289,7 +260,7 @@
                          }
  
                          this.attackVisualEffects(entity, criticalAttack, sweepAttack, fullStrengthAttack, false, magicBoost);
-@@ -998,6 +_,8 @@
+@@ -985,6 +_,8 @@
  
                  this.postPiercingAttack();
              }
@@ -298,7 +269,7 @@
          }
      }
  
-@@ -1040,7 +_,8 @@
+@@ -1027,7 +_,8 @@
              double approximateSpeedSq = this.getKnownMovement().horizontalDistanceSqr();
              double maxSpeedForSweepAttack = this.getSpeed() * 2.5;
              if (approximateSpeedSq < Mth.square(maxSpeedForSweepAttack)) {
@@ -308,7 +279,7 @@
              }
          }
  
-@@ -1078,11 +_,12 @@
+@@ -1065,11 +_,12 @@
  
      private void itemAttackInteraction(Entity entity, ItemStack attackingItemStack, DamageSource damageSource, boolean applyToTarget) {
          Entity hurtTarget = entity;
@@ -323,7 +294,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              if (hurtTarget instanceof LivingEntity livingTarget) {
                  itemHurtEnemy = attackingItemStack.hurtEnemy(livingTarget, this);
-@@ -1099,6 +_,7 @@
+@@ -1086,6 +_,7 @@
              }
  
              if (attackingItemStack.isEmpty()) {
@@ -331,7 +302,7 @@
                  if (attackingItemStack == this.getMainHandItem()) {
                      this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                  } else {
-@@ -1144,17 +_,24 @@
+@@ -1131,17 +_,24 @@
          return 1.0F;
      }
  
@@ -358,7 +329,7 @@
                      float enchantedDamage = this.getEnchantedDamage(nearby, var12, damageSource) * attackStrengthScale;
                      if (nearby.hurtServer(serverLevel, damageSource, enchantedDamage)) {
                          nearby.knockback(
-@@ -1320,6 +_,7 @@
+@@ -1310,6 +_,7 @@
      }
  
      public void stopSleepInBed(boolean forcefulWakeUp, boolean updateLevelList) {
@@ -366,7 +337,7 @@
          super.stopSleeping();
          if (this.level() instanceof ServerLevel && updateLevelList) {
              ((ServerLevel)this.level()).updateSleepingPlayerList();
-@@ -1430,7 +_,8 @@
+@@ -1413,7 +_,8 @@
  
      @Override
      public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
@@ -376,7 +347,7 @@
              return false;
          }
  
-@@ -1465,13 +_,13 @@
+@@ -1448,13 +_,13 @@
      protected void playStepSound(BlockPos onPos, BlockState onState) {
          if (this.isInWater()) {
              this.waterSwimSound();
@@ -392,7 +363,7 @@
                  } else {
                      super.playStepSound(primaryStepSoundPos, primaryStepState);
                  }
-@@ -1502,6 +_,10 @@
+@@ -1485,6 +_,10 @@
      }
  
      public void giveExperiencePoints(int i) {
@@ -403,7 +374,7 @@
          this.increaseScore(i);
          this.experienceProgress = this.experienceProgress + (float)i / this.getXpNeededForNextLevel();
          this.totalExperience = Mth.clamp(this.totalExperience + i, 0, Integer.MAX_VALUE);
-@@ -1529,7 +_,7 @@
+@@ -1512,7 +_,7 @@
      }
  
      public void onEnchantmentPerformed(ItemStack itemStack, int enchantmentCost) {
@@ -412,7 +383,7 @@
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
              this.experienceProgress = 0.0F;
-@@ -1540,6 +_,10 @@
+@@ -1523,6 +_,10 @@
      }
  
      public void giveExperienceLevels(int amount) {
@@ -423,16 +394,7 @@
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, amount);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
-@@ -1571,7 +_,7 @@
-     }
- 
-     protected boolean hasEnoughFoodToDoExhaustiveManoeuvres() {
--        return this.getFoodData().hasEnoughFood() || this.getAbilities().mayfly;
-+        return this.getFoodData().hasEnoughFood() || this.mayFly();
-     }
- 
-     public Optional<WardenSpawnTracker> getWardenSpawnTracker() {
-@@ -1678,7 +_,11 @@
+@@ -1657,7 +_,11 @@
  
      @Override
      public Component getDisplayName() {
@@ -445,7 +407,7 @@
          return this.decorateDisplayNameComponent(result);
      }
  
-@@ -1860,22 +_,22 @@
+@@ -1839,22 +_,22 @@
              return ItemStack.EMPTY;
          }
  
@@ -473,7 +435,7 @@
      }
  
      @Override
-@@ -1915,7 +_,7 @@
+@@ -1894,7 +_,7 @@
      }
  
      public boolean isScoping() {
@@ -482,7 +444,7 @@
      }
  
      @Override
-@@ -2043,5 +_,41 @@
+@@ -2022,5 +_,41 @@
          public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
          public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem(null);
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));

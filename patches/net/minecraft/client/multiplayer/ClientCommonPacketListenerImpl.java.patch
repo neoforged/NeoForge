@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -93,6 +_,10 @@
+@@ -94,6 +_,10 @@
      private ServerLinks serverLinks;
      protected final Map<UUID, PlayerInfo> seenPlayers;
      protected boolean seenInsecureChatWarning;
@@ -11,7 +11,7 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft minecraft, Connection connection, CommonListenerCookie cookie) {
          this.minecraft = minecraft;
-@@ -106,6 +_,8 @@
+@@ -107,6 +_,8 @@
          this.serverLinks = cookie.serverLinks();
          this.seenPlayers = new HashMap<>(cookie.seenPlayers());
          this.seenInsecureChatWarning = cookie.seenInsecureChatWarning();
@@ -20,7 +20,7 @@
      }
  
      public ServerLinks serverLinks() {
-@@ -157,6 +_,33 @@
+@@ -159,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket packet) {
@@ -54,7 +54,7 @@
          CustomPacketPayload payload = packet.payload();
          if (!(payload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
-@@ -347,6 +_,8 @@
+@@ -359,6 +_,8 @@
      }
  
      public void send(Packet<?> packet) {
@@ -63,7 +63,7 @@
          this.connection.send(packet);
      }
  
-@@ -494,5 +_,15 @@
+@@ -506,5 +_,15 @@
  
          private record PendingRequest(UUID id, URL url, String hash) {
          }

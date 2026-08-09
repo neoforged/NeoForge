@@ -1,26 +1,26 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -391,6 +_,9 @@
+@@ -380,6 +_,9 @@
                  break;
              case SPEAR:
-                 SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, true, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
+                 SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, HumanoidArm.RIGHT, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
 +                break;
 +            default:
 +                state.rightArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -436,6 +_,9 @@
+@@ -425,6 +_,9 @@
                  break;
              case SPEAR:
-                 SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, false, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
+                 SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, HumanoidArm.LEFT, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
 +                break;
 +            default:
 +                state.leftArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
-@@ -519,9 +_,20 @@
+@@ -507,9 +_,20 @@
          private final boolean twoHanded;
          private final boolean affectsOffhandPose;
  
@@ -41,7 +41,7 @@
          }
  
          public boolean isTwoHanded() {
-@@ -530,6 +_,14 @@
+@@ -518,6 +_,14 @@
  
          public boolean affectsOffhandPose() {
              return this.affectsOffhandPose;

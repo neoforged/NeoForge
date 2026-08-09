@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/resources/model/cuboid/FaceBakery.java
++++ b/net/minecraft/client/resources/model/cuboid/FaceBakery.java
+@@ -69,10 +69,14 @@
+ 
+         Transparency transparency = computeMaterialTransparency(material, uvs);
+         ModelBaker.Interner interner = modelBaker.interner();
+-        BakedQuad.MaterialInfo materialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(material, transparency, face.tintIndex(), shade, lightEmission));
+-        return bakeQuad(interner, from, to, uvs, face.rotation(), materialInfo, facing, modelState, elementRotation);
++        var faceData = face.faceData();
++        lightEmission = Math.max(lightEmission, faceData.lightEmission());
++        BakedQuad.MaterialInfo materialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(material, transparency, face.tintIndex(), shade, lightEmission, faceData.ambientOcclusion()));
++        return bakeQuad(interner, from, to, uvs, face.rotation(), materialInfo, facing, modelState, elementRotation, faceData);
+     }
+ 
++    /// @deprecated Neo: use [#bakeQuad(ModelBaker.Interner, Vector3fc, Vector3fc, CuboidFace.UVs, Quadrant, int, BakedQuad.MaterialInfo, Direction, ModelState, CuboidRotation, boolean, int, net.neoforged.neoforge.client.model.ExtraFaceData)] instead
++    @Deprecated
+     public static BakedQuad bakeQuad(
+         ModelBaker.Interner interner,
+         Vector3fc from,

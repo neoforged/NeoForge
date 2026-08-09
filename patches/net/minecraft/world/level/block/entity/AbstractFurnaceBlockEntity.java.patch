@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -67,9 +_,14 @@
+@@ -72,9 +_,14 @@
          public int get(int dataId) {
              switch (dataId) {
                  case 0:
@@ -16,7 +16,7 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -103,12 +_,14 @@
+@@ -108,12 +_,14 @@
      };
      private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
      private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
@@ -31,37 +31,7 @@
      }
  
      @Override
-@@ -116,10 +_,10 @@
-         super.loadAdditional(input);
-         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-         ContainerHelper.loadAllItems(input, this.items);
--        this.cookingTimer = input.getShortOr("cooking_time_spent", (short)0);
--        this.cookingTotalTime = input.getShortOr("cooking_total_time", (short)0);
--        this.litTimeRemaining = input.getShortOr("lit_time_remaining", (short)0);
--        this.litTotalTime = input.getShortOr("lit_total_time", (short)0);
-+        this.cookingTimer = input.getIntOr("cooking_time_spent", (short)0);
-+        this.cookingTotalTime = input.getIntOr("cooking_total_time", (short)0);
-+        this.litTimeRemaining = input.getIntOr("lit_time_remaining", (short)0);
-+        this.litTotalTime = input.getIntOr("lit_total_time", (short)0);
-         this.recipesUsed.clear();
-         this.recipesUsed.putAll(input.read("RecipesUsed", RECIPES_USED_CODEC).orElse(Map.of()));
-     }
-@@ -127,10 +_,10 @@
-     @Override
-     protected void saveAdditional(ValueOutput output) {
-         super.saveAdditional(output);
--        output.putShort("cooking_time_spent", (short)this.cookingTimer);
--        output.putShort("cooking_total_time", (short)this.cookingTotalTime);
--        output.putShort("lit_time_remaining", (short)this.litTimeRemaining);
--        output.putShort("lit_total_time", (short)this.litTotalTime);
-+        output.putInt("cooking_time_spent", this.cookingTimer);
-+        output.putInt("cooking_total_time", this.cookingTotalTime);
-+        output.putInt("lit_time_remaining", this.litTimeRemaining);
-+        output.putInt("lit_total_time", this.litTotalTime);
-         ContainerHelper.saveAllItems(output, this.items);
-         output.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
-     }
-@@ -207,9 +_,10 @@
+@@ -222,9 +_,10 @@
  
      private static void consumeFuel(NonNullList<ItemStack> items, ItemStack fuel) {
          Item fuelItem = fuel.getItem();
@@ -73,16 +43,7 @@
              items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
          }
      }
-@@ -245,7 +_,7 @@
-     }
- 
-     protected int getBurnDuration(FuelValues fuelValues, ItemStack itemStack) {
--        return fuelValues.burnDuration(itemStack);
-+        return itemStack.getBurnTime(this.recipeType, fuelValues);
-     }
- 
-     private static int getTotalCookTime(ServerLevel level, AbstractFurnaceBlockEntity entity) {
-@@ -289,17 +_,57 @@
+@@ -316,17 +_,57 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -141,11 +102,11 @@
      @Override
      public boolean canPlaceItem(int slot, ItemStack itemStack) {
          if (slot == 2) {
-@@ -311,7 +_,7 @@
+@@ -338,7 +_,7 @@
          }
  
          ItemStack fuelSlot = this.items.get(1);
--        return this.level.fuelValues().isFuel(itemStack) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
+-        return itemStack.has(DataComponents.COOKING_FUEL) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
 +        return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
      }
  

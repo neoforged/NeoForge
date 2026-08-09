@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/predicates/LootItemRandomChanceWithEnchantedBonusCondition.java
 +++ b/net/minecraft/world/level/storage/loot/predicates/LootItemRandomChanceWithEnchantedBonusCondition.java
-@@ -41,6 +_,10 @@
+@@ -40,6 +_,10 @@
      public boolean test(LootContext context) {
          Entity killerEntity = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
          int enchantmentLevel = killerEntity instanceof LivingEntity livingKiller ? EnchantmentHelper.getEnchantmentLevel(this.enchantment, livingKiller) : 0;

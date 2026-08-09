@@ -1,18 +1,9 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -71,6 +_,7 @@
-     private static @Nullable DynamicUniforms dynamicUniforms;
-     private static final ScissorState scissorStateForRenderTypeDraws = new ScissorState();
-     private static final SamplerCache samplerCache = new SamplerCache();
-+    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
- 
-     public static SamplerCache getSamplerCache() {
-         return samplerCache;
-@@ -377,5 +_,33 @@
-     }
+@@ -494,4 +_,32 @@
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {
-+    }
+     }
 +
 +    /// Neo: Push the provided [net.neoforged.neoforge.client.pipeline.PipelineModifier] to be applied to subsequent rendering.
 +    ///
@@ -40,5 +31,5 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void ensurePipelineModifiersEmpty() {
 +        PIPELINE_MODIFIERS.ensureEmpty();
-     }
++    }
  }

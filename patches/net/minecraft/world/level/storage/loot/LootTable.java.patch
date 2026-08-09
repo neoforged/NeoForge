@@ -1,32 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
-@@ -39,12 +_,14 @@
-             i -> i.group(
-                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(t -> t.paramSet),
-                     Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(t -> t.randomSequence),
--                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
--                    LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(t -> t.functions)
-+                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
-+                    net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter(t -> t.functions)
-                 )
-                 .apply(i, LootTable::new)
-         )
-     );
-+    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<LootTable>>> CONDITIONAL_DIRECT_CODEC =
-+            net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC);
-     public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.create(Registries.LOOT_TABLE, DIRECT_CODEC);
-     public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
-     private final ContextKeySet paramSet;
-@@ -56,7 +_,7 @@
-     private LootTable(ContextKeySet paramSet, Optional<Identifier> randomSequence, List<LootPool> pools, List<LootItemFunction> functions) {
-         this.paramSet = paramSet;
-         this.randomSequence = randomSequence;
--        this.pools = pools;
-+        this.pools = Lists.newArrayList(pools);
-         this.functions = functions;
-         this.compositeFunction = LootItemFunctions.compose(functions);
-     }
-@@ -79,10 +_,12 @@
+@@ -78,10 +_,12 @@
          };
      }
  
@@ -39,7 +13,7 @@
      public void getRandomItemsRaw(LootContext context, Consumer<ItemStack> output) {
          LootContext.VisitedEntry<?> breadcrumb = LootContext.createVisitedEntry(this);
          if (context.pushVisitedElement(breadcrumb)) {
-@@ -99,18 +_,15 @@
+@@ -98,18 +_,15 @@
      }
  
      public void getRandomItems(LootParams params, long optionalLootTableSeed, Consumer<ItemStack> output) {
@@ -61,7 +35,7 @@
      }
  
      public ObjectArrayList<ItemStack> getRandomItems(LootParams params, RandomSource randomSource) {
-@@ -127,7 +_,8 @@
+@@ -126,7 +_,8 @@
  
      private ObjectArrayList<ItemStack> getRandomItems(LootContext context) {
          ObjectArrayList<ItemStack> result = new ObjectArrayList<>();
@@ -71,7 +45,7 @@
          return result;
      }
  
-@@ -214,11 +_,68 @@
+@@ -213,11 +_,68 @@
          return new LootTable.Builder();
      }
  
@@ -133,17 +107,17 @@
 +
      public static class Builder implements FunctionUserBuilder<LootTable.Builder> {
          private final ImmutableList.Builder<LootPool> pools = ImmutableList.builder();
-         private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
+         private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
          private ContextKeySet paramSet = LootTable.DEFAULT_PARAM_SET;
          private Optional<Identifier> randomSequence = Optional.empty();
 +        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new java.util.ArrayList<>();
  
          public LootTable.Builder withPool(LootPool.Builder pool) {
              this.pools.add(pool.build());
-@@ -246,6 +_,20 @@
+@@ -245,6 +_,20 @@
  
          public LootTable build() {
-             return new LootTable(this.paramSet, this.randomSequence, this.pools.build(), this.functions.build());
+             return new LootTable(this.paramSet, this.randomSequence, this.pools.build(), FunctionUserBuilder.buildFunction(this.functions.build()));
 +        }
 +
 +        public LootTable.Builder withCondition(net.neoforged.neoforge.common.conditions.ICondition condition) {

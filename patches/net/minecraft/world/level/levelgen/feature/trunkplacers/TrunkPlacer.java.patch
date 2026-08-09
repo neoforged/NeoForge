@@ -1,13 +1,13 @@
 --- a/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
 +++ b/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
-@@ -62,6 +_,10 @@
+@@ -61,6 +_,10 @@
      protected static void placeBelowTrunkBlock(
-         WorldGenLevel level, BiConsumer<BlockPos, BlockState> trunkSetter, RandomSource random, BlockPos pos, TreeConfiguration config
+         WorldGenLevel level, BiConsumer<BlockPos, BlockState> trunkSetter, RandomSource random, BlockPos pos, TreeFeature tree
      ) {
 +        if (level.getBlockState(pos).onTreeGrow(level, trunkSetter, random, pos, config)) {
 +            return;
 +        }
 +
-         BlockState blockBelowTrunk = config.belowTrunkProvider.getOptionalState(level, random, pos);
+         BlockState blockBelowTrunk = tree.belowTrunkProvider().getOptionalState(level, random, pos);
          if (blockBelowTrunk != null) {
              trunkSetter.accept(pos, blockBelowTrunk);

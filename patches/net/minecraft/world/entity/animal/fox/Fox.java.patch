@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/fox/Fox.java
 +++ b/net/minecraft/world/entity/animal/fox/Fox.java
-@@ -331,7 +_,7 @@
+@@ -332,7 +_,7 @@
          return baby;
      }
  
@@ -9,7 +9,7 @@
          return level.getBlockState(pos.below()).is(BlockTags.FOXES_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
-@@ -706,13 +_,18 @@
+@@ -707,13 +_,18 @@
  
      @Override
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
@@ -29,7 +29,7 @@
      }
  
      public static boolean isPathClear(Fox fox, LivingEntity target) {
-@@ -868,6 +_,17 @@
+@@ -869,6 +_,17 @@
          @Override
          protected void breed() {
              Fox offspring = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
@@ -47,7 +47,7 @@
              if (offspring != null) {
                  ServerPlayer animalLoveCause = this.animal.getLoveCause();
                  ServerPlayer partnerLoveCause = this.partner.getLoveCause();
-@@ -945,7 +_,7 @@
+@@ -946,7 +_,7 @@
          }
  
          protected void onReachedTarget() {
@@ -56,7 +56,7 @@
                  BlockState state = Fox.this.level().getBlockState(this.blockPos);
                  if (state.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(state);
-@@ -1004,7 +_,7 @@
+@@ -1005,7 +_,7 @@
  
          @Override
          public boolean canUse() {

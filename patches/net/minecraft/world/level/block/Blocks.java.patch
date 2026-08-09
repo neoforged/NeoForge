@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/block/Blocks.java
 +++ b/net/minecraft/world/level/block/Blocks.java
-@@ -705,7 +_,7 @@
-             .pushReaction(PushReaction.DESTROY)
+@@ -802,7 +_,7 @@
+             .pushReaction(PushReaction.POPPED)
      );
      public static final Block POWERED_RAIL = register(
 -        BlockItemIds.POWERED_RAIL, PoweredRailBlock::new, BlockBehaviour.Properties.of().noCollision().strength(0.7F).sound(SoundType.METAL)
@@ -9,13 +9,3 @@
      );
      public static final Block DETECTOR_RAIL = register(
          BlockItemIds.DETECTOR_RAIL, DetectorRailBlock::new, BlockBehaviour.Properties.of().noCollision().strength(0.7F).sound(SoundType.METAL)
-@@ -5995,7 +_,8 @@
-     static {
-         for (Block block : BuiltInRegistries.BLOCK) {
-             for (BlockState state : block.getStateDefinition().getPossibleStates()) {
--                Block.BLOCK_STATE_REGISTRY.add(state);
-+                // Neo: comment out, it's done in NeoForgeRegistryCallbacks
-+                //Block.BLOCK_STATE_REGISTRY.add(blockstate);
-                 state.initCache();
-             }
-         }

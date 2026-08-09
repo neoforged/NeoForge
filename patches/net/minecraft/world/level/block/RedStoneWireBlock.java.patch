@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/RedStoneWireBlock.java
 +++ b/net/minecraft/world/level/block/RedStoneWireBlock.java
-@@ -240,7 +_,7 @@
+@@ -233,7 +_,7 @@
          BlockState relativeState = level.getBlockState(relativePos);
          if (canConnectUp) {
              boolean isPlaceableAbove = relativeState.getBlock() instanceof TrapDoorBlock || this.canSurviveOn(level, relativePos, relativeState);
@@ -9,7 +9,7 @@
                  if (relativeState.isFaceSturdy(level, relativePos, direction.getOpposite())) {
                      return RedstoneSide.UP;
                  }
-@@ -249,10 +_,14 @@
+@@ -242,10 +_,14 @@
              }
          }
  

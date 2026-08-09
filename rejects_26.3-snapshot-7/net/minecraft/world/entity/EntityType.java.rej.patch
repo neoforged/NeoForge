@@ -1,0 +1,70 @@
+--- a/net/minecraft/world/entity/EntityType.java
++++ b/net/minecraft/world/entity/EntityType.java
+@@ -94,6 +99,30 @@
+         FeatureFlagSet requiredFeatures,
+         boolean allowedInPeaceful
+     ) {
++        this(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, dimensions, spawnDimensionsScale, clientTrackingRange, updateInterval, descriptionId, lootTable, requiredFeatures, allowedInPeaceful, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, false);
++    }
++
++    public EntityType(
++            EntityType.EntityFactory<T> factory,
++            MobCategory category,
++            boolean serialize,
++            boolean summon,
++            boolean fireImmune,
++            boolean canSpawnFarFromPlayer,
++            TagKey<Block> immuneTo,
++            EntityDimensions dimensions,
++            float spawnDimensionsScale,
++            int clientTrackingRange,
++            int updateInterval,
++            String descriptionId,
++            Optional<ResourceKey<LootTable>> lootTable,
++            FeatureFlagSet requiredFeatures,
++            boolean allowedInPeaceful,
++            final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
++            final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
++            final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++            boolean onlyOpCanSetNbt
++    ) {
+         this.factory = factory;
+         this.category = category;
+         this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
+@@ -408,14 +448,23 @@
+     }
+ 
+     public int clientTrackingRange() {
++        return trackingRangeSupplier.applyAsInt(this);
++    }
++    private int defaultTrackingRangeSupplier() {
+         return this.clientTrackingRange;
+     }
+ 
+     public int updateInterval() {
++        return updateIntervalSupplier.applyAsInt(this);
++    }
++    private int defaultUpdateIntervalSupplier() {
+         return this.updateInterval;
+     }
+ 
+     public boolean trackDeltas() {
++        return this.trackDeltasSupplier.test(this);
++    }
++    private boolean defaultTrackDeltasSupplier() {
+         return this != EntityTypes.PLAYER
+             && this != EntityTypes.LLAMA_SPIT
+             && this != EntityTypes.WITHER
+@@ -607,7 +683,11 @@
+                 this.descriptionId.get(name),
+                 this.lootTable.get(name),
+                 this.requiredFeatures,
+-                this.allowedInPeaceful
++                this.allowedInPeaceful,
++                this.velocityUpdateSupplier,
++                this.trackingRangeSupplier,
++                this.updateIntervalSupplier,
++                this.onlyOpCanSetNbt
+             );
+         }
+     }

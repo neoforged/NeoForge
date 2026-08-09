@@ -46,7 +46,7 @@
 +            return;
 +        }
          this.state = this.state.setValue(this.block.getShapeProperty(), shape);
-         this.level.setBlock(this.pos, this.state, 3);
+         this.level.setBlockAndUpdate(this.pos, this.state);
      }
 @@ -303,7 +_,7 @@
              }

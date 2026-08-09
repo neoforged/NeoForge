@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/ForceLoadCommand.java
 +++ b/net/minecraft/server/commands/ForceLoadCommand.java
-@@ -93,13 +_,13 @@
+@@ -119,13 +_,13 @@
          if (result) {
              source.sendSuccess(
                  () -> Component.translatable(
@@ -16,8 +16,8 @@
          }
      }
  
-@@ -112,16 +_,16 @@
-             String chunkList = Joiner.on(", ").join(forcedChunks.stream().sorted().map(ChunkPos::unpack).map(ChunkPos::toString).iterator());
+@@ -138,16 +_,16 @@
+             String chunkList = Joiner.on(", ").join(forcedChunks.longStream().sorted().mapToObj(ChunkPos::unpack).map(ChunkPos::toString).iterator());
              if (chunkCount == 1) {
                  source.sendSuccess(
 -                    () -> Component.translatable("commands.forceload.list.single", Component.translationArg(dimension.identifier()), chunkList), false
@@ -36,7 +36,7 @@
          }
  
          return chunkCount;
-@@ -132,7 +_,7 @@
+@@ -158,7 +_,7 @@
          ResourceKey<Level> dimension = level.dimension();
          LongSet forcedChunks = level.getForceLoadedChunks();
          forcedChunks.forEach(chunk -> level.setChunkForced(ChunkPos.getX(chunk), ChunkPos.getZ(chunk), false));
@@ -45,21 +45,3 @@
          return 0;
      }
  
-@@ -179,7 +_,7 @@
-                     () -> Component.translatable(
-                         "commands.forceload." + (add ? "added" : "removed") + ".single",
-                         Component.translationArg(finalFirstChanged),
--                        Component.translationArg(dimension.identifier())
-+                        level.getDescription() // Neo: Use dimension translation, if one exists
-                     ),
-                     true
-                 );
-@@ -190,7 +_,7 @@
-                     () -> Component.translatable(
-                         "commands.forceload." + (add ? "added" : "removed") + ".multiple",
-                         changedChunks,
--                        Component.translationArg(dimension.identifier()),
-+                        level.getDescription(), // Neo: Use dimension translation, if one exists
-                         Component.translationArg(min),
-                         Component.translationArg(max)
-                     ),

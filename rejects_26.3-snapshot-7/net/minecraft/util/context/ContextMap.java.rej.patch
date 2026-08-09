@@ -1,0 +1,12 @@
+--- a/net/minecraft/util/context/ContextMap.java
++++ b/net/minecraft/util/context/ContextMap.java
+@@ -9,6 +9,9 @@
+ import org.jspecify.annotations.Nullable;
+ 
+ public class ContextMap {
++    // Neo: Add EMPTY map for convenience.
++    public static final ContextMap EMPTY = new Builder().create(ContextKeySet.EMPTY);
++
+     private final Map<ContextKey<?>, Object> params;
+ 
+     private ContextMap(Map<ContextKey<?>, Object> params) {

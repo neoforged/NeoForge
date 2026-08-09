@@ -1,0 +1,115 @@
+++++ Target missing
+--- a/net/minecraft/world/item/alchemy/PotionBrewing.java
++++ b/net/minecraft/world/item/alchemy/PotionBrewing.java
+@@ -19,15 +19,37 @@
+     private final List<Ingredient> containers;
+     private final List<PotionBrewing.Mix<Potion>> potionMixes;
+     private final List<PotionBrewing.Mix<Item>> containerMixes;
++    private final net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry registry;
+ 
+     private PotionBrewing(List<Ingredient> containers, List<PotionBrewing.Mix<Potion>> potionMixes, List<PotionBrewing.Mix<Item>> containerMixes) {
++        this(containers, potionMixes, containerMixes, List.of());
++    }
++
++    PotionBrewing(List<Ingredient> containers, List<PotionBrewing.Mix<Potion>> potionMixes, List<PotionBrewing.Mix<Item>> containerMixes, List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> recipes) {
+         this.containers = containers;
+         this.potionMixes = potionMixes;
+         this.containerMixes = containerMixes;
++        this.registry = new net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry(recipes);
+     }
+ 
+     public boolean isIngredient(ItemStack ingredient) {
+-        return this.isContainerIngredient(ingredient) || this.isPotionIngredient(ingredient);
++        return this.registry.isValidIngredient(ingredient) || this.isContainerIngredient(ingredient) || this.isPotionIngredient(ingredient);
++    }
++
++    /**
++     * Checks if an item stack is a valid input for brewing,
++     * for use in the lower 3 slots where water bottles would normally go.
++     */
++    public boolean isInput(ItemStack stack) {
++        return this.registry.isValidInput(stack) || isContainer(stack);
++    }
++
++    /**
++     * Retrieves recipes that use the more general interface.
++     * This does NOT include the container and potion mixes.
++     */
++    public List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> getRecipes() {
++        return registry.recipes();
+     }
+ 
+     private boolean isContainer(ItemStack input) {
+@@ -71,6 +93,7 @@
+     }
+ 
+     public boolean hasMix(ItemStack source, ItemStack ingredient) {
++        if (registry.hasOutput(source, ingredient)) return true;
+         return !this.isContainer(source) ? false : this.hasContainerMix(source, ingredient) || this.hasPotionMix(source, ingredient);
+     }
+ 
+@@ -104,6 +127,9 @@
+             return source;
+         }
+ 
++        var customMix = registry.getOutput(source, ingredient); // Parameters are swapped compared to what vanilla passes!
++        if (!customMix.isEmpty()) return customMix;
++
+         Optional<Holder<Potion>> potion = source.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
+         if (potion.isEmpty()) {
+             return source;
+@@ -124,9 +150,18 @@
+         return source;
+     }
+ 
++    /**
++     * @deprecated Use {@link #bootstrap(FeatureFlagSet, net.minecraft.core.RegistryAccess)} instead
++     */
++    @Deprecated
+     public static PotionBrewing bootstrap(FeatureFlagSet enabledFeatures) {
++        return bootstrap(enabledFeatures, net.minecraft.core.RegistryAccess.EMPTY);
++    }
++
++    public static PotionBrewing bootstrap(FeatureFlagSet enabledFeatures, net.minecraft.core.RegistryAccess registryAccess) {
+         PotionBrewing.Builder builder = new PotionBrewing.Builder(enabledFeatures);
+         addVanillaMixes(builder);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent(builder, registryAccess));
+         return builder.build();
+     }
+ 
+@@ -194,6 +229,7 @@
+         private final List<Ingredient> containers = new ArrayList<>();
+         private final List<PotionBrewing.Mix<Potion>> potionMixes = new ArrayList<>();
+         private final List<PotionBrewing.Mix<Item>> containerMixes = new ArrayList<>();
++        private final List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> recipes = new ArrayList<>();
+         private final FeatureFlagSet enabledFeatures;
+ 
+         public Builder(FeatureFlagSet enabledFeatures) {
+@@ -234,8 +270,26 @@
+             }
+         }
+ 
++        /**
++         * Adds a new simple brewing recipe.
++         *
++         * @param input      the ingredient that goes in the same slot as water bottles would
++         * @param ingredient the ingredient that goes in the same slot as nether wart would
++         * @param output     the item stack that will replace the input once brewing is done
++         */
++        public void addRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
++            addRecipe(new net.neoforged.neoforge.common.brewing.BrewingRecipe(input, ingredient, output));
++        }
++
++        /**
++         * Adds a new brewing recipe with custom logic.
++         */
++        public void addRecipe(net.neoforged.neoforge.common.brewing.IBrewingRecipe recipe) {
++            this.recipes.add(recipe);
++        }
++
+         public PotionBrewing build() {
+-            return new PotionBrewing(List.copyOf(this.containers), List.copyOf(this.potionMixes), List.copyOf(this.containerMixes));
++            return new PotionBrewing(List.copyOf(this.containers), List.copyOf(this.potionMixes), List.copyOf(this.containerMixes), List.copyOf(this.recipes));
+         }
+     }
+ 

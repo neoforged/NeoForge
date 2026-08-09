@@ -1,15 +1,6 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -81,6 +_,8 @@
-     private volatile @Nullable DisconnectionDetails delayedDisconnect;
-     private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
-     private @Nullable UUID intendedProfileId;
-+    @Nullable
-+    private ProtocolInfo<?> inboundProtocol;
- 
-     public Connection(PacketFlow receiving) {
-         this.receiving = receiving;
-@@ -94,11 +_,13 @@
+@@ -92,11 +_,13 @@
          if (this.delayedDisconnect != null) {
              this.disconnect(this.delayedDisconnect);
          }
@@ -23,7 +14,7 @@
      }
  
      @Override
-@@ -115,6 +_,13 @@
+@@ -113,6 +_,13 @@
                  } else {
                      Component reason = Component.translatable("disconnect.genericReason", "Internal Exception: " + cause);
                      PacketListener listener = this.packetListener;
@@ -37,7 +28,7 @@
                      DisconnectionDetails details;
                      if (listener != null) {
                          details = listener.createDisconnectionInfo(reason, cause);
-@@ -201,6 +_,7 @@
+@@ -199,6 +_,7 @@
              throw new IllegalStateException("Invalid inbound protocol: " + protocol.id());
          }
  
@@ -45,7 +36,7 @@
          this.packetListener = packetListener;
          this.disconnectListener = null;
          UnconfiguredPipelineHandler.InboundConfigurationTask configMessage = UnconfiguredPipelineHandler.setupInboundProtocol(protocol);
-@@ -222,7 +_,12 @@
+@@ -220,7 +_,12 @@
          BundlerInfo bundlerInfo = protocol.bundlerInfo();
          if (bundlerInfo != null) {
              PacketBundleUnpacker newUnbundler = new PacketBundleUnpacker(bundlerInfo);
@@ -59,7 +50,7 @@
          }
  
          boolean isLoginProtocol = protocol.id() == ConnectionProtocol.LOGIN;
-@@ -381,7 +_,7 @@
+@@ -379,7 +_,7 @@
          if (this.address == null) {
              return "local";
          } else {
@@ -68,7 +59,7 @@
          }
      }
  
-@@ -424,6 +_,7 @@
+@@ -422,6 +_,7 @@
      }
  
      public static ChannelFuture connect(InetSocketAddress address, EventLoopGroupHolder eventLoopGroupHolder, Connection connection) {
@@ -76,21 +67,3 @@
          return new Bootstrap().group(eventLoopGroupHolder.eventLoopGroup()).handler(new ChannelInitializer<Channel>() {
              @Override
              protected void initChannel(Channel channel) {
-@@ -598,5 +_,17 @@
- 
-     public @Nullable UUID getIntendedProfileId() {
-         return this.intendedProfileId;
-+    }
-+
-+    public Channel channel() {
-+        return this.channel;
-+    }
-+
-+    public PacketFlow getDirection() {
-+        return this.receiving;
-+    }
-+
-+    public ProtocolInfo<?> getInboundProtocol() {
-+        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
-     }
- }

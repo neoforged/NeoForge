@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/commands/ForceLoadCommand.java
++++ b/net/minecraft/server/commands/ForceLoadCommand.java
+@@ -179,7 +179,7 @@
+                     () -> Component.translatable(
+                         "commands.forceload." + (add ? "added" : "removed") + ".single",
+                         Component.translationArg(finalFirstChanged),
+-                        Component.translationArg(dimension.identifier())
++                        level.getDescription() // Neo: Use dimension translation, if one exists
+                     ),
+                     true
+                 );
+@@ -190,7 +190,7 @@
+                     () -> Component.translatable(
+                         "commands.forceload." + (add ? "added" : "removed") + ".multiple",
+                         changedChunks,
+-                        Component.translationArg(dimension.identifier()),
++                        level.getDescription(), // Neo: Use dimension translation, if one exists
+                         Component.translationArg(min),
+                         Component.translationArg(max)
+                     ),

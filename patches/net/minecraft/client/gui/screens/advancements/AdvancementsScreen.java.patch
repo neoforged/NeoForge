@@ -34,7 +34,7 @@
                      this.advancements.setSelectedTab(tab.getRootNode().holder(), true);
                      break;
                  }
-@@ -143,6 +_,11 @@
+@@ -147,6 +_,11 @@
      @Override
      public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
          super.extractRenderState(graphics, mouseX, mouseY, a);
@@ -46,7 +46,7 @@
          graphics.nextStratum();
          this.extractInside(graphics);
          graphics.nextStratum();
-@@ -208,10 +_,12 @@
+@@ -212,10 +_,12 @@
          graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_LOCATION, this.leftPos, this.topPos, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
              for (AdvancementTab tab : this.tabs.values()) {
@@ -59,7 +59,7 @@
                  tab.extractIcon(graphics, this.leftPos, this.topPos);
              }
          }
-@@ -230,7 +_,7 @@
+@@ -234,7 +_,7 @@
  
          if (this.tabs.size() > 1) {
              for (AdvancementTab tab : this.tabs.values()) {

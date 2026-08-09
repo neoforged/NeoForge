@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/TntBlock.java
++++ b/net/minecraft/world/level/block/TntBlock.java
+@@ -78,10 +78,14 @@
+         }
+     }
+ 
++    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)} instead */
++    @Deprecated
+     public static boolean prime(Level level, BlockPos pos) {
+         return prime(level, pos, null);
+     }
+ 
++    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)} instead */
++    @Deprecated
+     private static boolean prime(Level level, BlockPos pos, @Nullable LivingEntity source) {
+         if (level instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.TNT_EXPLODES)) {
+             PrimedTnt tnt = new PrimedTnt(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, source);
+@@ -127,7 +131,7 @@
+             Entity owner = projectile.getOwner();
+             if (projectile.isOnFire()
+                 && projectile.mayInteract(serverLevel, pos)
+-                && prime(level, pos, owner instanceof LivingEntity livingEntity ? livingEntity : null)) {
++                && onCaughtFire(state, level, pos, null, owner instanceof LivingEntity ? (LivingEntity)owner : null)) {
+                 level.removeBlock(pos, false);
+             }
+         }

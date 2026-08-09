@@ -1,0 +1,15 @@
+--- a/net/minecraft/gametest/framework/GameTestServer.java
++++ b/net/minecraft/gametest/framework/GameTestServer.java
+@@ -176,10 +181,12 @@
+     protected boolean initServer() {
+         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()) {});
+         Gizmos.withCollector(GizmoCollector.NOOP);
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
+         this.loadLevel();
+         ServerLevel level = this.overworld();
+         this.testBatches = this.evaluateTestsToRun(level);
+         LOGGER.info("Started game test server");
++        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
+         return true;
+     }
+ 

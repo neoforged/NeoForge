@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ChorusPlantBlock.java
 +++ b/net/minecraft/world/level/block/ChorusPlantBlock.java
-@@ -50,7 +_,8 @@
+@@ -42,7 +_,8 @@
          BlockState south = level.getBlockState(pos.south());
          BlockState west = level.getBlockState(pos.west());
          Block block = defaultState.getBlock();
@@ -10,7 +10,7 @@
              .trySetValue(UP, up.is(block) || up.is(Blocks.CHORUS_FLOWER))
              .trySetValue(NORTH, north.is(block) || north.is(Blocks.CHORUS_FLOWER))
              .trySetValue(EAST, east.is(block) || east.is(Blocks.CHORUS_FLOWER))
-@@ -76,6 +_,12 @@
+@@ -68,6 +_,12 @@
              boolean connect = neighbourState.is(this)
                  || neighbourState.is(Blocks.CHORUS_FLOWER)
                  || directionToNeighbour == Direction.DOWN && neighbourState.is(BlockTags.SUPPORTS_CHORUS_PLANT);
@@ -23,7 +23,7 @@
              return state.setValue(PROPERTY_BY_DIRECTION.get(directionToNeighbour), connect);
          }
      }
-@@ -107,6 +_,8 @@
+@@ -99,6 +_,8 @@
              }
          }
  

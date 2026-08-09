@@ -1,38 +1,9 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -320,10 +_,14 @@
- 
-     @Override
-     public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
--        this.findBlocks(state -> state.getLightEmission() != 0, consumer);
-+        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, consumer);
-     }
- 
-     public void findBlocks(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
-+        findBlocks(predicate, (state, pos) -> predicate.test(state), consumer);
-+    }
-+
-+    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
-         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
- 
-         for (int sectionY = this.getMinSectionY(); sectionY <= this.getMaxSectionY(); sectionY++) {
-@@ -335,8 +_,9 @@
-                     for (int z = 0; z < 16; z++) {
-                         for (int x = 0; x < 16; x++) {
-                             BlockState state = section.getBlockState(x, y, z);
--                            if (predicate.test(state)) {
--                                consumer.accept(mutablePos.setWithOffset(origin, x, y, z), state);
-+                            mutablePos.setWithOffset(origin, x, y, z);
-+                            if (fineFilter.test(state, mutablePos)) {
-+                                consumer.accept(mutablePos, state);
-                             }
-                         }
-                     }
-@@ -484,6 +_,83 @@
-     public ChunkSkyLightSources getSkyLightSources() {
+@@ -482,6 +_,83 @@
          return this.skyLightSources;
      }
-+
+ 
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +
@@ -109,6 +80,7 @@
 +
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
 +    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
- 
++
      public static ProblemReporter.PathElement problemPath(ChunkPos pos) {
          return new ChunkAccess.ChunkPathElement(pos);
+     }

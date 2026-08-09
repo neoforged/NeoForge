@@ -1,0 +1,29 @@
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -81,6 +81,8 @@
+     private volatile @Nullable DisconnectionDetails delayedDisconnect;
+     private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
+     private @Nullable UUID intendedProfileId;
++    @Nullable
++    private ProtocolInfo<?> inboundProtocol;
+ 
+     public Connection(PacketFlow receiving) {
+         this.receiving = receiving;
+@@ -598,5 +616,17 @@
+ 
+     public @Nullable UUID getIntendedProfileId() {
+         return this.intendedProfileId;
++    }
++
++    public Channel channel() {
++        return this.channel;
++    }
++
++    public PacketFlow getDirection() {
++        return this.receiving;
++    }
++
++    public ProtocolInfo<?> getInboundProtocol() {
++        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
+     }
+ }

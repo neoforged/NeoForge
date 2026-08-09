@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/SubmitNodeCollection.java
++++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
+@@ -206,7 +206,7 @@
+     public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState movingBlockRenderState, int outlineColor) {
+         MovingBlockFeatureRenderer.Submit submit = new MovingBlockFeatureRenderer.Submit(new Matrix4f(poseStack.last().pose()), movingBlockRenderState, 0);
+         BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(movingBlockRenderState.blockState);
+-        if (model.hasMaterialFlag(1)) {
++        if (model.hasMaterialFlag(movingBlockRenderState, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, 1)) {
+             this.translucentBlocksAndItems.submit(submit);
+         } else {
+             this.solid.submit(submit);
