@@ -50,7 +50,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
@@ -235,6 +234,17 @@ public class EntityFluidInteractionTests {
                     honeyZombie.get().travel(Vec3.ZERO);
                     helper.assertTrue(honeyType.livingMovementCalls.get() > livingMovementCalls.get(), "Custom movement fluid should use the living movement hook");
                     helper.assertTrue(honeyZombie.get().getDeltaMovement().y > 0.0D, "Custom movement fluid living movement should affect velocity");
+                })
+                .thenExecute(() -> {
+                    honeyZombie.get().remove(Entity.RemovalReason.DISCARDED);
+                    livingMovementCalls.set(honeyType.livingMovementCalls.get());
+                    honeyZombie.set(helper.spawnZombieWithNoFreeWill(honeyPos.above(2)));
+                })
+                .thenExecuteAfter(2, () -> {
+                    honeyZombie.get().setDeltaMovement(Vec3.ZERO);
+                    honeyZombie.get().travel(Vec3.ZERO);
+                    helper.assertTrue(honeyType.livingMovementCalls.get() > livingMovementCalls.get(), "Custom movement fluid should use the living movement hook despite eyes outside of fluid");
+                    helper.assertTrue(honeyZombie.get().getDeltaMovement().y > 0.0D, "Custom movement fluid living movement should affect velocity despite eyes outside of fluid");
                 })
                 .thenSucceed();
     }
@@ -1246,7 +1256,7 @@ public class EntityFluidInteractionTests {
         }
 
         @Override
-        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+        public boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
             this.livingMovementCalls.incrementAndGet();
             entity.setDeltaMovement(0.0D, 0.125D, 0.0D);
             return true;
