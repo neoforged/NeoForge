@@ -1,0 +1,32 @@
+--- a/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
++++ b/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
+@@ -36,13 +_,17 @@
+     protected Map<Identifier, T> prepare(ResourceManager manager, ProfilerFiller profiler) {
+         Map<Identifier, T> result = new HashMap<>();
+ 
++        var conditionalOps = this.makeConditionalOps(this.ops);
++        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
+         for (Entry<Identifier, Resource> entry : this.lister.listMatchingResources(manager).entrySet()) {
+             Identifier location = entry.getKey();
+             Identifier id = this.lister.fileToId(location);
+ 
+             try (Reader reader = entry.getValue().openAsReader()) {
+-                this.codec.parse(this.ops, StrictJsonParser.parse(reader)).ifSuccess(parsed -> {
+-                    if (result.putIfAbsent(id, (T)parsed) != null) {
++                conditionalCodec.parse(conditionalOps, StrictJsonParser.parse(reader)).ifSuccess(parsed -> {
++                    if (parsed.isEmpty()) {
++                        LOGGER.debug("Skipping loading data file '{}' from '{}' as its conditions were not met", id, location);
++                    } else if (result.putIfAbsent(id, parsed.get()) != null) {
+                         throw new IllegalStateException("Duplicate data file ignored with ID " + id);
+                     }
+                 }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
+@@ -52,5 +_,9 @@
+         }
+ 
+         return result;
++    }
++
++    protected Identifier getPreparedPath(Identifier rl) {
++        return this.lister.idToFile(rl);
+     }
+ }

@@ -1,5 +1,13 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
+@@ -130,6 +_,7 @@
+     private int viewDistance;
+     private int simulationDistance;
+     private int sendAllPlayerInfoIn;
++    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(players);
+ 
+     public PlayerList(
+         MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService
 @@ -163,7 +_,7 @@
          LevelData levelData = level.getLevelData();
          ServerGamePacketListenerImpl playerConnection = new ServerGamePacketListenerImpl(this.server, connection, player, cookie);
@@ -133,3 +141,15 @@
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipeManager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
+@@ -860,6 +_,11 @@
+         for (ServerPlayer player : this.players) {
+             player.connection.send(recipes);
+             player.getRecipeBook().sendInitialRecipeBook(player);
++            net.neoforged.neoforge.common.CommonHooks.sendRecipes(player, dataSyncEvent.getRecipeTypesToSend(), recipeManager.recipeMap());
+         }
++    }
++
++    public PlayerDataStorage getPlayerIo() {
++        return this.playerIo;
+     }
+ }

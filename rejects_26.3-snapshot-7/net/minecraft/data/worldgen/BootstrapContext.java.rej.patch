@@ -1,9 +1,0 @@
---- a/net/minecraft/data/worldgen/BootstrapContext.java
-+++ b/net/minecraft/data/worldgen/BootstrapContext.java
-@@ -14,4 +14,6 @@
-     }
- 
-     <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key);
-+
-+    default <S> java.util.Optional<net.minecraft.core.HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) { return java.util.Optional.empty(); }
- }

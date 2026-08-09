@@ -1,0 +1,25 @@
+--- a/net/minecraft/core/RegistrySetBuilder.java
++++ b/net/minecraft/core/RegistrySetBuilder.java
+@@ -65,6 +_,10 @@
+         return this;
+     }
+ 
++    public List<? extends ResourceKey<? extends Registry<?>>> getEntryKeys() {
++        return this.entries.stream().flatMap(RegistrySetBuilder.RegistryStub::requiredRegistries).toList();
++    }
++
+     private static HolderLookup.Provider buildProviderWithContext(HolderLookup.Provider context, Stream<? extends HolderLookup.RegistryLookup<?>> newRegistries) {
+         Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> lookups = new HashMap<>();
+         context.listRegistries()
+@@ -154,6 +_,11 @@
+                 @Override
+                 public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+                     return state.contextRegistries.lookupOrThrow(key).listElements();
++                }
++
++                @Override
++                public <S> java.util.Optional<HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) {
++                    return (java.util.Optional<HolderLookup<S>>) state.contextRegistries.lookup(registry);
+                 }
+             };
+         }

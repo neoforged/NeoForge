@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/WorldLoader.java
++++ b/net/minecraft/server/WorldLoader.java
+@@ -39,7 +_,7 @@
+                     );
+                     RegistryAccess.Frozen worldLoadContext = initialLayers.getAccessForLoading(RegistryLayer.WORLD);
+                     List<HolderLookup.RegistryLookup<?>> worldContextRegistries = TagLoader.buildUpdatedLookups(worldLoadContext, staticLayerTags);
+-                    return RegistryDataLoader.load(resources, worldContextRegistries, RegistryDataLoader.WORLD_REGISTRIES, backgroundExecutor)
++                    return RegistryDataLoader.load(resources, worldContextRegistries, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), backgroundExecutor)
+                         .thenComposeAsync(
+                             loadedWorldRegistries -> {
+                                 List<HolderLookup.RegistryLookup<?>> dimensionContextRegistries = Stream.concat(

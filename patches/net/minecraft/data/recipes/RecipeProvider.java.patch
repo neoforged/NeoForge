@@ -1,5 +1,14 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
+@@ -96,7 +_,7 @@
+         this.advancementOutput = advancementOutput;
+         this.output = new RecipeOutput() {
+             @Override
+-            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder) {
++            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+                 recipeOutput.register(id, recipe);
+                 if (advancementHolder != null) {
+                     this.acceptAdvancement(advancementHolder);
 @@ -649,8 +_,7 @@
      }
  

@@ -1,5 +1,14 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
+@@ -79,6 +_,8 @@
+     private boolean handlingFault;
+     private volatile @Nullable DisconnectionDetails delayedDisconnect;
+     private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
++    @Nullable
++    private ProtocolInfo<?> inboundProtocol;
+ 
+     public Connection(PacketFlow receiving) {
+         this.receiving = receiving;
 @@ -92,11 +_,13 @@
          if (this.delayedDisconnect != null) {
              this.disconnect(this.delayedDisconnect);
@@ -67,3 +76,21 @@
          return new Bootstrap().group(eventLoopGroupHolder.eventLoopGroup()).handler(new ChannelInitializer<Channel>() {
              @Override
              protected void initChannel(Channel channel) {
+@@ -588,5 +_,17 @@
+ 
+     public void setBandwidthLogger(LocalSampleLogger bandwidthLogger) {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(bandwidthLogger);
++    }
++
++    public Channel channel() {
++        return this.channel;
++    }
++
++    public PacketFlow getDirection() {
++        return this.receiving;
++    }
++
++    public ProtocolInfo<?> getInboundProtocol() {
++        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
+     }
+ }

@@ -25,6 +25,14 @@
              } else {
                  level = overworld;
              }
+@@ -481,6 +_,7 @@
+             levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), BlockPos.ZERO.above(80), 0.0F, 0.0F));
+         } else {
+             ServerChunkCache chunkSource = level.getChunkSource();
++            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(level, levelData)) return;
+             ChunkPos spawnChunk = chunkSource.getGenerator().getOrigin(chunkSource.randomState());
+             levelLoadListener.start(LevelLoadListener.Stage.PREPARE_GLOBAL_SPAWN, 0);
+             levelLoadListener.updateFocus(level.dimension(), spawnChunk);
 @@ -543,6 +_,7 @@
                  TicketStorage savedTickets = level.getDataStorage().get(TicketStorage.TYPE);
                  if (savedTickets != null) {
@@ -194,6 +202,14 @@
                      .flatMap(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
+@@ -1540,6 +_,7 @@
+                 this.getPlayerList().reloadResources();
+                 this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
+                 this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
++                this.getPlayerList().getPlayers().forEach(this.getPlayerList()::sendPlayerPermissionLevel); //Forge: Fix newly added/modified commands not being sent to the client when commands reload.
+             }, this);
+         if (this.isSameThread()) {
+             this.managedBlock(result::isDone);
 @@ -1555,8 +_,10 @@
          FeatureFlagSet forcedFeatures = initMode ? FeatureFlagSet.of() : initialDataConfig.enabledFeatures();
          FeatureFlagSet allowedFeatures = initMode ? FeatureFlags.REGISTRY.allFlags() : initialDataConfig.enabledFeatures();

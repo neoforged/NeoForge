@@ -4,8 +4,7 @@
                          final List<CompletableFuture<?>> tasks = new ArrayList<>();
                          RecipeOutput recipeOutput = new RecipeOutput() {
                              @Override
--                            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder) {
-+                            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+                             public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
                                  if (!allRecipes.add(id)) {
                                      throw new IllegalStateException("Duplicate recipe " + id.identifier());
                                  }

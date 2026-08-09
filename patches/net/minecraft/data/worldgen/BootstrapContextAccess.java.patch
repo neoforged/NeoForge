@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/worldgen/BootstrapContextAccess.java
++++ b/net/minecraft/data/worldgen/BootstrapContextAccess.java
+@@ -11,4 +_,8 @@
+ 
+     @Deprecated
+     <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key);
++
++    default <S> java.util.Optional<net.minecraft.core.HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) {
++        return java.util.Optional.empty();
++    }
+ }

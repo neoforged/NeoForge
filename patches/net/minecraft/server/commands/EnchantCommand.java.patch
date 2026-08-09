@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/EnchantCommand.java
 +++ b/net/minecraft/server/commands/EnchantCommand.java
-@@ -75,7 +75,7 @@
+@@ -84,7 +_,7 @@
              if (entity instanceof LivingEntity target) {
                  ItemStack item = target.getMainHandItem();
                  if (!item.isEmpty()) {
@@ -8,4 +8,4 @@
 +                    if (item.supportsEnchantment(enchantmentHolder) // Neo: Respect IItemExtension#supportsEnchantment
                          && EnchantmentHelper.isEnchantmentCompatible(EnchantmentHelper.getEnchantmentsForCrafting(item).keySet(), enchantmentHolder)) {
                          item.enchant(enchantmentHolder, level);
-                         success++;
+                         tracker.track(entity);

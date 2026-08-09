@@ -1,36 +1,5 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -15,13 +15,30 @@
- import net.minecraft.resources.RegistryDataLoader;
- import net.minecraft.resources.ResourceKey;
- 
-+/**
-+ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} instead
-+ */
-+@Deprecated
- public class RegistriesDatapackGenerator implements DataProvider {
-     private final PackOutput output;
-     private final CompletableFuture<HolderLookup.Provider> registries;
-+    private final java.util.function.Predicate<String> namespacePredicate;
-+    private final java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions;
- 
-+    @Deprecated
-     public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-+        this(output, registries, null, java.util.Map.of());
-+    }
-+
-+    public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, java.util.@org.jspecify.annotations.Nullable Set<String> modIds) {
-+        this(output, registries, modIds, java.util.Map.of());
-+    }
-+
-+    public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, java.util.@org.jspecify.annotations.Nullable Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
-+        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
-         this.registries = registries;
-         this.output = output;
-+        this.conditions = conditions;
-     }
- 
-     @Override
 @@ -31,8 +48,7 @@
                  access -> {
                      DynamicOps<JsonElement> registryOps = access.createSerializationContext(JsonOps.INSTANCE);
