@@ -1,0 +1,83 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlRenderPipeline.java
++++ b/com/mojang/renderpearl/backend/opengl/GlRenderPipeline.java
+@@ -29,6 +_,19 @@
+     private final int srcAlpha;
+     private final int dstAlpha;
+     private final int modeAlpha;
++    private final boolean hasStencilTest;
++    private final boolean hasPerFaceStencilTest;
++    private final int stencilReferenceValue;
++    private final int stencilReadMask;
++    private final int stencilWriteMask;
++    private final int stencilFrontCompare;
++    private final int stencilFrontFail;
++    private final int stencilFrontDepthFail;
++    private final int stencilFrontPass;
++    private final int stencilBackCompare;
++    private final int stencilBackFail;
++    private final int stencilBackDepthFail;
++    private final int stencilBackPass;
+     private boolean closed = false;
+ 
+     GlRenderPipeline(GlDevice device, BackendRenderPipeline.CreateInfo createInfo, GlProgram program, VertexArray vertexArray) {
+@@ -88,6 +_,37 @@
+             this.dstAlpha = 1280;
+             this.modeAlpha = 1280;
+         }
++
++        var stencilTest = this.depthEnabled ? createInfo.depthStencilState().stencilTest() : null;
++        if (stencilTest != null) {
++            this.hasStencilTest = true;
++            this.hasPerFaceStencilTest = !stencilTest.front().equals(stencilTest.back());
++            this.stencilReferenceValue = stencilTest.referenceValue();
++            this.stencilReadMask = stencilTest.readMask();
++            this.stencilWriteMask = stencilTest.writeMask();
++            this.stencilFrontCompare = GlConst.toGl(stencilTest.front().compare());
++            this.stencilFrontFail = GlConst.toGl(stencilTest.front().fail());
++            this.stencilFrontDepthFail = GlConst.toGl(stencilTest.front().depthFail());
++            this.stencilFrontPass = GlConst.toGl(stencilTest.front().pass());
++            this.stencilBackCompare = GlConst.toGl(stencilTest.back().compare());
++            this.stencilBackFail = GlConst.toGl(stencilTest.back().fail());
++            this.stencilBackDepthFail = GlConst.toGl(stencilTest.back().depthFail());
++            this.stencilBackPass = GlConst.toGl(stencilTest.back().pass());
++        } else {
++            this.hasStencilTest = false;
++            this.hasPerFaceStencilTest = false;
++            this.stencilReferenceValue = 0;
++            this.stencilReadMask = 0;
++            this.stencilWriteMask = 0;
++            this.stencilFrontCompare = 0;
++            this.stencilFrontFail = 0;
++            this.stencilFrontDepthFail = 0;
++            this.stencilFrontPass = 0;
++            this.stencilBackCompare = 0;
++            this.stencilBackFail = 0;
++            this.stencilBackDepthFail = 0;
++            this.stencilBackPass = 0;
++        }
+     }
+ 
+     @Override
+@@ -156,6 +_,22 @@
+         }
+ 
+         GlStateManager._polygonMode(1032, this.polygonMode);
++
++        if (this.hasStencilTest) {
++            GlStateManager._enableStencilTest();
++            if (this.hasPerFaceStencilTest) {
++                GlStateManager._stencilFuncFront(this.stencilFrontCompare, this.stencilReferenceValue, this.stencilReadMask);
++                GlStateManager._stencilFuncBack(this.stencilBackCompare, this.stencilReferenceValue, this.stencilReadMask);
++                GlStateManager._stencilOpFront(this.stencilFrontFail, this.stencilFrontDepthFail, this.stencilFrontPass);
++                GlStateManager._stencilOpBack(this.stencilBackFail, this.stencilBackDepthFail, this.stencilBackPass);
++            } else {
++                GlStateManager._stencilFunc(this.stencilFrontCompare, this.stencilReferenceValue, this.stencilReadMask);
++                GlStateManager._stencilOp(this.stencilFrontFail, this.stencilFrontDepthFail, this.stencilFrontPass);
++            }
++            GlStateManager._stencilMask(this.stencilWriteMask);
++        } else {
++            GlStateManager._disableStencilTest();
++        }
+     }
+ 
+     public int primitiveTopology() {

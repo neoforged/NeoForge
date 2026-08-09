@@ -1,9 +1,27 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -494,4 +_,32 @@
+@@ -83,6 +_,7 @@
+     private static final SamplerCache samplerCache = new SamplerCache();
+     private static @Nullable PipelineCache fallbackPipelineCache;
+     private static @Nullable PipelineCache currentPipelineCache;
++    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
+ 
+     public static SamplerCache getSamplerCache() {
+         return samplerCache;
+@@ -103,6 +_,8 @@
+     }
+ 
+     public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline) {
++        pipeline = PIPELINE_MODIFIERS.apply(pipeline);
++
+         if (currentPipelineCache != null) {
+             CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline);
+             if (cachedPipeline != null) {
+@@ -493,5 +_,28 @@
+     }
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {
-     }
++    }
 +
 +    /// Neo: Push the provided [net.neoforged.neoforge.client.pipeline.PipelineModifier] to be applied to subsequent rendering.
 +    ///
@@ -24,12 +42,7 @@
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public static com.mojang.blaze3d.pipeline.RenderPipeline applyPipelineModifiers(com.mojang.blaze3d.pipeline.RenderPipeline pipeline) {
-+        return PIPELINE_MODIFIERS.apply(pipeline);
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void ensurePipelineModifiersEmpty() {
 +        PIPELINE_MODIFIERS.ensureEmpty();
-+    }
+     }
  }

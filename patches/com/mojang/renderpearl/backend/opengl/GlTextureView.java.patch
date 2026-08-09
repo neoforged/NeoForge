@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlTextureView.java
++++ b/com/mojang/renderpearl/backend/opengl/GlTextureView.java
+@@ -59,4 +_,9 @@
+     public void removeAssociatedFbo(FrameBufferCache.CacheKey fboKey) {
+         this.fboKeys.remove(fboKey);
+     }
++
++    @Override
++    public boolean hasStencilAspect() {
++        return this.texture().hasStencilAspect();
++    }
+ }

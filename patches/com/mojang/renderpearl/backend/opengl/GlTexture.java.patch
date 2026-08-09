@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlTexture.java
++++ b/com/mojang/renderpearl/backend/opengl/GlTexture.java
+@@ -86,4 +_,9 @@
+             this.destroyImmediately();
+         }
+     }
++
++    @Override
++    public boolean hasStencilAspect() {
++        return this.getFormat().hasStencilAspect();
++    }
+ }
