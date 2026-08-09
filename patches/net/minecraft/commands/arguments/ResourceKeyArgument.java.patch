@@ -10,6 +10,16 @@
      private final ResourceKey<? extends Registry<T>> registryKey;
      private final Predicate<T> filter;
  
+@@ -95,6 +_,9 @@
+     }
+ 
+     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
++        if (context.getSource().getUnsidedLevel().isClientSide()) {
++            throw ERROR_NO_RECIPES_ON_CLIENT.create();
++        }
+         RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
+         ResourceKey<Recipe<?>> key = getRegistryKey(context, name, Registries.RECIPE, ERROR_INVALID_RECIPE);
+         return recipeManager.byKey(key).filter(r -> !r.value().isSpecial()).orElseThrow(() -> ERROR_INVALID_RECIPE.create(key.identifier()));
 @@ -102,7 +_,7 @@
  
      public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
