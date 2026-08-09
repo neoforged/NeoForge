@@ -562,14 +562,12 @@
          float friction = blockFriction * 0.91F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
          double movementY = movement.y;
-@@ -2424,10 +_,15 @@
+@@ -2424,10 +_,13 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
-+        if (this.isInFluidType((entity, type, _) -> !type.isVanilla() && entity.isEyeInFluid(type))) {
-+            if (this.moveInFluid(this.level().getFluidState(BlockPos.containing(this.getEyePosition())), input, baseGravity)) {
-+                return;
-+            }
++        if (this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity))) {
++            return;
 +        }
          if (this.isInWater()) {
              this.travelInWater(input, baseGravity, isFalling, oldY);
