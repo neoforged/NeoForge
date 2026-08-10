@@ -4,7 +4,7 @@
      protected static void placeBelowTrunkBlock(
          WorldGenLevel level, BiConsumer<BlockPos, BlockState> trunkSetter, RandomSource random, BlockPos pos, TreeFeature tree
      ) {
-+        if (level.getBlockState(pos).onTreeGrow(level, trunkSetter, random, pos, config)) {
++        if (level.getBlockState(pos).onTreeGrow(level, trunkSetter, random, pos, tree)) {
 +            return;
 +        }
 +

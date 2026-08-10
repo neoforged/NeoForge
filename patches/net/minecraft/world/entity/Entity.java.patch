@@ -482,10 +482,14 @@
      public boolean isFlyingVehicle() {
          return false;
      }
-@@ -4173,6 +_,11 @@
+@@ -4173,6 +_,15 @@
  
      public void setInvulnerableTime(int invulnerableTime) {
          this.invulnerableTime = invulnerableTime;
++    }
++
++    public int getInvulnerableTime() {
++        return this.invulnerableTime;
 +    }
 +
 +    /// Neo: returns the [EntityFluidInteraction] tracking this entity's interactions with fluids

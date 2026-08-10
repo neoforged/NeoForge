@@ -114,12 +114,12 @@
              .toList();
          this.entityData.set(DATA_EFFECT_PARTICLES, visibleEffectParticles);
          this.entityData.set(DATA_EFFECT_AMBIENCE_ID, areAllEffectsAmbient(this.activeEffects.values()));
-@@ -965,6 +_,7 @@
+@@ -943,6 +_,7 @@
              }
          }
  
 +        visibilityPercent = net.neoforged.neoforge.common.CommonHooks.getEntityVisibilityMultiplier(this, targetingEntity, visibilityPercent);
-         return true;
+         return Mth.clamp(visibilityPercent, 0.0, 10.0);
      }
  
 @@ -981,9 +_,14 @@
@@ -232,7 +232,7 @@
 +
 +            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
 +            this.damageContainers.peek().setShouldCauseSideEffects(false);
-+            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.invulnerableTime);
++            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.getInvulnerableTime());
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
  
              this.actuallyHurt(level, source, damage - this.lastHurt);
@@ -241,13 +241,13 @@
 +            // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
 +            // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
 +            this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
-+            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
++            this.setInvulnerableTime(this.damageContainers.peek().getPostAttackInvulnerabilityTicks());
          } else {
 -            this.lastHurt = damage;
 -            this.damageCooldownTime = 20;
              this.actuallyHurt(level, source, damage);
 +            this.lastHurt = damage;
-+            this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
++            this.setInvulnerableTime(this.damageContainers.peek().getPostAttackInvulnerabilityTicks());
              this.hurtDuration = 10;
              this.hurtTime = this.hurtDuration;
          }

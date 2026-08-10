@@ -6,7 +6,7 @@
              Set<String> providedNamespaces = pack.getNamespaces(type);
 -            PackResources.Filter pathFilter = filterSection != null ? location -> filterSection.isPathFiltered(location.getPath()) : null;
 +            // Neo: Fix MC-271761 by properly coupling namespace and path checks
-+            Predicate<Identifier> pathFilter = filterSection != null ? filterSection::isFiltered : null;
++            PackResources.Filter pathFilter = filterSection != null ? filterSection::isFiltered : null;
  
              for (String namespace : namespaces) {
                  boolean packContainsNamespace = providedNamespaces.contains(namespace);

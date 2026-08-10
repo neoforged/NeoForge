@@ -40,8 +40,8 @@
 +                        // TODO 26.1: It's debatable whether this should advance in a dimension with no clock BUT in Vanilla it does!
 +                        this.awardStat(Stats.TIME_SINCE_REST);
 +                    } else {
-+                        var speed = level().clockManager().getRate(defaultClock.get());
-+                        var fullTicks = (int) speed;
++                        float speed = level().clockManager().getInstance(defaultClock.get()).rate();
++                        int fullTicks = (int) speed;
 +                        partialTimeSinceRestTick += speed;
 +                        if (partialTimeSinceRestTick >= 1) {
 +                            partialTimeSinceRestTick = 0;

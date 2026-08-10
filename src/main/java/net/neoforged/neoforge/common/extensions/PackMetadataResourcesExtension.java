@@ -5,10 +5,8 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-public interface IPackResourcesExtension {
-    /**
-     * {@return {@code true} if the pack should be hidden from any user interfaces}
-     */
+public interface PackMetadataResourcesExtension {
+    /// {@return {@code true} if the pack should be hidden from any user interfaces}
     default boolean isHidden() {
         return false;
     }

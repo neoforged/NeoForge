@@ -33,6 +33,7 @@ import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
@@ -196,7 +197,7 @@ public class ResourcePackLoader {
 
     private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
         final PackFormat currentVersion = SharedConstants.getCurrentVersion().packVersion(type);
-        try (final PackResources primaryResources = resources.openPrimary(location)) {
+        try (final PackMetadataResources primaryResources = resources.openMetadata(location)) {
             PackMetadataSection metadata;
             try {
                 metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
