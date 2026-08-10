@@ -38,10 +38,7 @@ import org.jspecify.annotations.Nullable;
  * @param <T> The objects that this journal uses to record its state snapshots.
  */
 public abstract class SnapshotJournal<T extends @Nullable Object> {
-    /**
-     * Used for entries of {@link #snapshots} that do not correspond to a snapshot.
-     * {@code null} corresponds to a snapshot that happens to be {@code null}.
-     */
+    /// Unique unit marker in snapshot stack, representing absence of created snapshot inside specific transaction
     private static final Object NO_SNAPSHOT = new Object();
 
     private final ArrayList<T> snapshots = new ArrayList<>();
@@ -51,15 +48,18 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     @Nullable
     private T originalState = null;
 
-    /**
-     * Return a new <b>nonnull</b> object containing the current state of this journal.
-     * <b>{@code null} may not be returned, or an exception will be thrown!</b>
-     */
+    /// {@return new *independent* state copy of this journal}
+    /// This value later will be passed to either [SnapshotJournal#revertToSnapshot] (on transaction abortion, directly or due to parent being aborted)
+    /// or [SnapshotJournal#onRootCommit] (when root transaction concludes successfully).
+    ///
+    /// Called only *once* per transaction, which can happen inside other transaction.
+    ///
+    /// One may settle for some form of partial independence, the only requirement is that value returned by this
+    /// method will be sufficient to rollback (via [SnapshotJournal#revertToSnapshot]) this journal to point in time this method was called.
     protected abstract T createSnapshot();
 
-    /**
-     * Roll back to a state previously created by {@link #createSnapshot}.
-     */
+    /// Roll back to a state previously created by [SnapshotJournal#createSnapshot].
+    /// Called when current or parental transaction is aborted, in which this journal took part of.
     protected abstract void revertToSnapshot(T snapshot);
 
     /**
