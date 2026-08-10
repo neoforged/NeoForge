@@ -38,12 +38,11 @@ import org.jspecify.annotations.Nullable;
  * @param <T> The objects that this journal uses to record its state snapshots.
  */
 public abstract class SnapshotJournal<T extends @Nullable Object> {
-    /// Unique unit marker in snapshot stack, representing absence of created snapshot inside specific transaction
+    /// Used for entries of [SnapshotJournal#snapshots] that do not correspond to a snapshot.
     private static final Object NO_SNAPSHOT = new Object();
 
     private final ArrayList<T> snapshots = new ArrayList<>();
-
-    private boolean hasOngoingTransaction = false;
+    private int snapshotCount = 0;
 
     @Nullable
     private T originalState = null;
@@ -52,14 +51,11 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     /// This value later will be passed to either [SnapshotJournal#revertToSnapshot] (on transaction abortion, directly or due to parent being aborted)
     /// or [SnapshotJournal#onRootCommit] (when root transaction concludes successfully).
     ///
-    /// Called only *once* per transaction, which can happen inside other transaction.
-    ///
     /// One may settle for some form of partial independence, the only requirement is that value returned by this
     /// method will be sufficient to rollback (via [SnapshotJournal#revertToSnapshot]) this journal to point in time this method was called.
     protected abstract T createSnapshot();
 
     /// Roll back to a state previously created by [SnapshotJournal#createSnapshot].
-    /// Called when current or parental transaction is aborted, in which this journal took part of.
     protected abstract void revertToSnapshot(T snapshot);
 
     /**
@@ -103,7 +99,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
 
     /// {@return whenever this journal is part of any ongoing transaction}
     public final boolean hasOngoingTransaction() {
-        return hasOngoingTransaction;
+        return snapshotCount > 0;
     }
 
     /**
@@ -127,7 +123,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
             var transactionImpl = (Transaction) transaction;
             transactionImpl.validateOpen();
 
-            hasOngoingTransaction = true;
+            snapshotCount++;
             snapshots.set(currentDepth, createSnapshot());
 
             transactionImpl.journalsToClose.add(this);
@@ -146,6 +142,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         if (wasAborted) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
+            snapshotCount--;
             releaseSnapshot(snapshot);
         } else if (currentDepth == 0) {
             // The transaction is the root.
@@ -158,6 +155,8 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
                 // In this case we just wait for the already-registered callback to run.
                 releaseSnapshot(snapshot);
             }
+
+            snapshotCount = 0;
         } else if (snapshots.get(currentDepth - 1) == NO_SNAPSHOT) {
             // No snapshot yet, so move the snapshot one depth up.
             snapshots.set(currentDepth - 1, snapshot);
@@ -166,23 +165,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         } else {
             // There is already an older snapshot at the depth above, just release the newer one.
             releaseSnapshot(snapshot);
-        }
-
-        // perform callbacks before declaring this snapshot being no longer part of ongoing transaction
-        if (currentDepth == 0) {
-            // root
-            hasOngoingTransaction = false;
-        } else {
-            // snapshot list may have gaps, so we must walk upwards until we hit valid snapshot
-            for (int i = currentDepth - 1; i >= 0; i--) {
-                if (snapshots.get(i) != NO_SNAPSHOT) {
-                    hasOngoingTransaction = true;
-                    return;
-                }
-            }
-
-            // no snapshot state, we don't belong to a transaction
-            hasOngoingTransaction = false;
+            snapshotCount--;
         }
     }
 
