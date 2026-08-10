@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -320,7 +_,7 @@
+@@ -165,7 +_,7 @@
+         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 16.0).add(Attributes.MOVEMENT_SPEED, 0.35F).add(Attributes.ATTACK_DAMAGE, 5.0);
+     }
+ 
+-    public static boolean checkPiglinSpawnRules(EntityType<Piglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkPiglinSpawnRules(EntityType<? extends Piglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return !level.getBlockState(pos.below()).is(Blocks.NETHER_WART_BLOCK);
+     }
+ 
+@@ -321,7 +_,7 @@
          } else if (this.isChargingCrossbow()) {
              return PiglinArmPose.CROSSBOW_CHARGE;
          } else {
@@ -9,7 +18,7 @@
          }
      }
  
-@@ -349,7 +_,7 @@
+@@ -350,7 +_,7 @@
  
      @Override
      public boolean canUseNonMeleeWeapon(ItemStack item) {
@@ -18,16 +27,15 @@
      }
  
      protected void holdInMainHand(ItemStack itemStack) {
-@@ -357,7 +_,7 @@
-     }
+@@ -360,14 +_,14 @@
  
      protected void holdInOffHand(ItemStack itemStack) {
--        if (itemStack.is(PiglinAi.BARTERING_ITEM)) {
-+        if (itemStack.isPiglinCurrency()) {
-             this.setItemSlot(EquipmentSlot.OFFHAND, itemStack);
-             this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
-         } else {
-@@ -367,7 +_,7 @@
+         this.setItemSlotAndDropWhenKilled(EquipmentSlot.OFFHAND, itemStack);
+-        if (!itemStack.is(PiglinAi.BARTERING_ITEM)) {
++        if (!itemStack.isPiglinCurrency()) {
+             this.setPersistenceRequired();
+         }
+     }
  
      @Override
      public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {

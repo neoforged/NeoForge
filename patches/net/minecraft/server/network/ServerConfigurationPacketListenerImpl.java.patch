@@ -79,6 +79,6 @@
  
 -            Objects.requireNonNull(this.prepareSpawnTask).spawnPlayer(this.connection, this.createCookie(this.clientInformation));
 +            Objects.requireNonNull(this.prepareSpawnTask).spawnPlayer(this.connection, this.createCookie(this.clientInformation, this.connectionType));
-         } catch (Exception var4) {
-             LOGGER.error("Couldn't place player in world", (Throwable)var4);
+         } catch (Exception e) {
+             LOGGER.error("Couldn't place player in world", e);
              this.disconnect(DISCONNECT_REASON_INVALID_DATA);

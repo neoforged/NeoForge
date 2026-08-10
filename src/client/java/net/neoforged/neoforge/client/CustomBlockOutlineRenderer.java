@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
@@ -24,5 +24,5 @@ public interface CustomBlockOutlineRenderer {
      * 
      * @return {@code true} to suppress vanilla outline rendering
      */
-    boolean render(BlockOutlineRenderState renderState, MultiBufferSource.BufferSource buffer, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState);
+    boolean render(BlockOutlineRenderState renderState, SubmitNodeCollector submitNodeCollector, PoseStack poseStack, LevelRenderState levelRenderState);
 }

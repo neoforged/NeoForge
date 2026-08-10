@@ -1,19 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -273,8 +_,11 @@
-     );
-     private static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(COMMAND_BLOCK, LECTERN, SIGN, HANGING_SIGN, MOB_SPAWNER, TRIAL_SPAWNER);
+@@ -11,18 +_,46 @@
+ 
+ public class BlockEntityType<T extends BlockEntity> {
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
-+    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
++    /// Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
      private final Set<Block> validBlocks;
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
-+    // Neo: Allow modded BE types to declare that they have NBT data only OPs can set
++    /// Neo: Allow modded BE types to declare that they have NBT data only OPs can set
 +    private final boolean onlyOpCanSetNbt;
- 
-     private static <T extends BlockEntity> BlockEntityType<T> register(
-         String name, BlockEntityType.BlockEntitySupplier<? extends T> factory, Block... validBlocks
-@@ -288,14 +_,39 @@
-     }
  
      public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> factory, Set<Block> validBlocks) {
 +        this(factory, validBlocks, false);
@@ -52,11 +47,11 @@
      public boolean isValid(BlockState state) {
          return this.validBlocks.contains(state.getBlock());
      }
-@@ -311,6 +_,7 @@
+@@ -38,6 +_,7 @@
      }
  
      public boolean onlyOpCanSetNbt() {
 +        if (onlyOpCanSetNbt) return true;
-         return OP_ONLY_CUSTOM_DATA.contains(this);
+         return BlockEntityTypes.OP_ONLY_CUSTOM_DATA.contains(this);
      }
  

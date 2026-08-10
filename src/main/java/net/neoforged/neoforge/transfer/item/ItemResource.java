@@ -248,7 +248,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
     }
 
     @Override
-    public <D> ItemResource with(DataComponentType<D> type, D data) {
+    public <D> ItemResource with(DataComponentType<D> type, @Nullable D data) {
         if (isEmpty()) return ItemResource.EMPTY;
         if (Objects.equals(get(type), data)) return this;
 
@@ -259,7 +259,7 @@ public final class ItemResource implements DataComponentHolderResource<Item> {
 
     //This is overridden to return ItemResource to allow method chaining
     @Override
-    public <D> ItemResource with(Supplier<? extends DataComponentType<D>> type, D data) {
+    public <D> ItemResource with(Supplier<? extends DataComponentType<D>> type, @Nullable D data) {
         return with(type.get(), data);
     }
 

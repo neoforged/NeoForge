@@ -76,4 +76,4 @@
 +        return flags;
      }
  
-     @OnlyIn(Dist.CLIENT)
+     public record Selector<T>(Predicate<BlockState> condition, T model) {

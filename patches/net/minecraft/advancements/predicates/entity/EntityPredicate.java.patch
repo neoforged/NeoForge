@@ -1,0 +1,34 @@
+--- a/net/minecraft/advancements/predicates/entity/EntityPredicate.java
++++ b/net/minecraft/advancements/predicates/entity/EntityPredicate.java
+@@ -91,6 +_,11 @@
+         return entity == null ? false : this.combinedPart.matches(entity, level, position);
+     }
+ 
++    @Nullable
++    public <T extends EntitySubPredicate> T getPartIfExists(Codec<T> type) {
++        return (T) parts.get(type);
++    }
++
+     public static LootContext createContext(ServerPlayer player, Entity entity) {
+         LootParams lootParams = new LootParams.Builder(player.level())
+             .withParameter(LootContextParams.THIS_ENTITY, entity)
+@@ -140,6 +_,19 @@
+ 
+         public static EntityPredicate.Builder entity() {
+             return new EntityPredicate.Builder();
++        }
++
++        /**
++         * Neo: create a builder that inherits all sub-predicates from the given {@code predicate}, that match the given {@code filter}.
++         */
++        public static EntityPredicate.Builder from(EntityPredicate predicate, java.util.function.Predicate<Codec<? extends EntitySubPredicate>> filter) {
++            var builder = new Builder();
++            predicate.parts.forEach((key, value) -> {
++                if (filter.test(key)) {
++                    builder.parts.put(key, value);
++                }
++            });
++            return builder;
+         }
+ 
+         public <T extends EntitySubPredicate> EntityPredicate.Builder put(Codec<T> key, T predicate) {

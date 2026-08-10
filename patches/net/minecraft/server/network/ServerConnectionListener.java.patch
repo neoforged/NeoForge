@@ -1,14 +1,14 @@
 --- a/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/net/minecraft/server/network/ServerConnectionListener.java
-@@ -39,6 +_,7 @@
+@@ -41,6 +_,7 @@
  
  public class ServerConnectionListener {
      private static final Logger LOGGER = LogUtils.getLogger();
 +    private static final int READ_TIMEOUT = Integer.parseInt(System.getProperty("neoforge.readTimeout", "30"));
      private final MinecraftServer server;
      public volatile boolean running;
-     private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
-@@ -50,6 +_,8 @@
+     private volatile @Nullable UUID sessionId;
+@@ -53,6 +_,8 @@
      }
  
      public void startTcpServerListener(@Nullable InetAddress address, int port) throws IOException {
@@ -17,7 +17,7 @@
          synchronized (this.channels) {
              EventLoopGroupHolder eventLoopGroupHolder = EventLoopGroupHolder.remote(this.server.useNativeTransport());
              this.channels
-@@ -69,7 +_,7 @@
+@@ -68,7 +_,7 @@
                                      } catch (ChannelException var5) {
                                      }
  
@@ -26,7 +26,7 @@
                                      if (ServerConnectionListener.this.server.repliesToStatus()) {
                                          pipeline.addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
                                      }
-@@ -87,7 +_,7 @@
+@@ -86,7 +_,7 @@
                                  }
                              }
                          )
@@ -35,7 +35,7 @@
                          .localAddress(address, port)
                          .bind()
                          .syncUninterruptibly()
-@@ -126,7 +_,7 @@
+@@ -121,7 +_,7 @@
                          }
                      }
                  )

@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
++++ b/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
+@@ -51,7 +_,7 @@
+     }
+ 
+     public static boolean checkMagmaCubeSpawnRules(
+-        EntityType<MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         return level.getDifficulty() != Difficulty.PEACEFUL;
+     }
+@@ -96,17 +_,28 @@
+         float sizeJumpBoostPower = this.getSize() * 0.1F;
+         this.setDeltaMovement(movement.x, this.getJumpPower() + sizeJumpBoostPower, movement.z);
+         this.needsSync = true;
++        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+     }
+ 
+     @Override
++    @Deprecated // FORGE: use jumpInFluid instead
+     protected void jumpInLiquid(TagKey<Fluid> type) {
+-        if (type == FluidTags.LAVA) {
++        this.jumpInLiquidInternal(() -> type == FluidTags.LAVA, () -> super.jumpInLiquid(type));
++    }
++
++    private void jumpInLiquidInternal(java.util.function.BooleanSupplier isLava, Runnable onSuper) {
++        if (isLava.getAsBoolean()) {
+             Vec3 movement = this.getDeltaMovement();
+             this.setDeltaMovement(movement.x, 0.22F + this.getSize() * 0.05F, movement.z);
+             this.needsSync = true;
+         } else {
+-            super.jumpInLiquid(type);
++            onSuper.run();
+         }
++    }
++
++    @Override
++    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++        this.jumpInLiquidInternal(() -> type == net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value(), () -> super.jumpInFluid(type));
+     }
+ 
+     @Override

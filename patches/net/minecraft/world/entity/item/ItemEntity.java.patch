@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -51,6 +_,10 @@
+@@ -52,6 +_,10 @@
      private @Nullable EntityReference<Entity> thrower;
      private @Nullable UUID target;
      public final float bobOffs = this.random.nextFloat() * (float) Math.PI * 2.0F;
@@ -11,7 +11,7 @@
  
      public ItemEntity(EntityType<? extends ItemEntity> type, Level level) {
          super(type, level);
-@@ -62,6 +_,7 @@
+@@ -63,6 +_,7 @@
          this.setPos(x, y, z);
          this.setItem(itemStack);
          this.setDeltaMovement(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
@@ -19,7 +19,7 @@
      }
  
      public ItemEntity(Level level, double x, double y, double z, ItemStack itemStack, double deltaX, double deltaY, double deltaZ) {
-@@ -69,6 +_,7 @@
+@@ -70,6 +_,7 @@
          this.setPos(x, y, z);
          this.setItem(itemStack);
          this.setDeltaMovement(deltaX, deltaY, deltaZ);
@@ -27,7 +27,7 @@
      }
  
      @Override
-@@ -106,6 +_,7 @@
+@@ -107,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -35,17 +35,28 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -142,7 +_,8 @@
-                 this.applyEffectsFromBlocks();
-                 float friction = 0.98F;
+@@ -119,6 +_,10 @@
+             this.yo = this.getY();
+             this.zo = this.getZ();
+             Vec3 oldMovement = this.getDeltaMovement();
++            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
++            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > FLOAT_HEIGHT) {
++                fluidType.setItemMovement(this);
++            } else
+             if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
+                 this.setUnderwaterMovement();
+             } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
+@@ -144,7 +_,8 @@
+                 float airDrag = this.getAirDrag();
+                 float groundFriction = airDrag;
                  if (this.onGround()) {
--                    friction = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction() * 0.98F;
+-                    groundFriction *= this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction();
 +                    BlockPos groundPos = getBlockPosBelowThatAffectsMyMovement();
-+                    friction = this.level().getBlockState(groundPos).getFriction(level(), groundPos, this) * 0.98F;
++                    groundFriction *= this.level().getBlockState(groundPos).getFriction(level(), groundPos, this);
                  }
  
-                 this.setDeltaMovement(this.getDeltaMovement().multiply(friction, 0.98, friction));
-@@ -174,7 +_,15 @@
+                 this.setDeltaMovement(this.getDeltaMovement().multiply(groundFriction, airDrag, groundFriction));
+@@ -176,7 +_,15 @@
                  }
              }
  
@@ -62,16 +73,16 @@
                  this.discard();
              }
          }
-@@ -284,7 +_,7 @@
-             this.health = (int)(this.health - damage);
-             this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
-             if (this.health <= 0) {
--                this.getItem().onDestroyed(this);
-+                this.getItem().onDestroyed(this, source);
-                 this.discard();
-             }
+@@ -291,7 +_,7 @@
+         this.health = (int)(this.health - damage);
+         this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
+         if (this.health <= 0) {
+-            this.getItem().onDestroyed(this);
++            this.getItem().onDestroyed(this, source);
+             this.discard();
+         }
  
-@@ -302,6 +_,7 @@
+@@ -308,6 +_,7 @@
          output.putShort("Health", (short)this.health);
          output.putShort("Age", (short)this.age);
          output.putShort("PickupDelay", (short)this.pickupDelay);
@@ -79,7 +90,7 @@
          EntityReference.store(this.thrower, output, "Thrower");
          output.storeNullable("Owner", UUIDUtil.CODEC, this.target);
          if (!this.getItem().isEmpty()) {
-@@ -314,6 +_,7 @@
+@@ -320,6 +_,7 @@
          this.health = input.getShortOr("Health", (short)5);
          this.age = input.getShortOr("Age", (short)0);
          this.pickupDelay = input.getShortOr("PickupDelay", (short)0);
@@ -87,7 +98,7 @@
          this.target = input.read("Owner", UUIDUtil.CODEC).orElse(null);
          this.thrower = EntityReference.read(input, "Thrower");
          this.setItem(input.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY));
-@@ -328,7 +_,22 @@
+@@ -334,7 +_,22 @@
              ItemStack itemStack = this.getItem();
              Item item = itemStack.getItem();
              int orgCount = itemStack.getCount();
@@ -111,7 +122,7 @@
                  player.take(this, orgCount);
                  if (itemStack.isEmpty()) {
                      this.discard();
-@@ -374,6 +_,15 @@
+@@ -380,6 +_,15 @@
          this.target = target;
      }
  
@@ -127,7 +138,7 @@
      public void setThrower(Entity thrower) {
          this.thrower = EntityReference.of(thrower);
      }
-@@ -412,7 +_,7 @@
+@@ -418,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();

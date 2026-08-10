@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/item/MobBucketItem.java
++++ b/net/minecraft/world/item/MobBucketItem.java
+@@ -59,11 +_,17 @@
+ 
+     @Override
+     public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
++        return emptyContents(user, level, pos, hitResult, null);
++    }
++
++    // Neo: Override our patched in overload from upstream allowing mobs to be placed with empty fludis
++    @Override
++    public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, @Nullable ItemStack containerItem) {
+         if (this.content == Fluids.EMPTY) {
+             this.playEmptySound(user, level, pos);
+             return true;
+         } else {
+-            return super.emptyContents(user, level, pos, hitResult);
++            return super.emptyContents(user, level, pos, hitResult, containerItem);
+         }
+     }
+ 

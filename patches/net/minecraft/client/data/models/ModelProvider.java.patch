@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -34,20 +_,58 @@
+@@ -36,20 +_,58 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -63,7 +63,7 @@
          blockStateGenerators.validate();
          itemModels.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -59,12 +_,22 @@
+@@ -61,11 +_,21 @@
  
      @Override
      public String getName() {
@@ -71,7 +71,6 @@
 +        return "Model Definitions - " + modId;
      }
  
-     @OnlyIn(Dist.CLIENT)
      private static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
 +        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>>> knownBlocks;
@@ -87,7 +86,7 @@
  
          public void accept(BlockModelDefinitionGenerator generator) {
              Block block = generator.block();
-@@ -75,11 +_,8 @@
+@@ -76,11 +_,8 @@
          }
  
          public void validate() {
@@ -142,8 +141,8 @@
                      if (item instanceof BlockItem blockItem && !this.itemInfos.containsKey(blockItem)) {
                          Identifier targetModel = ModelLocationUtils.getModelLocation(blockItem.getBlock());
 @@ -131,10 +_,9 @@
-                     this.register(acceptor, donorInfo);
-                 }
+ 
+                 this.register(acceptor, donorInfo);
              });
 -            List<Identifier> missingDefinitions = BuiltInRegistries.ITEM
 -                .listElements()

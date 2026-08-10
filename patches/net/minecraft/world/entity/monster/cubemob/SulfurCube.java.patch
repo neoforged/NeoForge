@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
++++ b/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
+@@ -185,7 +_,7 @@
+         super.travelInFluid(input);
+         if (this.hasBodyItem() && this.floatsInLiquids) {
+             float vibeAmount = 0.2F * Mth.sin(this.tickCount * 0.4F);
+-            double immersion = this.getFluidHeight(this.isInWater() ? FluidTags.WATER : FluidTags.LAVA) - this.getFluidJumpThreshold() + vibeAmount;
++            double immersion = this.getFluidHeight(getMaxHeightFluidType()) - this.getFluidJumpThreshold() + vibeAmount;
+             if (immersion > 0.0) {
+                 this.setDeltaMovement(this.getDeltaMovement().add(0.0, Math.min(1.0, immersion) * 0.04F, 0.0));
+             }
+@@ -224,7 +_,7 @@
+     }
+ 
+     public static boolean checkSulfurCubeSpawnRules(
+-        EntityType<SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
++        EntityType<? extends SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+     ) {
+         return true;
+     }

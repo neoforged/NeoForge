@@ -159,7 +159,7 @@ final class ClientPayloadHandler {
         MenuScreens.getScreenFactory(menuType).ifPresent(f -> {
             Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
             mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
-            mc.setScreen(s);
+            mc.gui.setScreen(s);
         });
     }
 

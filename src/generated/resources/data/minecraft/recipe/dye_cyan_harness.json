@@ -5,21 +5,21 @@
   "ingredients": [
     "#c:dyes/cyan",
     [
-      "minecraft:black_harness",
+      "minecraft:white_harness",
+      "minecraft:orange_harness",
+      "minecraft:magenta_harness",
+      "minecraft:light_blue_harness",
+      "minecraft:yellow_harness",
+      "minecraft:lime_harness",
+      "minecraft:pink_harness",
+      "minecraft:gray_harness",
+      "minecraft:light_gray_harness",
+      "minecraft:purple_harness",
       "minecraft:blue_harness",
       "minecraft:brown_harness",
-      "minecraft:gray_harness",
       "minecraft:green_harness",
-      "minecraft:light_blue_harness",
-      "minecraft:light_gray_harness",
-      "minecraft:lime_harness",
-      "minecraft:magenta_harness",
-      "minecraft:orange_harness",
-      "minecraft:pink_harness",
-      "minecraft:purple_harness",
       "minecraft:red_harness",
-      "minecraft:yellow_harness",
-      "minecraft:white_harness"
+      "minecraft:black_harness"
     ]
   ],
   "result": {

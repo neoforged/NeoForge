@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/net/minecraft/client/gui/screens/PauseScreen.java
 @@ -102,6 +_,7 @@
-         } else {
-             helper.addChild(this.openScreenButton(PLAYER_REPORTING, () -> new SocialInteractionsScreen(this)));
-         }
-+        helper.addChild(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this))).width(BUTTON_WIDTH_FULL).build(), 2);
- 
-         this.disconnectButton = helper.addChild(
-             Button.builder(
+         helper.addChild(this.openScreenButton(ADVANCEMENTS, () -> new AdvancementsScreen(this.minecraft.player.connection.getAdvancements(), this)));
+         helper.addChild(this.openScreenButton(STATS, () -> new StatsScreen(this, this.minecraft.player.getStats())));
+         LinearLayout iconButtonRow = LinearLayout.horizontal().spacing(4);
++        iconButtonRow.addChild(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this));
+         SpriteIconButton reportBugsButton = SpriteIconButton.builder(REPORT_BUGS, ConfirmLinkScreen.confirmLink(this, CommonLinks.SNAPSHOT_BUGS_FEEDBACK), true)
+             .width(20)
+             .sprite(Identifier.withDefaultNamespace("pause_menu/bug"), 15, 15)

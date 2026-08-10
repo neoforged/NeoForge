@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client.extensions.common;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
@@ -237,7 +237,7 @@ public interface IClientItemExtensions {
      * @return The texture to use for scoping
      */
     default Identifier getScopeOverlayTexture(ItemStack stack) {
-        return Gui.SPYGLASS_SCOPE_LOCATION;
+        return Hud.SPYGLASS_SCOPE_LOCATION;
     }
 
     enum FontContext {

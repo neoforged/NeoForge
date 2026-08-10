@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SculkShriekerBlock.java
 +++ b/net/minecraft/world/level/block/SculkShriekerBlock.java
-@@ -126,9 +_,14 @@
+@@ -127,9 +_,14 @@
      @Override
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
          super.spawnAfterBreak(state, level, pos, tool, dropExperience);

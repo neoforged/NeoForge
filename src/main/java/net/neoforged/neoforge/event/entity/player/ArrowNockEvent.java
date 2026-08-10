@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jspecify.annotations.Nullable;
 
 /**
  * ArrowNockEvent is fired when a player begins using a bow.<br>
@@ -29,6 +30,7 @@ public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent {
     private final InteractionHand hand;
     private final Level level;
     private final boolean hasAmmo;
+    @Nullable
     private InteractionResult action;
 
     public ArrowNockEvent(Player player, ItemStack item, InteractionHand hand, Level level, boolean hasAmmo) {
@@ -55,6 +57,7 @@ public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent {
         return this.hasAmmo;
     }
 
+    @Nullable
     public InteractionResult getAction() {
         return this.action;
     }

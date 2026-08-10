@@ -27,15 +27,15 @@
  
          this.setDirty();
          return true;
-@@ -259,6 +_,7 @@
-                 if (ticket.getType().equals(TicketType.FORCED)) {
-                     this.updateForcedChunks();
-                 }
-+                if (ticket.getType().forceNaturalSpawning()) this.updateForcedNaturalSpawning();
+@@ -261,6 +_,7 @@
+         if (ticket.getType().equals(TicketType.FORCED)) {
+             this.updateForcedChunks();
+         }
++        if (ticket.getType().forceNaturalSpawning()) this.updateForcedNaturalSpawning();
  
-                 this.setDirty();
-                 return true;
-@@ -301,11 +_,14 @@
+         this.setDirty();
+         return true;
+@@ -303,11 +_,14 @@
  
      public void deactivateTicketsOnClosing() {
          this.removeTicketIf((ticket, chunkPos) -> ticket.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
@@ -50,7 +50,7 @@
  
          while (ticketsPerChunkIterator.hasNext()) {
              Entry<List<Ticket>> entry = ticketsPerChunkIterator.next();
-@@ -334,6 +_,7 @@
+@@ -336,6 +_,7 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
                          removedForced = true;
                      }
@@ -58,7 +58,7 @@
                  }
              }
  
-@@ -356,6 +_,7 @@
+@@ -358,6 +_,7 @@
          if (removedForced) {
              this.updateForcedChunks();
          }
@@ -66,7 +66,7 @@
      }
  
      public void replaceTicketLevelOfType(int newLevel, TicketType ticketType) {
-@@ -409,5 +_,26 @@
+@@ -411,5 +_,26 @@
  
      public interface TicketPredicate {
          boolean test(Ticket ticket, long chunkPos);

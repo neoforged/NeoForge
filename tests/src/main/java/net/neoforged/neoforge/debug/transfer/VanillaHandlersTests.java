@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -196,7 +196,7 @@ public class VanillaHandlersTests {
         BlockPos absoluteComparatorPos = helper.absolutePos(comparatorPos);
         Direction comparatorFacing = helper.getTestRotation().rotate(Direction.WEST);
         // support block under the comparator
-        helper.setBlock(comparatorPos.relative(Direction.DOWN), Blocks.GREEN_WOOL.defaultBlockState());
+        helper.setBlock(comparatorPos.relative(Direction.DOWN), Blocks.WOOL.green().defaultBlockState());
         // comparator
         helper.setBlock(comparatorPos, Blocks.COMPARATOR.defaultBlockState().setValue(ComparatorBlock.FACING, comparatorFacing));
 
@@ -398,7 +398,7 @@ public class VanillaHandlersTests {
             }
 
             // 2 carrots and 2 golden carrots
-            helper.assertEntitiesPresent(EntityType.ITEM, 4);
+            helper.assertEntitiesPresent(EntityTypes.ITEM, 4);
             helper.succeed();
         });
     }
@@ -605,7 +605,7 @@ public class VanillaHandlersTests {
         }));
 
         test.onGameTest(helper -> {
-            var horse = helper.spawnWithNoFreeWill(EntityType.HORSE, new BlockPos(2, 2, 2));
+            var horse = helper.spawnWithNoFreeWill(EntityTypes.HORSE, new BlockPos(2, 2, 2));
             var wrapper = LivingEntityEquipmentWrapper.of(horse, EquipmentSlot.Type.ANIMAL_ARMOR);
 
             equipEvents.setPlain(0);

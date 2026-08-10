@@ -48,22 +48,22 @@ public class RecipePrioritiesTest {
 
                 // Try to craft default bed recipe
                 .thenMap(() -> helper.getBlockEntity(1, 1, 1, CrafterBlockEntity.class))
-                .thenExecute(crafter -> crafter.setItem(3, Items.YELLOW_WOOL.getDefaultInstance()))
-                .thenExecute(crafter -> crafter.setItem(4, Items.YELLOW_WOOL.getDefaultInstance()))
-                .thenExecute(crafter -> crafter.setItem(5, Items.YELLOW_WOOL.getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(3, Items.WOOL.yellow().getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(4, Items.WOOL.yellow().getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(5, Items.WOOL.yellow().getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(6, Items.OAK_PLANKS.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(7, Items.OAK_PLANKS.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(8, Items.OAK_PLANKS.getDefaultInstance()))
                 .thenIdle(3)
                 .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
-                .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.YELLOW_BED)) // Should craft yellow bed from recipe of yellow wool and oak planks (part of the #planks tag)
+                .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.BED.yellow())) // Should craft yellow bed from recipe of yellow wool and oak planks (part of the #planks tag)
 
                 .thenIdle(5) // Crafter cooldown
 
                 // Try to craft recipe that overrides the default bed recipe
-                .thenExecute(crafter -> crafter.setItem(3, Items.YELLOW_WOOL.getDefaultInstance()))
-                .thenExecute(crafter -> crafter.setItem(4, Items.YELLOW_WOOL.getDefaultInstance()))
-                .thenExecute(crafter -> crafter.setItem(5, Items.YELLOW_WOOL.getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(3, Items.WOOL.yellow().getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(4, Items.WOOL.yellow().getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(5, Items.WOOL.yellow().getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(6, Items.CHERRY_PLANKS.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(7, Items.CHERRY_PLANKS.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(8, Items.CHERRY_PLANKS.getDefaultInstance()))
@@ -82,7 +82,7 @@ public class RecipePrioritiesTest {
         @Override
         protected void buildRecipes() {
             this.shaped(RecipeCategory.MISC, Blocks.REDSTONE_BLOCK)
-                    .define('#', Blocks.YELLOW_WOOL)
+                    .define('#', Blocks.WOOL.yellow())
                     .define('X', Blocks.CHERRY_PLANKS)
                     .pattern("###")
                     .pattern("XXX")

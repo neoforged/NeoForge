@@ -1,13 +1,14 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -560,6 +_,12 @@
+@@ -558,6 +_,13 @@
      }
  
      private boolean tryItemClickBehaviourOverride(Player player, ClickAction clickAction, Slot slot, ItemStack clicked, ItemStack carried) {
-+        // Neo: Fire the ItemStackedOnOtherEvent, and return true if it was cancelled (meaning the event was handled). Returning true will trigger the container to stop processing further logic.
++        // Neo: Fire the ItemStackedOnOtherEvent, and return the event's cancel result if it was cancelled. Returning true will trigger the container to stop processing further logic.
 +        // The first parameter to onItemStackedOn is the "carried" (under-mouse) item, which is the second ItemStack parameter to this method.
-+        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(carried, clicked, slot, clickAction, player, createCarriedSlotAccess())) {
-+            return true;
++        var event = net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(carried, clicked, slot, clickAction, player, createCarriedSlotAccess());
++        if (event.isCanceled()) {
++            return event.getCancellationResult();
 +        }
 +
          FeatureFlagSet enabledFeatures = player.level().enabledFeatures();

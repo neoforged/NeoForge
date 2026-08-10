@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -20,8 +_,8 @@
+@@ -22,8 +_,8 @@
  
  @OnlyIn(Dist.CLIENT)
- public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
+ public class KeyMapping implements Comparable<KeyMapping>, IKeyMappingExtension {
 -    private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -    private static final Map<InputConstants.Key, List<KeyMapping>> MAP = Maps.newHashMap();
 +    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
@@ -11,7 +11,7 @@
      private final String name;
      private final InputConstants.Key defaultKey;
      private final KeyMapping.Category category;
-@@ -29,17 +_,25 @@
+@@ -31,17 +_,25 @@
      boolean isDown;
      private int clickCount;
      private final int order;
@@ -39,7 +39,7 @@
          if (keyMappings != null && !keyMappings.isEmpty()) {
              for (KeyMapping keyMapping : keyMappings) {
                  operation.accept(keyMapping);
-@@ -105,8 +_,83 @@
+@@ -107,8 +_,83 @@
          this.registerMapping(this.key);
      }
  
@@ -124,7 +124,7 @@
      }
  
      public KeyMapping.Category getCategory() {
-@@ -157,6 +_,20 @@
+@@ -159,6 +_,20 @@
      }
  
      public boolean same(KeyMapping that) {
@@ -145,7 +145,7 @@
          return this.key.equals(that.key);
      }
  
-@@ -175,11 +_,13 @@
+@@ -181,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -160,7 +160,7 @@
      }
  
      public String saveString() {
-@@ -191,7 +_,7 @@
+@@ -197,7 +_,7 @@
      }
  
      private void registerMapping(InputConstants.Key key) {
@@ -169,7 +169,7 @@
      }
  
      public static @Nullable KeyMapping get(String name) {
-@@ -214,6 +_,10 @@
+@@ -219,6 +_,10 @@
              return register(Identifier.withDefaultNamespace(name));
          }
  

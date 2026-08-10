@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/entity/animal/fox/Fox.java
 +++ b/net/minecraft/world/entity/animal/fox/Fox.java
-@@ -700,13 +_,18 @@
+@@ -331,7 +_,7 @@
+         return baby;
+     }
+ 
+-    public static boolean checkFoxSpawnRules(EntityType<Fox> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    public static boolean checkFoxSpawnRules(EntityType<? extends Fox> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+         return level.getBlockState(pos.below()).is(BlockTags.FOXES_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
+     }
+ 
+@@ -706,13 +_,18 @@
  
      @Override
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
@@ -20,7 +29,7 @@
      }
  
      public static boolean isPathClear(Fox fox, LivingEntity target) {
-@@ -873,6 +_,17 @@
+@@ -868,6 +_,17 @@
          @Override
          protected void breed() {
              Fox offspring = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
@@ -38,7 +47,7 @@
              if (offspring != null) {
                  ServerPlayer animalLoveCause = this.animal.getLoveCause();
                  ServerPlayer partnerLoveCause = this.partner.getLoveCause();
-@@ -951,7 +_,7 @@
+@@ -945,7 +_,7 @@
          }
  
          protected void onReachedTarget() {
@@ -47,3 +56,12 @@
                  BlockState state = Fox.this.level().getBlockState(this.blockPos);
                  if (state.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(state);
+@@ -1004,7 +_,7 @@
+ 
+         @Override
+         public boolean canUse() {
+-            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25 || Fox.this.isInLava();
++            return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25 || Fox.this.isInLava() || Fox.this.getFluidInteraction().isInFluidMatching(Fox.this, (entity, fluidType, height) -> entity.canSwimInFluidType(fluidType) && height > 0.25D);
+         }
+     }
+ 

@@ -55,4 +55,4 @@
 +        return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(this);
      }
  
-     public interface FallbackProvider<B extends FriendlyByteBuf> {
+     interface FallbackProvider<B extends FriendlyByteBuf> {

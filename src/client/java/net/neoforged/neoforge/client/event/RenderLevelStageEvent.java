@@ -117,7 +117,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after opaque "features" from entities, block entities and particles have been rendered.
      */
     public static class AfterOpaqueFeatures extends RenderLevelStageEvent {
-        public AfterOpaqueFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterOpaqueFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -126,7 +126,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after translucent "features" from entities and block entities have been rendered.
      */
     public static class AfterTranslucentFeatures extends RenderLevelStageEvent {
-        public AfterTranslucentFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTranslucentFeatures(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -135,7 +135,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after translucent chunk geometry has been rendered.
      */
     public static class AfterTranslucentBlocks extends RenderLevelStageEvent {
-        public AfterTranslucentBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTranslucentBlocks(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }
@@ -144,7 +144,7 @@ public abstract class RenderLevelStageEvent extends Event {
      * Fired within {@linkplain LevelRenderer#addMainPass} after translucent "features" from particles have been rendered.
      */
     public static class AfterTranslucentParticles extends RenderLevelStageEvent {
-        public AfterTranslucentParticles(LevelRenderer levelRenderer, LevelRenderState levelRenderState, PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
+        public AfterTranslucentParticles(LevelRenderer levelRenderer, LevelRenderState levelRenderState, @Nullable PoseStack poseStack, Matrix4fc modelViewMatrix, Iterable<? extends IRenderableSection> renderableSections) {
             super(levelRenderer, levelRenderState, poseStack, modelViewMatrix, renderableSections);
         }
     }

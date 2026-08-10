@@ -1,16 +1,17 @@
 --- a/net/minecraft/nbt/NbtIo.java
 +++ b/net/minecraft/nbt/NbtIo.java
-@@ -179,10 +_,12 @@
+@@ -169,11 +_,13 @@
      @VisibleForTesting
      public static Tag readUnnamedTag(DataInput input, NbtAccounter accounter) throws IOException {
          byte type = input.readByte();
 +        accounter.accountBytes(1); // Forge: Count everything!
          if (type == 0) {
              return EndTag.INSTANCE;
-         } else {
--            StringTag.skipString(input);
-+            accounter.readUTF(input.readUTF()); //Forge: Count this string.
-+            accounter.accountBytes(4); //Forge: 4 extra bytes for the object allocation.
-             return readTagSafe(input, accounter, type);
          }
+ 
+-        StringTag.skipString(input);
++        accounter.readUTF(input.readUTF()); //Forge: Count this string.
++        accounter.accountBytes(4); //Forge: 4 extra bytes for the object allocation.
+         return readTagSafe(input, accounter, type);
      }
+ 

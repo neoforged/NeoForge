@@ -163,8 +163,8 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     /**
      * Destroys the container item when it's emptied.
      *
-     * @deprecated Deprecated with no direct equivalent, however {@link ItemAccessFluidHandler} can serve as inspiration.
-     *             Please open an issue on GitHub if you have a use for an equivalent of this class.
+     * @deprecated Use {@link ItemAccessFluidHandler} instead, with an override of {@link ItemAccessFluidHandler#update}
+     *             to return {@code null} if the fluid amount is 0.
      */
     @Deprecated(since = "1.21.9", forRemoval = true)
     public static class Consumable extends FluidHandlerItemStack {

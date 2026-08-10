@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/decoration/ItemFrame.java
 +++ b/net/minecraft/world/entity/decoration/ItemFrame.java
-@@ -245,7 +_,7 @@
+@@ -248,7 +_,7 @@
      private void removeFramedMap(ItemStack itemStack) {
          MapId mapId = this.getFramedMapId(itemStack);
          if (mapId != null) {

@@ -31,8 +31,8 @@
                      Identifier location = Identifier.fromNamespaceAndPath(namespace, path);
 -                    appendFrom(languageCode, resourceManager.getResourceStack(location), translations);
 +                    appendFrom(languageCode, resourceManager.getResourceStack(location), translations, componentMap);
-                 } catch (Exception var10) {
-                     LOGGER.warn("Skipped language file: {}:{} ({})", namespace, path, var10.toString());
+                 } catch (Exception e) {
+                     LOGGER.warn("Skipped language file: {}:{} ({})", namespace, path, e.toString());
                  }
 @@ -46,13 +_,18 @@
          }
@@ -52,8 +52,8 @@
              try (InputStream inputStream = resource.open()) {
 -                Language.loadFromJson(inputStream, translations::put);
 +                Language.loadFromJson(inputStream, translations::put, componentMap::put);
-             } catch (IOException var10) {
-                 LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), var10);
+             } catch (IOException e) {
+                 LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), e);
              }
 @@ -77,5 +_,15 @@
      @Override

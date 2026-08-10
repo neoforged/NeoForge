@@ -28,7 +28,7 @@
 +
 +    // Neo: Register modded debug entries and profile inclusions
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public static void registerModdedDebugEntries() {
++    static void registerModdedDebugEntries() {
 +        if (MODDED_ENTRIES_REGISTERED) {
 +            throw new IllegalStateException("Already registered modded debug entries!");
 +        }

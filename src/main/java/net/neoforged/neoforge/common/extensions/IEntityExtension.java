@@ -14,12 +14,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
@@ -27,6 +29,7 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.InFluidPredicate;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jspecify.annotations.Nullable;
 
@@ -153,104 +156,79 @@ public interface IEntityExtension {
         return null;
     }
 
-// TODO: Reimplement with Entity/Fluid interaction patches
-//
-//    /**
-//     * Returns the height of the fluid type in relation to the bounding box of
-//     * the entity. If the entity is not in the fluid type, then {@code 0}
-//     * is returned.
-//     *
-//     * @param type the type of the fluid
-//     * @return the height of the fluid compared to the entity
-//     */
-//    double getFluidTypeHeight(FluidType type);
-//
-//    /**
-//     * Returns the fluid type which is the highest on the bounding box of
-//     * the entity.
-//     *
-//     * @return the fluid type which is the highest on the bounding box of
-//     *         the entity
-//     */
-//    FluidType getMaxHeightFluidType();
-//
-//    /**
-//     * Returns whether the entity is within the fluid type of the state.
-//     *
-//     * @param state the state of the fluid
-//     * @return {@code true} if the entity is within the fluid type of the
-//     *         state, {@code false} otherwise
-//     */
-//    default boolean isInFluidType(FluidState state) {
-//        return this.isInFluidType(state.getFluidType());
-//    }
-//
-//    /**
-//     * Returns whether the entity is within the fluid type.
-//     *
-//     * @param type the type of the fluid
-//     * @return {@code true} if the entity is within the fluid type,
-//     *         {@code false} otherwise
-//     */
-//    default boolean isInFluidType(FluidType type) {
-//        return this.getFluidTypeHeight(type) > 0.0D;
-//    }
-//
-//    /**
-//     * Returns whether any fluid type the entity is currently in matches
-//     * the specified condition.
-//     *
-//     * @param predicate a test taking in the fluid type and its height
-//     * @return {@code true} if a fluid type meets the condition, {@code false}
-//     *         otherwise
-//     */
-//    default boolean isInFluidType(BiPredicate<FluidType, Double> predicate) {
-//        return isInFluidType(predicate, false);
-//    }
-//
-//    /**
-//     * Returns whether the fluid type the entity is currently in matches
-//     * the specified condition.
-//     *
-//     * @param predicate   a test taking in the fluid type and its height
-//     * @param forAllTypes {@code true} if all fluid types should match the
-//     *                    condition instead of at least one
-//     * @return {@code true} if a fluid type meets the condition, {@code false}
-//     *         otherwise
-//     */
-//    boolean isInFluidType(BiPredicate<FluidType, Double> predicate, boolean forAllTypes);
-//
-//    /**
-//     * Returns whether the entity is in a fluid.
-//     *
-//     * @return {@code true} if the entity is in a fluid, {@code false} otherwise
-//     */
-//    boolean isInFluidType();
-//
-//    /**
-//     * Returns the fluid that is on the entity's eyes.
-//     *
-//     * @return the fluid that is on the entity's eyes
-//     */
-//    FluidType getEyeInFluidType();
-//
-//    /**
-//     * Returns whether the fluid is on the entity's eyes.
-//     *
-//     * @return {@code true} if the fluid is on the entity's eyes, {@code false} otherwise
-//     */
-//    default boolean isEyeInFluidType(FluidType type) {
-//        return type == this.getEyeInFluidType();
-//    }
-//
-//    /**
-//     * Returns whether the entity can start swimming in the fluid.
-//     *
-//     * @return {@code true} if the entity can start swimming, {@code false} otherwise
-//     */
-//    default boolean canStartSwimming() {
-//        return !this.getEyeInFluidType().isAir() && this.canSwimInFluidType(this.getEyeInFluidType()) && this.canSwimInFluidType(this.self().level().getFluidState(this.self().blockPosition()).getFluidType());
-//    }
+    /// Returns the height of the fluid type in relation to the bounding box of
+    /// the entity. If the entity is not in the fluid type, then `0`
+    /// is returned.
+    ///
+    /// @param type the type of the fluid
+    /// @return the height of the fluid compared to the entity
+    default double getFluidTypeHeight(FluidType type) {
+        return self().getFluidInteraction().getFluidHeight(type);
+    }
+
+    /// Returns the fluid type which is the highest on the bounding box of
+    /// the entity.
+    ///
+    /// @return the fluid type which is the highest on the bounding box of
+    ///         the entity
+    default FluidType getMaxHeightFluidType() {
+        return self().getFluidInteraction().getMaxHeightFluidType();
+    }
+
+    /// Returns whether the entity is within the fluid type of the state.
+    ///
+    /// @param state the state of the fluid
+    /// @return `true` if the entity is within the fluid type of the state, `false` otherwise
+    default boolean isInFluidType(FluidState state) {
+        return this.isInFluidType(state.getFluidType());
+    }
+
+    /// Returns whether the entity is within the fluid type.
+    ///
+    /// @param type the type of the fluid
+    /// @return `true` if the entity is within the fluid type, `false` otherwise
+    default boolean isInFluidType(FluidType type) {
+        return this.getFluidTypeHeight(type) > 0.0D;
+    }
+
+    /// Returns whether any fluid type the entity is currently in matches
+    /// the specified condition.
+    ///
+    /// @param predicate a test taking in the fluid type and its height
+    /// @return `true` if a fluid type meets the condition, `false` otherwise
+    default boolean isInFluidType(InFluidPredicate<Entity> predicate) {
+        return self().getFluidInteraction().isInFluidMatching(self(), predicate);
+    }
+
+    /// Returns whether the entity is in a fluid.
+    ///
+    /// @return `true` if the entity is in a fluid, `false` otherwise
+    default boolean isInFluidType() {
+        return self().getFluidInteraction().isInAnyFluid();
+    }
+
+    /// Returns the first fluid that is on the entity's eyes.
+    ///
+    /// @return the first fluid that is on the entity's eyes
+    default FluidType getFirstEyeInFluidType() {
+        return self().getFluidInteraction().getFirstEyeInFluid();
+    }
+
+    /// Returns whether the fluid is on the entity's eyes.
+    ///
+    /// @return `true` if the fluid is on the entity's eyes, `false` otherwise
+    default boolean isEyeInFluidType(FluidType type) {
+        return self().getFluidInteraction().isEyeInFluid(type);
+    }
+
+    /// Returns whether the entity can start swimming in the fluid.
+    ///
+    /// @return `true` if the entity can start swimming, `false` otherwise
+    default boolean canStartSwimming() {
+        return self().getFluidInteraction().isEyeInFluidMatching(self(), (entity, type, _) -> {
+            return entity.canSwimInFluidType(type) && entity.canSwimInFluidType(entity.level().getFluidState(entity.blockPosition()).getFluidType());
+        });
+    }
 
     /**
      * Returns how much the velocity of the fluid should be scaled by
@@ -335,18 +313,6 @@ public interface IEntityExtension {
     }
 
     /**
-     * Returns whether this {@link Entity} has custom outline rendering behavior which does
-     * not use the existing automatic outline rendering based on {@link Entity#isCurrentlyGlowing()}
-     * and the entity's team color.
-     *
-     * @param player the local player currently viewing this {@code Entity}
-     * @return {@code true} to enable outline processing
-     */
-    default boolean hasCustomOutlineRendering(Player player) {
-        return false;
-    }
-
-    /**
      * Sends the pairing data to the client.
      *
      * @param serverPlayer  The player to send the data to.
@@ -369,5 +335,22 @@ public interface IEntityExtension {
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
         AttachmentInternals.copyEntityAttachments(other, self(), isDeath);
+    }
+
+    /// Returns the block bounciness for the given block state. Normally between 0 and 1
+    ///
+    /// @param pos Position of the block to query bounciness at
+    /// @param blockState The block state to query bounciness for
+    /// @return The block bounciness for the given block state and position
+    /// @see IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)
+    default double getBlockBounciness(BlockPos pos, BlockState blockState) {
+        // must be kept inine with Entity.getBlockBounciness(Block)
+        var blockBounciness = blockState.getBounceRestitution(self().level(), pos, self());
+
+        if (!(this instanceof LivingEntity)) {
+            blockBounciness *= .8F;
+        }
+
+        return blockBounciness;
     }
 }

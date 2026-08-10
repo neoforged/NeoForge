@@ -6,10 +6,13 @@
 package net.neoforged.neoforge.common;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.graph.Graph;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
@@ -20,6 +23,8 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -60,9 +65,11 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
@@ -97,7 +104,9 @@ import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityFluidInteraction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -143,6 +152,7 @@ import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -161,15 +171,17 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.loading.toposort.CyclePresentException;
+import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -193,10 +205,12 @@ import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
+import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
@@ -209,6 +223,7 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.CustomClickActionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -223,7 +238,9 @@ import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -265,10 +282,10 @@ public class CommonHooks {
      * @param action            The click action being performed
      * @param player            The player who clicked the slot
      * @param carriedSlotAccess A slot access permitting changing the carried item.
-     * @return True if the event was cancelled, indicating that a mod has handled the click; false otherwise
+     * @return the event itself
      */
-    public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
-        return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
+    public static ItemStackedOnOtherEvent onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
+        return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess));
     }
 
     public static void onDifficultyChange(Difficulty difficulty, Difficulty oldDifficulty) {
@@ -304,10 +321,12 @@ public class CommonHooks {
      * @param entity    the entity to receive damage
      * @param container the newly instantiated container for damage to be dealt. Most properties of
      *                  the container will be empty at this stage.
-     * @return if the event is cancelled and no damage will be applied to the entity
+     * @return if the event is cancelled or the entity was killed during the event. If true, further processing stops and no damage will be applied to the entity
      */
     public static boolean onEntityIncomingDamage(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
+        Preconditions.checkArgument(!entity.isDeadOrDying(), "The LivingIncomingDamageEvent cannot be fired with a dead entity.");
+        var event = NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container));
+        return event.isCanceled() || entity.isDeadOrDying();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -798,12 +817,13 @@ public class CommonHooks {
         return true;
     }
 
-    private static ThreadLocal<Player> craftingPlayer = new ThreadLocal<Player>();
+    private static final ThreadLocal<@Nullable Player> craftingPlayer = new ThreadLocal<>();
 
-    public static void setCraftingPlayer(Player player) {
+    public static void setCraftingPlayer(@Nullable Player player) {
         craftingPlayer.set(player);
     }
 
+    @Nullable
     public static Player getCraftingPlayer() {
         return craftingPlayer.get();
     }
@@ -822,21 +842,8 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static InteractionResult onInteractEntityAt(Player player, Entity entity, HitResult ray, InteractionHand hand) {
-        Vec3 vec3d = ray.getLocation().subtract(entity.position());
-        return onInteractEntityAt(player, entity, vec3d, hand);
-    }
-
-    @Nullable
-    public static InteractionResult onInteractEntityAt(Player player, Entity entity, Vec3 vec3d, InteractionHand hand) {
-        PlayerInteractEvent.EntityInteractSpecific evt = new PlayerInteractEvent.EntityInteractSpecific(player, hand, entity, vec3d);
-        NeoForge.EVENT_BUS.post(evt);
-        return evt.isCanceled() ? evt.getCancellationResult() : null;
-    }
-
-    @Nullable
-    public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand) {
-        PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity);
+    public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand, Vec3 location) {
+        PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity, location);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
@@ -1121,7 +1128,10 @@ public class CommonHooks {
      */
     public static ObjectArrayList<ItemStack> modifyLoot(Identifier lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
-        LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
+        LootModifierManager man = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+                .getServerResources()
+                .managers()
+                .getListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY);
         for (IGlobalLootModifier mod : man.getSortedModifiers()) {
             try {
                 generatedLoot = mod.apply(generatedLoot, context);
@@ -1417,55 +1427,56 @@ public class CommonHooks {
         };
     }
 
-// TODO: Reimplement with Entity/Fluid interaction patches
-//
-//    /**
-//     * Handles living entities being underwater. This fires the {@link LivingBreatheEvent} and if the entity's air supply is less than or equal to zero also the {@link LivingDrownEvent}. Additionally, when the entity is underwater it will
-//     * dismount if {@link IEntityExtension#canBeRiddenUnderFluidType(FluidType, Entity)} returns false.
-//     *
-//     * @param entity           The living entity which is currently updated
-//     * @param consumeAirAmount The amount of air to consume when the entity is unable to breathe
-//     * @param refillAirAmount  The amount of air to refill when the entity is able to breathe
-//     * @implNote This method needs to closely replicate the logic found right after the call site in {@link LivingEntity#baseTick()} as it overrides it.
-//     */
-//    public static void onLivingBreathe(LivingEntity entity, int consumeAirAmount, int refillAirAmount) {
-//        // Check things that vanilla considers to be air - these will cause the air supply to be increased.
-//        boolean isAir = entity.getEyeInFluidType().isAir() || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
-//        boolean canBreathe = isAir;
-//        // The following effects cause the entity to not drown, but do not cause the air supply to be increased.
-//        if (!isAir && (MobEffectUtil.hasWaterBreathing(entity) || !entity.canDrownInFluidType(entity.getEyeInFluidType()) || (entity instanceof Player player && player.getAbilities().invulnerable))) {
-//            canBreathe = true;
-//            refillAirAmount = 0;
-//        }
-//        LivingBreatheEvent breatheEvent = new LivingBreatheEvent(entity, canBreathe, consumeAirAmount, refillAirAmount);
-//        NeoForge.EVENT_BUS.post(breatheEvent);
-//        if (breatheEvent.canBreathe()) {
-//            entity.setAirSupply(Math.min(entity.getAirSupply() + breatheEvent.getRefillAirAmount(), entity.getMaxAirSupply()));
-//        } else {
-//            entity.setAirSupply(entity.getAirSupply() - breatheEvent.getConsumeAirAmount());
-//        }
-//
-//        if (entity.getAirSupply() <= 0) {
-//            LivingDrownEvent drownEvent = new LivingDrownEvent(entity);
-//            if (!NeoForge.EVENT_BUS.post(drownEvent).isCanceled() && drownEvent.isDrowning()) {
-//                entity.setAirSupply(0);
-//                Vec3 vec3 = entity.getDeltaMovement();
-//
-//                for (int i = 0; i < drownEvent.getBubbleCount(); ++i) {
-//                    double d2 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
-//                    double d3 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
-//                    double d4 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
-//                    entity.level().addParticle(ParticleTypes.BUBBLE, entity.getX() + d2, entity.getY() + d3, entity.getZ() + d4, vec3.x, vec3.y, vec3.z);
-//                }
-//
-//                if (drownEvent.getDamageAmount() > 0) entity.hurt(entity.damageSources().drown(), drownEvent.getDamageAmount());
-//            }
-//        }
-//
-//        if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
-//            entity.stopRiding();
-//        }
-//    }
+    /**
+     * Handles living entities being underwater. This fires the {@link LivingBreatheEvent} and if the entity's air supply is less than or equal to zero also the {@link LivingDrownEvent}. Additionally, when the entity is underwater it will
+     * dismount if {@link IEntityExtension#canBeRiddenUnderFluidType(FluidType, Entity)} returns false.
+     *
+     * @param entity           The living entity which is currently updated
+     * @param consumeAirAmount The amount of air to consume when the entity is unable to breathe
+     * @param refillAirAmount  The amount of air to refill when the entity is able to breathe
+     * @implNote This method needs to closely replicate the logic found right after the call site in {@link LivingEntity#baseTick()} as it overrides it.
+     */
+    public static void onLivingBreathe(LivingEntity entity, ServerLevel level, int consumeAirAmount, int refillAirAmount) {
+        // Check things that vanilla considers to be air - these will cause the air supply to be increased.
+        EntityFluidInteraction fluidInteraction = entity.getFluidInteraction();
+        boolean isAir = !fluidInteraction.isEyeInFluidMatching(entity, (_, type, _) -> !type.isAir()) || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
+        boolean canBreathe = isAir;
+        // The following effects cause the entity to not drown, but do not cause the air supply to be increased.
+        if (!isAir && (MobEffectUtil.hasWaterBreathing(entity) || !fluidInteraction.isEyeInFluidMatching(entity, (e, type, _) -> e.canDrownInFluidType(type)) || (entity instanceof Player player && player.getAbilities().invulnerable))) {
+            canBreathe = true;
+            refillAirAmount = 0;
+        }
+        LivingBreatheEvent breatheEvent = new LivingBreatheEvent(entity, canBreathe, consumeAirAmount, refillAirAmount);
+        NeoForge.EVENT_BUS.post(breatheEvent);
+        if (breatheEvent.canBreathe()) {
+            entity.setAirSupply(Math.min(entity.getAirSupply() + breatheEvent.getRefillAirAmount(), entity.getMaxAirSupply()));
+        } else {
+            entity.setAirSupply(entity.getAirSupply() - breatheEvent.getConsumeAirAmount());
+        }
+
+        if (entity.getAirSupply() <= 0) {
+            LivingDrownEvent drownEvent = new LivingDrownEvent(entity);
+            if (!NeoForge.EVENT_BUS.post(drownEvent).isCanceled() && drownEvent.isDrowning()) {
+                entity.setAirSupply(0);
+                Vec3 vec3 = entity.getDeltaMovement();
+
+                for (int i = 0; i < drownEvent.getBubbleCount(); ++i) {
+                    double d2 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
+                    double d3 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
+                    double d4 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
+                    entity.level().addParticle(ParticleTypes.BUBBLE, entity.getX() + d2, entity.getY() + d3, entity.getZ() + d4, vec3.x, vec3.y, vec3.z);
+                }
+
+                if (drownEvent.getDamageAmount() > 0) {
+                    entity.hurtServer(level, entity.damageSources().drown(), drownEvent.getDamageAmount());
+                }
+            }
+        }
+
+        if (!isAir && entity.isPassenger() && entity.getVehicle() != null && fluidInteraction.isEyeInFluidMatching(entity, (e, type, _) -> !e.getVehicle().canBeRiddenUnderFluidType(type, e))) {
+            entity.stopRiding();
+        }
+    }
 
     private static final Set<Class<?>> checkedComponentClasses = ConcurrentHashMap.newKeySet();
 
@@ -1823,5 +1834,74 @@ public class CommonHooks {
             rotation = rotation.getRotated(prevRotation.get());
         }
         blockEntity.applyStructureRotation(settings.getMirror(), rotation);
+    }
+
+    @ApiStatus.Internal
+    public static boolean onCustomClickAction(@Nullable ServerPlayer player, GameProfile profile, Identifier id, Optional<Tag> payload) {
+        return NeoForge.EVENT_BUS.post(new CustomClickActionEvent(player, profile, id, payload.orElse(null))).isCanceled();
+    }
+
+    /// Toposort the given graph, throwing a descriptive exception if the graph contains cycles.
+    ///
+    /// @param graph           The graph to sort
+    /// @param values          The values of the graph in insertion order for secondary ordering
+    /// @param typeDescription A descriptive name of the type being sorted
+    /// @param valuePrinter    A function converting the sorted values to a human-readable representation
+    /// @return the sorted list of values
+    public static <T> List<T> sortGraphChecked(Graph<T> graph, Collection<T> values, String typeDescription, Function<T, ?> valuePrinter) {
+        // Build the index mapping in a way that can be used as a comparator to preserve insertion order.
+        Object2IntMap<T> insertionOrder = new Object2IntOpenHashMap<>();
+        int idx = 0;
+        for (T value : values) {
+            insertionOrder.put(value, idx++);
+        }
+
+        // Do the sort.
+        try {
+            return TopologicalSort.topologicalSort(graph, Comparator.comparingInt(insertionOrder::getInt));
+        } catch (CyclePresentException ex) {
+            // Build a real error message and re-throw.
+            StringBuilder sb = new StringBuilder();
+            sb.append("Cycles were detected during ").append(typeDescription).append(" sorting:\n");
+
+            Set<Set<T>> cycles = ex.getCycles();
+            idx = 0;
+            for (Set<T> cycle : cycles) {
+                sb.append(idx++).append(": ");
+                for (T key : cycle) {
+                    sb.append(valuePrinter.apply(key)).append("->");
+                }
+                sb.append(valuePrinter.apply(cycle.iterator().next())).append('\n');
+            }
+
+            throw new IllegalArgumentException(sb.toString());
+        }
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ItemAttributeModifiers> makeItemAttributesStreamCodec(
+            StreamCodec<RegistryFriendlyByteBuf, List<ItemAttributeModifiers.Entry>> entriesStreamCodec,
+            Function<ItemAttributeModifiers, List<ItemAttributeModifiers.Entry>> entryGetter,
+            Function<List<ItemAttributeModifiers.Entry>, ItemAttributeModifiers> constructor) {
+        return new StreamCodec<>() {
+            @Override
+            public ItemAttributeModifiers decode(RegistryFriendlyByteBuf input) {
+                return constructor.apply(entriesStreamCodec.decode(input));
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf output, ItemAttributeModifiers value) {
+                List<ItemAttributeModifiers.Entry> modifiers = entryGetter.apply(value);
+                if (output.getConnectionType().isOther()) {
+                    List<ItemAttributeModifiers.Entry> filteredModifiers = new ArrayList<>(modifiers.size());
+                    for (ItemAttributeModifiers.Entry entry : modifiers) {
+                        if (entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                            filteredModifiers.add(entry);
+                        }
+                    }
+                    modifiers = filteredModifiers;
+                }
+                entriesStreamCodec.encode(output, modifiers);
+            }
+        };
     }
 }

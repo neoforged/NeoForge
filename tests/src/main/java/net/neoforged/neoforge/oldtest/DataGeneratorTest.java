@@ -33,7 +33,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.core.Holder;
@@ -56,6 +56,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.OverlayMetadataSection;
@@ -65,13 +66,14 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.Util;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -240,7 +242,7 @@ public class DataGeneratorTest {
                     .pattern(" # ")
                     .pattern("###")
                     .pattern(" # ")
-                    .define('#', DifferenceIngredient.of(tag(ItemTags.FENCES), tag(ItemTags.NON_FLAMMABLE_WOOD)))
+                    .define('#', DifferenceIngredient.of(tag(BlockItemTags.FENCES.item()), tag(ItemTags.NON_FLAMMABLE_WOOD)))
                     .unlockedBy("has_fence", has(Items.CRIMSON_FENCE))
                     .save(output, recipeKey("difference_ingredient"));
 
@@ -483,7 +485,7 @@ public class DataGeneratorTest {
         @Override
         protected void addTags(HolderLookup.Provider provider) {
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "test")))
-                    .add(Blocks.DIAMOND_BLOCK)
+                    .add(BlockItemIds.DIAMOND_BLOCK.block())
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .add(TagEntry.optionalElement(Identifier.fromNamespaceAndPath("chisel", "marble/raw")))
@@ -491,16 +493,16 @@ public class DataGeneratorTest {
 
             // Hopefully sorting issues
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "thing/one")))
-                    .add(Blocks.COBBLESTONE);
+                    .add(BlockItemIds.COBBLESTONE.block());
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "thing/two")))
-                    .add(Blocks.DIORITE);
+                    .add(BlockItemIds.DIORITE.block());
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "thing/three")))
-                    .add(Blocks.ANDESITE);
+                    .add(BlockItemIds.ANDESITE.block());
 
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "things")))
-                    .add(Blocks.COBBLESTONE)
-                    .add(Blocks.DIORITE)
-                    .add(Blocks.ANDESITE);
+                    .add(BlockItemIds.COBBLESTONE.block())
+                    .add(BlockItemIds.DIORITE.block())
+                    .add(BlockItemIds.ANDESITE.block());
         }
     }
 
@@ -515,7 +517,7 @@ public class DataGeneratorTest {
             add(Items.DIAMOND, "Diamond");
             //add(Biomes.BEACH, "Beach");
             add(MobEffects.POISON.value(), "Poison");
-            add(EntityType.CAT, "Cat");
+            add(EntityTypes.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
             add(MODID + ".test.component.literal", Component.literal("Literal"));
             add(MODID + ".test.component.styled", Component.literal("Blue").withStyle(ChatFormatting.BLUE));

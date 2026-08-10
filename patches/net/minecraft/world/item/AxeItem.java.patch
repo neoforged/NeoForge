@@ -9,15 +9,15 @@
      protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
          .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
          .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
-@@ -64,7 +_,7 @@
-         if (playerHasBlockingItemUseIntent(context)) {
+@@ -65,7 +_,7 @@
              return InteractionResult.PASS;
-         } else {
--            Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos));
-+            Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos), context);
-             if (newBlock.isEmpty()) {
-                 return InteractionResult.PASS;
-             } else {
+         }
+ 
+-        Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos));
++        Optional<BlockState> newBlock = this.evaluateNewBlockState(level, pos, player, level.getBlockState(pos), context);
+         if (newBlock.isEmpty()) {
+             return InteractionResult.PASS;
+         }
 @@ -91,19 +_,18 @@
              && !player.isSecondaryUseActive();
      }
@@ -48,14 +48,14 @@
  
 +    @org.jspecify.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
-+        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        var strippable = originalState.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
 +
      private Optional<BlockState> getStripped(BlockState state) {
-+        var strippable = state.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        var strippable = state.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) {
 +            return Optional.of(strippable.strippedBlock().withPropertiesOf(state));
 +        }

@@ -1,28 +1,33 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -39,15 +_,20 @@
- import org.jspecify.annotations.Nullable;
- import org.slf4j.Logger;
+@@ -40,9 +_,13 @@
  
--public abstract class BlockEntity implements DebugValueSource, TypedInstance<BlockEntityType<?>>, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
-+public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
+ import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
+ 
+-public abstract class BlockEntity implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
++public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
-+    @Deprecated // Neo: always use getType()
++    /**
++     * @deprecated Neo: use {@link #getType()}
++     */
++    @Deprecated
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
      protected final BlockPos worldPosition;
-     protected boolean remove;
+@@ -50,6 +_,11 @@
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
+ 
 +    @Nullable
 +    private CompoundTag customPersistentData;
 +    @Nullable
 +    private Set<net.neoforged.neoforge.attachment.AttachmentType<?>> attachmentTypesToSync;
- 
++
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
-@@ -63,7 +_,7 @@
+         this.worldPosition = worldPosition.immutable();
+@@ -64,7 +_,7 @@
      }
  
      public boolean isValidBlockState(BlockState blockState) {
@@ -31,7 +36,7 @@
      }
  
      public static BlockPos getPosFromTag(ChunkPos base, CompoundTag entityTag) {
-@@ -94,6 +_,8 @@
+@@ -95,6 +_,8 @@
      }
  
      protected void loadAdditional(ValueInput input) {
@@ -40,7 +45,7 @@
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -106,6 +_,11 @@
+@@ -107,6 +_,11 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
@@ -52,7 +57,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
-@@ -239,10 +_,14 @@
+@@ -226,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -67,7 +72,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -272,6 +_,48 @@
+@@ -259,6 +_,48 @@
  
      public BlockEntityType<?> getType() {
          return this.type;

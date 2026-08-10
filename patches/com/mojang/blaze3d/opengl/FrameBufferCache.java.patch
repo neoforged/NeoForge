@@ -1,0 +1,28 @@
+--- a/com/mojang/blaze3d/opengl/FrameBufferCache.java
++++ b/com/mojang/blaze3d/opengl/FrameBufferCache.java
+@@ -46,7 +_,7 @@
+         }
+ 
+         dsa.bindFrameBufferTextures(
+-            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
++            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0, depthAttachment != null && depthAttachment.hasStencilAspect()
+         );
+         return fbo;
+     }
+@@ -71,7 +_,7 @@
+ 
+         public CacheKey(List<@Nullable FrameBufferAttachment> colorAttachments, @Nullable FrameBufferAttachment depthAttachment) {
+             int colorAttachmentCount = colorAttachments.size();
+-            this.data = new int[(colorAttachmentCount + (depthAttachment != null ? 1 : 0)) * 2];
++            this.data = new int[(colorAttachmentCount * 2) + (depthAttachment != null ? 3 : 0)];
+ 
+             for (int i = 0; i < colorAttachmentCount; i++) {
+                 FrameBufferAttachment attachment = colorAttachments.get(i);
+@@ -88,6 +_,7 @@
+             if (depthAttachment != null) {
+                 this.data[colorAttachmentCount * 2] = depthAttachment.glId();
+                 this.data[colorAttachmentCount * 2 + 1] = depthAttachment.fboMipLevel();
++                this.data[colorAttachmentCount * 2 + 2] = depthAttachment.hasStencilAspect() ? 1 : 0;
+                 this.associatedAttachments.add(depthAttachment);
+             }
+ 

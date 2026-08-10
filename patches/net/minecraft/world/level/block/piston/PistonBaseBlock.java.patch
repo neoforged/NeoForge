@@ -13,10 +13,10 @@
              level.gameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Context.of(extendedState));
          } else if (b0 == 1 || b0 == 2) {
 +            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, false)) return false;
-             BlockEntity prevBlockEntity = level.getBlockEntity(pos.relative(direction));
-             if (prevBlockEntity instanceof PistonMovingBlockEntity) {
-                 ((PistonMovingBlockEntity)prevBlockEntity).finalTick();
-@@ -219,6 +_,7 @@
+             if (level.getBlockEntity(pos.relative(direction)) instanceof PistonMovingBlockEntity pistonMovingBlockEntity) {
+                 pistonMovingBlockEntity.finalTick();
+             }
+@@ -218,6 +_,7 @@
              level.gameEvent(GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Context.of(movingPistonState));
          }
  
@@ -24,24 +24,47 @@
          return true;
      }
  
-@@ -289,8 +_,7 @@
-                     level.levelEvent(2001, pos, getId(state));
-                 }
- 
--                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 18);
--                level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
-+                state.onDestroyedByPushReaction(level, pos, direction, level.getFluidState(pos));
-                 toUpdate[updateIndex++] = state;
+@@ -297,8 +_,7 @@
+                 level.levelEvent(2001, pos, getId(state));
              }
  
-@@ -360,6 +_,10 @@
-     @Override
-     protected BlockState rotate(BlockState state, Rotation rotation) {
+-            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 18);
+-            level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
++            state.onDestroyedByPushReaction(level, pos, direction, level.getFluidState(pos));
+             toUpdate[updateIndex++] = state;
+         }
+ 
+@@ -369,6 +_,10 @@
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-+    }
-+
-+    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
-+         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
      }
  
++    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
++         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
++    }
++
      @Override
+     protected BlockState mirror(BlockState state, Mirror mirror) {
+         return state.rotate(mirror.getRotation(state.getValue(FACING)));
+@@ -387,5 +_,22 @@
+     @Override
+     protected boolean isPathfindable(BlockState state, PathComputationType type) {
+         return false;
++    }
++
++    // Neo: Extended piston multiblock can be relocated if and only if both halves are being relocated
++    @Override
++    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
++        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
++            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
++        }
++        if (!state.getValue(EXTENDED))
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        Direction facing = state.getValue(FACING);
++        BlockPos neighborPos = pos.relative(facing);
++        BlockState neighborState = level.getBlockState(neighborPos);
++        // if this is extended but somebody already cut the block in half, no point in denying the relocation
++        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
++            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
+     }
+ }

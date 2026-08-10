@@ -42,19 +42,14 @@ import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
-import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.VisibleForTesting;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
-    private static LootModifierManager LOOT_MODIFIER_MANAGER;
-    private static DataMapLoader DATA_MAP_LOADER;
-
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
@@ -106,7 +101,9 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent.ServerDataLoad event) {
-        DATA_MAP_LOADER.apply(event.getRegistries());
+        event.getServerResources()
+                .getListener(NeoForgeReloadListeners.DATA_MAPS_KEY)
+                .apply(event.getRegistries());
     }
 
     @SubscribeEvent
@@ -120,9 +117,10 @@ public class NeoForgeEventHandler {
                     return;
                 }
 
-                // Note: don't send data maps over in-memory connections for normal registries, else the client-side handling will wipe non-synced data maps.
-                // Sending them for synced datapack registries is fine and required as those registries are recreated on the client
-                if (player.connection.getConnection().isMemoryConnection() && DataPackRegistriesHooks.getSyncedRegistry((ResourceKey) registry) == null) {
+                // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+                // To prevent serialization issues with data component defaults holding datapack objects on static registries, synced
+                // datapack registries are not recreated on the client in singleplayer.
+                if (player.connection.getConnection().isMemoryConnection()) {
                     return;
                 }
                 final var playerMaps = player.connection.getConnection().channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
@@ -153,17 +151,11 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onResourceReload(AddServerReloadListenersEvent event) {
-        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
         event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
-        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader());
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
-    }
 
-    @VisibleForTesting
-    public static LootModifierManager getLootModifierManager() {
-        if (LOOT_MODIFIER_MANAGER == null)
-            throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
-        return LOOT_MODIFIER_MANAGER;
+        event.addRetainedListener(NeoForgeReloadListeners.LOOT_MODIFIERS_KEY, new LootModifierManager());
+        event.addRetainedListener(NeoForgeReloadListeners.DATA_MAPS_KEY, new DataMapLoader());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

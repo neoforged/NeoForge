@@ -1,16 +1,20 @@
 --- a/net/minecraft/client/resources/SplashManager.java
 +++ b/net/minecraft/client/resources/SplashManager.java
-@@ -41,8 +_,12 @@
+@@ -40,7 +_,16 @@
+     }
  
      protected List<Component> prepare(ResourceManager manager, ProfilerFiller profiler) {
-         try {
-+            var splashes = Minecraft.getInstance().getResourceManager().getResourceOrThrow(SPLASHES_LOCATION);
-+            if (splashes.sourcePackId().equals("vanilla") || !net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.skipModdedSplashesIfVanillaModified.getAsBoolean())
-+                return net.neoforged.neoforge.client.resources.NeoForgeSplashHooks.loadSplashes(manager);
+-        try (BufferedReader reader = Minecraft.getInstance().getResourceManager().openAsReader(SPLASHES_LOCATION)) {
++        net.minecraft.server.packs.resources.Resource splashes;
++        try {
++            splashes = Minecraft.getInstance().getResourceManager().getResourceOrThrow(SPLASHES_LOCATION);
++        } catch (IOException e) {
++            return List.of();
++        }
++        if (splashes.sourcePackId().equals("vanilla") || !net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.skipModdedSplashesIfVanillaModified.getAsBoolean())
++            return net.neoforged.neoforge.client.resources.NeoForgeSplashHooks.loadSplashes(manager);
 +
-             List var4;
--            try (BufferedReader reader = Minecraft.getInstance().getResourceManager().openAsReader(SPLASHES_LOCATION)) {
-+            try (BufferedReader reader = splashes.openAsReader()) {
-                 var4 = reader.lines().map(String::trim).filter(line -> line.hashCode() != 125780783).map(SplashManager::literalSplash).toList();
-             }
- 
++        try (BufferedReader reader = splashes.openAsReader()) {
+             return reader.lines().map(String::trim).filter(line -> line.hashCode() != 125780783).map(SplashManager::literalSplash).toList();
+         } catch (IOException ignored) {
+             return List.of();

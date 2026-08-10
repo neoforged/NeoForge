@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
-@@ -34,9 +_,9 @@
+@@ -33,9 +_,9 @@
          this.onListChanged = onListChanged;
          this.iconGetter = iconGetter;
          this.repository = repository;
@@ -12,7 +12,7 @@
          this.unselected.removeAll(this.selected);
          this.output = output;
      }
-@@ -62,7 +_,7 @@
+@@ -61,7 +_,7 @@
          this.repository.reload();
          this.selected.retainAll(this.repository.getAvailablePacks());
          this.unselected.clear();

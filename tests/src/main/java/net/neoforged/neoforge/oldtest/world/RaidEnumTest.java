@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.world;
 
 import java.util.function.Supplier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.raid.Raid;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
@@ -17,7 +18,7 @@ public class RaidEnumTest {
     @SuppressWarnings("unused") // referenced by enumextender.json
     public static final EnumProxy<Raid.RaiderType> RAIDER_ENUM_PARAMS = new EnumProxy<>(
             Raid.RaiderType.class,
-            (Supplier<EntityType<?>>) () -> EntityType.ILLUSIONER,
+            (Supplier<EntityType<?>>) () -> EntityTypes.ILLUSIONER,
             new int[] { 0, 5, 0, 1, 0, 1, 0, 2 });
 
     public RaidEnumTest() {

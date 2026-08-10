@@ -16,6 +16,6 @@
 +        var fromDataMap = biome.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VILLAGER_TYPES);
 +        if (fromDataMap != null) return fromDataMap.type();
 +        // TODO - 1.22: remove fallback
-         return biome.unwrapKey().map(BY_BIOME::get).orElse(PLAINS);
+         return biome.unwrapKey().map(BY_BIOME::get).orElse(VillagerData.DEFAULT_TYPE);
      }
  }

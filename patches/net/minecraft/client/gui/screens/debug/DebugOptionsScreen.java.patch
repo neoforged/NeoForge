@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
 +++ b/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
-@@ -192,6 +_,10 @@
+@@ -178,6 +_,10 @@
              DebugScreenEntry entry = DebugScreenEntries.getEntry(location);
              this.isAllowed = entry != null && entry.isAllowed(DebugOptionsScreen.this.minecraft.showOnlyReducedInfo());
              String name = location.getPath();
@@ -11,7 +11,7 @@
              if (this.isAllowed) {
                  this.name = name;
              } else {
-@@ -252,8 +_,11 @@
+@@ -238,8 +_,11 @@
          public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
              int x = this.getContentX();
              int y = this.getContentY();
@@ -24,7 +24,7 @@
              if (!this.isAllowed && hovered && mouseX < buttonsStartX) {
                  graphics.setTooltipForNextFrame(DebugOptionsScreen.NOT_ALLOWED_TOOLTIP, mouseX, mouseY);
              }
-@@ -317,6 +_,9 @@
+@@ -301,6 +_,9 @@
  
          public void updateSearch(String value) {
              this.clearEntries();
@@ -34,7 +34,7 @@
              List<Map.Entry<Identifier, DebugScreenEntry>> all = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
              all.sort(COMPARATOR);
              DebugEntryCategory currentCategory = null;
-@@ -331,6 +_,7 @@
+@@ -315,6 +_,7 @@
  
                      this.addEntry(DebugOptionsScreen.this.new OptionEntry(entry.getKey()));
                  }

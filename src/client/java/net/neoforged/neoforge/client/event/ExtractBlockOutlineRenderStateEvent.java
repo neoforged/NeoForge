@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.ApiStatus;
  * will be submitted and no outline will be rendered.
  */
 public final class ExtractBlockOutlineRenderStateEvent extends Event implements ICancellableEvent {
-    private final LevelRenderer levelRenderer;
+    private final LevelExtractor levelExtractor;
     private final ClientLevel level;
     private final BlockPos pos;
     private final BlockState state;
@@ -45,7 +45,7 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
 
     @ApiStatus.Internal
     public ExtractBlockOutlineRenderStateEvent(
-            LevelRenderer levelRenderer,
+            LevelExtractor levelExtractor,
             ClientLevel level,
             BlockPos pos,
             BlockState state,
@@ -55,7 +55,7 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
             boolean highContrast,
             Camera camera,
             LevelRenderState levelRenderState) {
-        this.levelRenderer = levelRenderer;
+        this.levelExtractor = levelExtractor;
         this.level = level;
         this.pos = pos;
         this.state = state;
@@ -75,10 +75,10 @@ public final class ExtractBlockOutlineRenderStateEvent extends Event implements 
     }
 
     /**
-     * {@return the {@link LevelRenderer} performing the extraction}
+     * {@return the {@link LevelExtractor} performing the extraction}
      */
-    public LevelRenderer getLevelRenderer() {
-        return this.levelRenderer;
+    public LevelExtractor getLevelExtractor() {
+        return this.levelExtractor;
     }
 
     /**

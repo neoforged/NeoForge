@@ -1,17 +1,18 @@
 --- a/net/minecraft/data/tags/FluidTagsProvider.java
 +++ b/net/minecraft/data/tags/FluidTagsProvider.java
-@@ -9,8 +_,13 @@
- import net.minecraft.world.level.material.Fluids;
+@@ -9,8 +_,14 @@
+ import net.minecraft.world.level.material.FluidIds;
  
- public class FluidTagsProvider extends IntrinsicHolderTagsProvider<Fluid> {
+ public class FluidTagsProvider extends TagsProvider<Fluid> {
 +    /** @deprecated Forge: Use the {@linkplain #FluidTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public FluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
--        super(output, Registries.FLUID, lookupProvider, e -> e.builtInRegistryHolder().key());
+-        super(output, Registries.FLUID, lookupProvider);
 +        this(output, lookupProvider, "vanilla");
 +    }
++
 +    public FluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
-+        super(output, Registries.FLUID, lookupProvider, e -> e.builtInRegistryHolder().key(), modId);
++        super(output, Registries.FLUID, lookupProvider, modId);
      }
  
      @Override

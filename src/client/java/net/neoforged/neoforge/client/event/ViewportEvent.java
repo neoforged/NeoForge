@@ -311,13 +311,11 @@ public abstract class ViewportEvent extends Event {
      * @see ComputeFovModifierEvent
      */
     public static class ComputeFov extends ViewportEvent {
-        private final boolean usedConfiguredFov;
         private float fov;
 
         @ApiStatus.Internal
-        public ComputeFov(GameRenderer renderer, Camera camera, float renderPartialTicks, float fov, boolean usedConfiguredFov) {
+        public ComputeFov(GameRenderer renderer, Camera camera, float renderPartialTicks, float fov) {
             super(renderer, camera, renderPartialTicks);
-            this.usedConfiguredFov = usedConfiguredFov;
             this.setFOV(fov);
         }
 
@@ -335,13 +333,6 @@ public abstract class ViewportEvent extends Event {
          */
         public void setFOV(float fov) {
             this.fov = fov;
-        }
-
-        /**
-         * {@return whether the base fov value started with a constant or was sourced from the fov set in the options}
-         */
-        public boolean usedConfiguredFov() {
-            return usedConfiguredFov;
         }
     }
 }

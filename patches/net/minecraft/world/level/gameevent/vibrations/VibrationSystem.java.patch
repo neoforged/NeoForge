@@ -9,7 +9,7 @@
      ToIntFunction<ResourceKey<GameEvent>> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Reference2IntOpenHashMap<>(), map -> {
          map.defaultReturnValue(0);
          map.put(GameEvent.STEP.key(), 1);
-@@ -103,11 +_,13 @@
+@@ -104,11 +_,13 @@
      VibrationSystem.User getVibrationUser();
  
      static int getGameEventFrequency(Holder<GameEvent> event) {
