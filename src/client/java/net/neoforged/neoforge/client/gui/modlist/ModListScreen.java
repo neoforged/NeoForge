@@ -10,6 +10,8 @@ import static net.minecraft.network.chat.Component.translatable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.IOException;
@@ -285,7 +287,7 @@ public class ModListScreen extends Screen {
     private record ImageData(Identifier sprite, int width, int height) {}
 
     @Nullable
-    private ImageData loadImage(String type, String modId, ImageResource imageResource) {
+    private ImageData loadImage(String type, String modId, ImageResource imageResource, boolean blurred) {
         final IoSupplier<InputStream> resource = imageResource.get(this.minecraft.getResourceManager());
 
         if (resource == null) {
@@ -303,7 +305,13 @@ public class ModListScreen extends Screen {
 
         final TextureManager textureManager = this.minecraft.getTextureManager();
         final Identifier sprite = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "mod/" + type + "/" + modId);
-        textureManager.register(sprite, new DynamicTexture(sprite::toString, image));
+        textureManager.register(sprite, new DynamicTexture(sprite::toString, image) {
+            @Override
+            public void upload() {
+                sampler = RenderSystem.getSamplerCache().getClampToEdge(blurred ? FilterMode.LINEAR : FilterMode.NEAREST);
+                super.upload();
+            }
+        });
 
         return new ImageData(sprite, image.getWidth(), image.getHeight());
     }
@@ -360,7 +368,7 @@ public class ModListScreen extends Screen {
                 this.checkResult = checkResult;
                 this.displayInfo = displayInfo;
                 if (displayInfo.icon() != null) {
-                    this.iconData = ModListScreen.this.loadImage("icon", displayInfo.id(), Objects.requireNonNull(displayInfo.icon()));
+                    this.iconData = ModListScreen.this.loadImage("icon", displayInfo.id(), Objects.requireNonNull(displayInfo.icon()), displayInfo.iconBlur());
                 } else {
                     this.iconData = null;
                 }
@@ -378,7 +386,7 @@ public class ModListScreen extends Screen {
                 int textLeft = left + 2;
 
                 if (iconData != null) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, iconData.sprite, left, top, 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+                    graphics.blit(iconData.sprite, left, top, left + ICON_SIZE, top + ICON_SIZE, 0.0F, 1.0F, 0.0F, 1.0F);
                     textLeft += ICON_SIZE + 4;
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
@@ -633,10 +641,10 @@ public class ModListScreen extends Screen {
                     int bannerWidth = (int) (LogoRenderer.LOGO_TEXTURE_WIDTH * scaleFactor);
                     this.bannerWidget.useMinecraftLogo(bannerWidth);
                 } else {
-                    this.bannerData = loadImage("banner", displayInfo.id(), bannerResource);
+                    this.bannerData = loadImage("banner", displayInfo.id(), bannerResource, false);
                     if (this.bannerData != null) {
-                        float widthScaleFactor = Math.min(1F, (float) this.width / this.bannerData.width());
-                        float heightScaleFactor = Math.min(1F, (float) BANNER_HEIGHT / this.bannerData.height());
+                        float widthScaleFactor = (float) this.width / this.bannerData.width();
+                        float heightScaleFactor = (float) BANNER_HEIGHT / this.bannerData.height();
                         float scaleFactor = Math.min(widthScaleFactor, heightScaleFactor);
                         int bannerWidth = (int) (this.bannerData.width() * scaleFactor);
                         int bannerHeight = (int) (this.bannerData.height() * scaleFactor);

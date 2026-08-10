@@ -54,6 +54,11 @@ public interface ModDisplayInfo extends IExtensionPoint {
     @Nullable
     ImageResource icon(); // rendered as a square
 
+    /// {@return whether linear filtering should be used when scaling the icon}
+    default boolean iconBlur() {
+        return false;
+    }
+
     /// {@return the URL for the mod homepage, or `null`} If `null`, the homepage button is disabled.
     @Nullable
     URI displayUrl();
