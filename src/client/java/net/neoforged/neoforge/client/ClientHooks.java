@@ -142,7 +142,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
@@ -194,7 +193,6 @@ import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.loading.earlydisplay.Blaze3DRenderBackend;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
@@ -216,7 +214,6 @@ import org.joml.Matrix4fc;
 import org.joml.Vector2ic;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Class for various client-side-only hooks.
@@ -1081,25 +1078,6 @@ public class ClientHooks {
                 Object2BooleanMap.Entry<ModelPart> entry = iterator.next();
                 entry.getKey().visible = entry.getBooleanValue();
             }
-        }
-    }
-
-    public static void takeOverLoadingScreen(Window window) {
-        EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
-        if (earlyLoadingScreen == null) {
-            return;
-        }
-
-        EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
-        if (state.posValid() && !state.minimized()) {
-            GLFW.glfwSetWindowPos(window.handle(), state.x(), state.y());
-            GLFW.glfwSetWindowSize(window.handle(), state.width(), state.height());
-        }
-        if (state.maximized()) {
-            GLFW.glfwMaximizeWindow(window.handle());
-        }
-        if (state.minimized() && !window.isFullscreen()) {
-            GLFW.glfwIconifyWindow(window.handle());
         }
     }
 }
