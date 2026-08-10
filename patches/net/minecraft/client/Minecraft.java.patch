@@ -83,7 +83,7 @@
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.modelManager);
          WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;
          windowRenderState.width = this.window.getWidth();
-@@ -688,9 +_,10 @@
+@@ -688,10 +_,11 @@
              }
          }
  
@@ -91,10 +91,11 @@
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
          this.window.setDefaultErrorCallback();
-+        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.completeWindowHandoff(this.window);
 -        GLFW.glfwShowWindow(windowCandidate.handle());
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.completeWindowHandoff(this.window);
          this.resizeGui();
          this.loadCriticalShaders();
+         this.telemetryManager = new ClientTelemetryManager(this, this.userApiService, this.user);
 @@ -704,6 +_,7 @@
          TitleScreen.registerTextures(this.textureManager);
          LoadingOverlay.registerTextures(this.textureManager);
