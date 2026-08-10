@@ -55,7 +55,10 @@ public interface IFluidStateExtension {
      * @param movementVector the velocity of how the entity wants to move
      * @param gravity        the gravity to apply to the entity
      * @return {@code true} if custom movement logic is performed, {@code false} otherwise
+     *
+     * @deprecated Use {@link FluidType#move(LivingEntity, Vec3, double)} instead
      */
+    @Deprecated(forRemoval = true, since = "26.2")
     default boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
         return self().getType().move(self(), entity, movementVector, gravity);
     }
