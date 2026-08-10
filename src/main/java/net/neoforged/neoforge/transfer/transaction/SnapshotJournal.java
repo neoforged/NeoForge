@@ -101,11 +101,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
      */
     protected void onRootCommit(T originalState) {}
 
-    /**
-     * Signifies whenever this journal is part of any ongoing transaction.
-     *
-     * @return whenever this journal is part of any ongoing transaction
-     */
+    /// {@return whenever this journal is part of any ongoing transaction}
     public final boolean hasOngoingTransaction() {
         return hasOngoingTransaction;
     }
