@@ -57,6 +57,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.Identifier;
@@ -469,12 +470,7 @@ public class ModListScreen extends Screen {
                     .build()
                     .setCentered(true),
                     contentLayout.newCellSettings().paddingVertical(3));
-            this.newerVersionWidget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
+            this.newerVersionWidget.setComponentClickHandler(this::handleClickEvent);
             this.newerVersionButton = contentLayout.addChild(Button.builder(translatable("neoforge.screen.mods.button.changelog"),
                     _ -> {
                         if (this.selected != null && this.selected.checkResult != null) {
@@ -546,13 +542,19 @@ public class ModListScreen extends Screen {
                     .maxWidth(width)
                     .build()
                     .setCentered(false));
-            widget.setComponentClickHandler(style -> {
-                ClickEvent clickEvent = style.getClickEvent();
-                if (clickEvent != null) {
-                    defaultHandleClickEvent(clickEvent, ModListScreen.this.minecraft, ModListScreen.this);
-                }
-            });
+            widget.setComponentClickHandler(this::handleClickEvent);
             return widget;
+        }
+
+        private void handleClickEvent(Style style) {
+            ClickEvent event = style.getClickEvent();
+            if (event == null) return;
+            switch (event) {
+                case ClickEvent.OpenUrl(URI uri) -> ConfirmLinkScreen.confirmLinkNow(ModListScreen.this, uri);
+                case ClickEvent.OpenFile openFile -> Util.getPlatform().openFile(openFile.file());
+                case ClickEvent.CopyToClipboard(String value) -> minecraft.keyboardHandler.setClipboard(value);
+                default -> LOGGER.error("Unable to handle click event ‘{}’", event);
+            }
         }
 
         public LinearLayout getMainLayout() {
