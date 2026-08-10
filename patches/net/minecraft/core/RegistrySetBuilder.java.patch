@@ -19,7 +19,7 @@
 +
 +                @Override
 +                public <S> java.util.Optional<HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) {
-+                    return (java.util.Optional<HolderLookup<S>>) state.contextRegistries.lookup(registry);
++                    return state.contextRegistries.lookup(registry).map(lookup -> (HolderLookup<S>) lookup);
                  }
              };
          }

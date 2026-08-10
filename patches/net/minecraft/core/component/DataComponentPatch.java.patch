@@ -1,15 +1,24 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
-@@ -143,6 +_,14 @@
+@@ -143,6 +_,23 @@
          return new DataComponentPatch.Builder();
      }
  
-+    /**
-+     * {@return the patch stored for the given component type, null if no patch is stored}
-+     */
-+    @SuppressWarnings("unchecked")
-+    public <T> @Nullable Optional<T> getPatch(DataComponentType<? extends T> type) {
-+        return (Optional<T>) this.map.get(type);
++    public boolean isPatched(DataComponentType<?> type) {
++        return this.map.containsKey(type);
++    }
++
++    /// {@return the patch stored for the given component type, null if no patch is stored}
++    public <T> @Nullable T getPatch(DataComponentType<? extends T> type) {
++        Object value = this.map.get(type);
++        if (value == null) {
++            throw new IllegalStateException("DataComponentType " + type + " is not patched");
++        }
++        return (T) Removed.removedToNull(value);
++    }
++
++    public Set<DataComponentType<?>> keySet(){
++        return this.map.keySet();
 +    }
 +
      public <T> @Nullable T get(DataComponentGetter prototype, DataComponentType<? extends T> type) {

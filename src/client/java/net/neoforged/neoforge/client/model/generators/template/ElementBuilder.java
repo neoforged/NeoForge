@@ -27,7 +27,8 @@ public final class ElementBuilder {
     private final Map<Direction, FaceBuilder> faces = new LinkedHashMap<>();
     @Nullable
     private RotationBuilder rotation;
-    private boolean shade = true;
+    @Nullable
+    private Direction shadeDirectionOverride = null;
     private int lightEmission = 0;
     private int color = 0xFFFFFFFF;
     private boolean hasAmbientOcclusion = true;
@@ -91,11 +92,10 @@ public final class ElementBuilder {
         return this;
     }
 
-    /**
-     * Sets whether or not this element should be shaded.
-     */
-    public ElementBuilder shade(boolean shade) {
-        this.shade = shade;
+    /// Sets which direction the shade of all faces of this element should be shaded with or `null`
+    /// to shade them based on their normal direction.
+    public ElementBuilder shadeDirectionOverride(@Nullable Direction shadeDirectionOverride) {
+        this.shadeDirectionOverride = shadeDirectionOverride;
         return this;
     }
 
@@ -226,7 +226,7 @@ public final class ElementBuilder {
         Map<Direction, CuboidFace> faces = this.faces.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
             throw new IllegalArgumentException();
         }, LinkedHashMap::new));
-        return new CuboidModelElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, 0, this.hasAmbientOcclusion));
+        return new CuboidModelElement(from, to, faces, rotation == null ? null : rotation.build(), shadeDirectionOverride, lightEmission, new ExtraFaceData(this.color, 0, this.hasAmbientOcclusion));
     }
 
     ElementBuilder copy() {
@@ -235,7 +235,7 @@ public final class ElementBuilder {
         builder.to.set(this.to);
         this.faces.forEach((side, faceBuilder) -> builder.faces.put(side, faceBuilder.copy()));
         builder.rotation = this.rotation != null ? this.rotation.copy() : null;
-        builder.shade = this.shade;
+        builder.shadeDirectionOverride = this.shadeDirectionOverride;
         builder.lightEmission = this.lightEmission;
         builder.color = this.color;
         builder.hasAmbientOcclusion = this.hasAmbientOcclusion;

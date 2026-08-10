@@ -36,7 +36,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -150,10 +150,10 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Called when a block is removed by {@link PushReaction#DESTROY}. This is responsible for
+     * Called when a block is removed by {@link PushReaction#POPPED}. This is responsible for
      * actually destroying the block, and the block is intact at time of call.
      * <p>
-     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#POPPED}.
      * <p>
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
@@ -333,11 +333,11 @@ public interface IBlockStateExtension {
      * @param placeFunction Function to set blocks in the level for the tree, use this instead of the level directly
      * @param randomSource  The random source
      * @param pos           Position of the block to be set to dirt
-     * @param config        Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
+     * @param tree          Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
      * @return True to ignore vanilla behaviour
      */
-    default boolean onTreeGrow(WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
-        return self().getBlock().onTreeGrow(self(), level, placeFunction, randomSource, pos, config);
+    default boolean onTreeGrow(WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeFeature tree) {
+        return self().getBlock().onTreeGrow(self(), level, placeFunction, randomSource, pos, tree);
     }
 
     /**

@@ -28,21 +28,17 @@ import org.jspecify.annotations.Nullable;
 public class VanillaServerListeners {
     private static final Map<Class<?>, Identifier> KNOWN_CLASSES = new LinkedHashMap<>();
 
-    public static final Identifier RECIPES = key(RecipeManager.class);
-
     public static final Identifier FUNCTIONS = key(ServerFunctionLibrary.class);
-
-    public static final Identifier ADVANCEMENTS = key(ServerAdvancementManager.class);
 
     /**
      * Sentinel field that will always reference the first reload listener in the vanilla order.
      */
-    public static final Identifier FIRST = RECIPES;
+    public static final Identifier FIRST = FUNCTIONS;
 
     /**
      * Sentinel field that will always reference the last reload listener in the vanilla order.
      */
-    public static final Identifier LAST = ADVANCEMENTS;
+    public static final Identifier LAST = FUNCTIONS;
 
     private static Identifier key(Class<? extends PreparableReloadListener> cls) {
         if (KNOWN_CLASSES.containsKey(cls)) {

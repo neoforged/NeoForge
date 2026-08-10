@@ -14,13 +14,12 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jspecify.annotations.Nullable;
 
 public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
-    private final Set<MobCategory> typesView = Collections.unmodifiableSet(this.spawners.keySet());
+    private final Set<MobCategory> typesView = Collections.unmodifiableSet(this.spawnsByCategory.keySet());
     private final Set<EntityType<?>> costView = Collections.unmodifiableSet(this.mobSpawnCosts.keySet());
 
     public MobSpawnSettingsBuilder(MobSpawnSettings orig) {
-        orig.getSpawnerTypes().forEach(k -> spawners.get(k).addAll(orig.getMobs(k)));
-        orig.getEntityTypes().forEach(k -> mobSpawnCosts.put(k, orig.getMobSpawnCost(k)));
-        creatureGenerationProbability = orig.getCreatureProbability();
+        orig.definedCategories().forEach(k -> spawnsByCategory.get(k).addAll(orig.getMobs(k)));
+        orig.allSpawnCosts().keySet().forEach(k -> mobSpawnCosts.put(k, orig.getMobSpawnCost(k)));
     }
 
     public Set<MobCategory> getSpawnerTypes() {
@@ -28,7 +27,7 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     }
 
     public WeightedList.Builder<MobSpawnSettings.SpawnerData> getSpawner(MobCategory type) {
-        return this.spawners.get(type);
+        return this.spawnsByCategory.get(type);
     }
 
     public Set<EntityType<?>> getEntityTypes() {
@@ -37,10 +36,6 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
 
     public MobSpawnSettings.@Nullable MobSpawnCost getCost(EntityType<?> type) {
         return this.mobSpawnCosts.get(type);
-    }
-
-    public float getProbability() {
-        return this.creatureGenerationProbability;
     }
 
     public MobSpawnSettingsBuilder disablePlayerSpawn() {
