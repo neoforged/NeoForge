@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/Witch.java
 +++ b/net/minecraft/world/entity/monster/Witch.java
+@@ -131,7 +_,7 @@
+                 }
+             } else {
+                 Holder<Potion> potion = null;
+-                if (this.random.nextFloat() < 0.15F && this.isEyeInFluid(FluidTags.WATER) && !this.hasEffect(MobEffects.WATER_BREATHING)) {
++                if (this.random.nextFloat() < 0.15F && this.getFluidInteraction().isEyeInFluidMatching(this, (entity, type, _) -> entity.canDrownInFluidType(type)) && !this.hasEffect(MobEffects.WATER_BREATHING)) {
+                     potion = Potions.WATER_BREATHING;
+                 } else if (this.random.nextFloat() < 0.15F
+                     && (this.isOnFire() || this.getLastDamageSource() != null && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE))
 @@ -207,10 +_,11 @@
      protected float getDamageAfterMagicAbsorb(DamageSource damageSource, float damage) {
          damage = super.getDamageAfterMagicAbsorb(damageSource, damage);

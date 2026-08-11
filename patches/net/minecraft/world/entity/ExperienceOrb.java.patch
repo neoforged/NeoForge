@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
+@@ -106,7 +_,7 @@
+         } else {
+             super.tick();
+             boolean colliding = !this.level().noCollision(this.getBoundingBox());
+-            if (this.isEyeInFluid(FluidTags.WATER)) {
++            if (this.getFluidInteraction().isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike())) {
+                 this.setUnderwaterMovement();
+             } else if (!colliding) {
+                 this.applyGravity();
 @@ -136,7 +_,8 @@
              this.applyEffectsFromBlocks();
              float friction = 0.98F;
