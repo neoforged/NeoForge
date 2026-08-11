@@ -53,20 +53,27 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     ///
     /// One may settle for some form of partial independence, the only requirement is that value returned by this
     /// method will be sufficient to rollback (via [SnapshotJournal#revertToSnapshot]) this journal to point in time this method was called.
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `true` inside this callback, and will continue to return `true`
+    /// until all snapshots are either reverted to or [SnapshotJournal#onRootCommit] is called.
     protected abstract T createSnapshot();
 
     /// Roll back to a state previously created by [SnapshotJournal#createSnapshot].
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `true` inside this callback, and, given there
+    /// are no snapshots left, will return `false` right after this callback returns.
     protected abstract void revertToSnapshot(T snapshot);
 
-    /**
-     * Signals that the snapshot will not be used anymore, and is safe to cache for future calls to {@link #createSnapshot},
-     * or discard entirely.
-     */
+    /// Signals that the snapshot will not be used anymore, and is safe to cache for future calls to [SnapshotJournal#createSnapshot],
+    /// or discard entirely.
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `false` inside this callback
     protected void releaseSnapshot(T snapshot) {}
 
     /**
      * Called after the root transaction was successfully committed,
      * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     * {@link #hasOngoingTransaction} will return {@code false} inside this callback.
      *
      * <p>When a root transaction is being closed,
      * all journals for which {@code onRootCommit} will be called are stored in a global thread-local queue.
@@ -98,6 +105,12 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
     protected void onRootCommit(T originalState) {}
 
     /// {@return whenever this journal is part of any ongoing transaction}
+    ///
+    /// Check specific callbacks docs to see when this method returns `true`.
+    /// 
+    /// @see SnapshotJournal#createSnapshot
+    /// @see SnapshotJournal#revertToSnapshot
+    /// @see SnapshotJournal#onRootCommit
     public final boolean hasOngoingTransaction() {
         return snapshotCount > 0;
     }
