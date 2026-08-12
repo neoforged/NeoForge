@@ -75,8 +75,8 @@ public class ClientModLoader extends CommonModLoader {
             Minecraft.saveReport(gameDir, report);
             reportFatalError(e, gameDir.toPath(), report);
         }
-        if (earlyLoadingScreen instanceof DisplayWindow displayWindow) {
-            displayWindow.close();
+        if (earlyLoadingScreen != null) {
+            earlyLoadingScreen.close();
         }
     }
 
