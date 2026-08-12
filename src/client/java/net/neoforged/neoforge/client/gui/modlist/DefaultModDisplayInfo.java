@@ -15,7 +15,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -70,8 +69,7 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
     /// where `[modid]` is the [mod ID][#id()], with a fallback to the `description` key of the mod info.
     @Override
     public Component description() {
-        //noinspection UnstableApiUsage
-        return Component.translatable(FMLTranslations.getPattern("neoforge.screen.mods.info.description." + id(), container.getModInfo()::getDescription));
+        return Component.translatableWithFallback("neoforge.screen.mods.info.description." + id(), container.getModInfo().getDescription());
     }
 
     /// {@inheritDoc} This uses the `license` key of the mod file info.
