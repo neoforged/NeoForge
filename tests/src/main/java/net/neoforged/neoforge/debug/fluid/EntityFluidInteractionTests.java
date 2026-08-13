@@ -89,7 +89,8 @@ public class EntityFluidInteractionTests {
      * Seed oil is a custom non-water fluid that does not override movement.
      */
     private static final FluidFixture<FluidType> SEED_OIL = new FluidFixture<>("seed_oil", () -> new FluidType(FluidType.Properties.create()
-            .descriptionId("fluid_type.neotests_entity_fluid_interaction.seed_oil")));
+            .descriptionId("fluid_type.neotests_entity_fluid_interaction.seed_oil")
+            .fallDistanceModifier(.75F)));
 
     /**
      * Named milk so the tests read like a concrete mod fluid.
@@ -352,25 +353,33 @@ public class EntityFluidInteractionTests {
     }
 
     @GameTest(timeoutTicks = 200)
-    @EmptyTemplate(value = "7x6x3", floor = true)
+    @EmptyTemplate(value = "11x6x3", floor = true)
     @TestHolder(description = "Tests vanilla fluid fall distance against a dry control")
     static void vanillaFluidFallDistance(final TestHelper helper) {
         helper.requireDifficulty(Difficulty.NORMAL);
         final BlockPos waterPos = new BlockPos(1, 2, 1);
         final BlockPos lavaPos = new BlockPos(3, 2, 1);
         final BlockPos dryPos = new BlockPos(5, 2, 1);
+        final BlockPos milkPos = new BlockPos(7, 2, 1);
+        final BlockPos seedOilPos = new BlockPos(9, 2, 1);
         helper.fillFluidColumn(WATER, waterPos);
         helper.fillFluidColumn(LAVA, lavaPos);
+        helper.fillFluidColumn(MILK, milkPos);
+        helper.fillFluidColumn(SEED_OIL, seedOilPos);
 
         final Zombie waterZombie = helper.spawnZombieWithNoFreeWill(waterPos);
         final Zombie lavaZombie = helper.spawnZombieWithNoFreeWill(lavaPos);
         final Zombie dryZombie = helper.spawnZombieWithNoFreeWill(dryPos);
+        final Zombie milkZombie = helper.spawnZombieWithNoFreeWill(milkPos);
+        final Zombie seedOilZombie = helper.spawnZombieWithNoFreeWill(seedOilPos);
 
         helper.startSequence()
                 .thenExecuteAfter(2, () -> {
                     helper.assertFallDistanceAfterBaseTick(waterZombie, 12.0D, 0.0D, "Water should reset fall distance during base tick");
                     helper.assertFallDistanceAfterBaseTick(lavaZombie, 12.0D, 6.0D, "Lava should reduce fall distance by its fluid modifier");
                     helper.assertFallDistanceAfterBaseTick(dryZombie, 12.0D, 12.0D, "Dry entity should keep fall distance during base tick");
+                    helper.assertFallDistanceAfterBaseTick(milkZombie, 12.0D, 0.0D, "Water-like fluid should reset fall distance during base tick");
+                    helper.assertFallDistanceAfterBaseTick(seedOilZombie, 12.0D, 9.0D, "Non-water-like fluid should reduce fall distance by its fluid modifier");
                 })
                 .thenSucceed();
     }
@@ -1074,7 +1083,7 @@ public class EntityFluidInteractionTests {
         void assertFallDistanceAfterBaseTick(Entity entity, double initialFallDistance, double expectedFallDistance, String message) {
             entity.fallDistance = initialFallDistance;
             entity.baseTick();
-            this.assertValueEqual(expectedFallDistance, entity.fallDistance, message);
+            this.assertValueEqual(entity.fallDistance, expectedFallDistance, message);
         }
 
         void assertNormalSkeletonHorse(CalciumAbsorbingSkeletonHorse horse, float normalWidth, float normalHeight, String fluidName) {

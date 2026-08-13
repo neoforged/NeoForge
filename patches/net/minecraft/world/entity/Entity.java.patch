@@ -37,12 +37,14 @@
          this.updateFluidInteraction();
          this.updateSwimming();
          if (this.level() instanceof ServerLevel serverLevel) {
-@@ -550,7 +_,7 @@
+@@ -550,7 +_,9 @@
          }
  
          if (this.isInLava()) {
 -            this.fallDistance *= 0.5;
 +            this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        } else if (!this.isInWater()) {
++            this.fallDistance *= this.fluidInteraction.getFallDistanceModifier(this);
          }
  
          this.checkBelowWorld();
