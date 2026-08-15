@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.PreeditEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -39,7 +38,6 @@ import org.lwjgl.glfw.GLFW;
  * @see Render
  * @see MouseInput
  * @see KeyInput
- * @see Preedit
  */
 public abstract class ScreenEvent extends Event {
     private final Screen screen;
@@ -964,68 +962,6 @@ public abstract class ScreenEvent extends Event {
             @ApiStatus.Internal
             public Post(Screen screen, CharacterEvent charEvent) {
                 super(screen, charEvent);
-            }
-        }
-    }
-
-    /**
-     * Fired when an {@linkplain PreeditEvent Input Method Editor (IME) preedit event} is submitted to a screen.
-     *
-     * <p>An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
-     * and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
-     * until the user commits it.</p>
-     *
-     * See the two subclasses for listening before and after the normal handling.
-     *
-     * @see Preedit.Pre
-     * @see Preedit.Post
-     */
-    public static abstract class Preedit extends ScreenEvent {
-        private final @Nullable PreeditEvent preeditEvent;
-
-        @ApiStatus.Internal
-        public Preedit(Screen screen, @Nullable PreeditEvent preeditEvent) {
-            super(screen);
-            this.preeditEvent = preeditEvent;
-        }
-
-        /**
-         * {@return the current preedit composition, or {@code null} if there is no active composition}
-         */
-        public @Nullable PreeditEvent getPreeditEvent() {
-            return preeditEvent;
-        }
-
-        /**
-         * Fired <b>before</b> the preedit event is handled by the screen.
-         *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}.
-         * If the event is cancelled, the screen's preedit handler will be bypassed
-         * and the corresponding {@link Preedit.Post} will not be fired.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
-        public static class Pre extends Preedit implements ICancellableEvent {
-            @ApiStatus.Internal
-            public Pre(Screen screen, @Nullable PreeditEvent preeditEvent) {
-                super(screen, preeditEvent);
-            }
-        }
-
-        /**
-         * Fired <b>after</b> the preedit event is handled, if not handled by the screen
-         * and the corresponding {@link Preedit.Pre} is not cancelled.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
-        public static class Post extends Preedit {
-            @ApiStatus.Internal
-            public Post(Screen screen, @Nullable PreeditEvent preeditEvent) {
-                super(screen, preeditEvent);
             }
         }
     }

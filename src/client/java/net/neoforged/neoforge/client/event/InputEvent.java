@@ -7,8 +7,10 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -16,6 +18,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2ic;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -25,6 +28,7 @@ import org.lwjgl.glfw.GLFW;
  * @see InputEvent.MouseButton
  * @see MouseScrollingEvent
  * @see Key
+ * @see Preedit
  * @see InteractionKeyMappingTriggered
  */
 public abstract class InputEvent extends Event {
@@ -298,6 +302,76 @@ public abstract class InputEvent extends Event {
          */
         public int getModifiers() {
             return this.keyEvent.modifiers();
+        }
+    }
+
+    /**
+     * Fired when an {@linkplain PreeditEvent Input Method Editor (IME) preedit event} is submitted to a GUI input target.
+     *
+     * <p>An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
+     * and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
+     * until the user commits it.</p>
+     *
+     * See the two subclasses for listening before and after the normal handling.
+     *
+     * @see Preedit.Pre
+     * @see Preedit.Post
+     */
+    public static abstract class Preedit extends InputEvent {
+        private final GuiEventListener inputTarget;
+        private final @Nullable PreeditEvent preeditEvent;
+
+        @ApiStatus.Internal
+        public Preedit(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
+            this.inputTarget = inputTarget;
+            this.preeditEvent = preeditEvent;
+        }
+
+        /**
+         * {@return the GUI input target that will receive the preedit event}
+         */
+        public GuiEventListener getInputTarget() {
+            return inputTarget;
+        }
+
+        /**
+         * {@return the current preedit composition, or {@code null} if there is no active composition}
+         */
+        public @Nullable PreeditEvent getPreeditEvent() {
+            return preeditEvent;
+        }
+
+        /**
+         * Fired <b>before</b> the preedit event is handled by the input target.
+         *
+         * <p>This event is {@linkplain ICancellableEvent cancellable}.
+         * If the event is cancelled, the input target's preedit handler will be bypassed
+         * and the corresponding {@link Preedit.Post} will not be fired.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         */
+        public static class Pre extends Preedit implements ICancellableEvent {
+            @ApiStatus.Internal
+            public Pre(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
+                super(inputTarget, preeditEvent);
+            }
+        }
+
+        /**
+         * Fired <b>after</b> the preedit event is handled, if not handled by the input target
+         * and the corresponding {@link Preedit.Pre} is not cancelled.
+         *
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         */
+        public static class Post extends Preedit {
+            @ApiStatus.Internal
+            public Post(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
+                super(inputTarget, preeditEvent);
+            }
         }
     }
 
