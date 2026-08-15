@@ -139,10 +139,11 @@ public abstract class ScreenEvent extends Event {
 
     /**
      * Fired when a screen is being drawn.
-     * See the two subclasses for listening before and after drawing.
+     * See the subclasses for the various rendering stages.
      *
      * @see Render.Pre
      * @see Render.Background
+     * @see Render.Foreground
      * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
@@ -218,6 +219,19 @@ public abstract class ScreenEvent extends Event {
         public static class Background extends ScreenEvent.Render {
             @ApiStatus.Internal
             public Background(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /// Fired after the screen's main contents and before deferred elements (e.g. tooltips and the preedit overlay).
+        ///
+        /// This event is not [cancellable][ICancellableEvent].
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
+        public static class Foreground extends Render {
+            @ApiStatus.Internal
+            public Foreground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
