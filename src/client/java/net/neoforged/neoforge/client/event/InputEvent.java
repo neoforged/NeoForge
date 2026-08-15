@@ -305,18 +305,13 @@ public abstract class InputEvent extends Event {
         }
     }
 
-    /**
-     * Fired when an {@linkplain PreeditEvent Input Method Editor (IME) preedit event} is submitted to a GUI input target.
-     *
-     * <p>An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
-     * and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
-     * until the user commits it.</p>
-     *
-     * See the two subclasses for listening before and after the normal handling.
-     *
-     * @see Preedit.Pre
-     * @see Preedit.Post
-     */
+    /// Fired when an [Input Method Editor (IME) preedit event][PreeditEvent] is submitted to a GUI input target.
+    ///
+    /// An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
+    /// and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
+    /// until the user commits it.
+    ///
+    /// See [Pre][Preedit.Pre] and [Post][Preedit.Post] for listening before and after the normal handling.
     public static abstract class Preedit extends InputEvent {
         private final GuiEventListener inputTarget;
         private final @Nullable PreeditEvent preeditEvent;
@@ -327,30 +322,23 @@ public abstract class InputEvent extends Event {
             this.preeditEvent = preeditEvent;
         }
 
-        /**
-         * {@return the GUI input target that will receive the preedit event}
-         */
+        /// {@return the GUI input target that will receive the preedit event}
         public GuiEventListener getInputTarget() {
             return inputTarget;
         }
 
-        /**
-         * {@return the current preedit composition, or {@code null} if there is no active composition}
-         */
+        /// {@return the current preedit composition, or `null` if there is no active composition}
         public @Nullable PreeditEvent getPreeditEvent() {
             return preeditEvent;
         }
 
-        /**
-         * Fired <b>before</b> the preedit event is handled by the input target.
-         *
-         * <p>This event is {@linkplain ICancellableEvent cancellable}.
-         * If the event is cancelled, the input target's preedit handler will be bypassed
-         * and the corresponding {@link Preedit.Post} will not be fired.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
+        /// Fired **before** the preedit event is handled by the input target.
+        ///
+        /// This event is [cancellable][ICancellableEvent]. If the event is cancelled, the input target's preedit
+        /// handler will be bypassed and the corresponding [Post][Preedit.Post] will not be fired.
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
         public static class Pre extends Preedit implements ICancellableEvent {
             @ApiStatus.Internal
             public Pre(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
@@ -358,15 +346,13 @@ public abstract class InputEvent extends Event {
             }
         }
 
-        /**
-         * Fired <b>after</b> the preedit event is handled, if not handled by the input target
-         * and the corresponding {@link Preedit.Pre} is not cancelled.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-         */
+        /// Fired **after** the preedit event is handled, if not handled by the input target
+        /// and the corresponding [Pre][Preedit.Pre] is not cancelled.
+        ///
+        /// This event is not [cancellable][ICancellableEvent].
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
         public static class Post extends Preedit {
             @ApiStatus.Internal
             public Post(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
