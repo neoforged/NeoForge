@@ -68,7 +68,8 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
     /// @param template The template to generate the fallback model from
     /// @param textures The texture mapping to generate the fallback model with
     public ConditionalModelBuilder setInlineFallback(ModelTemplate template, TextureMapping textures) {
-        Preconditions.checkNotNull(fallback, "Fallback must not be null");
+        Preconditions.checkNotNull(template, "Template must not be null");
+        Preconditions.checkNotNull(textures, "Textures must not be null");
         this.fallback = Either.right(new InlineModel(template, textures));
         return this;
     }
