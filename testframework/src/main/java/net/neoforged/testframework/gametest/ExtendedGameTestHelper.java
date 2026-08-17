@@ -358,8 +358,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     @Override
-    public <T> void assertValueEqual(T expected, T actual, String message) {
-        this.assertValueEqual(expected, actual, Component.translatable(message));
+    public <T> void assertValueEqual(T actual, T expected, String message) {
+        this.assertValueEqual(actual, expected, Component.translatable(message));
     }
 
     public <T, E extends Entity> void assertEntityProperty(E entity, Function<E, T> function, String message, T value) {
