@@ -26,9 +26,12 @@ public class LogoFileWarningsHandler {
                     .or(() -> info.getOwningFile().getConfig().getConfigElement("logoFile"));
             var bannerFile = info.getConfig().getConfigElement("bannerFile")
                     .or(() -> info.getOwningFile().getConfig().getConfigElement("bannerFile"));
+            // See DefaultModDisplayInfo#icon()
+            var iconFile = info.getConfig().getConfigElement("iconFile")
+                    .or(() -> info.getOwningFile().getConfig().getConfigElement("iconFile"));
 
-            // Skip warning if bannerFile is present, since it means the developer consciously kept the old property (for multi-version compat)
-            if (logoFile.isPresent() && bannerFile.isEmpty()) {
+            // Skip warning if bannerFile or iconFile is present, since it means the developer consciously kept the old property (for multi-version compat)
+            if (logoFile.isPresent() && bannerFile.isEmpty() && iconFile.isEmpty()) {
                 // This shouldn't need to be translated, as it will only ever show for developers
                 //noinspection UnstableApiUsage
                 ModLoader.addLoadingIssue(ModLoadingIssue.warning("Mod %s uses the deprecated `logoFile` property; change to `bannerFile` and/or (for square icons) `iconFile`", info.getModId()).withAffectedMod(info));
