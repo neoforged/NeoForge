@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -311,20 +_,38 @@
+@@ -296,20 +_,38 @@
              }
          }
  
@@ -42,7 +42,7 @@
              task.doTask(SectionRenderDispatcher.this.fixedBuffers);
          }
  
-@@ -417,12 +_,29 @@
+@@ -405,12 +_,29 @@
              return success;
          }
  
@@ -72,7 +72,7 @@
              }
  
              @Override
-@@ -442,7 +_,7 @@
+@@ -430,7 +_,7 @@
                  SectionCompiler.Results results;
                  try (Zone ignored = Profiler.get().zone("Compile Section")) {
                      results = SectionRenderDispatcher.this.sectionCompiler

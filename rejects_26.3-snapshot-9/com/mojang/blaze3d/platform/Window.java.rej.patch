@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -99,6 +_,18 @@
+@@ -99,6 +99,18 @@
          this.windowedWidth = this.width = allowedWindowMinSize(displayData.width(), 320);
          this.windowedHeight = this.height = allowedWindowMinSize(displayData.height(), 240);
          this.handle = this.createWindow(backend, this.width, this.height, title);
@@ -19,7 +19,7 @@
          this.backend = backend;
          if (Util.getPlatform() == Util.OS.OSX) {
              MacosUtil.disableCloseWindowMenuItem();
-@@ -135,7 +_,14 @@
+@@ -135,7 +147,14 @@
      private long createWindow(GpuBackend backend, int width, int height, String title) throws BackendCreationException {
          backend.setWindowHints();
          long flags = backend.getWindowFlags() | 8L | 32L | 8192L;

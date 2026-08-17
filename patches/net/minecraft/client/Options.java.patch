@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -1104,7 +_,7 @@
+@@ -1113,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack entry : packRepository.getSelectedPacks()) {
@@ -9,7 +9,7 @@
                  this.resourcePacks.add(entry.getId());
                  if (!entry.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(entry.getId());
-@@ -1487,6 +_,7 @@
+@@ -1500,6 +_,7 @@
      }
  
      public Options(Minecraft minecraft, File workingDirectory) {
@@ -17,7 +17,7 @@
          this.minecraft = minecraft;
          this.optionsFile = new File(workingDirectory, "options.txt");
          boolean largeDistances = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1507,6 +_,7 @@
+@@ -1520,6 +_,7 @@
              var1 -> this.setGraphicsPresetToCustom()
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
@@ -25,7 +25,7 @@
          this.load();
      }
  
-@@ -1640,10 +_,15 @@
+@@ -1654,10 +_,15 @@
          access.process("musicFrequency", this.musicFrequency);
  
          for (KeyMapping keyMapping : this.keyMappings) {
@@ -43,7 +43,7 @@
              }
          }
  
-@@ -1937,6 +_,23 @@
+@@ -1951,6 +_,23 @@
          }
  
          repository.setSelected(selected);

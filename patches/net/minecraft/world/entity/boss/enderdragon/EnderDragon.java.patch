@@ -20,7 +20,7 @@
          this.processFlappingMovement();
          if (this.level().isClientSide()) {
              this.setHealth(this.getHealth());
-@@ -438,7 +_,7 @@
+@@ -437,7 +_,7 @@
                      BlockPos blockPos = new BlockPos(x, y, z);
                      BlockState state = level.getBlockState(blockPos);
                      if (!state.isAir() && !state.is(BlockTags.DRAGON_TRANSPARENT)) {
@@ -29,7 +29,7 @@
                              destroyedBlock = level.removeBlock(blockPos, false) || destroyedBlock;
                          } else {
                              hitWall = true;
-@@ -542,7 +_,8 @@
+@@ -541,7 +_,8 @@
  
          if (this.level() instanceof ServerLevel level) {
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -39,7 +39,7 @@
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -560,7 +_,8 @@
+@@ -559,7 +_,8 @@
  
          if (this.dragonDeathTime >= 200 && this.level() instanceof ServerLevel level) {
              if (level.getGameRules().get(GameRules.MOB_DROPS)) {
@@ -49,7 +49,7 @@
              }
  
              if (this.dragonFight != null) {
-@@ -866,6 +_,16 @@
+@@ -865,6 +_,16 @@
      @Override
      public boolean canUsePortal(boolean ignorePassenger) {
          return false;

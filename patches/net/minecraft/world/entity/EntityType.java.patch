@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -74,6 +_,11 @@
+@@ -75,6 +_,11 @@
      private final boolean allowedInPeaceful;
      private final boolean trackDeltas;
  
@@ -12,7 +12,7 @@
      public static Identifier getKey(EntityType<?> type) {
          return BuiltInRegistries.ENTITY_TYPE.getKey(type);
      }
-@@ -96,6 +_,31 @@
+@@ -97,6 +_,31 @@
          boolean allowedInPeaceful,
          boolean trackDeltas
      ) {
@@ -44,7 +44,7 @@
          this.factory = factory;
          this.category = category;
          this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
-@@ -112,6 +_,10 @@
+@@ -113,6 +_,10 @@
          this.requiredFeatures = requiredFeatures;
          this.allowedInPeaceful = allowedInPeaceful;
          this.trackDeltas = trackDeltas;
@@ -55,7 +55,7 @@
      }
  
      public @Nullable T spawn(
-@@ -203,6 +_,13 @@
+@@ -204,6 +_,13 @@
              mob.yHeadRot = mob.getYRot();
              mob.yBodyRot = mob.getYRot();
              mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), spawnReason, null);
@@ -69,7 +69,7 @@
          }
  
          if (postSpawnConfig != null) {
-@@ -415,14 +_,26 @@
+@@ -416,14 +_,26 @@
      }
  
      public int clientTrackingRange() {
@@ -88,15 +88,15 @@
          return this.updateInterval;
      }
  
-     public boolean trackDeltas() {
+     public boolean hasUpdateInterval() {
 +        return this.trackDeltasSupplier.test(this);
 +    }
 +
 +    private boolean defaultTrackDeltasSupplier() {
-         return this.trackDeltas;
+         return this.updateInterval != Integer.MAX_VALUE;
      }
  
-@@ -445,9 +_,12 @@
+@@ -450,9 +_,12 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -109,7 +109,7 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -468,6 +_,10 @@
+@@ -473,6 +_,10 @@
          private final DependantName<EntityType<?>, String> descriptionId = id -> Util.makeDescriptionId("entity", id.identifier());
          private boolean allowedInPeaceful = true;
          private boolean trackDeltas = true;
@@ -120,7 +120,7 @@
  
          private Builder(EntityType.EntityFactory<T> factory, MobCategory category) {
              this.factory = factory;
-@@ -591,6 +_,26 @@
+@@ -600,6 +_,26 @@
              return this;
          }
  
@@ -147,7 +147,7 @@
          public EntityType<T> build(ResourceKey<EntityType<?>> name) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, name.identifier().toString());
-@@ -612,7 +_,11 @@
+@@ -621,7 +_,11 @@
                  this.lootTable.get(name),
                  this.requiredFeatures,
                  this.allowedInPeaceful,

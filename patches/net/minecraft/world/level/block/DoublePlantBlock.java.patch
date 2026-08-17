@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DoublePlantBlock.java
 +++ b/net/minecraft/world/level/block/DoublePlantBlock.java
-@@ -73,6 +_,7 @@
+@@ -75,6 +_,7 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());
@@ -8,7 +8,7 @@
          return belowState.is(this) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER;
      }
  
-@@ -125,5 +_,21 @@
+@@ -129,5 +_,21 @@
      @Override
      protected long getSeed(BlockState state, BlockPos pos) {
          return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());

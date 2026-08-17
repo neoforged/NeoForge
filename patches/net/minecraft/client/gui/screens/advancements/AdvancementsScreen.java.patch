@@ -9,7 +9,7 @@
      public AdvancementsScreen(ClientAdvancements advancements) {
          this(advancements, null);
 @@ -76,6 +_,16 @@
-             this.advancements.setSelectedTab(this.selectedTab == null ? null : this.selectedTab.getRootNode().holder(), true);
+             this.advancements.setSelectedTab(this.selectedTab == null ? null : this.selectedTab.getRootAdvancement(), true);
          }
  
 +        if (this.tabs.size() > AdvancementTabType.MAX_TABS) {
@@ -31,7 +31,7 @@
              for (AdvancementTab tab : this.tabs.values()) {
 -                if (tab.isMouseOver(xo, yo, event.x(), event.y())) {
 +                if (tab.getPage() == tabPage && tab.isMouseOver(xo, yo, event.x(), event.y())) {
-                     this.advancements.setSelectedTab(tab.getRootNode().holder(), true);
+                     this.advancements.setSelectedTab(tab.getRootAdvancement(), true);
                      break;
                  }
 @@ -147,6 +_,11 @@

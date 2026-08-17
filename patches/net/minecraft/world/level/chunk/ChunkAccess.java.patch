@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -323,10 +_,14 @@
+@@ -321,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
@@ -16,7 +16,7 @@
          BlockStateConsumer blockStateConsumer = (pos, state) -> {
              consumer.accept(pos, state);
              return Continuation.CONTINUE;
-@@ -481,6 +_,83 @@
+@@ -479,6 +_,83 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }

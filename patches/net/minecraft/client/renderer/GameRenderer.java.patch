@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -165,18 +_,18 @@
+@@ -163,18 +_,18 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -19,7 +19,7 @@
 +                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
 +            ))
          );
-         this.screenEffectRenderer = new ScreenEffectRenderer(minecraft, atlasManager);
+         this.screenEffectRenderer = new ScreenEffectRenderer(this, atlasManager);
          this.debugCrosshairRenderer = new DebugCrosshairRenderer();
 -        this.mainRenderTarget = new MainTarget(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
          this.hud3DTarget = new TextureTarget("hud_3d_depth", minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), null, GpuFormat.D32_FLOAT);
@@ -27,7 +27,7 @@
      }
  
      @Override
-@@ -236,6 +_,7 @@
+@@ -234,6 +_,7 @@
                  break;
              case null:
              default:
@@ -35,7 +35,7 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -341,6 +_,9 @@
+@@ -331,6 +_,9 @@
                  return;
              }
  
@@ -45,13 +45,13 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
-@@ -652,6 +_,9 @@
+@@ -647,6 +_,9 @@
          this.minecraft
              .levelRenderer
              .render(this.resourcePool, renderOutline, cameraState, terrainFog, cameraState.fogData.color, !shouldCreateBossFog, consistentDepthRequired);
 +        profiler.popPush("neoforge_render_after_level");
 +        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, cameraState.viewRotationMatrix, levelRenderer.visibleSections()));
-         this.render3dHud(cameraState, optionsState, consistentDepthRequired);
+         this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
      }
  

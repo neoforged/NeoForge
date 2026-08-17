@@ -61,20 +61,7 @@
          ParticleStatus particleStatus = this.minecraft.options.particles().get();
          int weatherRadius = this.minecraft.options.weatherRadius().get();
          float rainLevel = this.getRainLevel(1.0F);
-@@ -470,7 +_,11 @@
-         entity.setOldPosAndRot();
-         entity.tickCount++;
-         Profiler.get().push(entity.typeHolder()::getRegisteredName);
--        entity.tick();
-+        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
-+        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
-+            entity.tick();
-+            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
-+        }
-         Profiler.get().pop();
- 
-         for (Entity passenger : entity.getPassengers()) {
-@@ -526,8 +_,10 @@
+@@ -524,8 +_,10 @@
      }
  
      public void addEntity(Entity entity) {
@@ -85,7 +72,7 @@
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -675,6 +_,13 @@
+@@ -673,6 +_,13 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -99,7 +86,7 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -684,6 +_,12 @@
+@@ -682,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -112,7 +99,7 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -918,7 +_,7 @@
+@@ -916,7 +_,7 @@
          return this.players;
      }
  
@@ -121,7 +108,7 @@
          return this.dragonParts;
      }
  
-@@ -1014,7 +_,7 @@
+@@ -1012,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos pos, BlockState blockState) {
@@ -130,7 +117,7 @@
              VoxelShape shape = blockState.getShape(this, pos);
              double density = 0.25;
              shape.forAllBoxes(
-@@ -1040,7 +_,7 @@
+@@ -1038,7 +_,7 @@
                                      .add(
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
@@ -139,7 +126,7 @@
                                      );
                              }
                          }
-@@ -1050,9 +_,16 @@
+@@ -1048,9 +_,16 @@
          }
      }
  
@@ -157,7 +144,7 @@
              int x = pos.getX();
              int y = pos.getY();
              int z = pos.getZ();
-@@ -1085,7 +_,7 @@
+@@ -1083,7 +_,7 @@
                  xp = x + shape.maxX + 0.1F;
              }
  
@@ -166,7 +153,7 @@
          }
      }
  
-@@ -1195,6 +_,7 @@
+@@ -1193,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty difficulty) {
@@ -174,7 +161,7 @@
              this.difficulty = difficulty;
          }
  
-@@ -1235,6 +_,9 @@
+@@ -1233,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -184,7 +171,7 @@
              }
          }
  
-@@ -1248,10 +_,26 @@
+@@ -1246,10 +_,26 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:

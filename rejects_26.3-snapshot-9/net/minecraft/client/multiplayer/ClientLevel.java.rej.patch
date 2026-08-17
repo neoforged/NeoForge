@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -470,7 +483,11 @@
+         entity.setOldPosAndRot();
+         entity.tickCount++;
+         Profiler.get().push(entity.typeHolder()::getRegisteredName);
+-        entity.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
++            entity.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
++        }
+         Profiler.get().pop();
+ 
+         for (Entity passenger : entity.getPassengers()) {

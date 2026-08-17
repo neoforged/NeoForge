@@ -91,10 +91,10 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
--            this.ackBlockChangesUpTo(packet.getSequence());
+-            this.ackBlockChangesUpTo(packet.sequence());
 +            this.player.connection.ackBlockChangesUpTo = packet.getSequence();
              ServerLevel level = this.player.level();
-             InteractionHand hand = packet.getHand();
+             InteractionHand hand = packet.hand();
              ItemStack itemStack = this.player.getItemInHand(hand);
 @@ -1484,13 +_,24 @@
      @Override

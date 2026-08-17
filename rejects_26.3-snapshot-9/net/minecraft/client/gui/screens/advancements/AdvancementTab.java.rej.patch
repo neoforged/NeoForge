@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
-@@ -41,6 +_,7 @@
+@@ -41,6 +41,7 @@
      private float fade;
      private boolean centered;
      private @Nullable AdvancementWidget hovered;
@@ -8,7 +8,7 @@
  
      public AdvancementTab(Minecraft minecraft, AdvancementsScreen screen, AdvancementTabType type, int index, AdvancementNode rootNode, DisplayInfo display) {
          this.minecraft = minecraft;
-@@ -55,6 +_,15 @@
+@@ -55,6 +56,15 @@
          this.addWidget(this.root, rootNode.holder());
      }
  
@@ -24,7 +24,7 @@
      public AdvancementTabType getType() {
          return this.type;
      }
-@@ -162,8 +_,8 @@
+@@ -162,8 +172,8 @@
          }
  
          for (AdvancementTabType type : AdvancementTabType.values()) {

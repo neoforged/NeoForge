@@ -1,0 +1,15 @@
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -828,7 +852,11 @@
+         entity.tickCount++;
+         profiler.push(entity.typeHolder()::getRegisteredName);
+         profiler.incrementCounter("tickNonPassenger");
+-        entity.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
++            entity.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
++        }
+         profiler.pop();
+ 
+         for (Entity passenger : entity.getPassengers()) {
