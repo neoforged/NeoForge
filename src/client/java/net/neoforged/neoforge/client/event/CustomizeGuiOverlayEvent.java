@@ -48,6 +48,8 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
     /// Fired **before** a boss health bar is rendered to the screen.
     ///
     /// This event is [cancellable][ICancellableEvent]. Cancelling this event will prevent the given bar from rendering.
+    /// The [Y position increment][#getIncrement()] is always applied, even if the event is canceled, to give way for any
+    /// custom elements rendered in place of vanilla's bar rendering.
     ///
     /// This event is fired on the [game event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
     public static class BossEventProgress extends CustomizeGuiOverlayEvent implements ICancellableEvent {
@@ -81,6 +83,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         }
 
         /// {@return the Y position increment, applied before rendering the next boss health bar}
+        /// This is always applied, even if the event is [canceled][#setCanceled(boolean)].
         public int getIncrement() {
             return increment;
         }
