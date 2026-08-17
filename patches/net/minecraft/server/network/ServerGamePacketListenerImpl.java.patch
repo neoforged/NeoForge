@@ -92,7 +92,7 @@
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
 -            this.ackBlockChangesUpTo(packet.sequence());
-+            this.player.connection.ackBlockChangesUpTo = packet.getSequence();
++            this.player.connection.ackBlockChangesUpTo = packet.sequence();
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.hand();
              ItemStack itemStack = this.player.getItemInHand(hand);
